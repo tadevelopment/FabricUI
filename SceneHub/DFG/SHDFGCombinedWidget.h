@@ -48,7 +48,8 @@ namespace FabricUI
         /// Calls when the SceneGraph hierachy changed.
         void onSceneHierarchyChanged(); 
         /// Calls when the SceneGraph hierachy changed.
-        void refresh();   
+        void refreshTreeView();   
+
 
       signals :
         void sceneHierarchyChanged();

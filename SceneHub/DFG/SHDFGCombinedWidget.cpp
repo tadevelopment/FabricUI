@@ -30,10 +30,10 @@ void SHDFGCombinedWidget::initDocks() {
   layout->addWidget(m_shTreeView);
   m_hSplitter->addWidget(widget);
   
-  QObject::connect(m_LineEdit, SIGNAL(editingFinished()), this, SLOT(refresh()));
+  QObject::connect(m_LineEdit, SIGNAL(editingFinished()), this, SLOT(refreshTreeView()));
 }
 
-void SHDFGCombinedWidget::refresh() {
+void SHDFGCombinedWidget::refreshTreeView() {
   
   FabricCore::DFGBinding binding = m_dfgWidget->getUIController()->getBinding();
   FabricCore::DFGExec exec = binding.getExec();
