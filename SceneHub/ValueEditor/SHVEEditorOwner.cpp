@@ -3,8 +3,10 @@
 //
 
 #include "SHVEEditorOwner.h"
+#include "SGObjectModelItem.h"
 #include <FabricUI/ValueEditor/VETreeWidget.h>
 #include <FabricUI/ValueEditor/VETreeWidgetItem.h>
+#include <FabricUI/DFG/DFGController.h>
 
 using namespace FabricUI;
 using namespace SceneHub;
@@ -36,6 +38,10 @@ void SHVEEditorOwner::onSceneItemSelected( FabricUI::SceneHub::SHTreeItem *item 
 {
   m_valueEditor->clear();
 
-  FabricCore::RTVal sgObject = item->getSGObject();
+  if(m_modelRoot)
+    delete m_modelRoot;
 
+  FabricCore::RTVal sgObject = item->getSGObject();
+  m_modelRoot = new SGObjectModelItem(getDFGController()->getClient(), sgObject);
+  emit replaceModelRoot( m_modelRoot );
 }

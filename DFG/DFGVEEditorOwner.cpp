@@ -37,14 +37,14 @@ void DFGVEEditorOwner::initConnections()
 {
   VEEditorOwner::initConnections();
   connect(
-    getUIController(),
+    getDFGController(),
     SIGNAL(bindingChanged(FabricCore::DFGBinding const &)),
     this,
     SLOT(onControllerBindingChanged(FabricCore::DFGBinding const &))
     );
 
   connect(
-    getUIController(), SIGNAL( argsChanged() ),
+    getDFGController(), SIGNAL( argsChanged() ),
     this, SLOT( onStructureChanged() )
     );
   connect(  // [FE-6010]
@@ -67,10 +67,7 @@ FabricUI::DFG::DFGWidget * DFGVEEditorOwner::getDfgWidget()
 {
   return m_dfgWidget;
 }
-FabricUI::DFG::DFGController * DFGVEEditorOwner::getUIController()
-{
-  return getDfgWidget()->getUIController();
-}
+
 FabricUI::DFG::DFGController * DFGVEEditorOwner::getDFGController()
 {
   return getDfgWidget()->getDFGController();
@@ -261,7 +258,7 @@ void DFGVEEditorOwner::onControllerBindingChanged(
 
 void DFGVEEditorOwner::onSidePanelInspectRequested()
 {
-  FabricUI::DFG::DFGController *dfgController = getUIController();
+  FabricUI::DFG::DFGController *dfgController = getDFGController();
   FabricCore::DFGBinding binding = dfgController->getBinding();
   std::string path = dfgController->getExecPath();
   if ( path.empty() )
@@ -309,7 +306,7 @@ void DFGVEEditorOwner::onNodeInspectRequested(
     return;
 
   FabricUI::DFG::DFGController *dfgController =
-    getUIController();
+    getDFGController();
 
   FabricUI::DFG::DFGUICmdHandler *dfgUICmdHandler =
     dfgController->getCmdHandler();
@@ -766,13 +763,13 @@ void DFGVEEditorOwner::onExecRefVarPathChanged(
 
 void DFGVEEditorOwner::onStructureChanged()
 {
-  if (getUIController()->isViewingRootGraph())
+  if (getDFGController()->isViewingRootGraph())
   {
     m_timelinePortIndex = -1;
     try
     {
       FabricCore::DFGExec graph =
-        getUIController()->getExec();
+        getDFGController()->getExec();
       unsigned portCount = graph.getExecPortCount();
       for (unsigned i = 0; i < portCount; i++)
       {
@@ -806,7 +803,7 @@ void DFGVEEditorOwner::onFrameChanged( int frame )
   try
   {
     FabricCore::DFGBinding binding =
-      getUIController()->getBinding();
+      getDFGController()->getBinding();
     FabricCore::DFGExec exec = binding.getExec();
     FabricCore::Context ctxt = binding.getHost().getContext();
 

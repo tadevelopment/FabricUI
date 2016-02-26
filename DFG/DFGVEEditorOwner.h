@@ -155,9 +155,7 @@ namespace FabricUI {
 
       void onGraphSet(FabricUI::GraphView::Graph * graph);
 
-    private:
       FabricUI::DFG::DFGWidget * getDfgWidget();
-      FabricUI::DFG::DFGController * getUIController();
       FabricUI::DFG::DFGController * getDFGController();
 
     private:
