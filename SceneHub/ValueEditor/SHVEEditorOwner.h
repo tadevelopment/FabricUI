@@ -5,6 +5,8 @@
 #pragma once
 
 #include <FabricUI/DFG/DFGVEEditorOwner.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeView.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
 
 namespace FabricUI {
 
@@ -16,21 +18,23 @@ namespace FabricUI {
 
     public:
 
-      SHVEEditorOwner(DFG::DFGWidget * dfgWidget);
+      SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHTreeView * treeView);
       ~SHVEEditorOwner();
 
       virtual void initConnections();
 
-    // protected slots:
+    public slots:
 
-    // private:
+      void onSceneItemSelected( FabricUI::SceneHub::SHTreeItem *item );
+
+    private:
 
       // void setModelRoot(
       //   FabricUI::DFG::DFGController *dfgController,
       //   FabricUI::ModelItems::BindingModelItem *bindingModelItem
       //   );
 
-      // QSharedPointer<DFG::DFGNotifier> m_notifier;
+      SceneHub::SHTreeView * m_treeView;
     };
   }
 }
