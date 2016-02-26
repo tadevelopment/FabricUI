@@ -124,6 +124,7 @@ dirs = [
   'SceneHub/TreeView',
   'SceneHub/Viewports',
   'SceneHub/Commands',
+  'SceneHub/ValueEditor',
 
   'Licensing',
   'ModelItems'
