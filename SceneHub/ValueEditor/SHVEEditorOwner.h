@@ -4,19 +4,19 @@
 
 #pragma once
 
-#include <FabricUI/ValueEditor/VEEditorOwner.h>
+#include <FabricUI/DFG/DFGVEEditorOwner.h>
 
 namespace FabricUI {
 
   namespace SceneHub
   { 
-    class SHVEEditorOwner : public ValueEditor::VEEditorOwner
+    class SHVEEditorOwner : public DFG::DFGVEEditorOwner
     {
       Q_OBJECT
 
     public:
 
-      SHVEEditorOwner();
+      SHVEEditorOwner(DFG::DFGWidget * dfgWidget);
       ~SHVEEditorOwner();
 
       virtual void initConnections();

@@ -8,7 +8,8 @@ using namespace FabricUI;
 using namespace SceneHub;
 using namespace ModelItems;
 
-SHVEEditorOwner::SHVEEditorOwner()
+SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget)
+  : DFG::DFGVEEditorOwner(dfgWidget)
 {
 }
 
@@ -18,7 +19,7 @@ SHVEEditorOwner::~SHVEEditorOwner()
 
 void SHVEEditorOwner::initConnections()
 {
-  VEEditorOwner::initConnections();
+  DFG::DFGVEEditorOwner::initConnections();
 //   connect(
 //     getUIController(),
 //     SIGNAL(bindingChanged(FabricCore::DFGBinding const &)),
