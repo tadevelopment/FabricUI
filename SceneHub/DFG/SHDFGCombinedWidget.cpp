@@ -14,7 +14,8 @@
 #include <FabricUI/DFG/DFGActions.h>
 
 using namespace FabricUI::DFG;
-  
+using namespace FabricUI::DFG;
+
 void SHDFGCombinedWidget::initTreeView() {
   DFGCombinedWidget::initTreeView();
   m_shTreeView = new FabricUI::SceneHub::SHTreeView(m_client);
@@ -29,24 +30,33 @@ void SHDFGCombinedWidget::initDocks() {
   layout->addWidget(m_LineEdit);
   layout->addWidget(m_shTreeView);
   m_hSplitter->addWidget(widget);
-  
   QObject::connect(m_LineEdit, SIGNAL(editingFinished()), this, SLOT(refreshTreeView()));
 }
 
-void SHDFGCombinedWidget::refreshTreeView() {
-  
-  FabricCore::DFGBinding binding = m_dfgWidget->getUIController()->getBinding();
-  FabricCore::DFGExec exec = binding.getExec();
-  
-  QString shHostName = m_LineEdit->text();
-  if(exec.hasVar(shHostName.toUtf8())) 
+bool SHDFGCombinedWidget::getHost(const char *name, FabricCore::RTVal &shHost) {
+  FabricCore::DFGExec exec = m_dfgWidget->getUIController()->getBinding().getExec();
+  if(exec.hasVar(name))
   {
-    FabricCore::RTVal shHost = exec.getVarValue(shHostName.toUtf8());
-    if(shHost.isNullObject()) return;
-    
-    m_shHostName = shHostName;
- 
-    FABRIC_TRY( "SHDFGCombinedWidget::initTreeView",
+    shHost = exec.getVarValue(name);
+    return true;
+  }
+  return false;
+}
+
+bool SHDFGCombinedWidget::getRTRHostCallback(FabricCore::RTVal &callback) {
+  FabricCore::RTVal isValid = FabricCore::RTVal::ConstructBoolean(m_client, false);   
+  callback = FabricCore::RTVal::Construct(m_client, "RTROGLHostCallback", 0, 0);
+  callback = callback.callMethod("RTROGLHostCallback", "getCallback", 1, &isValid);
+  return isValid.getBoolean();
+}
+
+// ***** Tree-View *****
+void SHDFGCombinedWidget::refreshTreeView() {
+
+  FABRIC_TRY( "SHDFGCombinedWidget::refreshTreeView",
+    FabricCore::RTVal shHost;
+    if(getHost(m_LineEdit->text().toUtf8(), shHost))
+    {
       FabricCore::RTVal sceneGraphRTVal = shHost.callMethod("SceneGraph", "getScene", 0, 0);
       if(sceneGraphRTVal.isNullObject()) return;
 
@@ -71,11 +81,10 @@ void SHDFGCombinedWidget::refreshTreeView() {
       QObject::connect(treeModel, SIGNAL( sceneHierarchyChanged() ), this, SLOT( onSceneHierarchyChanged() ));
     
       showTreeView(1);
-    );
-  }
+    }
+  );
 }
 
-// ***** Tree-View *****
 void SHDFGCombinedWidget::showTreeView(unsigned int initalExpandLevel) {
   if(initalExpandLevel == uint32_t(-1)) m_shTreeView->expandAll();
   else if(initalExpandLevel > 0) m_shTreeView->expandToDepth(initalExpandLevel-1);
@@ -85,22 +94,40 @@ void SHDFGCombinedWidget::showTreeView() {
   showTreeView(1);
 }
 
-void SHDFGCombinedWidget::onSceneHierarchyChanged() {
-  // Check if it actually changed, to reduce number of notifications
-  //if(shHost.callMethod("Boolean", "sceneHierarchyChanged", 0, 0).getBoolean())
-  //  emit sceneHierarchyChanged();
-}
-
 void SHDFGCombinedWidget::treeItemSelected(FabricUI::SceneHub::SHTreeItem *item) { 
-  //FABRIC_TRY( "SHDFGCombinedWidget::treeItemSelected",
-  //  FabricCore::RTVal sgObj = item->getSGObject();
-  //  shHost.callMethod( "", "treeItemSelected", 1, &sgObj );     
-  //);
+  FABRIC_TRY( "SHDFGCombinedWidget::treeItemSelected",
+    FabricCore::RTVal callback;
+    if(getRTRHostCallback(callback))
+    {
+      FabricCore::RTVal sgObj = item->getSGObject();
+      callback.callMethod( "", "treeItemSelected", 1, &sgObj );   
+      refresh();  
+    }
+  );
 }
 
 void SHDFGCombinedWidget::treeItemDeselected(FabricUI::SceneHub::SHTreeItem *item) {
-  //FABRIC_TRY( "SHDFGCombinedWidget::treeItemDeselected",
-  //  FabricCore::RTVal sgObj = item->getSGObject();
-  //  shHost.callMethod( "", "treeItemDeselected", 1, &sgObj );
-  //);
+  FABRIC_TRY( "SHDFGCombinedWidget::treeItemDeselected",
+    FabricCore::RTVal callback;
+    if(getRTRHostCallback(callback))
+    {
+      FabricCore::RTVal sgObj = item->getSGObject();
+      callback.callMethod( "", "treeItemDeselected", 1, &sgObj );
+      refresh();     
+    }
+  );
+}
+
+void SHDFGCombinedWidget::onSceneHierarchyChanged() {
+  FabricCore::RTVal shHost;
+  if(getHost(m_LineEdit->text().toUtf8(), shHost))
+  {
+    // Check if it actually changed, to reduce number of notifications
+    if(shHost.callMethod("Boolean", "sceneHierarchyChanged", 0, 0).getBoolean())
+    {
+      m_valueEditor->onOutputsChanged();
+      emit sceneHierarchyChanged();
+      refresh();
+    }
+  }
 }

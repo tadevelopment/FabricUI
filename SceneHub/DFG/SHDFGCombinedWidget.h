@@ -23,11 +23,10 @@ namespace FabricUI
         SHDFGCombinedWidget(QWidget * parent) : DFGCombinedWidget(parent) {};
 
         ~SHDFGCombinedWidget() {};
- 
+        
       public slots:
         virtual void onUndo() {};
         virtual void onRedo() {};
-
         virtual void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifier, QString str) { DFGCombinedWidget::onHotkeyPressed(key, modifier, str); }
         virtual void onGraphSet(FabricUI::GraphView::Graph * graph) { DFGCombinedWidget::onGraphSet(graph); };
         virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeInspectRequested(node); };
@@ -48,26 +47,27 @@ namespace FabricUI
         /// Calls when the SceneGraph hierachy changed.
         void onSceneHierarchyChanged(); 
         /// Calls when the SceneGraph hierachy changed.
-        void refreshTreeView();   
-
+        virtual void refreshTreeView();   
 
       signals :
         void sceneHierarchyChanged();
 
-      private slots:
+      protected slots:
         void onPortEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog) { DFGCombinedWidget::onPortEditDialogCreated(dialog); }
         void onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData) { DFGCombinedWidget::onPortEditDialogInvoked(dialog, additionalMetaData); }
       
-      private :
+      protected :
+        virtual void refresh() = 0;
         /// Initializes the treeView widget.
         virtual void initTreeView();
         /// Initializes the windows docks.
         virtual void initDocks();
-        void addSceneHubAsPort();
-        
-        SceneHub::SHTreeView *m_shTreeView;
-        QLineEdit *m_LineEdit;
+        bool getHost(const char *name, FabricCore::RTVal &);
+        bool getRTRHostCallback(FabricCore::RTVal &);
+
         QString m_shHostName;
+        QLineEdit *m_LineEdit;
+        SceneHub::SHTreeView *m_shTreeView;
     };
   }
 }

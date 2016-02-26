@@ -74,14 +74,6 @@ void DFGCombinedWidget::initDFG() {
   m_dfgLogWidget = new DFGLogWidget( m_config );
   if(m_dfgWidget->isEditable())
   {
-    // QObject::connect(
-    //   m_dfgValueEditor, SIGNAL(valueItemDelta(ValueItem*)),
-    //   this, SLOT(onValueChanged())
-    //   );
-    // QObject::connect(
-    //   m_dfgValueEditor, SIGNAL(valueItemInteractionDelta(ValueItem*)),
-    //   this, SLOT(onValueChanged())
-    //   );
     QObject::connect(
       m_dfgWidget, SIGNAL(portEditDialogCreated(FabricUI::DFG::DFGBaseDialog*)),
       this, SLOT(onPortEditDialogCreated(FabricUI::DFG::DFGBaseDialog*))
@@ -90,29 +82,6 @@ void DFGCombinedWidget::initDFG() {
       m_dfgWidget, SIGNAL(portEditDialogInvoked(FabricUI::DFG::DFGBaseDialog*, FTL::JSONObjectEnc<>*)),
       this, SLOT(onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog*, FTL::JSONObjectEnc<>*))
       );
-
-    // QObject::connect(
-    //   m_dfgWidget->getUIController(), SIGNAL(nodeRenamed(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
-    //   m_dfgValueEditor, SLOT(onNodeRenamed(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
-    //   );
-    // QObject::connect(
-    //   m_dfgWidget->getUIController(), SIGNAL(nodeRemoved(FTL::CStrRef, FTL::CStrRef)),
-    //   m_dfgValueEditor, SLOT(onNodeRemoved(FTL::CStrRef, FTL::CStrRef))
-    //   );
-
-    //QObject::connect(
-    //  m_dfgWidget->getUIController(), SIGNAL(argsChanged()),
-    //  this, SLOT(onStructureChanged())
-    //  );
-    // QObject::connect(
-    //   m_dfgWidget->getUIController(), SIGNAL(argValuesChanged()),
-    //   this, SLOT(onValueChanged())
-    //   );
-    
-    // QObject::connect(
-    //   m_dfgWidget->getUIController(), SIGNAL(defaultValuesChanged()),
-    //   this, SLOT(onValueChanged())
-    //   );
     QObject::connect(
       m_dfgWidget, SIGNAL(nodeInspectRequested(FabricUI::GraphView::Node*)),
       this, SLOT(onNodeInspectRequested(FabricUI::GraphView::Node*))
@@ -146,25 +115,23 @@ void DFGCombinedWidget::init(
   if(m_dfgWidget)
     return;
 
-   try
+  try
   {
     m_config = config;
     m_client = client;
     m_manager = manager;
 
-    m_dfgWidget = 
-      new DFG::DFGWidget(
-        this,
-        m_client,
-        host,
-        binding,
-        execPath,
-        exec,
-        m_manager,
-        cmdHandler,
-        m_config,
-        overTakeBindingNotifications
-        );
+    m_dfgWidget = new DFG::DFGWidget(
+      this,
+      m_client,
+      host,
+      binding,
+      execPath,
+      exec,
+      m_manager,
+      cmdHandler,
+      m_config,
+      overTakeBindingNotifications);
 
     m_hSplitter = new QSplitter(this);
     m_hSplitter->setOrientation(Qt::Horizontal);
@@ -219,16 +186,6 @@ void DFGCombinedWidget::keyPressEvent(QKeyEvent * event)
   }
   event->accept();
 }
-
-//void DFGCombinedWidget::onValueChanged()
-//{
-//  emit valueChanged();
-//}
-//
-//void DFGCombinedWidget::onStructureChanged()
-//{
-//  onValueChanged();
-//}
 
 void DFGCombinedWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifiers, QString hotkey)
 {

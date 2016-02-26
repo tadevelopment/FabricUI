@@ -48,8 +48,7 @@ namespace FabricUI
         FabricCore::DFGExec &exec,
         DFGUICmdHandler *cmdHandler,
         bool overTakeBindingNotifications = true,
-        DFGConfig config = DFGConfig()
-        );
+        DFGConfig config = DFGConfig() );
 
       static void setLogFunc(DFGController::LogFunc func);
 
@@ -58,17 +57,13 @@ namespace FabricUI
       virtual DFGWidget * getDfgWidget() { return m_dfgWidget; }
       virtual DFGLogWidget * getDfgLogWidget() { return m_dfgLogWidget; }
       virtual QWidget* getDfgValueEditor();
-
       virtual void keyPressEvent(QKeyEvent * event);
 
     public slots:
       virtual void onUndo() = 0;
       virtual void onRedo() = 0;
-      //virtual void onValueChanged();
-      //virtual void onStructureChanged();
       virtual void onHotkeyPressed(Qt::Key, Qt::KeyboardModifier, QString);
       virtual void onGraphSet(FabricUI::GraphView::Graph * graph);
-
       virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node);
       virtual void onNodeEditRequested(FabricUI::GraphView::Node * node);
       virtual void onAdditionalMenuActionsRequested(QString name, QMenu * menu, bool prefix);
@@ -78,7 +73,6 @@ namespace FabricUI
       void onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData);
 
     signals:
-      void valueChanged();
       void portEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog);
       void portEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData);
 
@@ -92,14 +86,14 @@ namespace FabricUI
       virtual void initDocks();
       virtual void log(const char * message) const;
 
-      QSplitter * m_hSplitter;
+      QSplitter *m_hSplitter;
       FabricCore::Client m_client;
-      ASTWrapper::KLASTManager * m_manager;
-      PresetTreeWidget * m_treeWidget;
-      DFGWidget * m_dfgWidget;
-      DFGLogWidget * m_dfgLogWidget;
-      FabricUI::GraphView::Graph * m_setGraph;
-      ValueEditor::VEEditorOwner * m_valueEditor;
+      ASTWrapper::KLASTManager *m_manager;
+      PresetTreeWidget *m_treeWidget;
+      DFGWidget *m_dfgWidget;
+      DFGLogWidget *m_dfgLogWidget;
+      FabricUI::GraphView::Graph *m_setGraph;
+      ValueEditor::VEEditorOwner *m_valueEditor;
       DFG::DFGConfig m_config;
     };
   };
