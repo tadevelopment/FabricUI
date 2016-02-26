@@ -33,21 +33,13 @@ namespace FabricUI {
   namespace DFG 
   { 
 
-    class DFGValueEditorBridgeOwner : public ValueEditor::ValueEditorBridgeOwner
-    {
-    public:
-      // This must be concrete so we can subclass in PySide
-      virtual ~DFGValueEditorBridgeOwner() {}
-      virtual FabricUI::DFG::DFGWidget * getDfgWidget() { return 0; }
-    };
-
     class DFGVEEditorOwner : public ValueEditor::VEEditorOwner
     {
       Q_OBJECT
 
     public:
 
-      DFGVEEditorOwner( DFGValueEditorBridgeOwner *owner );
+      DFGVEEditorOwner( DFGWidget * dfgWidget );
       ~DFGVEEditorOwner();
 
       virtual void initConnections();
@@ -182,6 +174,7 @@ namespace FabricUI {
 
       int m_timelinePortIndex;
 
+      DFG::DFGWidget * m_dfgWidget;
       FabricUI::GraphView::Graph * m_setGraph;
       QSharedPointer<DFG::DFGNotifier> m_notifier;
       QSharedPointer<DFG::DFGNotifier> m_subNotifier;

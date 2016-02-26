@@ -10,6 +10,7 @@
 #include <FabricUI/Style/FabricStyle.h>
 #include <FabricUI/DFG/Dialogs/DFGNodePropertiesDialog.h>
 #include <FabricUI/DFG/DFGActions.h>
+#include <FabricUI/DFG/DFGVEEditorOwner.h>
 
 using namespace FabricUI::DFG;
 
@@ -68,7 +69,8 @@ void DFGCombinedWidget::initTreeView() {
 
 void DFGCombinedWidget::initDFG() {
  
-  m_valueEditor = new ValueEditor::VEEditorOwner( this );
+  m_valueEditor = new DFG::DFGVEEditorOwner( m_dfgWidget );
+  QObject::connect( m_valueEditor, SIGNAL( log( const char * ) ), this, SLOT( log ( const char * ) ) );
 
   m_dfgWidget->getUIController()->setLogFunc(DFGLogWidget::log);
   m_dfgLogWidget = new DFGLogWidget( m_config );

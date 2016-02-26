@@ -29,7 +29,7 @@ namespace FabricUI
 
     class DFGUICmdHandler;
     
-    class DFGCombinedWidget : public QSplitter, FabricUI::ValueEditor::ValueEditorBridgeOwner
+    class DFGCombinedWidget : public QSplitter
     {
 
       Q_OBJECT
@@ -62,6 +62,7 @@ namespace FabricUI
       virtual void keyPressEvent(QKeyEvent * event);
 
     public slots:
+      void log(const char * message) const;
       virtual void onUndo() = 0;
       virtual void onRedo() = 0;
       //virtual void onValueChanged();
@@ -90,7 +91,6 @@ namespace FabricUI
       virtual void initTreeView();
       /// Initializes the windows docks.
       virtual void initDocks();
-      virtual void log(const char * message) const;
 
       QSplitter * m_hSplitter;
       FabricCore::Client m_client;

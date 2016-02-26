@@ -18,9 +18,8 @@ using namespace FabricUI;
 using namespace ValueEditor;
 using namespace ModelItems;
 
-VEEditorOwner::VEEditorOwner( ValueEditorBridgeOwner *owner )
-  : m_owner( owner )
-  , m_valueEditor( NULL )
+VEEditorOwner::VEEditorOwner()
+  : m_valueEditor( NULL )
   , m_modelRoot( NULL )
 {
   m_valueEditor = new VETreeWidget();

@@ -36,21 +36,13 @@ namespace FabricUI {
   namespace ValueEditor 
   { 
 
-    class ValueEditorBridgeOwner
-    {
-    public:
-      // This must be concrete so we can subclass in PySide
-      virtual ~ValueEditorBridgeOwner() {}
-      virtual void log(const char* txt) const {}
-    };
-
     class VEEditorOwner : public QObject 
     {
       Q_OBJECT
 
     public:
 
-      VEEditorOwner( ValueEditorBridgeOwner *owner );
+      VEEditorOwner();
       ~VEEditorOwner();
 
       virtual QWidget* getWidget() const;
@@ -63,6 +55,7 @@ namespace FabricUI {
       virtual void onFrameChanged(int frame) {}
 
     signals:
+      void log(const char * message);
       void replaceModelRoot( BaseModelItem* model);
       void modelItemInserted( BaseModelItem* parent, int index, const char* childName);
       void modelItemTypeChange( BaseModelItem* changingItem, const char* newType);
@@ -72,7 +65,6 @@ namespace FabricUI {
 
     protected:
 
-      ValueEditorBridgeOwner *m_owner;
       VETreeWidget* m_valueEditor;
       FabricUI::ModelItems::RootModelItem* m_modelRoot;
     };
