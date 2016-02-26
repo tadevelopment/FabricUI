@@ -95,6 +95,7 @@ namespace FabricUI
       FabricUI::GraphView::Graph *m_setGraph;
       ValueEditor::VEEditorOwner *m_valueEditor;
       DFG::DFGConfig m_config;
+      QMenuBar *m_menuBar;
     };
   };
 };

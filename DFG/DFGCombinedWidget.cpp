@@ -30,9 +30,9 @@ DFGCombinedWidget::DFGCombinedWidget(QWidget *parent)
 
 void DFGCombinedWidget::initMenu() {
 
-  QMenuBar * menuBar = new QMenuBar(this);
-  menuBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-  addWidget(menuBar);
+  m_menuBar = new QMenuBar(this);
+  m_menuBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+  addWidget(m_menuBar);
 
   // populate the menu bar
   QObject::connect(
@@ -41,7 +41,7 @@ void DFGCombinedWidget::initMenu() {
     this, SLOT(onAdditionalMenuActionsRequested(QString, QMenu *, bool))
     );
 
-  m_dfgWidget->populateMenuBar(menuBar, false);
+  m_dfgWidget->populateMenuBar(m_menuBar, false);
 }
 
 void DFGCombinedWidget::initTreeView() {

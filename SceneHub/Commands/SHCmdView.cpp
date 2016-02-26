@@ -81,7 +81,7 @@ void SHCmdView::keyPressEvent(QKeyEvent *event) {
   // Check if the user hit the Enter (Return) key -> validate the command
   if( (event->key()==Qt::Key_Enter) || (event->key()==Qt::Key_Return) ) 
     // Check if the QTextEdit m_edit has the focus
-    if(m_edit->hasFocus()) addCommand(m_edit->text().toStdString());
+    if(m_edit->hasFocus()) addCommand(m_edit->text().toUtf8().constData());
 }
 
 /// Adds a command.

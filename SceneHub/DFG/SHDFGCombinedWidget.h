@@ -32,6 +32,7 @@ namespace FabricUI
         virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeInspectRequested(node); };
         virtual void onNodeEditRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeEditRequested(node); };
         virtual void onAdditionalMenuActionsRequested(QString name, QMenu * menu, bool prefix) { DFGCombinedWidget::onAdditionalMenuActionsRequested(name, menu, prefix); }; 
+        
         /// Displays the treeView in the application.
         /// \param initalExpandLevel The initial level of expension of the treeView.
         void showTreeView(unsigned int initalExpandLevel);
@@ -47,7 +48,15 @@ namespace FabricUI
         /// Calls when the SceneGraph hierachy changed.
         void onSceneHierarchyChanged(); 
         /// Calls when the SceneGraph hierachy changed.
-        virtual void refreshTreeView();   
+        virtual void refreshTreeView(); 
+
+        /// Export the scene to Alembic
+        void exportToAlembic();
+        /// Displays statistics about the application.
+        void showUsage();
+        /// Activation of tools
+        void activeTool();
+    
 
       signals :
         void sceneHierarchyChanged();
@@ -59,6 +68,8 @@ namespace FabricUI
       protected :
         virtual void refresh() = 0;
         /// Initializes the treeView widget.
+        virtual void initMenu();
+        /// Initializes the treeView widget.
         virtual void initTreeView();
         /// Initializes the windows docks.
         virtual void initDocks();
@@ -68,6 +79,7 @@ namespace FabricUI
         QString m_shHostName;
         QLineEdit *m_LineEdit;
         SceneHub::SHTreeView *m_shTreeView;
+        QWidget *m_shTreeViewWidget;
     };
   }
 }
