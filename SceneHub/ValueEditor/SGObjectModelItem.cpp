@@ -156,7 +156,7 @@ void SGObjectModelItem::ensurePropertiesRTVal()
 
   try
   {
-    m_propertiesRtVal =  m_rtVal.callMethod("SGObjectProperty[]", "getPropertyArray", 0, 0);
+    m_propertiesRtVal =  m_rtVal.callMethod("SGObjectProperty[]", "getEditablePropertyArray", 0, 0);
     for(unsigned int i=0;i<m_propertiesRtVal.getArraySize();i++)
     {
       FabricCore::RTVal nameVal = m_propertiesRtVal.getArrayElement(i).callMethod("String", "getName", 0, 0);

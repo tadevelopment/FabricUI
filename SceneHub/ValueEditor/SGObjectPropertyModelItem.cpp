@@ -185,6 +185,9 @@ QVariant SGObjectPropertyModelItem::getValue()
     else if(type == FTL_STR("Mat44"))
     {
       value = m_rtVal.callMethod("Mat44", "getMat44Value", 0, 0);
+
+      /* special case, convert to Xfo for editing */
+      value = FabricCore::RTVal::Construct(m_client, "Xfo", 1, &value);
     }
     else if(type == FTL_STR("Color"))
     {
@@ -231,6 +234,19 @@ void SGObjectPropertyModelItem::setValue(
   if(!RTVariant::toRTVal(var, varVal))
     return;
 
+  /* special case for Mat44 */
+  if(getRTValType() == FTL_STR("Mat44"))
+  {
+    try
+    {
+      varVal = varVal.callMethod("Mat44", "toMat44", 0, 0);
+    }
+    catch(FabricCore::Exception e)
+    {
+      printf("SGObjectPropertyModelItem::setValue, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
+    }
+  }
+
   if(!m_rtVal.isValid())
     return;
 
@@ -243,6 +259,10 @@ void SGObjectPropertyModelItem::setValue(
 
     try
     {
+      /* special case for Mat44 */
+      if(getRTValType() == FTL_STR("Mat44"))
+        valueAtInteractionBeginVal = valueAtInteractionBeginVal.callMethod("Mat44", "toMat44", 0, 0);
+
       std::vector<FabricCore::RTVal> params(6);
       params[0] = m_rtVal.callMethod("String", "getFullPath", 0, 0);
       params[1] = varVal.callMethod("Type", "type", 0, 0);
