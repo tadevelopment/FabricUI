@@ -42,6 +42,10 @@ void VEEditorOwner::initConnections()
     m_valueEditor, SLOT( onModelItemChildInserted( BaseModelItem*, int, const char* ) )
     );
   connect(
+    this, SIGNAL( modelItemInserted( BaseModelItem*, int, const char* ) ),
+    this, SLOT( onModelItemInserted( BaseModelItem*, int, const char* ) )
+    );
+  connect(
     this, SIGNAL( modelItemTypeChange( BaseModelItem*, const char* ) ),
     m_valueEditor, SLOT( onModelItemTypeChanged( BaseModelItem*, const char* ) )
     );
@@ -61,4 +65,22 @@ void VEEditorOwner::initConnections()
     this, SIGNAL( replaceModelRoot( BaseModelItem* ) ),
     m_valueEditor, SLOT( onSetModelItem( BaseModelItem* ) )
     );
+}
+
+void VEEditorOwner::onModelItemInserted( BaseModelItem* parent, int index, const char* childName )
+{
+  BaseModelItem * child = parent->getChild(childName);
+  if(child)
+  {
+    connect(
+      child, SIGNAL( modelValueChanged( QVariant const & ) ),
+      this, SLOT( onModelValueChanged( QVariant const & ) )
+      );
+  }
+}
+
+void VEEditorOwner::onModelValueChanged( QVariant const &newValue )
+{
+  BaseModelItem * item = (BaseModelItem *)QObject::sender();
+  emit modelItemValueChanged(item, newValue);
 }

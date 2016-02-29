@@ -53,10 +53,13 @@ namespace FabricUI {
 
     protected slots:
       virtual void onFrameChanged(int frame) {}
+      virtual void onModelItemInserted( BaseModelItem* parent, int index, const char* childName );
+      virtual void onModelValueChanged( QVariant const &newValue );
 
     signals:
       void log(const char * message);
       void replaceModelRoot( BaseModelItem* model);
+      void modelItemValueChanged( BaseModelItem * item, QVariant const &newValue );
       void modelItemInserted( BaseModelItem* parent, int index, const char* childName);
       void modelItemTypeChange( BaseModelItem* changingItem, const char* newType);
       void modelItemRemoved( BaseModelItem* removedItem);

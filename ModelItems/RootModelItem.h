@@ -35,6 +35,7 @@ namespace FabricUI
     protected:
 
       ChildVec m_children;
+      BaseModelItem * pushChild(BaseModelItem * item);
       
     public:
 
@@ -44,6 +45,7 @@ namespace FabricUI
       virtual bool isNode() const { return false; }
       virtual bool isBinding() const { return false; }
       virtual bool isSGObject() const { return false; }
+      virtual bool isSGObjectProperty() const { return false; }
 
       virtual BaseModelItem* createChild( FTL::CStrRef name ) = 0;
 
