@@ -12,9 +12,10 @@ using namespace FabricUI;
 using namespace SceneHub;
 using namespace ModelItems;
 
-SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHTreeView * treeView)
+SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHTreeView * treeView, SHCmdView * cmdView)
   : DFG::DFGVEEditorOwner(dfgWidget)
   , m_treeView(treeView)
+  , m_cmdView(cmdView)
 {
 }
 
@@ -42,7 +43,7 @@ void SHVEEditorOwner::onSceneItemSelected( FabricUI::SceneHub::SHTreeItem *item 
     delete m_modelRoot;
 
   FabricCore::RTVal sgObject = item->getSGObject();
-  SGObjectModelItem * objectItem = new SGObjectModelItem(getDFGController()->getClient(), sgObject);
+  SGObjectModelItem * objectItem = new SGObjectModelItem(m_cmdView, getDFGController()->getClient(), sgObject);
   QObject::connect(objectItem, SIGNAL( propertyItemInserted( BaseModelItem * ) ), this, SLOT( onSGObjectPropertyItemInserted( BaseModelItem * ) ));
 
   m_modelRoot = objectItem;

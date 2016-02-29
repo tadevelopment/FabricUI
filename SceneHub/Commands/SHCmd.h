@@ -83,6 +83,9 @@ namespace FabricUI
         /// Gets a reference to the sceneHub application. 
         FabricCore::RTVal& getRefOnSCeneHub() { return m_shObject; }
 
+        /// Adds additional dependencies of RTVals to this cmd
+        void addRTValDependency(FabricCore::RTVal val);
+
       protected:
         /// Checks if the command has been already applied.
         bool wasInvoked() const { return m_state != State_New; };
@@ -98,6 +101,7 @@ namespace FabricUI
         State m_state;
         std::string m_desc;
         unsigned m_coreUndoCount;
+        std::vector<FabricCore::RTVal> m_additionalRTVals;
 
         /// \internal
         /// Refenrece to the sceneHub applcaiton.

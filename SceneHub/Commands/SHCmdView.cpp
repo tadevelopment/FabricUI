@@ -112,3 +112,11 @@ bool SHCmdView::addCommand(const std::string &command, bool exec) {
   }
   return false;
 }
+
+/// Adds a existing command.
+/// \param command The command to add
+/// \param exec If true executes the command, just add it to the Qt stack otherwise
+bool SHCmdView::addCommand(SHCmd * cmd)
+{
+  return m_shCmdHandler.addCommand(cmd);
+}

@@ -23,7 +23,7 @@ namespace FabricUI
     const string SGSetPropertyValueCmd_Str = "setPropertyValueCmd";
     const string SGSetPropertyValueCmd_Type_Str = "SGSetPropertyValueCmd";
 
-    class SGSetPropertyValueCmd : SHCmd
+    class SGSetPropertyValueCmd : public SHCmd
     {
       public:        
         /// Constructs and executes a command.

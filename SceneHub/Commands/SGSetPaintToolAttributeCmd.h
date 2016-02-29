@@ -22,7 +22,7 @@ namespace FabricUI
     const string SGSetPaintToolAttributeCmd_Str = "setPaintToolAttributeCmd";
     const string SGSetPaintToolAttributeCmd_Type_Str = "SGSetPaintToolAttributeCmd";
 
-    class SGSetPaintToolAttributeCmd : SHCmd
+    class SGSetPaintToolAttributeCmd : public SHCmd
     {
       public:        
         /// Constructs and executes a command.

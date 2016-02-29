@@ -258,3 +258,8 @@ void SHCmd::redo() {
       GetCmdManager(m_shObject).callMethod("Boolean", "redo", 0, 0);
   );
 }
+
+void SHCmd::addRTValDependency(FabricCore::RTVal val)
+{
+  m_additionalRTVals.push_back(val);
+}

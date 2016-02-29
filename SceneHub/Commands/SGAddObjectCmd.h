@@ -22,7 +22,7 @@ namespace FabricUI
     const string SGAddObjectCmd_Str = "addObjectCmd";
     const string SGAddObjectCmd_Type_Str = "SGAddObjectCmd";
 
-    class SGAddObjectCmd : SHCmd
+    class SGAddObjectCmd : public SHCmd
     {
       public:        
         /// Constructs and executes a command.

@@ -4,37 +4,41 @@
 
 #pragma once
 
+#include <FabricUI/ValueEditor/BaseModelItem.h>
+#include <FabricUI/ValueEditor/QVariantRTVal.h>
 #include <FabricUI/SceneHub/Commands/SHCmdView.h>
-#include <FabricUI/ModelItems/RootModelItem.h>
+#include <FTL/StrRef.h>
 
 namespace FabricUI
 {
+
   namespace SceneHub
   {
+
     //////////////////////////////////////////////////////////////////////////
-    class SGObjectModelItem : public ModelItems::RootModelItem
+    // Basic ModelItem for accessing propertyes
+    class SGObjectPropertyModelItem : public BaseModelItem
     {
       Q_OBJECT
       
-    private:
+    protected:
 
       SHCmdView * m_cmdView;
       FabricCore::Client m_client;
       FabricCore::RTVal m_rtVal;
       std::string m_name;
-      FabricCore::RTVal m_propertiesRtVal;
-      std::map<std::string, unsigned int> m_propertyNameMap;
+      std::string m_rtValType;
 
     public:
 
-      SGObjectModelItem(
+      SGObjectPropertyModelItem(
         SHCmdView * cmdView,
         FabricCore::Client client,
         FabricCore::RTVal rtVal
         );
-      ~SGObjectModelItem();
+      ~SGObjectPropertyModelItem();
 
-      virtual bool isSGObject() const /*override*/ { return true; }
+      virtual bool isSGObjectProperty() const /*override*/ { return true; }
 
       BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
 
@@ -60,7 +64,14 @@ namespace FabricUI
       /////////////////////////////////////////////////////////////////////////
       // Value
       /////////////////////////////////////////////////////////////////////////
+
+      virtual FTL::CStrRef getRTValType();
+
       virtual QVariant getValue() /*override*/;
+
+      virtual bool hasDefault() /*override*/;
+      
+      virtual void resetToDefault() /*override*/;
 
       /////////////////////////////////////////////////////////////////////////
       // Metadata
@@ -72,9 +83,6 @@ namespace FabricUI
                                 const char* value, 
                                 bool canUndo )/*override*/;
 
-    signals:
-      void propertyItemInserted( BaseModelItem * item );
-
     protected:
 
       virtual void setValue(
@@ -82,8 +90,6 @@ namespace FabricUI
         bool commit,
         QVariant valueAtInteractionBegin
         ) /*override*/;
-
-      void ensurePropertiesRTVal();
     };
   }
 }

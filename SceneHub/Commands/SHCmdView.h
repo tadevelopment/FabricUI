@@ -33,6 +33,13 @@ namespace FabricUI
         SHCmdView(FabricCore::Client &client, FabricCore::RTVal &shObject, QUndoStack *QUndoStack);
 
         virtual ~SHCmdView() {};
+
+        FabricCore::RTVal getShObject() const { return m_shObject; }
+
+        /// Adds a existing command.
+        /// \param command The command to add
+        /// \param exec If true executes the command, just add it to the Qt stack otherwise
+        bool addCommand(SHCmd * cmd);
  
       public slots:
         /// Gets the "Return/Enter" key event, validate the command.

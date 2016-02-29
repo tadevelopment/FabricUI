@@ -21,7 +21,7 @@ namespace FabricUI
     const string SGAddPropertyCmd_Str = "addPropertyCmd";
     const string SGAddPropertyCmd_Type_Str = "SGAddPropertyCmd";
 
-    class SGAddPropertyCmd : SHCmd
+    class SGAddPropertyCmd : public SHCmd
     {
       public:        
         /// Constructs and executes a command.
