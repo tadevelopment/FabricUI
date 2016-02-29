@@ -42,6 +42,15 @@ void SHVEEditorOwner::onSceneItemSelected( FabricUI::SceneHub::SHTreeItem *item 
     delete m_modelRoot;
 
   FabricCore::RTVal sgObject = item->getSGObject();
-  m_modelRoot = new SGObjectModelItem(getDFGController()->getClient(), sgObject);
+  SGObjectModelItem * objectItem = new SGObjectModelItem(getDFGController()->getClient(), sgObject);
+  QObject::connect(objectItem, SIGNAL( propertyItemInserted( BaseModelItem * ) ), this, SLOT( onSGObjectPropertyItemInserted( BaseModelItem * ) ));
+
+  m_modelRoot = objectItem;
   emit replaceModelRoot( m_modelRoot );
 }
+
+void SHVEEditorOwner::onSGObjectPropertyItemInserted( BaseModelItem * item )
+{
+  emit modelItemInserted( m_modelRoot, 0, item->getName().c_str() );
+}
+

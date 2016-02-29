@@ -13,10 +13,15 @@ namespace FabricUI
     //////////////////////////////////////////////////////////////////////////
     class SGObjectModelItem : public ModelItems::RootModelItem
     {
+      Q_OBJECT
+      
     private:
 
       FabricCore::Client m_client;
       FabricCore::RTVal m_rtVal;
+      std::string m_name;
+      FabricCore::RTVal m_propertiesRtVal;
+      std::map<std::string, unsigned int> m_propertyNameMap;
 
     public:
 
@@ -64,6 +69,9 @@ namespace FabricUI
                                 const char* value, 
                                 bool canUndo )/*override*/;
 
+    signals:
+      void propertyItemInserted( BaseModelItem * item );
+
     protected:
 
       virtual void setValue(
@@ -71,6 +79,8 @@ namespace FabricUI
         bool commit,
         QVariant valueAtInteractionBegin
         ) /*override*/;
+
+      void ensurePropertiesRTVal();
     };
   }
 }

@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include "SGObjectModelItem.h"
+#include "SGObjectPropertyModelItem.h"
 
 namespace FabricUI {
 namespace SceneHub {
@@ -22,25 +23,64 @@ SGObjectModelItem::~SGObjectModelItem()
 {
 }
 
-
 int SGObjectModelItem::getNumChildren()
 {
-  return 0; // todo
+  ensurePropertiesRTVal();
+  if(m_propertiesRtVal.isValid())
+  {
+    try
+    {
+      return m_propertiesRtVal.getArraySize();
+    }
+    catch(FabricCore::Exception e)
+    {
+      printf("SGObjectModelItem::getNumChildren, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
+    }
+  }
+  return 0;
 }
 
 FTL::CStrRef SGObjectModelItem::getChildName( int i )
 {
-  return ""; // todo
+  ensurePropertiesRTVal();
+
+  std::map<std::string, unsigned int>::iterator it = m_propertyNameMap.begin();
+  for(int offset=0;it != m_propertyNameMap.end(); offset++,it++)
+  {
+    if(offset == i)
+    {
+      return it->first.c_str();
+    }
+  }
+
+  return "";
 }
 
 BaseModelItem *SGObjectModelItem::createChild( FTL::CStrRef name ) /**/
 {
-  // return new ArgModelItem(
-  //   m_dfgUICmdHandler,
-  //   m_binding,
-  //   name
-  //   );
-  return NULL; // todo
+  ensurePropertiesRTVal();
+  if(m_propertiesRtVal.isValid())
+  {
+    std::map<std::string, unsigned int>::iterator it = m_propertyNameMap.find(name);
+    if(it == m_propertyNameMap.end())
+      return NULL;
+
+    try
+    {
+      if(it->second >= m_propertiesRtVal.getArraySize())
+        return NULL;
+
+      FabricCore::RTVal propRtVal = m_propertiesRtVal.getArrayElement(it->second);
+      BaseModelItem * child = pushChild(new SGObjectPropertyModelItem(m_client, propRtVal));
+      emit propertyItemInserted(child);
+      return child;
+    }
+    catch(FabricCore::Exception e)
+    {
+      printf("SGObjectModelItem::createChild, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
+    }
+  }
+  return NULL;
 }
 
 FTL::CStrRef SGObjectModelItem::getName()
@@ -49,11 +89,12 @@ FTL::CStrRef SGObjectModelItem::getName()
   {
     try
     {
-      return m_rtVal.callMethod("String", "getName", 0, 0).getStringCString();
+      m_name = m_rtVal.callMethod("String", "getName", 0, 0).getStringCString();
+      return m_name;;
     }
     catch(FabricCore::Exception e)
     {
-      printf("FabricCore::Exception: '%s'\n", e.getDesc_cstr());
+      printf("SGObjectModelItem::createChild, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
     }
   }
   return FTL_STR("<Root>");
@@ -61,20 +102,11 @@ FTL::CStrRef SGObjectModelItem::getName()
 
 bool SGObjectModelItem::canRename()
 {
-  return true;
+  return false;
 }
 
 void SGObjectModelItem::rename( FTL::CStrRef newName )
 {
-  try
-  {
-    FabricCore::RTVal newNameVal = FabricCore::RTVal::ConstructString(m_client, newName.c_str());
-    m_rtVal.callMethod("", "setUserName", 1, &newNameVal); // todo: does not seem to work
-  }
-  catch(FabricCore::Exception e)
-  {
-    printf("FabricCore::Exception: '%s'\n", e.getDesc_cstr());
-  }
 }
 
 void SGObjectModelItem::onRenamed(
@@ -82,25 +114,23 @@ void SGObjectModelItem::onRenamed(
   FTL::CStrRef newName
   )
 {
-  assert( false ); // todo
+}
+
+QVariant SGObjectModelItem::getValue()
+{
+  return QVariant();
+}
+
+ItemMetadata* SGObjectModelItem::getMetadata()
+{
+  return NULL;
 }
 
 void SGObjectModelItem::setMetadataImp( 
   const char* key, 
   const char* value, 
-  bool canUndo ) /**/
+  bool canUndo )
 {
-  // m_rootExec.setMetadata( key, value, canUndo ); // todo
-}
-
-QVariant SGObjectModelItem::getValue()
-{
-  return QVariant(); // todo
-}
-
-ItemMetadata* SGObjectModelItem::getMetadata()
-{
-  return NULL; // todo
 }
 
 void SGObjectModelItem::setValue(
@@ -109,13 +139,33 @@ void SGObjectModelItem::setValue(
   QVariant valueAtInteractionBegin
   )
 {
-  // todo
-  // if (commit)
-  // {
-  //   QByteArray asciiArr = var.toString().toAscii();
-  //   m_rootExec.setTitle( asciiArr.data() );
-  //   emitModelValueChanged(var);
-  // }
+}
+
+void SGObjectModelItem::ensurePropertiesRTVal()
+{
+  if(m_propertiesRtVal.isValid())
+    return;
+
+  if(!m_rtVal.isValid())
+    return;
+
+  m_propertyNameMap.clear();
+  m_propertiesRtVal = FabricCore::RTVal();
+
+  try
+  {
+    m_propertiesRtVal =  m_rtVal.callMethod("SGObjectProperty[]", "getPropertyArray", 0, 0);
+    for(unsigned int i=0;i<m_propertiesRtVal.getArraySize();i++)
+    {
+      FabricCore::RTVal nameVal = m_propertiesRtVal.getArrayElement(i).callMethod("String", "getName", 0, 0);
+      m_propertyNameMap.insert(std::pair<std::string, unsigned int>(nameVal.getStringCString(), i));
+    }
+  }
+  catch(FabricCore::Exception e)
+  {
+    printf("SGObjectModelItem::ensurePropertiesRTVal, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
+  }
+
 }
 
 } // namespace SceneHub

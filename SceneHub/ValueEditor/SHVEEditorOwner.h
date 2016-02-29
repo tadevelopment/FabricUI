@@ -26,6 +26,7 @@ namespace FabricUI {
     public slots:
 
       void onSceneItemSelected( FabricUI::SceneHub::SHTreeItem *item );
+      void onSGObjectPropertyItemInserted( BaseModelItem * item );
 
     private:
 
