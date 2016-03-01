@@ -137,7 +137,7 @@ strsources = []
 strheaders = []
 for d in dirs:
   headers = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.h')))
-  srcs = env.Glob(os.path.join(env.Dir('.').abspath, d, '*.cpp')
+  srcs = env.Glob(os.path.join(env.Dir('.').abspath, d, '*.cpp'))
   if buildOS == 'Darwin':
     srcs.extend(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.mm')))
   dirsrc = Flatten(srcs)
