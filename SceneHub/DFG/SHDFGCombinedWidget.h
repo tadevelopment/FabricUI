@@ -48,15 +48,8 @@ namespace FabricUI
         /// Calls when the SceneGraph hierachy changed.
         void onSceneHierarchyChanged(); 
         /// Calls when the SceneGraph hierachy changed.
-        virtual void refreshTreeView(); 
+        void refresh();
 
-        /// Export the scene to Alembic
-        void exportToAlembic();
-        /// Displays statistics about the application.
-        void showUsage();
-        /// Activation of tools
-        void activeTool();
-    
 
       signals :
         void sceneHierarchyChanged();
@@ -66,20 +59,16 @@ namespace FabricUI
         void onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData) { DFGCombinedWidget::onPortEditDialogInvoked(dialog, additionalMetaData); }
       
       protected :
-        virtual void refresh() = 0;
         /// Initializes the treeView widget.
-        virtual void initMenu();
+        //virtual void initMenu();
         /// Initializes the treeView widget.
         virtual void initTreeView();
         /// Initializes the windows docks.
         virtual void initDocks();
-        bool getHost(const char *name, FabricCore::RTVal &);
-        bool getRTRHostCallback(FabricCore::RTVal &);
-
+       
         QString m_shHostName;
         QLineEdit *m_LineEdit;
         SceneHub::SHTreeView *m_shTreeView;
-        QWidget *m_shTreeViewWidget;
     };
   }
 }
