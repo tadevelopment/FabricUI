@@ -3,6 +3,7 @@
 #ifndef _SHDFGCOMBINEDWIDGET_H_
 #define _SHDFGCOMBINEDWIDGET_H_
  
+#include <QtGui/QPushButton>
 #include <QtGui/QLineEdit>
 #include <FabricUI/Util/macros.h>
 #include <FabricUI/DFG/DFGCombinedWidget.h>
@@ -48,7 +49,7 @@ namespace FabricUI
         /// Calls when the SceneGraph hierachy changed.
         void onSceneHierarchyChanged(); 
         /// Calls when the SceneGraph hierachy changed.
-        void refresh();
+        virtual void refresh();
 
 
       signals :
@@ -68,6 +69,7 @@ namespace FabricUI
        
         QString m_shHostName;
         QLineEdit *m_LineEdit;
+        QPushButton *m_refreshButton;
         SceneHub::SHTreeView *m_shTreeView;
     };
   }

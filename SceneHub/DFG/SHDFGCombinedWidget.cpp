@@ -22,15 +22,19 @@ void SHDFGCombinedWidget::initTreeView() {
 
 void SHDFGCombinedWidget::initDocks() { 
   DFGCombinedWidget::initDocks(); 
-  m_LineEdit = new QLineEdit("");
+  m_refreshButton = new QPushButton("Refresh");
+  m_LineEdit = new QLineEdit("SHGLHost");
+  m_LineEdit->setEnabled(false);
   QWidget *widget = new QWidget();
   QVBoxLayout *layout = new QVBoxLayout();
   widget->setLayout(layout);
   layout->addWidget(m_LineEdit);
+  layout->addWidget(m_refreshButton);
   layout->addWidget(m_shTreeView);
   m_hSplitter->addWidget(widget);
   
   QObject::connect(m_LineEdit, SIGNAL(editingFinished()), this, SLOT(refresh()));
+  QObject::connect(m_refreshButton, SIGNAL(pressed()), this, SLOT(refresh()));
 }
 
 void SHDFGCombinedWidget::refresh() {
@@ -69,8 +73,6 @@ void SHDFGCombinedWidget::refresh() {
       QObject::connect(m_shTreeView, SIGNAL( itemDeselected( FabricUI::SceneHub::SHTreeItem * ) ), this, SLOT( treeItemDeselected( FabricUI::SceneHub::SHTreeItem * ) ));
       QObject::connect(this, SIGNAL( sceneHierarchyChanged() ), treeModel, SLOT( onSceneHierarchyChanged() ));
       QObject::connect(treeModel, SIGNAL( sceneHierarchyChanged() ), this, SLOT( onSceneHierarchyChanged() ));
-    
-      showTreeView(1);
     );
   }
 }
