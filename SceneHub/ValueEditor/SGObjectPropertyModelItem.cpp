@@ -134,6 +134,22 @@ QVariant SGObjectPropertyModelItem::getValue()
     {
       value = m_rtVal.callMethod("Boolean", "getBooleanValue", 0, 0);
     }
+    else if(type == FTL_STR("UInt8"))
+    {
+      value = m_rtVal.callMethod("UInt8", "getUInt8Value", 0, 0);
+    }
+    else if(type == FTL_STR("SInt8"))
+    {
+      value = m_rtVal.callMethod("SInt8", "getSInt8Value", 0, 0);
+    }
+    else if(type == FTL_STR("UInt16"))
+    {
+      value = m_rtVal.callMethod("UInt16", "getUInt16Value", 0, 0);
+    }
+    else if(type == FTL_STR("SInt16"))
+    {
+      value = m_rtVal.callMethod("SInt16", "getSInt16Value", 0, 0);
+    }
     else if(type == FTL_STR("UInt32"))
     {
       value = m_rtVal.callMethod("UInt32", "getUInt32Value", 0, 0);
@@ -193,6 +209,18 @@ QVariant SGObjectPropertyModelItem::getValue()
     {
       value = m_rtVal.callMethod("Color", "getColorValue", 0, 0);
     }
+    else if(type == FTL_STR("RGB"))
+    {
+      value = m_rtVal.callMethod("RGB", "getRGBValue", 0, 0);
+    }
+    else if(type == FTL_STR("RGBA"))
+    {
+      value = m_rtVal.callMethod("RGBA", "getRGBAValue", 0, 0);
+    }
+    else if(type == FTL_STR("ARGB"))
+    {
+      value = m_rtVal.callMethod("ARGB", "getARGBValue", 0, 0);
+    }
     else if(type == FTL_STR("Quat"))
     {
       value = m_rtVal.callMethod("Quat", "getQuatValue", 0, 0);
@@ -227,10 +255,131 @@ void SGObjectPropertyModelItem::setValue(
   QVariant valueAtInteractionBegin
   )
 {
-  if(!isRTVal(var))
-    return;
-
   FabricCore::RTVal varVal;
+  if(!isRTVal(var))
+  {
+    FTL::CStrRef type = getRTValType();
+    if(type.empty() || type == FTL_STR("Reference") || type == FTL_STR("Object"))
+      return;
+
+    try
+    {
+      if(type == FTL_STR("Boolean"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Boolean", 0, 0);
+      }
+      else if(type == FTL_STR("UInt8"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "UInt8", 0, 0);
+      }
+      else if(type == FTL_STR("SInt8"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "SInt8", 0, 0);
+      }
+      else if(type == FTL_STR("UInt16"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "UInt16", 0, 0);
+      }
+      else if(type == FTL_STR("SInt16"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "SInt16", 0, 0);
+      }
+      else if(type == FTL_STR("UInt32"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "UInt32", 0, 0);
+      }
+      else if(type == FTL_STR("SInt32"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "SInt32", 0, 0);
+      }
+      else if(type == FTL_STR("UInt64"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "UInt64", 0, 0);
+      }
+      else if(type == FTL_STR("SInt64"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "SInt64", 0, 0);
+      }
+      else if(type == FTL_STR("Float32"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Float32", 0, 0);
+      }
+      else if(type == FTL_STR("Float64"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Float64", 0, 0);
+      }
+      else if(type == FTL_STR("String"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "String", 0, 0);
+      }
+      else if(type == FTL_STR("Vec2"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Vec2", 0, 0);
+      }
+      else if(type == FTL_STR("Vec3"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Vec3", 0, 0);
+      }
+      else if(type == FTL_STR("Vec4"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Vec4", 0, 0);
+      }
+      else if(type == FTL_STR("Mat22"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Mat22", 0, 0);
+      }
+      else if(type == FTL_STR("Mat33"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Mat33", 0, 0);
+      }
+      else if(type == FTL_STR("Mat44"))
+      {
+        // special case!
+        varVal = FabricCore::RTVal::Construct(m_client, "Xfo", 0, 0);
+      }
+      else if(type == FTL_STR("Color"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Color", 0, 0);
+      }
+      else if(type == FTL_STR("RGB"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "RGB", 0, 0);
+      }
+      else if(type == FTL_STR("RGBA"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "RGBA", 0, 0);
+      }
+      else if(type == FTL_STR("ARGB"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "ARGB", 0, 0);
+      }
+      else if(type == FTL_STR("Quat"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Quat", 0, 0);
+      }
+      else if(type == FTL_STR("Euler"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Euler", 0, 0);
+      }
+      else if(type == FTL_STR("Xfo"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Xfo", 0, 0);
+      }
+      else if(type == FTL_STR("Box2"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Box2", 0, 0);
+      }
+      else if(type == FTL_STR("Box3"))
+      {
+        varVal = FabricCore::RTVal::Construct(m_client, "Box3", 0, 0);
+      }
+    }
+    catch(FabricCore::Exception e)
+    {
+      printf("SGObjectPropertyModelItem::setValue, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
+    }
+  }
+
   if(!RTVariant::toRTVal(var, varVal))
     return;
 
