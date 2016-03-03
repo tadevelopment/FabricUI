@@ -851,7 +851,7 @@ void DFGVEEditorOwner::onGraphSet( FabricUI::GraphView::Graph * graph )
       this, SLOT( onNodeInspectRequested( FabricUI::GraphView::Node* ) )
       );
 
-    //if (m_setGraph == NULL)
+    
     onSidePanelInspectRequested();
 
     m_setGraph = graph;

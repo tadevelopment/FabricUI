@@ -24,17 +24,22 @@ namespace FabricUI {
 
       virtual void initConnections();
 
+    signals:
+
+      void canvasSidePanelInspectRequested();
+
     public slots:
 
+      virtual void onStructureChanged();
       void onSceneItemSelected( FabricUI::SceneHub::SHTreeItem *item );
+      void onNewSGObjectSet( FabricCore::RTVal sgObject );
       void onSGObjectPropertyItemInserted( BaseModelItem * item );
 
-    private:
+    protected slots:
 
-      // void setModelRoot(
-      //   FabricUI::DFG::DFGController *dfgController,
-      //   FabricUI::ModelItems::BindingModelItem *bindingModelItem
-      //   );
+      virtual void onSidePanelInspectRequested();
+
+    private:
 
       SceneHub::SHTreeView * m_treeView;
       SHCmdView * m_cmdView;

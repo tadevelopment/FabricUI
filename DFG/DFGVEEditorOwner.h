@@ -53,7 +53,7 @@ namespace FabricUI {
         FabricCore::DFGBinding const &binding
         );
 
-      void onSidePanelInspectRequested();
+      virtual void onSidePanelInspectRequested();
       void onNodeInspectRequested(FabricUI::GraphView::Node *node);
 
       void onBindingArgValueChanged( unsigned index, FTL::CStrRef name );
@@ -149,11 +149,10 @@ namespace FabricUI {
         FTL::CStrRef newVarPath
         );
 
-      void onStructureChanged();
-
+      virtual void onStructureChanged();
       virtual void onFrameChanged(int frame);
 
-      void onGraphSet(FabricUI::GraphView::Graph * graph);
+      virtual void onGraphSet(FabricUI::GraphView::Graph * graph);
 
       FabricUI::DFG::DFGWidget * getDfgWidget();
       FabricUI::DFG::DFGController * getDFGController();

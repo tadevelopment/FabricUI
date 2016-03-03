@@ -143,6 +143,12 @@ void SGObjectModelItem::setValue(
 {
 }
 
+void SGObjectModelItem::onStructureChanged()
+{
+  m_propertyNameMap.clear();
+  m_propertiesRtVal = FabricCore::RTVal();
+}
+
 void SGObjectModelItem::ensurePropertiesRTVal()
 {
   if(m_propertiesRtVal.isValid())

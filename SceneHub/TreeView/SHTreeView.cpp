@@ -164,3 +164,16 @@ void SHTreeView::mousePressEvent(QMouseEvent *event) {
   QTreeView::mousePressEvent(event);
 }
  
+void SHTreeView::mouseDoubleClickEvent(QMouseEvent * event)
+{
+  QTreeView::mousePressEvent(event);
+
+  QList<QModelIndex> modelIndexList = selectedIndexes();
+  foreach( QModelIndex index, modelIndexList )
+  {
+    SHTreeItem *item = static_cast<SHTreeItem *>( index.internalPointer() );
+    if( !item )
+      continue;
+    emit itemDoubleClicked( item );
+  }
+}

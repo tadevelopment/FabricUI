@@ -33,17 +33,40 @@ void SHVEEditorOwner::initConnections()
     this,
     SLOT(onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * ))
     );
+  connect(
+    m_treeView,
+    SIGNAL(itemDoubleClicked( FabricUI::SceneHub::SHTreeItem * )),
+    this,
+    SLOT(onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * ))
+    );
 }
 
-void SHVEEditorOwner::onSceneItemSelected( FabricUI::SceneHub::SHTreeItem *item )
+void SHVEEditorOwner::onStructureChanged()
+{
+  DFG::DFGVEEditorOwner::onStructureChanged();
+
+  // refresh!
+  SGObjectModelItem * objectItem = dynamic_cast< SGObjectModelItem * >( m_modelRoot );
+  if(objectItem) 
+  {
+    objectItem->onStructureChanged();
+    emit replaceModelRoot( m_modelRoot );
+  }
+}
+
+void SHVEEditorOwner::onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * item )
+{
+  onNewSGObjectSet( item->getSGObject() );
+}
+
+void SHVEEditorOwner::onNewSGObjectSet( FabricCore::RTVal sgObject )
 {
   m_valueEditor->clear();
 
   if(m_modelRoot)
     delete m_modelRoot;
 
-  FabricCore::RTVal sgObject = item->getSGObject();
-  SGObjectModelItem * objectItem = new SGObjectModelItem(m_cmdView, getDFGController()->getClient(), sgObject);
+  SGObjectModelItem * objectItem = new SGObjectModelItem( m_cmdView, getDFGController()->getClient(), sgObject );
   QObject::connect(objectItem, SIGNAL( propertyItemInserted( BaseModelItem * ) ), this, SLOT( onSGObjectPropertyItemInserted( BaseModelItem * ) ));
 
   m_modelRoot = objectItem;
@@ -55,3 +78,9 @@ void SHVEEditorOwner::onSGObjectPropertyItemInserted( BaseModelItem * item )
   emit modelItemInserted( m_modelRoot, 0, item->getName().c_str() );
 }
 
+void SHVEEditorOwner::onSidePanelInspectRequested()
+{
+  FTL::CStrRef execPath = getDFGController()->getExecPath();
+  if(execPath.empty())
+    emit canvasSidePanelInspectRequested();
+}

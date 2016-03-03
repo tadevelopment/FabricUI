@@ -53,10 +53,12 @@ namespace FabricUI
         SHTreeView(FabricCore::Client &client, QWidget *parent = 0 );
         void setSelectedObjects( FabricCore::RTVal selectedSGObjectArray );
         virtual void mousePressEvent(QMouseEvent *event);
+        virtual void mouseDoubleClickEvent(QMouseEvent * event);
      
       signals:
         void itemSelected( FabricUI::SceneHub::SHTreeItem *item );
         void itemDeselected( FabricUI::SceneHub::SHTreeItem *item );
+        void itemDoubleClicked( FabricUI::SceneHub::SHTreeItem *item );
         void addExternalFile(QStringList, bool);
 
       public slots:
