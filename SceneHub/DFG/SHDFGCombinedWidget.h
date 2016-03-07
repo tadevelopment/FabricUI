@@ -3,6 +3,7 @@
 #ifndef _SHDFGCOMBINEDWIDGET_H_
 #define _SHDFGCOMBINEDWIDGET_H_
  
+#include <QtGui/QPushButton>
 #include <QtGui/QLineEdit>
 #include <FabricUI/Util/macros.h>
 #include <FabricUI/DFG/DFGCombinedWidget.h>
@@ -23,16 +24,16 @@ namespace FabricUI
         SHDFGCombinedWidget(QWidget * parent) : DFGCombinedWidget(parent) {};
 
         ~SHDFGCombinedWidget() {};
- 
+        
       public slots:
         virtual void onUndo() {};
         virtual void onRedo() {};
-
         virtual void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifier, QString str) { DFGCombinedWidget::onHotkeyPressed(key, modifier, str); }
         virtual void onGraphSet(FabricUI::GraphView::Graph * graph) { DFGCombinedWidget::onGraphSet(graph); };
         virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeInspectRequested(node); };
         virtual void onNodeEditRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeEditRequested(node); };
         virtual void onAdditionalMenuActionsRequested(QString name, QMenu * menu, bool prefix) { DFGCombinedWidget::onAdditionalMenuActionsRequested(name, menu, prefix); }; 
+        
         /// Displays the treeView in the application.
         /// \param initalExpandLevel The initial level of expension of the treeView.
         void showTreeView(unsigned int initalExpandLevel);
@@ -48,25 +49,28 @@ namespace FabricUI
         /// Calls when the SceneGraph hierachy changed.
         void onSceneHierarchyChanged(); 
         /// Calls when the SceneGraph hierachy changed.
-        void refresh();   
+        virtual void refresh();
+
 
       signals :
         void sceneHierarchyChanged();
 
-      private slots:
+      protected slots:
         void onPortEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog) { DFGCombinedWidget::onPortEditDialogCreated(dialog); }
         void onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData) { DFGCombinedWidget::onPortEditDialogInvoked(dialog, additionalMetaData); }
       
-      private :
+      protected :
+        /// Initializes the treeView widget.
+        //virtual void initMenu();
         /// Initializes the treeView widget.
         virtual void initTreeView();
         /// Initializes the windows docks.
         virtual void initDocks();
-        void addSceneHubAsPort();
-        
-        SceneHub::SHTreeView *m_shTreeView;
-        QLineEdit *m_LineEdit;
+       
         QString m_shHostName;
+        QLineEdit *m_LineEdit;
+        QPushButton *m_refreshButton;
+        SceneHub::SHTreeView *m_shTreeView;
     };
   }
 }

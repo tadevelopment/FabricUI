@@ -167,7 +167,7 @@ void RTRGLViewportWidget::addExternalFile(QStringList paths, QPoint mousePos, bo
         CFRelease( relCFStringRef );
       }
 #endif
-    pathList.push_back( localFileQString.toStdString() );
+    pathList.push_back( localFileQString.toUtf8().constData() );
   }
 
   if(pathList.size() > 0)
@@ -242,7 +242,7 @@ void RTRGLViewportWidget::addLight() {
   
   // Get the light we want to add
   uint32_t lightType = 0;
-  std::string lightName = dynamic_cast<QAction*>( QObject::sender())->text().toStdString();
+  std::string lightName = dynamic_cast<QAction*>( QObject::sender())->text().toUtf8().constData();
   if(lightName.compare("Add Point") == 0) lightType = 0;
   else if(lightName.compare("Add Spot") == 0) lightType = 1;
   else if(lightName.compare("Add Directional") == 0) lightType = 2;
@@ -263,7 +263,7 @@ void RTRGLViewportWidget::addLight() {
 void RTRGLViewportWidget::addArchive() {
 
   bool forceExpand = false;
-  std::string name = dynamic_cast<QAction*>( QObject::sender())->text().toStdString();
+  std::string name = dynamic_cast<QAction*>( QObject::sender())->text().toUtf8().constData();
   if(name.compare("Add Geometry") != 0) forceExpand = true;
  
   QFileDialog dialog(this);
@@ -279,7 +279,7 @@ void RTRGLViewportWidget::addArchive() {
 void RTRGLViewportWidget::addTexture() {
 
   // bool forceExpand = false;
-  std::string name = dynamic_cast<QAction*>( QObject::sender())->text().toStdString();
+  std::string name = dynamic_cast<QAction*>( QObject::sender())->text().toUtf8().constData();
   
   QFileDialog dialog(this);
   dialog.setFileMode(QFileDialog::ExistingFiles);

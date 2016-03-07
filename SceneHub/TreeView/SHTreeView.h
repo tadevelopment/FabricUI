@@ -8,7 +8,9 @@
 #include <QtGui/QMenu>
 #include <QtGui/QDrag>
 #include <QtGui/QTreeView>
+#include <QtGui/QLineEdit>
 #include <QtGui/QMouseEvent>
+ 
 #include <FabricCore.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/SharedPtr.h>
@@ -71,6 +73,7 @@ namespace FabricUI
         /// \internal
         /// Reference to the client -> construct RTVal.
         FabricCore::Client m_client;
+        QLineEdit *m_LineEdit;
     };
   };
 };
