@@ -23,8 +23,8 @@ using namespace DFG;
 using namespace ModelItems;
 
 DFGVEEditorOwner::DFGVEEditorOwner( DFGWidget * dfgWidget )
-  : m_dfgWidget(dfgWidget)
-  , m_timelinePortIndex( -1 )
+  : m_timelinePortIndex( -1 )
+  , m_dfgWidget(dfgWidget)
   , m_setGraph( NULL )
 {
 }
