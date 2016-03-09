@@ -12,10 +12,10 @@ using namespace FabricUI;
 using namespace SceneHub;
 using namespace ModelItems;
 
-SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHTreeView * treeView, SHCmdView * cmdView)
+SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHTreeViewWidget * treeViewWidget, SHCmdViewWidget * cmdViewWidget)
   : DFG::DFGVEEditorOwner(dfgWidget)
-  , m_treeView(treeView)
-  , m_cmdView(cmdView)
+  , m_treeViewWidget(treeViewWidget)
+  , m_cmdViewWidget(cmdViewWidget)
 {
 }
 
@@ -28,13 +28,13 @@ void SHVEEditorOwner::initConnections()
   DFG::DFGVEEditorOwner::initConnections();
 
   connect(
-    m_treeView,
+    m_treeViewWidget->getTreeView(),
     SIGNAL(itemSelected( FabricUI::SceneHub::SHTreeItem * )),
     this,
     SLOT(onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * ))
     );
   connect(
-    m_treeView,
+    m_treeViewWidget->getTreeView(),
     SIGNAL(itemDoubleClicked( FabricUI::SceneHub::SHTreeItem * )),
     this,
     SLOT(onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * ))
@@ -66,7 +66,7 @@ void SHVEEditorOwner::onNewSGObjectSet( FabricCore::RTVal sgObject )
   if(m_modelRoot)
     delete m_modelRoot;
 
-  SGObjectModelItem * objectItem = new SGObjectModelItem( m_cmdView, getDFGController()->getClient(), sgObject );
+  SGObjectModelItem * objectItem = new SGObjectModelItem( m_cmdViewWidget, getDFGController()->getClient(), sgObject );
   QObject::connect(objectItem, SIGNAL( propertyItemInserted( BaseModelItem * ) ), this, SLOT( onSGObjectPropertyItemInserted( BaseModelItem * ) ));
 
   m_modelRoot = objectItem;

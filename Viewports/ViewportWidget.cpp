@@ -11,7 +11,7 @@ void ViewportWidget::init(FabricCore::Client *client, QColor bgColor, QSettings 
   m_client = client;
   m_bgColor = bgColor;
  
-  m_hasCommercialLicense = client->hasCommercialLicense();
+  m_hasCommercialLicense = m_client->hasCommercialLicense();
   setFocusPolicy(Qt::StrongFocus);
  
   m_fps = 0.0;

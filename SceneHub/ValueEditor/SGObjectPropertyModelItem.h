@@ -6,7 +6,7 @@
 
 #include <FabricUI/ValueEditor/BaseModelItem.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
-#include <FabricUI/SceneHub/Commands/SHCmdView.h>
+#include <FabricUI/SceneHub/Commands/SHCmdViewWidget.h>
 #include <FTL/StrRef.h>
 
 namespace FabricUI
@@ -23,7 +23,7 @@ namespace FabricUI
       
     protected:
 
-      SHCmdView * m_cmdView;
+      SHCmdViewWidget * m_cmdViewWidget;
       FabricCore::Client m_client;
       FabricCore::RTVal m_rtVal;
       std::string m_name;
@@ -32,7 +32,7 @@ namespace FabricUI
     public:
 
       SGObjectPropertyModelItem(
-        SHCmdView * cmdView,
+        SHCmdViewWidget * cmdViewWidget,
         FabricCore::Client client,
         FabricCore::RTVal rtVal
         );

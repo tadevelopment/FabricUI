@@ -75,7 +75,7 @@ namespace FabricUI
         FabricCore::Client m_client;
         QLineEdit *m_LineEdit;
     };
-  };
-};
+  }
+}
 
 #endif // __UI_SCENEHUB_SHTREEVIEW_H__

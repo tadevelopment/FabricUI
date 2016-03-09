@@ -12,11 +12,11 @@ namespace SceneHub {
 
 //////////////////////////////////////////////////////////////////////////
 SGObjectPropertyModelItem::SGObjectPropertyModelItem(
-  SHCmdView * cmdView,
+  SHCmdViewWidget * cmdViewWidget,
   FabricCore::Client client,
   FabricCore::RTVal rtVal
   )
-  : m_cmdView( cmdView )
+  : m_cmdViewWidget( cmdViewWidget )
   , m_client( client )
   , m_rtVal( rtVal )
 {
@@ -399,7 +399,7 @@ void SGObjectPropertyModelItem::setValue(
   if(!m_rtVal.isValid())
     return;
 
-  if (commit && m_cmdView != NULL)
+  if (commit && m_cmdViewWidget != NULL)
   {
 
     FabricCore::RTVal valueAtInteractionBeginVal;
@@ -420,11 +420,10 @@ void SGObjectPropertyModelItem::setValue(
       params[4] = varVal.callMethod("Data", "data", 0, 0);
       params[5] = varVal.callMethod("UInt64", "dataSize", 0, 0);
 
-      FabricCore::RTVal shObject = m_cmdView->getShObject();
-      SHCmd * cmd = new SGSetPropertyValueCmd(shObject, "SetValue", params, true);
+      SHCmd * cmd = new SGSetPropertyValueCmd(m_cmdViewWidget->getScene(), "SetValue", params, true);
       cmd->addRTValDependency(varVal);
       cmd->addRTValDependency(valueAtInteractionBeginVal);
-      m_cmdView->addCommand(cmd);
+      m_cmdViewWidget->addCommand(cmd);
 
       emitModelValueChanged(var);
     }

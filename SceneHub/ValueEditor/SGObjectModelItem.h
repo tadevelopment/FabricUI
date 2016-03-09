@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <FabricUI/SceneHub/Commands/SHCmdView.h>
+#include <FabricUI/SceneHub/Commands/SHCmdViewWidget.h>
 #include <FabricUI/ModelItems/RootModelItem.h>
 
 namespace FabricUI
@@ -18,7 +18,7 @@ namespace FabricUI
       
     private:
 
-      SHCmdView * m_cmdView;
+      SHCmdViewWidget * m_cmdViewWidget;
       FabricCore::Client m_client;
       FabricCore::RTVal m_rtVal;
       std::string m_name;
@@ -28,7 +28,7 @@ namespace FabricUI
     public:
 
       SGObjectModelItem(
-        SHCmdView * cmdView,
+        SHCmdViewWidget * cmdViewWidget,
         FabricCore::Client client,
         FabricCore::RTVal rtVal
         );

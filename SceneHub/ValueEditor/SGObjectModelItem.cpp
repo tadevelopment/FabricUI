@@ -11,11 +11,11 @@ namespace SceneHub {
 
 //////////////////////////////////////////////////////////////////////////
 SGObjectModelItem::SGObjectModelItem(
-  SHCmdView * cmdView,
+  SHCmdViewWidget * cmdViewWidget,
   FabricCore::Client client,
   FabricCore::RTVal rtVal
   )
-  : m_cmdView( cmdView)
+  : m_cmdViewWidget( cmdViewWidget )
   , m_client( client )
   , m_rtVal( rtVal )
 {
@@ -73,7 +73,7 @@ BaseModelItem *SGObjectModelItem::createChild( FTL::CStrRef name ) /**/
         return NULL;
 
       FabricCore::RTVal propRtVal = m_propertiesRtVal.getArrayElement(it->second);
-      BaseModelItem * child = pushChild(new SGObjectPropertyModelItem(m_cmdView, m_client, propRtVal));
+      BaseModelItem * child = pushChild(new SGObjectPropertyModelItem(m_cmdViewWidget, m_client, propRtVal));
       emit propertyItemInserted(child);
       return child;
     }

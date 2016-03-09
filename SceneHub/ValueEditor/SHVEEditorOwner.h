@@ -5,8 +5,9 @@
 #pragma once
 
 #include <FabricUI/DFG/DFGVEEditorOwner.h>
-#include <FabricUI/SceneHub/Commands/SHCmdView.h>
+#include <FabricUI/SceneHub/Commands/SHCmdViewWidget.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeView.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeViewWidget.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
 
 namespace FabricUI {
@@ -19,7 +20,7 @@ namespace FabricUI {
 
     public:
 
-      SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHTreeView * treeView, SHCmdView * cmdView);
+      SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHTreeViewWidget * treeViewWidget, SHCmdViewWidget * cmdViewWidget);
       ~SHVEEditorOwner();
 
       virtual void initConnections();
@@ -41,8 +42,8 @@ namespace FabricUI {
 
     private:
 
-      SceneHub::SHTreeView * m_treeView;
-      SHCmdView * m_cmdView;
+      SceneHub::SHTreeViewWidget * m_treeViewWidget;
+      SHCmdViewWidget * m_cmdViewWidget;
     };
   }
 }

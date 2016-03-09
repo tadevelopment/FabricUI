@@ -3,12 +3,10 @@
 #ifndef _SHDFGCOMBINEDWIDGET_H_
 #define _SHDFGCOMBINEDWIDGET_H_
  
-#include <QtGui/QPushButton>
-#include <QtGui/QLineEdit>
-#include <FabricUI/Util/macros.h>
+#include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/DFG/DFGCombinedWidget.h>
 #include <FabricUI/ValueEditor/VEEditorOwner.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeView.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeViewWidget.h>
 
 using namespace FabricServices;
  
@@ -24,53 +22,45 @@ namespace FabricUI
         SHDFGCombinedWidget(QWidget * parent) : DFGCombinedWidget(parent) {};
 
         ~SHDFGCombinedWidget() {};
-        
+ 
+
       public slots:
         virtual void onUndo() {};
-        virtual void onRedo() {};
-        virtual void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifier, QString str) { DFGCombinedWidget::onHotkeyPressed(key, modifier, str); }
-        virtual void onGraphSet(FabricUI::GraphView::Graph * graph) { DFGCombinedWidget::onGraphSet(graph); };
-        virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeInspectRequested(node); };
-        virtual void onNodeEditRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeEditRequested(node); };
-        virtual void onAdditionalMenuActionsRequested(QString name, QMenu * menu, bool prefix) { DFGCombinedWidget::onAdditionalMenuActionsRequested(name, menu, prefix); }; 
         
-        /// Displays the treeView in the application.
-        /// \param initalExpandLevel The initial level of expension of the treeView.
-        void showTreeView(unsigned int initalExpandLevel);
-        /// Displays the treeView in the application.
-        /// Expands the whole treeView.  
-        void showTreeView();
-        /// Updates the application when an item of the treeView is selected.
-        /// \param item The selected item.
-        void treeItemSelected(FabricUI::SceneHub::SHTreeItem *item);
-        /// Updates the application when an item of the treeView is deselected.
-        /// \param item The deselected item.
-        void treeItemDeselected(FabricUI::SceneHub::SHTreeItem *item);
-        /// Calls when the SceneGraph hierachy changed.
-        void onSceneHierarchyChanged(); 
-        /// Calls when the SceneGraph hierachy changed.
-        virtual void refresh();
+        virtual void onRedo() {};
 
+        virtual void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifier, QString str) { DFGCombinedWidget::onHotkeyPressed(key, modifier, str); }
+        
+        virtual void onGraphSet(FabricUI::GraphView::Graph * graph) { DFGCombinedWidget::onGraphSet(graph); };
+        
+        virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeInspectRequested(node); };
+        
+        virtual void onNodeEditRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeEditRequested(node); };
+        
+        virtual void onAdditionalMenuActionsRequested(QString name, QMenu * menu, bool prefix) { DFGCombinedWidget::onAdditionalMenuActionsRequested(name, menu, prefix); }; 
 
-      signals :
-        void sceneHierarchyChanged();
+        virtual void onRefreshScene() { refreshScene(); }
+
 
       protected slots:
         void onPortEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog) { DFGCombinedWidget::onPortEditDialogCreated(dialog); }
+        
         void onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData) { DFGCombinedWidget::onPortEditDialogInvoked(dialog, additionalMetaData); }
       
-      protected :
-        /// Initializes the treeView widget.
-        //virtual void initMenu();
+
+      protected:
+        virtual void refreshScene() = 0;  
+
         /// Initializes the treeView widget.
         virtual void initTreeView();
+        
         /// Initializes the windows docks.
         virtual void initDocks();
        
-        QString m_shHostName;
-        QLineEdit *m_LineEdit;
-        QPushButton *m_refreshButton;
-        SceneHub::SHTreeView *m_shTreeView;
+        void addSceneHubAsPort();
+        
+        SceneHub::SHGLScene *m_shGLScene;
+        SceneHub::SHTreeViewWidget *m_shTreeViewWidget;
     };
   }
 }
