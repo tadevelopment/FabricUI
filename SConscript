@@ -19,7 +19,7 @@ Import(
   'pythonConfigs',
   'capiSharedLibFlags',
   'servicesFlags',
-  shibokenPysideDir
+  'shibokenPysideDir'
   )
  
 shibokenPysideIncludeDirs = [
