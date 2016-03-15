@@ -1,33 +1,27 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+//
+// Copyright 2010-2015 Fabric Software Inc. All rights reserved.
+//
 
-#ifndef __UI_DFG_DFGUICmdHandler_QUndo__
-#define __UI_DFG_DFGUICmdHandler_QUndo__
+#ifndef __UI_DFG_DFGUICmdHandler_Python__
+#define __UI_DFG_DFGUICmdHandler_Python__
 
-#include <QtGui/QUndoStack>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 
 FABRIC_UI_DFG_NAMESPACE_BEGIN
 
-class DFGUICmdHandler_QUndo : public DFGUICmdHandler
+class DFGUICmdHandler_Python : public DFGUICmdHandler
 {
 public:
 
-  DFGUICmdHandler_QUndo() {}
-  
-  DFGUICmdHandler_QUndo(
-    QUndoStack *qUndoStack
-    )
-    : m_qUndoStack( qUndoStack )
-    {}
-
-  virtual ~DFGUICmdHandler_QUndo() {}
+  DFGUICmdHandler_Python() {}
+  virtual ~DFGUICmdHandler_Python() {}
 
   virtual void dfgDoRemoveNodes(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
     QStringList nodeNames
-    );
+    ) {}
 
   virtual void dfgDoConnect(
     FabricCore::DFGBinding const &binding,
@@ -35,7 +29,7 @@ public:
     FabricCore::DFGExec const &exec,
     QString srcPath, 
     QString dstPath
-    );
+    ) {}
 
   virtual void dfgDoDisconnect(
     FabricCore::DFGBinding const &binding,
@@ -43,7 +37,7 @@ public:
     FabricCore::DFGExec const &exec,
     QString srcPath, 
     QString dstPath
-    );
+    ) {}
 
   virtual QString dfgDoAddGraph(
     FabricCore::DFGBinding const &binding,
@@ -51,7 +45,7 @@ public:
     FabricCore::DFGExec const &exec,
     QString title,
     QPointF pos
-    );
+    ) { return QString(); }
 
   virtual QString dfgDoAddFunc(
     FabricCore::DFGBinding const &binding,
@@ -60,7 +54,7 @@ public:
     QString title,
     QString initialCode,
     QPointF pos
-    );
+    ) { return QString(); }
 
   virtual QString dfgDoInstPreset(
     FabricCore::DFGBinding const &binding,
@@ -68,7 +62,7 @@ public:
     FabricCore::DFGExec const &exec,
     QString presetPath,
     QPointF pos
-    );
+    ) { return QString(); }
 
   virtual QString dfgDoAddVar(
     FabricCore::DFGBinding const &binding,
@@ -78,7 +72,7 @@ public:
     QString dataType,
     QString extDep,
     QPointF pos
-    );
+    ) { return QString(); }
 
   virtual QString dfgDoAddGet(
     FabricCore::DFGBinding const &binding,
@@ -87,7 +81,7 @@ public:
     QString desiredNodeName,
     QString varPath,
     QPointF pos
-    );
+    ) { return QString(); }
 
   virtual QString dfgDoAddSet(
     FabricCore::DFGBinding const &binding,
@@ -96,7 +90,7 @@ public:
     QString desiredNodeName,
     QString varPath,
     QPointF pos
-    );
+    ) { return QString(); }
 
   virtual QString dfgDoAddPort(
     FabricCore::DFGBinding const &binding,
@@ -108,7 +102,7 @@ public:
     QString portToConnect,
     QString extDep,
     QString metaData
-    );
+    ) { return QString(); }
 
   virtual QString dfgDoCreatePreset(
     FabricCore::DFGBinding const &binding,
@@ -117,7 +111,7 @@ public:
     QString nodeName,
     QString presetDirPath,
     QString presetName
-    );
+    ) { return QString(); }
 
   virtual QString dfgDoEditPort(
     FabricCore::DFGBinding const &binding,
@@ -128,14 +122,22 @@ public:
     QString typeSpec,
     QString extDep,
     QString uiMetadata
-    );
+    ) { return QString(); }
 
   virtual void dfgDoRemovePort(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
     QString portName
-    );
+    ) {}
+
+  virtual void dfgDoMoveNodes(
+    FabricCore::DFGBinding const &binding,
+    QString execPath,
+    FabricCore::DFGExec const &exec,
+    QStringList nodeNames,
+    QList<QPointF> newTopLeftPoss
+    ) {}
 
   virtual void dfgDoResizeBackDrop(
     FabricCore::DFGBinding const &binding,
@@ -144,15 +146,7 @@ public:
     QString backDropNodeName,
     QPointF newTopLeftPos,
     QSizeF newSize
-    );
-  
-  virtual void dfgDoMoveNodes(
-    FabricCore::DFGBinding const &binding,
-    QString execPath,
-    FabricCore::DFGExec const &exec,
-    QStringList nodeNames,
-    QList<QPointF> newTopLeftPoss
-    );
+    ) {}
 
   virtual QString dfgDoImplodeNodes(
     FabricCore::DFGBinding const &binding,
@@ -160,14 +154,14 @@ public:
     FabricCore::DFGExec const &exec,
     QStringList nodeNames,
     QString desiredNodeName
-    );
+    ) { return QString(); }
 
   virtual QStringList dfgDoExplodeNode(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
     QString nodeName
-    );
+    ) { return QStringList(); }
 
   virtual void dfgDoAddBackDrop(
     FabricCore::DFGBinding const &binding,
@@ -175,7 +169,7 @@ public:
     FabricCore::DFGExec const &exec,
     QString title,
     QPointF pos
-    );
+    ) {}
 
   virtual void dfgDoSetNodeComment(
     FabricCore::DFGBinding const &binding,
@@ -183,14 +177,14 @@ public:
     FabricCore::DFGExec const &exec,
     QString nodeName,
     QString comment
-    );
+    ) {}
 
   virtual void dfgDoSetCode(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
     QString code
-    );
+    ) {}
 
   virtual QString dfgDoEditNode(
     FabricCore::DFGBinding const &binding,
@@ -200,15 +194,15 @@ public:
     QString desiredNewNodeName,
     QString nodeMetadata,
     QString execMetadata
-    );
+    ) { return QString(); }
 
   virtual QString dfgDoRenamePort(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString oldName,
-    QString desiredNewName
-    );
+    QString oldPortName,
+    QString desiredNewPortName
+    ) { return QString(); }
 
   virtual QStringList dfgDoPaste(
     FabricCore::DFGBinding const &binding,
@@ -216,21 +210,21 @@ public:
     FabricCore::DFGExec const &exec,
     QString json,
     QPointF cursorPos
-    );
+    ) { return QStringList(); }
 
   virtual void dfgDoSetArgValue(
     FabricCore::DFGBinding const &binding,
     QString argName,
     FabricCore::RTVal const &value
-    );
+    ) {}
 
   virtual void dfgDoSetPortDefaultValue(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString portOrPinPath,
+    QString portPath,
     FabricCore::RTVal const &value
-    );
+    ) {}
 
   virtual void dfgDoSetRefVarPath(
     FabricCore::DFGBinding const &binding,
@@ -238,42 +232,29 @@ public:
     FabricCore::DFGExec const &exec,
     QString refName,
     QString varPath
-    );
+    ) {}
 
   virtual void dfgDoReorderPorts(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
     QList<int> indices
-    );
+    ) {}
 
   virtual void dfgDoSetExtDeps(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
     QStringList extDeps
-    );
+    ) {}
 
   virtual void dfgDoSplitFromPreset(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec
-    );
-  
-  virtual void dfgDoDismissLoadDiags(
-    FabricCore::DFGBinding const &binding,
-    QList<int> diagIndices
-    );
-
-protected:
-
-  class WrappedCommand;
-
-protected:
-
-  QUndoStack *m_qUndoStack;
+    ) {}
 };
 
 FABRIC_UI_DFG_NAMESPACE_END
 
-#endif // __UI_DFG_DFGUICmdHandler_QUndo__
+#endif // __UI_DFG_DFGUICmdHandler_Python__

@@ -3,8 +3,25 @@
 #
 
 import os, subprocess
-Import('buildOS', 'buildArch', 'buildType', 'parentEnv', 'fabricFlags', 'qtFlags', 'qtMOC', 'uiLibPrefix', 'qtDir', 'stageDir', 'shibokenPysideDir')
-
+Import(
+  'buildOS',
+  'buildArch',
+  'buildType',
+  'buildDir',
+  'parentEnv',
+  'fabricFlags',
+  'qtFlags',
+  'qtMOC',
+  'uiLibPrefix',
+  'qtIncludeDir',
+  'qtLibDir',
+  'stageDir',
+  'pythonConfigs',
+  'capiSharedLibFlags',
+  'servicesFlags',
+  shibokenPysideDir
+  )
+ 
 shibokenPysideIncludeDirs = [
   shibokenPysideDir.Dir('include'),
   shibokenPysideDir.Dir('include').Dir('PySide'),
@@ -99,6 +116,13 @@ env.AddMethod(GlobQObjectSources)
 
 if buildType == 'Debug':
   env.Append(CPPDEFINES = ['_DEBUG'])
+
+# [andrew 20160310] no DLL support yet, FE-6026
+#if buildOS == 'Windows':
+#  if buildType == 'Debug':
+#    env.Append(CCFLAGS = ['/MDd'])
+#  else:
+#    env.Append(CCFLAGS = ['/MD'])
 
 env.MergeFlags(fabricFlags)
 env.MergeFlags(qtFlags)
@@ -196,35 +220,100 @@ Export(uiLibPrefix + 'Lib', uiLibPrefix + 'IncludeDir', uiLibPrefix + 'Flags')
 
 env.Alias(uiLibPrefix + 'Lib', uiFiles)
 
-pysideEnv = env.Clone()
-pysideDir = pysideEnv.Dir('pyside')
-shibokenDir = pysideEnv.Dir('shiboken')
+if uiLibPrefix == 'ui' and buildOS != 'Windows':
 
-if buildOS != 'Windows':
-  pysideEnv.Append(CCFLAGS = ['-Wno-sign-compare', '-Wno-error'])
+  fabricDir = env.Dir(os.environ['FABRIC_DIR'])
 
-if uiLibPrefix == 'ui' and buildOS == 'Linux':
-  pysideGen = pysideEnv.Command(
-    pysideDir.Dir('FabricUI').File('fabricui_python.h'),
-    shibokenDir.File('global.h'),
-    [
-        [
-            os.path.join(shibokenPysideDir.abspath, 'bin', 'shiboken'),
-            '$SOURCE',
-            #'--no-suppress-warnings',
-            '--typesystem-paths='+shibokenPysideDir.Dir('share').Dir('PySide').Dir('typesystems').abspath+
-                ':'+pysideEnv.Dir('shiboken').srcnode().abspath,
-            '--include-paths='+shibokenPysideDir.Dir('include').Dir('PySide').abspath+
-                ':'+stageDir.Dir('include').abspath,
-            '--enable-pyside-extensions',
-            '--output-directory='+pysideDir.abspath,
-            shibokenDir.File('fabricui.xml').srcnode().abspath
+  pysideGens = []
+  installedPySideLibs = []
+
+  for pythonVersion, pythonConfig in pythonConfigs.iteritems():
+
+    if not pythonConfig['havePySide']:
+      continue
+
+    pysideEnv = env.Clone()
+    pysideEnv.MergeFlags(capiSharedLibFlags)
+    pysideEnv.MergeFlags(servicesFlags)
+    pysideEnv.Append(LIBS = ['FabricSplitSearch'])
+    pysideEnv.MergeFlags(pythonConfig['pythonFlags'])
+    pysideEnv.MergeFlags(pythonConfig['shibokenFlags'])
+    pysideEnv.MergeFlags(pythonConfig['pysideFlags'])
+    pysideEnv.MergeFlags(qtFlags)
+    # These are necessary because of the way that shiboken
+    # generates its includes
+    pysideEnv.Append(CPPPATH = [
+      stageDir.Dir('include').Dir('FabricServices').Dir('ASTWrapper'),
+      os.path.join(qtIncludeDir, 'QtCore'),
+      os.path.join(qtIncludeDir, 'QtGui'),
+      os.path.join(qtIncludeDir, 'QtOpenGL'),
+      ])
+
+    pysideDir = pysideEnv.Dir('pyside').Dir('python'+pythonVersion)
+    shibokenDir = pysideEnv.Dir('shiboken')
+
+    if buildOS == 'Windows':
+      if buildType == 'Debug':
+        pysideEnv.Append(CCFLAGS = ['/MDd'])
+      else:
+        pysideEnv.Append(CCFLAGS = ['/MD'])
+    else:
+      pysideEnv.Append(CCFLAGS = ['-Wno-sign-compare', '-Wno-error'])
+
+    shibokenIncludePaths = [
+      str(pythonConfig['pysideIncludeDir']),
+      ]
+    shibokenIncludePaths.append(qtIncludeDir)
+    shibokenIncludePaths.append(os.path.join(os.environ['FABRIC_DIR'], "include"))
+
+    if buildOS == 'Windows':
+      diffFile = shibokenDir.File('fabricui.Windows.diff')
+    if buildOS == 'Linux':
+      diffFile = shibokenDir.File('fabricui.diff')
+    if buildOS == 'Darwin':
+      diffFile = shibokenDir.File('fabricui.diff')
+
+    if buildOS == 'Linux':
+      pysideEnv['ENV']['LD_LIBRARY_PATH'] = qtLibDir
+
+    pysideGen = pysideEnv.Command(
+      pysideDir.Dir('FabricUI').File('fabricui_python.h'),
+      [
+        shibokenDir.File('global.h'),
+        diffFile,
+        shibokenDir.File('fabricui.xml'),
+        shibokenDir.File('fabricui_core.xml'),
+        shibokenDir.File('fabricui_dfg.xml'),
+        shibokenDir.File('fabricui_viewports.xml'),
         ],
-        [ 'cd', pysideDir.abspath, '&&', 'patch', '-p1',
-            '<'+shibokenDir.File('fabricui.diff').srcnode().abspath ],
-    ]
-    )
-  pysideEnv.Alias('pysideGen', [pysideGen])
+      [
+          [
+              pythonConfig['shibokenBin'],
+              '${SOURCES[0]}',
+              #'--no-suppress-warnings',
+              '--typesystem-paths='+os.pathsep.join([
+                str(shibokenDir.srcnode()),
+                str(pythonConfig['pysideTypesystemsDir']),
+                ]),
+              '--include-paths='+os.pathsep.join(shibokenIncludePaths),
+              '--output-directory='+pysideDir.abspath,
+              '--avoid-protected-hack',
+              #################################################################
+              # These are copied from PySide's CMakeLists.txt:
+              '--generator-set=shiboken',
+              '--enable-parent-ctor-heuristic',
+              '--enable-pyside-extensions',
+              '--enable-return-value-heuristic',
+              '--use-isnull-as-nb_nonzero',
+              #################################################################
+              '${SOURCES[2]}',
+          ],
+          [ 'cd', pysideDir.Dir("FabricUI").abspath, '&&', 'patch', '-p1',
+              '<${SOURCES[1].abspath}' ],
+      ]
+      )
+    pysideEnv.Depends(pysideGen, installedHeaders)
+    pysideGens.append(pysideGen)
 
   fabricDir = env.Dir(os.environ['FABRIC_DIR'])
   pythonCAPISourceDir = fabricDir.Dir('Source').Dir('Python').Dir('Core').Dir('2.7')

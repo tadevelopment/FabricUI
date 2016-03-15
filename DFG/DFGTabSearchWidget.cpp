@@ -353,6 +353,9 @@ void DFGTabSearchWidget::addNodeFromPath(QString path)
   QPoint localPos = geometry().topLeft();
   QPointF scenePos = m_parent->getGraphViewWidget()->graph()->itemGroup()->mapFromScene(localPos);
 
+  // init node name.
+  QString nodeName;
+
   // deal with special case
   if(path == "var")
   {
@@ -413,6 +416,14 @@ void DFGTabSearchWidget::addNodeFromPath(QString path)
     controller->cmdAddInstFromPreset(
       path.toUtf8().constData(),
       scenePos
-      );
+      ).toUtf8().constData();
+  }
+
+  // was a new node created?
+  if ( !nodeName.isEmpty() )
+  {
+    m_parent->getGraphViewWidget()->graph()->clearSelection();
+    if ( GraphView::Node *uiNode = m_parent->getGraphViewWidget()->graph()->node( nodeName ) )
+      uiNode->setSelected( true );
   }
 }
