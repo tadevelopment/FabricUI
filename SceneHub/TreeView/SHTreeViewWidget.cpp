@@ -18,11 +18,9 @@ void SHTreeViewWidget::init() {
   m_shGLScene = new SHGLScene(m_client);
 
   m_comboBox = new SHTreeComboBox();
-  //m_refreshButton = new QPushButton("Refresh");
   m_shTreeView = new FabricUI::SceneHub::SHTreeView(m_client);
   
   QLayout *layout = new QVBoxLayout();
-  //layout->addWidget(m_refreshButton);
   layout->addWidget(m_comboBox);
   layout->addWidget(m_shTreeView);
   this->setLayout(layout);

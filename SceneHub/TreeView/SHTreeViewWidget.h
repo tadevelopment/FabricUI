@@ -73,14 +73,13 @@ namespace FabricUI
 
         void constructTree();
 
-	FabricCore::Client m_client;
+	      FabricCore::Client m_client;
         SHGLScene *m_shGLScene;
         SHTreeView *m_shTreeView;
         SHGLScene *m_mainSHGLScene;
         SHTreeModel *m_treeModel;
         DFG::DFGController *m_controller;
 
-        //QPushButton *m_refreshButton;
         SHTreeComboBox *m_comboBox;
         bool m_bUpdatingSelectionFrom3D;
 

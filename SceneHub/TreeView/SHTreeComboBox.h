@@ -20,10 +20,6 @@ namespace FabricUI
         virtual ~SHTreeComboBox() {}
  
         virtual void showPopup() {
-          //std::cerr << "showPopup " << std::endl;
-          //while (count() > 0) { removeItem(0); }
-          //addItem("hello");
-          //addItem("World"):
           emit updateList();
           QComboBox::showPopup();
         }
