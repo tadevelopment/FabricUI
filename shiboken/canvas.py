@@ -1,6 +1,6 @@
 import optparse, os, sys
 from FabricEngine import Core, FabricUI
-from FabricEngine.FabricUI import DFG, KLASTManager, Style, Viewports
+from FabricEngine.FabricUI import DFG, KLASTManager, Style, Viewports, TimeLine
 from PySide import QtCore, QtGui, QtOpenGL
 
 # [andrew 20151028] shiboken thinks FabricStyle is an abstract class
@@ -1487,7 +1487,7 @@ class MainWindow(DFG.DFGMainWindow):
 
         self.timeLinePortIndex = -1
         self.timeLinePortPath = None
-        self.timeLine = Viewports.TimeLineWidget()
+        self.timeLine = TimeLine.TimeLineWidget()
         self.timeLine.setTimeRange(MainWindow.defaultFrameIn,
                                    MainWindow.defaultFrameOut)
         self.timeLine.updateTime(1)
@@ -1897,15 +1897,18 @@ class MainWindow(DFG.DFGMainWindow):
         if not self.checkUnsavedChanges():
             return
 
-        lastPresetFolder = self.settings.value(
-            "mainWindow/lastPresetFolder").toString()
-        filePath = QtGui.QFileDialog.getOpenFileName(
+        lastPresetFolder = str(self.settings.value(
+            "mainWindow/lastPresetFolder"))#.toString()
+        filePath, _ = QtGui.QFileDialog.getOpenFileName(
             self, "Load graph", lastPresetFolder, "*.canvas")
-        if len(filePath.length):
+
+        print "filePath " + str(filePath)
+        filePath = str(filePath)
+        if len(filePath) > 0:
             folder = QtCore.QDir(filePath)
             folder.cdUp()
             self.settings.setValue("mainWindow/lastPresetFolder",
-                                   folder.path())
+                                   str(folder.path()))
             self.loadGraph(filePath)
 
     # [andrew 20151027] FIXME Core.CAPI normally takes care of this
@@ -1957,8 +1960,8 @@ class MainWindow(DFG.DFGMainWindow):
 
         filePath = self.lastFileName
         if len(filePath) == 0 or saveAs:
-            lastPresetFolder = self.settings.value(
-                "mainWindow/lastPresetFolder").toString()
+            lastPresetFolder = str(self.settings.value(
+                "mainWindow/lastPresetFolder"))#.toString()
             if len(self.lastFileName) > 0:
                 filePath = self.lastFileName
                 if filePath.lower().endswith('.canvas'):
@@ -2213,6 +2216,7 @@ opt_parser.add_option('-e', '--exec',
 unguarded = opts.unguarded is True
 
 settings = QtCore.QSettings()
+settings.setValue("mainWindow/lastPresetFolder", str("."))
 mainWin = MainWindow(settings, unguarded)
 mainWin.show()
 

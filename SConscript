@@ -275,7 +275,7 @@ if uiLibPrefix == 'ui' :#and buildOS != 'Windows':
           [
               pythonConfig['shibokenBin'],
               '${SOURCES[0]}',
-              #'--no-suppress-warnings',
+              '--no-suppress-warnings',
               '--typesystem-paths='+os.pathsep.join([
                 str(shibokenDir.srcnode()),
                 str(pythonConfig['pysideTypesystemsDir']),
@@ -348,6 +348,7 @@ if uiLibPrefix == 'ui' :#and buildOS != 'Windows':
     pysideEnv.Append(CPPPATH = pysideDir.abspath)
     pysideEnv.Append(CPPPATH = stageDir.Dir('Python/' + pythonVersion + '/FabricEngine'))
     pysideEnv.Append(LIBPATH = [stageDir.Dir('Python/' + pythonVersion + '/FabricEngine')])
+    pysideEnv.Append(LIBS = [fabricPythonLibName])
  
     pythonCAPISourceDir = fabricDir.Dir('Source').Dir('Python').Dir('Core').Dir('2.7')
     copyPythonCAPI = []
