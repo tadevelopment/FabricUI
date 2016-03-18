@@ -59,6 +59,9 @@ namespace FabricUI {
 
       void initConnections();
 
+    public slots :
+      void onOutputsChanged(); // Call after each evaluation
+
     protected slots:
 
       void onControllerBindingChanged(
@@ -69,7 +72,6 @@ namespace FabricUI {
       void onNodeInspectRequested(FabricUI::GraphView::Node *node);
 
       void onBindingArgValueChanged( unsigned index, FTL::CStrRef name );
-      void onOutputsChanged(); // Call after each evaluation
 
       void onBindingArgInserted(
         unsigned index,

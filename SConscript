@@ -94,19 +94,27 @@ env.MergeFlags(qtFlags)
 env.MergeFlags(glewFlags)
 
 dirs = [
-  'Util',
+'Util',
   'Style',
+  'Viewports',
+  'KLEditor',
+
   'TreeView',
   'ValueEditor_Legacy',
   'ValueEditor',
   'GraphView',
   'GraphView/Commands',
-  'KLEditor',
   'DFG',
   'DFG/DFGUICmd',
   'DFG/Dialogs',
+ 
   'SceneHub',
-  'Viewports',
+  'SceneHub/DFG',
+  'SceneHub/Editors',
+  'SceneHub/TreeView',
+  'SceneHub/Viewports',
+  'SceneHub/Commands',
+
   'Licensing',
   'ModelItems'
 ]

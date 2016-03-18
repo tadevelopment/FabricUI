@@ -18,7 +18,6 @@
 
 namespace FabricUI
 {
-
   namespace ValueEditor_Legacy
   {
     class ValueEditorWidget : public QWidget

@@ -1,6 +1,6 @@
 import optparse, os, sys
 from FabricEngine import Core, FabricUI
-from FabricEngine.FabricUI import DFG, KLASTManager, Style, Viewports
+from FabricEngine.FabricUI import DFG, KLASTManager, Style, Viewports, TimeLine
 from PySide import QtCore, QtGui, QtOpenGL
 from bindingWrapper import BindingWrapper
 from cmdWrapper import UndoCmd
@@ -161,7 +161,7 @@ class MainWindow(DFG.DFGMainWindow):
 
         self.timeLinePortIndex = -1
         self.timeLinePortPath = None
-        self.timeLine = Viewports.TimeLineWidget()
+        self.timeLine = TimeLine.TimeLineWidget()
         self.timeLine.setTimeRange(MainWindow.defaultFrameIn,
                                    MainWindow.defaultFrameOut)
         self.timeLine.updateTime(1)
@@ -881,6 +881,7 @@ opt_parser.add_option('-e', '--exec',
 unguarded = opts.unguarded is True
 
 settings = QtCore.QSettings()
+settings.setValue("mainWindow/lastPresetFolder", str("."))
 mainWin = MainWindow(settings, unguarded)
 mainWin.show()
 
