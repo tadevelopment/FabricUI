@@ -5,8 +5,9 @@
 #ifndef __UI_SCENEHUB_TREE_VIEW_WIDGET_H__
 #define __UI_SCENEHUB_TREE_VIEW_WIDGET_H__
 
+#include <iostream>
 #include <QtGui/QWidget>
-#include <QtGui/QComboBox>
+#include "SHTreeComboBox.h"
 #include <QtGui/QPushButton>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
@@ -73,15 +74,14 @@ namespace FabricUI
 
         void constructTree();
 
-	FabricCore::Client m_client;
+	      FabricCore::Client m_client;
         SHGLScene *m_shGLScene;
         SHTreeView *m_shTreeView;
         SHGLScene *m_mainSHGLScene;
         SHTreeModel *m_treeModel;
         DFG::DFGController *m_controller;
 
-        QPushButton *m_refreshButton;
-        QComboBox *m_comboBox;
+        SHTreeComboBox *m_comboBox;
         bool m_bUpdatingSelectionFrom3D;
 
     };
