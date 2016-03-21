@@ -2,8 +2,7 @@ import optparse, os, sys
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import DFG, KLASTManager, Style, Viewports, TimeLine
 from PySide import QtCore, QtGui, QtOpenGL
-from canvasWindow import CanvasWindow
-from canvasWindow import FabricStyle
+from sceneHubWindow import SceneHubWindow
 
 app = QtGui.QApplication([])
 app.setOrganizationName('Fabric Software Inc')
@@ -31,7 +30,7 @@ unguarded = opts.unguarded is True
 
 settings = QtCore.QSettings()
 settings.setValue("mainWindow/lastPresetFolder", str("."))
-canvasWin = CanvasWindow(settings, unguarded)
+canvasWin = SceneHubWindow(settings, unguarded)
 canvasWin.show()
 
 for arg in args:

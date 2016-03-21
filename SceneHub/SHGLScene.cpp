@@ -267,7 +267,7 @@ bool SHGLScene::showTreeViewByDefault(uint32_t &level) {
 }
 
 
-void SHGLScene::addExternalFileList(QStringList pathList, float pos[3], bool forceExpand) {
+void SHGLScene::addExternalFileList(QStringList pathList, float *pos, bool forceExpand) {
   try 
   {
     RTVal klPathList = RTVal::ConstructVariableArray(getClient(), "String");
@@ -293,7 +293,7 @@ void SHGLScene::addExternalFileList(QStringList pathList, float pos[3], bool for
   }
 }
 
-void SHGLScene::setObjectColor(float color[4], bool local) {
+void SHGLScene::setObjectColor(float *color, bool local) {
   try 
   {
     RTVal colorVal = RTVal::Construct(getClient(), "Color", 0, 0);
@@ -314,7 +314,7 @@ void SHGLScene::setObjectColor(float color[4], bool local) {
   }
 }
 
-void SHGLScene::addLight(uint32_t lightType, float pos[3]) {
+void SHGLScene::addLight(uint32_t lightType, float *pos) {
   try 
   {
    RTVal posVal = RTVal::Construct(getClient(), "Vec3", 0, 0);
@@ -334,7 +334,7 @@ void SHGLScene::addLight(uint32_t lightType, float pos[3]) {
   }
 }
 
-void SHGLScene::setlightProperties(float color[4], float intensity) {
+void SHGLScene::setlightProperties(float *color, float intensity) {
   try 
   {
     RTVal colorVal = RTVal::Construct(getClient(), "Color", 0, 0);

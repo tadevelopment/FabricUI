@@ -62,4 +62,8 @@
 #include <FabricUI/Viewports/GLViewportWidget.h>
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Viewports/TimeLineWidget.h>
+#include <FabricUI/SceneHub/SHGLRenderer.h>
+#include <FabricUI/SceneHub/SHGLScene.h>
+#include <FabricUI/SceneHub/Viewports/RTRGLViewportWidget.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeViewWidget.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>

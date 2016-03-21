@@ -71,7 +71,7 @@ namespace FabricUI
         /// Casts a ray from a Viewport and a position in camera space.
         /// \param viewportID The ID of the viewport.
         /// \param pos The mouse's position in the viewport
-        FabricCore::RTVal castRay(uint32_t viewportID, float pos[2]);
+        FabricCore::RTVal castRay(uint32_t viewportID, float *pos);
 
         /// This helper method will raycast in the scene. 
         // If no result is found, it will intersect with the Y = 0 plane. 

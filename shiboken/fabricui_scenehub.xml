@@ -1,0 +1,10 @@
+<?xml  version="1.0"?>
+<typesystem package="FabricUI">
+  <namespace-type name="FabricUI"  generate="no">
+    <namespace-type name="SceneHub"  generate="yes">
+      <object-type name="SHGLRenderer" copyable="false"/>
+      <object-type name="SHGLScene" copyable="false"/>
+      <object-type name="SHTreeViewWidget" copyable="false"/>
+	</namespace-type>
+  </namespace-type>
+</typesystem>

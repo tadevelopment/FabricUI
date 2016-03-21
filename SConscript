@@ -94,7 +94,7 @@ env.MergeFlags(qtFlags)
 env.MergeFlags(glewFlags)
 
 dirs = [
-'Util',
+  'Util',
   'Style',
   'Viewports',
   'KLEditor',
@@ -242,6 +242,7 @@ if uiLibPrefix == 'ui':
         shibokenDir.File('fabricui_core.xml'),
         shibokenDir.File('fabricui_dfg.xml'),
         shibokenDir.File('fabricui_viewports.xml'),
+        shibokenDir.File('fabricui_scenehub.xml'),
         ],
       [
           [
@@ -281,6 +282,12 @@ if uiLibPrefix == 'ui':
         pysideEnv.Dir('ValueEditor').srcnode(),
         pysideEnv.Dir('ValueEditor_Legacy').srcnode(),
         pysideEnv.Dir('Viewports').srcnode(),
+        pysideEnv.Dir('SceneHub').srcnode(),
+        pysideEnv.Dir('SceneHub/DFG').srcnode(),
+        pysideEnv.Dir('SceneHub/Editors').srcnode(),
+        pysideEnv.Dir('SceneHub/TreeView').srcnode(),
+        pysideEnv.Dir('SceneHub/Viewports').srcnode(),
+        pysideEnv.Dir('SceneHub/Commands').srcnode(),
         fabricDir.Dir('include'),
         ])
     pysideEnv.Append(CPPPATH = [pythonConfig['includeDir']])

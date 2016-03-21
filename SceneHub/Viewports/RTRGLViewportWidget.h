@@ -20,7 +20,7 @@ namespace FabricUI
   {
     class RTRGLViewportWidget : public ViewportWidget {
     
-    Q_OBJECT
+      Q_OBJECT
 
       public:
         RTRGLViewportWidget(
