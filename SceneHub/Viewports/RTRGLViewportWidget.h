@@ -35,7 +35,7 @@ namespace FabricUI
 
         virtual ~RTRGLViewportWidget();
 
-        void setTime( float time );
+        //void setTime( float time );
         
         void toggleAlwaysRefresh();
         

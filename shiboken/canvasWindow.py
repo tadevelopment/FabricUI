@@ -3,7 +3,6 @@ from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import DFG, KLASTManager, Style, Viewports, TimeLine
 from PySide import QtCore, QtGui, QtOpenGL
 from bindingWrapper import BindingWrapper
-from cmdWrapper import UndoCmd
 from cmdWrapper import UICmdHandler
 from scriptEditorWrapper import ScriptEditor
 
@@ -306,6 +305,8 @@ class CanvasWindow(DFG.DFGMainWindow):
             except Exception as e:
                 self.dfgWidget.getDFGController().logError(str(e))
 
+
+                
     def onPortManipulationRequested(self, portName):
         try:
             controller = self.dfgWidget.getDFGController()
@@ -357,6 +358,8 @@ class CanvasWindow(DFG.DFGMainWindow):
             self.lastSavedBindingVersion = binding.getVersion()
             dfgExec = binding.getExec()
             dfgController.setBindingExec(binding, "", dfgExec)
+
+            self.scriptEditor.updateBinding(binding)
             #self.onSidePanelInspectRequested()
 
             self.evalContext.currentFilePath = filePath

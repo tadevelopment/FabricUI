@@ -46,6 +46,10 @@ class ScriptEditor(QtGui.QWidget):
         self.setContentsMargins(0,0,0,0)
         self.setLayout(layout)
 
+    def updateBinding(self, binding):
+        prev = self.eval_globals['binding'] 
+        self.eval_globals['binding'] = BindingWrapper(prev.client, binding, prev.qUndoStack)
+
     def onReturnPressed(self):
         code = self.cmd.text()
         self.execute(code)

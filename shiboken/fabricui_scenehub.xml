@@ -6,5 +6,9 @@
       <object-type name="SHGLScene" copyable="false"/>
       <object-type name="SHTreeViewWidget" copyable="false"/>
 	</namespace-type>
+	<namespace-type name="Viewports"  generate="yes">
+	  <object-type name="RTRGLContext" copyable="false"/>
+	  <object-type name="RTRGLViewportWidget" copyable="false"/>
+	</namespace-type>
   </namespace-type>
 </typesystem>

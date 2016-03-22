@@ -3,10 +3,11 @@ from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import DFG, KLASTManager, Style, Viewports, TimeLine
 from PySide import QtCore, QtGui, QtOpenGL
 from sceneHubWindow import SceneHubWindow
+from canvasWindow import FabricStyle
 
 app = QtGui.QApplication([])
 app.setOrganizationName('Fabric Software Inc')
-app.setApplicationName('Fabric Canvas Standalone')
+app.setApplicationName('Fabric SceneHub Standalone')
 app.setApplicationVersion('2.0.0')
 app.setStyle( FabricStyle() )
 
@@ -30,14 +31,14 @@ unguarded = opts.unguarded is True
 
 settings = QtCore.QSettings()
 settings.setValue("mainWindow/lastPresetFolder", str("."))
-canvasWin = SceneHubWindow(settings, unguarded)
-canvasWin.show()
+sceneHubWin = SceneHubWindow(settings, unguarded)
+sceneHubWin.show()
 
 for arg in args:
-    canvasWin.loadGraph(arg)
+    sceneHubWin.loadGraph(arg)
 
 if opts.script:
     with open(opts.script, "r") as f:
-        canvasWin.scriptEditor.exec_(f.read())
+        sceneHubWin.scriptEditor.exec_(f.read())
 
 app.exec_()
