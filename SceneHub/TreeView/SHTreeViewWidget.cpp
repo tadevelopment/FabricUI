@@ -17,19 +17,17 @@ void SHTreeViewWidget::init() {
   m_bUpdatingSelectionFrom3D = false;
   m_shGLScene = new SHGLScene(m_client);
 
-  m_comboBox = new QComboBox();
-  m_refreshButton = new QPushButton("Refresh");
+  m_comboBox = new SHTreeComboBox();
   m_shTreeView = new FabricUI::SceneHub::SHTreeView(m_client);
   
   QLayout *layout = new QVBoxLayout();
-  layout->addWidget(m_refreshButton);
   layout->addWidget(m_comboBox);
   layout->addWidget(m_shTreeView);
   this->setLayout(layout);
 
   QObject::connect( m_shTreeView, SIGNAL( itemSelected( FabricUI::SceneHub::SHTreeItem * ) ), this, SLOT( treeItemSelected( FabricUI::SceneHub::SHTreeItem * ) ) );
   QObject::connect( m_shTreeView, SIGNAL( itemDeselected( FabricUI::SceneHub::SHTreeItem * ) ), this, SLOT( treeItemDeselected( FabricUI::SceneHub::SHTreeItem * ) ) );
-  QObject::connect(m_refreshButton, SIGNAL(clicked()), this, SLOT(onUpdateSceneList()));
+  QObject::connect(m_comboBox, SIGNAL(updateList()), this, SLOT(onUpdateSceneList()));
   QObject::connect(m_comboBox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(onUpdateScene(const QString &)));
 }
 
