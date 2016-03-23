@@ -1,4 +1,4 @@
-import optparse, os, sys
+import optparse, os, sys, math, copy
 from FabricEngine import Core, FabricUI
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine.FabricUI import *
@@ -6,215 +6,237 @@ from canvasWindow import CanvasWindow
  
 class SceneHubWindow(CanvasWindow):
 
-    def __init__(self, settings, unguarded, qglContext):
-        super(SceneHubWindow, self).__init__(settings, unguarded)
+  def __init__(
+    self, 
+    settings, 
+    unguarded, 
+    noopt, 
+    klFile, 
+    qglContext):
+    self.nextViewportIndex = 1
+    self.qglContext = [] 
+    self.viewports = []
+    self.sampleActions = []
+    self.isCanvas = False
+    self.viewport = None
+    self.klFile = klFile
+    self.noopt = noopt
+    super(SceneHubWindow, self).__init__(settings, unguarded)
 
-        self.qglContext = qglContext
+  def _initKL(self, unguarded):
+    super(SceneHubWindow, self)._initKL(unguarded)
+    self.client.loadExtension('Manipulation')
+    self.client.loadExtension('SceneHub')
+    # Create the renderer, only one.
+    self.shGLRenderer = SceneHub.SHGLRenderer(self.client)
+    # Construct the "main scene"
+    self.shMainGLScene = SceneHub.SHGLScene(self.client, self.klFile)
+    # Update the renderer in case it has been overriden by the main scene.
+    self.shGLRenderer.update()
 
-    def initKL(self, unguarded):
-        super(SceneHubWindow, self).initKL(unguarded)
+  def _initGL(self):
+    self.samples = 1#self.qglContext[0].format().samples()
+    self.viewport, intermediateOwnerWidget = self.__createViewport(0, False, None)
+    self.setCentralWidget(intermediateOwnerWidget)
+    self.viewport.makeCurrent()
 
-        self.client.loadExtension('Manipulation')
-        self.client.loadExtension('SceneHub')
-        # Create the renderer, only one.
-        self.shGLRenderer = SceneHub.SHGLRenderer(self.client)
-        # Construct the "main scene"
-        sceneName = 'SceneHub'
-        #if(klFile.length() > 0) sceneName = loadScene(self.client, klFile)
-        self.shMainGLScene = SceneHub.SHGLScene(self.client, sceneName)
-        # Update the renderer in case it has been overriden by the main scene.
-        self.shGLRenderer.update()
+  def _initTreeView(self):
+    super(SceneHubWindow, self)._initTreeView()
+    self.shTreeViewWidget = SceneHub.SHTreeViewWidget(self.shMainGLScene, self.dfgWidget.getUIController())
 
-    def initGL(self):
-        self.samples = self.qglContext.format().samples()
-        self.viewport, intermediateOwnerWidget = createViewport( 0, false, 0, qglContext, intermediateOwnerWidget )
-        setCentralWidget(intermediateOwnerWidget)
-        self.viewport.makeCurrent()
+  def __updateSampleChecks(self):
+    self.sampleActions[0].setChecked(False)
+    self.sampleActions[1].setChecked(False)
+    self.sampleActions[2].setChecked(False)
+    self.sampleActions[3].setChecked(False)
+    if( self.samples == 1 ):   self.sampleActions[0].setChecked(True)
+    elif( self.samples == 2 ): self.sampleActions[1].setChecked(True)
+    elif( self.samples == 4 ): self.sampleActions[2].setChecked(True)
+    elif( self.samples == 8 ): self.sampleActions[3].setChecked(True)
 
-    def initTreeView(self):
-        super(SceneHubWindow, self).initTreeView()
+  def _initDocksAndMenus(self):
+    super(SceneHubWindow, self)._initDocksAndMenus()
+    shTreeDock = QtGui.QDockWidget("Sh Tree-View", self)
+    shTreeDock.setObjectName("SH Tree-View")
+    shTreeDock.setFeatures(self.dockFeatures)
+    shTreeDock.setWidget(self.shTreeViewWidget)
+    self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, shTreeDock, QtCore.Qt.Vertical)
 
-        self.shTreeViewWidget = SceneHub.SHTreeViewWidget(
-            self.shMainGLScene,
-            self.dfgWidget.getUIController())
+    menus = self.menuBar().findChildren(QtGui.QMenu)
+    for menu in menus:
+      if menu.title() == "&Window":
+        toggleAction = shTreeDock.toggleViewAction()
+        toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
+        menu.addAction(toggleAction)
 
-    def initDocksAndMenus(self):
-        super(SceneHubWindow, self).initDocksAndMenus()
+        menu.addSeparator();
+        viewportMenu = menu.addMenu("Add Viewport")
+        viewportAction = viewportMenu.addAction("Add Perspective Viewport")
+        viewportAction.triggered.connect(self.onAddViewport)
+        viewportAction = viewportMenu.addAction("Add Orthographic Viewport")
+        viewportAction.triggered.connect(self.onAddOrthoViewport)
 
-        shTreeDock = QtGui.QDockWidget("Sh Tree-View", self)
-        shTreeDock.setObjectName("SH Tree-View")
-        shTreeDock.setWidget(self.shTreeViewWidget)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, shTreeDock, QtCore.Qt.Vertical)
-
-        menus = self.menuBar().findChildren(QtGui.QMenu)
-        for menu in menus:
-            if menu.title() == "&Window":
-                print menu.title()
-                toggleAction = shTreeDock.toggleViewAction()
-                toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
-                menu.addAction(toggleAction)
-        
-    def createViewport(
-        self, 
-        viewportIndex, 
-        orthographic, 
-        widgetToReplaceWithNewSampling,
-        qglContext):
-
-        # If the multisampling has changed, we need to replace the RTRGLViewportWidget with a new one, since there
-        # is a 1-to-1 correspondance between the QGlWidget, its context, and context's sampling options.
-        # To do this, we add an intermediate widget, otherwise the layout collapses when one widget with another one.
-        intermediateLayout = None
-        intermediateOwnerWidget = None
-        if( widgetToReplaceWithNewSampling is None ) :
-            # initializing
-            intermediateOwnerWidget = QtGuiQWidget(self)
-            intermediateLayout = QtGui.QStackedLayout()
-            intermediateOwnerWidget.setLayout(intermediateLayout)
-
-            if( qglContext is None ) :
-                qglContext = RTRGLContext( self.viewport.context().format() )
-
-        else :
-            intermediateOwnerWidget = widgetToReplaceWithNewSampling.parentWidget()
-            intermediateLayout = intermediateOwnerWidget.layout()
-
-            # We will recreate the RTR viewport associated with the index
-            widgetToReplaceWithNewSampling.detachFromRTRViewport()
-
-            # create a context from the previous one,
-            # but change samples
-            format = widgetToReplaceWithNewSampling.context().format()
-            format.setSamples( self.samples )
-            format.setSampleBuffers( self.samples > 1 )
-            qglContext = Viewports.RTRGLContext( format )
-
-        if widgetToReplaceWithNewSampling is not None:
-            widgetToReplaceWithNewSampling = widgetToReplaceWithNewSampling
-        else: 
-            widgetToReplaceWithNewSampling = self.viewport
-
-        newViewport = Viewports.RTRGLViewportWidget(
-            self.client,
-            self.shGLRenderer,
-            self.shTreeViewWidget.getScene(),
-            viewportIndex, 
-            qglContext, 
-            self, 
-            widgetToReplaceWithNewSampling, 
-            self.settings)
-     
-        if( orthographic is not None ) :
-            newViewport.setOrthographic(true)
-
-        intermediateLayout.addWidget(newViewport)
-        if( widgetToReplaceWithNewSampling is not None ) :
-            self.viewports.erase( self.viewports.find( widgetToReplaceWithNewSampling ) )
-            intermediateLayout.removeWidget(widgetToReplaceWithNewSampling)
-            widgetToReplaceWithNewSampling.deleteLater()
+        multisampleMenu = menu.addMenu("Multisampling")
+        for i in range(0, 4):
+          self.sampleActions.append(multisampleMenu.addAction(str(int(math.pow(2, i)))))
+          self.sampleActions[i].setCheckable(True)
+          self.sampleActions[i].triggered.connect(self.onSetSamples)
+        self.__updateSampleChecks()
       
-        self.viewports.insert( newViewport )
+      if menu.title() == "&File":
+        actions = menu.findChildren(QtGui.QAction)
+        for action in actions:
+          if action.text() == "Quit":
+            importAssetAction = QtGui.QAction( "Import Alembic/Fbx", menu );
+            importAssetAction.triggered.connect(self.onImportAsset);
+            menu.insertAction( action, importAssetAction );
 
-        self.shTreeViewWidget.sceneHierarchyChanged.connect(self.refreshViewports())
-        self.shTreeViewWidget.sceneUpdated.connect(self.onSceneUpdated());
-        newViewport.sceneChanged().connect(self.shTreeViewWidget, SLOT( onSceneHierarchyChanged() ) )
-        newViewport.viewportDestroying().connect(self.viewportDestroying() )
-        newViewport.sceneChanged().connect(self.refreshViewports() )
-        newViewport.manipsAcceptedEvent().connect(self.shTreeViewWidget.updateFrom3DSelection() )
-        newViewport.manipsAcceptedEvent().connect(this.refreshViewports() )
+            exportToAlembicAction = QtGui.QAction( "Export to Alembic", menu );
+            exportToAlembicAction.triggered.connect(self.onExportToAlembic);
+            menu.insertAction( action, exportToAlembicAction );
+            menu.insertSeparator( action );
 
-        #if(self.shCmdViewWidget)
-        #  newViewport.synchronizeCommands.connect( self.shCmdViewWidget.synchronize() )
 
-        return newViewport, intermediateOwnerWidget;
-     
+  def _contentChanged(self) :
+    self.valueEditor.onOutputsChanged()
+    self.onRefreshAllViewports()
 
-'''
+  def __createViewport(self, viewportIndex, orthographic, widgetToReplace):
+
+    # If the multisampling has changed, we need to replace the RTRGLViewportWidget with a new one, since there
+    # is a 1-to-1 correspondance between the QGlWidget, its context, and context's sampling options.
+    # To do it, we add an intermediate widget, otherwise the layout collapses when one widget with another one.
+    intermediateLayout = None
+    intermediateOwnerWidget = None
  
+    if not widgetToReplace:
+      # initializing
+      intermediateOwnerWidget = QtGui.QWidget(self)
+      intermediateLayout = QtGui.QStackedLayout()
+      intermediateOwnerWidget.setLayout(intermediateLayout)
+       
+      format = QtOpenGL.QGLFormat()
+      format.setSamples(self.samples)
+      format.setSampleBuffers(self.samples > 1)
+      self.qglContext.append(Viewports.RTRGLContext( format ))
+
+    else:
+      intermediateOwnerWidget = widgetToReplace.parent()
+      intermediateLayout = intermediateOwnerWidget.layout()
+      # We will recreate the RTR viewport associated with the index
+      widgetToReplace.detachFromRTRViewport()
+      # create a context from the previous one, but change samples
+      format = widgetToReplace.context().format()
+      format.setSamples(self.samples)
+      format.setSampleBuffers(self.samples > 1)
+      self.qglContext[viewportIndex] = Viewports.RTRGLContext(format)
+
+    temp = None
+    if widgetToReplace is not None: temp = widgetToReplace
+    else: temp = self.viewport
+
+    newViewport = Viewports.RTRGLViewportWidget(
+      self.client,
+      self.shGLRenderer,
+      self.shTreeViewWidget.getScene(),
+      viewportIndex, 
+      self.qglContext[viewportIndex], 
+      self, 
+      temp, 
+      self.settings)
+ 
+    if orthographic is not None:
+      newViewport.setOrthographic(True)
+
+    intermediateLayout.addWidget(newViewport)
+    if widgetToReplace is not None:
+      index = self.viewports.index(widgetToReplace)
+      intermediateLayout.removeWidget(widgetToReplace)
+      self.viewports.remove(widgetToReplace)
+      widgetToReplace.deleteLater()
+    self.viewports.append(newViewport)
+
+    self.shTreeViewWidget.sceneHierarchyChanged.connect(self.onRefreshAllViewports)
+    self.shTreeViewWidget.sceneUpdated.connect(newViewport.onSceneUpdated)
+    newViewport.sceneChanged.connect(self.shTreeViewWidget.onSceneHierarchyChanged)
+    newViewport.viewportDestroying.connect(self.onViewportDestroying)
+    newViewport.sceneChanged.connect(self.onRefreshAllViewports)
+    newViewport.manipsAcceptedEvent.connect(self.shTreeViewWidget.updateFrom3DSelection)
+    newViewport.manipsAcceptedEvent.connect(self.onRefreshAllViewports)
+
+    #if(self.shCmdViewWidget)
+    #  newViewport.synchronizeCommands.connect( self.shCmdViewWidget.synchronize() )
+
+    return newViewport, intermediateOwnerWidget;
+
+  def __addViewport(self, orthographic):
+    index = self.nextViewportIndex
+    self.nextViewportIndex = self.nextViewportIndex + 1
+    print "self.nextViewportIndex " + str(self.nextViewportIndex)
+    _, intermediateOwnerWidget = self.__createViewport(index, orthographic, None)
+    
+    name = "Viewport " + str(index)
+    viewportDock = QtGui.QDockWidget(str(name), self)
+    viewportDock.setObjectName(name)
+    viewportDock.setWidget(intermediateOwnerWidget)
+    #viewportDock.setFeatures(self.dockFeatures)
+    viewportDock.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+    self.addDockWidget(QtCore.Qt.TopDockWidgetArea, viewportDock)
+    
+  def onAddViewport(self):
+    self.__addViewport(False)
+
+  def onAddOrthoViewport(self):
+    self.__addViewport(True)
+
+  def onSetSamples(self):
+    for i in range(0, 4):
+      if(self.sampleActions[i] is self.sender()):
+        self.samples = math.pow(2, i)
+        self.__updateSampleChecks()
+
+        # We need to recreate all viewports widgets with the new sampling setting
+        oldViewports = list(self.viewports)
+        for j in range(0, len(oldViewports)):
+          viewport = oldViewports[j]
+          viewportIndex = viewport.getViewportIndex()
+          newViewport, _ = self.__createViewport(viewportIndex, viewport.isOrthographic(), viewport)
+          if(viewportIndex == 0): self.viewport = newViewport
+
+  def onRefreshAllViewports(self):
+    self.shMainGLScene.prepareSceneForRender()
+    for viewport in self.viewports: viewport.redraw()
+
+  def onRefreshViewport(self, refreshAll):
+    if refreshAll == True : self.onRefreshAllViewports()
+    else:
+      viewport = self.sender()
+      viewport.redraw()
+
+  def onViewportDestroying(self):
+    viewport = self.sender()
+    if viewport in self.viewports: self.viewports.remove(viewport)
+
+  def onTogglePlayback(self):  
+    if self.timeLineDock.isVisible() == False : self.timeLineDock.show()
+    self.timeLine.play()
+   
+  def onFrameChanged(self, frame):
+    super(SceneHubWindow, self).onFrameChanged(frame)
+    self.shMainGLScene.setFrame(frame)
+    self.onRefreshAllViewports()
+
+  def onPlaybackChanged(self, isPlaying):
+    self.shGLRenderer.setPlayback(isPlaying)
+    # Refresh viewports: because there might be a "one frame behind" if were are drawing while computing
+    self.onRefreshAllViewports()
 
 
-void SceneHubWindow::updateSampleChecks() {
-  m_sampleAction[0].setChecked(false);
-  m_sampleAction[1].setChecked(false);
-  m_sampleAction[2].setChecked(false);
-  m_sampleAction[3].setChecked(false);
-  if( self.samples == 1 )
-    m_sampleAction[0].setChecked(true);
-  else if( self.samples == 2 )
-    m_sampleAction[1].setChecked(true);
-  else if( self.samples == 4 )
-    m_sampleAction[2].setChecked(true);
-  else if( self.samples == 8 )
-    m_sampleAction[3].setChecked(true);
-}
+  def onImportAsset(self): 
+    self.timeLine.pause();
+    #SHEditorWidget.ImportAsset(slef.shMainGLScene);
 
-void SceneHubWindow::setSamples(int samples) {
-  if( samples != self.samples ) 
-  {
-    self.samples = samples;
-    updateSampleChecks();
+  def onExportToAlembic(self): 
+    self.timeLine.pause();
+    #FabricUI::SceneHub::SHEditorWidget::ExportToAlembic(m_shMainGLScene);
 
-    // We need to recreate all viewports widgets with the new sampling setting
-    ViewportSet oldViewports = self.viewports;
-
-    for( ViewportSet::iterator it = oldViewports.begin(); it != oldViewports.end(); ++it ) 
-    {
-      int viewportIndex = (*it).getViewportIndex();
-      QWidget *intermediateOwnerWidget;
-      FabricUI::Viewports::RTRGLViewportWidget* newViewport = createViewport( viewportIndex, (*it).isOrthographic(), (*it), 0, intermediateOwnerWidget );
-      if( viewportIndex == 0 )
-        self.viewport = newViewport;
-    }
-  }
-}
-
-void SceneHubWindow::addViewport(bool orthographic) {
-  int index = m_nextViewportIndex++;
-  QWidget *intermediateOwnerWidget;
-  createViewport( index, orthographic, 0, 0, intermediateOwnerWidget );
-
-  QString name = "Viewport " + QString::number(index);
-  QDockWidget *viewportDock = new QDockWidget( name, this);
-  viewportDock.setObjectName( name );
-  viewportDock.setWidget( intermediateOwnerWidget );
-  viewportDock.setAttribute(Qt::WA_DeleteOnClose);
-  viewportDock.setFloating( true );
-  addDockWidget( Qt::TopDockWidgetArea, viewportDock);
-}
-
-void SceneHubWindow::refreshViewports() {
-  m_shMainGLScene.prepareSceneForRender();
-  for(ViewportSet::iterator it = self.viewports.begin(); it != self.viewports.end(); ++it)
-    (*it).redraw();
-}
-
-void SceneHubWindow::refreshViewports(bool refreshAll) {
-  if( refreshAll ) refreshViewports();
-  else {
-    FabricUI::Viewports::ViewportWidget *viewport = (FabricUI::Viewports::ViewportWidget *)sender();
-    viewport.redraw();
-  }
-}
-
-void SceneHubWindow::viewportDestroying() {
-  ViewportSet::iterator iter = self.viewports.find( (FabricUI::Viewports::RTRGLViewportWidget*)sender() );
-  if( iter != self.viewports.end() )
-    self.viewports.erase( iter );
-}
-
-void SceneHubWindow::togglePlayback() {
-  if(!m_timeLineDock.isVisible()) m_timeLineDock.show();
-  m_timeLine.play();
-}
-
-void SceneHubWindow::onFrameChanged(int frame) {
-  CanvasWindow::onFrameChanged(frame);
-  m_shMainGLScene.setFrame(frame);
-}
-
-void SceneHubWindow::onPlaybackChanged(bool isPlaying) {
-  self.shGLRenderer.setPlayback(isPlaying);
-  // Refresh viewports: because there might be a "one frame behind" if were are drawing while computing
-  refreshViewports();
-}
-'''

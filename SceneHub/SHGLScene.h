@@ -23,7 +23,7 @@ namespace FabricUI
       public:
         SHGLScene(FabricCore::Client client) : m_client(client) {}
 
-        SHGLScene(FabricCore::Client client, QString sceneName);
+        SHGLScene(FabricCore::Client client, QString klFile);
 
         SHGLScene(FabricCore::Client client, FabricCore::RTVal shGLScene);
 
