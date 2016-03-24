@@ -3,19 +3,12 @@ from FabricEngine import Core, FabricUI
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine.FabricUI import *
 from CanvasWindow import CanvasWindow
-#from SHTreeViewWidget import SHTreeViewWidget
+from SHGLViewportWidget import SHGLViewportWidget
 
 class SceneHubWindow(CanvasWindow):
 
-  def __init__(
-    self, 
-    settings, 
-    unguarded, 
-    noopt, 
-    klFile, 
-    qglContext):
+  def __init__(self, settings, unguarded, noopt, klFile, qglContext):
     self.nextViewportIndex = 1
-    self.qglContext = [] 
     self.viewports = []
     self.sampleActions = []
     self.isCanvas = False
@@ -36,7 +29,7 @@ class SceneHubWindow(CanvasWindow):
     self.shGLRenderer.update()
 
   def _initGL(self):
-    self.samples = 1#self.qglContext[0].format().samples()
+    self.samples = 1
     self.viewport, intermediateOwnerWidget = self.__createViewport(0, False, None)
     self.setCentralWidget(intermediateOwnerWidget)
     self.viewport.makeCurrent()
@@ -44,7 +37,8 @@ class SceneHubWindow(CanvasWindow):
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
     self.shTreeViewWidget = SceneHub.SHTreeViewWidget(self.shMainGLScene, self.dfgWidget.getUIController())
- 
+    #self.shTreeViewWidget.setMainScene(self.shMainGLScene)
+
   def __updateSampleChecks(self):
     self.sampleActions[0].setChecked(False)
     self.sampleActions[1].setChecked(False)
@@ -109,7 +103,8 @@ class SceneHubWindow(CanvasWindow):
     # To do it, we add an intermediate widget, otherwise the layout collapses when one widget with another one.
     intermediateLayout = None
     intermediateOwnerWidget = None
- 
+    
+    qglContext = None
     if not widgetToReplace:
       # initializing
       intermediateOwnerWidget = QtGui.QWidget(self)
@@ -119,7 +114,7 @@ class SceneHubWindow(CanvasWindow):
       format = QtOpenGL.QGLFormat()
       format.setSamples(self.samples)
       format.setSampleBuffers(self.samples > 1)
-      self.qglContext.append(Viewports.RTRGLContext( format ))
+      qglContext= Viewports.RTRGLContext(format)
 
     else:
       intermediateOwnerWidget = widgetToReplace.parent()
@@ -130,20 +125,20 @@ class SceneHubWindow(CanvasWindow):
       format = widgetToReplace.context().format()
       format.setSamples(self.samples)
       format.setSampleBuffers(self.samples > 1)
-      self.qglContext[viewportIndex] = Viewports.RTRGLContext(format)
+      qglContext = Viewports.RTRGLContext(format)
 
-    temp = None
-    if widgetToReplace is not None: temp = widgetToReplace
-    else: temp = self.viewport
+    sharedWidget = None
+    if widgetToReplace is not None: sharedWidget = widgetToReplace
+    else: sharedWidget = self.viewport
 
-    newViewport = Viewports.RTRGLViewportWidget(
+    newViewport = SHGLViewportWidget(
       self.client,
       self.shGLRenderer,
       self.shTreeViewWidget.getScene(),
       viewportIndex, 
-      self.qglContext[viewportIndex], 
+      qglContext, 
       self, 
-      temp, 
+      sharedWidget, 
       self.settings)
  
     if orthographic is not None:

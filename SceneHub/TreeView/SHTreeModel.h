@@ -30,7 +30,6 @@ namespace FabricUI
       typedef std::vector<SHTreeItem *> RootItemsVec;
 
     public:
-      SHTreeModel( int , FabricCore::Client client, QObject *parent );
 
       SHTreeModel( FabricCore::Client client, FabricCore::RTVal sceneGraph, QObject *parent = 0 );
 
@@ -48,8 +47,9 @@ namespace FabricUI
         FabricCore::RTVal rootSGObject
         )
       {
-        SHTreeItem *item = new SHTreeItem( this, 0 /* parentItem */, m_client );
+        SHTreeItem *item = 0;
         try {
+          item = new SHTreeItem( this, 0 /* parentItem */, m_client );
           FabricCore::RTVal args[2];
           args[0] = rootSGObject;//SGObject root
           args[1] = FabricCore::RTVal::ConstructData( m_client, item );//Data externalOwnerID

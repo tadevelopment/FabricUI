@@ -8,13 +8,6 @@
 using namespace FabricUI;
 using namespace FabricUI::SceneHub;
 
-SHTreeModel::SHTreeModel(int, FabricCore::Client client, QObject *parent )
-  : QAbstractItemModel( parent )
-  , m_client( client )
-  , m_sceneHierarchyChangedBlockCount( 0 )
-{
-
-}
 
 SHTreeModel::SHTreeModel( FabricCore::Client client, FabricCore::RTVal sceneGraph, QObject *parent )
   : QAbstractItemModel( parent )
