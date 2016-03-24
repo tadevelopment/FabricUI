@@ -2,8 +2,9 @@ import optparse, os, sys, math, copy
 from FabricEngine import Core, FabricUI
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine.FabricUI import *
-from canvasWindow import CanvasWindow
- 
+from CanvasWindow import CanvasWindow
+#from SHTreeViewWidget import SHTreeViewWidget
+
 class SceneHubWindow(CanvasWindow):
 
   def __init__(
@@ -43,7 +44,7 @@ class SceneHubWindow(CanvasWindow):
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
     self.shTreeViewWidget = SceneHub.SHTreeViewWidget(self.shMainGLScene, self.dfgWidget.getUIController())
-
+ 
   def __updateSampleChecks(self):
     self.sampleActions[0].setChecked(False)
     self.sampleActions[1].setChecked(False)

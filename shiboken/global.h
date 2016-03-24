@@ -66,5 +66,8 @@
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/Viewports/RTRGLContext.h>
 #include <FabricUI/SceneHub/Viewports/RTRGLViewportWidget.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeView.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeViewWidget.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeComboBox.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>

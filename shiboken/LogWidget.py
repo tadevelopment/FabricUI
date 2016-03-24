@@ -1,10 +1,7 @@
-import optparse, os, sys
-from FabricEngine import Core, FabricUI
-from FabricEngine.FabricUI import DFG, KLASTManager
-from PySide import QtCore, QtGui, QtOpenGL
-from bindingWrapper import BindingWrapper
 
-
+from FabricEngine import Core
+from PySide import QtCore, QtGui
+ 
 class AppendingTextWidget(QtGui.QTextEdit):
   def __init__(self):
     QtGui.QTextEdit.__init__(self)

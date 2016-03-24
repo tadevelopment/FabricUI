@@ -2,8 +2,8 @@ import optparse, os, sys
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
 from PySide import QtCore, QtGui, QtOpenGL
-from sceneHubWindow import SceneHubWindow
-from canvasWindow import FabricStyle
+from SceneHubWindow import SceneHubWindow
+from CanvasWindow import FabricStyle
 
 app = QtGui.QApplication([])
 app.setOrganizationName('Fabric Software Inc')

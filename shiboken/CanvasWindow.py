@@ -2,9 +2,8 @@ import optparse, os, sys
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import DFG, KLASTManager, Style, Viewports, TimeLine
 from PySide import QtCore, QtGui, QtOpenGL
-from bindingWrapper import BindingWrapper
-from cmdWrapper import UICmdHandler
-from scriptEditorWrapper import ScriptEditor
+from CmdHandlerWidget import CmdHandlerWidget
+from ScriptEditorWidget import ScriptEditorWidget
 
 fabricDir = os.environ.get('FABRIC_DIR', None)
 
@@ -165,8 +164,8 @@ class CanvasWindow(DFG.DFGMainWindow):
     self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
 
     graph = binding.getExec()
-    self.scriptEditor = ScriptEditor(self.client, binding, self.qUndoStack)
-    self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
+    self.scriptEditor = ScriptEditorWidget(self.client, binding, self.qUndoStack)
+    self.dfguiCommandHandler = CmdHandlerWidget(self.client, self.scriptEditor)
    
     self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
                                    binding, '', graph, astManager,
@@ -553,7 +552,7 @@ class CanvasWindow(DFG.DFGMainWindow):
       folder = QtCore.QDir(filePath)
       folder.cdUp()
       self.settings.setValue("mainWindow/lastPresetFolder", str(folder.path()))
-      self.loadGraph(filePath)
+      self.__loadGraph(filePath)
 
   def __performSave(self, binding, filePath):
     graph = binding.getExec()
