@@ -353,6 +353,9 @@ void DFGTabSearchWidget::addNodeFromPath(QString path)
   QPoint localPos = geometry().topLeft();
   QPointF scenePos = m_parent->getGraphViewWidget()->graph()->itemGroup()->mapFromScene(localPos);
 
+  // init node name.
+  QString nodeName;
+
   // deal with special case
   if(path == "var")
   {
@@ -369,7 +372,14 @@ void DFGTabSearchWidget::addNodeFromPath(QString path)
     QString dataType = dialog.dataType();
     QString extension = dialog.extension();
 
-    controller->cmdAddVar(
+    if (name.isEmpty())
+    { controller->log("Warning: no variable created (empty name).");
+      return; }
+    if (dataType.isEmpty())
+    { controller->log("Warning: no variable created (empty type).");
+      return; }
+
+    nodeName = controller->cmdAddVar(
       name.toUtf8().constData(), 
       dataType.toUtf8().constData(), 
       extension.toUtf8().constData(), 
@@ -413,6 +423,14 @@ void DFGTabSearchWidget::addNodeFromPath(QString path)
     controller->cmdAddInstFromPreset(
       path.toUtf8().constData(),
       scenePos
-      );
+      ).toUtf8().constData();
+  }
+
+  // was a new node created?
+  if ( !nodeName.isEmpty() )
+  {
+    m_parent->getGraphViewWidget()->graph()->clearSelection();
+    if ( GraphView::Node *uiNode = m_parent->getGraphViewWidget()->graph()->node( nodeName ) )
+      uiNode->setSelected( true );
   }
 }

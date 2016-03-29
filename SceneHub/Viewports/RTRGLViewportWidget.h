@@ -20,11 +20,11 @@ namespace FabricUI
   {
     class RTRGLViewportWidget : public ViewportWidget {
     
-    Q_OBJECT
+      Q_OBJECT
 
       public:
         RTRGLViewportWidget(
-          FabricCore::Client client,
+          FabricCore::Client &client,
           SceneHub::SHGLRenderer *shGLRenderer,
           SceneHub::SHGLScene *shGLScene,
           int,
@@ -34,8 +34,6 @@ namespace FabricUI
           QSettings *settings = 0 );
 
         virtual ~RTRGLViewportWidget();
-
-        void setTime( float time );
         
         void toggleAlwaysRefresh();
         
@@ -109,8 +107,8 @@ namespace FabricUI
         uint32_t m_samples;
         SceneHub::SHGLRenderer *m_shGLRenderer;
         SceneHub::SHGLScene *m_shGLScene;
-
     };
+    
   }
 }
 

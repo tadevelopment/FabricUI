@@ -2,10 +2,19 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
+#include <iostream>
 #include "SHTreeModel.h"
 
 using namespace FabricUI;
 using namespace FabricUI::SceneHub;
+
+SHTreeModel::SHTreeModel(int, FabricCore::Client client, QObject *parent )
+  : QAbstractItemModel( parent )
+  , m_client( client )
+  , m_sceneHierarchyChangedBlockCount( 0 )
+{
+
+}
 
 SHTreeModel::SHTreeModel( FabricCore::Client client, FabricCore::RTVal sceneGraph, QObject *parent )
   : QAbstractItemModel( parent )
@@ -33,6 +42,7 @@ SHTreeModel::SHTreeModel( FabricCore::Client client, FabricCore::RTVal sceneGrap
   {
     printf("SHTreeModel::SHTreeModel: Error: %s\n", e.getDesc_cstr());
   }
+
 }
 
 std::vector< QModelIndex > SHTreeModel::getIndicesFromSGObject( FabricCore::RTVal sgObject ) {

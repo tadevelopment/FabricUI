@@ -23,7 +23,7 @@ namespace FabricUI
       public:
         SHGLScene(FabricCore::Client client) : m_client(client) {}
 
-        SHGLScene(FabricCore::Client client, QString sceneName);
+        SHGLScene(FabricCore::Client client, QString klFile);
 
         SHGLScene(FabricCore::Client client, FabricCore::RTVal shGLScene);
 
@@ -113,21 +113,21 @@ namespace FabricUI
         /// \param pathList The array of pathes to read
         /// \param pos The scene position, use to asset/texture placement
         /// \param forceExpand Force expension
-        void addExternalFileList(QStringList pathList, float pos[3], bool forceExpand);
+        void addExternalFileList(QStringList pathList, float *pos, bool forceExpand);
 
         /// Updates selected intance(s) with provided properties
         /// \param color The instance color
         /// \param local Local proprety if true
-        void setObjectColor(float color[4], bool local);
+        void setObjectColor(float *color, bool local);
 
         /// Adding lights
         /// \param lightType The type of light (spot, point, diectional...)
-        void addLight(uint32_t lightType, float pos[3]);
+        void addLight(uint32_t lightType, float *pos);
 
         /// Updates selected light(s) with provided properties
         /// \param color The light color
         /// \param intensisty The light intensisty
-        void setlightProperties(float color[4], float intensity);
+        void setlightProperties(float *color, float intensity);
 
         /// Exports the scene to alembic.
         /// \param filePath The path of the alembic file.

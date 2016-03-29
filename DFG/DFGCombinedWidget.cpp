@@ -178,6 +178,12 @@ QWidget* FabricUI::DFG::DFGCombinedWidget::getDfgValueEditor()
 
 void DFGCombinedWidget::keyPressEvent(QKeyEvent * event)
 {
+  // [FE-5660] no need to filter out undo/redo,
+  // instead simply pass all keyboard events to
+  // the parent class.
+  QSplitter::keyPressEvent(event);
+
+  /*
   if(event->modifiers().testFlag(Qt::ControlModifier))
   {
     // filter out undo redo
@@ -187,6 +193,7 @@ void DFGCombinedWidget::keyPressEvent(QKeyEvent * event)
     }
   }
   event->accept();
+  */
 }
 
 void DFGCombinedWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifiers, QString hotkey)

@@ -9,11 +9,50 @@ using namespace FabricCore;
 using namespace FabricUI::SceneHub;
 
 
-SHGLScene::SHGLScene(Client client, QString sceneName) 
+inline QString loadScene(FabricCore::Client &client, QString const &klFile) {
+  FILE * klFilePtr = fopen(klFile.toUtf8().constData(), "rb");
+  if(!klFilePtr) 
+  {
+    printf("KL file '%s' not found.", klFile.toUtf8().constData());
+    exit(1);//close();
+    return "";
+  }
+
+  fseek( klFilePtr, 0, SEEK_END );
+  int fileSize = ftell( klFilePtr );
+  rewind( klFilePtr );
+
+  char * klCodeBuffer = (char*) malloc(fileSize + 1);
+  klCodeBuffer[fileSize] = '\0';
+
+  fread(klCodeBuffer, fileSize, 1, klFilePtr);
+  fclose(klFilePtr);
+
+  std::string klCode = klCodeBuffer;
+  free(klCodeBuffer);
+
+  QString prefix = QFile(klFile).fileName();
+  prefix = prefix.replace('\\', '/');
+  QStringList prefixParts = prefix.split('/');
+  prefix = prefixParts[prefixParts.length()-1];
+  prefix = prefix.split('.')[0];
+
+  FabricCore::KLSourceFile sourceFile;
+  sourceFile.filenameCStr = klFile.toUtf8().constData();
+  sourceFile.sourceCodeCStr = klCode.c_str();
+
+  FabricCore::RegisterKLExtension(client, ("SceneHub_" + prefix).toUtf8().constData(), "1.0.0", "", 1, &sourceFile, true, false);
+  return prefix;
+}
+
+SHGLScene::SHGLScene(Client client, QString klFile) 
   : m_client(client) 
 {
   try 
   {
+    QString sceneName = "SceneHub";
+    if(klFile.length() > 0) sceneName = loadScene(m_client, klFile);
+
     m_shGLSceneVal = RTVal::Create(client, sceneName.toUtf8().constData(), 0, 0);
     m_shGLSceneVal.callMethod("", "initializeSceneAndRTR", 0, 0);
   }
@@ -267,7 +306,7 @@ bool SHGLScene::showTreeViewByDefault(uint32_t &level) {
 }
 
 
-void SHGLScene::addExternalFileList(QStringList pathList, float pos[3], bool forceExpand) {
+void SHGLScene::addExternalFileList(QStringList pathList, float *pos, bool forceExpand) {
   try 
   {
     RTVal klPathList = RTVal::ConstructVariableArray(getClient(), "String");
@@ -293,7 +332,7 @@ void SHGLScene::addExternalFileList(QStringList pathList, float pos[3], bool for
   }
 }
 
-void SHGLScene::setObjectColor(float color[4], bool local) {
+void SHGLScene::setObjectColor(float *color, bool local) {
   try 
   {
     RTVal colorVal = RTVal::Construct(getClient(), "Color", 0, 0);
@@ -314,7 +353,7 @@ void SHGLScene::setObjectColor(float color[4], bool local) {
   }
 }
 
-void SHGLScene::addLight(uint32_t lightType, float pos[3]) {
+void SHGLScene::addLight(uint32_t lightType, float *pos) {
   try 
   {
    RTVal posVal = RTVal::Construct(getClient(), "Vec3", 0, 0);
@@ -334,7 +373,7 @@ void SHGLScene::addLight(uint32_t lightType, float pos[3]) {
   }
 }
 
-void SHGLScene::setlightProperties(float color[4], float intensity) {
+void SHGLScene::setlightProperties(float *color, float intensity) {
   try 
   {
     RTVal colorVal = RTVal::Construct(getClient(), "Color", 0, 0);

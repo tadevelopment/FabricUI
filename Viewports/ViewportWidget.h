@@ -37,12 +37,15 @@ namespace FabricUI
     class ViewportWidget : public QGLWidget
     { 
       private:
-        void init(FabricCore::Client *client, QColor bgColor, QSettings *settings = 0);
+        void init(
+          FabricCore::Client &client, 
+          QColor bgColor, 
+          QSettings *settings = 0);
 
       public:
         /// Constructor for RTRGLViewportWidget.
         ViewportWidget(
-          FabricCore::Client *client, 
+          FabricCore::Client &client, 
           QColor bgColor, 
           QGLContext *qglContext, 
           QWidget *parent = 0, 
@@ -51,7 +54,7 @@ namespace FabricUI
 
         /// Constructor for GLViewportWidget.
       	ViewportWidget(
-          FabricCore::Client *client, 
+          FabricCore::Client &client, 
           QColor bgColor, 
           QGLFormat format, 
           QWidget *parent = 0, 
@@ -59,27 +62,27 @@ namespace FabricUI
 
       	virtual ~ViewportWidget() {};
 
-        double fps() const { return m_fps; }
-        QColor backgroundColor() const {return m_bgColor; };
+        virtual double fps() { return m_fps; }
+        QColor backgroundColor() { return m_bgColor; }
       
-        FabricCore::Client *getClient() { return m_client; }
-        FabricCore::RTVal getViewport() const { return m_viewport; }
-        virtual FabricCore::RTVal getCamera() = 0;
-        virtual void setBackgroundColor(QColor color) = 0;
+        FabricCore::Client getClient() { return m_client; }
+        FabricCore::RTVal getViewport() { return m_viewport; }
+        virtual FabricCore::RTVal getCamera() { FabricCore::RTVal val; return val; }
+        virtual void setBackgroundColor(QColor color) {}
       
         // Canvas (InlineDrawing) specific
-        virtual void clearInlineDrawing() {};
-        virtual bool isManipulationActive() const { return false; };
-        virtual void setManipulationActive(bool state) {};
-        virtual ManipulationTool *getManipTool() { return 0; };
-        virtual bool isUsingStage() { return false; };
-        virtual bool isStageVisible() { return false; };
+        virtual void clearInlineDrawing() {}
+        virtual bool isManipulationActive() { return false; }
+        virtual void setManipulationActive(bool state) {}
+        virtual ManipulationTool *getManipTool() { return 0; }
+        virtual bool isUsingStage() { return false; }
+        virtual bool isStageVisible() { return false; }
 
 
       public slots:
-        virtual void redraw() { updateGL(); };
-        virtual void onKeyPressed(QKeyEvent * event) {};
-        virtual void onContextMenu(const QPoint &point) {};
+        virtual void redraw() { updateGL(); }
+        virtual void onKeyPressed(QKeyEvent * event) {}
+        virtual void onContextMenu(QPoint &point) {}
         
 
       protected:
@@ -87,21 +90,21 @@ namespace FabricUI
         virtual void mousePressEvent(QMouseEvent *event);
         virtual void mouseMoveEvent(QMouseEvent *event);
         virtual void mouseReleaseEvent(QMouseEvent *event);
-        virtual void wheelEvent(QWheelEvent *event) ;
+        virtual void wheelEvent(QWheelEvent *event);
         void computeFPS();
        
 
         double m_fps;
         bool m_hasCommercialLicense;
         double m_fpsStack[16];
-        FabricCore::Client *m_client;
+        FabricCore::Client m_client;
      
         QColor m_bgColor;
         QTime m_fpsTimer;
         QSettings *m_settings;
         FabricCore::RTVal m_viewport;
     };
-  };
-};
+  }
+}
 
 #endif // __FABRICUI_VIEWPORT_H__

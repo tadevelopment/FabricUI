@@ -30,6 +30,7 @@ namespace FabricUI
       typedef std::vector<SHTreeItem *> RootItemsVec;
 
     public:
+      SHTreeModel( int , FabricCore::Client client, QObject *parent );
 
       SHTreeModel( FabricCore::Client client, FabricCore::RTVal sceneGraph, QObject *parent = 0 );
 

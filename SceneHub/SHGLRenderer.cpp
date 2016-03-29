@@ -57,8 +57,22 @@ void SHGLRenderer::getDrawStats(
   }
   catch(Exception e)
   {
-    printf("SHGLRenderer::getOrAddViewport: exception: %s\n", e.getDesc_cstr());
+    printf("SHGLRenderer::getDrawStats: exception: %s\n", e.getDesc_cstr());
   }
+}
+
+RTVal SHGLRenderer::getViewport(uint32_t viewportID) {
+  RTVal viewportVal;
+  try 
+  {
+    RTVal arg = RTVal::ConstructUInt32(m_client, viewportID);
+    viewportVal = m_shGLRendererVal.callMethod("BaseRTRViewport", "getViewport", 1, &arg);
+  }
+  catch(Exception e)
+  {
+    printf("SHGLRenderer::getViewport: exception: %s\n", e.getDesc_cstr());
+  }
+  return viewportVal;
 }
 
 RTVal SHGLRenderer::getOrAddViewport(uint32_t viewportID) {
@@ -157,7 +171,7 @@ bool SHGLRenderer::isPlayback(bool playback) {
   return false;
 }
 
-FabricCore::RTVal SHGLRenderer::castRay(uint32_t viewportID, float pos[2]) {
+FabricCore::RTVal SHGLRenderer::castRay(uint32_t viewportID, float *pos) {
   RTVal rayVal;
   try 
   {
