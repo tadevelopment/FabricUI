@@ -19,24 +19,15 @@ namespace FabricUI
 
       public:
 
-        static void AddExternalFileList(
-          SHGLScene *shGLScene,
-          QStringList pathList, 
-          float pos3D[3], 
-          bool forceExpand); 
+        static void AddExternalFileList(SHGLScene *shGLScene, QStringList pathList, float* pos, bool expand); 
 
-        static void AddExternalFile(
-          SHGLScene *shGLScene,
-          QString path, 
-          float pos3D[3], 
-          bool forceExpand);
+        static void AddExternalFile(SHGLScene *shGLScene, QString path, float* pos, bool expand);
 
         static void ImportAsset(SHGLScene *shGLScene);
 
         static void ExportToAlembic(SHGLScene *shGLScene);
 
-
-        SHEditorWidget(QWidget* parent, SHGLScene *shGLScene, const QPoint &point);
+        SHEditorWidget(QWidget* parent, SHGLScene *shGLScene, QPoint point);
 
         ~SHEditorWidget() {} 
 

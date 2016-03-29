@@ -52,11 +52,8 @@ settings.setValue("mainWindow/lastPresetFolder", str("."))
 qglFormat = QtOpenGL.QGLFormat()
 qglContext = Viewports.RTRGLContext( qglFormat )
 
-sceneHubWin = SceneHubWindow(settings, unguarded, noopt, scene, qglContext)
+sceneHubWin = SceneHubWindow(settings, unguarded, noopt, scene)
 sceneHubWin.show()
-
-for arg in args:
-    sceneHubWin.loadGraph(arg)
 
 if opts.script:
     with open(opts.script, "r") as f:

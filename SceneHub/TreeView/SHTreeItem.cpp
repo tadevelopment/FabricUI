@@ -8,6 +8,55 @@
 using namespace FabricUI;
 using namespace FabricUI::SceneHub;
 
+SHTreeItem::SHTreeItem(SHTreeModel *model, SHTreeItem *parentItem, FabricCore::Client client)
+  : m_model( model )
+  , m_parentItem( parentItem )
+  , m_client( client )
+  , m_needsUpdate( true )
+  , m_hadInitialUpdate( false )
+{}
+
+QString SHTreeItem::desc() {
+  return ( m_treeViewObjectDataRTVal.isValid() && !m_treeViewObjectDataRTVal.isNullObject() ) ? 
+    m_treeViewObjectDataRTVal.callMethod( "String", "getName", 0, 0 ).getStringCString() : m_name;
+}
+
+void SHTreeItem::updateNeeded( FabricCore::RTVal treeViewObjectData, bool invalidate ) {
+  m_treeViewObjectDataRTVal = treeViewObjectData;
+  if( invalidate ) {
+    // TODO: remove all child nodes, recursively
+    m_hadInitialUpdate = false;
+  }
+  m_needsUpdate = true;
+}
+
+int SHTreeItem::childItemCount() {
+  updateChildItemsIfNeeded();
+  return m_childItems.size();
+}
+
+int SHTreeItem::childRow( SHTreeItem *childItem ) {
+  int row = 0;
+  for( ChildItemVec::const_iterator it = m_childItems.begin(); it != m_childItems.end(); ++it, ++row ) 
+    if( childItem == it->m_child.get() ) return row;
+  assert( false );
+  return 0;
+}
+
+FabricCore::RTVal SHTreeItem::getSGObject()  {
+  FabricCore::RTVal sgObjectRTVal;
+  try
+  {
+    sgObjectRTVal =
+      m_treeViewObjectDataRTVal.callMethod("SGObject", "getObject", 0, 0);
+  }
+  catch ( FabricCore::Exception e )
+  {
+    printf("Error: %s\n", e.getDesc_cstr());
+  }
+  return sgObjectRTVal;
+}
+
 void SHTreeItem::updateChildItemIfNeeded( int row ) {
   if( m_childItems[row].m_updateNeeded ) {
     m_childItems[row].m_updateNeeded = false;
@@ -123,3 +172,9 @@ void SHTreeItem::loadRecursively() {
   m_model->emitSceneHierarchyChanged();
 }
 
+SHTreeItem *SHTreeItem::getOrCreateChildItem( int row ) {
+  updateChildItemsIfNeeded();
+  updateChildItemIfNeeded( row );
+  assert( row < int(m_childItems.size()) );
+  return m_childItems[row].m_child.get();
+}

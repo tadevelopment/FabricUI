@@ -5,7 +5,6 @@ from PySide import QtCore, QtGui
 class AppendingTextWidget(QtGui.QTextEdit):
   def __init__(self):
     QtGui.QTextEdit.__init__(self)
-
     self.setReadOnly(True)
 
   def append(self, text, color):
@@ -27,9 +26,7 @@ class AppendingTextWidget(QtGui.QTextEdit):
 class LogWidget(AppendingTextWidget):
   def __init__(self):
     AppendingTextWidget.__init__(self)
-
     self.setFocusPolicy(QtCore.Qt.NoFocus)
-
     self.commandColor = QtGui.QColor(QtCore.Qt.white)
     self.commentColor = QtGui.QColor(QtCore.Qt.black)
     self.exceptionColor = QtGui.QColor("#E04040")

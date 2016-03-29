@@ -5,9 +5,8 @@
 #ifndef __UI_SCENEHUB_TREE_VIEW_WIDGET_H__
 #define __UI_SCENEHUB_TREE_VIEW_WIDGET_H__
 
-#include <iostream>
 #include <QtGui/QWidget>
-#include "SHTreeComboBox.h"
+#include <QtGui/QComboBox>
 #include <QtGui/QPushButton>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
@@ -17,6 +16,25 @@ namespace FabricUI
 {
   namespace SceneHub
   {
+
+    class SHTreeComboBox : public QComboBox {
+
+      Q_OBJECT 
+      
+      public:
+        SHTreeComboBox(QWidget *parent = 0) : QComboBox(parent){}
+        
+        virtual ~SHTreeComboBox() {}
+ 
+        virtual void showPopup() {
+          emit updateList();
+          QComboBox::showPopup();
+        }
+
+      signals:
+        void updateList();
+    };
+
     class SHTreeViewWidget : public QWidget { 
 
       Q_OBJECT
@@ -82,8 +100,8 @@ namespace FabricUI
 
         SHTreeComboBox *m_comboBox;
         bool m_bUpdatingSelectionFrom3D;
-
     };
+
   }
 }
 

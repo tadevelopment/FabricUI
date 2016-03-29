@@ -5,13 +5,95 @@
 #ifndef __UI_FABRICUI_STRING_UTILS_H__
 #define __UI_FABRICUI_STRING_UTILS_H__
 
+#include <FTL/Config.h>
+#include <FabricCore.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <algorithm>
+#include <iterator>
+#include <vector>
+#include <cmath>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <streambuf>
+#include <memory>
+#include <assert.h>
+#if defined(FTL_OS_DARWIN)
+# include <CoreFoundation/CFURL.h>
+#endif
 
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <FabricUI/Util/macros.h>
 
 namespace FabricUI
 {
   namespace Util
   {  
+
+    class StringUtils {
+      
+      public:
+        StringUtils() {}
+
+        ~StringUtils() {}
+
+        static QStringList ProcessPathQStringForOsX(QStringList pathList) {
+          QStringList pathList_;
+          for(int i=0; i<pathList.size(); ++i) 
+          {
+            QString localFileQString = pathList[i];
+          #if defined(FTL_OS_DARWIN)
+              // [pzion 20150805] Work around
+              // https://bugreports.qt.io/browse/QTBUG-40449
+              if ( localFileQString.startsWith("/.file/id=") )
+              {
+                CFStringRef relCFStringRef =
+                  CFStringCreateWithCString(
+                    kCFAllocatorDefault,
+                    localFileQString.toUtf8().constData(),
+                    kCFStringEncodingUTF8
+                    );
+                CFURLRef relCFURL =
+                  CFURLCreateWithFileSystemPath(
+                    kCFAllocatorDefault,
+                    relCFStringRef,
+                    kCFURLPOSIXPathStyle,
+                    false // isDirectory
+                    );
+                CFErrorRef error = 0;
+                CFURLRef absCFURL =
+                  CFURLCreateFilePathURL(
+                    kCFAllocatorDefault,
+                    relCFURL,
+                    &error
+                    );
+                if ( !error )
+                {
+                  static const CFIndex maxAbsPathCStrBufLen = 4096;
+                  char absPathCStr[maxAbsPathCStrBufLen];
+                  if ( CFURLGetFileSystemRepresentation(
+                    absCFURL,
+                    true, // resolveAgainstBase
+                    reinterpret_cast<UInt8 *>( &absPathCStr[0] ),
+                    maxAbsPathCStrBufLen
+                    ) )
+                  {
+                    localFileQString = QString( absPathCStr );
+                  }
+                }
+                CFRelease( absCFURL );
+                CFRelease( relCFURL );
+                CFRelease( relCFStringRef );
+              }
+          #endif
+            pathList_.append(localFileQString);
+          }
+          return pathList_;
+        }
+    };
+
     /// Lower a string
     /// \param s The string to lower
     inline std::string ToLower(const std::string &s) {
@@ -96,7 +178,7 @@ namespace FabricUI
       }
       return v;
     }
-  };
-};
+  }
+}
  
 #endif // __UI_FABRICUI_STRING_UTILS_H__

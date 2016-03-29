@@ -68,7 +68,7 @@ void SHTreeViewWidget::resetTree() {
 void SHTreeViewWidget::constructTree() {
   resetTree();
 
-  m_treeModel = new FabricUI::SceneHub::SHTreeModel(m_shGLScene->getClient(), m_shGLScene->getSG(), m_shTreeView);
+  m_treeModel = new FabricUI::SceneHub::SHTreeModel(m_shGLScene/*->getClient(), m_shGLScene->getSG(),*/, m_shTreeView);
   QObject::connect(this, SIGNAL(sceneHierarchyChanged()), m_treeModel, SLOT(onSceneHierarchyChanged()));
   QObject::connect(m_treeModel, SIGNAL(sceneHierarchyChanged()), this, SLOT(onSceneHierarchyChanged()));
 

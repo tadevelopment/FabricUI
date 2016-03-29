@@ -9,7 +9,7 @@ using namespace FabricCore;
 using namespace FabricUI::SceneHub;
 
 
-SHGLRenderer::SHGLRenderer(FabricCore::Client client) : m_client(client) {
+SHGLRenderer::SHGLRenderer(Client client) : m_client(client) {
   try 
   {
     RTVal dummyGLRendererVal = RTVal::Construct( m_client, "SHGLRenderer", 0, 0 );
@@ -33,13 +33,7 @@ void SHGLRenderer::update() {
   }
 }
 
-void SHGLRenderer::getDrawStats(
-  uint32_t viewportID, 
-  uint32_t &obj, 
-  uint32_t &point, 
-  uint32_t &line, 
-  uint32_t &triangle) 
-{
+void SHGLRenderer::getDrawStats(uint32_t viewportID, uint32_t &obj, uint32_t &pt, uint32_t &li, uint32_t &tr) {
   try 
   {
     RTVal args[5] = {
@@ -51,9 +45,9 @@ void SHGLRenderer::getDrawStats(
     };
     m_shGLRendererVal.callMethod("Boolean", "getDrawStats", 5, &args[0]);
     obj = args[1].getUInt32();
-    point = args[2].getUInt32();
-    line = args[3].getUInt32();
-    triangle = args[4].getUInt32();
+    pt = args[2].getUInt32();
+    li = args[3].getUInt32();
+    tr = args[4].getUInt32();
   }
   catch(Exception e)
   {
@@ -171,13 +165,13 @@ bool SHGLRenderer::isPlayback(bool playback) {
   return false;
 }
 
-FabricCore::RTVal SHGLRenderer::castRay(uint32_t viewportID, float *pos) {
+RTVal SHGLRenderer::castRay(uint32_t viewportID, QPoint pos) {
   RTVal rayVal;
   try 
   {
     RTVal posVal = RTVal::Construct(m_client, "Vec2", 0, 0);
-    posVal.setMember("x", RTVal::ConstructFloat32(m_client, pos[0]));
-    posVal.setMember("y", RTVal::ConstructFloat32(m_client, pos[1]));
+    posVal.setMember("x", RTVal::ConstructFloat32(m_client, pos.x()));
+    posVal.setMember("y", RTVal::ConstructFloat32(m_client, pos.y()));
     RTVal args[2] = {
       RTVal::ConstructUInt32(m_client, viewportID),
       posVal
@@ -191,23 +185,25 @@ FabricCore::RTVal SHGLRenderer::castRay(uint32_t viewportID, float *pos) {
   return rayVal;
 }
 
-void SHGLRenderer::get3DScenePosFrom2DScreenPos( uint32_t viewportID, QPoint pos, float *pos3D ) {
+QVector3D SHGLRenderer::get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint pos) {
+  QVector3D pos3D;
   try 
   {
-    FabricCore::RTVal posVal = QtToKLMousePosition( pos, m_client, getOrAddViewport( viewportID ), true );
+    RTVal posVal = QtToKLMousePosition(pos, m_client, getOrAddViewport(viewportID), true);
     RTVal args[2] = {
       RTVal::ConstructUInt32(m_client, viewportID),
       posVal
     };
     RTVal pos3DVal = m_shGLRendererVal.callMethod("Vec3", "get3DScenePosFrom2DScreenPos", 2, &args[0]);
-    pos3D[0] = pos3DVal.maybeGetMember("x").getFloat32();
-    pos3D[1] = pos3DVal.maybeGetMember("y").getFloat32();
-    pos3D[2] = pos3DVal.maybeGetMember("z").getFloat32();
+    pos3D.setX(pos3DVal.maybeGetMember("x").getFloat32());
+    pos3D.setY(pos3DVal.maybeGetMember("y").getFloat32());
+    pos3D.setX(pos3DVal.maybeGetMember("z").getFloat32());
   }
   catch(Exception e)
   {
     printf("SHGLRenderer::get3DScenePosFrom2DScreenPos: exception: %s\n", e.getDesc_cstr());
   }
+  return pos3D;
 }
 
 void SHGLRenderer::render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples) {

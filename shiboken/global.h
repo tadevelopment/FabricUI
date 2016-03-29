@@ -62,12 +62,11 @@
 #include <FabricUI/Viewports/GLViewportWidget.h>
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Viewports/TimeLineWidget.h>
-#include <FabricUI/SceneHub/SHGLRenderer.h>
+#include <FabricUI/Util/StringUtils.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
+#include <FabricUI/SceneHub/SHGLRenderer.h>
 #include <FabricUI/SceneHub/Viewports/RTRGLContext.h>
-#include <FabricUI/SceneHub/Viewports/RTRGLViewportWidget.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeItem.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeView.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeViewWidget.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeComboBox.h>
+#include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>

@@ -24,7 +24,6 @@ RTRGLViewportWidget::RTRGLViewportWidget(
   , m_orthographic(false)
   , m_shGLRenderer(shGLRenderer)
   , m_shGLScene(shGLScene)
-
 {
   m_samples = qglContext->format().samples();
   // Force to track mouse movment when not clicking
@@ -68,7 +67,6 @@ FabricCore::RTVal RTRGLViewportWidget::getCamera() {
   return m_shGLRenderer->getCamera(m_viewportIndex);
 }
 
-
 void RTRGLViewportWidget::enterEvent(QEvent * event) {
   grabKeyboard();
 }
@@ -82,12 +80,14 @@ void RTRGLViewportWidget::mousePressEvent(QMouseEvent *event) {
   {
     if(!onEvent(event) && event->button() == Qt::RightButton) 
     {
+      /*
       SHEditorWidget *editor = new SHEditorWidget(
           this, 
           m_shGLScene, 
           mapToGlobal(event->pos()));
       editor->exec(mapToGlobal(event->pos()));
       emit sceneChanged();
+      */
     }
   }
 }
@@ -122,7 +122,7 @@ void RTRGLViewportWidget::dragMoveEvent(QDragMoveEvent* event) {
 }
 
 void RTRGLViewportWidget::dropEvent(QDropEvent *event) {
-
+  /*
   if(m_shGLScene)
   {
     const QMimeData *myData = qobject_cast<const QMimeData*>(event->mimeData());
@@ -136,10 +136,11 @@ void RTRGLViewportWidget::dropEvent(QDropEvent *event) {
         
     if(pathList.size() == 0) return;
      
-  float pos3D[3];
-  m_shGLRenderer->get3DScenePosFrom2DScreenPos( m_viewportIndex, event->pos(), pos3D );
+    float pos3D[3];
+    m_shGLRenderer->get3DScenePosFrom2DScreenPos( m_viewportIndex, event->pos(), pos3D );
     SHEditorWidget::AddExternalFileList(m_shGLScene, pathList, pos3D, forceExpand);
     event->acceptProposedAction();
     emit sceneChanged();
   }
+  */
 }

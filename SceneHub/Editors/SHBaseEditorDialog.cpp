@@ -22,11 +22,7 @@ SHBaseEditorDialog::SHBaseEditorDialog(QWidget*parent, SHGLScene *shGLScene)
  
 void SHBaseEditorDialog::showColorDialog() {
   QColor color = QColorDialog::getColor(Qt::yellow, this);
-  if(color == QColor::Invalid) return;
-  m_color[0] = color.redF();
-  m_color[1] = color.greenF();
-  m_color[2] = color.blueF();
-  m_color[3] = color.alphaF();
+  if(color != QColor::Invalid) m_color = color;
 }
 
 void SHBaseEditorDialog::closeEvent(QCloseEvent *e) {

@@ -5,6 +5,7 @@
 #ifndef __UI_SCENEHUB_SHBaseEditorDialog_H__
 #define __UI_SCENEHUB_SHBaseEditorDialog_H__
 
+#include <QtGui/QColor>
 #include <QtGui/QWidget>
 #include <FabricUI/SceneHub/SHGLScene.h>
  
@@ -30,7 +31,7 @@ namespace FabricUI
         
         virtual void showColorDialog();
 
-        float m_color[4];
+        QColor m_color;
         SHGLScene *m_shGLScene;
     };
   }

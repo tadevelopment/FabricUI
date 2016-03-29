@@ -45,9 +45,7 @@ inline QString loadScene(FabricCore::Client &client, QString const &klFile) {
   return prefix;
 }
 
-SHGLScene::SHGLScene(Client client, QString klFile) 
-  : m_client(client) 
-{
+SHGLScene::SHGLScene(Client client, QString klFile) : m_client(client) {
   try 
   {
     QString sceneName = "SceneHub";
@@ -62,10 +60,12 @@ SHGLScene::SHGLScene(Client client, QString klFile)
   }
 }
 
-SHGLScene::SHGLScene(FabricCore::Client client, FabricCore::RTVal shGLScene) 
-  : m_client(client)
-{
+SHGLScene::SHGLScene(FabricCore::Client client, FabricCore::RTVal shGLScene) : m_client(client) {
   m_shGLSceneVal = shGLScene;
+}
+
+bool SHGLScene::hasSG() {
+  return m_shGLSceneVal.isValid() && getSG().isValid();
 }
 
 RTVal SHGLScene::getSG() {
@@ -244,6 +244,10 @@ void SHGLScene::sceneItemSelected(RTVal obj) {
   }
 }
 
+void SHGLScene::treeItemSelected(SHTreeItem *item) {
+  treeItemSelected(item->getSGObject());
+}
+
 void SHGLScene::treeItemSelected(RTVal obj) {
   try 
   {
@@ -253,6 +257,10 @@ void SHGLScene::treeItemSelected(RTVal obj) {
   {
     printf("SHGLScene::treeItemSelected: exception: %s\n", e.getDesc_cstr());
   }
+}
+
+void SHGLScene::treeItemDeselected(SHTreeItem *item) {
+  treeItemDeselected(item->getSGObject());
 }
 
 void SHGLScene::treeItemDeselected(RTVal obj) {
@@ -305,8 +313,7 @@ bool SHGLScene::showTreeViewByDefault(uint32_t &level) {
   return show;
 }
 
-
-void SHGLScene::addExternalFileList(QStringList pathList, float *pos, bool forceExpand) {
+void SHGLScene::addExternalFileList(QStringList pathList, bool expand, float x, float y, float z) {
   try 
   {
     RTVal klPathList = RTVal::ConstructVariableArray(getClient(), "String");
@@ -315,14 +322,14 @@ void SHGLScene::addExternalFileList(QStringList pathList, float *pos, bool force
       klPathList.setArrayElement(i, RTVal::ConstructString(getClient(), pathList[i].toUtf8().constData()));
 
     RTVal posVal = RTVal::Construct(getClient(), "Vec3", 0, 0);
-    posVal.setMember("x", RTVal::ConstructFloat32(getClient(), pos[0]));
-    posVal.setMember("y", RTVal::ConstructFloat32(getClient(), pos[1]));
-    posVal.setMember("z", RTVal::ConstructFloat32(getClient(), pos[2]));
+    posVal.setMember("x", RTVal::ConstructFloat32(getClient(), x));
+    posVal.setMember("y", RTVal::ConstructFloat32(getClient(), y));
+    posVal.setMember("z", RTVal::ConstructFloat32(getClient(), z));
 
     RTVal args[3] = {
       klPathList,
       posVal,
-      RTVal::ConstructBoolean(getClient(), forceExpand)
+      RTVal::ConstructBoolean(getClient(), expand)
     };
     m_shGLSceneVal.callMethod("", "addExternalFileList", 3, &args[0]);
   }
@@ -332,14 +339,14 @@ void SHGLScene::addExternalFileList(QStringList pathList, float *pos, bool force
   }
 }
 
-void SHGLScene::setObjectColor(float *color, bool local) {
+void SHGLScene::setObjectColor(QColor color, bool local) {
   try 
   {
     RTVal colorVal = RTVal::Construct(getClient(), "Color", 0, 0);
-    colorVal.setMember("r", RTVal::ConstructFloat32(getClient(), color[0]));
-    colorVal.setMember("g", RTVal::ConstructFloat32(getClient(), color[1]));
-    colorVal.setMember("b", RTVal::ConstructFloat32(getClient(), color[2]));
-    colorVal.setMember("a", RTVal::ConstructFloat32(getClient(), color[3]));
+    colorVal.setMember("r", RTVal::ConstructFloat32(getClient(), color.redF()));
+    colorVal.setMember("g", RTVal::ConstructFloat32(getClient(), color.greenF()));
+    colorVal.setMember("b", RTVal::ConstructFloat32(getClient(), color.blueF()));
+    colorVal.setMember("a", RTVal::ConstructFloat32(getClient(), color.alpha()));
 
     RTVal args[2] = {
       colorVal,
@@ -353,13 +360,13 @@ void SHGLScene::setObjectColor(float *color, bool local) {
   }
 }
 
-void SHGLScene::addLight(uint32_t lightType, float *pos) {
+void SHGLScene::addLight(uint32_t lightType, float x, float y, float z) {
   try 
   {
-   RTVal posVal = RTVal::Construct(getClient(), "Vec3", 0, 0);
-    posVal.setMember("x", RTVal::ConstructFloat32(getClient(), pos[0]));
-    posVal.setMember("y", RTVal::ConstructFloat32(getClient(), pos[1]));
-    posVal.setMember("z", RTVal::ConstructFloat32(getClient(), pos[2]));
+    RTVal posVal = RTVal::Construct(getClient(), "Vec3", 0, 0);
+    posVal.setMember("x", RTVal::ConstructFloat32(getClient(), x));
+    posVal.setMember("y", RTVal::ConstructFloat32(getClient(), y));
+    posVal.setMember("z", RTVal::ConstructFloat32(getClient(), z));
 
     RTVal args[2] = {
       RTVal::ConstructUInt32(getClient(), lightType),
@@ -373,14 +380,14 @@ void SHGLScene::addLight(uint32_t lightType, float *pos) {
   }
 }
 
-void SHGLScene::setlightProperties(float *color, float intensity) {
+void SHGLScene::setlightProperties(QColor color, float intensity) {
   try 
   {
     RTVal colorVal = RTVal::Construct(getClient(), "Color", 0, 0);
-    colorVal.setMember("r", RTVal::ConstructFloat32(getClient(), color[0]));
-    colorVal.setMember("g", RTVal::ConstructFloat32(getClient(), color[1]));
-    colorVal.setMember("b", RTVal::ConstructFloat32(getClient(), color[2]));
-    colorVal.setMember("a", RTVal::ConstructFloat32(getClient(), color[3]));
+    colorVal.setMember("r", RTVal::ConstructFloat32(getClient(), color.redF()));
+    colorVal.setMember("g", RTVal::ConstructFloat32(getClient(), color.greenF()));
+    colorVal.setMember("b", RTVal::ConstructFloat32(getClient(), color.blueF()));
+    colorVal.setMember("a", RTVal::ConstructFloat32(getClient(), color.alpha()));
 
     RTVal args[2] = {
       colorVal,
@@ -406,6 +413,7 @@ void SHGLScene::exportToAlembic(QString filePath) {
   }
 }
 
+// ****************
 RTVal SHGLScene::getCmdManager() {
   RTVal cmdManager;
   try 
@@ -494,7 +502,6 @@ void SHGLScene::redoCmd(uint32_t redoCount) {
   }
 }
 
-
 // ****************
 std::string SHGLScene::EncodeRTValToJSON(FabricCore::Client client, FabricCore::RTVal rtVal) {
   if(rtVal.isValid())
@@ -531,7 +538,7 @@ std::string SHGLScene::EncodeRTValToJSON(FabricCore::Client client, FabricCore::
   return valueJSON.getStringCString();
 }
 
-void SHGLScene::DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal & rtVal, FTL::CStrRef json) {
+void SHGLScene::DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal &rtVal, FTL::CStrRef json) {
 
   if(json.size() > 2)
   {

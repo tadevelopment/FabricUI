@@ -5,14 +5,17 @@
 #ifndef __UI_SCENEHUB_SCENE_H__
 #define __UI_SCENEHUB_SCENE_H__
 
-#include <QtGui/QMenu>
 #include <QtGui/QDrag>
-#include <QtGui/QTreeView>
+#include <QtGui/QColor>
+#include <QtGui/QVector3D>
 #include <QtGui/QMouseEvent>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <FabricCore.h>
 #include <FTL/JSONEnc.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONValue.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeItem.h>
 
 namespace FabricUI
 {
@@ -37,6 +40,9 @@ namespace FabricUI
 
         /// Sets a reference to the scenegraph.
         void setSHGLScene(FabricCore::RTVal shGLSceneVal) { m_shGLSceneVal = shGLSceneVal; }
+
+        /// Checks a scenegraph is set.
+        bool hasSG();
 
         /// Gets a reference to the scenegraph.
         FabricCore::RTVal getSG();
@@ -65,11 +71,7 @@ namespace FabricUI
         /// \param startFrame The timeline first frame.
         /// \param endFrame The timeline last frame.
         /// \param fps The number of frames per second.
-        void getInitialTimelineState(
-          bool &enable, 
-          int &startFrame, 
-          int &endFrame, 
-          float &fps);
+        void getInitialTimelineState(bool &enable, int &startFrame, int &endFrame, float &fps);
 
         /// Activates the playback at app opening.
         bool playbackByDefault();
@@ -90,10 +92,18 @@ namespace FabricUI
         /// \param obj The selected scenegraph object
         void sceneItemSelected(FabricCore::RTVal obj); 
 
+        /// Updates the tree-view when selection from the scene.
+        /// \param obj The selected scenegraph object
+        void treeItemSelected(SHTreeItem *item); 
+
         /// Updates the 'selection' from TreeView's selection.
         /// \param obj The selected scenegraph object
         void treeItemSelected(FabricCore::RTVal obj); 
 
+        /// Updates the 'selection' from TreeView's selection.
+        /// \param obj The selected scenegraph object
+        void treeItemDeselected(SHTreeItem *item); 
+        
         /// Updates the 'selection' from TreeView's selection.
         /// \param obj The selected scenegraph object
         void treeItemDeselected(FabricCore::RTVal obj); 
@@ -112,22 +122,22 @@ namespace FabricUI
         /// Depending on their type, a Scene hierarchy or a texture might be created.
         /// \param pathList The array of pathes to read
         /// \param pos The scene position, use to asset/texture placement
-        /// \param forceExpand Force expension
-        void addExternalFileList(QStringList pathList, float *pos, bool forceExpand);
+        /// \param expand Force expension
+        void addExternalFileList(QStringList pathList, bool expand, float x=0, float y=0, float z=0);
 
         /// Updates selected intance(s) with provided properties
         /// \param color The instance color
         /// \param local Local proprety if true
-        void setObjectColor(float *color, bool local);
+        void setObjectColor(QColor color, bool local);
 
         /// Adding lights
         /// \param lightType The type of light (spot, point, diectional...)
-        void addLight(uint32_t lightType, float *pos);
+        void addLight(uint32_t lightType, float x=0, float y=0, float z=0);
 
         /// Updates selected light(s) with provided properties
         /// \param color The light color
         /// \param intensisty The light intensisty
-        void setlightProperties(float *color, float intensity);
+        void setlightProperties(QColor color, float intensity);
 
         /// Exports the scene to alembic.
         /// \param filePath The path of the alembic file.

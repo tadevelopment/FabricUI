@@ -2,101 +2,27 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
-#include <FTL/Config.h>
-#include <FabricCore.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <algorithm>
-#include <iterator>
-#include <vector>
-#include <cmath>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <streambuf>
-#include <memory>
-#include <assert.h>
-#if defined(FTL_OS_DARWIN)
-# include <CoreFoundation/CFURL.h>
-#endif
-
+#include <QtGui/QFileDialog>
+#include <QtGui/QColorDialog>
 #include "SHEditorWidget.h"
 #include "SHLightEditorDialog.h"
 #include "SHGeometryEditorDialog.h"
 #include <FabricUI/Viewports/QtToKLEvent.h>
-#include <QtGui/QFileDialog>
-#include <QtGui/QColorDialog>
+#include <FabricUI/Util/StringUtils.h>
+
 using namespace FabricCore;
+using namespace FabricUI::Util;
 using namespace FabricUI::SceneHub;
 
 
 // *************************
-inline QStringList ProcessPathQStringForOsX(QStringList pathList) {
-  QStringList pathList_;
-  for(int i=0; i<pathList.size(); ++i) 
-  {
-    QString localFileQString = pathList[i];
-#if defined(FTL_OS_DARWIN)
-      // [pzion 20150805] Work around
-      // https://bugreports.qt.io/browse/QTBUG-40449
-      if ( localFileQString.startsWith("/.file/id=") )
-      {
-        CFStringRef relCFStringRef =
-          CFStringCreateWithCString(
-            kCFAllocatorDefault,
-            localFileQString.toUtf8().constData(),
-            kCFStringEncodingUTF8
-            );
-        CFURLRef relCFURL =
-          CFURLCreateWithFileSystemPath(
-            kCFAllocatorDefault,
-            relCFStringRef,
-            kCFURLPOSIXPathStyle,
-            false // isDirectory
-            );
-        CFErrorRef error = 0;
-        CFURLRef absCFURL =
-          CFURLCreateFilePathURL(
-            kCFAllocatorDefault,
-            relCFURL,
-            &error
-            );
-        if ( !error )
-        {
-          static const CFIndex maxAbsPathCStrBufLen = 4096;
-          char absPathCStr[maxAbsPathCStrBufLen];
-          if ( CFURLGetFileSystemRepresentation(
-            absCFURL,
-            true, // resolveAgainstBase
-            reinterpret_cast<UInt8 *>( &absPathCStr[0] ),
-            maxAbsPathCStrBufLen
-            ) )
-          {
-            localFileQString = QString( absPathCStr );
-          }
-        }
-        CFRelease( absCFURL );
-        CFRelease( relCFURL );
-        CFRelease( relCFStringRef );
-      }
-#endif
-    pathList_.append(localFileQString);
-  }
-  return pathList_;
-}
-
-void SHEditorWidget::AddExternalFileList(
-  SHGLScene *shGLScene,
-  QStringList pathList, 
-  float pos3D[3], 
-  bool forceExpand) 
-{ 
-  QStringList pathList_ = ProcessPathQStringForOsX(pathList);
+void SHEditorWidget::AddExternalFileList(SHGLScene *shGLScene, QStringList pathList, float *pos, bool expand) {
+  QStringList pathList_ = StringUtils::ProcessPathQStringForOsX(pathList);
   if(pathList_.size() > 0)
   {
     try 
     {
-      shGLScene->addExternalFileList(pathList_, pos3D, forceExpand);
+      shGLScene->addExternalFileList(pathList_, expand, pos[0], pos[1], pos[2]);
     }
     catch(Exception e)
     {
@@ -105,18 +31,12 @@ void SHEditorWidget::AddExternalFileList(
   }
 }
 
-void SHEditorWidget::AddExternalFile(
-  SHGLScene *shGLScene,
-  QString path, 
-  float pos3D[3], 
-  bool forceExpand) 
-{ 
+void SHEditorWidget::AddExternalFile(SHGLScene *shGLScene, QString path, float *pos, bool expand) { 
   QStringList pathList; pathList.append(path);
-  AddExternalFileList(shGLScene, pathList, pos3D, forceExpand);
+  AddExternalFileList(shGLScene, pathList, pos, expand);
 }
 
 void SHEditorWidget::ImportAsset(SHGLScene *shGLScene) { 
- 
   QFileDialog dialog(0, "Import Assets", "", "*.abc *.fbx");
   dialog.setFileMode(QFileDialog::ExistingFiles);
   if(dialog.exec())
@@ -124,7 +44,7 @@ void SHEditorWidget::ImportAsset(SHGLScene *shGLScene) {
     QStringList pathList = dialog.selectedFiles();
     if(pathList.size() > 0)
     {
-      float pos[3]; pos[0] = pos[1] = pos[2] = 0.0f;
+      float pos[3] = { 0.0f, 0.0f, 0.0f };
       AddExternalFileList(shGLScene, pathList, pos, false);
     }
   }
@@ -143,7 +63,7 @@ void SHEditorWidget::ExportToAlembic(SHGLScene *shGLScene) {
   try 
   {
     QStringList pathList; pathList.append(filePath);
-    pathList = ProcessPathQStringForOsX(pathList);
+    pathList = StringUtils::ProcessPathQStringForOsX(pathList);
     shGLScene->exportToAlembic(pathList[0]);
   }
   catch(Exception e)
@@ -154,7 +74,7 @@ void SHEditorWidget::ExportToAlembic(SHGLScene *shGLScene) {
 
 
 // *************************
-SHEditorWidget::SHEditorWidget(QWidget* parent, SHGLScene *shGLScene, const QPoint &point) 
+SHEditorWidget::SHEditorWidget(QWidget* parent, SHGLScene *shGLScene, QPoint point) 
   : QMenu(parent)
   , m_shGLScene(shGLScene)
 {
@@ -218,7 +138,6 @@ void SHEditorWidget::constuctLightMenu() {
 }
 
 void SHEditorWidget::addLight() {
-  
   // Get the light we want to add
   uint32_t lightType = 0;
   QString lightName = dynamic_cast<QAction*>(QObject::sender())->text();
@@ -228,17 +147,13 @@ void SHEditorWidget::addLight() {
   else if(lightName == "Add Shadow Point") lightType = 3;
   else if(lightName == "Add Shadow Spot") lightType = 4;
   else if(lightName == "Add Shadow Directional") lightType = 5;
- 
-  float pos[3]; pos[0] = pos[1] = pos[2] = 0.0f;
-  m_shGLScene->addLight(lightType, pos);
+  m_shGLScene->addLight(lightType, 0.0f, 0.0f, 0.0f);
 }
 
 void SHEditorWidget::addArchive() {
-
-  bool forceExpand = false;
+  bool expand = false;
   QString senderName = dynamic_cast<QAction*>( QObject::sender())->text();
-  if(senderName == "Add Geometry") forceExpand = true;
- 
+  if(senderName == "Add Geometry") expand = true;
   QFileDialog dialog(this);
   dialog.setFileMode(QFileDialog::ExistingFiles);
   dialog.setNameFilter(tr("Files (*.abc *.fbx)"));
@@ -246,38 +161,28 @@ void SHEditorWidget::addArchive() {
   if(dialog.exec())
   {
     pathList = dialog.selectedFiles();
-    float pos[3]; pos[0] = pos[1] = pos[2] = 0.0f;
-    AddExternalFileList(m_shGLScene, pathList, pos, forceExpand);
+    float pos[3] = { 0.0f, 0.0f, 0.0f };
+    AddExternalFileList(m_shGLScene, pathList, pos, expand);
   }
 }
 
 void SHEditorWidget::addTexture() {
-
-  bool forceExpand = false;
+  bool expand = false;
   //std::string name = dynamic_cast<QAction*>( QObject::sender())->text().toStdString();
-  
   QFileDialog dialog(this);
   dialog.setFileMode(QFileDialog::ExistingFiles);
   QStringList pathList;
   if(dialog.exec())
   {
     pathList = dialog.selectedFiles();
-    float pos[3]; pos[0] = pos[1] = pos[2] = 0.0f;
-    AddExternalFileList(m_shGLScene, pathList, pos, forceExpand);
+    float pos[3] = { 0.0f, 0.0f, 0.0f };
+    AddExternalFileList(m_shGLScene, pathList, pos, expand);
   }
 }
 
 void SHEditorWidget::editObjectColor( bool local ) {
   QColor color = QColorDialog::getColor(Qt::yellow, this);
-  if(color != QColor::Invalid)
-  {
-    float color_[4]; 
-    color_[0] = color.redF();
-    color_[1] = color.greenF();
-    color_[2] = color.blueF();
-    color_[3] = color.alphaF();
-    m_shGLScene->setObjectColor(color_, local);
-  }
+  if(color != QColor::Invalid) m_shGLScene->setObjectColor(color, local);
 }
 
 void SHEditorWidget::editLightProperties() {

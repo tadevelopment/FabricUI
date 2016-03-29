@@ -52,6 +52,8 @@ class CanvasWindow(DFG.DFGMainWindow):
   autosaveIntervalSecs = 30
 
   def __init__(self, settings, unguarded):
+    self.settings = settings
+
     super(CanvasWindow, self).__init__()
 
     self.autosaveTimer = QtCore.QTimer()
@@ -59,7 +61,7 @@ class CanvasWindow(DFG.DFGMainWindow):
     self.autosaveTimer.start(CanvasWindow.autosaveIntervalSecs * 1000)
     self.dockFeatures = QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable | QtGui.QDockWidget.DockWidgetClosable
 
-    self.__init(settings)
+    self.__init()
     self._initWindow()
     self._initKL(unguarded)
     self._initDFG()
@@ -70,16 +72,15 @@ class CanvasWindow(DFG.DFGMainWindow):
     self._initTimeLine()
     self._initDocksAndMenus()
 
-    self.restoreGeometry(settings.value("mainWindow/geometry"))
-    self.restoreState(settings.value("mainWindow/state"))
+    self.restoreGeometry(self.settings.value("mainWindow/geometry"))
+    self.restoreState(self.settings.value("mainWindow/state"))
     self.onFrameChanged(self.timeLine.getTime())
     self.onGraphSet(self.dfgWidget.getUIGraph())
     self.valueEditor.initConnections()
     self.installEventFilter(MainWindowEventFilter(self))
 
-  def __init(self, settings) :
-    self.settings = settings
-    DFG.DFGWidget.setSettings(settings)
+  def __init(self):
+    DFG.DFGWidget.setSettings(self.settings)
     self.config = DFG.DFGConfig()
 
     self.autosaveFilename = os.path.join(fabricDir, 'autosave')
@@ -179,8 +180,7 @@ class CanvasWindow(DFG.DFGMainWindow):
 
   def _initTreeView(self):
     controller = self.dfgWidget.getDFGController()
-    self.treeWidget = DFG.PresetTreeWidget(controller, self.config,
-        True, False, False, False, False, True)
+    self.treeWidget = DFG.PresetTreeWidget(controller, self.config, True, False, False, False, False, True)
     self.dfgWidget.newPresetSaved.connect(self.treeWidget.refresh)
     controller.varsChanged.connect(self.treeWidget.refresh)
     controller.dirty.connect(self.onDirty)
@@ -193,12 +193,8 @@ class CanvasWindow(DFG.DFGMainWindow):
     glFormat.setSampleBuffers(True)
     glFormat.setSamples(4)
 
-    self.viewport = Viewports.GLViewportWidget(
-      self.client,
-      self.config.defaultWindowColor, 
-      glFormat, self, self.settings)
+    self.viewport = Viewports.GLViewportWidget(self.client, self.config.defaultWindowColor, glFormat, self, self.settings)
     self.setCentralWidget(self.viewport)
-
     self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
   def _initValueEditor(self):
@@ -334,7 +330,7 @@ class CanvasWindow(DFG.DFGMainWindow):
     self.dfgWidget.getDFGController().execute()
     self._contentChanged()
 
-  def __loadGraph(self, filePath):
+  def loadGraph(self, filePath):
     self.timeLine.pause()
     self.timeLinePortPath = None
 
@@ -552,7 +548,7 @@ class CanvasWindow(DFG.DFGMainWindow):
       folder = QtCore.QDir(filePath)
       folder.cdUp()
       self.settings.setValue("mainWindow/lastPresetFolder", str(folder.path()))
-      self.__loadGraph(filePath)
+      self.loadGraph(filePath)
 
   def __performSave(self, binding, filePath):
     graph = binding.getExec()

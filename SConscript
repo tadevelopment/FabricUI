@@ -242,6 +242,7 @@ if uiLibPrefix == 'ui':
         shibokenDir.File('fabricui_core.xml'),
         shibokenDir.File('fabricui_dfg.xml'),
         shibokenDir.File('fabricui_viewports.xml'),
+        shibokenDir.File('fabricui_util.xml'),
         shibokenDir.File('fabricui_scenehub.xml'),
         ],
       [
@@ -274,6 +275,7 @@ if uiLibPrefix == 'ui':
     pysideGens.append(pysideGen)
 
     pysideEnv.Append(CPPPATH = [
+        pysideEnv.Dir('Util').srcnode(),
         pysideEnv.Dir('DFG').srcnode(),
         pysideEnv.Dir('DFG/DFGUICmd').srcnode(),
         pysideEnv.Dir('GraphView').srcnode(),

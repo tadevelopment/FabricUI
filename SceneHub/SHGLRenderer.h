@@ -5,16 +5,18 @@
 #ifndef __UI_SCENEHUB_GLRENDERER_H__
 #define __UI_SCENEHUB_GLRENDERER_H__
 
-#include <QtGui/QMenu>
-#include <QtGui/QDrag>
-#include <QtGui/QTreeView>
-#include <QtGui/QMouseEvent>
 #include <FabricCore.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtGui/QDrag>
+#include <QtGui/QVector3D>
+#include <QtGui/QMouseEvent>
  
 namespace FabricUI
 {
   namespace SceneHub
   {
+
     class SHGLRenderer {
 
       public:
@@ -37,12 +39,7 @@ namespace FabricUI
         /// \param point the total number of renderer points
         /// \param line the total number of renderer lines
         /// \param triangle the total number of renderer triangless
-        void getDrawStats(
-          uint32_t viewportID, 
-          uint32_t &obj, 
-          uint32_t &point, 
-          uint32_t &line, 
-          uint32_t &triangle);
+        void getDrawStats(uint32_t viewportID, uint32_t &obj, uint32_t &pt, uint32_t &li, uint32_t &tr);
         
         /// Fast getter to the viewport at this viewportID.
         /// \param viewportID The viewport ID.
@@ -71,14 +68,14 @@ namespace FabricUI
         /// Casts a ray from a Viewport and a position in camera space.
         /// \param viewportID The ID of the viewport.
         /// \param pos The mouse's position in the viewport
-        FabricCore::RTVal castRay(uint32_t viewportID, float *pos);
+        FabricCore::RTVal castRay(uint32_t viewportID, QPoint pos);
 
         /// This helper method will raycast in the scene. 
         // If no result is found, it will intersect with the Y = 0 plane. 
         // If this is outside the near/far camera range, it will return the origin.
         // \param viewportID The ID of the viewport.
         // \param pos The mouse's position in the viewport
-        void get3DScenePosFrom2DScreenPos( uint32_t viewportID, QPoint pos, float *pos3D );
+        QVector3D get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint pos);
 
         /// Activates the playback.
         /// \param playback It true, playback.
@@ -92,11 +89,7 @@ namespace FabricUI
         /// \param width the viewport width.
         /// \param height the viewport height.
         /// \param samples Anti-aliasing number of samples.
-        void render(
-          uint32_t viewportID,
-          uint32_t width,
-          uint32_t height,
-          uint32_t samples);
+        void render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples);
         
         /// Renders within this viewport.
         /// \param viewportID The viewport ID.
@@ -104,16 +97,11 @@ namespace FabricUI
         /// \param height the viewport height.
         /// \param samples Anti-aliasing number of samples.
         /// \param drawPhase Drawing phases (pre-post draw).
-        void render(
-          uint32_t viewportID,
-          uint32_t width,
-          uint32_t height,
-          uint32_t samples,
-          uint32_t drawPhase);
+        void render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples, uint32_t drawPhase);
         
         /// Propagates the events.
         /// \param event The event.
-        bool onEvent( uint32_t viewportID, QEvent *event, bool &redrawAllViewports, bool dragging );
+        bool onEvent(uint32_t viewportID, QEvent *event, bool &redrawAllViewports, bool dragging);
         
         /// Returns a reference to the ToolDispatcher.
         FabricCore::RTVal getToolDispatcher();
@@ -142,6 +130,7 @@ namespace FabricUI
         /// \internal
         FabricCore::RTVal m_shGLRendererVal;
     };
+
   }
 }
 
