@@ -16,7 +16,6 @@ class SHViewportWidgetsManager():
 
   def initMenu(self, menuBar):
     menus = menuBar.findChildren(QtGui.QMenu)
-
     for menu in menus:
       if menu.title() == "&Window":
         viewportMenu = menu.addMenu("Add Viewport")
@@ -152,7 +151,7 @@ class SHViewportWidgetsManager():
 
   def _onSetSamples(self):
     for i in range(0, 4):
-       if self.sampleActions[i].isChecked() and self.samples != int(math.pow(2, i)):
+      if self.sampleActions[i].isChecked() and self.samples != int(math.pow(2, i)):
  
         self.samples = int(math.pow(2, i))
         self.__updateSampleChecks()
@@ -166,3 +165,7 @@ class SHViewportWidgetsManager():
           
           newViewport, _ = self.createViewport(index, orthographic, True, viewport)
           if(index == 0): self.parentApp.viewport = newViewport
+
+  def onSceneUpdated(self, scene):
+    for j in range(0, len(self.viewports)):
+      self.viewports[i].onSceneUpdated(scene)

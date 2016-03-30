@@ -1,11 +1,12 @@
-import optparse, os, sys, math, copy
+import os, sys, math
 from FabricEngine import Core, FabricUI
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine.FabricUI import *
 from CanvasWindow import CanvasWindow
-from SHViewportWidget import SHViewportWidget
 from SHTreeViewWidget import SHTreeViewWidget
 from SHViewportWidgetsManager import SHViewportWidgetsManager
+from SHAssetsMenu import SHAssetsMenu
+from SHLightsMenu import SHLightsMenu
 
 class SceneHubWindow(CanvasWindow):
 
@@ -22,17 +23,18 @@ class SceneHubWindow(CanvasWindow):
     # Create the renderer
     self.viewportsManager = SHViewportWidgetsManager(self)
 
-  def _initGL(self):
-    self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(0, False, False, None)
-    self.setCentralWidget(intermediateOwnerWidget)
-    self.viewport.makeCurrent()
-
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
     self.shTreeViewWidget = SHTreeViewWidget(self, self.klFile)
     # Update the renderer in case it has been overriden by the main scene.
     self.viewportsManager.update()
-  
+    self.shTreeViewWidget.sceneUpdated.connect(self.onSceneUpdated)
+
+  def _initGL(self):
+    self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(0, False, False, None)
+    self.setCentralWidget(intermediateOwnerWidget)
+    self.viewport.makeCurrent()  
+
   def _initDocksAndMenus(self):
     super(SceneHubWindow, self)._initDocksAndMenus()
     shTreeDock = QtGui.QDockWidget("Sh Tree-View", self)
@@ -49,8 +51,19 @@ class SceneHubWindow(CanvasWindow):
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
         menu.addAction(toggleAction)
         menu.addSeparator();
+    
     self.viewportsManager.initMenu(menuBar)
-    self.shTreeViewWidget.initMenu(menuBar)
+
+    self.assetMenu = SHAssetsMenu(self.shTreeViewWidget.getScene())
+    self.lightsMenu = SHLightsMenu(self.shTreeViewWidget.getScene())
+    menus = menuBar.findChildren(QtGui.QMenu)    
+    for menu in menus:      
+      if menu.title() == "&File":
+        actions = menu.findChildren(QtGui.QAction)
+        for action in actions:
+          if action.text() == "Quit":
+            menu.insertMenu(action, self.assetMenu)
+            menu.insertMenu(action, self.lightsMenu)
 
   def _contentChanged(self) :
     self.valueEditor.onOutputsChanged()
@@ -64,3 +77,8 @@ class SceneHubWindow(CanvasWindow):
     super(SceneHubWindow, self).onFrameChanged(frame)
     self.shTreeViewWidget.getScene().setFrame(frame)
     self.viewportsManager.onRefreshAllViewports()
+
+  def onSceneUpdated(self, scene):
+    self.viewportsManager.onSceneUpdated(scene)
+    self.assetMenu.onSceneUpdated(scene)
+    self.lightsMenu.onSceneUpdated(scene)

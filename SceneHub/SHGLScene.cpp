@@ -8,8 +8,7 @@
 using namespace FabricCore;
 using namespace FabricUI::SceneHub;
 
-
-inline QString loadScene(FabricCore::Client &client, QString const &klFile) {
+inline QString loadScene(Client &client, QString const &klFile) {
   FILE * klFilePtr = fopen(klFile.toUtf8().constData(), "rb");
   if(!klFilePtr) 
   {
@@ -37,11 +36,11 @@ inline QString loadScene(FabricCore::Client &client, QString const &klFile) {
   prefix = prefixParts[prefixParts.length()-1];
   prefix = prefix.split('.')[0];
 
-  FabricCore::KLSourceFile sourceFile;
+  KLSourceFile sourceFile;
   sourceFile.filenameCStr = klFile.toUtf8().constData();
   sourceFile.sourceCodeCStr = klCode.c_str();
 
-  FabricCore::RegisterKLExtension(client, ("SceneHub_" + prefix).toUtf8().constData(), "1.0.0", "", 1, &sourceFile, true, false);
+  RegisterKLExtension(client, ("SceneHub_" + prefix).toUtf8().constData(), "1.0.0", "", 1, &sourceFile, true, false);
   return prefix;
 }
 
@@ -60,8 +59,24 @@ SHGLScene::SHGLScene(Client client, QString klFile) : m_client(client) {
   }
 }
 
-SHGLScene::SHGLScene(FabricCore::Client client, FabricCore::RTVal shGLScene) : m_client(client) {
-  m_shGLSceneVal = shGLScene;
+FabricCore::Client SHGLScene::getClient() { 
+  return m_client; 
+}
+
+FabricCore::RTVal SHGLScene::getSHGLScene() { 
+  return m_shGLSceneVal; 
+}
+
+void SHGLScene::setSHGLScene(FabricCore::RTVal shGLSceneVal) { 
+  m_shGLSceneVal = shGLSceneVal; 
+}
+
+void SHGLScene::setSHGLScene(SHGLScene *shGLSceneIn) { 
+  m_shGLSceneVal = shGLSceneIn->getSHGLScene(); 
+}
+
+void SHGLScene::setSHGLScene(DFGBinding &binding, QString sceneName) { 
+  setSHGLScene(binding.getExec().getVarValue(sceneName.toUtf8().constData())); 
 }
 
 bool SHGLScene::hasSG() {
@@ -274,6 +289,75 @@ void SHGLScene::treeItemDeselected(RTVal obj) {
   }
 }
 
+QString SHGLScene::getTreeItemPath(SHTreeItem *item) {
+  QString url = "none";
+  try 
+  {
+    RTVal sgObject = item->getSGObject();
+    RTVal sgParent = sgObject.callMethod("SGObject", "getOwnerInstance", 0, 0);
+
+    if(sgParent.callMethod("Boolean", "isValid", 0, 0).getBoolean())
+    {
+      RTVal parentNameVal = sgParent.callMethod("String", "getName", 0, 0);
+      RTVal typeVal = sgObject.callMethod("String", "type", 0, 0);
+      QString parentName = QString(parentNameVal.getStringCString());
+      QString type = QString(typeVal.getStringCString());
+      
+      // Assets
+      if(parentName == "assets" || parentName == "images")
+      {
+        RTVal param = RTVal::ConstructString(m_client, "path");
+        RTVal sgProperty = sgObject.callMethod("SGObjectProperty", "getLocalProperty", 1, &param);
+        if(sgProperty.callMethod("Boolean", "isValid", 0, 0).getBoolean())
+        {
+          sgProperty.callMethod("", "getValue", 1, &param);
+          // Create data
+          url = QString(QString("file://") + QString(param.getStringCString()));
+        }
+      }
+    }
+  }
+  catch(Exception e)
+  {
+    printf("SHGLScene::getTreeItemPath: exception: %s\n", e.getDesc_cstr());
+  }
+
+  return url;
+}
+
+QStringList SHGLScene::getSceneNamesFromBinding(DFGBinding &binding) {
+
+  FabricCore::DFGStringResult json =  binding.getVars();
+  FTL::JSONStrWithLoc jsonStrWithLoc( json.getCString() );
+  FTL::OwnedPtr<FTL::JSONObject> jsonObject(FTL::JSONValue::Decode( jsonStrWithLoc )->cast<FTL::JSONObject>() );
+
+  QList<FTL::JSONObject const *> objects;
+  objects.append(jsonObject.get());
+  QStringList sceneNameList;
+
+  for(int i=0; i<objects.size(); i++)
+  {
+    FTL::JSONObject const * varsObject = objects[i]->maybeGetObject( FTL_STR("vars") );
+    if(varsObject)
+    {
+      for(FTL::JSONObject::const_iterator it = varsObject->begin(); it != varsObject->end(); it++)
+      {
+        QString sceneName(it->first.c_str());
+        FTL::JSONObject const *value = it->second->cast<FTL::JSONObject>();
+        for(FTL::JSONObject::const_iterator jt = value->begin(); jt != value->end(); jt++) 
+        {
+          if(QString(jt->second->getStringValue().c_str()) == "SHGLScene")
+          {
+            if(!sceneNameList.contains(sceneName))
+              sceneNameList.append(sceneName);
+          }
+        }
+      }
+    }
+  }
+  return sceneNameList;
+}
+
 bool SHGLScene::selectionChangedFromManips() {
   try 
   {
@@ -413,6 +497,7 @@ void SHGLScene::exportToAlembic(QString filePath) {
   }
 }
 
+
 // ****************
 RTVal SHGLScene::getCmdManager() {
   RTVal cmdManager;
@@ -502,20 +587,21 @@ void SHGLScene::redoCmd(uint32_t redoCount) {
   }
 }
 
+
 // ****************
-std::string SHGLScene::EncodeRTValToJSON(FabricCore::Client client, FabricCore::RTVal rtVal) {
+std::string SHGLScene::EncodeRTValToJSON(Client client, RTVal rtVal) {
   if(rtVal.isValid())
   {
     if(rtVal.isObject())
     {
       if(!rtVal.isNullObject())
       {
-        FabricCore::RTVal cast = FabricCore::RTVal::Construct(client, "RTValToJSONEncoder", 1, &rtVal);
+        RTVal cast = RTVal::Construct(client, "RTValToJSONEncoder", 1, &rtVal);
         if(cast.isValid())
         {
           if(!cast.isNullObject())
           {
-            FabricCore::RTVal result = cast.callMethod("String", "convertToString", 0, 0);
+            RTVal result = cast.callMethod("String", "convertToString", 0, 0);
             if(result.isValid())
             {
               FTL::CStrRef ref = result.getStringCString();
@@ -534,11 +620,11 @@ std::string SHGLScene::EncodeRTValToJSON(FabricCore::Client client, FabricCore::
       }
     }
   }
-  FabricCore::RTVal valueJSON = rtVal.getJSON();
+  RTVal valueJSON = rtVal.getJSON();
   return valueJSON.getStringCString();
 }
 
-void SHGLScene::DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal &rtVal, FTL::CStrRef json) {
+void SHGLScene::DecodeRTValFromJSON(Client client, RTVal &rtVal, FTL::CStrRef json) {
 
   if(json.size() > 2)
   {
@@ -549,7 +635,7 @@ void SHGLScene::DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal
         if(rtVal.isObject())
         {
           if(rtVal.isNullObject())
-            rtVal = FabricCore::RTVal::Create( client, rtVal.getTypeName().getStringCString(), 0, NULL );
+            rtVal = RTVal::Create( client, rtVal.getTypeName().getStringCString(), 0, NULL );
           
           std::string decodedString;
           {
@@ -562,18 +648,18 @@ void SHGLScene::DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal
 
           if(decodedString.length() > 0)
           {
-            FabricCore::RTVal cast = FabricCore::RTVal::Construct(client, "RTValFromJSONDecoder", 1, &rtVal);
+            RTVal cast = RTVal::Construct(client, "RTValFromJSONDecoder", 1, &rtVal);
             if(cast.isInterface())
             {
               if(!cast.isNullObject())
               {
-                FabricCore::RTVal data =
-                  FabricCore::RTVal::ConstructString(
+                RTVal data =
+                  RTVal::ConstructString(
                     client,
                     decodedString.data(),
                     decodedString.size()
                     );
-                FabricCore::RTVal result = cast.callMethod("Boolean", "convertFromString", 1, &data);
+                RTVal result = cast.callMethod("Boolean", "convertFromString", 1, &data);
                 if(result.isValid())
                 {
                   if(result.getBoolean())
@@ -587,7 +673,7 @@ void SHGLScene::DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal
         }
       }
     }
-    catch(FabricCore::Exception e)
+    catch(Exception e)
     {
       printf("decodeRTValFromJSON: Hit exception: %s\n", e.getDesc_cstr());
     }

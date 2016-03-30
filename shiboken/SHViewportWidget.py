@@ -92,9 +92,9 @@ class SHViewportWidget(Viewports.ViewportWidget):
   def mousePressEvent(self, event):
     if self.shGLScene.hasSG():
       if not self.__onEvent(event) and event.button() == QtCore.Qt.RightButton:
-        menu = SHContextualMenu(self.shGLScene, "")
+        menu = SHContextualMenu(self.shGLScene)
         menu.exec_(self.mapToGlobal(event.pos()))
-        self.sceneChanged.emit();
+        self.sceneChanged.emit()
     
   def __onEvent(self, event):
     redrawAllViewports = False
@@ -111,29 +111,32 @@ class SHViewportWidget(Viewports.ViewportWidget):
   def dragMoveEvent(self, event): 
     if(event.mimeData().hasUrls() and (event.possibleActions() & QtCore.Qt.CopyAction)):
       # Convert to a mouseMove event
-      mouseEvent = QtGui.QMouseEvent(QtGui.QEvent.MouseMove, event.pos(), QtCore.Qt.LeftButton, QtCore.Qt.LeftButton, QtCore.Qt.NoModifier)
+      mouseEvent = QtGui.QMouseEvent(QtCore.QEvent.MouseMove, event.pos(), QtCore.Qt.LeftButton, QtCore.Qt.LeftButton, QtCore.Qt.NoModifier)
       redrawAllViewports = False
       if self.shGLRenderer.onEvent(self.viewportIndex, mouseEvent, redrawAllViewports, True):
         self.manipsAcceptedEvent.emit(redrawAllViewports)
 
   def dropEvent(self, event):
-    if(self.shGLScene)
-      const QMimeData *myData = qobject_cast<const QMimeData*>(event.mimeData());
-      if(!myData) return;
-      if(!event.mimeData().hasUrls()) return;
+    if self.shGLScene.hasSG(): 
+      myData = event.mimeData()
+      if myData is None: return
+      if event.mimeData().hasUrls() == False: return
 
-      bool forceExpand = event.keyboardModifiers() & QtCore.Qt.ControlModifier;
-      QStringList pathList;
-      foreach(QUrl url, event.mimeData().urls())
-        pathList.append(url.toLocalFile());
-          
-      if(pathList.size() == 0) return;
+      pathList = []
+      for url in event.mimeData().urls():
+        pathList.append(url.toLocalFile())
+      if len(pathList) == 0: return
        
-      float pos3D[3];
-      self.shGLRenderer.get3DScenePosFrom2DScreenPos( self.viewportIndex, event.pos(), pos3D );
-      SHEditorWidget::AddExternalFileList(self.shGLScene, pathList, pos3D, forceExpand);
-      event.acceptProposedAction();
-      self.sceneChanged.emit();
+      pos = self.shGLRenderer.get3DScenePosFrom2DScreenPos(self.viewportIndex, event.pos())
+      pathList = Util.StringUtils.ProcessPathQStringForOsX(pathList)
+      self.shGLScene.addExternalFileList(
+        pathList, 
+        event.keyboardModifiers() & QtCore.Qt.ControlModifier, 
+        pos[0],
+        pos[1],
+        pos[2])
+      event.acceptProposedAction()
+      self.sceneChanged.emit()
 
   def onSceneUpdated(self, scene):
     self.shGLScene = scene

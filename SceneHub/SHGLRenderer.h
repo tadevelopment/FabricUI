@@ -6,6 +6,7 @@
 #define __UI_SCENEHUB_GLRENDERER_H__
 
 #include <FabricCore.h>
+#include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtGui/QDrag>
@@ -75,7 +76,7 @@ namespace FabricUI
         // If this is outside the near/far camera range, it will return the origin.
         // \param viewportID The ID of the viewport.
         // \param pos The mouse's position in the viewport
-        QVector3D get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint pos);
+        QList<float> get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint pos);
 
         /// Activates the playback.
         /// \param playback It true, playback.

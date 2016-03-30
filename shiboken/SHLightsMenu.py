@@ -6,8 +6,8 @@ from SHBaseMenu import SHBaseMenu
 
 class SHLightsMenu(SHBaseMenu):
 
-  def __init__(self, scene, title, parent = None):
-    super(SHLightsMenu, self).__init__(scene, title, parent)
+  def __init__(self, scene, title = None, parent = None):
+    super(SHLightsMenu, self).__init__(scene, "Lights", parent)
  
   def _constructMenu(self):
     addSpotLightAction = self.addAction("Add Spot")

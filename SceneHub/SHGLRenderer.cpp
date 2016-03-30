@@ -185,8 +185,8 @@ RTVal SHGLRenderer::castRay(uint32_t viewportID, QPoint pos) {
   return rayVal;
 }
 
-QVector3D SHGLRenderer::get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint pos) {
-  QVector3D pos3D;
+QList<float> SHGLRenderer::get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint pos) {
+  QList<float> list;
   try 
   {
     RTVal posVal = QtToKLMousePosition(pos, m_client, getOrAddViewport(viewportID), true);
@@ -195,15 +195,15 @@ QVector3D SHGLRenderer::get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint
       posVal
     };
     RTVal pos3DVal = m_shGLRendererVal.callMethod("Vec3", "get3DScenePosFrom2DScreenPos", 2, &args[0]);
-    pos3D.setX(pos3DVal.maybeGetMember("x").getFloat32());
-    pos3D.setY(pos3DVal.maybeGetMember("y").getFloat32());
-    pos3D.setX(pos3DVal.maybeGetMember("z").getFloat32());
+    list.append(pos3DVal.maybeGetMember("x").getFloat32());
+    list.append(pos3DVal.maybeGetMember("y").getFloat32());
+    list.append(pos3DVal.maybeGetMember("z").getFloat32());
   }
   catch(Exception e)
   {
     printf("SHGLRenderer::get3DScenePosFrom2DScreenPos: exception: %s\n", e.getDesc_cstr());
   }
-  return pos3D;
+  return list;
 }
 
 void SHGLRenderer::render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples) {

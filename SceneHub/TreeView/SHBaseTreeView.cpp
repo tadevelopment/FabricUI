@@ -55,13 +55,13 @@ void SHBaseTreeView::setSelectedObjects( FabricCore::RTVal selectedSGObjectArray
     std::vector< QModelIndex > selectedIndices;
 
     unsigned int count = selectedSGObjectArray.getArraySize();
-    for( unsigned int i = 0; i < count; ++i ) {
+    for(unsigned int i = 0; i < count; ++i) {
       FabricCore::RTVal sgObject = selectedSGObjectArray.getArrayElement( i );
       std::vector< QModelIndex > indices = treeModel->getIndicesFromSGObject( sgObject );
       selectedIndices.insert( selectedIndices.end(), indices.begin(), indices.end() );
     }
 
-    if( selectedIndices.empty() ) clearSelection();
+    if(selectedIndices.empty()) clearSelection();
     else 
     {
       QItemSelectionModel* selection = selectionModel();

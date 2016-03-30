@@ -2,8 +2,6 @@ from PySide import QtCore, QtGui
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
 from SHTreeView import SHTreeView
-from SHAssetsMenu import SHAssetsMenu
-from SHLightsMenu import SHLightsMenu
 
 class SHTreeComboBox(QtGui.QComboBox):
   updateList = QtCore.Signal()
@@ -24,12 +22,11 @@ class SHTreeViewWidget(QtGui.QWidget):
     self.parentApp = parent
 
     super(SHTreeViewWidget, self).__init__()
-    self.shGLScene = SceneHub.SHGLScene(self.parentApp.client, klFile)
-    #self.controller = controller
+    self.shMainGLScene = SceneHub.SHGLScene(self.parentApp.client, klFile)
+    self.shGLScene = SceneHub.SHGLScene(self.parentApp.client)
 
     self.treeModel = None
     self.bUpdatingSelectionFrom3D = False
-    #self.shGLScene = SceneHub.SHGLScene(self.client)
 
     self.comboBox = SHTreeComboBox()
     self.shTreeView = SHTreeView(self.parentApp.client, self.shGLScene)
@@ -46,19 +43,7 @@ class SHTreeViewWidget(QtGui.QWidget):
     self.comboBox.currentIndexChanged.connect(self.onUpdateScene)
  
     self.onUpdateScene()
-
-  def initMenu(self, menuBar):
-    self.assetMenu = SHAssetsMenu(self.shGLScene, "Assets")
-    self.lightsMenu = SHLightsMenu(self.shGLScene, "lights")
-    menus = menuBar.findChildren(QtGui.QMenu)    
-    for menu in menus:      
-      if menu.title() == "&File":
-        actions = menu.findChildren(QtGui.QAction)
-        for action in actions:
-          if action.text() == "Quit":
-            menu.insertMenu(action, self.assetMenu)
-            menu.insertMenu(action, self.lightsMenu)
-
+ 
   def getScene(self):
     return self.shGLScene
 
@@ -76,65 +61,36 @@ class SHTreeViewWidget(QtGui.QWidget):
     self.shTreeView.setExpanded(sceneRootIndex, True)
 
   def onUpdateScene(self):
-    if not self.shGLScene.hasSG(): return
-
     sceneName = self.comboBox.currentText()
     if str(sceneName) == "Main Scene":
-      #self.shGLScene.setSHGLScene(self.shGLScene.getSHGLScene())
+      self.shGLScene.setSHGLScene(self.shMainGLScene)
       self.__constructTree()
-      #self.sceneUpdated.emit(self.shGLScene)
+      self.sceneUpdated.emit(self.shGLScene)
     
-    #elif self.controller.getBinding().getExec().hasVar(str(sceneName)):
-      #self.shGLScene.setSHGLScene(self.controller.getBinding().getExec().getVarValue(str(sceneName)))
-      #self.__constructTree()
-      #self.sceneUpdated.emit(self.shGLScene)
+    elif self.parentApp.dfgWidget.getDFGController().getBinding().getExec().hasVar(str(sceneName)):
+      self.shGLScene.setSHGLScene(self.parentApp.dfgWidget.getDFGController().getBinding(), sceneName)
+      self.__constructTree()
+      self.sceneUpdated.emit(self.shGLScene)
     
     else:
       self.comboBox.clear()
       self.__resetTree()
     
   def onUpdateSceneList(self):
-    pass
-    '''
-      self.comboBox.clear()
-
-      FabricCore::DFGStringResult json =  self.controller.getBinding().getVars()
-      FTL::JSONStrWithLoc jsonStrWithLoc( json.getCString() )
-      FTL::OwnedPtr<FTL::JSONObject> jsonObject(FTL::JSONValue::Decode( jsonStrWithLoc ).cast<FTL::JSONObject>() )
-
-      std::vector<FTL::JSONObject const *> objects
-      objects.push_back(jsonObject.get())
-      QStringList sceneNameList
-
-      for(size_t i=0 i<objects.size() i++)
-      {
-        FTL::JSONObject const * varsObject = objects[i].maybeGetObject( FTL_STR("vars") )
-        if(varsObject)
-        {
-          for(FTL::JSONObject::const_iterator it = varsObject.begin() it != varsObject.end() it++)
-          {
-            QString sceneName(it.first.c_str())
-            FTL::JSONObject const *value = it.second.cast<FTL::JSONObject>()
-            for(FTL::JSONObject::const_iterator jt = value.begin() jt != value.end() jt++) 
-            {
-              if(QString(jt.second.getStringValue().c_str()) == "SHGLScene")
-              {
-                if(!sceneNameList.contains(sceneName))
-                  sceneNameList.append(sceneName)
-              }
-            }
-          }
-        }
+    self.comboBox.clear()
     
-        if(sceneNameList.size() == 0 && !self.shGLScene)
-        self.__resetTree()
+    binding = self.parentApp.dfgWidget.getDFGController().getBinding()
+    sceneNameList = self.shGLScene.getSceneNamesFromBinding(binding)
+      
+    if len(sceneNameList) == 0 and not self.shGLScene.hasSG():
+      self.__resetTree()
 
-      if(self.shGLScene) self.comboBox.addItem("Main Scene")
-      for(int i=0 i<sceneNameList.size() ++i)
-        self.comboBox.addItem(sceneNameList[i])
-      }
-    '''
+    if self.shMainGLScene.hasSG(): 
+      self.comboBox.addItem("Main Scene")
 
+    for sceneName in sceneNameList:
+     self.comboBox.addItem(sceneName)
+    
   def expandTree(self, level):
     if(level == -1): self.shTreeView.expandAll()
     elif(level>0): self.shTreeView.expandToDepth(level-1)

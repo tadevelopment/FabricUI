@@ -15,6 +15,7 @@
 #include <FTL/JSONEnc.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONValue.h>
+#include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeItem.h>
 
 namespace FabricUI
@@ -27,19 +28,22 @@ namespace FabricUI
         SHGLScene(FabricCore::Client client) : m_client(client) {}
 
         SHGLScene(FabricCore::Client client, QString klFile);
-
-        SHGLScene(FabricCore::Client client, FabricCore::RTVal shGLScene);
-
+ 
         ~SHGLScene() {}
         
         /// Gets the client.
-        FabricCore::Client getClient() { return m_client; }
+        FabricCore::Client getClient();
 
         /// Gets a reference to the scenegraph.
-        FabricCore::RTVal getSHGLScene() { return m_shGLSceneVal; }
+        FabricCore::RTVal getSHGLScene();
 
         /// Sets a reference to the scenegraph.
-        void setSHGLScene(FabricCore::RTVal shGLSceneVal) { m_shGLSceneVal = shGLSceneVal; }
+        void setSHGLScene(FabricCore::RTVal shGLSceneVal);
+
+        /// Sets a reference to the scenegraph.
+        void setSHGLScene(SHGLScene *shGLSceneIn);
+
+        void setSHGLScene(FabricCore::DFGBinding &binding, QString sceneName);
 
         /// Checks a scenegraph is set.
         bool hasSG();
@@ -93,7 +97,7 @@ namespace FabricUI
         void sceneItemSelected(FabricCore::RTVal obj); 
 
         /// Updates the tree-view when selection from the scene.
-        /// \param obj The selected scenegraph object
+        /// \param obj The selected SHTreeItem
         void treeItemSelected(SHTreeItem *item); 
 
         /// Updates the 'selection' from TreeView's selection.
@@ -101,13 +105,17 @@ namespace FabricUI
         void treeItemSelected(FabricCore::RTVal obj); 
 
         /// Updates the 'selection' from TreeView's selection.
-        /// \param obj The selected scenegraph object
+        /// \param obj The deselected SHTreeItem
         void treeItemDeselected(SHTreeItem *item); 
         
         /// Updates the 'selection' from TreeView's selection.
-        /// \param obj The selected scenegraph object
+        /// \param obj The deselected scenegraph object
         void treeItemDeselected(FabricCore::RTVal obj); 
                     
+        QString getTreeItemPath(SHTreeItem *item);
+
+        QStringList getSceneNamesFromBinding(FabricCore::DFGBinding &binding);
+
         /// Checks if the selection changed from the manipulation system.
         /// Synchronizes with the tree-view.
         bool selectionChangedFromManips();
@@ -143,6 +151,8 @@ namespace FabricUI
         /// \param filePath The path of the alembic file.
         void exportToAlembic(QString filePath);
     
+        /// Shows the treeView when the app opens.
+        /// \param level Iniitial level of expension
         bool showTreeViewByDefault(uint32_t &level);
 
         /// Gets the command manager.
