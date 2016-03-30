@@ -28,6 +28,7 @@ namespace FabricUI
       FabricCore::RTVal m_rtVal;
       std::string m_name;
       std::string m_rtValType;
+      int m_lastValueVersion;
 
     public:
 
@@ -45,6 +46,9 @@ namespace FabricUI
       virtual int getNumChildren() /*override*/;
 
       virtual FTL::CStrRef getChildName( int i ) /*override*/;
+
+      // Detects changes for this SGObjectProperty and updates the value.
+      void updateFromScene();
 
       /////////////////////////////////////////////////////////////////////////
       // Name

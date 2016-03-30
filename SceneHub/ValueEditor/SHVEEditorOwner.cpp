@@ -56,18 +56,43 @@ void SHVEEditorOwner::onStructureChanged()
 
 void SHVEEditorOwner::onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * item )
 {
-  onNewSGObjectSet( item->getSGObject() );
+  FabricCore::RTVal sgObject = item->getSGObject();
+  if( sgObject.isValid() )
+    updateSGObject( sgObject );
 }
 
-void SHVEEditorOwner::onNewSGObjectSet( FabricCore::RTVal sgObject )
+void SHVEEditorOwner::onSceneChanged() {
+  SGObjectModelItem * objectItem = dynamic_cast< SGObjectModelItem * >( m_modelRoot );
+  if( objectItem ) {
+    //Important: take a value copy since passed by ref and sgObject might be deleted
+    FabricCore::RTVal sgObject = objectItem->getSGObject();
+    updateSGObject( sgObject );
+  }
+}
+
+void SHVEEditorOwner::updateSGObject( const FabricCore::RTVal& sgObject )
 {
+  bool isValid = true;
+  bool structureChanged = true;
+
+  SGObjectModelItem * objectItem = dynamic_cast< SGObjectModelItem * >( m_modelRoot );
+  if( objectItem )
+    objectItem->updateFromScene( sgObject, isValid, structureChanged );
+
+  if( !structureChanged )
+    return;
+
+  // Currently we don't support incremental structure changes; we just rebuild all if it was the case
+
   m_valueEditor->clear();
-
-  if(m_modelRoot)
+  if( m_modelRoot )
     delete m_modelRoot;
+  objectItem = 0;
 
-  SGObjectModelItem * objectItem = new SGObjectModelItem( m_cmdViewWidget, getDFGController()->getClient(), sgObject );
-  QObject::connect(objectItem, SIGNAL( propertyItemInserted( BaseModelItem * ) ), this, SLOT( onSGObjectPropertyItemInserted( BaseModelItem * ) ));
+  if( sgObject.isValid() && isValid ) {
+    objectItem = new SGObjectModelItem( m_cmdViewWidget, getDFGController()->getClient(), sgObject );
+    QObject::connect( objectItem, SIGNAL( propertyItemInserted( BaseModelItem * ) ), this, SLOT( onSGObjectPropertyItemInserted( BaseModelItem * ) ) );
+  }
 
   m_modelRoot = objectItem;
   emit replaceModelRoot( m_modelRoot );

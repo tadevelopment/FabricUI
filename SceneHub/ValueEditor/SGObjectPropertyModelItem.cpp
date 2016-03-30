@@ -19,6 +19,7 @@ SGObjectPropertyModelItem::SGObjectPropertyModelItem(
   : m_cmdViewWidget( cmdViewWidget )
   , m_client( client )
   , m_rtVal( rtVal )
+  , m_lastValueVersion(0)
 {
 }
 
@@ -112,6 +113,8 @@ FTL::CStrRef SGObjectPropertyModelItem::getRTValType()
   try
   {
     m_rtValType = m_rtVal.callMethod("String", "_getPropertyTypeAsString", 0, 0).getStringCString();
+    if( strcmp( m_rtValType.c_str(), "None" ) == 0 )
+      m_rtValType = std::string();
   }
   catch(FabricCore::Exception e)
   {
@@ -121,11 +124,36 @@ FTL::CStrRef SGObjectPropertyModelItem::getRTValType()
   return m_rtValType;
 }
 
+void SGObjectPropertyModelItem::updateFromScene() {
+  if( !m_rtVal.isValid() )
+    return;
+
+  try {
+    int valueVersion = m_rtVal.callMethod( "UInt32", "getValueVersion", 0, 0 ).getUInt32();
+    if( m_lastValueVersion != valueVersion ) {
+      // Value changed.
+      m_lastValueVersion = valueVersion;
+
+      // Update the type
+      std::string prevType = m_rtValType;
+      m_rtValType = std::string();
+      getRTValType();
+      if( prevType != m_rtValType ) {
+        // TODO: notify that the type changed...
+      }
+
+      emitModelValueChanged( getValue() );
+      // Check if type changed (todo!)
+    }
+  }
+  catch( FabricCore::Exception e ) {
+    printf( "SGObjectPropertyModelItem::updateFromScene, FabricCore::Exception: '%s'\n", e.getDesc_cstr() );
+  }
+}
+
 QVariant SGObjectPropertyModelItem::getValue()
 {
   FTL::CStrRef type = getRTValType();
-  if(type.empty() || type == FTL_STR("Reference") || type == FTL_STR("Object"))
-    return QVariant();
 
   FabricCore::RTVal value;
   try
@@ -246,6 +274,10 @@ QVariant SGObjectPropertyModelItem::getValue()
   {
     printf("SGObjectPropertyModelItem::getValue, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
   }
+
+  if( !value.isValid() )
+    return QVariant();// Might be another object type
+
   return toVariant(value);
 }
 
@@ -259,8 +291,6 @@ void SGObjectPropertyModelItem::setValue(
   if(!isRTVal(var))
   {
     FTL::CStrRef type = getRTValType();
-    if(type.empty() || type == FTL_STR("Reference") || type == FTL_STR("Object"))
-      return;
 
     try
     {
@@ -378,6 +408,8 @@ void SGObjectPropertyModelItem::setValue(
     {
       printf("SGObjectPropertyModelItem::setValue, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
     }
+    if( !varVal.isValid() )
+      return; //Might be another Object type
   }
 
   if(!RTVariant::toRTVal(var, varVal))

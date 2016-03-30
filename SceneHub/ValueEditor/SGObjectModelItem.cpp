@@ -19,6 +19,15 @@ SGObjectModelItem::SGObjectModelItem(
   , m_client( client )
   , m_rtVal( rtVal )
 {
+  m_lastStructureVersionRtVal = FabricCore::RTVal::ConstructUInt32( m_client, 0 );
+  m_lastValuesVersionRtVal = FabricCore::RTVal::ConstructUInt32( m_client, 0 );
+  m_isValidRtVal = FabricCore::RTVal::ConstructBoolean( m_client, false );
+  m_structureChangedRtVal = FabricCore::RTVal::ConstructBoolean( m_client, false );
+  m_valueChangedRtVal = FabricCore::RTVal::ConstructBoolean( m_client, false );
+
+  // Cache initial versions
+  bool isValid, structureChanged;
+  updateFromScene( rtVal, isValid, structureChanged );
 }
 
 SGObjectModelItem::~SGObjectModelItem()
@@ -173,7 +182,35 @@ void SGObjectModelItem::ensurePropertiesRTVal()
   {
     printf("SGObjectModelItem::ensurePropertiesRTVal, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
   }
+}
 
+void SGObjectModelItem::updateFromScene( const FabricCore::RTVal& newSGObject, bool& isValid, bool& structureChanged ) {
+  try {
+    FabricCore::RTVal args[6];
+    args[0] = newSGObject;
+    args[1] = m_lastStructureVersionRtVal;
+    args[2] = m_lastValuesVersionRtVal;
+    args[3] = m_isValidRtVal;
+    args[4] = m_structureChangedRtVal;
+    args[5] = m_valueChangedRtVal;
+
+    m_rtVal.callMethod( "", "synchronize", 6, args );
+
+    isValid = m_isValidRtVal.getBoolean();
+    structureChanged = m_structureChangedRtVal.getBoolean();
+    if( isValid && !structureChanged && m_valueChangedRtVal.getBoolean() ) {
+      // Update individual property values
+      int count = getNumChildren();
+      for( int i = 0; i < count; ++i ) {
+        SGObjectPropertyModelItem * objectItem = dynamic_cast< SGObjectPropertyModelItem * >( getChild( i, false ) );
+        if( objectItem )
+          objectItem->updateFromScene();
+      }
+    }
+  }
+  catch( FabricCore::Exception e ) {
+    printf( "SGObjectModelItem::updateFromScene, FabricCore::Exception: '%s'\n", e.getDesc_cstr() );
+  }
 }
 
 } // namespace SceneHub

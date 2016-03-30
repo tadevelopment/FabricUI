@@ -33,8 +33,9 @@ namespace FabricUI {
 
       virtual void onStructureChanged();
       void onSceneItemSelected( FabricUI::SceneHub::SHTreeItem *item );
-      void onNewSGObjectSet( FabricCore::RTVal sgObject );
+      void updateSGObject( const FabricCore::RTVal& sgObject );
       void onSGObjectPropertyItemInserted( BaseModelItem * item );
+      void onSceneChanged();
 
     protected slots:
 

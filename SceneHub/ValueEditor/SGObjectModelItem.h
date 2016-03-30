@@ -21,6 +21,13 @@ namespace FabricUI
       SHCmdViewWidget * m_cmdViewWidget;
       FabricCore::Client m_client;
       FabricCore::RTVal m_rtVal;
+
+      FabricCore::RTVal m_lastStructureVersionRtVal;
+      FabricCore::RTVal m_lastValuesVersionRtVal;
+      FabricCore::RTVal m_isValidRtVal;
+      FabricCore::RTVal m_structureChangedRtVal;
+      FabricCore::RTVal m_valueChangedRtVal;
+
       std::string m_name;
       FabricCore::RTVal m_propertiesRtVal;
       std::map<std::string, unsigned int> m_propertyNameMap;
@@ -43,6 +50,14 @@ namespace FabricUI
       virtual FTL::CStrRef getChildName( int i ) /*override*/;
 
       virtual void onStructureChanged();
+
+      const FabricCore::RTVal& getSGObject() { return m_rtVal; }
+
+      // Detects potential scene changes for this SGObject.
+      // If structureChanged, this object must be recreated
+      // (incremental update is not supported right now). Otherwise, property values will 
+      // be updated if required.
+      void updateFromScene( const FabricCore::RTVal& newSGObject, bool& isValid, bool& structureChanged );
 
       /////////////////////////////////////////////////////////////////////////
       // Name
