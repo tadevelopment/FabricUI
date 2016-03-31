@@ -119,6 +119,11 @@ namespace FabricUI
         {
           if( m_treeViewObjectDataRTVal.isValid() && !m_treeViewObjectDataRTVal.isNullObject() )
             sgObjectRTVal = m_treeViewObjectDataRTVal.callMethod("SGObject", "getObject", 0, 0);
+          else if( m_parentItem && m_parentItem->m_treeViewObjectDataRTVal.isValid() && !m_parentItem->m_treeViewObjectDataRTVal.isNullObject() ) {
+            // Might be a generator, in which case we return the generator owned container
+            FabricCore::RTVal indexRTVal = FabricCore::RTVal::ConstructUInt32( m_client, m_index.row() );
+            sgObjectRTVal = m_parentItem->m_treeViewObjectDataRTVal.callMethod( "SGObject", "getGeneratorOwnedObject", 1, &indexRTVal );
+          }
         }
         catch ( FabricCore::Exception e )
         {
