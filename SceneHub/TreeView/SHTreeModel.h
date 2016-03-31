@@ -71,6 +71,14 @@ namespace FabricUI
         return index;
       }
 
+      void setShowProperties( bool show );
+
+      void setShowOperators( bool show );
+
+      void setPropertyColor( QColor color ) { m_propertyColorVariant = QVariant( color ); }
+      void setReferenceColor( QColor color ) { m_referenceColorVariant = QVariant( color ); }
+      void setOperatorColor( QColor color ) { m_operatorColorVariant = QVariant( color ); }
+
       std::vector< QModelIndex > getIndicesFromSGObject( FabricCore::RTVal sgObject );
 
       virtual QVariant data(
@@ -78,10 +86,20 @@ namespace FabricUI
         int role
         ) const
       {
-        if ( !index.isValid() || role != Qt::DisplayRole )
+        if( !index.isValid() )
           return QVariant();
         SHTreeItem *item = static_cast<SHTreeItem *>( index.internalPointer() );
-        return item->desc();
+        if( role == Qt::DisplayRole )
+          return item->desc();
+        else if( role == Qt::ForegroundRole ) {
+          if( item->isGenerator() )
+            return m_operatorColorVariant;
+          if( item->isReference() )
+            return m_referenceColorVariant;
+          return m_propertyColorVariant;
+        } else if( role == Qt::FontRole && item->isPropagated() )
+          return m_overrideFontVariant;
+        return QVariant();
       }
 
       virtual Qt::ItemFlags flags( const QModelIndex &index ) const
@@ -207,12 +225,22 @@ namespace FabricUI
 
     private:
 
+      void initStyle();
+
       RootItemsVec m_rootItems;
       FabricCore::Client m_client;
       FabricCore::RTVal m_treeViewDataRTVal;
 
-      FabricCore::RTVal m_getUpdatedChildDataArgs[3];
-      FabricCore::RTVal m_updateArgs[2];
+      bool m_showProperties;
+      bool m_showOperators;
+
+      QVariant m_propertyColorVariant;
+      QVariant m_referenceColorVariant;
+      QVariant m_operatorColorVariant;
+      QVariant m_overrideFontVariant;
+
+      FabricCore::RTVal m_getUpdatedChildDataArgs[6];
+      FabricCore::RTVal m_updateArgs[3];
 
       uint32_t m_sceneHierarchyChangedBlockCount;
       bool m_sceneHierarchyChangedPending;

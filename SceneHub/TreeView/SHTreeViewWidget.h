@@ -37,6 +37,8 @@ namespace FabricUI
         SHTreeView * getTreeView() { return m_shTreeView; }
         SHGLScene* getScene() { return m_shGLScene; }
   
+        void setShowProperties( bool show );
+        void setShowOperators( bool show );
   
       public slots:
         void onUpdateScene(const QString &sceneName);
@@ -60,7 +62,6 @@ namespace FabricUI
         /// Updates the treeView from the 3D scene selection.
         void updateFrom3DSelection();
 
-
       signals:
         void sceneHierarchyChanged();
   
@@ -83,6 +84,9 @@ namespace FabricUI
 
         SHTreeComboBox *m_comboBox;
         bool m_bUpdatingSelectionFrom3D;
+
+        bool m_showProperties;
+        bool m_showOperators;
 
     };
   }

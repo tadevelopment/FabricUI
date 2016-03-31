@@ -50,6 +50,8 @@ namespace FabricUI
       // Detects changes for this SGObjectProperty and updates the value.
       void updateFromScene();
 
+      const FabricCore::RTVal& getSGObjectProperty() { return m_rtVal; }
+
       /////////////////////////////////////////////////////////////////////////
       // Name
       /////////////////////////////////////////////////////////////////////////

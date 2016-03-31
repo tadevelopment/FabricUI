@@ -14,6 +14,8 @@ namespace FabricUI {
 
   namespace SceneHub
   { 
+    class SGObjectPropertyModelItem;
+
     class SHVEEditorOwner : public DFG::DFGVEEditorOwner
     {
       Q_OBJECT
@@ -43,8 +45,11 @@ namespace FabricUI {
 
     private:
 
+      void updateSGObjectProperty( const FabricCore::RTVal& sgObjectProperty );
+
       SceneHub::SHTreeViewWidget * m_treeViewWidget;
       SHCmdViewWidget * m_cmdViewWidget;
+      SGObjectPropertyModelItem * m_objectPropertyItem;//Defined if "root" is a single property
     };
   }
 }

@@ -3,6 +3,7 @@
 //
 
 #include "SHVEEditorOwner.h"
+#include "SGObjectPropertyModelItem.h"
 #include "SGObjectModelItem.h"
 #include <FabricUI/ValueEditor/VETreeWidget.h>
 #include <FabricUI/ValueEditor/VETreeWidgetItem.h>
@@ -16,11 +17,13 @@ SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHTreeVie
   : DFG::DFGVEEditorOwner(dfgWidget)
   , m_treeViewWidget(treeViewWidget)
   , m_cmdViewWidget(cmdViewWidget)
+  , m_objectPropertyItem(0)
 {
 }
 
 SHVEEditorOwner::~SHVEEditorOwner()
 {
+  delete m_objectPropertyItem;
 }
 
 void SHVEEditorOwner::initConnections()
@@ -59,6 +62,11 @@ void SHVEEditorOwner::onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * item
   FabricCore::RTVal sgObject = item->getSGObject();
   if( sgObject.isValid() )
     updateSGObject( sgObject );
+  else {
+    FabricCore::RTVal sgObjectProperty = item->getSGObjectProperty();
+    if( sgObjectProperty.isValid() )
+      updateSGObjectProperty( sgObjectProperty );
+  }
 }
 
 void SHVEEditorOwner::onSceneChanged() {
@@ -67,6 +75,10 @@ void SHVEEditorOwner::onSceneChanged() {
     //Important: take a value copy since passed by ref and sgObject might be deleted
     FabricCore::RTVal sgObject = objectItem->getSGObject();
     updateSGObject( sgObject );
+  } else if( m_objectPropertyItem ) {
+      //Important: take a value copy since passed by ref and sgObject might be deleted
+    FabricCore::RTVal sgObjectProperty = m_objectPropertyItem->getSGObjectProperty();
+    updateSGObjectProperty( sgObjectProperty );
   }
 }
 
@@ -82,11 +94,19 @@ void SHVEEditorOwner::updateSGObject( const FabricCore::RTVal& sgObject )
   if( !structureChanged )
     return;
 
-  // Currently we don't support incremental structure changes; we just rebuild all if it was the case
+  // Currently we don't support incremental structure changes; we just rebuild all
 
   m_valueEditor->clear();
-  if( m_modelRoot )
+  if( m_modelRoot ) {
     delete m_modelRoot;
+    m_modelRoot = 0;
+  }
+
+  if( m_objectPropertyItem ) {
+    delete m_objectPropertyItem;
+    m_objectPropertyItem = 0;
+  }
+
   objectItem = 0;
 
   if( sgObject.isValid() && isValid ) {
@@ -96,6 +116,49 @@ void SHVEEditorOwner::updateSGObject( const FabricCore::RTVal& sgObject )
 
   m_modelRoot = objectItem;
   emit replaceModelRoot( m_modelRoot );
+}
+
+
+void SHVEEditorOwner::updateSGObjectProperty( const FabricCore::RTVal& sgObjectProperty ) {
+  bool isValid = true;
+  bool structureChanged = true;
+
+  if( m_objectPropertyItem ) {
+    // Check if it is the same property
+    bool sameProperty = false;
+    try {
+      FabricCore::RTVal prevSGObjectProperty = m_objectPropertyItem->getSGObjectProperty();
+      FabricCore::RTVal newSGObjectProperty = sgObjectProperty;
+      sameProperty = newSGObjectProperty.callMethod( "Boolean", "equals_noContext", 1, &prevSGObjectProperty ).getBoolean();
+    }
+    catch( FabricCore::Exception e ) {
+      printf( "SHVEEditorOwner::updateSGObjectProperty: Error: %s\n", e.getDesc_cstr() );
+    }
+    if( sameProperty ) {
+      m_objectPropertyItem->updateFromScene();
+      return;
+    }
+  }
+
+  // Currently we don't support incremental changes; just rebuild all
+
+  m_valueEditor->clear();
+
+  if( m_modelRoot ) {
+    delete m_modelRoot;
+    m_modelRoot = 0;
+  }
+
+  if( m_objectPropertyItem ) {
+    delete m_objectPropertyItem;
+    m_objectPropertyItem = 0;
+  }
+
+  if( sgObjectProperty.isValid() && isValid ) {
+    m_objectPropertyItem = new SGObjectPropertyModelItem( m_cmdViewWidget, getDFGController()->getClient(), sgObjectProperty );
+    connect( m_objectPropertyItem, SIGNAL( modelValueChanged( QVariant const & ) ), this, SLOT( onModelValueChanged( QVariant const & ) ) );
+  }
+  emit replaceModelRoot( m_objectPropertyItem );
 }
 
 void SHVEEditorOwner::onSGObjectPropertyItemInserted( BaseModelItem * item )

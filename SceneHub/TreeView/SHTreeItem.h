@@ -35,6 +35,8 @@ namespace FabricUI
 
     public:
 
+      enum ItemType { Object, Property, Operator };
+
       SHTreeItem(
         SHTreeModel *model,
         SHTreeItem *parentItem,
@@ -45,7 +47,13 @@ namespace FabricUI
         , m_client( client )
         , m_needsUpdate( true )
         , m_hadInitialUpdate( false )
-        {}
+        , m_isPropagated( false )
+        , m_isReference( false )
+        , m_isGenerator( false )
+      {
+        if( !parentItem )
+          m_isReference = true;
+      }
 
       ~SHTreeItem() {}
 
@@ -109,19 +117,38 @@ namespace FabricUI
         FabricCore::RTVal sgObjectRTVal;
         try
         {
-          sgObjectRTVal =
-            m_treeViewObjectDataRTVal.callMethod("SGObject", "getObject", 0, 0);
+          if( m_treeViewObjectDataRTVal.isValid() && !m_treeViewObjectDataRTVal.isNullObject() )
+            sgObjectRTVal = m_treeViewObjectDataRTVal.callMethod("SGObject", "getObject", 0, 0);
         }
         catch ( FabricCore::Exception e )
         {
-          printf("Error: %s\n", e.getDesc_cstr());
+          printf("SHTreeItem::getSGObject: Error: %s\n", e.getDesc_cstr());
         }
         return sgObjectRTVal;
+      }
+
+      FabricCore::RTVal getSGObjectProperty() {
+        FabricCore::RTVal sgObjectPropertyRTVal;
+        try {
+          if( m_parentItem && m_parentItem->m_treeViewObjectDataRTVal.isValid() && !m_parentItem->m_treeViewObjectDataRTVal.isNullObject() ) {
+            FabricCore::RTVal indexRTVal = FabricCore::RTVal::ConstructUInt32( m_client, m_index.row() );
+            sgObjectPropertyRTVal = m_parentItem->m_treeViewObjectDataRTVal.callMethod( "SGObjectProperty", "getObjectProperty", 1, &indexRTVal );
+          }
+        }
+        catch( FabricCore::Exception e ) {
+          printf( "SHTreeItem::getSGObjectProperty: Error: %s\n", e.getDesc_cstr() );
+        }
+        return sgObjectPropertyRTVal;
       }
 
       void loadRecursively();
 
       void updateChildItemsIfNeeded();
+
+      bool isObject() const { return m_isReference; }
+      bool isReference() const { return m_isReference; }
+      bool isPropagated() const { return m_isPropagated; }
+      bool isGenerator() const { return m_isGenerator; }
 
     protected:
 
@@ -145,6 +172,10 @@ namespace FabricUI
       bool m_needsUpdate, m_hadInitialUpdate;
       QModelIndex m_index;
       QString m_name;
+
+      bool m_isPropagated;
+      bool m_isReference;
+      bool m_isGenerator;
     };
   }
 }

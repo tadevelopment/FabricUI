@@ -21,10 +21,14 @@ void SHTreeItem::updateChildItemIfNeeded( int row ) {
       m_treeViewObjectDataRTVal.callMethod(
       "SGTreeViewObjectData",
       "getUpdatedChildData",
-      3, m_model->m_getUpdatedChildDataArgs
+      6, m_model->m_getUpdatedChildDataArgs
       );
 
     bool invalidate = m_model->m_getUpdatedChildDataArgs[2].getBoolean();
+    childItem->m_isPropagated = m_model->m_getUpdatedChildDataArgs[3].getBoolean();
+    childItem->m_isReference = m_model->m_getUpdatedChildDataArgs[4].getBoolean();
+    childItem->m_isGenerator = m_model->m_getUpdatedChildDataArgs[5].getBoolean();
+
     childItem->updateNeeded( childDataRTVal, invalidate );
     if( invalidate ) // Target object might have been created
       m_model->emitSceneHierarchyChanged();
@@ -36,16 +40,16 @@ void SHTreeItem::updateChildItemsIfNeeded() {
     //std::cerr << "updateChildItemsIfNeeded " << (const char*)(desc().data()) << " " << std::endl;
 
     try {
-      //NOTE: normally we should be able to "reuse" the content m_updateArgs[1] but there seems to be a bug (getArraySize isn't refreshing)
+      //NOTE: normally we should be able to "reuse" the content m_updateArgs[2] but there seems to be a bug (getArraySize isn't refreshing)
       //A bug has been logged for this. To repro the bug, comment out the following line.
-      m_model->m_updateArgs[1] = FabricCore::RTVal::Construct( m_client, "SGTreeViewObjectDataChanges", 0, 0 );//io SGTreeViewObjectDataChanges changes
-      unsigned int result = m_treeViewObjectDataRTVal.callMethod("UInt32", "update", 2, m_model->m_updateArgs).getUInt32();
+      m_model->m_updateArgs[2] = FabricCore::RTVal::Construct( m_client, "SGTreeViewObjectDataChanges", 0, 0 );//io SGTreeViewObjectDataChanges changes
+      unsigned int result = m_treeViewObjectDataRTVal.callMethod("UInt32", "update", 3, m_model->m_updateArgs).getUInt32();
 
       // If result is 0: no scene changes; no need to even recurse into children
       if( result != 0 ) {
         if( result == 2 ) {
           // Layout changed: we need to remove then insert rows
-          FabricCore::RTVal removedItems = m_model->m_updateArgs[1].maybeGetMember( "removed" );
+          FabricCore::RTVal removedItems = m_model->m_updateArgs[2].maybeGetMember( "removed" );
           unsigned int removedCount = removedItems.getArraySize();
 
           for( unsigned int i = 0; i < removedCount; ++i ) {
@@ -56,11 +60,11 @@ void SHTreeItem::updateChildItemsIfNeeded() {
             m_model->endRemoveRows();
           }
 
-          FabricCore::RTVal insertedItems = m_model->m_updateArgs[1].maybeGetMember( "inserted" );
+          FabricCore::RTVal insertedItems = m_model->m_updateArgs[2].maybeGetMember( "inserted" );
           unsigned int insertedCount = insertedItems.getArraySize();
 
           if( insertedCount ) {
-            FabricCore::RTVal insertedItemNames = m_model->m_updateArgs[1].maybeGetMember( "insertedNames" );
+            FabricCore::RTVal insertedItemNames = m_model->m_updateArgs[2].maybeGetMember( "insertedNames" );
 
             for( unsigned int i = 0; i < insertedCount; ++i ) {
               unsigned int index = insertedItems.getArrayElement( i ).getUInt32();
@@ -115,7 +119,8 @@ void SHTreeItem::loadRecursively() {
   try
   {
     FabricCore::RTVal sgObject = getSGObject();
-    sgObject.callMethod( "", "forceHierarchyExpansion", 0, 0 );
+    if( sgObject.isValid() )
+      sgObject.callMethod( "", "forceHierarchyExpansion", 0, 0 );
   }
   catch( FabricCore::Exception e ) {
     printf( "Error: %s\n", e.getDesc_cstr() );

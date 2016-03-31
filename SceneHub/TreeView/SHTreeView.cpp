@@ -120,38 +120,37 @@ void SHTreeView::mousePressEvent(QMouseEvent *event) {
     {
       SHTreeItem *item = static_cast<SHTreeItem *>( index.internalPointer() );
       FabricCore::RTVal sgObject = item->getSGObject();
-      FabricCore::RTVal sgParent = sgObject.callMethod("SGObject", "getOwnerInstance", 0, 0);
-   
-      if(sgParent.callMethod("Boolean", "isValid", 0, 0).getBoolean())
-      {
-        FabricCore::RTVal parentNameVal = sgParent.callMethod("String", "getName", 0, 0);
-        FabricCore::RTVal typeVal = sgObject.callMethod("String", "type", 0, 0);
-        std::string parentName = std::string(parentNameVal.getStringCString());
-        std::string type = std::string(typeVal.getStringCString());
-       
-        // Assets
-        if(parentName.compare(SH_ASSETS_LIBRARY) == 0)
-        {
-          FabricCore::RTVal param = FabricCore::RTVal::ConstructString(m_client, "path");
-          FabricCore::RTVal sgProperty = sgObject.callMethod("SGObjectProperty", "getLocalProperty", 1, &param);
-            
-          if(sgProperty.callMethod("Boolean", "isValid", 0, 0).getBoolean())
-          {
-            sgProperty.callMethod("", "getValue", 1, &param);
-            // Create data
-            QMimeData *mimeData = new QMimeData();
-            QList<QUrl> urlsList;
+      if( sgObject.isValid() ) {
+        FabricCore::RTVal sgParent = sgObject.callMethod( "SGObject", "getOwnerInstance", 0, 0 );
 
-            QString url(std::string(std::string("file://") + std::string(param.getStringCString())).c_str());
-            urlsList.push_back(QUrl(url));
-            mimeData->setUrls(urlsList);
-            // Create drag
-            QDrag *drag = new QDrag(this);
-            drag->setMimeData(mimeData);
-            drag->exec(Qt::CopyAction);
+        if( sgParent.callMethod( "Boolean", "isValid", 0, 0 ).getBoolean() ) {
+          FabricCore::RTVal parentNameVal = sgParent.callMethod( "String", "getName", 0, 0 );
+          FabricCore::RTVal typeVal = sgObject.callMethod( "String", "type", 0, 0 );
+          std::string parentName = std::string( parentNameVal.getStringCString() );
+          std::string type = std::string( typeVal.getStringCString() );
+
+          // Assets
+          if( parentName.compare( SH_ASSETS_LIBRARY ) == 0 ) {
+            FabricCore::RTVal param = FabricCore::RTVal::ConstructString( m_client, "path" );
+            FabricCore::RTVal sgProperty = sgObject.callMethod( "SGObjectProperty", "getLocalProperty", 1, &param );
+
+            if( sgProperty.callMethod( "Boolean", "isValid", 0, 0 ).getBoolean() ) {
+              sgProperty.callMethod( "", "getValue", 1, &param );
+              // Create data
+              QMimeData *mimeData = new QMimeData();
+              QList<QUrl> urlsList;
+
+              QString url( std::string( std::string( "file://" ) + std::string( param.getStringCString() ) ).c_str() );
+              urlsList.push_back( QUrl( url ) );
+              mimeData->setUrls( urlsList );
+              // Create drag
+              QDrag *drag = new QDrag( this );
+              drag->setMimeData( mimeData );
+              drag->exec( Qt::CopyAction );
+            }
           }
+          break;
         }
-        break;
       }
     }
   }
