@@ -29,13 +29,15 @@ namespace FabricUI
       std::string m_name;
       std::string m_rtValType;
       int m_lastValueVersion;
+      bool m_rootItem;
 
     public:
 
       SGObjectPropertyModelItem(
         SHCmdViewWidget * cmdViewWidget,
         FabricCore::Client client,
-        FabricCore::RTVal rtVal
+        FabricCore::RTVal rtVal,
+        bool isRootItem
         );
       ~SGObjectPropertyModelItem();
 

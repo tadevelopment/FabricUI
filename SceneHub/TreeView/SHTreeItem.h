@@ -112,39 +112,9 @@ namespace FabricUI
 
       void onSceneHierarchyChanged();
 
-      FabricCore::RTVal getSGObject()
-      {
-        FabricCore::RTVal sgObjectRTVal;
-        try
-        {
-          if( m_treeViewObjectDataRTVal.isValid() && !m_treeViewObjectDataRTVal.isNullObject() )
-            sgObjectRTVal = m_treeViewObjectDataRTVal.callMethod("SGObject", "getObject", 0, 0);
-          else if( m_parentItem && m_parentItem->m_treeViewObjectDataRTVal.isValid() && !m_parentItem->m_treeViewObjectDataRTVal.isNullObject() ) {
-            // Might be a generator, in which case we return the generator owned container
-            FabricCore::RTVal indexRTVal = FabricCore::RTVal::ConstructUInt32( m_client, m_index.row() );
-            sgObjectRTVal = m_parentItem->m_treeViewObjectDataRTVal.callMethod( "SGObject", "getGeneratorOwnedObject", 1, &indexRTVal );
-          }
-        }
-        catch ( FabricCore::Exception e )
-        {
-          printf("SHTreeItem::getSGObject: Error: %s\n", e.getDesc_cstr());
-        }
-        return sgObjectRTVal;
-      }
+      FabricCore::RTVal getSGObject();
 
-      FabricCore::RTVal getSGObjectProperty() {
-        FabricCore::RTVal sgObjectPropertyRTVal;
-        try {
-          if( m_parentItem && m_parentItem->m_treeViewObjectDataRTVal.isValid() && !m_parentItem->m_treeViewObjectDataRTVal.isNullObject() ) {
-            FabricCore::RTVal indexRTVal = FabricCore::RTVal::ConstructUInt32( m_client, m_index.row() );
-            sgObjectPropertyRTVal = m_parentItem->m_treeViewObjectDataRTVal.callMethod( "SGObjectProperty", "getObjectProperty", 1, &indexRTVal );
-          }
-        }
-        catch( FabricCore::Exception e ) {
-          printf( "SHTreeItem::getSGObjectProperty: Error: %s\n", e.getDesc_cstr() );
-        }
-        return sgObjectPropertyRTVal;
-      }
+      FabricCore::RTVal getSGObjectProperty();
 
       void loadRecursively();
 

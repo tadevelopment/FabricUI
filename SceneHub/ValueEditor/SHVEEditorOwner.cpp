@@ -155,7 +155,7 @@ void SHVEEditorOwner::updateSGObjectProperty( const FabricCore::RTVal& sgObjectP
   }
 
   if( sgObjectProperty.isValid() && isValid ) {
-    m_objectPropertyItem = new SGObjectPropertyModelItem( m_cmdViewWidget, getDFGController()->getClient(), sgObjectProperty );
+    m_objectPropertyItem = new SGObjectPropertyModelItem( m_cmdViewWidget, getDFGController()->getClient(), sgObjectProperty, true );
     connect( m_objectPropertyItem, SIGNAL( modelValueChanged( QVariant const & ) ), this, SLOT( onModelValueChanged( QVariant const & ) ) );
   }
   emit replaceModelRoot( m_objectPropertyItem );

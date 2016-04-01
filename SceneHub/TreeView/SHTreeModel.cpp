@@ -66,7 +66,6 @@ void SHTreeModel::setShowProperties( bool show ) {
   if( show != m_showProperties ) {
     m_showProperties = show;
     m_updateArgs[0].setBoolean( m_showProperties );
-    m_updateArgs[1].setBoolean( m_showOperators );
     onSceneHierarchyChanged();
   }
 }
@@ -74,6 +73,7 @@ void SHTreeModel::setShowProperties( bool show ) {
 void SHTreeModel::setShowOperators( bool show ) {
   if( show != m_showOperators ) {
     m_showOperators = show;
+    m_updateArgs[1].setBoolean( m_showOperators );
     onSceneHierarchyChanged();
   }
 }

@@ -14,12 +14,14 @@ namespace SceneHub {
 SGObjectPropertyModelItem::SGObjectPropertyModelItem(
   SHCmdViewWidget * cmdViewWidget,
   FabricCore::Client client,
-  FabricCore::RTVal rtVal
+  FabricCore::RTVal rtVal,
+  bool isRootItem
   )
   : m_cmdViewWidget( cmdViewWidget )
   , m_client( client )
   , m_rtVal( rtVal )
   , m_lastValueVersion(0)
+  , m_rootItem( isRootItem )
 {
 }
 
@@ -54,8 +56,11 @@ FTL::CStrRef SGObjectPropertyModelItem::getName()
   {
     try
     {
-      m_name = m_rtVal.callMethod("String", "getName", 0, 0).getStringCString();
-      return m_name;;
+      if( m_rootItem )
+        m_name = m_rtVal.callMethod( "String", "getFullPath", 0, 0 ).getStringCString();
+      else
+        m_name = m_rtVal.callMethod("String", "getName", 0, 0).getStringCString();
+      return m_name;
     }
     catch(FabricCore::Exception e)
     {

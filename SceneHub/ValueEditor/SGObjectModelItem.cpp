@@ -82,7 +82,7 @@ BaseModelItem *SGObjectModelItem::createChild( FTL::CStrRef name ) /**/
         return NULL;
 
       FabricCore::RTVal propRtVal = m_propertiesRtVal.getArrayElement(it->second);
-      BaseModelItem * child = pushChild(new SGObjectPropertyModelItem(m_cmdViewWidget, m_client, propRtVal));
+      BaseModelItem * child = pushChild(new SGObjectPropertyModelItem(m_cmdViewWidget, m_client, propRtVal, false));
       emit propertyItemInserted(child);
       return child;
     }
@@ -100,7 +100,7 @@ FTL::CStrRef SGObjectModelItem::getName()
   {
     try
     {
-      m_name = m_rtVal.callMethod("String", "getName", 0, 0).getStringCString();
+      m_name = m_rtVal.callMethod("String", "getFullPath", 0, 0).getStringCString();
       return m_name;;
     }
     catch(FabricCore::Exception e)
