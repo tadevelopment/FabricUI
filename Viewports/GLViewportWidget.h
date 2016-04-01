@@ -35,7 +35,7 @@ namespace FabricUI
       virtual ManipulationTool * getManipTool() { return m_manipTool; }
       virtual FabricCore::RTVal getCameraManipulator() const { return m_cameraManipulator; }
       virtual FabricCore::RTVal getCamera() { return m_camera; }
-     
+      void updateFromManip() {  emit dirty(); }
 
       bool isGridVisible();
 
@@ -44,14 +44,13 @@ namespace FabricUI
       void toggleManipulation() { setManipulationActive(!isManipulationActive()); }
       void setGridVisible( bool gridVisible, bool update = true );
       void resetCamera();
-
-
+ 
     signals:
+      void dirty();
       void redrawn();
       void portManipulationRequested(QString portName);
 
     protected:
-
       virtual void initializeGL();
       virtual void resizeGL(int w, int h);
       virtual void paintGL();
