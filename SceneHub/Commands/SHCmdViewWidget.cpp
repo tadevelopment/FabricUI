@@ -5,7 +5,7 @@
 #include "SHCmdViewWidget.h"
 #include "SGAddObjectCmd.h"
 #include "SGAddPropertyCmd.h"
-#include "SGSetPropertyValueCmd.h"
+#include "SGSetPropertyCmd.h"
 #include "SGSetPaintToolAttributeCmd.h"
 #include <FabricUI/Util/StringUtils.h>
 #include <QtGui/QVBoxLayout>
@@ -52,9 +52,9 @@ void SHCmdViewWidget::synchronize() {
     else if(FabricUI::Util::ToLower(type).compare(FabricUI::Util::ToLower(SGAddPropertyCmd_Type_Str)) == 0)
       addCommand(SGAddPropertyCmd::Get(m_shGLScene, i), false);
 
-    // SGSetPropertyValueCmd
-    else if(FabricUI::Util::ToLower(type).compare(FabricUI::Util::ToLower(SGSetPropertyValueCmd_Type_Str)) == 0)
-      addCommand(SGSetPropertyValueCmd::Get(m_shGLScene, i), false);
+    // SGSetPropertyCmd
+    else if(FabricUI::Util::ToLower(type).compare(FabricUI::Util::ToLower(SGSetPropertyCmd_Type_Str)) == 0)
+      addCommand(SGSetPropertyCmd::Get(m_shGLScene, i), false);
 
 
     // SGSetPaintToolAttributeCmd
@@ -90,9 +90,9 @@ bool SHCmdViewWidget::addCommand(const std::string &command, bool exec) {
     else if(FabricUI::Util::ToLower(name).compare(FabricUI::Util::ToLower(SGAddPropertyCmd_Str)) == 0) 
       return m_shCmdHandler.addCommand(SGAddPropertyCmd::Create(m_shGLScene, command, exec));
     
-    // SGSetPropertyValueCmd
-    else if(FabricUI::Util::ToLower(name).compare(FabricUI::Util::ToLower(SGSetPropertyValueCmd_Str)) == 0) 
-      return m_shCmdHandler.addCommand(SGSetPropertyValueCmd::Create(m_shGLScene, command, exec));
+    // SGSetPropertyCmd
+    else if(FabricUI::Util::ToLower(name).compare(FabricUI::Util::ToLower(SGSetPropertyCmd_Str)) == 0) 
+      return m_shCmdHandler.addCommand(SGSetPropertyCmd::Create(m_shGLScene, command, exec));
 
     // SGSetPaintToolAttributeCmd
     else if(FabricUI::Util::ToLower(name).compare(FabricUI::Util::ToLower(SGSetPaintToolAttributeCmd_Str)) == 0)

@@ -2,8 +2,8 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
-#ifndef __UI_SCENEHUB_SGSetPropertyValueCmd_H__
-#define __UI_SCENEHUB_SGSetPropertyValueCmd_H__
+#ifndef __UI_SCENEHUB_SGSetPropertyCmd_H__
+#define __UI_SCENEHUB_SGSetPropertyCmd_H__
 
 #include "SHCmd.h"
 #include <FabricUI/Util/StringUtils.h>
@@ -15,10 +15,10 @@ namespace FabricUI
 {
   namespace SceneHub
   {
-    const string SGSetPropertyValueCmd_Str = "setPropertyValueCmd";
-    const string SGSetPropertyValueCmd_Type_Str = "SGSetPropertyValueCmd";
+    const string SGSetPropertyCmd_Str = "setPropertyCmd";
+    const string SGSetPropertyCmd_Type_Str = "SGSetPropertyCmd";
 
-    class SGSetPropertyValueCmd : SHCmd
+    class SGSetPropertyCmd : SHCmd
     {
       public:   
         /// Constructs and executes a command.
@@ -26,8 +26,8 @@ namespace FabricUI
         /// \param cmdDes The command desciprtion
         /// \param params The command parameters
         /// \param exec If true executes the command, just add it to the Qt stack otherwise
-        SGSetPropertyValueCmd(SHGLScene *shGLScene, string cmdDes, vector<RTVal> &params, bool exec) :
-          SHCmd(shGLScene, SGSetPropertyValueCmd_Str, cmdDes, params, exec) {};
+        SGSetPropertyCmd(SHGLScene *shGLScene, string cmdDes, vector<RTVal> &params, bool exec):
+          SHCmd(shGLScene, SGSetPropertyCmd_Str, cmdDes, params, exec) {};
      
         /// Adds an object to the scene-graph
         /// \param shGLScene A reference to SHGLScene
@@ -52,11 +52,11 @@ namespace FabricUI
               //params[1] = val.callMethod("Type", "type", 0, 0);
               //params[2] = val.callMethod("Data", "data", 0, 0);
               //params[3] = RTVal::ConstructUInt64(client, dataSize);
-              cmd = new SGSetPropertyValueCmd(shGLScene, command, params, exec);
+              cmd = new SGSetPropertyCmd(shGLScene, command, params, exec);
             }
             catch(FabricCore::Exception e)
             {
-              printf("SGSetPropertyValueCmd::Create: exception: %s\n", e.getDesc_cstr());
+              printf("SGSetPropertyCmd::Create: exception: %s\n", e.getDesc_cstr());
             }
           }
           return cmd;
@@ -85,12 +85,12 @@ namespace FabricUI
             //sgCmd.callMethod("", "getPropertyData", 1, &dataVal);
             //string data = EncodeRTValToJSON(shGLScene->getClient(), structVal);
         
-            res = string( SGSetPropertyValueCmd_Str + "(" + fullPath + ")" ); // ", " + type +  
+            res = string( SGSetPropertyCmd_Str + "(" + fullPath + ")" ); // ", " + type +  
               //", " + FabricUI::Util::RemoveSpace(FabricUI::Util::RemoveNewLine(data)) + ", " + FabricUI::Util::ToStr(dataSize) + ")" );
           }
           catch(FabricCore::Exception e)
           {
-            printf("SGSetPropertyValueCmd::Get: exception: %s\n", e.getDesc_cstr());
+            printf("SGSetPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
           }
           return res;
         }     
@@ -99,4 +99,4 @@ namespace FabricUI
   }  
 }
 
-#endif // __UI_SCENEHUB_SGSetPropertyValueCmd_H__
+#endif // __UI_SCENEHUB_SGSetPropertyCmd_H__
