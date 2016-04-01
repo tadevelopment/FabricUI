@@ -11,8 +11,8 @@ using namespace FabricUI::SceneHub;
 SHTreeModel::SHTreeModel(int, FabricCore::Client client, QObject *parent )
   : QAbstractItemModel( parent )
   , m_client( client )
-  , m_showProperties( false )
-  , m_showOperators( false )
+  , m_showProperties( true )
+  , m_showOperators( true )
   , m_sceneHierarchyChangedBlockCount( 0 )
 {
   initStyle();

@@ -17,8 +17,8 @@ void SHTreeViewWidget::init() {
   m_bUpdatingSelectionFrom3D = false;
   m_shGLScene = new SHGLScene(m_client);
 
-  m_showProperties = false;
-  m_showOperators = false;
+  m_showProperties = true;
+  m_showOperators = true;
 
   m_comboBox = new SHTreeComboBox();
   m_shTreeView = new FabricUI::SceneHub::SHTreeView(m_client);
