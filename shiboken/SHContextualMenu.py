@@ -10,7 +10,7 @@ class SHContextualMenu(SHBaseContextualMenu):
     super(SHContextualMenu, self).__init__(scene, "")
  
   def _constructMenu(self):
-    self.assetMenu = SHAssetsMenu(self.shGLScene)
-    self.lightsMenu = SHLightsMenu(self.shGLScene)
-    self.addMenu(self.assetMenu)
-    self.addMenu(self.lightsMenu)
+    assetMenu = SHAssetsMenu(self.shGLScene)
+    lightsMenu = SHLightsMenu(self.shGLScene)
+    self.addMenu(assetMenu)
+    self.addMenu(lightsMenu)

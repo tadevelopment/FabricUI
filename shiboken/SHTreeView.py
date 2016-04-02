@@ -28,11 +28,10 @@ class SHTreeView(SceneHub.SHBaseTreeView):
       loadAction = QtGui.QAction("Load recursively", menu)
       loadAction.triggered.connect(viewIndexTarget.loadRecursively)
       menu.addAction(loadAction)
+
     else:
-      assetMenu = SHAssetsMenu(self.shGLScene)
-      lightsMenu = SHLightsMenu(self.shGLScene)
-      menu.addMenu(assetMenu)
-      menu.addMenu(lightsMenu)
+      menu.addMenu(SHAssetsMenu(self.shGLScene))
+      menu.addMenu(SHLightsMenu(self.shGLScene))
     menu.popup(self.mapToGlobal(point))
   
   def selectionChanged(self, selected, deselected):
