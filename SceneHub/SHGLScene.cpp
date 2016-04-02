@@ -531,7 +531,7 @@ RTVal SHGLScene::retrieveCmd(uint32_t index) {
   try 
   {
     RTVal indexVal = RTVal::ConstructUInt32(getClient(), index);
-    cmdVal = getCmdManager().callMethod("SGCmd", "getCmdInUndoStack", 1, &indexVal);
+    cmdVal = getCmdManager().callMethod("SGBaseCmd", "getCmdInUndoStack", 1, &indexVal);
   }
   catch(Exception e)
   {
