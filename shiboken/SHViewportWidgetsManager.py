@@ -167,5 +167,5 @@ class SHViewportWidgetsManager():
           if(index == 0): self.parentApp.viewport = newViewport
 
   def onSceneUpdated(self, scene):
-    for j in range(0, len(self.viewports)):
+    for i in range(0, len(self.viewports)):
       self.viewports[i].onSceneUpdated(scene)

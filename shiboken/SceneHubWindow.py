@@ -10,12 +10,12 @@ from SHLightsMenu import SHLightsMenu
 
 class SceneHubWindow(CanvasWindow):
 
-  def __init__(self, settings, unguarded, noopt, klFile):
+  def __init__(self, fabricDir, settings, unguarded, noopt, klFile):
     self.noopt = noopt
     self.klFile = klFile
     self.viewport = None
     self.isCanvas = False
-    super(SceneHubWindow, self).__init__(settings, unguarded)
+    super(SceneHubWindow, self).__init__(fabricDir, settings, unguarded)
 
   def _initKL(self, unguarded):
     super(SceneHubWindow, self)._initKL(unguarded)

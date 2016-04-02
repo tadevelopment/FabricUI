@@ -1,6 +1,6 @@
 import optparse, os, sys
 from FabricEngine import Core, FabricUI
-from FabricEngine.FabricUI import DFG, KLASTManager, Style, Viewports
+from FabricEngine.FabricUI import DFG, KLASTManager, Viewports, TimeLine
 from PySide import QtCore, QtGui, QtOpenGL
 from BindingWrapper import BindingWrapper
 from ScriptEditor import ScriptEditor
@@ -213,7 +213,7 @@ class CanvasWindow(DFG.DFGMainWindow):
     def _initTimeLine(self):
         self.timeLinePortIndex = -1
         self.timeLinePortPath = None
-        self.timeLine = Viewports.TimeLineWidget()
+        self.timeLine = TimeLine.TimeLineWidget()
         self.timeLine.setTimeRange(CanvasWindow.defaultFrameIn, CanvasWindow.defaultFrameOut)
         self.timeLine.updateTime(1)
         self.timeLine.frameChanged.connect(self.onFrameChanged)
@@ -735,38 +735,41 @@ class CanvasWindow(DFG.DFGMainWindow):
                 redoAction.setShortcut(QtGui.QKeySequence.Redo)
                 menu.addAction(redoAction)
             else:
-                menu.addSeparator()
-                self.manipAction = QtGui.QAction(
-                    DFG.DFGHotkeys.TOGGLE_MANIPULATION, self.viewport)
-                self.manipAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Q))
-                self.manipAction.setShortcutContext(
-                    QtCore.Qt.WidgetWithChildrenShortcut)
-                self.manipAction.setCheckable(True)
-                self.manipAction.setChecked(
-                    self.viewport.isManipulationActive())
-                self.manipAction.triggered.connect(
-                    self.viewport.toggleManipulation)
-                self.viewport.addAction(self.manipAction)
-                menu.addAction(self.manipAction)
+                if self.isCanvas:
+                    menu.addSeparator()
+                    self.manipAction = QtGui.QAction(
+                        DFG.DFGHotkeys.TOGGLE_MANIPULATION, self.viewport)
+                    self.manipAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Q))
+                    self.manipAction.setShortcutContext(
+                        QtCore.Qt.WidgetWithChildrenShortcut)
+                    self.manipAction.setCheckable(True)
+                    self.manipAction.setChecked(
+                        self.viewport.isManipulationActive())
+                    self.manipAction.triggered.connect(
+                        self.viewport.toggleManipulation)
+                    self.viewport.addAction(self.manipAction)
+                    menu.addAction(self.manipAction)
         elif name == 'View':
             if prefix:
-                self.setGridVisibleAction = QtGui.QAction('&Display Grid', None)
-                self.setGridVisibleAction.setShortcut(
-                    QtCore.Qt.CTRL + QtCore.Qt.Key_G)
-                self.setGridVisibleAction.setCheckable(True)
-                self.setGridVisibleAction.setChecked(
-                    self.viewport.isGridVisible())
-                self.setGridVisibleAction.toggled.connect(
-                    self.viewport.setGridVisible)
 
-                self.resetCameraAction = QtGui.QAction('&Reset Camera',
-                                                       self.viewport)
-                self.resetCameraAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_R))
-                self.resetCameraAction.setShortcutContext(
-                    QtCore.Qt.WidgetWithChildrenShortcut)
-                self.resetCameraAction.triggered.connect(
-                    self.viewport.resetCamera)
-                self.viewport.addAction(self.resetCameraAction)
+                if self.isCanvas:
+                    self.setGridVisibleAction = QtGui.QAction('&Display Grid', None)
+                    self.setGridVisibleAction.setShortcut(
+                        QtCore.Qt.CTRL + QtCore.Qt.Key_G)
+                    self.setGridVisibleAction.setCheckable(True)
+                    self.setGridVisibleAction.setChecked(
+                        self.viewport.isGridVisible())
+                    self.setGridVisibleAction.toggled.connect(
+                        self.viewport.setGridVisible)
+
+                    self.resetCameraAction = QtGui.QAction('&Reset Camera',
+                                                           self.viewport)
+                    self.resetCameraAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_R))
+                    self.resetCameraAction.setShortcutContext(
+                        QtCore.Qt.WidgetWithChildrenShortcut)
+                    self.resetCameraAction.triggered.connect(
+                        self.viewport.resetCamera)
+                    self.viewport.addAction(self.resetCameraAction)
 
                 self.clearLogAction = QtGui.QAction('&Clear Log Messages', None)
                 self.clearLogAction.triggered.connect(self.logWidget.clear)
@@ -778,10 +781,11 @@ class CanvasWindow(DFG.DFGMainWindow):
                 self.blockCompilationsAction.triggered.connect(
                     self.setBlockCompilations)
 
-                menu.addAction(self.setGridVisibleAction)
-                menu.addSeparator()
-                menu.addAction(self.resetCameraAction)
-                menu.addSeparator()
+                if self.isCanvas:
+                    menu.addAction(self.setGridVisibleAction)
+                    menu.addSeparator()
+                    menu.addAction(self.resetCameraAction)
+                    menu.addSeparator()
                 menu.addAction(self.clearLogAction)
                 menu.addSeparator()
                 menu.addAction(self.blockCompilationsAction)
@@ -797,8 +801,9 @@ class CanvasWindow(DFG.DFGMainWindow):
             self.saveGraph(False)
         elif hotkey == DFG.DFGHotkeys.TOGGLE_MANIPULATION:
             # Make sure we use the Action path, so menu's "checked" state is updated
-            if self.manipAction:
-                self.manipAction.trigger()
+            if isCanvas:
+                if self.manipAction:
+                    self.manipAction.trigger()
         else:
             self.dfgWidget.onHotkeyPressed(key, modifiers, hotkey)
 

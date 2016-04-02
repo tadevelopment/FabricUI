@@ -3,7 +3,7 @@ from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
 from PySide import QtCore, QtGui, QtOpenGL
 from SceneHubWindow import SceneHubWindow
-from CanvasWindow import FabricStyle
+from canvas import FabricStyle
 
 app = QtGui.QApplication([])
 app.setOrganizationName('Fabric Software Inc')
@@ -52,7 +52,7 @@ settings.setValue("mainWindow/lastPresetFolder", str("."))
 qglFormat = QtOpenGL.QGLFormat()
 qglContext = Viewports.RTRGLContext( qglFormat )
 
-sceneHubWin = SceneHubWindow(settings, unguarded, noopt, scene)
+sceneHubWin = SceneHubWindow(fabricDir, settings, unguarded, noopt, scene)
 sceneHubWin.show()
 
 if opts.script:
