@@ -172,3 +172,19 @@ FabricCore::RTVal SHTreeItem::getSGObjectProperty() {
   }
   return sgObjectPropertyRTVal;
 }
+
+FabricCore::RTVal SHTreeItem::getSGCanvasOperator() {
+  FabricCore::RTVal sgCanvasGraphRTVal;
+  try {
+    if( m_parentItem && m_parentItem->m_treeViewObjectDataRTVal.isValid() && !m_parentItem->m_treeViewObjectDataRTVal.isNullObject() ) {
+      FabricCore::RTVal rowRTVal = FabricCore::RTVal::ConstructUInt32( m_client, m_index.row() );
+      sgCanvasGraphRTVal = m_parentItem->m_treeViewObjectDataRTVal.callMethod( "SGCanvasOperator", "getCanvasOperator", 1, &rowRTVal );
+      if( sgCanvasGraphRTVal.isNullObject() )
+        sgCanvasGraphRTVal = FabricCore::RTVal();
+    }
+  }
+  catch( FabricCore::Exception e ) {
+    printf( "SHTreeItem::getSGCanvasGraph: Error: %s\n", e.getDesc_cstr() );
+  }
+  return sgCanvasGraphRTVal;
+}

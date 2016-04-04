@@ -113,8 +113,8 @@ namespace FabricUI
       void onSceneHierarchyChanged();
 
       FabricCore::RTVal getSGObject();
-
       FabricCore::RTVal getSGObjectProperty();
+      FabricCore::RTVal getSGCanvasOperator();
 
       void loadRecursively();
 
