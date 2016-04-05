@@ -80,7 +80,7 @@ namespace FabricUI
 
 
       public slots:
-        virtual void redraw() { updateGL(); }
+        virtual void redraw() { update(); }
         virtual void onKeyPressed(QKeyEvent * event) {}
         virtual void onContextMenu(QPoint &point) {}
         
