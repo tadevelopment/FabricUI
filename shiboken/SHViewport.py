@@ -4,7 +4,7 @@ from FabricEngine import Core
 from FabricEngine.FabricUI import *  
 from SHContextualMenu import SHContextualMenu
 
-class SHViewportWidget(Viewports.ViewportWidget):
+class SHViewport(Viewports.ViewportWidget):
   sceneChanged = QtCore.Signal()
   viewportDestroying = QtCore.Signal()
   synchronizeCommands = QtCore.Signal()
@@ -22,7 +22,7 @@ class SHViewportWidget(Viewports.ViewportWidget):
     self.shGLRenderer = renderer
 
     client = renderer.getClient()
-    super(SHViewportWidget, self).__init__(client, QtGui.QColor(), self.qglContext, parent, sharedWidget, parent.settings)
+    super(SHViewport, self).__init__(client, QtGui.QColor(), self.qglContext, parent, sharedWidget, parent.settings)
 
     self.samples = self.qglContext.format().samples()
     # Force to track mouse movment when not clicking
@@ -88,7 +88,8 @@ class SHViewportWidget(Viewports.ViewportWidget):
 
   def mouseReleaseEvent(self, event):
     self.__onEvent(event)
- 
+    self.synchronizeCommands.emit()
+    
   def mousePressEvent(self, event):
     if self.shGLScene.hasSG():
       if not self.__onEvent(event) and event.button() == QtCore.Qt.RightButton:

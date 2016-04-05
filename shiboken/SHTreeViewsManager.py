@@ -14,14 +14,16 @@ class SHTreeComboBox(QtGui.QComboBox):
     super(SHTreeComboBox, self).showPopup()
  
 
-class SHTreeViewWidget(QtGui.QWidget):
+class SHTreeViewsManager(QtGui.QWidget):
   sceneHierarchyChanged = QtCore.Signal()
   sceneUpdated = QtCore.Signal(SceneHub.SHGLScene)
   
   def __init__(self, parent, klFile):
     self.parentApp = parent
+    self.showProperties = True
+    self.showOperators = True
 
-    super(SHTreeViewWidget, self).__init__()
+    super(SHTreeViewsManager, self).__init__()
     self.shMainGLScene = SceneHub.SHGLScene(self.parentApp.client, klFile)
     self.shGLScene = SceneHub.SHGLScene(self.parentApp.client)
 
@@ -47,34 +49,47 @@ class SHTreeViewWidget(QtGui.QWidget):
   def getScene(self):
     return self.shGLScene
 
-  def __resetTree(self):
+  def _resetTree(self):
     self.shTreeView.reset()
     if self.treeModel is not None: self.treeModel = None
  
-  def __constructTree(self):
-    self.__resetTree()
+  def _constructTree(self):
+    self._resetTree()
     self.treeModel = SceneHub.SHTreeModel(self.shGLScene, self.shTreeView)
+    self.setShowProperties(self.showProperties)
+    self.setShowOperators(self.showOperators)
+
     self.sceneHierarchyChanged.connect(self.treeModel.onSceneHierarchyChanged)
     self.treeModel.sceneHierarchyChanged.connect(self.onSceneHierarchyChanged)
     sceneRootIndex = self.treeModel.addRootItemsFromScene(self.shGLScene)
     self.shTreeView.setModel(self.treeModel)
     self.shTreeView.setExpanded(sceneRootIndex, True)
 
+  def setShowProperties(self, show):
+    self.showProperties = show;
+    if self.treeModel is not None:
+      self.treeModel.setShowProperties(show)
+
+  def setShowOperators(self, show):
+    self.showOperators = show;
+    if self.treeModel is not None:
+      self.treeModel.setShowOperators(show)
+
   def onUpdateScene(self):
     sceneName = self.comboBox.currentText()
     if str(sceneName) == "Main Scene":
       self.shGLScene.setSHGLScene(self.shMainGLScene)
-      self.__constructTree()
+      self._constructTree()
       self.sceneUpdated.emit(self.shGLScene)
     
     elif self.parentApp.dfgWidget.getDFGController().getBinding().getExec().hasVar(str(sceneName)):
       self.shGLScene.setSHGLScene(self.parentApp.dfgWidget.getDFGController().getBinding(), sceneName)
-      self.__constructTree()
+      self._constructTree()
       self.sceneUpdated.emit(self.shGLScene)
     
     else:
       self.comboBox.clear()
-      self.__resetTree()
+      self._resetTree()
     
   def onUpdateSceneList(self):
     self.comboBox.clear()
@@ -83,7 +98,7 @@ class SHTreeViewWidget(QtGui.QWidget):
     sceneNameList = self.shGLScene.getSceneNamesFromBinding(binding)
       
     if len(sceneNameList) == 0 and not self.shGLScene.hasSG():
-      self.__resetTree()
+      self._resetTree()
 
     if self.shMainGLScene.hasSG(): 
       self.comboBox.addItem("Main Scene")

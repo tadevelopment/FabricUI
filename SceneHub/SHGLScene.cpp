@@ -512,12 +512,12 @@ RTVal SHGLScene::getCmdManager() {
   return cmdManager;
 }
 
-RTVal SHGLScene::setParamValue(std::string type, std::string value) {
+RTVal SHGLScene::setParamValue(QString type, QString value) {
   RTVal cmdManager, paramsVal;
   try 
   {
-    paramsVal = RTVal::Construct(getClient(), type.c_str(), 0, 0);
-    DecodeRTValFromJSON(getClient(), paramsVal, value.c_str());
+    paramsVal = RTVal::Construct(getClient(), type.toUtf8(), 0, 0);
+    DecodeRTValFromJSON(getClient(), paramsVal, value.toUtf8().constData());
   }
   catch(Exception e)
   {
@@ -552,10 +552,10 @@ uint32_t SHGLScene::getNumCmdInUndoStack() {
   return 0;
 }
 
-void SHGLScene::executeCmd(std::string cmdName, std::vector<RTVal> &params)  {
+void SHGLScene::executeCmd(QString cmdName, QList<RTVal> &params)  {
   try 
   {
-    getSG().callMethod("", cmdName.c_str(), params.size(), &params[0]);
+    getSG().callMethod("", cmdName.toUtf8(), params.size(), &params[0]);
   }
   catch(Exception e)
   {

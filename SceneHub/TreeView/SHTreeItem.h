@@ -33,7 +33,9 @@ namespace FabricUI {
 
 
       public:
-        SHTreeItem(SHTreeModel *model, SHTreeItem *parentItem, FabricCore::Client client);
+		enum ItemType { Object, Property, Operator };
+
+		SHTreeItem(SHTreeModel *model, SHTreeItem *parentItem, FabricCore::Client client);
 
         ~SHTreeItem() {}
 
@@ -58,12 +60,22 @@ namespace FabricUI {
         int childRow( SHTreeItem *childItem );
 
         FabricCore::RTVal getSGObject();
+
+        FabricCore::RTVal getSGObjectProperty();
     
         void loadRecursively();
 
         void updateChildItemsIfNeeded();
 
-
+		    bool isObject() const { return m_isReference; }
+      	
+        bool isReference() const { return m_isReference; }
+      	
+        bool isPropagated() const { return m_isPropagated; }
+      	
+        bool isGenerator() const { return m_isGenerator; }
+      
+      
       protected:
         void updateChildItemIfNeeded( int row );
 
@@ -79,6 +91,10 @@ namespace FabricUI {
         bool m_needsUpdate, m_hadInitialUpdate;
         QModelIndex m_index;
         QString m_name;
+
+        bool m_isPropagated;
+      	bool m_isReference;
+      	bool m_isGenerator;
       };
 
   }

@@ -1,0 +1,63 @@
+/*
+ *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
+ */
+
+#ifndef __UI_SCENEHUB_DFG_CANVAS_H__
+#define __UI_SCENEHUB_DFG_CANVAS_H__
+
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <FabricCore.h>
+#include <FTL/JSONEnc.h>
+#include <FTL/OwnedPtr.h>
+#include <FTL/JSONValue.h>
+#include <FabricUI/DFG/DFGController.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeItem.h>
+
+namespace FabricUI
+{
+  namespace SceneHub
+  {
+    class SHDFGCanvas : public QObject{
+
+      Q_OBJECT
+
+      public:
+        SHDFGCanvas(FabricUI::DFG::DFGController *controller, FabricCore::Client client);
+ 
+        ~SHDFGCanvas() {}
+        
+        FabricCore::RTVal getSgObject() { return m_dfgCanvasSgObject; }
+        
+        FabricCore::RTVal getOperator() { return  m_dfgCanvasOperator; }
+
+        bool isSgObjectValid() { return m_dfgCanvasSgObject.isValid(); }
+
+        bool isOperatorValid() { return m_dfgCanvasOperator.isValid(); }
+
+        bool dirtyAllOutputs();
+
+
+      public slots:
+        void onArgInserted(unsigned index, FTL::CStrRef name, FTL::CStrRef typeName);
+
+        void onArgRemoved(unsigned index, FTL::CStrRef name);
+
+        void onArgTypeChanged(unsigned index, FTL::CStrRef name, FTL::CStrRef newTypeName);
+
+        void onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item);
+
+
+      protected:         
+        void connectBindingNotifier();
+
+        FabricCore::Client m_client;
+        FabricUI::DFG::DFGController *m_controller;
+        FabricCore::RTVal m_dfgCanvasSgObject;
+        FabricCore::RTVal m_dfgCanvasOperator;
+    };
+
+  }
+}
+
+#endif // __UI_SCENEHUB_DFG_CANVAS_H__

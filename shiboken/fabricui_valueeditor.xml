@@ -1,0 +1,9 @@
+<?xml  version="1.0"?>
+  <typesystem package="FabricUI">
+    <namespace-type name="FabricUI"  generate="no">
+      <namespace-type name="ValueEditor" generate="yes">
+      <object-type name="VETreeWidget" />
+      <object-type name="VEEditorOwner" />
+    </namespace-type>
+  </typesystem>
+</typesystem>

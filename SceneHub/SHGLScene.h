@@ -161,7 +161,7 @@ namespace FabricUI
         /// From the parameter type and its value, creates 
         /// \param type The parameter type
         /// \param value The parameter value JSon encoded
-        FabricCore::RTVal setParamValue(std::string type, std::string value);
+        FabricCore::RTVal setParamValue(QString type, QString value);
         
         /// Gets the command at index i of KL stack.
         /// \param index The indo of the commands in the stack.
@@ -174,7 +174,7 @@ namespace FabricUI
         /// Executes the command at index i of KL stack.
         /// \param cmdName The name of the commands
         /// \param params The paramters
-        void executeCmd(std::string cmdName, std::vector<FabricCore::RTVal> &params);
+        void executeCmd(QString cmdName, QList<FabricCore::RTVal> &params);
 
         /// Undo commands.
         /// \param undoCount The number of undos. 

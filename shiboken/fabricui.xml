@@ -11,6 +11,12 @@
   <load-typesystem name="fabricui_core.xml" generate="yes"/>
 
   <namespace-type name="FabricUI" generate="no">
+
+    <namespace-type name="ValueEditor" generate="yes">
+      <object-type name="VETreeWidget" />
+      <object-type name="VEEditorOwner" />
+    </namespace-type>
+ 
     <load-typesystem name="fabricui_dfg.xml" generate="yes"/>
     <load-typesystem name="fabricui_viewports.xml" generate="yes"/>
     <load-typesystem name="fabricui_timeline.xml" generate="yes"/>
@@ -27,12 +33,6 @@
 
     <namespace-type name="Style" generate="yes">
       <object-type name="FabricStyle" />
-    </namespace-type>
-
-    <namespace-type name="ValueEditor" generate="yes">
-      <object-type name="ValueEditorBridgeOwner" />
-      <object-type name="VEEditorOwner" />
-      <object-type name="VETreeWidget" />
     </namespace-type>
     
     <load-typesystem name="fabricui_scenehub.xml" generate="yes"/>

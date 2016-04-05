@@ -17,6 +17,9 @@ void SHTreeViewWidget::init() {
   m_bUpdatingSelectionFrom3D = false;
   m_shGLScene = new SHGLScene(m_client);
 
+  m_showProperties = true;
+  m_showOperators = true;
+
   m_comboBox = new SHTreeComboBox();
   m_shTreeView = new FabricUI::SceneHub::SHTreeView(m_client);
   
@@ -69,6 +72,9 @@ void SHTreeViewWidget::constructTree() {
   resetTree();
 
   m_treeModel = new FabricUI::SceneHub::SHTreeModel(m_shGLScene/*->getClient(), m_shGLScene->getSG(),*/, m_shTreeView);
+  setShowProperties( m_showProperties );
+  setShowOperators( m_showOperators );
+
   QObject::connect(this, SIGNAL(sceneHierarchyChanged()), m_treeModel, SLOT(onSceneHierarchyChanged()));
   QObject::connect(m_treeModel, SIGNAL(sceneHierarchyChanged()), this, SLOT(onSceneHierarchyChanged()));
 
@@ -79,6 +85,18 @@ void SHTreeViewWidget::constructTree() {
 
   m_shTreeView->setModel(m_treeModel);
   m_shTreeView->setExpanded(sceneRootIndex, true);
+}
+
+void SHTreeViewWidget::setShowProperties( bool show ) {
+  m_showProperties = show;
+  if( m_treeModel )
+    m_treeModel->setShowProperties( show );
+}
+
+void SHTreeViewWidget::setShowOperators( bool show ) {
+  m_showOperators = show;
+  if( m_treeModel )
+    m_treeModel->setShowOperators( show );
 }
 
 void SHTreeViewWidget::onUpdateScene(const QString &sceneName) {
@@ -162,8 +180,11 @@ void SHTreeViewWidget::treeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {
   {
     if( !m_bUpdatingSelectionFrom3D )
     {
-      m_shGLScene->treeItemSelected( item->getSGObject() );
-      emit sceneHierarchyChanged();
+      FabricCore::RTVal sgObject = item->getSGObject();
+      if( sgObject.isValid() ) {
+        m_shGLScene->treeItemSelected( item->getSGObject() );
+        emit sceneHierarchyChanged();//Should only be a "repaint"...
+      }
     }
   }
 }
@@ -173,8 +194,11 @@ void SHTreeViewWidget::treeItemDeselected(FabricUI::SceneHub::SHTreeItem *item) 
   {
     if(!m_bUpdatingSelectionFrom3D) 
     {
-      m_shGLScene->treeItemDeselected(item->getSGObject()); 
-      emit sceneHierarchyChanged();
+      FabricCore::RTVal sgObject = item->getSGObject();
+      if( sgObject.isValid() ) {
+        m_shGLScene->treeItemDeselected( item->getSGObject() );
+        emit sceneHierarchyChanged();//Should only be a "repaint"...
+      }
     }
   }
 }

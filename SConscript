@@ -115,6 +115,7 @@ dirs = [
   'SceneHub/TreeView',
   'SceneHub/Viewports',
   'SceneHub/Commands',
+  'SceneHub/ValueEditor',
 
   'Licensing',
   'ModelItems'
@@ -293,9 +294,10 @@ if uiLibPrefix == 'ui':
         pysideEnv.Dir('SceneHub').srcnode(),
         pysideEnv.Dir('SceneHub/DFG').srcnode(),
         pysideEnv.Dir('SceneHub/Editors').srcnode(),
+        pysideEnv.Dir('SceneHub/Commands').srcnode(),
         pysideEnv.Dir('SceneHub/TreeView').srcnode(),
         pysideEnv.Dir('SceneHub/Viewports').srcnode(),
-        pysideEnv.Dir('SceneHub/Commands').srcnode(),
+        pysideEnv.Dir('SceneHub/ValueEditor').srcnode(),
         fabricDir.Dir('include'),
         ])
     pysideEnv.Append(CPPPATH = [pythonConfig['includeDir']])

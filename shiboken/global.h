@@ -9,6 +9,8 @@
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/Controller.h>
 #include <FabricUI/GraphView/GraphConfig.h>
+#include <FabricUI/ValueEditor/VETreeWidget.h>
+#include <FabricUI/ValueEditor/VEEditorOwner.h>
 #include <FabricUI/DFG/DFGConfig.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGHotkeys.h>
@@ -17,6 +19,7 @@
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/DFG/DFGUICmdHandler_QUndo.h>
 #include <FabricUI/DFG/DFGUICmdHandler_Python.h>
+#include <FabricUI/DFG/DFGVEEditorOwner.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddBackDrop.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddFunc.h>
@@ -56,17 +59,17 @@
 #include <FabricUI/DFG/PresetTreeWidget.h>
 #include <FabricUI/Licensing/Licensing.h>
 #include <FabricUI/Style/FabricStyle.h>
-#include <FabricUI/ValueEditor/ValueEditorBridgeOwner.h>
-#include <FabricUI/ValueEditor/VEEditorOwner.h>
-#include <FabricUI/ValueEditor/VTreeWidget.h>
 #include <FabricUI/Viewports/GLViewportWidget.h>
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Viewports/TimeLineWidget.h>
 #include <FabricUI/Util/StringUtils.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>
+#include <FabricUI/SceneHub/SHDFGCanvas.h>
+#include <FabricUI/SceneHub/Commands/SHCmdHandler.h>
 #include <FabricUI/SceneHub/Viewports/RTRGLContext.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeItem.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
+#include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>

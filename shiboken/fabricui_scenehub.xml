@@ -4,10 +4,13 @@
     <namespace-type name="SceneHub"  generate="yes">
       <object-type name="SHGLRenderer" copyable="false"/>
       <object-type name="SHGLScene" copyable="false"/>
+      <object-type name="SHDFGCanvas" copyable="false"/>
+      <object-type name="SHCmdHandler" copyable="false"/>
       <object-type name="SHTreeItem" copyable="false"/>
       <object-type name="SHTreeModel" copyable="false"/>
       <object-type name="SHTreeView_ViewIndexTarget" copyable="false"/>
       <object-type name="SHBaseTreeView" copyable="false"/>
+      <object-type name="SHVEEditorOwner" copyable="false"/>
     </namespace-type>
   </namespace-type>
 </typesystem>

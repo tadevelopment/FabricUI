@@ -30,8 +30,9 @@ namespace FabricUI
 
       typedef std::vector<SHTreeItem *> RootItemsVec;
 
+
       public:
-        SHTreeModel( SHGLScene *shGLScene, QObject *parent = 0 );
+        SHTreeModel( SHGLScene *shGLScene, QObject *parent );
 
         SHTreeModel( FabricCore::Client client, FabricCore::RTVal sceneGraph, QObject *parent = 0 );
 
@@ -40,6 +41,17 @@ namespace FabricUI
         QModelIndex addRootItemsFromScene(SHGLScene *shGLScene);
 
         QModelIndex addRootItem(FabricCore::RTVal rootSGObject);
+
+        void setShowProperties( bool show );
+
+        void setShowOperators( bool show );
+
+        void setPropertyColor( QColor color ) { m_propertyColorVariant = QVariant( color ); }
+        
+        void setReferenceColor( QColor color ) { m_referenceColorVariant = QVariant( color ); }
+        
+        void setOperatorColor( QColor color ) { m_operatorColorVariant = QVariant( color ); }
+
 
         std::vector< QModelIndex > getIndicesFromSGObject( FabricCore::RTVal sgObject );
 
@@ -80,7 +92,6 @@ namespace FabricUI
         }
 
 
-
       signals:
         void sceneHierarchyChanged() const;
 
@@ -90,15 +101,26 @@ namespace FabricUI
 
 
       private:
+        void initStyle();
+
         RootItemsVec m_rootItems;
         FabricCore::Client m_client;
         FabricCore::RTVal m_treeViewDataRTVal;
 
-        FabricCore::RTVal m_getUpdatedChildDataArgs[3];
-        FabricCore::RTVal m_updateArgs[2];
+        bool m_showProperties;
+        bool m_showOperators;
+
+        QVariant m_propertyColorVariant;
+        QVariant m_referenceColorVariant;
+        QVariant m_operatorColorVariant;
+        QVariant m_overrideFontVariant;
+
+        FabricCore::RTVal m_getUpdatedChildDataArgs[6];
+        FabricCore::RTVal m_updateArgs[3];
 
         uint32_t m_sceneHierarchyChangedBlockCount;
         bool m_sceneHierarchyChangedPending;
+
     };
   }
 }

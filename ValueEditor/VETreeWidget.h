@@ -10,52 +10,59 @@ class BaseViewItem;
 class BaseModelItem;
 class VETreeWidgetItem;
 
-class VETreeWidget : public QTreeWidget
-{
-  Q_OBJECT
+namespace FabricUI {
 
-public:
+  namespace ValueEditor {
 
-  VETreeWidget();
-  ~VETreeWidget();
+    class VETreeWidget : public QTreeWidget
+    {
+      Q_OBJECT
 
-  void reloadStyles();
+    public:
 
-  void sortTree();
-  bool focusNextPrevChild( bool next );
+      VETreeWidget();
+      ~VETreeWidget();
 
-  VETreeWidgetItem* createTreeWidgetItem( BaseViewItem* viewItem, QTreeWidgetItem* parent, int index = -1 );
+      void reloadStyles();
 
-  VETreeWidgetItem* findTreeWidget( QWidget* widget ) const;
-  VETreeWidgetItem* findTreeWidget( QWidget* widget, VETreeWidgetItem * item ) const;
+      void sortTree();
+      bool focusNextPrevChild( bool next );
 
-  VETreeWidgetItem* findTreeWidget( BaseModelItem* pItem ) const;
-  VETreeWidgetItem* findTreeWidget( BaseModelItem* pItem, VETreeWidgetItem* pWidget ) const;
-  VETreeWidgetItem * findTreeWidget( BaseViewItem * pItem ) const;
-  VETreeWidgetItem * findTreeWidget( BaseViewItem * pItem, VETreeWidgetItem * pWidget ) const;
+      VETreeWidgetItem* createTreeWidgetItem( BaseViewItem* viewItem, QTreeWidgetItem* parent, int index = -1 );
 
-  public slots:
+      VETreeWidgetItem* findTreeWidget( QWidget* widget ) const;
+      VETreeWidgetItem* findTreeWidget( QWidget* widget, VETreeWidgetItem * item ) const;
 
-  void onSetModelItem( BaseModelItem* pItem );
+      VETreeWidgetItem* findTreeWidget( BaseModelItem* pItem ) const;
+      VETreeWidgetItem* findTreeWidget( BaseModelItem* pItem, VETreeWidgetItem* pWidget ) const;
+      VETreeWidgetItem * findTreeWidget( BaseViewItem * pItem ) const;
+      VETreeWidgetItem * findTreeWidget( BaseViewItem * pItem, VETreeWidgetItem * pWidget ) const;
 
-  void onModelItemChildInserted( BaseModelItem* parent, int index, const char* name );
-  void onModelItemRemoved( BaseModelItem* item );
-  void onModelItemRenamed( BaseModelItem* item );
-  void onModelItemTypeChanged( BaseModelItem* item, const char* newType );
-  void onModelItemChildrenReordered( BaseModelItem* parent, const QList<int>& newOrder );
+    public slots:
 
-  void onViewItemChildrenRebuild( BaseViewItem* item );
+      void onSetModelItem( BaseModelItem* pItem );
 
-  // This slot is triggered when an item is edited in the view
-  void onItemEdited( QTreeWidgetItem* item, int column );
+      void onModelItemChildInserted( BaseModelItem* parent, int index, const char* name );
+      void onModelItemRemoved( BaseModelItem* item );
+      void onModelItemRenamed( BaseModelItem* item );
+      void onModelItemTypeChanged( BaseModelItem* item, const char* newType );
+      void onModelItemChildrenReordered( BaseModelItem* parent, const QList<int>& newOrder );
 
-protected slots:
+      void onViewItemChildrenRebuild( BaseViewItem* item );
 
-  void onTreeWidgetItemExpanded( QTreeWidgetItem *_treeWidgetItem );
+      // This slot is triggered when an item is edited in the view
+      void onItemEdited( QTreeWidgetItem* item, int column );
 
-  void onTreeWidgetItemCollapsed( QTreeWidgetItem *_treeWidgetItem );
+    protected slots:
 
-  void prepareMenu( const QPoint& pt );
+      void onTreeWidgetItemExpanded( QTreeWidgetItem *_treeWidgetItem );
 
-  void resetItem();
-};
+      void onTreeWidgetItemCollapsed( QTreeWidgetItem *_treeWidgetItem );
+
+      void prepareMenu( const QPoint& pt );
+
+      void resetItem();
+    };
+
+  }
+}

@@ -40,19 +40,19 @@ namespace FabricUI
       Q_OBJECT
 
       public:
-        SHTreeViewWidget(
-          SHGLScene *shGLScene, 
-          DFG::DFGController *controller,
-          QWidget *parent = 0);
+        SHTreeViewWidget(SHGLScene *shGLScene, DFG::DFGController *controller, QWidget *parent = 0);
 
-        SHTreeViewWidget(
-          FabricCore::Client client,
-          DFG::DFGController *controller,
-          QWidget *parent = 0);
+        SHTreeViewWidget(FabricCore::Client client, DFG::DFGController *controller, QWidget *parent = 0);
 
         ~SHTreeViewWidget() {}
         
+        SHTreeView * getTreeView() { return m_shTreeView; }
+        
         SHGLScene* getScene() { return m_shGLScene; }
+  
+        void setShowProperties( bool show );
+        
+        void setShowOperators( bool show );
   
   
       public slots:
@@ -62,7 +62,6 @@ namespace FabricUI
 
         void expandTree(uint32_t level);
         
-        /// Calls when the SceneGraph hierachy changed.
         /// Calls when the SceneGraph hierachy changed.
         void onSceneHierarchyChanged();
         
@@ -86,9 +85,7 @@ namespace FabricUI
 
       private:
         void init();
-        
         void resetTree();
-
         void constructTree();
 
 	      FabricCore::Client m_client;
@@ -100,6 +97,9 @@ namespace FabricUI
 
         SHTreeComboBox *m_comboBox;
         bool m_bUpdatingSelectionFrom3D;
+        bool m_showProperties;
+        bool m_showOperators;
+
     };
 
   }

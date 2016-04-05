@@ -57,6 +57,14 @@ namespace FabricUI
         static SHTreeItem *GetTreeItemAtIndex(QModelIndex index);
 
 
+      signals:
+        virtual void itemSelected(FabricUI::SceneHub::SHTreeItem *item);
+        
+        virtual void itemDeselected(FabricUI::SceneHub::SHTreeItem *item);
+        
+        virtual void itemDoubleClicked( FabricUI::SceneHub::SHTreeItem *item);
+
+
       protected:
         SHTreeItem *getTreeItemAtIndex(QModelIndex index);
 

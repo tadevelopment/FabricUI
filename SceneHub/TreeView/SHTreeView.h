@@ -17,12 +17,19 @@ namespace FabricUI
 
       public:
         SHTreeView(FabricCore::Client &client, QWidget *parent = 0);
-      
-      signals:
-        void itemSelected(FabricUI::SceneHub::SHTreeItem *item);
+
+        virtual void mousePressEvent(QMouseEvent *event);
         
-        void itemDeselected(FabricUI::SceneHub::SHTreeItem *item);
-       
+        virtual void mouseDoubleClickEvent(QMouseEvent * event);
+     
+
+      signals:
+        virtual void itemSelected(FabricUI::SceneHub::SHTreeItem *item);
+        
+        virtual void itemDeselected(FabricUI::SceneHub::SHTreeItem *item);
+        
+        virtual void itemDoubleClicked( FabricUI::SceneHub::SHTreeItem *item );
+        
 
       public slots:
         void onCustomContextMenu(const QPoint &point);
@@ -30,6 +37,8 @@ namespace FabricUI
 
       protected:
         void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+      
+        QLineEdit *m_LineEdit;
     };
   }
 }

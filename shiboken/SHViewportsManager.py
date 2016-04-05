@@ -2,9 +2,9 @@ import math
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core
 from FabricEngine.FabricUI import *
-from SHViewportWidget import SHViewportWidget
+from SHViewport import SHViewport
 
-class SHViewportWidgetsManager():
+class SHViewportsManager():
 
   def __init__(self, parent):
     self.samples = 1
@@ -29,7 +29,7 @@ class SHViewportWidgetsManager():
           self.sampleActions.append(multisampleMenu.addAction(str(int(math.pow(2, i)))))
           self.sampleActions[i].setCheckable(True)
           self.sampleActions[i].triggered.connect(self._onSetSamples)
-        self.__updateSampleChecks()
+        self._updateSampleChecks()
     
   def update(self):
     self.shGLRenderer.update()
@@ -64,8 +64,8 @@ class SHViewportWidgetsManager():
       format.setSampleBuffers(self.samples > 1)
       qglContext = Viewports.RTRGLContext(format)
 
-    scene = self.parentApp.shTreeViewWidget.getScene()
-    newViewport = SHViewportWidget(
+    scene = self.parentApp.shTreesManager.getScene()
+    newViewport = SHViewport(
       self.shGLRenderer,
       scene,
       index, 
@@ -87,17 +87,20 @@ class SHViewportWidgetsManager():
     newViewport.sceneChanged.connect(self.onRefreshAllViewports)
     newViewport.manipsAcceptedEvent.connect(self.onRefreshAllViewports)
 
-    self.parentApp.shTreeViewWidget.sceneHierarchyChanged.connect(self.onRefreshAllViewports)
-    self.parentApp.shTreeViewWidget.sceneUpdated.connect(newViewport.onSceneUpdated)
-    newViewport.sceneChanged.connect(self.parentApp.shTreeViewWidget.onSceneHierarchyChanged)
-    newViewport.manipsAcceptedEvent.connect(self.parentApp.shTreeViewWidget.onUpdateFrom3DSelection)
-   
-    #if(self.shCmdViewWidget)
-    #  newViewport.synchronizeCommands.connect( self.shCmdViewWidget.synchronize() )
+    self.parentApp.shTreesManager.sceneHierarchyChanged.connect(self.onRefreshAllViewports)
+    self.parentApp.shTreesManager.sceneUpdated.connect(newViewport.onSceneUpdated)
+    newViewport.sceneChanged.connect(self.parentApp.shTreesManager.onSceneHierarchyChanged)
+    newViewport.manipsAcceptedEvent.connect(self.parentApp.shTreesManager.onUpdateFrom3DSelection)
+    
+    self.parentApp.qUndoStack.indexChanged.connect(self.onRefreshAllViewports)
+    newViewport.synchronizeCommands.connect(self._onSynchronizeCommands)
+    
+    if self.parentApp.valueEditor is not None:
+      newViewport.sceneChanged.connect(self.parentApp.valueEditor.onSceneChanged);
 
     return newViewport, intermediateOwnerWidget;
 
-  def __addViewport(self, orthographic):
+  def _addViewport(self, orthographic):
     index = self.nextViewportIndex
     self.nextViewportIndex = self.nextViewportIndex + 1
     _, intermediateOwnerWidget = self.createViewport(index, orthographic, False, self.parentApp.viewport)
@@ -110,7 +113,7 @@ class SHViewportWidgetsManager():
     viewportDock.setAttribute(QtCore.Qt.WA_DeleteOnClose)
     self.parentApp.addDockWidget(QtCore.Qt.TopDockWidgetArea, viewportDock)
     
-  def __updateSampleChecks(self):
+  def _updateSampleChecks(self):
     self.sampleActions[0].setChecked(False)
     self.sampleActions[1].setChecked(False)
     self.sampleActions[2].setChecked(False)
@@ -133,8 +136,11 @@ class SHViewportWidgetsManager():
     #  self.viewports.remove(viewport)
   
   def onRefreshAllViewports(self):
-    self.parentApp.shTreeViewWidget.getScene().prepareSceneForRender()
+    self.parentApp.shTreesManager.getScene().prepareSceneForRender()
     for viewport in self.viewports: viewport.redraw()
+
+  def _onSynchronizeCommands(self):
+    self.parentApp.shCmdHandler.synchronize()
 
   def onRefreshViewport(self, refreshAll):
     if refreshAll == True: 
@@ -144,17 +150,17 @@ class SHViewportWidgetsManager():
       viewport.redraw()
 
   def _onAddViewport(self):
-    self.__addViewport(False)
+    self._addViewport(False)
 
   def _onAddOrthoViewport(self):
-    self.__addViewport(True)
+    self._addViewport(True)
 
   def _onSetSamples(self):
     for i in range(0, 4):
       if self.sampleActions[i].isChecked() and self.samples != int(math.pow(2, i)):
  
         self.samples = int(math.pow(2, i))
-        self.__updateSampleChecks()
+        self._updateSampleChecks()
 
         # We need to recreate all viewports widgets with the new sampling setting
         oldViewports = list(self.viewports)

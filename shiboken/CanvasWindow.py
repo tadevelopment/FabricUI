@@ -53,14 +53,14 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.autosaveTimer.start(CanvasWindow.autosaveIntervalSecs * 1000)
         self.dockFeatures = QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable | QtGui.QDockWidget.DockWidgetClosable
 
-        self.__init(fabricDir)
+        self._init(fabricDir)
         self._initWindow()
         self._initKL(unguarded)
         self._initLog()
         self._initDFG()
+        self._initValueEditor()
         self._initTreeView()
         self._initGL()
-        self._initValueEditor()
         self._initTimeLine()
         self._initDocksAndMenus()
 
@@ -71,7 +71,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.valueEditor.initConnections()
         self.installEventFilter(CanvasWindowEventFilter(self))
 
-    def __init(self, fabricDir):
+    def _init(self, fabricDir):
         DFG.DFGWidget.setSettings(self.settings)
         self.config = DFG.DFGConfig()
 
@@ -114,7 +114,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.fpsTimer.timeout.connect(self.updateFPS)
         self.fpsTimer.start()
 
-    def __reportCallback(self, source, level, line):
+    def _reportCallback(self, source, level, line):
         if self.dfgWidget:
           self.dfgWidget.getDFGController().log(line)
 
@@ -123,7 +123,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         else:
           sys.stderr.write(line + "\n")
 
-    def __statusCallback(self, target, data):
+    def _statusCallback(self, target, data):
         if target == "licensing":
           try:
             FabricUI.HandleLicenseData(self, self.client, data, True)
@@ -133,33 +133,36 @@ class CanvasWindow(DFG.DFGMainWindow):
     def _initKL(self, unguarded):
         clientOpts = {
           'guarded': not unguarded,
-          'reportCallback': self.__reportCallback
+          'reportCallback': self._reportCallback
           }
         client = Core.createClient(clientOpts)
         #options.licenseType = FabricCore::ClientLicenseType_Interactive
         client.loadExtension('Math')
         client.loadExtension('Parameters')
         client.loadExtension('Util')
-        client.setStatusCallback(self.__statusCallback)
+        client.setStatusCallback(self._statusCallback)
         self.client = client
         self.qUndoStack = QtGui.QUndoStack()
 
+    def _initCommands(self, binding):
+        self.scriptEditor = ScriptEditor(self.client, binding, self.qUndoStack, self.logWidget)
+        self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
+    
     def _initDFG(self):
         self.evalContext = self.client.RT.types.EvalContext.create()
         self.evalContext = self.evalContext.getInstance('EvalContext')
         self.evalContext.host = 'Canvas'
         self.evalContext.graph = ''
 
-        astManager = KLASTManager(self.client)
         self.host = self.client.getDFGHost()
         binding = self.host.createBindingToNewGraph()
+        self._initCommands(binding);
+
+        astManager = KLASTManager(self.client)
         self.lastSavedBindingVersion = binding.getVersion()
         self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
-
+   
         graph = binding.getExec()
-        self.scriptEditor = ScriptEditor(self.client, binding, self.qUndoStack, self.logWidget)
-        self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
-       
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
                                        binding, '', graph, astManager,
                                        self.dfguiCommandHandler, self.config)
@@ -190,20 +193,8 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
     def _initValueEditor(self):
-        class VEBridgeOwner(FabricUI.ValueEditor.ValueEditorBridgeOwner):
-          def __init__(self, mainWindow):
-            FabricUI.ValueEditor.ValueEditorBridgeOwner.__init__(self)
-            self.mainWindow = mainWindow
-
-          def log(self, txt):
-            if self.mainWindow.dfgWidget:
-              self.mainWindow.dfgWidget.getDFGController().logError(txt)
-
-          def getDfgWidget(self):
-            return self.mainWindow.dfgWidget
-        self.veBridgeOwner = VEBridgeOwner(self)
-
-        self.valueEditor = FabricUI.ValueEditor.VEEditorOwner(self.veBridgeOwner)
+        print "canvas _initValueEditor"
+        self.valueEditor = DFG.DFGVEEditorOwner(self.dfgWidget)
      
     def _initLog(self):
         self.logWidget = DFG.DFGLogWidget(self.config)
