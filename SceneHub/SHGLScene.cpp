@@ -300,11 +300,22 @@ bool SHGLScene::showTreeViewByDefault(uint32_t &level) {
   }
   catch(Exception e)
   {
-    printf("SHGLScene::getSelectionCategory: exception: %s\n", e.getDesc_cstr());
+    printf("SHGLScene::showTreeViewByDefault: exception: %s\n", e.getDesc_cstr());
   }
   return show;
 }
 
+bool SHGLScene::showValueEditorByDefault( FabricCore::RTVal &defaultTarget ) {
+  bool show = false;
+  try {
+    defaultTarget = FabricCore::RTVal::Construct( m_client, "SGObject", 0, 0 );
+    show = m_shGLSceneVal.callMethod( "Boolean", "showValueEditorByDefault", 1, &defaultTarget ).getBoolean();
+  }
+  catch( Exception e ) {
+    printf( "SHGLScene::showValueEditorByDefault: exception: %s\n", e.getDesc_cstr() );
+  }
+  return show;
+}
 
 void SHGLScene::addExternalFileList(QStringList pathList, float *pos, bool forceExpand) {
   try 

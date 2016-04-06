@@ -135,6 +135,9 @@ namespace FabricUI
     
         bool showTreeViewByDefault(uint32_t &level);
 
+        /// If true, show the value editor when initializing, and set its target to defaultTarget
+        bool showValueEditorByDefault( FabricCore::RTVal &defaultTarget );
+
         /// Gets the command manager.
         FabricCore::RTVal getCmdManager();
 
