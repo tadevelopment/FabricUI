@@ -71,20 +71,18 @@ namespace FabricUI
         virtual void setBackgroundColor(QColor color) {}
       
         // Canvas (InlineDrawing) specific
-        virtual void clearInlineDrawing() {}
-        virtual bool isManipulationActive() { return false; }
-        virtual void setManipulationActive(bool state) {}
-        virtual ManipulationTool *getManipTool() { return 0; }
-        virtual bool isUsingStage() { return false; }
-        virtual bool isStageVisible() { return false; }
-
-
+        virtual void clearInlineDrawing() {};
+        virtual bool isManipulationActive() const { return false; };
+        virtual void setManipulationActive(bool state) {};
+        virtual ManipulationTool *getManipTool() { return 0; };
+        virtual bool isUsingStage() { return false; };
+        virtual bool isStageVisible() { return false; };
+ 
       public slots:
         virtual void redraw() { updateGL(); }
         virtual void onKeyPressed(QKeyEvent * event) {}
         virtual void onContextMenu(QPoint &point) {}
         
-
       protected:
         virtual void keyPressEvent(QKeyEvent * event);
         virtual void mousePressEvent(QMouseEvent *event);
