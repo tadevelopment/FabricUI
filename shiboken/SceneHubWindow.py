@@ -16,7 +16,7 @@ class SceneHubWindow(CanvasWindow):
     self.noopt = noopt
     self.klFile = klFile
     self.viewport = None
-    self.shDFGCanvas = None
+    self.shDFGBinding = None
     self.isCanvas = False
     super(SceneHubWindow, self).__init__(fabricDir, settings, unguarded)
 
@@ -29,8 +29,8 @@ class SceneHubWindow(CanvasWindow):
 
   def _intDFG(self):
     super(SceneHubWindow, self)._intDFG()
-    self.shDFGCanvas = SceneHub.SHDFGCanvas(self.mainBinding, self.dfgWidget.getUIController(), self.client)
-    self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGCanvas.onTreeItemSelected)
+    self.shDFGBinding = SceneHub.SHDFGCanvas(self.mainBinding, self.dfgWidget.getUIController(), self.client)
+    self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGBinding.onTreeItemSelected)
 
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
@@ -109,8 +109,8 @@ class SceneHubWindow(CanvasWindow):
     self.timeLine.play()
    
   def _onCanvasSidePanelInspectRequested(self):
-    if self.shDFGCanvas is not None and self.shDFGCanvas.isSgObjectValid(): 
-      self.valueEditor.updateSGObject(self.shDFGCanvas)
+    if self.shDFGBinding is not None and self.shDFGBinding.isSgObjectValid(): 
+      self.valueEditor.updateSGObject(self.shDFGBinding)
   
   def _onModelValueChanged(self, item, var):
     self.viewportsManager.onRefreshAllViewports()
@@ -211,7 +211,7 @@ class SceneHubWindow(CanvasWindow):
     txt.show();
   
   def onDirty(self):
-    if self.shDFGCanvas is not None and self.shDFGCanvas.dirtyAllOutputs():
+    if self.shDFGBinding is not None and self.shDFGBinding.dirtyAllOutputs():
       self.onRefreshAllViewports()
 
   def _onLog(self, message):

@@ -100,7 +100,7 @@
 #include <FabricUI/Util/StringUtils.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>
-#include <FabricUI/SceneHub/SHDFGCanvas.h>
+#include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
 #include <FabricUI/SceneHub/Commands/SHCmdHandler.h>
 #include <FabricUI/SceneHub/Viewports/RTRGLContext.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeItem.h>

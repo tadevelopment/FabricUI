@@ -23,8 +23,10 @@ SHTreeItem::SHTreeItem(SHTreeModel *model, SHTreeItem *parentItem, FabricCore::C
 }
 
 QString SHTreeItem::desc() {
-  return ( m_treeViewObjectDataRTVal.isValid() && !m_treeViewObjectDataRTVal.isNullObject() ) ? 
-    m_treeViewObjectDataRTVal.callMethod( "String", "getName", 0, 0 ).getStringCString() : m_name;
+  if( m_treeViewObjectDataRTVal.isValid() && !m_treeViewObjectDataRTVal.isNullObject() )
+    return m_treeViewObjectDataRTVal.callMethod( "String", "getName", 0, 0 ).getStringCString();
+  else
+    return m_name;
 }
 
 void SHTreeItem::updateNeeded( FabricCore::RTVal treeViewObjectData, bool invalidate ) {
@@ -48,7 +50,6 @@ int SHTreeItem::childRow( SHTreeItem *childItem ) {
   assert( false );
   return 0;
 }
-
 
 void SHTreeItem::updateChildItemIfNeeded( int row ) {
   if( m_childItems[row].m_updateNeeded ) {
@@ -162,7 +163,6 @@ void SHTreeItem::updateChildItemsIfNeeded() {
   m_needsUpdate = false;
 }
 
-
 void SHTreeItem::loadRecursively() {
   try
   {
@@ -223,3 +223,18 @@ FabricCore::RTVal SHTreeItem::getSGObjectProperty() {
   return sgObjectPropertyRTVal;
 }
 
+FabricCore::RTVal SHTreeItem::getSGCanvasOperator() {
+  FabricCore::RTVal sgCanvasGraphRTVal;
+  try {
+    if( m_parentItem && m_parentItem->m_treeViewObjectDataRTVal.isValid() && !m_parentItem->m_treeViewObjectDataRTVal.isNullObject() ) {
+      FabricCore::RTVal rowRTVal = FabricCore::RTVal::ConstructUInt32( m_client, m_index.row() );
+      sgCanvasGraphRTVal = m_parentItem->m_treeViewObjectDataRTVal.callMethod( "SGCanvasOperator", "getCanvasOperator", 1, &rowRTVal );
+      if( sgCanvasGraphRTVal.isNullObject() )
+        sgCanvasGraphRTVal = FabricCore::RTVal();
+    }
+  }
+  catch( FabricCore::Exception e ) {
+    printf( "SHTreeItem::getSGCanvasGraph: Error: %s\n", e.getDesc_cstr() );
+  }
+  return sgCanvasGraphRTVal;
+}

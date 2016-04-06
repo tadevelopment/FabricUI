@@ -284,7 +284,7 @@ bool GLViewportWidget::manipulateCamera(
     printf("Error: %s\n", e.getDesc_cstr());
   }
   if ( shouldUpdateGL )
-    updateGL();
+    update();
   return result;
 }
 
@@ -293,7 +293,7 @@ bool GLViewportWidget::isGridVisible()
   return m_gridVisible;
 }
 
-void GLViewportWidget::setGridVisible( bool gridVisible, bool update )
+void GLViewportWidget::setGridVisible( bool gridVisible, bool updateView )
 {
   m_gridVisible = gridVisible;
   if(m_settings)
@@ -314,8 +314,8 @@ void GLViewportWidget::setGridVisible( bool gridVisible, bool update )
     printf("Error: %s\n", e.getDesc_cstr());
   }
 
-  if(update)
-    updateGL();
+  if( updateView )
+    update();
 }
 
 void GLViewportWidget::resetCamera()
@@ -347,6 +347,6 @@ void GLViewportWidget::resetCamera()
     printf("Error: %s\n", e.getDesc_cstr());
   }
 
-  updateGL();
+  update();
 }
 

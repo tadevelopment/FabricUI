@@ -5,7 +5,7 @@
 #pragma once
 
 #include <FabricUI/DFG/DFGVEEditorOwner.h>
-#include <FabricUI/SceneHub/SHDFGCanvas.h>
+#include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
 #include <FabricUI/SceneHub/Commands/SHCmdHandler.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeView.h>
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
@@ -38,7 +38,7 @@ namespace FabricUI {
       
       void onSceneItemSelected(FabricUI::SceneHub::SHTreeItem *item);
       
-      void updateSGObject(SHDFGCanvas *shDFGCanvas);
+      void updateSGObject(SHDFGBinding *shDFGBinding);
       
       void onSGObjectPropertyItemInserted(FabricUI::ValueEditor::BaseModelItem * item);
       

@@ -78,8 +78,8 @@ void SHVEEditorOwner::onSceneChanged() {
   }
 }
 
-void SHVEEditorOwner::updateSGObject( SHDFGCanvas *shDFGCanvas ) {
-  updateSGObject(shDFGCanvas->getSgObject());
+void SHVEEditorOwner::updateSGObject( SHDFGBinding *shDFGBinding ) {
+  updateSGObject(shDFGBinding->getSgObject());
 }
 
 void SHVEEditorOwner::updateSGObject( const FabricCore::RTVal& sgObject ) {

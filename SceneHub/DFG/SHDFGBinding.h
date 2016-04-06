@@ -18,17 +18,17 @@ namespace FabricUI
 {
   namespace SceneHub
   {
-    class SHDFGCanvas : public QObject{
+    class SHDFGBinding : public QObject{
 
       Q_OBJECT
 
       public:
-        SHDFGCanvas(
+        SHDFGBinding(
           FabricCore::DFGBinding &binding, 
           FabricUI::DFG::DFGController *controller, 
           FabricCore::Client client);
  
-        ~SHDFGCanvas() {}
+        ~SHDFGBinding() {}
         
         FabricCore::RTVal getSgObject() { return m_dfgCanvasSgObject; }
         
@@ -40,6 +40,10 @@ namespace FabricUI
 
         bool dirtyAllOutputs();
 
+
+      signals:
+        void sceneChanged();
+        
 
       public slots:
         void onArgInserted(unsigned index, FTL::CStrRef name, FTL::CStrRef typeName);

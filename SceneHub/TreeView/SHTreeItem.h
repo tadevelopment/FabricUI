@@ -49,20 +49,24 @@ namespace FabricUI {
 
         void updateNeeded() { m_needsUpdate = true; }
 
+        void updateNeeded( FabricCore::RTVal treeViewObjectData, bool invalidate );
+
         SHTreeItem *parentItem()  { return m_parentItem; }
 
         SHTreeItem *childItem( int row ) { return getOrCreateChildItem( row ); }
-
-        void updateNeeded( FabricCore::RTVal treeViewObjectData, bool invalidate );
 
         int childItemCount();
 
         int childRow( SHTreeItem *childItem );
 
+        void onSceneHierarchyChanged();
+
         FabricCore::RTVal getSGObject();
 
         FabricCore::RTVal getSGObjectProperty();
-    
+      
+        FabricCore::RTVal getSGCanvasOperator();
+
         void loadRecursively();
 
         void updateChildItemsIfNeeded();
