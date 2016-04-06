@@ -93,27 +93,32 @@ namespace FabricUI
         FabricCore::RTVal getSelectedObjects(); 
 
         /// Updates the tree-view when selection from the scene.
-        /// \param obj The selected scenegraph object
-        void sceneItemSelected(FabricCore::RTVal obj); 
+        /// \param sgObject The selected scenegraph object
+        void sceneItemSelected(FabricCore::RTVal sgObject); 
 
         /// Updates the tree-view when selection from the scene.
-        /// \param obj The selected SHTreeItem
+        /// \param item The selected SHTreeItem
         void treeItemSelected(SHTreeItem *item); 
 
         /// Updates the 'selection' from TreeView's selection.
-        /// \param obj The selected scenegraph object
-        void treeItemSelected(FabricCore::RTVal obj); 
+        /// \param sgObject The selected scenegraph object
+        void treeItemSelected(FabricCore::RTVal sgObject); 
 
         /// Updates the 'selection' from TreeView's selection.
-        /// \param obj The deselected SHTreeItem
+        /// \param item The deselected SHTreeItem
         void treeItemDeselected(SHTreeItem *item); 
         
         /// Updates the 'selection' from TreeView's selection.
-        /// \param obj The deselected scenegraph object
-        void treeItemDeselected(FabricCore::RTVal obj); 
+        /// \param sgObject The deselected scenegraph object
+        void treeItemDeselected(FabricCore::RTVal sgObject); 
                     
+        /// Gets the path of the current selected object.
         QString getTreeItemPath(SHTreeItem *item);
 
+        /// Gets the path of the current selected object.
+        QString getTreeItemPath(FabricCore::RTVal sgObject);
+
+        /// Gets the path of the current selected object.
         QStringList getSceneNamesFromBinding(FabricCore::DFGBinding &binding);
 
         /// Checks if the selection changed from the manipulation system.

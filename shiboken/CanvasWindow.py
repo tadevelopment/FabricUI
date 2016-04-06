@@ -143,11 +143,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         client.setStatusCallback(self._statusCallback)
         self.client = client
         self.qUndoStack = QtGui.QUndoStack()
-
-    def _initCommands(self, binding):
-        self.scriptEditor = ScriptEditor(self.client, binding, self.qUndoStack, self.logWidget)
-        self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
-    
+ 
     def _initDFG(self):
         self.evalContext = self.client.RT.types.EvalContext.create()
         self.evalContext = self.evalContext.getInstance('EvalContext')
@@ -155,16 +151,17 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.evalContext.graph = ''
 
         self.host = self.client.getDFGHost()
-        binding = self.host.createBindingToNewGraph()
-        self._initCommands(binding);
+        self.mainBinding = self.host.createBindingToNewGraph()
+        self.scriptEditor = ScriptEditor(self.client, self.mainBinding, self.qUndoStack, self.logWidget)
+        self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
 
         astManager = KLASTManager(self.client)
-        self.lastSavedBindingVersion = binding.getVersion()
+        self.lastSavedBindingVersion = self.mainBinding.getVersion()
         self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
    
-        graph = binding.getExec()
+        graph = self.mainBinding.getExec()
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
-                                       binding, '', graph, astManager,
+                                       self.mainBinding, '', graph, astManager,
                                        self.dfguiCommandHandler, self.config)
 
         tabSearchWidget = self.dfgWidget.getTabSearchWidget()

@@ -43,7 +43,7 @@ namespace FabricUI
 
       virtual bool isSGObject() const /*override*/ { return true; }
 
-      BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
+      FabricUI::ValueEditor::BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
 
       virtual int getNumChildren() /*override*/;
 
@@ -83,14 +83,14 @@ namespace FabricUI
       // Metadata
       /////////////////////////////////////////////////////////////////////////
 
-      virtual ItemMetadata* getMetadata() /*override*/;
+      virtual FabricUI::ValueEditor::ItemMetadata* getMetadata() /*override*/;
 
       virtual void setMetadataImp( const char* key, 
                                 const char* value, 
                                 bool canUndo )/*override*/;
 
     signals:
-      void propertyItemInserted( BaseModelItem * item );
+      void propertyItemInserted( FabricUI::ValueEditor::BaseModelItem * item );
 
     protected:
 

@@ -7,8 +7,6 @@
 #include <FabricUI/ValueEditor/VEEditorOwner.h>
 #include <FabricUI/DFG/DFGNotifier.h>
 
-class BaseModelItem;
-class VETreeWidget;
 
 namespace FTL {
   class JSONArray;
@@ -30,6 +28,11 @@ namespace FabricUI {
     class RootModelItem;
   }
 
+  namespace ValueEditor {
+    class BaseModelItem;
+    class VETreeWidget;
+  }
+  
   namespace DFG 
   { 
 

@@ -67,7 +67,7 @@ FTL::CStrRef SGObjectModelItem::getChildName( int i )
   return "";
 }
 
-BaseModelItem *SGObjectModelItem::createChild( FTL::CStrRef name ) /**/
+FabricUI::ValueEditor::BaseModelItem *SGObjectModelItem::createChild( FTL::CStrRef name ) /**/
 {
   ensurePropertiesRTVal();
   if(m_propertiesRtVal.isValid())
@@ -82,7 +82,7 @@ BaseModelItem *SGObjectModelItem::createChild( FTL::CStrRef name ) /**/
         return NULL;
 
       FabricCore::RTVal propRtVal = m_propertiesRtVal.getArrayElement(it->second);
-      BaseModelItem * child = pushChild(new SGObjectPropertyModelItem(m_cmdViewWidget, m_client, propRtVal, false));
+      FabricUI::ValueEditor::BaseModelItem * child = pushChild(new SGObjectPropertyModelItem(m_cmdViewWidget, m_client, propRtVal, false));
       emit propertyItemInserted(child);
       return child;
     }
@@ -132,7 +132,7 @@ QVariant SGObjectModelItem::getValue()
   return QVariant();
 }
 
-ItemMetadata* SGObjectModelItem::getMetadata()
+FabricUI::ValueEditor::ItemMetadata* SGObjectModelItem::getMetadata()
 {
   return NULL;
 }

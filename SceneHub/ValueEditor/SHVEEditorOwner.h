@@ -40,7 +40,7 @@ namespace FabricUI {
       
       void updateSGObject(SHDFGCanvas *shDFGCanvas);
       
-      void onSGObjectPropertyItemInserted(BaseModelItem * item);
+      void onSGObjectPropertyItemInserted(FabricUI::ValueEditor::BaseModelItem * item);
       
       void onSceneChanged();
 

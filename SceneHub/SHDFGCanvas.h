@@ -23,7 +23,10 @@ namespace FabricUI
       Q_OBJECT
 
       public:
-        SHDFGCanvas(FabricUI::DFG::DFGController *controller, FabricCore::Client client);
+        SHDFGCanvas(
+          FabricCore::DFGBinding &binding, 
+          FabricUI::DFG::DFGController *controller, 
+          FabricCore::Client client);
  
         ~SHDFGCanvas() {}
         
@@ -51,8 +54,9 @@ namespace FabricUI
       protected:         
         void connectBindingNotifier();
 
-        FabricCore::Client m_client;
+        FabricCore::DFGBinding m_binding;
         FabricUI::DFG::DFGController *m_controller;
+        FabricCore::Client m_client;
         FabricCore::RTVal m_dfgCanvasSgObject;
         FabricCore::RTVal m_dfgCanvasOperator;
     };

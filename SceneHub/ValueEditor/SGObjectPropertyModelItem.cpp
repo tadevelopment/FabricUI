@@ -40,7 +40,7 @@ FTL::CStrRef SGObjectPropertyModelItem::getChildName( int i )
   return ""; // todo
 }
 
-BaseModelItem *SGObjectPropertyModelItem::createChild( FTL::CStrRef name ) /**/
+FabricUI::ValueEditor::BaseModelItem *SGObjectPropertyModelItem::createChild( FTL::CStrRef name ) /**/
 {
   // return new ArgModelItem(
   //   m_dfgUICmdHandler,
@@ -86,7 +86,7 @@ void SGObjectPropertyModelItem::onRenamed(
 {
 }
 
-ItemMetadata* SGObjectPropertyModelItem::getMetadata()
+FabricUI::ValueEditor::ItemMetadata* SGObjectPropertyModelItem::getMetadata()
 {
   return NULL;
 }
@@ -417,7 +417,7 @@ void SGObjectPropertyModelItem::setValue(
       return; //Might be another Object type
   }
 
-  if(!RTVariant::toRTVal(var, varVal))
+  if(!FabricUI::ValueEditor::RTVariant::toRTVal(var, varVal))
     return;
 
   /* special case for Mat44 */
@@ -440,7 +440,7 @@ void SGObjectPropertyModelItem::setValue(
   {
 
     FabricCore::RTVal valueAtInteractionBeginVal;
-    if(!RTVariant::toRTVal(valueAtInteractionBegin, valueAtInteractionBeginVal))
+    if(!FabricUI::ValueEditor::RTVariant::toRTVal(valueAtInteractionBegin, valueAtInteractionBeginVal))
       return;
 
     try

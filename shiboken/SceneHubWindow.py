@@ -29,7 +29,7 @@ class SceneHubWindow(CanvasWindow):
 
   def _intDFG(self):
     super(SceneHubWindow, self)._intDFG()
-    self.shDFGCanvas = SceneHub.SHDFGCanvas(self.dfgWidget.getUIController(), self.client)
+    self.shDFGCanvas = SceneHub.SHDFGCanvas(self.mainBinding, self.dfgWidget.getUIController(), self.client)
     self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGCanvas.onTreeItemSelected)
 
   def _initTreeView(self):

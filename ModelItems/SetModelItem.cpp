@@ -6,8 +6,8 @@
 #include <FabricUI/ModelItems/SetPortModelItem.h>
 #include <FabricUI/ModelItems/VarPathModelItem.h>
 
-namespace FabricUI {
-namespace ModelItems {
+using namespace FabricUI;
+using namespace ModelItems;
 
 SetModelItem::SetModelItem(
   DFG::DFGUICmdHandler *dfgUICmdHandler,
@@ -30,7 +30,7 @@ SetModelItem::~SetModelItem()
 {
 }
 
-BaseModelItem *SetModelItem::createChild( FTL::CStrRef portName )
+FabricUI::ValueEditor::BaseModelItem *SetModelItem::createChild( FTL::CStrRef portName )
 {
   if ( portName == FTL_STR("varPath") )
     return pushChild(new VarPathModelItem(
@@ -50,6 +50,3 @@ BaseModelItem *SetModelItem::createChild( FTL::CStrRef portName )
       portName
       ));
 }
-
-} // namespace ModelItems
-} // namespace FabricUI

@@ -248,10 +248,11 @@ RTVal SHGLScene::getSelectedObjects() {
   return selectedObject;
 }
 
-void SHGLScene::sceneItemSelected(RTVal obj) {
+void SHGLScene::sceneItemSelected(RTVal sgObject) {
+  if(!sgObject.isValid()) return;
   try 
   {
-    m_shGLSceneVal.callMethod("", "sceneItemSelected", 1, &obj);
+    m_shGLSceneVal.callMethod("", "sceneItemSelected", 1, &sgObject);
   }
   catch(Exception e)
   {
@@ -260,13 +261,14 @@ void SHGLScene::sceneItemSelected(RTVal obj) {
 }
 
 void SHGLScene::treeItemSelected(SHTreeItem *item) {
-  treeItemSelected(item->getSGObject());
+  if(item) treeItemSelected(item->getSGObject());
 }
 
-void SHGLScene::treeItemSelected(RTVal obj) {
+void SHGLScene::treeItemSelected(RTVal sgObject) {
+  if(!sgObject.isValid()) return;
   try 
   {
-    m_shGLSceneVal.callMethod("", "treeItemSelected", 1, &obj);
+    m_shGLSceneVal.callMethod("", "treeItemSelected", 1, &sgObject);
   }
   catch(Exception e)
   {
@@ -275,13 +277,14 @@ void SHGLScene::treeItemSelected(RTVal obj) {
 }
 
 void SHGLScene::treeItemDeselected(SHTreeItem *item) {
-  treeItemDeselected(item->getSGObject());
+  if(item) treeItemDeselected(item->getSGObject());
 }
 
-void SHGLScene::treeItemDeselected(RTVal obj) {
+void SHGLScene::treeItemDeselected(RTVal sgObject) {
+  if(!sgObject.isValid()) return;
   try 
   {
-    m_shGLSceneVal.callMethod("", "treeItemDeselected", 1, &obj);
+    m_shGLSceneVal.callMethod("", "treeItemDeselected", 1, &sgObject);
   }
   catch(Exception e)
   {
@@ -290,10 +293,14 @@ void SHGLScene::treeItemDeselected(RTVal obj) {
 }
 
 QString SHGLScene::getTreeItemPath(SHTreeItem *item) {
+  return (item) ? getTreeItemPath(item->getSGObject()): "none";
+}
+
+QString SHGLScene::getTreeItemPath(RTVal sgObject) {
   QString url = "none";
+  if(!sgObject.isValid()) return url;
   try 
   {
-    RTVal sgObject = item->getSGObject();
     RTVal sgParent = sgObject.callMethod("SGObject", "getOwnerInstance", 0, 0);
 
     if(sgParent.callMethod("Boolean", "isValid", 0, 0).getBoolean())
@@ -321,7 +328,7 @@ QString SHGLScene::getTreeItemPath(SHTreeItem *item) {
   {
     printf("SHGLScene::getTreeItemPath: exception: %s\n", e.getDesc_cstr());
   }
-
+ 
   return url;
 }
 

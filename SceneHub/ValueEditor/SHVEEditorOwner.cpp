@@ -110,7 +110,7 @@ void SHVEEditorOwner::updateSGObject( const FabricCore::RTVal& sgObject ) {
 
   if( sgObject.isValid() && isValid ) {
     objectItem = new SGObjectModelItem( m_cmdViewWidget, getDFGController()->getClient(), sgObject );
-    QObject::connect( objectItem, SIGNAL( propertyItemInserted( BaseModelItem * ) ), this, SLOT( onSGObjectPropertyItemInserted( BaseModelItem * ) ) );
+    QObject::connect( objectItem, SIGNAL( propertyItemInserted( FabricUI::ValueEditor::BaseModelItem * ) ), this, SLOT( onSGObjectPropertyItemInserted( FabricUI::ValueEditor::BaseModelItem * ) ) );
   }
 
   m_modelRoot = objectItem;
@@ -159,8 +159,9 @@ void SHVEEditorOwner::updateSGObjectProperty( const FabricCore::RTVal& sgObjectP
   emit replaceModelRoot( m_objectPropertyItem );
 }
 
-void SHVEEditorOwner::onSGObjectPropertyItemInserted( BaseModelItem * item ) {
-  emit modelItemInserted( m_modelRoot, 0, item->getName().c_str() );
+void SHVEEditorOwner::onSGObjectPropertyItemInserted( FabricUI::ValueEditor::BaseModelItem * item ) {
+  if(item)
+    emit modelItemInserted( m_modelRoot, 0, item->getName().c_str() );
 }
 
 void SHVEEditorOwner::onSidePanelInspectRequested() {

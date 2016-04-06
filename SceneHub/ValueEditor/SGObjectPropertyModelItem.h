@@ -17,7 +17,7 @@ namespace FabricUI
 
     //////////////////////////////////////////////////////////////////////////
     // Basic ModelItem for accessing propertyes
-    class SGObjectPropertyModelItem : public BaseModelItem
+    class SGObjectPropertyModelItem : public FabricUI::ValueEditor::BaseModelItem
     {
       Q_OBJECT
       
@@ -43,7 +43,7 @@ namespace FabricUI
 
       virtual bool isSGObjectProperty() const /*override*/ { return true; }
 
-      BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
+      FabricUI::ValueEditor::BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
 
       virtual int getNumChildren() /*override*/;
 
@@ -85,7 +85,7 @@ namespace FabricUI
       // Metadata
       /////////////////////////////////////////////////////////////////////////
 
-      virtual ItemMetadata* getMetadata() /*override*/;
+      virtual FabricUI::ValueEditor::ItemMetadata* getMetadata() /*override*/;
 
       virtual void setMetadataImp( const char* key, 
                                 const char* value, 

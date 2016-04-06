@@ -7,9 +7,13 @@ using namespace FabricCore;
 using namespace FabricUI::SceneHub;
  
 
-SHDFGCanvas::SHDFGCanvas(FabricUI::DFG::DFGController *controller, FabricCore::Client client) 
-  : m_client(client)
+SHDFGCanvas::SHDFGCanvas(
+  FabricCore::DFGBinding &binding, 
+  FabricUI::DFG::DFGController *controller, 
+  FabricCore::Client client) 
+  : m_binding(binding)
   , m_controller(controller) 
+  , m_client(client)
 { 
   connectBindingNotifier();
 }
@@ -113,7 +117,7 @@ void SHDFGCanvas::onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {
         // return to the standard binding
         m_dfgCanvasOperator = FabricCore::RTVal();
         FabricCore::DFGExec exec =m_controller->getBinding().getExec();
-        m_controller->setBindingExec(m_controller->getBinding(), "", exec );
+        m_controller->setBindingExec(m_binding, "", exec );
       }
     } 
     else 
@@ -121,10 +125,11 @@ void SHDFGCanvas::onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {
       // return to the standard binding
       m_dfgCanvasOperator = FabricCore::RTVal();
       FabricCore::DFGExec exec =m_controller->getBinding().getExec();
-      m_controller->setBindingExec(m_controller->getBinding(), "", exec );
+      m_controller->setBindingExec(m_binding, "", exec );
     }
   } 
   catch( FabricCore::Exception e ) {
+    printf("SHDFGCanvas::onTreeItemSelected: exception: %s\n", e.getDesc_cstr());
   }
 
   connectBindingNotifier();
