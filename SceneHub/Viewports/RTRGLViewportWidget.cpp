@@ -24,7 +24,6 @@ RTRGLViewportWidget::RTRGLViewportWidget(
   , m_orthographic(false)
   , m_shGLRenderer(shGLRenderer)
   , m_shGLScene(shGLScene)
-
 {
   m_samples = qglContext->format().samples();
   // Force to track mouse movment when not clicking
@@ -68,7 +67,6 @@ FabricCore::RTVal RTRGLViewportWidget::getCamera() {
   return m_shGLRenderer->getCamera(m_viewportIndex);
 }
 
-
 void RTRGLViewportWidget::enterEvent(QEvent * event) {
   grabKeyboard();
 }
@@ -79,19 +77,25 @@ void RTRGLViewportWidget::leaveEvent(QEvent * event) {
 
 void RTRGLViewportWidget::mousePressEvent(QMouseEvent *event) {
   if(m_shGLScene)
-  {
+  {  
+    emit synchronizeCommands(); 
     if(!onEvent(event) && event->button() == Qt::RightButton) 
     {
       SHEditorWidget *editor = new SHEditorWidget(
-          this, 
-          m_shGLScene, 
-          mapToGlobal(event->pos()));
+        this, 
+        m_shGLScene, 
+        mapToGlobal(event->pos()));
       editor->exec(mapToGlobal(event->pos()));
       emit sceneChanged();
     }
   }
 }
  
+void RTRGLViewportWidget::mouseReleaseEvent(QMouseEvent *event) { 
+  onEvent(event); 
+  emit addCommands(); 
+}
+
 bool RTRGLViewportWidget::onEvent(QEvent *event) {
   bool redrawAllViewports;
   if(m_shGLRenderer->onEvent(m_viewportIndex, event, redrawAllViewports, false))

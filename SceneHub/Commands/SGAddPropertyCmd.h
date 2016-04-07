@@ -16,10 +16,10 @@ namespace FabricUI
 {
   namespace SceneHub
   {
-    const string SGAddPropertyCmd_Str = "addPropertyCmd";
-    const string SGAddPropertyCmd_Type_Str = "SGAddPropertyCmd";
+    const QString SGAddPropertyCmd_Str = "addPropertyCmd";
+    const QString SGAddPropertyCmd_Type_Str = "SGAddPropertyCmd";
 
-    class SGAddPropertyCmd : SHCmd
+    class SGAddPropertyCmd : public SHCmd
     {
       public:        
         /// Constructs and executes a command.
@@ -27,25 +27,25 @@ namespace FabricUI
         /// \param cmdDes The command desciprtion
         /// \param params The command parameters
         /// \param exec If true executes the command, just add it to the Qt stack otherwise
-        SGAddPropertyCmd(SHGLScene *shGLScene, string cmdDes, vector<RTVal> &params, bool exec) :
+        SGAddPropertyCmd(SHGLScene *shGLScene, QString cmdDes, QList<RTVal> &params, bool exec):
           SHCmd(shGLScene, SGAddPropertyCmd_Str, cmdDes, params, exec) {};
         
         /// Adds an object to the scene-graph
         /// \param shGLScene A reference to SHGLScene
         /// \param command The command to create
         /// \param exec If true executes the command, just add it to the Qt stack otherwise
-        static SHCmd* Create(SHGLScene *shGLScene, const string &command, bool exec) {
+        static SHCmd* Create(SHGLScene *shGLScene, QString command, bool exec) {
           SHCmd* cmd = 0;
-          vector<string> params;
+          QStringList params;
           if(SHCmd::ExtractParams(command, params) && params.size() == 2)
           {
-            string ownerPath = FabricUI::Util::RemoveSpace(params[0]); 
-            string name = FabricUI::Util::RemoveSpace(params[1]); 
+            QString ownerPath = params[0].remove(QChar(' ')); 
+            QString name = params[1].remove(QChar(' ')); 
             try 
             {
-              vector<RTVal> params(2);
-              params[0] = RTVal::ConstructString(shGLScene->getClient(), ownerPath.c_str());
-              params[1] = RTVal::ConstructString(shGLScene->getClient(), name.c_str());
+              QList<RTVal> params;
+              params.append(RTVal::ConstructString(shGLScene->getClient(), ownerPath.toUtf8().constData()));
+              params.append(RTVal::ConstructString(shGLScene->getClient(), name.toUtf8().constData()));
               cmd = new SGAddPropertyCmd(shGLScene, command, params, exec);
             }
             catch(Exception e)
@@ -59,20 +59,20 @@ namespace FabricUI
         /// Gets the KL command parameters.
         /// \param shGLScene A reference to SHGLScene
         /// \param index The name of the object
-        static string Get(SHGLScene *shGLScene, uint32_t index) {
-          string cmd;
+        static QString Get(SHGLScene *shGLScene, int index) {
+          QString cmd;
           try 
           {
             RTVal sgCmd = shGLScene->retrieveCmd(index);
             RTVal keyVal = RTVal::ConstructString(shGLScene->getClient(), "ownerPath");
             RTVal nameVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
-            string ownerPath = string(nameVal.getStringCString());
+            QString ownerPath = QString(nameVal.getStringCString());
 
             keyVal = RTVal::ConstructString(shGLScene->getClient(), "name");
             nameVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
-            string name = string(nameVal.getStringCString());
+            QString name = QString(nameVal.getStringCString());
 
-            cmd = string( SGAddPropertyCmd_Str + "(" + ownerPath + ", " + name + ")" );
+            cmd = QString( SGAddPropertyCmd_Str + "(" + ownerPath + ", " + name + ")" );
           }
           catch(Exception e)
           {
@@ -85,5 +85,3 @@ namespace FabricUI
 }
 
 #endif // __UI_SCENEHUB_SGAddPropertyCmd_H__
-
-

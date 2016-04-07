@@ -266,7 +266,6 @@ bool SHGLScene::showTreeViewByDefault(uint32_t &level) {
   return show;
 }
 
-
 void SHGLScene::addExternalFileList(QStringList pathList, float pos[3], bool forceExpand) {
   try 
   {
@@ -367,6 +366,8 @@ void SHGLScene::exportToAlembic(QString filePath) {
   }
 }
 
+ 
+// ****************
 RTVal SHGLScene::getCmdManager() {
   RTVal cmdManager;
   try 
@@ -380,12 +381,12 @@ RTVal SHGLScene::getCmdManager() {
   return cmdManager;
 }
 
-RTVal SHGLScene::setParamValue(std::string type, std::string value) {
+RTVal SHGLScene::setParamValue(QString type, QString value) {
   RTVal cmdManager, paramsVal;
   try 
   {
-    paramsVal = RTVal::Construct(getClient(), type.c_str(), 0, 0);
-    DecodeRTValFromJSON(getClient(), paramsVal, value.c_str());
+    paramsVal = RTVal::Construct(getClient(), type.toUtf8(), 0, 0);
+    DecodeRTValFromJSON(getClient(), paramsVal, value.toUtf8().constData());
   }
   catch(Exception e)
   {
@@ -399,7 +400,7 @@ RTVal SHGLScene::retrieveCmd(uint32_t index) {
   try 
   {
     RTVal indexVal = RTVal::ConstructUInt32(getClient(), index);
-    cmdVal = getCmdManager().callMethod("SGCmd", "getCmdInUndoStack", 1, &indexVal);
+    cmdVal = getCmdManager().callMethod("SGBaseCmd", "getCmdInUndoStack", 1, &indexVal);
   }
   catch(Exception e)
   {
@@ -420,10 +421,10 @@ uint32_t SHGLScene::getNumCmdInUndoStack() {
   return 0;
 }
 
-void SHGLScene::executeCmd(std::string cmdName, std::vector<RTVal> &params)  {
+void SHGLScene::executeCmd(QString cmdName, QList<RTVal> &params)  {
   try 
   {
-    getSG().callMethod("", cmdName.c_str(), params.size(), &params[0]);
+    getSG().callMethod("", cmdName.toUtf8(), params.size(), &params[0]);
   }
   catch(Exception e)
   {
@@ -457,19 +458,19 @@ void SHGLScene::redoCmd(uint32_t redoCount) {
 
 
 // ****************
-std::string SHGLScene::EncodeRTValToJSON(FabricCore::Client client, FabricCore::RTVal rtVal) {
+std::string SHGLScene::EncodeRTValToJSON(Client client, RTVal rtVal) {
   if(rtVal.isValid())
   {
     if(rtVal.isObject())
     {
       if(!rtVal.isNullObject())
       {
-        FabricCore::RTVal cast = FabricCore::RTVal::Construct(client, "RTValToJSONEncoder", 1, &rtVal);
+        RTVal cast = RTVal::Construct(client, "RTValToJSONEncoder", 1, &rtVal);
         if(cast.isValid())
         {
           if(!cast.isNullObject())
           {
-            FabricCore::RTVal result = cast.callMethod("String", "convertToString", 0, 0);
+            RTVal result = cast.callMethod("String", "convertToString", 0, 0);
             if(result.isValid())
             {
               FTL::CStrRef ref = result.getStringCString();
@@ -488,11 +489,11 @@ std::string SHGLScene::EncodeRTValToJSON(FabricCore::Client client, FabricCore::
       }
     }
   }
-  FabricCore::RTVal valueJSON = rtVal.getJSON();
+  RTVal valueJSON = rtVal.getJSON();
   return valueJSON.getStringCString();
 }
 
-void SHGLScene::DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal & rtVal, FTL::CStrRef json) {
+void SHGLScene::DecodeRTValFromJSON(Client client, RTVal &rtVal, FTL::CStrRef json) {
 
   if(json.size() > 2)
   {
@@ -503,7 +504,7 @@ void SHGLScene::DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal
         if(rtVal.isObject())
         {
           if(rtVal.isNullObject())
-            rtVal = FabricCore::RTVal::Create( client, rtVal.getTypeName().getStringCString(), 0, NULL );
+            rtVal = RTVal::Create( client, rtVal.getTypeName().getStringCString(), 0, NULL );
           
           std::string decodedString;
           {
@@ -516,18 +517,18 @@ void SHGLScene::DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal
 
           if(decodedString.length() > 0)
           {
-            FabricCore::RTVal cast = FabricCore::RTVal::Construct(client, "RTValFromJSONDecoder", 1, &rtVal);
+            RTVal cast = RTVal::Construct(client, "RTValFromJSONDecoder", 1, &rtVal);
             if(cast.isInterface())
             {
               if(!cast.isNullObject())
               {
-                FabricCore::RTVal data =
-                  FabricCore::RTVal::ConstructString(
+                RTVal data =
+                  RTVal::ConstructString(
                     client,
                     decodedString.data(),
                     decodedString.size()
                     );
-                FabricCore::RTVal result = cast.callMethod("Boolean", "convertFromString", 1, &data);
+                RTVal result = cast.callMethod("Boolean", "convertFromString", 1, &data);
                 if(result.isValid())
                 {
                   if(result.getBoolean())
@@ -541,7 +542,7 @@ void SHGLScene::DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal
         }
       }
     }
-    catch(FabricCore::Exception e)
+    catch(Exception e)
     {
       printf("decodeRTValFromJSON: Hit exception: %s\n", e.getDesc_cstr());
     }

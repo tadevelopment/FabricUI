@@ -74,14 +74,12 @@ namespace FabricUI
         virtual ManipulationTool *getManipTool() { return 0; };
         virtual bool isUsingStage() { return false; };
         virtual bool isStageVisible() { return false; };
-
-
+ 
       public slots:
         virtual void redraw() { updateGL(); };
         virtual void onKeyPressed(QKeyEvent * event) {};
         virtual void onContextMenu(const QPoint &point) {};
         
-
       protected:
         virtual void keyPressEvent(QKeyEvent * event);
         virtual void mousePressEvent(QMouseEvent *event);
