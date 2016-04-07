@@ -41,8 +41,6 @@ namespace FabricUI
         );
       ~SGObjectPropertyModelItem();
 
-      virtual bool isSGObjectProperty() const /*override*/ { return true; }
-
       BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
 
       virtual int getNumChildren() /*override*/;
