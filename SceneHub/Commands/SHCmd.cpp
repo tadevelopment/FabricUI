@@ -3,12 +3,64 @@
  */
 
 #include "SHCmd.h"
-
 using namespace FabricUI;
-using namespace FabricUI::SceneHub;
+using namespace SceneHub;
  
+SHCmd::SHCmd() 
+  : m_state(State_New)
+  , m_coreUndoCount(0) {
+}
 
-bool SHCmd::ExtractParams(QString command, QStringList &params) {
+SHCmdDescription SHCmd::registerCommand() { 
+  return m_desctiption; 
+}
+
+QString SHCmd::getFromRTVal(FabricCore::RTVal cmd) { 
+  QString str; 
+  return str; 
+}
+
+void SHCmd::setScene(SHGLScene *scene) {
+  m_shGLScene = scene;
+}
+
+QString SHCmd::getCommand() { 
+  assert(wasInvoked()); 
+  return m_command; 
+}
+
+void SHCmd::setCommand(QString command) { 
+  m_command = command; 
+}
+
+void SHCmd::doit() {
+  assert(m_state == State_New);
+  ++m_coreUndoCount;
+  m_state = State_Done;
+}
+
+void SHCmd::undo() {
+  assert(m_state == State_Done || m_state == State_Redone);
+  m_state = State_Undone;
+  m_shGLScene->undoCmd(m_coreUndoCount);
+}
+
+void SHCmd::redo() {
+  assert( m_state = State_Undone );
+  m_state = State_Redone; 
+  m_shGLScene->redoCmd(m_coreUndoCount);
+}
+
+bool SHCmd::wasInvoked() { 
+  return m_state != State_New; 
+}
+
+void SHCmd::execute(QString command) {
+  m_command = command;
+}
+
+QStringList SHCmd::extractParams(QString command) {
+  QStringList params;
   QStringList split = command.split("(");
   if(split.size() == 2)
   {
@@ -49,55 +101,7 @@ bool SHCmd::ExtractParams(QString command, QStringList &params) {
         if(params.size() == 0 && paramArray != "")
           params.append(paramArray);
       }
-
-      return true;
     }
   }
-  return false;
-}
-
-bool SHCmd::ExtractName(QString command, QString &name) {
-  QStringList split = command.split("(");
-  if(split.size() > 1) 
-  {
-    name = split[0];
-    return true;
-  }
-  return false;
-}
-
-SHCmd::SHCmd(
-  SHGLScene *shGLScene,
-  QString cmdName, 
-  QString cmdDes, 
-  QList<FabricCore::RTVal> &params, 
-  bool exec) 
-  : m_state(State_New)
-  ,  m_coreUndoCount(0) 
-  ,  m_shGLScene(shGLScene) 
-{
-  setDesc(cmdDes);
-  // !!! executeCmd(QString cmdName, std::vector<RTVal> &params)
-}
-
-void SHCmd::doit() {
-  assert(m_state == State_New);
-  ++m_coreUndoCount;
-  m_state = State_Done;
-}
-
-void SHCmd::undo() {
-  assert(m_state == State_Done || m_state == State_Redone);
-  m_state = State_Undone;
-  m_shGLScene->undoCmd(m_coreUndoCount);
-}
-
-void SHCmd::redo() {
-  assert( m_state = State_Undone );
-  m_state = State_Redone; 
-  m_shGLScene->redoCmd(m_coreUndoCount);
-}
-
-void SHCmd::addRTValDependency(FabricCore::RTVal val) {
-  m_additionalRTVals.append(val);
+  return params;
 }

@@ -2,55 +2,50 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
-#ifndef __UI_SCENEHUB_CMDHANDLER_QUNDO_H__
-#define __UI_SCENEHUB_CMDHANDLER_QUNDO_H__
+#ifndef __UI_SCENEHUB_CMD_HANDLER_H__
+#define __UI_SCENEHUB_CMD_HANDLER_H__
 
 #include "SHCmd.h"
-#include <QtCore/QList>
-#include <QtCore/QString>
 #include <QtGui/QUndoStack>
-#include <QtCore/QStringList>
+#include "SHCmdRegistration.h"
+
+namespace FabricUI {
+namespace SceneHub {
+
+class SHCmdHandler : public QObject {
+  Q_OBJECT
+
+  protected:
+    class WrappedCmd;
 
 
-namespace FabricUI
-{
-  namespace SceneHub
-  {
-    class SHCmdHandler : public QObject
-    {
-      Q_OBJECT
+  public:
+    SHCmdHandler(
+      SHGLScene *scene, 
+      SHCmdRegistration *cmdRegistration,
+      QUndoStack *qUndoStack);
 
-      protected:
-        class WrappedCmd;
+    virtual ~SHCmdHandler() {};
 
-      public:
-        /// Constructs a new SHCmdHandler.
-        /// \param qUndoStack A pointer to the Qt undo-redo stack
-        SHCmdHandler(SHGLScene *scene, QUndoStack *qUndoStack);
   
-        virtual ~SHCmdHandler() {};
+  public slots:
+    void onSceneUpdated(SHGLScene *scene);
 
-        bool addCommand(QString command, bool exec);
+    void onSynchronizeCommands();
 
-       
-      public slots:
-        void onSceneUpdated(SHGLScene *scene) { m_shGLScene = scene; }
-
-        void onSynchronizeCommands();
-
-        void onAddCommands();
+    void onAddCommands();
 
 
-      protected:        
-        /// Adds and executes a command
-        /// \param cmd The command
-        bool addCommand(SHCmd *cmd);
+  protected:       
+    void addCommand(QString command);
+  
+    unsigned int m_stackSize;
+    QUndoStack *m_qUndoStack;
+    SHGLScene *m_shGLScene;
+    SHCmdRegistration *m_shCmdRegistration;
+};
 
-        unsigned int m_stackSize;
-        QUndoStack *m_qUndoStack;
-        SceneHub::SHGLScene *m_shGLScene;
-    };
-  }
-}
+} // SceneHub
+} // FabricUI 
 
-#endif // __UI_SCENEHUB_CMDHANDLER_QUNDO_H__
+#endif // __UI_SCENEHUB_CMD_HANDLER_H__

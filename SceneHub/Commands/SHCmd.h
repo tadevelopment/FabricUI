@@ -5,82 +5,68 @@
 #ifndef __UI_SCENEHUB_CMD_H__
 #define __UI_SCENEHUB_CMD_H__
 
-#include <QtGui/QUndoCommand>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
-#include <FabricUI/Util/StringUtils.h>
+#include "SHCmdDescription.h"
 #include <FabricUI/SceneHub/SHGLScene.h>
 
-namespace FabricUI
-{
-  namespace SceneHub
-  {
+namespace FabricUI {
+namespace SceneHub {
 
-    class SHCmd
-    {
-      public:
-        /// Extracts the name of a command.
-        /// \param command The command
-        /// \param name The command's name
-        static bool ExtractName(QString command, QString &name);
+class SHCmd {
+  
+  public:
+    SHCmd();
 
-        /// Extracts the parameters from the command string.
-        /// \param command The command
-        /// \param params The array of parameters as string
-        static bool ExtractParams(QString command, QStringList &params);
+    ~SHCmd() {}
 
-        /// Constructs and executes a command.
-        /// \param shGLScene A reference to shGLScene
-        /// \param name The name of the command
-        /// \param desc The command desciprtion
-        /// \param params The command parameters
-        /// \param exec If true executes the command, just add it to the Qt stack otherwise
-        SHCmd(SHGLScene *shGLScene, QString name, QString desc, QList<FabricCore::RTVal> &params, bool exec);
+    virtual SHCmdDescription registerCommand();
 
-        ~SHCmd() {};
-
-        /// Does nothing (don't call the command in KL).
-        void doit();
+    /// Gets the command
+    virtual QString getFromRTVal(FabricCore::RTVal command);
         
-        /// Undoes the command.
-        void undo();
-        
-        /// Redoes the command.
-        void redo();
+    void setScene(SHGLScene *scene);
 
-        /// Gets the command description
-        QString getDesc() const { assert(wasInvoked()); return m_desc; };
-        
-        /// Sets the command decription (here the command itself).
-        /// \param desc The description
-        void setDesc(QString desc) { m_desc = desc; };
- 
-        /// Adds additional dependencies of RTVals to this cmd
-        void addRTValDependency(FabricCore::RTVal val);
+    /// Gets the command
+    QString getCommand();
+    
+    /// Sets the command
+    void setCommand(QString command);
+    
+    /// Does nothing (don't call the command in KL).
+    void doit();
+    
+    /// Undoes the command.
+    void undo();
+    
+    /// Redoes the command.
+    void redo();
 
 
-      protected:
-        /// Checks if the command has been already applied.
-        bool wasInvoked() const { return m_state != State_New; };
+  protected:
+    /// Extracts the parameters from the command string.
+    /// \param command The command
+    QStringList extractParams(QString command);
 
-        /// Command states
-        enum State {
-          State_New,
-          State_Done,
-          State_Undone,
-          State_Redone
-        };
+    void execute(QString command); 
 
-        State m_state;
-        QString m_desc;
-        unsigned m_coreUndoCount;
-        QList<FabricCore::RTVal> m_additionalRTVals;
+    /// Checks if the command has been already applied.
+    bool wasInvoked();
 
-        /// \internal
-        SHGLScene *m_shGLScene;
+    /// Command states
+    enum State {
+      State_New,
+      State_Done,
+      State_Undone,
+      State_Redone
     };
 
-  }
-}
+    State m_state;
+    QString m_command;
+    unsigned m_coreUndoCount;
+    SHGLScene *m_shGLScene;
+    SHCmdDescription m_desctiption;
+};
+
+} // SceneHub
+} // FabricUI
 
 #endif // __UI_SCENEHUB_CMD_H__
