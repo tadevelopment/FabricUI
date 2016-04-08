@@ -97,8 +97,14 @@ namespace FabricUI
           if( item->isReference() )
             return m_referenceColorVariant;
           return m_propertyColorVariant;
-        } else if( role == Qt::FontRole && item->isPropagated() )
-          return m_overrideFontVariant;
+        } else if( role == Qt::FontRole && item->isPropagated() ) {
+          if( item->isPropagated() && item->isOverride() )
+            return m_overridePropagatedFontVariant;
+          if( item->isPropagated() )
+            return m_propagatedFontVariant;
+          if( item->isOverride() )
+            return m_overrideFontVariant;
+        }
         return QVariant();
       }
 
@@ -187,9 +193,10 @@ namespace FabricUI
 
         ~SceneHierarchyChangedBlocker()
         {
-          if ( --m_model->m_sceneHierarchyChangedBlockCount == 0
-            && m_model->m_sceneHierarchyChangedPending )
+          if( --m_model->m_sceneHierarchyChangedBlockCount == 0
+            && m_model->m_sceneHierarchyChangedPending ) {
             emit m_model->sceneHierarchyChanged();
+          }
         }
 
       private:
@@ -205,9 +212,14 @@ namespace FabricUI
           emit sceneHierarchyChanged();
       }
 
+      void emitSceneChanged() {
+        emit sceneChanged();
+      }
+
     signals:
 
       void sceneHierarchyChanged() const;
+      void sceneChanged() const;
 
     public slots:
 
@@ -237,9 +249,11 @@ namespace FabricUI
       QVariant m_propertyColorVariant;
       QVariant m_referenceColorVariant;
       QVariant m_operatorColorVariant;
+      QVariant m_propagatedFontVariant;
       QVariant m_overrideFontVariant;
+      QVariant m_overridePropagatedFontVariant;
 
-      FabricCore::RTVal m_getUpdatedChildDataArgs[6];
+      FabricCore::RTVal m_getUpdatedChildDataArgs[7];
       FabricCore::RTVal m_updateArgs[3];
 
       uint32_t m_sceneHierarchyChangedBlockCount;

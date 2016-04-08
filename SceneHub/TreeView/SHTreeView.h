@@ -35,9 +35,19 @@ namespace FabricUI
           , m_index( index )
           {}
 
+        void setVisibility( bool visible, unsigned char propagationType );
+
       public slots:
         void expandRecursively() { expandRecursively( m_index ); }
         void loadRecursively();
+
+        void showLocal() { setVisibility( true, 0 ); }
+        void showPropagated() { setVisibility( true, 1 ); }
+        void showOverride() { setVisibility( true, 2 ); }
+
+        void hideLocal() { setVisibility( false, 0 ); }
+        void hidePropagated() { setVisibility( false, 1 ); }
+        void hideOverride() { setVisibility( false, 2 ); }
 
       protected:
         void expandRecursively( QModelIndex const &index );
@@ -50,6 +60,8 @@ namespace FabricUI
     class SHTreeView : public QTreeView
     {
       Q_OBJECT
+
+        friend class SHTreeView_ViewIndexTarget;
 
       public:
         SHTreeView(FabricCore::Client &client, QWidget *parent = 0 );

@@ -215,7 +215,7 @@ bool SHGLScene::sceneHierarchyChanged() {
   }
   catch(Exception e)
   {
-    printf("SHGLScene::setOrthographicViewport: sceneHierarchyChanged: %s\n", e.getDesc_cstr());
+    printf("SHGLScene::sceneHierarchyChanged: sceneHierarchyChanged: %s\n", e.getDesc_cstr());
   }
   return false;
 }

@@ -21,13 +21,14 @@ void SHTreeItem::updateChildItemIfNeeded( int row ) {
       m_treeViewObjectDataRTVal.callMethod(
       "SGTreeViewObjectData",
       "getUpdatedChildData",
-      6, m_model->m_getUpdatedChildDataArgs
+      7, m_model->m_getUpdatedChildDataArgs
       );
 
     bool invalidate = m_model->m_getUpdatedChildDataArgs[2].getBoolean();
     childItem->m_isPropagated = m_model->m_getUpdatedChildDataArgs[3].getBoolean();
-    childItem->m_isReference = m_model->m_getUpdatedChildDataArgs[4].getBoolean();
-    childItem->m_isGenerator = m_model->m_getUpdatedChildDataArgs[5].getBoolean();
+    childItem->m_isOverride = m_model->m_getUpdatedChildDataArgs[4].getBoolean();
+    childItem->m_isReference = m_model->m_getUpdatedChildDataArgs[5].getBoolean();
+    childItem->m_isGenerator = m_model->m_getUpdatedChildDataArgs[6].getBoolean();
     childItem->updateNeeded( childDataRTVal, invalidate );
     if( invalidate ) // Target object might have been created
       m_model->emitSceneHierarchyChanged();

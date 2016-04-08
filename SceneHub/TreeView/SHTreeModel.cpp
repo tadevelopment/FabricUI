@@ -40,8 +40,9 @@ SHTreeModel::SHTreeModel( FabricCore::Client client, FabricCore::RTVal sceneGrap
     m_getUpdatedChildDataArgs[1] = FabricCore::RTVal::ConstructData( m_client, NULL );//Data externalOwnerID
     m_getUpdatedChildDataArgs[2] = FabricCore::RTVal::ConstructBoolean( m_client, false );//io Boolean invalidate
     m_getUpdatedChildDataArgs[3] = FabricCore::RTVal::ConstructBoolean( m_client, false );//io Boolean isPropagated
-    m_getUpdatedChildDataArgs[4] = FabricCore::RTVal::ConstructBoolean( m_client, false );//io Boolean isReference
-    m_getUpdatedChildDataArgs[5] = FabricCore::RTVal::ConstructBoolean( m_client, false );//io Boolean isGenerator
+    m_getUpdatedChildDataArgs[4] = FabricCore::RTVal::ConstructBoolean( m_client, false );//io Boolean isOverride
+    m_getUpdatedChildDataArgs[5] = FabricCore::RTVal::ConstructBoolean( m_client, false );//io Boolean isReference
+    m_getUpdatedChildDataArgs[6] = FabricCore::RTVal::ConstructBoolean( m_client, false );//io Boolean isGenerator
 
     m_updateArgs[0] = FabricCore::RTVal::ConstructBoolean( m_client, m_showProperties );
     m_updateArgs[1] = FabricCore::RTVal::ConstructBoolean( m_client, m_showOperators );
@@ -57,9 +58,19 @@ void SHTreeModel::initStyle() {
   setReferenceColor( QColor( Qt::white ) );
   setPropertyColor( QColor( Qt::blue ).lighter( 165 ) );
   setOperatorColor( QColor( Qt::red ).lighter( 165 ) );
+
+  QFont propagatedFont;
+  propagatedFont.setItalic( true );
+  m_propagatedFontVariant = QVariant( propagatedFont );
+
   QFont overrideFont;
-  overrideFont.setItalic( true );
+  overrideFont.setBold( true );
   m_overrideFontVariant = QVariant( overrideFont );
+
+  QFont overridePropagatedFont;
+  overridePropagatedFont.setItalic( true );
+  overridePropagatedFont.setBold( true );
+  m_overridePropagatedFontVariant = QVariant( overridePropagatedFont );
 }
 
 void SHTreeModel::setShowProperties( bool show ) {

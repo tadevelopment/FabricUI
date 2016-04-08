@@ -48,6 +48,7 @@ namespace FabricUI
         , m_needsUpdate( true )
         , m_hadInitialUpdate( false )
         , m_isPropagated( false )
+        , m_isOverride( false )
         , m_isReference( false )
         , m_isGenerator( false )
       {
@@ -123,6 +124,7 @@ namespace FabricUI
       bool isObject() const { return m_isReference; }
       bool isReference() const { return m_isReference; }
       bool isPropagated() const { return m_isPropagated; }
+      bool isOverride() const { return m_isOverride; }
       bool isGenerator() const { return m_isGenerator; }
 
     protected:
@@ -149,6 +151,7 @@ namespace FabricUI
       QString m_name;
 
       bool m_isPropagated;
+      bool m_isOverride;
       bool m_isReference;
       bool m_isGenerator;
     };

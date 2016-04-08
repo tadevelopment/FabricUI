@@ -48,9 +48,11 @@ namespace FabricUI
         void expandTree(uint32_t level);
         
         /// Calls when the SceneGraph hierachy changed.
-        /// Calls when the SceneGraph hierachy changed.
         void onSceneHierarchyChanged();
-        
+
+        /// Calls when the SceneGraph changed.
+        void onSceneChanged();
+
         /// Updates the application when an item of the treeView is selected.
         /// \param item The selected item.
         void treeItemSelected(FabricUI::SceneHub::SHTreeItem *item);
