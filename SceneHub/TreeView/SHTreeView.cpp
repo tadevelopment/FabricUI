@@ -145,7 +145,7 @@ void SHTreeView::onCustomContextMenu( const QPoint &point ) {
 
       QMenu *visMenu = menu->addMenu( tr( "Visibility" ) );
 
-      QAction *visAction = new QAction( "Show (local)", 0 );
+      QAction *visAction = new QAction( "Show", 0 );
       connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( showLocal() ) );
       visAction->setCheckable( true );
       if( visible && propagType == 0 )
@@ -166,7 +166,7 @@ void SHTreeView::onCustomContextMenu( const QPoint &point ) {
         visAction->setChecked( true );
       visMenu->addAction( visAction );
       */
-      visAction = new QAction( "Hide (local)", 0 );
+      visAction = new QAction( "Hide", 0 );
       connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( hideLocal() ) );
       visAction->setCheckable( true );
       if( !visible && propagType == 0 )
