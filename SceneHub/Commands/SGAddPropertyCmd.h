@@ -21,8 +21,8 @@ class SGAddPropertyCmd : public SHCmd {
     }
 
     virtual SHCmdDescription registerCommand() {
-      if(QMetaType::type(m_desctiption.cmdType) == 0)
-        qRegisterMetaType<FabricUI::SceneHub::SGAddPropertyCmd>(m_desctiption.cmdType);
+      if(QMetaType::type(m_desctiption.cmdType.toUtf8().constData()) == 0)
+        qRegisterMetaType<FabricUI::SceneHub::SGAddPropertyCmd>(m_desctiption.cmdType.toUtf8().constData());
       return SHCmd::registerCommand();
     }
 
