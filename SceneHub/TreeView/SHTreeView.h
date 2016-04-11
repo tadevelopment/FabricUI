@@ -24,11 +24,11 @@ namespace FabricUI
      
 
       signals:
-        virtual void itemSelected(FabricUI::SceneHub::SHTreeItem *item);
+        void itemSelected(FabricUI::SceneHub::SHTreeItem *item);
         
-        virtual void itemDeselected(FabricUI::SceneHub::SHTreeItem *item);
+        void itemDeselected(FabricUI::SceneHub::SHTreeItem *item);
         
-        virtual void itemDoubleClicked( FabricUI::SceneHub::SHTreeItem *item );
+        void itemDoubleClicked( FabricUI::SceneHub::SHTreeItem *item );
         
 
       public slots:
