@@ -66,6 +66,8 @@ namespace FabricUI
         
         void synchronizeCommands();
 
+        void addCommands();
+
 
       private:
         bool onEvent(QEvent *event);
@@ -88,7 +90,7 @@ namespace FabricUI
         
         virtual void mousePressEvent(QMouseEvent *event);
         
-        virtual void mouseReleaseEvent(QMouseEvent *event) { onEvent(event); emit synchronizeCommands(); }
+        virtual void mouseReleaseEvent(QMouseEvent *event);
 
         virtual void dropEvent(QDropEvent *event);
         

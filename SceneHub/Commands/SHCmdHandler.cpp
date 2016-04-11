@@ -2,21 +2,19 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
-#include "SGAddObjectCmd.h"
-#include "SGAddPropertyCmd.h"
-#include "SGSetPropertyCmd.h"
-#include "SGSetPaintToolAttributeCmd.h"
 #include "SHCmdHandler.h"
    
 using namespace FabricCore;
 using namespace FabricUI;
-using namespace FabricUI::SceneHub;
+using namespace SceneHub;
 
 
 class SHCmdHandler::WrappedCmd : public QUndoCommand {
-
   public:
-    WrappedCmd( SHCmd *shCmd ) : QUndoCommand(), m_shCmd( shCmd ), m_didit( false ) {};
+    WrappedCmd(SHCmd *shCmd) 
+      : QUndoCommand()
+      , m_shCmd( shCmd )
+      , m_didit( false ) {}
 
   protected:
     virtual void redo() 
@@ -29,93 +27,102 @@ class SHCmdHandler::WrappedCmd : public QUndoCommand {
           m_didit = true;
           m_shCmd->doit();
         }
-        QUndoCommand::setText( m_shCmd->getDesc() );
+        QUndoCommand::setText( m_shCmd->getCommand() );
       }
       catch (FabricCore::Exception e) {
-        printf("Caught FabricCore::Exception: %s\n", e.getDesc_cstr() );
+        printf("SHCmdHandler::WrappedCmd error: %s\n", e.getDesc_cstr() );
       }
     }
 
     virtual void undo() {
       try 
       {
-        assert( m_didit );
+        assert(m_didit);
         m_shCmd->undo();
       }
       catch (FabricCore::Exception e) {
-        printf( "Caught FabricCore::Exception: %s\n", e.getDesc_cstr() );
+        printf("SHCmdHandler::WrappedCmd error: %s\n", e.getDesc_cstr() );
       }
     }
 
-  private:
     FTL::OwnedPtr<SHCmd> m_shCmd;
     bool m_didit;
 };
 
-SHCmdHandler::SHCmdHandler(SHGLScene *scene, QUndoStack *qUndoStack)
+SHCmdHandler::SHCmdHandler(
+  SHGLScene *scene, 
+  SHCmdRegistration *cmdRegistration,
+  QUndoStack *qUndoStack)
  : m_qUndoStack(qUndoStack)
- , m_shGLScene(scene) 
-{
+ , m_shGLScene(scene)
+ , m_stackSize(0)
+ , m_shCmdRegistration(cmdRegistration) {
 }
 
-bool SHCmdHandler::addCommand(SHCmd *cmd) {
-  if(cmd) 
-  {
-    // Clears the kl undo stack --> synchronize Qt and K stacks
-    //SHCmd::GetCmdManager(cmd->getRefOnSCeneHub()).callMethod("", "clearRedoStack", 0, 0);
-    m_qUndoStack->push( new WrappedCmd(cmd) );
-    return true;
-  }
-  else return false;
-}
-
-bool SHCmdHandler::addCommand(QString command, bool exec) {
+QString inline ExtractCommandName(QString command) {
   QString name;
-  if(SHCmd::ExtractName(command, name)) 
-  {
-    // SGAddObjectCmd
-    if(name.toLower() == SGAddObjectCmd_Str.toLower()) 
-      return addCommand(SGAddObjectCmd::Create(m_shGLScene, command, exec));
-    
-    // SGAddPropertyCmd
-    else if(name.toLower() == SGAddPropertyCmd_Str.toLower()) 
-      return addCommand(SGAddPropertyCmd::Create(m_shGLScene, command, exec));
-    
-    // SGSetPropertyCmd
-    else if(name.toLower() == SGSetPropertyCmd_Str.toLower()) 
-      return addCommand(SGSetPropertyCmd::Create(m_shGLScene, command, exec));
-
-    // SGSetPaintToolAttributeCmd
-    else if(name.toLower() == SGSetPaintToolAttributeCmd_Str.toLower())
-      return addCommand(SGSetPaintToolAttributeCmd::Create(m_shGLScene, command, exec));
- 
-    // log an error
-    else std::cerr << "SHCmdHandler::addCommand : Command name " << name.toStdString() << " wasn't founded" << std::endl;
-  }
-  return false;
+  QStringList split = command.split("(");
+  if(split.size() > 1) name = split[0];
+  return name;
 }
 
-void SHCmdHandler::synchronize() {
+void SHCmdHandler::addCommand(QString command) {
+ 
+  QString name = ExtractCommandName(command).toLower();
+  
+  QSetIterator<SHCmdDescription> ite(m_shCmdRegistration->getCmdDescriptionSet());
+  while(ite.hasNext())
+  {
+    SHCmdDescription cmdDescription = ite.next();
+    if(name == cmdDescription.cmdName.toLower()) 
+    {
+      int id = QMetaType::type(cmdDescription.cmdType.toUtf8().constData());
+      if(id != 0) 
+      {
+        SHCmd *cmd = static_cast <SHCmd*>(QMetaType::construct(id));
+        cmd->setScene(m_shGLScene);
+        cmd->setCommand(command);
+        m_qUndoStack->push(new WrappedCmd(cmd));
+        break;
+      }
+    }
+  }
+}
+
+void SHCmdHandler::onAddCommands() {
 
   // Get the number of commands already done in the KL stack
-  for(unsigned int i=getStack()->index(); i<m_shGLScene->getNumCmdInUndoStack(); ++i)
-  {
-    FabricCore::RTVal typeVal = m_shGLScene->retrieveCmd(i).callMethod("String", "type", 0, 0);
-    QString type = QString(typeVal.getStringCString());
-      
-    if(type.toLower() == SGAddObjectCmd_Type_Str.toLower())
-      addCommand(SGAddObjectCmd::Get(m_shGLScene, i), false);
+  for(unsigned int i=m_stackSize; i<m_shGLScene->getNumCmdInUndoStack(); ++i)
+  {        
+    FabricCore::RTVal sgCmd = m_shGLScene->retrieveCmd(i);
+    QString type = QString(sgCmd.callMethod("String", "type", 0, 0).getStringCString()).toLower();
 
-    else if(type.toLower() == SGAddPropertyCmd_Type_Str.toLower())
-      addCommand(SGAddPropertyCmd::Get(m_shGLScene, i), false);
-
-    else if(type.toLower() == SGSetPropertyCmd_Type_Str.toLower())
-      addCommand(SGSetPropertyCmd::Get(m_shGLScene, i), false);
-
-    else if(type.toLower() == SGSetPaintToolAttributeCmd_Type_Str.toLower())
-      addCommand(SGSetPaintToolAttributeCmd::Get(m_shGLScene, i), false);
-
-    // log an error
-    else std::cerr << "SHCmdHandler::synchronize : Command type " << type.toStdString() << " wasn't founded" << std::endl;
+    QSetIterator<SHCmdDescription> ite(m_shCmdRegistration->getCmdDescriptionSet());
+    while(ite.hasNext())
+    {
+      SHCmdDescription cmdDescription = ite.next();
+      if(type == cmdDescription.cmdType.toLower()) 
+      {
+        int id = QMetaType::type(cmdDescription.cmdType.toUtf8().constData());
+        if(id != 0) 
+        {
+          SHCmd *cmd = static_cast <SHCmd*>(QMetaType::construct(id));
+          cmd->setScene(m_shGLScene);
+          addCommand(cmd->getFromRTVal(sgCmd));
+          delete cmd;
+          break;
+        }
+      }
+    }
   }
+
+  onSynchronizeCommands();
+}
+
+void SHCmdHandler::onSynchronizeCommands() {
+  m_stackSize = m_shGLScene->getNumCmdInUndoStack();
+}
+
+void SHCmdHandler::onSceneUpdated(SHGLScene *scene) { 
+  m_shGLScene = scene; 
 }

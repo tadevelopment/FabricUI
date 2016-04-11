@@ -191,8 +191,8 @@ namespace FabricUI
         /// Redo commands.
         /// \param redoCount The number of redos. 
         void redoCmd(uint32_t redoCount);
+     
 
-        
       private:
         /// Encodes a rtVal into a Json, saves the rtVal
         /// \param rtVal The value to encode
@@ -203,7 +203,7 @@ namespace FabricUI
         /// \param rtVal The result value
         /// \param json The string to decode
         void DecodeRTValFromJSON(FabricCore::Client client, FabricCore::RTVal &rtVal, FTL::CStrRef json); 
-       
+        
         /// \internal
         FabricCore::Client m_client;    
         /// \internal
