@@ -19,23 +19,27 @@ class SHCmdRegistration  {
   public:
     SHCmdRegistration() { 
       SGAddObjectCmd addObjectCmd;
-      m_cmdDescriptionSet.insert(addObjectCmd.registerCommand());
+      registerCommand(&addObjectCmd);
 
       SGAddPropertyCmd addPropertyCmd;
-      m_cmdDescriptionSet.insert(addPropertyCmd.registerCommand());
+      registerCommand(&addPropertyCmd);
 
       SGSetPropertyCmd setPropertyCmd;
-      m_cmdDescriptionSet.insert(setPropertyCmd.registerCommand());
-
+      registerCommand(&setPropertyCmd);
+ 
       SGSetPaintToolAttributeCmd setPaintToolAttributeCmd;
-      m_cmdDescriptionSet.insert(setPaintToolAttributeCmd.registerCommand());
+      registerCommand(&setPaintToolAttributeCmd);
     }
 
-    virtual ~SHCmdRegistration() {}
+    ~SHCmdRegistration() {}
 
     QSet<SHCmdDescription> getCmdDescriptionSet() { return m_cmdDescriptionSet; }
 
-  protected:
+    void registerCommand(SHCmd *cmd) {
+      m_cmdDescriptionSet.insert(cmd->registerCommand());
+    }
+
+  private:
     QSet<SHCmdDescription> m_cmdDescriptionSet;
 };
 
