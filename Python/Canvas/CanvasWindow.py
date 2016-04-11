@@ -1,10 +1,10 @@
 import optparse, os, sys
 from FabricEngine import Core, FabricUI
-from FabricEngine.FabricUI import DFG, KLASTManager, Viewports, TimeLine
+from FabricEngine.FabricUI import DFG, KLASTManager, Style, Viewports, TimeLine
 from PySide import QtCore, QtGui, QtOpenGL
-from BindingWrapper import BindingWrapper
-from ScriptEditor import ScriptEditor
-from UICmdHandler import UICmdHandler
+from FabricEngine.Canvas.BindingWrapper import BindingWrapper
+from FabricEngine.Canvas.ScriptEditor import ScriptEditor
+from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 
 
 class CanvasWindowEventFilter(QtCore.QObject):
@@ -38,7 +38,6 @@ class CanvasWindowEventFilter(QtCore.QObject):
 
 class CanvasWindow(DFG.DFGMainWindow):
     
-    isCanvas = True
     defaultFrameIn = 1
     defaultFrameOut = 50
     autosaveIntervalSecs = 30
@@ -190,8 +189,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
     def _initValueEditor(self):
-        print "canvas _initValueEditor"
-        self.valueEditor = DFG.DFGVEEditorOwner(self.dfgWidget)
+        self.valueEditor = FabricUI.DFG.DFGVEEditorOwner(self.dfgWidget)
      
     def _initLog(self):
         self.logWidget = DFG.DFGLogWidget(self.config)
