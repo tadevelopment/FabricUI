@@ -53,10 +53,10 @@ SHCmdHandler::SHCmdHandler(
   SHGLScene *scene, 
   SHCmdRegistration *cmdRegistration,
   QUndoStack *qUndoStack)
- : m_qUndoStack(qUndoStack)
- , m_shGLScene(scene)
- , m_stackSize(0)
- , m_shCmdRegistration(cmdRegistration) {
+  : m_stackSize(0)
+  , m_shGLScene(scene)
+  , m_shCmdRegistration(cmdRegistration)
+  , m_qUndoStack(qUndoStack) {
 }
 
 QString inline ExtractCommandName(QString command) {

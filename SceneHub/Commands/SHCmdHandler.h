@@ -40,9 +40,9 @@ class SHCmdHandler : public QObject {
     void addCommand(QString command);
   
     unsigned int m_stackSize;
-    QUndoStack *m_qUndoStack;
     SHGLScene *m_shGLScene;
     SHCmdRegistration *m_shCmdRegistration;
+    QUndoStack *m_qUndoStack;
 };
 
 } // SceneHub

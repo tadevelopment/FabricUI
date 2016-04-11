@@ -16,7 +16,7 @@ class SHCmd {
   public:
     SHCmd();
 
-    ~SHCmd() {}
+    virtual ~SHCmd() {}
 
     virtual SHCmdDescription registerCommand();
 
