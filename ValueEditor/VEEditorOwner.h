@@ -10,9 +10,6 @@
 #include <QtGui/QWidget>
 #include <QtCore/QMetaType>
 #include <QtCore/QSharedPointer>
-#include <FabricUI/DFG/DFGNotifier.h>
-#include <FabricUI/ValueEditor/VETreeWidget.h>
-#include <FabricUI/ValueEditor/BaseModelItem.h>
 
 
 namespace FTL {
@@ -37,8 +34,8 @@ namespace FabricUI {
 
   namespace ValueEditor 
   {     
-    //class VETreeWidget;
-    //class BaseModelItem;
+    class BaseModelItem;
+    class VETreeWidget;
 
     class VEEditorOwner : public QObject 
     {
@@ -47,7 +44,7 @@ namespace FabricUI {
     public:
 
       VEEditorOwner();
-      virtual ~VEEditorOwner();
+      ~VEEditorOwner();
 
       virtual QWidget* getWidget() const;
       virtual void initConnections();
@@ -62,17 +59,17 @@ namespace FabricUI {
 
     signals:
       void log(const char * message);
-      void replaceModelRoot( FabricUI::ValueEditor::BaseModelItem* model);
+      void replaceModelRoot( FabricUI::ValueEditor::BaseModelItem* model );
       void modelItemValueChanged( FabricUI::ValueEditor::BaseModelItem * item, QVariant const &newValue );
-      void modelItemInserted( FabricUI::ValueEditor::BaseModelItem* parent, int index, const char* childName);
-      void modelItemTypeChange( FabricUI::ValueEditor::BaseModelItem* changingItem, const char* newType);
+      void modelItemInserted( FabricUI::ValueEditor::BaseModelItem* parent, int index, const char* childName );
+      void modelItemTypeChange( FabricUI::ValueEditor::BaseModelItem* changingItem, const char* newType );
       void modelItemRemoved( FabricUI::ValueEditor::BaseModelItem* removedItem);
       void modelItemChildrenReordered( FabricUI::ValueEditor::BaseModelItem* parent, const QList<int>& newOrder );
       void modelItemRenamed( FabricUI::ValueEditor::BaseModelItem* renamedItem );
 
     protected:
 
-      FabricUI::ValueEditor::VETreeWidget* m_valueEditor;
+      VETreeWidget* m_valueEditor;
       FabricUI::ModelItems::RootModelItem* m_modelRoot;
     };
   }

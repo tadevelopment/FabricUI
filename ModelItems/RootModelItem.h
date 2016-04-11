@@ -35,7 +35,7 @@ namespace FabricUI
     protected:
 
       ChildVec m_children;
-      FabricUI::ValueEditor::BaseModelItem * pushChild(FabricUI::ValueEditor::BaseModelItem * item);
+      BaseModelItem * pushChild(BaseModelItem * item);
       
     public:
 

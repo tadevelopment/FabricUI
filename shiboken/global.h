@@ -108,3 +108,4 @@
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
 #include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>
+#include <FabricUI/Test/RTValCrash.h>

@@ -22,7 +22,7 @@ VEEditorOwner::VEEditorOwner()
   : m_valueEditor( NULL )
   , m_modelRoot( NULL )
 {
-  m_valueEditor = new VETreeWidget();
+  m_valueEditor = new FabricUI::ValueEditor::VETreeWidget();
 }
 
 VEEditorOwner::~VEEditorOwner()
@@ -69,7 +69,7 @@ void VEEditorOwner::initConnections()
 
 void VEEditorOwner::onModelItemInserted( FabricUI::ValueEditor::BaseModelItem* parent, int index, const char* childName )
 {
-  FabricUI::ValueEditor::BaseModelItem * child = parent->getChild(childName);
+  BaseModelItem * child = parent->getChild(childName);
   if(child)
   {
     connect(
@@ -81,6 +81,6 @@ void VEEditorOwner::onModelItemInserted( FabricUI::ValueEditor::BaseModelItem* p
 
 void VEEditorOwner::onModelValueChanged( QVariant const &newValue )
 {
-  FabricUI::ValueEditor::BaseModelItem * item = (FabricUI::ValueEditor::BaseModelItem *)QObject::sender();
+  BaseModelItem * item = (BaseModelItem *)QObject::sender();
   emit modelItemValueChanged(item, newValue);
 }
