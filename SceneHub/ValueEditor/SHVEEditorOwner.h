@@ -7,7 +7,6 @@
 #include <FabricUI/DFG/DFGVEEditorOwner.h>
 #include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
 #include <FabricUI/SceneHub/Commands/SHCmdHandler.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeView.h>
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
 
@@ -20,7 +19,7 @@ class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
   Q_OBJECT
 
   public:
-    SHVEEditorOwner(DFG::DFGWidget *dfgWidget, SHTreeView *baseTreeView, SHCmdHandler *cmdViewWidget = 0);
+    SHVEEditorOwner(DFG::DFGWidget *dfgWidget, SHBaseTreeView *baseTreeView, SHCmdHandler *cmdViewWidget = 0);
     
     ~SHVEEditorOwner();
 
@@ -52,7 +51,7 @@ class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
 
     void updateSGObjectProperty( const FabricCore::RTVal& sgObjectProperty );
 
-    SceneHub::SHTreeView *m_baseTreeView;
+    SceneHub::SHBaseTreeView *m_baseTreeView;
     SHCmdHandler *m_cmdViewWidget;
     SGObjectPropertyModelItem *m_objectPropertyItem;//Defined if "root" is a single property
 };

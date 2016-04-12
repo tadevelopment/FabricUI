@@ -29,14 +29,6 @@ class SHTreeView : public SHBaseTreeView {
     virtual void mousePressEvent(QMouseEvent *event);
     
     virtual void mouseDoubleClickEvent(QMouseEvent * event);
- 
-
-  signals:
-    void itemSelected( FabricUI::SceneHub::SHTreeItem *item );
-    
-    void itemDeselected( FabricUI::SceneHub::SHTreeItem *item );
-    
-    void itemDoubleClicked( FabricUI::SceneHub::SHTreeItem *item );
 
 
   public slots:

@@ -16,7 +16,7 @@ class SHCmd {
   public:
     SHCmd();
 
-    virtual ~SHCmd() {}
+    virtual ~SHCmd();
 
     virtual SHCmdDescription registerCommand();
 
@@ -63,7 +63,7 @@ class SHCmd {
     QString m_command;
     unsigned m_coreUndoCount;
     SHGLScene *m_shGLScene;
-    SHCmdDescription m_desctiption;
+    SHCmdDescription m_description;
 };
 
 } // SceneHub

@@ -55,23 +55,34 @@ class SHTreeViewsManager(QtGui.QWidget):
  
   def _constructTree(self):
     self._resetTree()
-    self.treeModel = SceneHub.SHTreeModel(self.shGLScene, self.shTreeView)
+
+    self.treeModel = SceneHub.SHTreeModel(
+     self.shGLScene.getClient(), 
+      self.shGLScene.getSG(), 
+     self.shTreeView)
+
     self.setShowProperties(self.showProperties)
     self.setShowOperators(self.showOperators)
 
     self.sceneHierarchyChanged.connect(self.treeModel.onSceneHierarchyChanged)
     self.treeModel.sceneHierarchyChanged.connect(self.onSceneHierarchyChanged)
+    self.treeModel.sceneChanged.connect(self.onSceneChanged)
+
     sceneRootIndex = self.treeModel.addRootItemsFromScene(self.shGLScene)
+    #self.treeModel.addRootItem(self.shGLScene.getAssetLibraryRoot())
+    #self.treeModel.addRootItem(self.shGLScene.getMaterialLibraryRoot())
+    #self.treeModel.addRootItem(self.shGLScene.getImageLibraryRoot())
+
     self.shTreeView.setModel(self.treeModel)
     self.shTreeView.setExpanded(sceneRootIndex, True)
 
   def setShowProperties(self, show):
-    self.showProperties = show;
+    self.showProperties = show
     if self.treeModel is not None:
       self.treeModel.setShowProperties(show)
 
   def setShowOperators(self, show):
-    self.showOperators = show;
+    self.showOperators = show
     if self.treeModel is not None:
       self.treeModel.setShowOperators(show)
 
@@ -104,7 +115,7 @@ class SHTreeViewsManager(QtGui.QWidget):
       self.comboBox.addItem("Main Scene")
 
     for sceneName in sceneNameList:
-     self.comboBox.addItem(sceneName)
+      self.comboBox.addItem(sceneName)
     
   def expandTree(self, level):
     if(level == -1): self.shTreeView.expandAll()
@@ -114,6 +125,12 @@ class SHTreeViewsManager(QtGui.QWidget):
     #Check if it actually changed, to reduce number of notifications
     if self.shGLScene.hasSG() and self.shGLScene.sceneHierarchyChanged():
       self.sceneHierarchyChanged.emit()
+
+  def onSceneChanged(self):
+    if self.shGLScene.hasSG():
+      # No filter on this one
+      #Use that signal for now; to be refactored with SH-227
+      sceneHierarchyChanged.emit()
 
   def onTreeItemSelected(self, item):
     if self.shGLScene.hasSG() and not self.bUpdatingSelectionFrom3D:

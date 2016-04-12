@@ -5,6 +5,13 @@
       <object-type name="SHGLRenderer" copyable="false"/>
       <object-type name="SHGLScene" copyable="false"/>
       <object-type name="SHDFGBinding" copyable="false"/>
+      <object-type name="SHCmd" copyable="false"/>
+      <object-type name="SGAddObjectCmd" copyable="false"/>
+      <object-type name="SGAddPropertyCmd" copyable="false"/>
+      <object-type name="SGSetPaintToolAttributeCmd" copyable="false"/>
+      <object-type name="SGSetPropertyCmd" copyable="false"/>
+      <primitive-type name="SHCmdDescription" copyable="false"/>
+      <object-type name="SHCmdRegistration" copyable="false"/>
       <object-type name="SHCmdHandler" copyable="false"/>
       <object-type name="SHTreeItem" copyable="false"/>
       <object-type name="SHTreeModel" copyable="false"/>

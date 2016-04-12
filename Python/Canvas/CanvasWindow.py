@@ -38,6 +38,7 @@ class CanvasWindowEventFilter(QtCore.QObject):
 
 class CanvasWindow(DFG.DFGMainWindow):
     
+    isCanvas = False
     defaultFrameIn = 1
     defaultFrameOut = 50
     autosaveIntervalSecs = 30
@@ -787,7 +788,7 @@ class CanvasWindow(DFG.DFGMainWindow):
             self.saveGraph(False)
         elif hotkey == DFG.DFGHotkeys.TOGGLE_MANIPULATION:
             # Make sure we use the Action path, so menu's "checked" state is updated
-            if isCanvas:
+            if self.isCanvas:
                 if self.manipAction:
                     self.manipAction.trigger()
         else:

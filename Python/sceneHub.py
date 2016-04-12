@@ -2,7 +2,7 @@ import optparse, os, sys
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
 from PySide import QtCore, QtGui, QtOpenGL
-from SceneHubWindow import SceneHubWindow
+from SceneHub.SceneHubWindow import SceneHubWindow
 from canvas import FabricStyle
 
 app = QtGui.QApplication([])

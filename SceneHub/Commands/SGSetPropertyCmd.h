@@ -17,13 +17,13 @@ class SGSetPropertyCmd : public SHCmd {
 
   public:   
     SGSetPropertyCmd() : SHCmd() {
-      m_desctiption.cmdName = "setPropertyCmd";
-      m_desctiption.cmdType = "SGSetPropertyCmd";
+      m_description.cmdName = "setPropertyCmd";
+      m_description.cmdType = "SGSetPropertyCmd";
     }
 
     virtual SHCmdDescription registerCommand() {
-      if(QMetaType::type(m_desctiption.cmdType.toUtf8().constData()) == 0)
-        qRegisterMetaType<FabricUI::SceneHub::SGSetPropertyCmd>(m_desctiption.cmdType.toUtf8().constData());
+      if(QMetaType::type(m_description.cmdType.toUtf8().constData()) == 0)
+        qRegisterMetaType<FabricUI::SceneHub::SGSetPropertyCmd>(m_description.cmdType.toUtf8().constData());
       return SHCmd::registerCommand();
     }
 
@@ -34,7 +34,7 @@ class SGSetPropertyCmd : public SHCmd {
         RTVal keyVal = RTVal::ConstructString(m_shGLScene->getClient(), "fullPath");
         RTVal fullPathVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
         QString fullPath = QString(fullPathVal.getStringCString());
-        res = QString( m_desctiption.cmdName + "(" + fullPath + ")" );   
+        res = QString( m_description.cmdName + "(" + fullPath + ")" );   
       }
       catch(FabricCore::Exception e)
       {

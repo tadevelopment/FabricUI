@@ -7,7 +7,7 @@ from SHContextualMenu import SHContextualMenu
 class SHViewport(Viewports.ViewportWidget):
   sceneChanged = QtCore.Signal()
   viewportDestroying = QtCore.Signal()
-  synchronizeCommands = QtCore.Signal()
+  addCommands = QtCore.Signal()
   manipsAcceptedEvent = QtCore.Signal(bool)
 
   def __init__(self, renderer, scene, index, orthographic, context, parent, sharedWidget):
@@ -88,7 +88,7 @@ class SHViewport(Viewports.ViewportWidget):
 
   def mouseReleaseEvent(self, event):
     self.__onEvent(event)
-    self.synchronizeCommands.emit()
+    self.addCommands.emit()
     
   def mousePressEvent(self, event):
     if self.shGLScene.hasSG():

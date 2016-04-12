@@ -16,13 +16,13 @@ class SGAddPropertyCmd : public SHCmd {
   
   public:        
     SGAddPropertyCmd() : SHCmd() {
-      m_desctiption.cmdName = "addPropertyCmd";
-      m_desctiption.cmdType = "SGAddPropertyCmd";
+      m_description.cmdName = "addPropertyCmd";
+      m_description.cmdType = "SGAddPropertyCmd";
     }
 
     virtual SHCmdDescription registerCommand() {
-      if(QMetaType::type(m_desctiption.cmdType.toUtf8().constData()) == 0)
-        qRegisterMetaType<FabricUI::SceneHub::SGAddPropertyCmd>(m_desctiption.cmdType.toUtf8().constData());
+      if(QMetaType::type(m_description.cmdType.toUtf8().constData()) == 0)
+        qRegisterMetaType<FabricUI::SceneHub::SGAddPropertyCmd>(m_description.cmdType.toUtf8().constData());
       return SHCmd::registerCommand();
     }
 
@@ -37,7 +37,7 @@ class SGAddPropertyCmd : public SHCmd {
         keyVal = RTVal::ConstructString(m_shGLScene->getClient(), "name");
         nameVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
         QString name = QString(nameVal.getStringCString());
-        cmd = QString( m_desctiption.cmdName + "(" + ownerPath + ", " + name + ")" );
+        cmd = QString( m_description.cmdName + "(" + ownerPath + ", " + name + ")" );
       }
       catch(Exception e)
       {

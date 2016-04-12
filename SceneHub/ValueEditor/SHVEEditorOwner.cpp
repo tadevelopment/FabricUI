@@ -14,7 +14,7 @@ using namespace SceneHub;
 using namespace ModelItems;
 
 
-SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHTreeView* baseTreeView, SHCmdHandler *cmdViewWidget)
+SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHBaseTreeView* baseTreeView, SHCmdHandler *cmdViewWidget)
   : DFG::DFGVEEditorOwner(dfgWidget)
   , m_baseTreeView(baseTreeView)
   , m_cmdViewWidget(cmdViewWidget)
@@ -28,6 +28,7 @@ SHVEEditorOwner::~SHVEEditorOwner() {
 void SHVEEditorOwner::initConnections() {
   DFG::DFGVEEditorOwner::initConnections();
 
+  /*
   connect(
     m_baseTreeView,
     SIGNAL(itemSelected( FabricUI::SceneHub::SHTreeItem * )),
@@ -40,6 +41,7 @@ void SHVEEditorOwner::initConnections() {
     this,
     SLOT(onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * ))
     );
+  */
 }
 
 void SHVEEditorOwner::onStructureChanged() {

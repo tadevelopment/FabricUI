@@ -69,11 +69,11 @@ QString inline ExtractCommandName(QString command) {
 void SHCmdHandler::addCommand(QString command) {
  
   QString name = ExtractCommandName(command).toLower();
-  
-  QSetIterator<SHCmdDescription> ite(m_shCmdRegistration->getCmdDescriptionSet());
-  while(ite.hasNext())
+   
+  QList<SHCmdDescription> list = m_shCmdRegistration->getCmdDescriptionSet();
+  for(int i=0; i<list.count(); ++i)
   {
-    SHCmdDescription cmdDescription = ite.next();
+    SHCmdDescription cmdDescription = list[i];
     if(name == cmdDescription.cmdName.toLower()) 
     {
       int id = QMetaType::type(cmdDescription.cmdType.toUtf8().constData());
@@ -97,10 +97,10 @@ void SHCmdHandler::onAddCommands() {
     FabricCore::RTVal sgCmd = m_shGLScene->retrieveCmd(i);
     QString type = QString(sgCmd.callMethod("String", "type", 0, 0).getStringCString()).toLower();
 
-    QSetIterator<SHCmdDescription> ite(m_shCmdRegistration->getCmdDescriptionSet());
-    while(ite.hasNext())
+    QList<SHCmdDescription> list = m_shCmdRegistration->getCmdDescriptionSet();
+    for(int j=0; j<list.count(); ++j)
     {
-      SHCmdDescription cmdDescription = ite.next();
+      SHCmdDescription cmdDescription = list[j];
       if(type == cmdDescription.cmdType.toLower()) 
       {
         int id = QMetaType::type(cmdDescription.cmdType.toUtf8().constData());

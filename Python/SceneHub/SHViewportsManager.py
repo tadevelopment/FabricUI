@@ -93,10 +93,10 @@ class SHViewportsManager():
     newViewport.manipsAcceptedEvent.connect(self.parentApp.shTreesManager.onUpdateFrom3DSelection)
     
     self.parentApp.qUndoStack.indexChanged.connect(self.onRefreshAllViewports)
-    newViewport.synchronizeCommands.connect(self._onSynchronizeCommands)
+    newViewport.addCommands.connect(self.parentApp.shCmdHandler.onAddCommands)
     
-    if self.parentApp.valueEditor is not None:
-      newViewport.sceneChanged.connect(self.parentApp.valueEditor.onSceneChanged);
+    #if self.parentApp.valueEditor is not None:
+    #  newViewport.sceneChanged.connect(self.parentApp.valueEditor.onSceneChanged);
 
     return newViewport, intermediateOwnerWidget;
 
@@ -138,9 +138,6 @@ class SHViewportsManager():
   def onRefreshAllViewports(self):
     self.parentApp.shTreesManager.getScene().prepareSceneForRender()
     for viewport in self.viewports: viewport.redraw()
-
-  def _onSynchronizeCommands(self):
-    self.parentApp.shCmdHandler.synchronize()
 
   def onRefreshViewport(self, refreshAll):
     if refreshAll == True: 

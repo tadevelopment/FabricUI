@@ -5,7 +5,7 @@
 #ifndef __UI_SCENEHUB_CMD_REGISTRATION_H__
 #define __UI_SCENEHUB_CMD_REGISTRATION_H__
 
-#include <QtCore/QSet>
+#include <QtCore/QList>
 #include "SGAddObjectCmd.h"
 #include "SGAddPropertyCmd.h"
 #include "SGSetPropertyCmd.h"
@@ -33,14 +33,14 @@ class SHCmdRegistration  {
 
     ~SHCmdRegistration() {}
 
-    QSet<SHCmdDescription> getCmdDescriptionSet() { return m_cmdDescriptionSet; }
+    QList<SHCmdDescription> getCmdDescriptionSet() { return m_cmdDescriptionSet; }
 
     void registerCommand(SHCmd *cmd) {
-      m_cmdDescriptionSet.insert(cmd->registerCommand());
+      m_cmdDescriptionSet.append(cmd->registerCommand());
     }
 
   private:
-    QSet<SHCmdDescription> m_cmdDescriptionSet;
+    QList<SHCmdDescription> m_cmdDescriptionSet;
 };
 
 } // SceneHub

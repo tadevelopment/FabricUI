@@ -58,8 +58,6 @@ public:
 
   int childRow( SHTreeItem *childItem );
 
-  void onSceneHierarchyChanged();
-
   FabricCore::RTVal getSGObject();
   
   FabricCore::RTVal getSGObjectProperty();

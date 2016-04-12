@@ -60,6 +60,14 @@ SHTreeModel::~SHTreeModel() {
   }
 }
 
+QModelIndex SHTreeModel::addRootItemsFromScene(SHGLScene *shGLScene) {
+  QModelIndex sceneRootIndex = addRootItem(shGLScene->getSceneRoot());
+  addRootItem(shGLScene->getAssetLibraryRoot());
+  addRootItem(shGLScene->getMaterialLibraryRoot());
+  addRootItem(shGLScene->getImageLibraryRoot());
+  return sceneRootIndex;
+}
+
 QModelIndex SHTreeModel::addRootItem(FabricCore::RTVal rootSGObject) {
   SHTreeItem *item = new SHTreeItem( this, 0 /* parentItem */, m_client );
   try 
@@ -83,7 +91,6 @@ QModelIndex SHTreeModel::addRootItem(FabricCore::RTVal rootSGObject) {
   m_rootItems.push_back( item );
   return index;
 }
-
 
 void SHTreeModel::initStyle() {
   setReferenceColor( QColor( Qt::white ) );

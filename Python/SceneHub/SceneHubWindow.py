@@ -2,7 +2,7 @@ import os, sys, math
 from FabricEngine import Core, FabricUI
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine.FabricUI import *
-from CanvasWindow import CanvasWindow
+from Canvas.CanvasWindow import CanvasWindow
 from SHTreeViewsManager import SHTreeViewsManager
 from SHViewportsManager import SHViewportsManager
 from SHAssetsMenu import SHAssetsMenu
@@ -37,20 +37,26 @@ class SceneHubWindow(CanvasWindow):
     # Update the renderer in case it has been overriden by the main scene.
     self.viewportsManager.update()
     self.shTreesManager.sceneUpdated.connect(self.onSceneUpdated)
-    self.shCmdHandler = SceneHub.SHCmdHandler(self.shTreesManager.getScene(), self.qUndoStack);
+
+    self.shCmdRegistration = SceneHub.SHCmdRegistration()
+
+    self.shCmdHandler = SceneHub.SHCmdHandler(
+      self.shTreesManager.getScene(), 
+      self.shCmdRegistration,
+      self.qUndoStack);
  
-  def _initValueEditor(self):
-    self.valueEditor = SceneHub.SHVEEditorOwner(self.dfgWidget, self.shTreesManager.shTreeView)
-    if self.shTreesManager is not None:
-      self.shTreesManager.sceneHierarchyChanged.connect(self.valueEditor.onSceneChanged)
-      self.shTreesManager.sceneUpdated.connect(self.valueEditor.onSceneChanged)
+  #def _initValueEditor(self):
+  ##  self.valueEditor = SceneHub.SHVEEditorOwner(self.dfgWidget, self.shTreesManager.shTreeView, None)
+  #  if self.shTreesManager is not None:
+  #    self.shTreesManager.sceneHierarchyChanged.connect(self.valueEditor.onSceneChanged)
+  #    self.shTreesManager.sceneUpdated.connect(self.valueEditor.onSceneChanged)
     
     #for( ViewportSet::iterator it = m_viewports.begin(); it != m_viewports.end(); ++it )
     #  QObject::connect( *it, SIGNAL( sceneChanged() ), m_valueEditor, SLOT( onSceneChanged() ) );
 
-    self.valueEditor.log.connect(self._onLog)
-    self.valueEditor.modelItemValueChanged.connect(self._onModelValueChanged)
-    self.valueEditor.canvasSidePanelInspectRequested.connect(self._onCanvasSidePanelInspectRequested)
+  #self.valueEditor.log.connect(self._onLog)
+  #  self.valueEditor.modelItemValueChanged.connect(self._onModelValueChanged)
+  #  self.valueEditor.canvasSidePanelInspectRequested.connect(self._onCanvasSidePanelInspectRequested)
 
   def _initGL(self):
     self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(0, False, False, None)
@@ -59,8 +65,8 @@ class SceneHubWindow(CanvasWindow):
 
   def _initDocksAndMenus(self):
     super(SceneHubWindow, self)._initDocksAndMenus()
-    shTreeDock = QtGui.QDockWidget("Sh Tree-View", self)
-    shTreeDock.setObjectName("SH Tree-View")
+    shTreeDock = QtGui.QDockWidget("Tree-View", self)
+    shTreeDock.setObjectName("Tree-View")
     shTreeDock.setFeatures(self.dockFeatures)
     shTreeDock.setWidget(self.shTreesManager)
     self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, shTreeDock, QtCore.Qt.Vertical)
@@ -101,7 +107,7 @@ class SceneHubWindow(CanvasWindow):
     usageAction.triggered.connect(self._onShowUsage)
 
   def _contentChanged(self) :
-    self.valueEditor.onOutputsChanged()
+    #self.valueEditor.onOutputsChanged()
     self.viewportsManager.onRefreshAllViewports()
 
   def _onTogglePlayback(self):  

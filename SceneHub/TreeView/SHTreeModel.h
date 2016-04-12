@@ -14,8 +14,8 @@
 #include <vector>
 #include <assert.h>
 #include <iostream>
-
 #include "SHTreeItem.h"
+#include <FabricUI/SceneHub/SHGLScene.h>
 
 namespace FabricUI {
 namespace SceneHub {
@@ -33,6 +33,8 @@ class SHTreeModel : public QAbstractItemModel {
     SHTreeModel( FabricCore::Client client, FabricCore::RTVal sceneGraph, QObject *parent = 0 );
 
     ~SHTreeModel();
+
+    QModelIndex addRootItemsFromScene(SHGLScene *shGLScene);
 
     QModelIndex addRootItem(FabricCore::RTVal rootSGObject);
 

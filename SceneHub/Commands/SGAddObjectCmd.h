@@ -16,13 +16,13 @@ class SGAddObjectCmd : public SHCmd {
     
   public:  
     SGAddObjectCmd() : SHCmd() {
-      m_desctiption.cmdName = "addObjectCmd";
-      m_desctiption.cmdType = "SGAddObjectCmd";
+      m_description.cmdName = "addObjectCmd";
+      m_description.cmdType = "SGAddObjectCmd";
     }
 
     virtual SHCmdDescription registerCommand() {
-      if(QMetaType::type(m_desctiption.cmdType.toUtf8().constData()) == 0)
-        qRegisterMetaType<FabricUI::SceneHub::SGAddObjectCmd>(m_desctiption.cmdType.toUtf8().constData());
+      if(QMetaType::type(m_description.cmdType.toUtf8().constData()) == 0)
+        qRegisterMetaType<FabricUI::SceneHub::SGAddObjectCmd>(m_description.cmdType.toUtf8().constData());
       return SHCmd::registerCommand();
     }
       
@@ -36,7 +36,7 @@ class SGAddObjectCmd : public SHCmd {
 
         keyVal = RTVal::ConstructString(m_shGLScene->getClient(), "isGlobal");
         bool isGlobal = sgCmd.callMethod("Boolean", "getBooleanParam", 1, &keyVal).getBoolean();
-        cmd = QString( m_desctiption.cmdName + "(" + name + ", " + QString(isGlobal) + ")" );
+        cmd = QString( m_description.cmdName + "(" + name + ", " + QString(isGlobal) + ")" );
       }
       catch(Exception e)
       {

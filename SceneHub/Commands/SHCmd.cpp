@@ -11,8 +11,10 @@ SHCmd::SHCmd()
   , m_coreUndoCount(0) {
 }
 
+SHCmd::~SHCmd() {}
+
 SHCmdDescription SHCmd::registerCommand() { 
-  return m_desctiption; 
+  return m_description; 
 }
 
 QString SHCmd::getFromRTVal(FabricCore::RTVal cmd) { 
