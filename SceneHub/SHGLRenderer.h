@@ -13,126 +13,124 @@
 #include <QtGui/QVector3D>
 #include <QtGui/QMouseEvent>
  
-namespace FabricUI
-{
-  namespace SceneHub
-  {
+namespace FabricUI {
+namespace SceneHub {
 
-    class SHGLRenderer {
+class SHGLRenderer {
 
-      public:
-        SHGLRenderer(FabricCore::Client client);
+  public:
+    SHGLRenderer(FabricCore::Client client);
 
-        ~SHGLRenderer() {}
+    ~SHGLRenderer() {}
 
-        /// Updates the Renderer, if set externally
-        void update();
+    /// Updates the Renderer, if set externally
+    void update();
 
-        /// Gets the client.
-        FabricCore::Client getClient() { return m_client; }
+    /// Gets the client.
+    FabricCore::Client getClient() { return m_client; }
 
-        /// \internal
-        FabricCore::RTVal getSHGLRenderer() { return m_shGLRendererVal; }
-            
-        /// Gets the drawing statistics.
-        /// \param viewportID The viewport ID.
-        /// \param obj the total number of renderer objects
-        /// \param point the total number of renderer points
-        /// \param line the total number of renderer lines
-        /// \param triangle the total number of renderer triangless
-        void getDrawStats(uint32_t viewportID, uint32_t &obj, uint32_t &pt, uint32_t &li, uint32_t &tr);
+    /// \internal
+    FabricCore::RTVal getSHGLRenderer() { return m_shGLRendererVal; }
         
-        /// Fast getter to the viewport at this viewportID.
-        /// \param viewportID The viewport ID.
-        FabricCore::RTVal getViewport(uint32_t viewportID);
-        
-        /// Gets/creates a viewport.
-        /// \param viewportID The viewport ID.
-        FabricCore::RTVal getOrAddViewport(uint32_t viewportID);
-        
-        /// Gets/creates a setreo-viewport.
-        /// \param viewportID The viewport ID.
-        FabricCore::RTVal getOrAddStereoViewport(uint32_t viewportID);
-        
-        /// Removes the viewport.
-        /// \param viewportID The viewport ID. 
-        void removeViewport(uint32_t viewportID);
-        
-        /// Sets the viewport camera as orthographic.
-        /// \param viewportID The viewport ID.
-        void setOrthographicViewport(uint32_t viewportID, bool orthographic);
-        
-        /// Gets the viewport camera.
-        /// \param viewportID The viewport ID.
-        FabricCore::RTVal getCamera(uint32_t viewportID);
-        
-        /// Casts a ray from a Viewport and a position in camera space.
-        /// \param viewportID The ID of the viewport.
-        /// \param pos The mouse's position in the viewport
-        FabricCore::RTVal castRay(uint32_t viewportID, QPoint pos);
+    /// Gets the drawing statistics.
+    /// \param viewportID The viewport ID.
+    /// \param obj the total number of renderer objects
+    /// \param point the total number of renderer points
+    /// \param line the total number of renderer lines
+    /// \param triangle the total number of renderer triangless
+    void getDrawStats(uint32_t viewportID, uint32_t &obj, uint32_t &pt, uint32_t &li, uint32_t &tr);
+    
+    /// Fast getter to the viewport at this viewportID.
+    /// \param viewportID The viewport ID.
+    FabricCore::RTVal getViewport(uint32_t viewportID);
+    
+    /// Gets/creates a viewport.
+    /// \param viewportID The viewport ID.
+    FabricCore::RTVal getOrAddViewport(uint32_t viewportID);
+    
+    /// Gets/creates a setreo-viewport.
+    /// \param viewportID The viewport ID.
+    FabricCore::RTVal getOrAddStereoViewport(uint32_t viewportID);
+    
+    /// Removes the viewport.
+    /// \param viewportID The viewport ID. 
+    void removeViewport(uint32_t viewportID);
+    
+    /// Sets the viewport camera as orthographic.
+    /// \param viewportID The viewport ID.
+    void setOrthographicViewport(uint32_t viewportID, bool orthographic);
+    
+    /// Gets the viewport camera.
+    /// \param viewportID The viewport ID.
+    FabricCore::RTVal getCamera(uint32_t viewportID);
+    
+    /// Casts a ray from a Viewport and a position in camera space.
+    /// \param viewportID The ID of the viewport.
+    /// \param pos The mouse's position in the viewport
+    FabricCore::RTVal castRay(uint32_t viewportID, QPoint pos);
 
-        /// This helper method will raycast in the scene. 
-        // If no result is found, it will intersect with the Y = 0 plane. 
-        // If this is outside the near/far camera range, it will return the origin.
-        // \param viewportID The ID of the viewport.
-        // \param pos The mouse's position in the viewport
-        QList<float> get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint pos);
+    /// This helper method will raycast in the scene. 
+    // If no result is found, it will intersect with the Y = 0 plane. 
+    // If this is outside the near/far camera range, it will return the origin.
+    // \param viewportID The ID of the viewport.
+    // \param pos The mouse's position in the viewport
+    QList<float> get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint pos);
 
-        /// Activates the playback.
-        /// \param playback It true, playback.
-        void setPlayback(bool playback);
-        
-        /// Checks if the playback is active.
-        bool isPlayback(bool playback);
-        
-        /// Renders within this viewport.
-        /// \param viewportID The viewport ID.
-        /// \param width the viewport width.
-        /// \param height the viewport height.
-        /// \param samples Anti-aliasing number of samples.
-        void render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples);
-        
-        /// Renders within this viewport.
-        /// \param viewportID The viewport ID.
-        /// \param width the viewport width.
-        /// \param height the viewport height.
-        /// \param samples Anti-aliasing number of samples.
-        /// \param drawPhase Drawing phases (pre-post draw).
-        void render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples, uint32_t drawPhase);
-        
-        /// Propagates the events.
-        /// \param event The event.
-        bool onEvent(uint32_t viewportID, QEvent *event, bool &redrawAllViewports, bool dragging);
-        
-        /// Returns a reference to the ToolDispatcher.
-        FabricCore::RTVal getToolDispatcher();
+    /// Activates the playback.
+    /// \param playback It true, playback.
+    void setPlayback(bool playback);
+    
+    /// Checks if the playback is active.
+    bool isPlayback(bool playback);
+    
+    /// Renders within this viewport.
+    /// \param viewportID The viewport ID.
+    /// \param width the viewport width.
+    /// \param height the viewport height.
+    /// \param samples Anti-aliasing number of samples.
+    void render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples);
+    
+    /// Renders within this viewport.
+    /// \param viewportID The viewport ID.
+    /// \param width the viewport width.
+    /// \param height the viewport height.
+    /// \param samples Anti-aliasing number of samples.
+    /// \param drawPhase Drawing phases (pre-post draw).
+    void render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples, uint32_t drawPhase);
+    
+    /// Propagates the events.
+    /// \param event The event.
+    bool onEvent(uint32_t viewportID, QEvent *event, bool &redrawAllViewports, bool dragging);
+    
+    /// Returns a reference to the ToolDispatcher.
+    FabricCore::RTVal getToolDispatcher();
 
-        /// Gets the names and the keys of the registered tools.
-        /// \param toolNames Name of the registered tools.
-        /// \param enableKeys Key of the registered tools.
-        void getRegisteredTools(QStringList &toolNames, QStringList &toolKeys);
-        
-        /// Returns the selection set if any.
-        FabricCore::RTVal getSelectionSet();
-        
-        /// Checks if the selection changed from the manipulation system.
-        /// Synchronizes with the tree-view.
-        bool selectionChangedFromManips();
-        
-        /// Gets the category of the selection.
-        /// Used to know what type of element is selected.
-        /// For showing the right contextual menu.
-        QString getSelectionCategory();
+    /// Gets the names and the keys of the registered tools.
+    /// \param toolNames Name of the registered tools.
+    /// \param enableKeys Key of the registered tools.
+    void getRegisteredTools(QStringList &toolNames, QStringList &toolKeys);
+    
+    /// Returns the selection set if any.
+    FabricCore::RTVal getSelectionSet();
+    
+    /// Checks if the selection changed from the manipulation system.
+    /// Synchronizes with the tree-view.
+    bool selectionChangedFromManips();
+    
+    /// Gets the category of the selection.
+    /// Used to know what type of element is selected.
+    /// For showing the right contextual menu.
+    QString getSelectionCategory();
 
 
-      private:
-        /// \internal
-        FabricCore::Client m_client;    
-        /// \internal
-        FabricCore::RTVal m_shGLRendererVal;
-    };
+  private:
+    /// \internal
+    FabricCore::Client m_client;    
+    /// \internal
+    FabricCore::RTVal m_shGLRendererVal;
+};
 
-  }
-}
+} // namespace SceneHub
+} // namespace FabricUI
 
 #endif // __UI_SCENEHUB_GLRENDERER_H__

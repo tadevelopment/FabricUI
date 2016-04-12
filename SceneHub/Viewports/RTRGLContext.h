@@ -7,10 +7,9 @@
 
 #include <QtOpenGL/QGLWidget>
 
-namespace FabricUI
-{
-  namespace Viewports
-  {
+namespace FabricUI {
+namespace Viewports {
+
 #ifdef __APPLE__
     extern "C" void *TryFormatImpl(
       bool doubleBuffer,
@@ -76,7 +75,8 @@ namespace FabricUI
       }
     #endif
     };
-  };
-};
+
+} // namespace Viewports
+} // namespace FabricUI
 
 #endif // _UI_SCENEHUB_RTRGLCONTEXT_H__

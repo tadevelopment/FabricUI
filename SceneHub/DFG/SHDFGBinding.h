@@ -14,58 +14,58 @@
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeItem.h>
 
-namespace FabricUI
-{
-  namespace SceneHub
-  {
-    class SHDFGBinding : public QObject{
+namespace FabricUI {
+namespace SceneHub {
+    
+class SHDFGBinding : public QObject{
 
-      Q_OBJECT
+  Q_OBJECT
 
-      public:
-        SHDFGBinding(
-          FabricCore::DFGBinding &binding, 
-          FabricUI::DFG::DFGController *controller, 
-          FabricCore::Client client);
- 
-        ~SHDFGBinding() {}
-        
-        FabricCore::RTVal getSgObject() { return m_dfgCanvasSgObject; }
-        
-        FabricCore::RTVal getOperator() { return  m_dfgCanvasOperator; }
+  public:
+    SHDFGBinding(
+      FabricCore::DFGBinding &binding, 
+      FabricUI::DFG::DFGController *controller, 
+      FabricCore::Client client);
 
-        bool isSgObjectValid() { return m_dfgCanvasSgObject.isValid(); }
+    ~SHDFGBinding() {}
+    
+    FabricCore::RTVal getSgObject() { return m_dfgCanvasSgObject; }
+    
+    FabricCore::RTVal getOperator() { return  m_dfgCanvasOperator; }
 
-        bool isOperatorValid() { return m_dfgCanvasOperator.isValid(); }
+    bool isSgObjectValid() { return m_dfgCanvasSgObject.isValid(); }
 
-        bool dirtyAllOutputs();
+    bool isOperatorValid() { return m_dfgCanvasOperator.isValid(); }
 
-
-      signals:
-        void sceneChanged();
-        
-
-      public slots:
-        void onArgInserted(unsigned index, FTL::CStrRef name, FTL::CStrRef typeName);
-
-        void onArgRemoved(unsigned index, FTL::CStrRef name);
-
-        void onArgTypeChanged(unsigned index, FTL::CStrRef name, FTL::CStrRef newTypeName);
-
-        void onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item);
+    bool dirtyAllOutputs();
 
 
-      protected:         
-        void connectBindingNotifier();
+  signals:
+    void sceneChanged();
+    
 
-        FabricCore::DFGBinding m_binding;
-        FabricUI::DFG::DFGController *m_controller;
-        FabricCore::Client m_client;
-        FabricCore::RTVal m_dfgCanvasSgObject;
-        FabricCore::RTVal m_dfgCanvasOperator;
-    };
+  public slots:
+    void onArgInserted(unsigned index, FTL::CStrRef name, FTL::CStrRef typeName);
 
-  }
-}
+    void onArgRemoved(unsigned index, FTL::CStrRef name);
+
+    void onArgTypeChanged(unsigned index, FTL::CStrRef name, FTL::CStrRef newTypeName);
+
+    void onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item);
+
+
+  protected:         
+    void connectBindingNotifier();
+
+    FabricCore::DFGBinding m_binding;
+    FabricUI::DFG::DFGController *m_controller;
+    FabricCore::Client m_client;
+    FabricCore::RTVal m_dfgCanvasSgObject;
+    FabricCore::RTVal m_dfgCanvasOperator;
+};
+
+} // namespace SceneHub
+} // namespace FabricUI
+
 
 #endif // __UI_SCENEHUB_DFG_CANVAS_H__

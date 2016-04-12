@@ -12,51 +12,50 @@
 #include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
 
 namespace FabricUI {
+namespace SceneHub {
+    
+class SGObjectPropertyModelItem;
 
-  namespace SceneHub
-  { 
-    class SGObjectPropertyModelItem;
+class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
+  Q_OBJECT
 
-    class SHVEEditorOwner : public DFG::DFGVEEditorOwner
-    {
-      Q_OBJECT
+  public:
+    SHVEEditorOwner(DFG::DFGWidget *dfgWidget, SHTreeView *baseTreeView, SHCmdHandler *cmdViewWidget = 0);
+    
+    ~SHVEEditorOwner();
 
-    public:
-      SHVEEditorOwner(DFG::DFGWidget *dfgWidget, SHBaseTreeView *baseTreeView, SHCmdHandler *cmdViewWidget = 0);
-      
-      ~SHVEEditorOwner();
-
-      virtual void initConnections();
+    virtual void initConnections();
 
 
-    signals:
-      void canvasSidePanelInspectRequested();
+  signals:
+    void canvasSidePanelInspectRequested();
 
 
-    public slots:
-      virtual void onStructureChanged();
-      
-      void onSceneItemSelected(FabricUI::SceneHub::SHTreeItem *item);
-      
-      void updateSGObject(SHDFGBinding *shDFGBinding);
-      
-      void onSGObjectPropertyItemInserted(FabricUI::ValueEditor::BaseModelItem * item);
-      
-      void onSceneChanged();
+  public slots:
+    virtual void onStructureChanged();
+    
+    void onSceneItemSelected(FabricUI::SceneHub::SHTreeItem *item);
+    
+    void updateSGObject(SHDFGBinding *shDFGBinding);
+    
+    void onSGObjectPropertyItemInserted(FabricUI::ValueEditor::BaseModelItem * item);
+    
+    void onSceneChanged();
 
 
-    protected slots:
-      virtual void onSidePanelInspectRequested();
+  protected slots:
+    virtual void onSidePanelInspectRequested();
 
 
-    protected:
-      void updateSGObject( const FabricCore::RTVal& sgObject );
+  protected:
+    void updateSGObject( const FabricCore::RTVal& sgObject );
 
-      void updateSGObjectProperty( const FabricCore::RTVal& sgObjectProperty );
+    void updateSGObjectProperty( const FabricCore::RTVal& sgObjectProperty );
 
-      SceneHub::SHBaseTreeView *m_baseTreeView;
-      SHCmdHandler *m_cmdViewWidget;
-      SGObjectPropertyModelItem *m_objectPropertyItem;//Defined if "root" is a single property
-    };
-  }
-}
+    SceneHub::SHTreeView *m_baseTreeView;
+    SHCmdHandler *m_cmdViewWidget;
+    SGObjectPropertyModelItem *m_objectPropertyItem;//Defined if "root" is a single property
+};
+
+} // namespace SceneHub
+} // namespace FabricUI

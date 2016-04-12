@@ -16,90 +16,94 @@
 #include <iostream>
 
 namespace FabricUI {
+namespace SceneHub {
 
-  namespace SceneHub {
+class SHTreeModel;
 
-    class SHTreeModel;
+class SHTreeItem : public FTL::Shareable {
 
-    class SHTreeItem : public FTL::Shareable {
+  struct ChildItem {
+    bool m_updateNeeded;
+    FTL::SharedPtr<SHTreeItem> m_child;
+    ChildItem() : m_updateNeeded(true) {}
+  };
 
-      struct ChildItem {
-        bool m_updateNeeded;
-        FTL::SharedPtr<SHTreeItem> m_child;
-        ChildItem() : m_updateNeeded(true) {}
-      };
-
-      typedef std::vector< ChildItem > ChildItemVec;
-
-
-      public:
-		enum ItemType { Object, Property, Operator };
-
-		SHTreeItem(SHTreeModel *model, SHTreeItem *parentItem, FabricCore::Client client);
-
-        ~SHTreeItem() {}
-
-        QString desc();
-
-        void setIndex( QModelIndex index ) { m_index = index; }
-
-        QModelIndex getIndex() { return m_index; }
-
-        void setName( QString name ) { m_name = name; }
-
-        void updateNeeded() { m_needsUpdate = true; }
-
-        void updateNeeded( FabricCore::RTVal treeViewObjectData, bool invalidate );
-
-        SHTreeItem *parentItem()  { return m_parentItem; }
-
-        SHTreeItem *childItem( int row ) { return getOrCreateChildItem( row ); }
-
-        int childItemCount();
-
-        int childRow( SHTreeItem *childItem );
-
-        FabricCore::RTVal getSGObject();
-
-        FabricCore::RTVal getSGObjectProperty();
-      
-        FabricCore::RTVal getSGCanvasOperator();
-
-        void loadRecursively();
-
-        void updateChildItemsIfNeeded();
-
-		    bool isObject() const { return m_isReference; }
-      	
-        bool isReference() const { return m_isReference; }
-      	
-        bool isPropagated() const { return m_isPropagated; }
-      	
-        bool isGenerator() const { return m_isGenerator; }
-      
-      
-      protected:
-        void updateChildItemIfNeeded( int row );
-
-        SHTreeItem *getOrCreateChildItem( int row );
+  typedef std::vector< ChildItem > ChildItemVec;
 
 
-      private:
-        SHTreeModel *m_model;
-        SHTreeItem *m_parentItem;
-        FabricCore::Client m_client;
-        FabricCore::RTVal m_treeViewObjectDataRTVal;
-        ChildItemVec m_childItems;
-        bool m_needsUpdate, m_hadInitialUpdate;
-        QModelIndex m_index;
-        QString m_name;
+public:
+  enum ItemType { Object, Property, Operator };
 
-        bool m_isPropagated;
-      	bool m_isReference;
-      	bool m_isGenerator;
-      };
+  SHTreeItem(SHTreeModel *model, SHTreeItem *parentItem, FabricCore::Client client);
 
-  }
-}
+  ~SHTreeItem() {}
+
+  QString desc();
+
+  void setIndex( QModelIndex index ) { m_index = index; }
+
+  QModelIndex getIndex() { return m_index; }
+
+  void setName( QString name ) { m_name = name; }
+
+  void updateNeeded() { m_needsUpdate = true; }
+
+  void updateNeeded( FabricCore::RTVal treeViewObjectData, bool invalidate );
+
+  SHTreeItem *parentItem() { return m_parentItem; }
+
+  int childItemCount();
+
+  SHTreeItem *childItem( int row ) { return getOrCreateChildItem( row ); }
+
+  int childRow( SHTreeItem *childItem );
+
+  void onSceneHierarchyChanged();
+
+  FabricCore::RTVal getSGObject();
+  
+  FabricCore::RTVal getSGObjectProperty();
+  
+  FabricCore::RTVal getSGCanvasOperator();
+
+  void loadRecursively();
+
+  void updateChildItemsIfNeeded();
+
+  bool isObject() const { return m_isReference; }
+  
+  bool isReference() const { return m_isReference; }
+  
+  bool isPropagated() const { return m_isPropagated; }
+  
+  bool isOverride() const { return m_isOverride; }
+  
+  bool isGenerator() const { return m_isGenerator; }
+
+
+protected:
+  void updateChildItemIfNeeded( int row );
+
+  SHTreeItem *getOrCreateChildItem( int row );
+
+
+private:
+  SHTreeModel *m_model;
+  SHTreeItem *m_parentItem;
+  FabricCore::Client m_client;
+  FabricCore::RTVal m_treeViewObjectDataRTVal;
+  ChildItemVec m_childItems;
+  bool m_needsUpdate, m_hadInitialUpdate;
+  QModelIndex m_index;
+  QString m_name;
+
+  bool m_isPropagated;
+  bool m_isOverride;
+  bool m_isReference;
+  bool m_isGenerator;
+};
+
+} // namespace SceneHub
+} // namespace FabricUI
 
 #endif // __UI_SCENEHUB_SHTREEITEM_H__

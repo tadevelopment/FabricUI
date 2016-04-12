@@ -5,13 +5,13 @@
  
 #include <QtGui/QKeyEvent>
 
-namespace FabricUI
-{
-  namespace SceneHub
-  {
-    #define SH_ASSETS_LIBRARY "assets"
-    #define SH_IMAGES_LIBRARY "images"
-  };
-};
+namespace FabricUI {
+namespace SceneHub {
+
+  #define SH_ASSETS_LIBRARY "assets"
+  #define SH_IMAGES_LIBRARY "images"
+  
+} // namespace SceneHub
+} // namespace FabricUI
 
 #endif // _SCENE_HUB_HOT_KEYS_H_

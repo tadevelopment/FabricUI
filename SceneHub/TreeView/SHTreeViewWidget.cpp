@@ -71,12 +71,13 @@ void SHTreeViewWidget::resetTree() {
 void SHTreeViewWidget::constructTree() {
   resetTree();
 
-  m_treeModel = new FabricUI::SceneHub::SHTreeModel(m_shGLScene/*->getClient(), m_shGLScene->getSG(),*/, m_shTreeView);
+  m_treeModel = new FabricUI::SceneHub::SHTreeModel(m_shGLScene->getClient(), m_shGLScene->getSG(), m_shTreeView);
   setShowProperties( m_showProperties );
   setShowOperators( m_showOperators );
 
   QObject::connect(this, SIGNAL(sceneHierarchyChanged()), m_treeModel, SLOT(onSceneHierarchyChanged()));
   QObject::connect(m_treeModel, SIGNAL(sceneHierarchyChanged()), this, SLOT(onSceneHierarchyChanged()));
+  QObject::connect( m_treeModel, SIGNAL( sceneChanged() ), this, SLOT( onSceneChanged() ) );
 
   QModelIndex sceneRootIndex = m_treeModel->addRootItem(m_shGLScene->getSceneRoot());
   m_treeModel->addRootItem(m_shGLScene->getAssetLibraryRoot());
@@ -173,6 +174,11 @@ void SHTreeViewWidget::onSceneHierarchyChanged() {
     if(m_shGLScene->sceneHierarchyChanged())
       emit sceneHierarchyChanged();
   }
+}
+
+void SHTreeViewWidget::onSceneChanged() {
+  // No filter on this one
+  emit sceneHierarchyChanged();//Use that signal for now; to be refactored with SH-227
 }
 
 void SHTreeViewWidget::treeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {

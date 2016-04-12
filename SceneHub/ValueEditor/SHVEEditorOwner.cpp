@@ -14,7 +14,7 @@ using namespace SceneHub;
 using namespace ModelItems;
 
 
-SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHBaseTreeView* baseTreeView, SHCmdHandler *cmdViewWidget)
+SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHTreeView* baseTreeView, SHCmdHandler *cmdViewWidget)
   : DFG::DFGVEEditorOwner(dfgWidget)
   , m_baseTreeView(baseTreeView)
   , m_cmdViewWidget(cmdViewWidget)

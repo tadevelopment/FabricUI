@@ -44,8 +44,6 @@ namespace FabricUI
 
       virtual bool isNode() const { return false; }
       virtual bool isBinding() const { return false; }
-      virtual bool isSGObject() const { return false; }
-      virtual bool isSGObjectProperty() const { return false; }
 
       virtual FabricUI::ValueEditor::BaseModelItem* createChild( FTL::CStrRef name ) = 0;
 

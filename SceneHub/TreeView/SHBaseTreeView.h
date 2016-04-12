@@ -5,10 +5,7 @@
 #ifndef __UI_SCENEHUB_SHBASETREEVIEW_H__
 #define __UI_SCENEHUB_SHBASETREEVIEW_H__
 
-#include <QtGui/QMenu>
-#include <QtGui/QDrag>
-#include <QtGui/QTreeView>
-#include <QtGui/QMouseEvent>
+
 #include <FabricCore.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/SharedPtr.h>
@@ -16,63 +13,73 @@
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
 
-namespace FabricUI
-{
-  namespace SceneHub
-  {
-    class SHBaseTreeView;
 
-    class SHTreeView_ViewIndexTarget : public QObject {
-      Q_OBJECT
+namespace FabricUI {
+namespace SceneHub {
 
-      public:
-        SHTreeView_ViewIndexTarget(SHBaseTreeView *view, QModelIndex const &index, QObject *parent);
+class SHBaseTreeView;
 
+class SHTreeView_ViewIndexTarget : public QObject {
+  Q_OBJECT
 
-      public slots:
-        void expandRecursively() { expandRecursively( m_index ); }
-        
-        void loadRecursively();
+  public:
+    SHTreeView_ViewIndexTarget(SHBaseTreeView *view, QModelIndex const &index, QObject *parent);
 
-      protected:
-        void expandRecursively( QModelIndex const &index );
-
-      private:
-        SHBaseTreeView *m_view;
-        QModelIndex m_index;
-    };
-
-    class SHBaseTreeView : public QTreeView {
-      Q_OBJECT
-
-      public:
-        SHBaseTreeView(FabricCore::Client &client, QWidget *parent = 0 );
-
-        virtual ~SHBaseTreeView() {}
-
-        void setSelectedObjects( SHGLScene *scene );
-
-        void setSelectedObjects( FabricCore::RTVal selectedSGObjectArray );
-
-        static SHTreeItem *GetTreeItemAtIndex(QModelIndex index);
+    void setVisibility( bool visible, unsigned char propagationType );
 
 
-      signals:
-        virtual void itemSelected(FabricUI::SceneHub::SHTreeItem *item);
-        
-        virtual void itemDeselected(FabricUI::SceneHub::SHTreeItem *item);
-        
-        virtual void itemDoubleClicked( FabricUI::SceneHub::SHTreeItem *item);
+  public slots:
+    void expandRecursively() { expandRecursively( m_index ); }
+    
+    void loadRecursively();
+
+    void showLocal() { setVisibility( true, 0 ); }
+    
+    void showPropagated() { setVisibility( true, 1 ); }
+    
+    void showOverride() { setVisibility( true, 2 ); }
+
+    void hideLocal() { setVisibility( false, 0 ); }
+    
+    void hidePropagated() { setVisibility( false, 1 ); }
+    
+    void hideOverride() { setVisibility( false, 2 ); }
 
 
-      protected:
-        SHTreeItem *getTreeItemAtIndex(QModelIndex index);
+  protected:
+    void expandRecursively( QModelIndex const &index );
 
-        /// \internal
-        /// Reference to the client -> construct RTVal.
-        FabricCore::Client m_client;
-    };
-  }
-}
+
+  private:
+    SHBaseTreeView *m_view;
+    QModelIndex m_index;
+};
+
+class SHBaseTreeView : public QTreeView {
+  
+  Q_OBJECT
+
+  friend class SHTreeView_ViewIndexTarget;
+
+  public:
+    SHBaseTreeView(FabricCore::Client &client, QWidget *parent = 0 );
+
+    virtual ~SHBaseTreeView() {}
+
+    void setSelectedObjects( SHGLScene *scene );
+
+    void setSelectedObjects( FabricCore::RTVal selectedSGObjectArray );
+
+    static SHTreeItem *GetTreeItemAtIndex(QModelIndex index);
+
+
+  protected:
+    SHTreeItem *getTreeItemAtIndex(QModelIndex index);
+
+    FabricCore::Client m_client;
+};
+
+} // namespace SceneHub
+} // namespace FabricUI
 
 #endif // __UI_SCENEHUB_SHBASETREEVIEW_H__

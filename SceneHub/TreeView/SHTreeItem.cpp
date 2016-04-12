@@ -15,6 +15,7 @@ SHTreeItem::SHTreeItem(SHTreeModel *model, SHTreeItem *parentItem, FabricCore::C
   , m_needsUpdate( true )
   , m_hadInitialUpdate( false )
   , m_isPropagated( false )
+  , m_isOverride( false )
   , m_isReference( false )
   , m_isGenerator( false )
 {
@@ -25,8 +26,7 @@ SHTreeItem::SHTreeItem(SHTreeModel *model, SHTreeItem *parentItem, FabricCore::C
 QString SHTreeItem::desc() {
   if( m_treeViewObjectDataRTVal.isValid() && !m_treeViewObjectDataRTVal.isNullObject() )
     return m_treeViewObjectDataRTVal.callMethod( "String", "getName", 0, 0 ).getStringCString();
-  else
-    return m_name;
+  else return m_name;
 }
 
 void SHTreeItem::updateNeeded( FabricCore::RTVal treeViewObjectData, bool invalidate ) {
@@ -45,8 +45,10 @@ int SHTreeItem::childItemCount() {
 
 int SHTreeItem::childRow( SHTreeItem *childItem ) {
   int row = 0;
-  for( ChildItemVec::const_iterator it = m_childItems.begin(); it != m_childItems.end(); ++it, ++row ) 
-    if( childItem == it->m_child.get() ) return row;
+  for( ChildItemVec::const_iterator it = m_childItems.begin(); it != m_childItems.end(); ++it, ++row ) {
+    if( childItem == it->m_child.get() )
+      return row;
+  }
   assert( false );
   return 0;
 }
@@ -64,13 +66,14 @@ void SHTreeItem::updateChildItemIfNeeded( int row ) {
       m_treeViewObjectDataRTVal.callMethod(
       "SGTreeViewObjectData",
       "getUpdatedChildData",
-      6, m_model->m_getUpdatedChildDataArgs
+      7, m_model->m_getUpdatedChildDataArgs
       );
 
     bool invalidate = m_model->m_getUpdatedChildDataArgs[2].getBoolean();
     childItem->m_isPropagated = m_model->m_getUpdatedChildDataArgs[3].getBoolean();
-    childItem->m_isReference = m_model->m_getUpdatedChildDataArgs[4].getBoolean();
-    childItem->m_isGenerator = m_model->m_getUpdatedChildDataArgs[5].getBoolean();
+    childItem->m_isOverride = m_model->m_getUpdatedChildDataArgs[4].getBoolean();
+    childItem->m_isReference = m_model->m_getUpdatedChildDataArgs[5].getBoolean();
+    childItem->m_isGenerator = m_model->m_getUpdatedChildDataArgs[6].getBoolean();
     childItem->updateNeeded( childDataRTVal, invalidate );
     if( invalidate ) // Target object might have been created
       m_model->emitSceneHierarchyChanged();
@@ -176,13 +179,6 @@ void SHTreeItem::loadRecursively() {
   m_model->emitSceneHierarchyChanged();
 }
 
-SHTreeItem *SHTreeItem::getOrCreateChildItem( int row ) {
-  updateChildItemsIfNeeded();
-  updateChildItemIfNeeded( row );
-  assert( row < int(m_childItems.size()) );
-  return m_childItems[row].m_child.get();
-}
-
 FabricCore::RTVal SHTreeItem::getSGObject() {
   FabricCore::RTVal sgObjectRTVal;
   try {
@@ -237,4 +233,11 @@ FabricCore::RTVal SHTreeItem::getSGCanvasOperator() {
     printf( "SHTreeItem::getSGCanvasGraph: Error: %s\n", e.getDesc_cstr() );
   }
   return sgCanvasGraphRTVal;
+}
+
+SHTreeItem *SHTreeItem::getOrCreateChildItem( int row ) {
+  updateChildItemsIfNeeded();
+  updateChildItemIfNeeded( row );
+  assert( row < int(m_childItems.size()) );
+  return m_childItems[row].m_child.get();
 }

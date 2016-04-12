@@ -9,95 +9,91 @@
 #include <FabricUI/SceneHub/Commands/SHCmdHandler.h>
 #include <FTL/StrRef.h>
 
-namespace FabricUI
+namespace FabricUI {
+namespace SceneHub {
+
+//////////////////////////////////////////////////////////////////////////
+// Basic ModelItem for accessing propertyes
+class SGObjectPropertyModelItem : public FabricUI::ValueEditor::BaseModelItem
 {
+  Q_OBJECT
+  
+  protected:
 
-  namespace SceneHub
-  {
+    SHCmdHandler * m_cmdViewWidget;
+    FabricCore::Client m_client;
+    FabricCore::RTVal m_rtVal;
+    std::string m_name;
+    std::string m_rtValType;
+    int m_lastValueVersion;
+    bool m_rootItem;
 
-    //////////////////////////////////////////////////////////////////////////
-    // Basic ModelItem for accessing propertyes
-    class SGObjectPropertyModelItem : public FabricUI::ValueEditor::BaseModelItem
-    {
-      Q_OBJECT
-      
-    protected:
+  public:
 
-      SHCmdHandler * m_cmdViewWidget;
-      FabricCore::Client m_client;
-      FabricCore::RTVal m_rtVal;
-      std::string m_name;
-      std::string m_rtValType;
-      int m_lastValueVersion;
-      bool m_rootItem;
+    SGObjectPropertyModelItem(
+      SHCmdHandler * cmdViewWidget,
+      FabricCore::Client client,
+      FabricCore::RTVal rtVal,
+      bool isRootItem
+      );
+    ~SGObjectPropertyModelItem();
 
-    public:
+    BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
 
-      SGObjectPropertyModelItem(
-        SHCmdHandler * cmdViewWidget,
-        FabricCore::Client client,
-        FabricCore::RTVal rtVal,
-        bool isRootItem
-        );
-      ~SGObjectPropertyModelItem();
+    virtual int getNumChildren() /*override*/;
 
-      virtual bool isSGObjectProperty() const /*override*/ { return true; }
+    virtual FTL::CStrRef getChildName( int i ) /*override*/;
 
-      FabricUI::ValueEditor::BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
+    // Detects changes for this SGObjectProperty and updates the value.
+    void updateFromScene();
 
-      virtual int getNumChildren() /*override*/;
+    const FabricCore::RTVal& getSGObjectProperty() { return m_rtVal; }
 
-      virtual FTL::CStrRef getChildName( int i ) /*override*/;
+    /////////////////////////////////////////////////////////////////////////
+    // Name
+    /////////////////////////////////////////////////////////////////////////
 
-      // Detects changes for this SGObjectProperty and updates the value.
-      void updateFromScene();
+    virtual FTL::CStrRef getName() /*override*/;
 
-      const FabricCore::RTVal& getSGObjectProperty() { return m_rtVal; }
+    virtual bool canRename() /*override*/;
 
-      /////////////////////////////////////////////////////////////////////////
-      // Name
-      /////////////////////////////////////////////////////////////////////////
+    virtual void rename( FTL::CStrRef newName ) /*override*/;
 
-      virtual FTL::CStrRef getName() /*override*/;
+    virtual void onRenamed(
+      FTL::CStrRef oldName,
+      FTL::CStrRef newName
+      ) /*override*/;
 
-      virtual bool canRename() /*override*/;
+    /////////////////////////////////////////////////////////////////////////
+    // Value
+    /////////////////////////////////////////////////////////////////////////
 
-      virtual void rename( FTL::CStrRef newName ) /*override*/;
+    virtual FTL::CStrRef getRTValType();
 
-      virtual void onRenamed(
-        FTL::CStrRef oldName,
-        FTL::CStrRef newName
-        ) /*override*/;
+    virtual QVariant getValue() /*override*/;
 
-      /////////////////////////////////////////////////////////////////////////
-      // Value
-      /////////////////////////////////////////////////////////////////////////
+    virtual bool hasDefault() /*override*/;
+    
+    virtual void resetToDefault() /*override*/;
 
-      virtual FTL::CStrRef getRTValType();
+    /////////////////////////////////////////////////////////////////////////
+    // Metadata
+    /////////////////////////////////////////////////////////////////////////
 
-      virtual QVariant getValue() /*override*/;
+    virtual FabricUI::ValueEditor::ItemMetadata* getMetadata() /*override*/;
 
-      virtual bool hasDefault() /*override*/;
-      
-      virtual void resetToDefault() /*override*/;
+    virtual void setMetadataImp( const char* key, 
+                              const char* value, 
+                              bool canUndo )/*override*/;
 
-      /////////////////////////////////////////////////////////////////////////
-      // Metadata
-      /////////////////////////////////////////////////////////////////////////
+  protected:
 
-      virtual FabricUI::ValueEditor::ItemMetadata* getMetadata() /*override*/;
-
-      virtual void setMetadataImp( const char* key, 
-                                const char* value, 
-                                bool canUndo )/*override*/;
-
-    protected:
-
-      virtual void setValue(
-        QVariant var,
-        bool commit,
-        QVariant valueAtInteractionBegin
-        ) /*override*/;
-    };
-  }
-}
+    virtual void setValue(
+      QVariant var,
+      bool commit,
+      QVariant valueAtInteractionBegin
+      ) /*override*/;
+};
+    
+} // namespace SceneHub
+} // namespace FabricUI

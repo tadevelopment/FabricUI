@@ -14,7 +14,7 @@
 #include <FabricUI/DFG/DFGActions.h>
 
 using namespace FabricUI::DFG;
-  
+
 
 void SHDFGCombinedWidget::initTreeView() {
   DFGCombinedWidget::initTreeView(); 

@@ -10,59 +10,60 @@
 
 using namespace FabricServices;
  
-namespace FabricUI
+namespace FabricUI {
+namespace DFG {
+    
+class SHDFGCombinedWidget : public FabricUI::DFG::DFGCombinedWidget
 {
-  namespace DFG
-  {
-    class SHDFGCombinedWidget : public FabricUI::DFG::DFGCombinedWidget
-    {
-      Q_OBJECT
-      
-      public:
-        SHDFGCombinedWidget(QWidget * parent) : DFGCombinedWidget(parent) {};
+  Q_OBJECT
+  
+  public:
+    SHDFGCombinedWidget(QWidget * parent) : DFGCombinedWidget(parent) {};
 
-        ~SHDFGCombinedWidget() {};
- 
-
-      public slots:
-        virtual void onUndo() {};
-        
-        virtual void onRedo() {};
-
-        virtual void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifier, QString str) { DFGCombinedWidget::onHotkeyPressed(key, modifier, str); }
-        
-        virtual void onGraphSet(FabricUI::GraphView::Graph * graph) { DFGCombinedWidget::onGraphSet(graph); };
-        
-        virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeInspectRequested(node); };
-        
-        virtual void onNodeEditRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeEditRequested(node); };
-        
-        virtual void onAdditionalMenuActionsRequested(QString name, QMenu * menu, bool prefix) { DFGCombinedWidget::onAdditionalMenuActionsRequested(name, menu, prefix); }; 
-
-        virtual void onRefreshScene() { refreshScene(); }
+    ~SHDFGCombinedWidget() {};
 
 
-      protected slots:
-        void onPortEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog) { DFGCombinedWidget::onPortEditDialogCreated(dialog); }
-        
-        void onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData) { DFGCombinedWidget::onPortEditDialogInvoked(dialog, additionalMetaData); }
-      
+  public slots:
+    virtual void onUndo() {};
+    
+    virtual void onRedo() {};
 
-      protected:
-        virtual void refreshScene() = 0;  
+    virtual void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifier, QString str) { DFGCombinedWidget::onHotkeyPressed(key, modifier, str); }
+    
+    virtual void onGraphSet(FabricUI::GraphView::Graph * graph) { DFGCombinedWidget::onGraphSet(graph); };
+    
+    virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeInspectRequested(node); };
+    
+    virtual void onNodeEditRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeEditRequested(node); };
+    
+    virtual void onAdditionalMenuActionsRequested(QString name, QMenu * menu, bool prefix) { DFGCombinedWidget::onAdditionalMenuActionsRequested(name, menu, prefix); }; 
 
-        /// Initializes the treeView widget.
-        virtual void initTreeView();
-        
-        /// Initializes the windows docks.
-        virtual void initDocks();
-       
-        void addSceneHubAsPort();
-        
-        SceneHub::SHGLScene *m_shGLScene;
-        SceneHub::SHTreeViewWidget *m_shTreeViewWidget;
-    };
-  }
-}
+    virtual void onRefreshScene() { refreshScene(); }
+
+
+  protected slots:
+    void onPortEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog) { DFGCombinedWidget::onPortEditDialogCreated(dialog); }
+    
+    void onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData) { DFGCombinedWidget::onPortEditDialogInvoked(dialog, additionalMetaData); }
+  
+
+  protected:
+    virtual void refreshScene() = 0;  
+
+    /// Initializes the treeView widget.
+    virtual void initTreeView();
+    
+    /// Initializes the windows docks.
+    virtual void initDocks();
+   
+    void addSceneHubAsPort();
+    
+    SceneHub::SHGLScene *m_shGLScene;
+    SceneHub::SHTreeViewWidget *m_shTreeViewWidget;
+};
+
+} // namespace DFG
+} // namespace FabricUI
+
 
 #endif 

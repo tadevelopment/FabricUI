@@ -5,10 +5,11 @@
 #include "SHBaseTreeView.h"
 #include <QtCore/QUrl>
 #include <QtCore/QMimeData>
+#include <QtCore/QAbstractItemModel>
 #include <QtGui/QDrag>
 #include <QtGui/QTreeWidgetItem>
-#include <QtCore/QAbstractItemModel>
- 
+#include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
+
 using namespace FabricUI;
 using namespace FabricUI::SceneHub;
 
@@ -20,8 +21,11 @@ SHTreeView_ViewIndexTarget::SHTreeView_ViewIndexTarget(SHBaseTreeView *view, QMo
 {}
 
 void SHTreeView_ViewIndexTarget::expandRecursively( QModelIndex const &index ) {
-  SHTreeModel *model = const_cast<SHTreeModel *>( static_cast<SHTreeModel const *>( index.model() ) );
+  SHTreeModel *model = const_cast<SHTreeModel *>(
+    static_cast<SHTreeModel const *>( index.model() )
+    );
   SHTreeModel::SceneHierarchyChangedBlocker blocker( model );
+
   m_view->expand( index );
   int rows = model->rowCount( index );
   for ( int row = 0; row < rows; ++row ) {
@@ -31,14 +35,42 @@ void SHTreeView_ViewIndexTarget::expandRecursively( QModelIndex const &index ) {
 }
 
 void SHTreeView_ViewIndexTarget::loadRecursively() {
-  SHTreeModel *model = const_cast<SHTreeModel *>( static_cast<SHTreeModel const *>( m_index.model() ) );
+  SHTreeModel *model = const_cast<SHTreeModel *>(
+    static_cast<SHTreeModel const *>( m_index.model() )
+    );
   SHTreeModel::SceneHierarchyChangedBlocker blocker( model );
+
   SHTreeItem *item = static_cast<SHTreeItem *>( m_index.internalPointer() );
   item->loadRecursively();
 }
 
+void SHTreeView_ViewIndexTarget::setVisibility( bool visible, unsigned char propagationType ) {
+  SHTreeItem *item = static_cast<SHTreeItem *>( m_index.internalPointer() );
+  FabricCore::RTVal sgObjectVal = item->getSGObject();
+  if( sgObjectVal.isValid() ) {
+
+    SHTreeModel *model = const_cast<SHTreeModel *>(
+      static_cast<SHTreeModel const *>( m_index.model() )
+      );
+
+    try {
+      FabricCore::RTVal args[2];
+      args[0] = FabricCore::RTVal::ConstructBoolean( m_view->m_client, visible );
+      args[1] = FabricCore::RTVal::ConstructUInt8( m_view->m_client, propagationType );
+      sgObjectVal.callMethod( "", "setVisibility", 2, args );
+    }
+    catch( FabricCore::Exception e ) {
+      printf( "SHTreeView_ViewIndexTarget::setVisibility: Error: %s\n", e.getDesc_cstr() );
+    }
+    model->emitSceneChanged();
+  }
+}
+
+
 // *********
-SHBaseTreeView::SHBaseTreeView(FabricCore::Client &client, QWidget *parent) : QTreeView( parent ) {
+SHBaseTreeView::SHBaseTreeView(FabricCore::Client &client, QWidget *parent) 
+  : QTreeView( parent ) 
+{
   m_client = client;
   this->setAcceptDrops(true);
 }
