@@ -16,22 +16,27 @@ SHDFGBinding::SHDFGBinding(
   , m_client(client)
 { 
   connectBindingNotifier();
+  m_computeContextVal = FabricCore::RTVal::Create( m_client, "ComputeContextRTValWrapper", 0, 0 );
 }
 
-bool SHDFGBinding::dirtyAllOutputs() {
-  if(m_dfgCanvasOperator.isValid()) 
+void SHDFGBinding::setDirty( bool& accepted, bool& refresh ) {
+  accepted = m_dfgCanvasOperator.isValid();
+  refresh = false;
+  if( accepted )
   {
     try
     {
-      m_dfgCanvasOperator.callMethod("", "dirtyAllOutputs", 0, 0);
+      if( m_computeContextVal.callMethod( "Boolean", "hasExecutingKLDFGBinding", 0, 0 ).getBoolean() )
+        return;//Ignore: this is from runtime KL Bindings computation (we are already redrawing)
+
+      refresh = true;
+      m_dfgCanvasOperator.callMethod("", "setDirty", 0, 0);
     }
     catch(Exception e)
     {
-      printf("SHDFGBinding::dirtyAllOutputs: exception: %s\n", e.getDesc_cstr());
+      printf("SHDFGBinding::setDirty: exception: %s\n", e.getDesc_cstr());
     }
-    return true;
   }
-  return false;
 }
 
 void SHDFGBinding::connectBindingNotifier() {
@@ -51,6 +56,7 @@ void SHDFGBinding::onArgInserted(unsigned index, FTL::CStrRef name, FTL::CStrRef
   {
     printf("SHDFGBinding::onArgInserted: exception: %s\n", e.getDesc_cstr());
   }
+  emit sceneChanged();
 }
 
 void SHDFGBinding::onArgRemoved(unsigned index, FTL::CStrRef name) {
@@ -63,6 +69,7 @@ void SHDFGBinding::onArgRemoved(unsigned index, FTL::CStrRef name) {
   {
     printf("SHDFGBinding::getAssetLibraryRoot: exception: %s\n", e.getDesc_cstr());
   }
+  emit sceneChanged();
 }
 
 void SHDFGBinding::onArgTypeChanged(unsigned index, FTL::CStrRef name, FTL::CStrRef newTypeName) {
@@ -75,6 +82,7 @@ void SHDFGBinding::onArgTypeChanged(unsigned index, FTL::CStrRef name, FTL::CStr
   {
     printf("SHDFGBinding::onArgTypeChanged: exception: %s\n", e.getDesc_cstr());
   }
+  emit sceneChanged();
 }
 
 void SHDFGBinding::onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {

@@ -37,8 +37,7 @@ class SHDFGBinding : public QObject{
 
     bool isOperatorValid() { return m_dfgCanvasOperator.isValid(); }
 
-    bool dirtyAllOutputs();
-
+    void setDirty( bool& accepted, bool& refresh );
 
   signals:
     void sceneChanged();
@@ -62,6 +61,7 @@ class SHDFGBinding : public QObject{
     FabricCore::Client m_client;
     FabricCore::RTVal m_dfgCanvasSgObject;
     FabricCore::RTVal m_dfgCanvasOperator;
+    FabricCore::RTVal m_computeContextVal;
 };
 
 } // namespace SceneHub

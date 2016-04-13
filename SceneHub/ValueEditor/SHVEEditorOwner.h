@@ -25,6 +25,7 @@ class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
 
     virtual void initConnections();
 
+    void updateSGObject( const FabricCore::RTVal& sgObject );
 
   signals:
     void canvasSidePanelInspectRequested();
@@ -47,7 +48,6 @@ class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
 
 
   protected:
-    void updateSGObject( const FabricCore::RTVal& sgObject );
 
     void updateSGObjectProperty( const FabricCore::RTVal& sgObjectProperty );
 
