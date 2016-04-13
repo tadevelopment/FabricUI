@@ -31,6 +31,7 @@ class SHTreeView : public SHBaseTreeView {
     virtual void mouseDoubleClickEvent(QMouseEvent * event);
 
 
+
   public slots:
     void onCustomContextMenu( const QPoint &point );
 

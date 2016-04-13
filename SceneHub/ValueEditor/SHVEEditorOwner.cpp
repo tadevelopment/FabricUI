@@ -27,8 +27,6 @@ SHVEEditorOwner::~SHVEEditorOwner() {
 
 void SHVEEditorOwner::initConnections() {
   DFG::DFGVEEditorOwner::initConnections();
-
-  /*
   connect(
     m_baseTreeView,
     SIGNAL(itemSelected( FabricUI::SceneHub::SHTreeItem * )),
@@ -41,7 +39,6 @@ void SHVEEditorOwner::initConnections() {
     this,
     SLOT(onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * ))
     );
-  */
 }
 
 void SHVEEditorOwner::onStructureChanged() {

@@ -72,13 +72,15 @@ class SHBaseTreeView : public QTreeView {
 
     static SHTreeItem *GetTreeItemAtIndex(QModelIndex index);
    
-
+   
   signals:
     void itemSelected( FabricUI::SceneHub::SHTreeItem *item );
     
     void itemDeselected( FabricUI::SceneHub::SHTreeItem *item );
     
     void itemDoubleClicked( FabricUI::SceneHub::SHTreeItem *item );
+
+
 
   protected:
     SHTreeItem *getTreeItemAtIndex(QModelIndex index);
