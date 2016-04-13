@@ -69,6 +69,7 @@ class SHTreeViewsManager(QtGui.QWidget):
     self.treeModel.sceneChanged.connect(self.onSceneChanged)
 
     sceneRootIndex = self.treeModel.addRootItemsFromScene(self.shGLScene)
+    #sceneRootIndex = self.treeModel.addRootItem(self.shGLScene.getSceneRoot())
     #self.treeModel.addRootItem(self.shGLScene.getAssetLibraryRoot())
     #self.treeModel.addRootItem(self.shGLScene.getMaterialLibraryRoot())
     #self.treeModel.addRootItem(self.shGLScene.getImageLibraryRoot())
@@ -130,7 +131,7 @@ class SHTreeViewsManager(QtGui.QWidget):
     if self.shGLScene.hasSG():
       # No filter on this one
       #Use that signal for now; to be refactored with SH-227
-      sceneHierarchyChanged.emit()
+      self.sceneHierarchyChanged.emit()
 
   def onTreeItemSelected(self, item):
     if self.shGLScene.hasSG() and not self.bUpdatingSelectionFrom3D:

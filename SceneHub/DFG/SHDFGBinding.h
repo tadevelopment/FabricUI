@@ -39,6 +39,7 @@ class SHDFGBinding : public QObject{
 
     void setDirty( bool& accepted, bool& refresh );
 
+
   signals:
     void sceneChanged();
     

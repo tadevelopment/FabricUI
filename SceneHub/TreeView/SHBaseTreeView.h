@@ -70,9 +70,12 @@ class SHBaseTreeView : public QTreeView {
 
     void setSelectedObjects( FabricCore::RTVal selectedSGObjectArray );
 
+    FabricCore::Client getClient() { return m_client; }
+
     static SHTreeItem *GetTreeItemAtIndex(QModelIndex index);
    
-   
+    
+
   signals:
     void itemSelected( FabricUI::SceneHub::SHTreeItem *item );
     

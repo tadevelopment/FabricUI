@@ -1,6 +1,8 @@
-from FabricEngine import Core, FabricUI
+from FabricEngine import Core, FabricUI, Util, CAPI
 from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import *
+from FabricEngine.Util import *
+from FabricEngine.CAPI import *
 from SHAssetsMenu import SHAssetsMenu
 from SHLightsMenu import SHLightsMenu
 from SHContextualMenu import SHContextualMenu
@@ -20,15 +22,72 @@ class SHTreeView(SceneHub.SHBaseTreeView):
   def onCustomContextMenu(self, point):
     menu = QtGui.QMenu(self)
     index = self.indexAt(point)
-    if index.isValid():
-      viewIndexTarget = SceneHub.SHTreeView_ViewIndexTarget(self, index, menu)
-      expandAction = QtGui.QAction("Expand recursively", menu)
-      expandAction.triggered.connect(viewIndexTarget.expandRecursively)
-      menu.addAction(expandAction)
-      loadAction = QtGui.QAction("Load recursively", menu)
-      loadAction.triggered.connect(viewIndexTarget.loadRecursively)
-      menu.addAction(loadAction)
 
+    if index.isValid():
+      item = SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index)
+      sgObjectVal = pyObjectToRTVal( self.getClient().getContext(), item.getSGObject())
+
+      if sgObjectVal.isValid():
+        viewIndexTarget = SceneHub.SHTreeView_ViewIndexTarget(self, index, menu)
+        expandAction = QtGui.QAction("Expand recursively", menu)
+        expandAction.triggered.connect(viewIndexTarget.expandRecursively)
+        menu.addAction(expandAction)
+        loadAction = QtGui.QAction("Load recursively", menu)
+        loadAction.triggered.connect(viewIndexTarget.loadRecursively)
+        menu.addAction(loadAction)
+
+        visible = False
+        propagVal = RTVal_ConstructUInt8(self.getClient(), 0)
+        visible = sgObjectVal.callMethod("Boolean", "getVisibility", 1, propagVal).getBoolean()
+        propagType = propagVal.getUInt8()
+    
+        
+        visMenu = menu.addMenu("Visibility")
+        visAction = QtGui.QAction("Show", visMenu)
+        visAction.triggered.connect(viewIndexTarget.showLocal)
+        visAction.setCheckable( True )
+        if visible and not propagType:
+          visAction.setChecked( True )
+        visMenu.addAction( visAction )
+
+        visAction = QtGui.QAction("Show (propagated)", visMenu)
+        visAction.triggered.connect(viewIndexTarget.showPropagated)
+        visAction.setCheckable( True )
+        if visible and propagType:
+          visAction.setChecked(True)
+        visMenu.addAction( visAction )
+
+        # THERE ARE BUGS WITH OVERRIDES
+        #visAction = new QAction( "Show (override)", 0 )
+        #connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( showOverride() ) )
+        #visAction.setCheckable( True )
+        #if( visible and propagType == 2 )
+        #  visAction.setChecked( True )
+        #visMenu.addAction( visAction )
+        
+        visAction = QtGui.QAction("Hide", visMenu)
+        visAction.triggered.connect(viewIndexTarget.hideLocal)
+        visAction.setCheckable( True )
+        if not visible and not propagType:
+          visAction.setChecked( True )
+        visMenu.addAction( visAction )
+
+        visAction = QtGui.QAction("Hide (propagated)", visMenu)
+        visAction.triggered.connect(viewIndexTarget.hidePropagated)
+        visAction.setCheckable( True )
+        if not visible and propagType:
+          visAction.setChecked( True )
+        visMenu.addAction( visAction )
+        
+        # THERE ARE BUGS WITH OVERRIDES
+        #visAction = new QAction( "Hide (override)", 0 )
+        #connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( hideOverride() ) )
+        #visAction.setCheckable( True )
+        #if( !visible and propagType == 2 )
+        #  visAction.setChecked( True )
+        #visMenu.addAction( visAction )
+        
+ 
     else:
       menu.addMenu(SHAssetsMenu(self.shGLScene))
       menu.addMenu(SHLightsMenu(self.shGLScene))
@@ -52,7 +111,7 @@ class SHTreeView(SceneHub.SHBaseTreeView):
         mimeData = QtCore.QMimeData()
         mimeData.setUrls(urlsList)
         # Create drag
-        drag = QtGui.QDrag(self);
+        drag = QtGui.QDrag(self)
         drag.setMimeData(mimeData)
         drag.exec_(QtCore.Qt.CopyAction)
 

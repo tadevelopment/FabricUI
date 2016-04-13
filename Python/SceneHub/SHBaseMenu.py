@@ -9,7 +9,7 @@ class SHBaseMenu(QtGui.QMenu):
     if title is not None : self.setTitle(title)
     self._constructMenu()
     
-  def onSceneUpdated(scene):
+  def onSceneUpdated(self, scene):
     self.shGLScene = scene
 
   def _constructMenu(self):
