@@ -26,7 +26,7 @@ protected:
   static void Callback(
     void *userdata,
     char const *jsonCStr,
-    uint32_t jsonSize
+    unsigned int jsonSize
     )
   {
     static_cast<DFGNotifier *>(

@@ -207,7 +207,7 @@ namespace FabricUI
       static void Callback(
         void *thisVoidPtr,
         char const *jsonCStr,
-        uint32_t jsonSize
+        unsigned int jsonSize
         )
       {
         static_cast<DFGNotificationRouter *>( thisVoidPtr )->callback(

@@ -15,7 +15,7 @@
 #include <FabricUI/ValueEditor/VETreeWidgetItem.h>
 
 using namespace FabricUI;
-using namespace ValueEditor;
+using namespace FabricUI::ValueEditor;
 using namespace ModelItems;
 
 VEEditorOwner::VEEditorOwner()
