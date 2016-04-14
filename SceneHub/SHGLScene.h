@@ -63,7 +63,7 @@ class SHGLScene {
     FabricCore::RTVal getAssetLibraryRoot();
 
     /// Gets the drawing statistics.
-    void getSceneStats(uint32_t &meshCount, uint32_t &triangleCount, uint32_t &lightCount);
+    void getSceneStats(unsigned int &meshCount, unsigned int &triangleCount, unsigned int &lightCount);
     
     /// Prepares for rendering. 
     /// This must be called once before re-drawing all viewports.
@@ -144,7 +144,7 @@ class SHGLScene {
 
     /// Adding lights
     /// \param lightType The type of light (spot, point, diectional...)
-    void addLight(uint32_t lightType, float x=0, float y=0, float z=0);
+    void addLight(unsigned int lightType, float x=0, float y=0, float z=0);
 
     /// Updates selected light(s) with provided properties
     /// \param color The light color
@@ -157,7 +157,7 @@ class SHGLScene {
 
     /// Shows the treeView when the app opens.
     /// \param level Iniitial level of expension
-    bool showTreeViewByDefault(uint32_t &level);
+    bool showTreeViewByDefault(unsigned int &level);
 
     /// If true, show the value editor when initializing, and set its target to defaultTarget
     bool showValueEditorByDefault( FabricCore::RTVal &defaultTarget );
@@ -172,11 +172,11 @@ class SHGLScene {
     
     /// Gets the command at index i of KL stack.
     /// \param index The indo of the commands in the stack.
-    FabricCore::RTVal retrieveCmd(uint32_t index);
+    FabricCore::RTVal retrieveCmd(unsigned int index);
 
     /// Gets the number of commands in the kl stacks.
     /// Uses for synchronizaztion
-    uint32_t getNumCmdInUndoStack();
+    unsigned int getNumCmdInUndoStack();
 
     /// Executes the command at index i of KL stack.
     /// \param cmdName The name of the commands
@@ -185,11 +185,11 @@ class SHGLScene {
 
     /// Undo commands.
     /// \param undoCount The number of undos. 
-    void undoCmd(uint32_t undoCount);
+    void undoCmd(unsigned int undoCount);
 
     /// Redo commands.
     /// \param redoCount The number of redos. 
-    void redoCmd(uint32_t redoCount);
+    void redoCmd(unsigned int redoCount);
  
 
   private:

@@ -148,7 +148,7 @@ RTVal SHGLScene::getAssetLibraryRoot() {
   return libRootVal;
 }
 
-void SHGLScene::getSceneStats(uint32_t &mesh, uint32_t &triangle, uint32_t &light) {
+void SHGLScene::getSceneStats(unsigned int &mesh, unsigned int &triangle, unsigned int &light) {
   try 
   {
     RTVal args[3] = {
@@ -389,7 +389,7 @@ QString SHGLScene::getSelectionCategory() {
   return QString();
 }
 
-bool SHGLScene::showTreeViewByDefault(uint32_t &level) {
+bool SHGLScene::showTreeViewByDefault(unsigned int &level) {
   bool show = false;
   try 
   {
@@ -463,7 +463,7 @@ void SHGLScene::setObjectColor(QColor color, bool local) {
   }
 }
 
-void SHGLScene::addLight(uint32_t lightType, float x, float y, float z) {
+void SHGLScene::addLight(unsigned int lightType, float x, float y, float z) {
   try 
   {
     RTVal posVal = RTVal::Construct(getClient(), "Vec3", 0, 0);
@@ -545,7 +545,7 @@ RTVal SHGLScene::setParamValue(QString type, QString value) {
   return paramsVal;
 }
 
-RTVal SHGLScene::retrieveCmd(uint32_t index) {
+RTVal SHGLScene::retrieveCmd(unsigned int index) {
   RTVal cmdVal;
   try 
   {
@@ -559,7 +559,7 @@ RTVal SHGLScene::retrieveCmd(uint32_t index) {
   return cmdVal;
 }
 
-uint32_t SHGLScene::getNumCmdInUndoStack() {
+unsigned int SHGLScene::getNumCmdInUndoStack() {
   try 
   {
     return getCmdManager().callMethod("Size", "getNumCmdInUndoStack", 0, 0).getUInt32();
@@ -582,7 +582,7 @@ void SHGLScene::executeCmd(QString cmdName, QList<RTVal> &params)  {
   }
 }
 
-void SHGLScene::undoCmd(uint32_t undoCount) {
+void SHGLScene::undoCmd(unsigned int undoCount) {
   try 
   {
     for(unsigned i=0; i<undoCount; ++i)
@@ -594,7 +594,7 @@ void SHGLScene::undoCmd(uint32_t undoCount) {
   }
 }
 
-void SHGLScene::redoCmd(uint32_t redoCount) {
+void SHGLScene::redoCmd(unsigned int redoCount) {
   try 
   {
     for(unsigned i=0; i<redoCount; ++i)
