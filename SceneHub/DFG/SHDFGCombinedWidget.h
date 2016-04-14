@@ -50,6 +50,9 @@ class SHDFGCombinedWidget : public FabricUI::DFG::DFGCombinedWidget
   protected:
     virtual void refreshScene() = 0;  
 
+    /// Initializes the DFG widget.
+    virtual void initValueEditor();
+
     /// Initializes the treeView widget.
     virtual void initTreeView();
     

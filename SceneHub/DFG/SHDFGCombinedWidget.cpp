@@ -12,7 +12,8 @@
 #include <FabricUI/Style/FabricStyle.h>
 #include <FabricUI/DFG/Dialogs/DFGNodePropertiesDialog.h>
 #include <FabricUI/DFG/DFGActions.h>
-
+#include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
+ 
 using namespace FabricUI::DFG;
 
 
@@ -28,4 +29,9 @@ void SHDFGCombinedWidget::initTreeView() {
 void SHDFGCombinedWidget::initDocks() { 
   DFGCombinedWidget::initDocks(); 
   m_hSplitter->addWidget(m_shTreeViewWidget);
+}
+
+void SHDFGCombinedWidget::initValueEditor() {
+  m_valueEditor = new FabricUI::SceneHub::SHVEEditorOwner( getDfgWidget(), m_shTreeViewWidget->getTreeView(), 0 );
+  QObject::connect( m_valueEditor, SIGNAL( log( const char * ) ), this, SLOT( log ( const char * ) ) );
 }

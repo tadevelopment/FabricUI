@@ -80,7 +80,6 @@ void SHBaseTreeView::setSelectedObjects( SHGLScene *scene ) {
 }
 
 void SHBaseTreeView::setSelectedObjects( FabricCore::RTVal selectedSGObjectArray ) {
-
   SHTreeModel* treeModel = (SHTreeModel*)model();
   try 
   {

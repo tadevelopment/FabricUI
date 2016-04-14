@@ -2,6 +2,7 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
+#include <iostream>
 #include "SHGLRenderer.h"
 #include <FabricUI/Viewports/QtToKLEvent.h>
 
@@ -276,7 +277,8 @@ RTVal SHGLRenderer::getToolDispatcher() {
   return toolDispatcherVal;
 }
 
-void SHGLRenderer::getRegisteredTools(QStringList &toolNames, QStringList &toolKeys) {
+QList<QStringList> SHGLRenderer::getRegisteredTools() {
+  QList<QStringList> list;
   try 
   {
     RTVal args[2] = {
@@ -285,18 +287,23 @@ void SHGLRenderer::getRegisteredTools(QStringList &toolNames, QStringList &toolK
     };
     m_shGLRendererVal.callMethod("", "getRegisteredTools", 2, &args[0]);
 
+    QStringList toolNames;
+    QStringList toolKeys;
     for(uint32_t i=0; i<args[0].getArraySize(); ++i)
     {
       RTVal name = args[0].getArrayElement(i);
       RTVal key = args[1].getArrayElement(i);
       toolNames.append(name.getStringCString());
-      toolKeys.append(QKeySequence(key.getUInt32()).toString()); 
+      toolKeys.append(QKeySequence(key.getUInt32()).toString());
     }
+    list.append(toolNames);
+    list.append(toolKeys);
   }
   catch(Exception e)
   {
     printf("SHGLRenderer::getRegisteredTools: exception: %s\n", e.getDesc_cstr());
   }
+  return list;
 }
 
 RTVal SHGLRenderer::getSelectionSet() {

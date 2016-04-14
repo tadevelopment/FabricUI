@@ -8,7 +8,8 @@ from SHViewportsManager import SHViewportsManager
 from SHAssetsMenu import SHAssetsMenu
 from SHLightsMenu import SHLightsMenu
 from SHTreeViewMenu import SHTreeViewMenu
- 
+from SHInteractionMenu import SHInteractionMenu
+from HelpWidget import HelpWidget
 
 class SceneHubWindow(CanvasWindow):
 
@@ -43,7 +44,7 @@ class SceneHubWindow(CanvasWindow):
     self.shCmdHandler = SceneHub.SHCmdHandler(
       self.shTreesManager.getScene(), 
       self.shCmdRegistration,
-      self.qUndoStack);
+      self.qUndoStack)
  
   def _initValueEditor(self):
     self.valueEditor = SceneHub.SHVEEditorOwner(self.dfgWidget, self.shTreesManager.shTreeView, None)
@@ -51,8 +52,8 @@ class SceneHubWindow(CanvasWindow):
       self.shTreesManager.sceneHierarchyChanged.connect(self.valueEditor.onSceneChanged)
       self.shTreesManager.sceneUpdated.connect(self.valueEditor.onSceneChanged)
     
-    #for( ViewportSet::iterator it = m_viewports.begin(); it != m_viewports.end(); ++it )
-    #  QObject::connect( *it, SIGNAL( sceneChanged() ), m_valueEditor, SLOT( onSceneChanged() ) );
+    #for( ViewportSet::iterator it = m_viewports.begin() it != m_viewports.end() ++it )
+    #  QObject::connect( *it, SIGNAL( sceneChanged() ), m_valueEditor, SLOT( onSceneChanged() ) )
 
     self.valueEditor.log.connect(self._onLog)
     self.valueEditor.modelItemValueChanged.connect(self._onModelValueChanged)
@@ -71,37 +72,32 @@ class SceneHubWindow(CanvasWindow):
     shTreeDock.setWidget(self.shTreesManager)
     self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, shTreeDock, QtCore.Qt.Vertical)
 
+    self.treeViewMenu = SHTreeViewMenu(self.shTreesManager)
     menus = self.menuBar().findChildren(QtGui.QMenu)
     for menu in menus:      
       if menu.title() == "&Window":
         toggleAction = shTreeDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
         menu.addAction(toggleAction)
-        menu.addSeparator();
-    
-    self.viewportsManager.initMenu(self.menuBar())
-
-    self.assetMenu = SHAssetsMenu(self.shTreesManager.getScene())
-    self.lightsMenu = SHLightsMenu(self.shTreesManager.getScene())
-    self.treeViewMenu = SHTreeViewMenu(self.shTreesManager)
-
-    menus = self.menuBar().findChildren(QtGui.QMenu)    
-    for menu in menus:      
-      if menu.title() == "&File":
-        actions = menu.findChildren(QtGui.QAction)
-        for action in actions:
-          if action.text() == "Quit":
-            menu.insertMenu(action, self.assetMenu)
-            menu.insertMenu(action, self.lightsMenu)
-
+        menu.addSeparator()
       if menu.title() == "&View":
-        menu.addSeparator();
+        menu.addSeparator()
         menu.addMenu(self.treeViewMenu)
 
-    interactionMenu = self.menuBar().addMenu("&Interaction")
-    togglePlaybackAction = interactionMenu.addAction("Toggle Playback")
+    self.viewportsManager.initMenu(self.menuBar())
+
+    sceneMenus = self.menuBar().addMenu("&Scene")    
+    self.assetMenu = SHAssetsMenu(self.shTreesManager.getScene())
+    self.lightsMenu = SHLightsMenu(self.shTreesManager.getScene())
+    sceneMenus.addMenu(self.assetMenu)
+    sceneMenus.addMenu(self.lightsMenu)
+
+    self.interactionMenu = self.menuBar().addMenu("&Interaction")
+    togglePlaybackAction = self.interactionMenu.addAction("Toggle Playback")
     togglePlaybackAction.triggered.connect(self._onTogglePlayback)
-   
+    self.interactionMenu.addMenu(SHInteractionMenu(self.viewportsManager.shGLRenderer))
+
+
     helpMenu = self.menuBar().addMenu("&Help")
     usageAction = helpMenu.addAction("Show Usage")
     usageAction.triggered.connect(self._onShowUsage)
@@ -145,85 +141,28 @@ class SceneHubWindow(CanvasWindow):
       self.dfgWidget.getUIController().logError(message)
  
   def updateFPS(self):
-    super(SceneHubWindow, self).updateFPS()
+    pass
     '''
-    FabricCore::RTVal scene = m_shMainGLScene->getSHGLScene();
-
-    if ( !m_glWidget || !scene.isValid() ) return;
+    #super(SceneHubWindow, self).updateFPS()
+    #FabricCore::RTVal scene = m_shMainGLScene->getSHGLScene()
+    if ( !self.viewport ) return # || !scene.isValid() ) return
+    caption = str(self.viewport.fps())
+    caption += " FPS"
     
-    QString caption;
-    caption.setNum(m_glWidget->fps(), 'f', 2);
-    caption += " FPS";
-    
-    uint32_t obj, point, line, triangle;
+    obj = int point, line, triangle
     # Viewport 0
-    m_shGLRenderer->getDrawStats(0, obj, point, line, triangle);
+    stats = m_shGLRenderer.getDrawStats(0)
 
-    std::ostringstream ss;
-    ss << " Drawn obj: " << obj;
-    if( point ) ss << " pt: " << point;
-    if( line ) ss << " li: " << line;
-    if( triangle ) ss << " tri: " << triangle;
-    caption += ss.str().c_str();
+    std::ostringstream ss
+    ss << " Drawn obj: " << stats[0]
+    if( point ) ss << " pt: " << stats[1]
+    if( line ) ss << " li: " << stats[2]
+    if( triangle ) ss << " tri: " << stats[3]
+    caption += ss.str().c_str()
    
-    self.fpsLabel.setText( caption );
+    self.fpsLabel.setText( caption )
     '''
   
   def _onShowUsage(self):
-    txt = QtGui.QTextEdit()
-    txt.setText("\
-      SceneHub is a work-in-progress app framework for viewing and editing SceneGraph objects.\n\
-      This is in an early 'alpha' state and can serve as an example or for testing.\n\
-      \n\
-      The following operations are supported:\n\
-      \n\
-      Tree view:\n\
-      \n\
-      - generated instances will be created as branches are expanded\n\
-      - selection will be reflected in the 3D view, enabling the transform manipulator\n\
-      - with an item selected, right-clicking will open a contextual menu to expand or load recursively\n\
-      \n\
-      3D view:\n\
-      \n\
-      - partially loaded assets are shown as bounding boxes (if at least one of the child isn't loaded)\n\
-      \n\
-      - hold 'Alt' key to navigate the camera:\n\
-      \n\
-        - click & drag: orbit\n\
-        - middle-click & drag: pan\n\
-        - wheel or right-click & drag: zoom\n\
-        - arrow keys to orbit and zoom\n\
-      \n\
-      - click on a geometry to select it. This will activate the transform tool:\n\
-      \n\
-        - press S, R, T to change transform mode (might need to first click in the 3D view)\n\
-        - click & drag the gizmos to change the transform\n\
-      \n\
-      - With a selected geometry, right-click to have a contextual menu for:\n\
-      \n\
-        - light: changing the color or intensity\n\
-        - geometry: setting the color (shared), local color (instance specific) or texture\n\
-        - parent: setting the color (propagated to children)\n\
-      \n\
-      - click in the background to un-select. Then, right-click to have a contextual menu for:\n\
-      \n\
-        - adding a geometry from a file (Fbx, Alembic)\n\
-        - creating a light\n\
-      \n\
-      - drag & drop to the 3D view:\n\
-      \n\
-        - Fbx or Alembic file:\n\
-          - adds the asset as a child of the 'root'\n\
-          - bounding box'es bottom placed under mouse's cursor (raycast)\n\
-          - assets dropped multiple times share their content in the SceneGraph (load once)\n\
-          - if holding `Ctrl` key: will load recursively (expand)\n\
-      \n\
-        - Image file:\n\
-          - set as a textured color if dropped on a geometry with UVs\n\
-          - images dropped multiple times share their content in the SceneGraph (load once)\n\
-          - if holding `Ctrl` key: will set as a local texture (instance specific)\n\
-    ");
-
-    txt.resize( 800, 500 );
-    txt.setReadOnly( true );
-    txt.show();
+    helpWidget = HelpWidget(self)
+    helpWidget.show()

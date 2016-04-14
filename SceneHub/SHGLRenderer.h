@@ -108,7 +108,7 @@ class SHGLRenderer {
     /// Gets the names and the keys of the registered tools.
     /// \param toolNames Name of the registered tools.
     /// \param enableKeys Key of the registered tools.
-    void getRegisteredTools(QStringList &toolNames, QStringList &toolKeys);
+    QList<QStringList> getRegisteredTools();
     
     /// Returns the selection set if any.
     FabricCore::RTVal getSelectionSet();

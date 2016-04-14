@@ -137,15 +137,15 @@ class SHViewportsManager():
   
   def onRefreshAllViewports(self):
     self.parentApp.shTreesManager.getScene().prepareSceneForRender()
-    for viewport in self.viewports: viewport.redraw()
+    for viewport in self.viewports: viewport.update()
 
   def onRefreshViewport(self, refreshAll):
     if refreshAll == True: 
       self.onRefreshAllViewports()
     else:
       viewport = self.sender()
-      viewport.redraw()
-
+      viewport.update()
+ 
   def _onAddViewport(self):
     self._addViewport(False)
 

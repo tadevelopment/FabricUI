@@ -6,7 +6,6 @@
 #define __UI_SCENEHUB_SGSETPROPERTYCMD_H__
 
 #include "SHCmd.h"
-using namespace std;
 using namespace FabricCore;
  
 namespace FabricUI {

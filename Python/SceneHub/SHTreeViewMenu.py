@@ -12,8 +12,13 @@ class SHTreeViewMenu(SHBaseMenu):
  
   def _constructMenu(self):
     self.showProperty = self.addAction("Show properties")
+    self.showProperty.setCheckable( True )
+    self.showProperty.setChecked( True )
+    
     self.addSeparator()
     self.showPropertyGenerator = self.addAction("Show property generators")
+    self.showPropertyGenerator.setCheckable( True )
+    self.showPropertyGenerator.setChecked( True )
 
     self.showProperty.triggered.connect(self.updateTreeViewVisibility)
     self.showPropertyGenerator.triggered.connect(self.updateTreeViewVisibility)
