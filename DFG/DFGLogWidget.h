@@ -31,7 +31,7 @@ namespace FabricUI
         FabricCore::ReportSource source,
         FabricCore::ReportLevel level,
         char const * stringData,
-        uint32_t stringLength
+        unsigned int stringLength
         );
 
       virtual void keyPressEvent(QKeyEvent * event);

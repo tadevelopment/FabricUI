@@ -7,7 +7,7 @@
 #include <QtGui/QTreeWidget>
 
 namespace FabricUI {
-namespace ValueEditor { 
+namespace ValueEditor {
 
 class BaseViewItem;
 class BaseModelItem;
@@ -32,8 +32,8 @@ public:
   VETreeWidgetItem* findTreeWidget( QWidget* widget ) const;
   VETreeWidgetItem* findTreeWidget( QWidget* widget, VETreeWidgetItem * item ) const;
 
-  VETreeWidgetItem* findTreeWidget( FabricUI::ValueEditor::BaseModelItem* pItem ) const;
-  VETreeWidgetItem* findTreeWidget( FabricUI::ValueEditor::BaseModelItem* pItem, VETreeWidgetItem* pWidget ) const;
+  VETreeWidgetItem* findTreeWidget( BaseModelItem* pItem ) const;
+  VETreeWidgetItem* findTreeWidget( BaseModelItem* pItem, VETreeWidgetItem* pWidget ) const;
   VETreeWidgetItem * findTreeWidget( BaseViewItem * pItem ) const;
   VETreeWidgetItem * findTreeWidget( BaseViewItem * pItem, VETreeWidgetItem * pWidget ) const;
 
@@ -52,7 +52,6 @@ public slots:
   // This slot is triggered when an item is edited in the view
   void onItemEdited( QTreeWidgetItem* item, int column );
 
-
 protected slots:
 
   void onTreeWidgetItemExpanded( QTreeWidgetItem *_treeWidgetItem );
@@ -64,6 +63,5 @@ protected slots:
   void resetItem();
 };
 
-} // ValueEditor 
-} // FabricUI 
-
+} // namespace FabricUI 
+} // namespace ValueEditor 

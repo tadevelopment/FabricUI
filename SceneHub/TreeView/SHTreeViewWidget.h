@@ -59,7 +59,7 @@ class SHTreeViewWidget : public QWidget {
 
     void onUpdateSceneList();
 
-    void expandTree(uint32_t level);
+    void expandTree( unsigned int level );
     
     /// Calls when the SceneGraph hierachy changed.
     void onSceneHierarchyChanged();
