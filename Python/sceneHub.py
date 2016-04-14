@@ -52,7 +52,7 @@ settings.setValue("mainWindow/lastPresetFolder", str("."))
 qglFormat = QtOpenGL.QGLFormat()
 qglContext = Viewports.RTRGLContext( qglFormat )
 
-sceneHubWin = SceneHubWindow(fabricDir, settings, unguarded, noopt, scene)
+sceneHubWin = SceneHubWindow(settings, unguarded, noopt, scene)
 sceneHubWin.show()
 
 if opts.script:

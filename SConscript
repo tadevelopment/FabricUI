@@ -458,6 +458,18 @@ if uiLibPrefix == 'ui':
         pysideEnv.Dir('Python').File('canvas.py')
         )
       )
+    installedPySideLibs.append(
+      pysideEnv.Install(
+        pysideEnv['STAGE_DIR'].Dir('Python').Dir(pythonVersion).Dir('FabricEngine').Dir('SceneHub'),
+        Glob(os.path.join(pysideEnv.Dir('Python').Dir('SceneHub').abspath, '*'))
+        )
+      )
+    installedPySideLibs.append(
+      pysideEnv.Install(
+        pysideEnv['STAGE_DIR'].Dir('bin'),
+        pysideEnv.Dir('Python').File('sceneHub.py')
+        )
+      )
 
     installedPySideLibs.append(
       pysideEnv.Install(

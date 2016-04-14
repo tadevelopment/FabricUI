@@ -34,7 +34,7 @@ void SHGLRenderer::update() {
   }
 }
 
-void SHGLRenderer::getDrawStats(uint32_t viewportID, uint32_t &obj, uint32_t &pt, uint32_t &li, uint32_t &tr) {
+void SHGLRenderer::getDrawStats(unsigned int viewportID, unsigned int &obj, unsigned int &pt, unsigned int &li, unsigned int &tr) {
   try 
   {
     RTVal args[5] = {
@@ -56,7 +56,7 @@ void SHGLRenderer::getDrawStats(uint32_t viewportID, uint32_t &obj, uint32_t &pt
   }
 }
 
-RTVal SHGLRenderer::getViewport(uint32_t viewportID) {
+RTVal SHGLRenderer::getViewport(unsigned int viewportID) {
   RTVal viewportVal;
   try 
   {
@@ -70,7 +70,7 @@ RTVal SHGLRenderer::getViewport(uint32_t viewportID) {
   return viewportVal;
 }
 
-RTVal SHGLRenderer::getOrAddViewport(uint32_t viewportID) {
+RTVal SHGLRenderer::getOrAddViewport(unsigned int viewportID) {
   RTVal viewportVal;
   try 
   {
@@ -84,7 +84,7 @@ RTVal SHGLRenderer::getOrAddViewport(uint32_t viewportID) {
   return viewportVal;
 }
 
-RTVal SHGLRenderer::getOrAddStereoViewport(uint32_t viewportID) {
+RTVal SHGLRenderer::getOrAddStereoViewport(unsigned int viewportID) {
   RTVal viewportVal;
   try 
   {
@@ -98,7 +98,7 @@ RTVal SHGLRenderer::getOrAddStereoViewport(uint32_t viewportID) {
   return viewportVal;
 }
 
-void SHGLRenderer::removeViewport(uint32_t viewportID) {
+void SHGLRenderer::removeViewport(unsigned int viewportID) {
   try 
   {
     RTVal glRenderer = m_shGLRendererVal;
@@ -113,7 +113,7 @@ void SHGLRenderer::removeViewport(uint32_t viewportID) {
   }
 }
 
-void SHGLRenderer::setOrthographicViewport(uint32_t viewportID, bool orthographic) {
+void SHGLRenderer::setOrthographicViewport(unsigned int viewportID, bool orthographic) {
   try 
   {
     RTVal args[2] = {
@@ -128,7 +128,7 @@ void SHGLRenderer::setOrthographicViewport(uint32_t viewportID, bool orthographi
   }
 }
 
-RTVal SHGLRenderer::getCamera(uint32_t viewportID) {
+RTVal SHGLRenderer::getCamera(unsigned int viewportID) {
   RTVal cameraVal;
   try 
   {
@@ -166,7 +166,7 @@ bool SHGLRenderer::isPlayback(bool playback) {
   return false;
 }
 
-RTVal SHGLRenderer::castRay(uint32_t viewportID, QPoint pos) {
+RTVal SHGLRenderer::castRay(unsigned int viewportID, QPoint pos) {
   RTVal rayVal;
   try 
   {
@@ -186,7 +186,7 @@ RTVal SHGLRenderer::castRay(uint32_t viewportID, QPoint pos) {
   return rayVal;
 }
 
-QList<float> SHGLRenderer::get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint pos) {
+QList<float> SHGLRenderer::get3DScenePosFrom2DScreenPos(unsigned int viewportID, QPoint pos) {
   QList<float> list;
   try 
   {
@@ -207,7 +207,7 @@ QList<float> SHGLRenderer::get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPo
   return list;
 }
 
-void SHGLRenderer::render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples) {
+void SHGLRenderer::render(unsigned int viewportID, unsigned int width, unsigned int height, unsigned int samples) {
   try 
   {
     RTVal args[4] = {
@@ -224,7 +224,7 @@ void SHGLRenderer::render(uint32_t viewportID, uint32_t width, uint32_t height, 
   }
 }
 
-void SHGLRenderer::render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples, uint32_t drawPhase) {
+void SHGLRenderer::render(unsigned int viewportID, unsigned int width, unsigned int height, unsigned int samples, unsigned int drawPhase) {
   try 
   {
     RTVal args[5] = {
@@ -242,7 +242,7 @@ void SHGLRenderer::render(uint32_t viewportID, uint32_t width, uint32_t height, 
   }
 }
 
-bool SHGLRenderer::onEvent(uint32_t viewportID, QEvent *event, bool &redrawAllViewports, bool dragging) {
+bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool &redrawAllViewports, bool dragging) {
   try 
   {
     RTVal viewportVal = getOrAddViewport(viewportID);
@@ -289,7 +289,7 @@ QList<QStringList> SHGLRenderer::getRegisteredTools() {
 
     QStringList toolNames;
     QStringList toolKeys;
-    for(uint32_t i=0; i<args[0].getArraySize(); ++i)
+    for(unsigned int i=0; i<args[0].getArraySize(); ++i)
     {
       RTVal name = args[0].getArrayElement(i);
       RTVal key = args[1].getArrayElement(i);

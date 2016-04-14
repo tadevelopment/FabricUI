@@ -38,43 +38,43 @@ class SHGLRenderer {
     /// \param point the total number of renderer points
     /// \param line the total number of renderer lines
     /// \param triangle the total number of renderer triangless
-    void getDrawStats(uint32_t viewportID, uint32_t &obj, uint32_t &pt, uint32_t &li, uint32_t &tr);
+    void getDrawStats(unsigned int viewportID, unsigned int &obj, unsigned int &pt, unsigned int &li, unsigned int &tr);
     
     /// Fast getter to the viewport at this viewportID.
     /// \param viewportID The viewport ID.
-    FabricCore::RTVal getViewport(uint32_t viewportID);
+    FabricCore::RTVal getViewport(unsigned int viewportID);
     
     /// Gets/creates a viewport.
     /// \param viewportID The viewport ID.
-    FabricCore::RTVal getOrAddViewport(uint32_t viewportID);
+    FabricCore::RTVal getOrAddViewport(unsigned int viewportID);
     
     /// Gets/creates a setreo-viewport.
     /// \param viewportID The viewport ID.
-    FabricCore::RTVal getOrAddStereoViewport(uint32_t viewportID);
+    FabricCore::RTVal getOrAddStereoViewport(unsigned int viewportID);
     
     /// Removes the viewport.
     /// \param viewportID The viewport ID. 
-    void removeViewport(uint32_t viewportID);
+    void removeViewport(unsigned int viewportID);
     
     /// Sets the viewport camera as orthographic.
     /// \param viewportID The viewport ID.
-    void setOrthographicViewport(uint32_t viewportID, bool orthographic);
+    void setOrthographicViewport(unsigned int viewportID, bool orthographic);
     
     /// Gets the viewport camera.
     /// \param viewportID The viewport ID.
-    FabricCore::RTVal getCamera(uint32_t viewportID);
+    FabricCore::RTVal getCamera(unsigned int viewportID);
     
     /// Casts a ray from a Viewport and a position in camera space.
     /// \param viewportID The ID of the viewport.
     /// \param pos The mouse's position in the viewport
-    FabricCore::RTVal castRay(uint32_t viewportID, QPoint pos);
+    FabricCore::RTVal castRay(unsigned int viewportID, QPoint pos);
 
     /// This helper method will raycast in the scene. 
     // If no result is found, it will intersect with the Y = 0 plane. 
     // If this is outside the near/far camera range, it will return the origin.
     // \param viewportID The ID of the viewport.
     // \param pos The mouse's position in the viewport
-    QList<float> get3DScenePosFrom2DScreenPos(uint32_t viewportID, QPoint pos);
+    QList<float> get3DScenePosFrom2DScreenPos(unsigned int viewportID, QPoint pos);
 
     /// Activates the playback.
     /// \param playback It true, playback.
@@ -88,7 +88,7 @@ class SHGLRenderer {
     /// \param width the viewport width.
     /// \param height the viewport height.
     /// \param samples Anti-aliasing number of samples.
-    void render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples);
+    void render(unsigned int viewportID, unsigned int width, unsigned int height, unsigned int samples);
     
     /// Renders within this viewport.
     /// \param viewportID The viewport ID.
@@ -96,11 +96,11 @@ class SHGLRenderer {
     /// \param height the viewport height.
     /// \param samples Anti-aliasing number of samples.
     /// \param drawPhase Drawing phases (pre-post draw).
-    void render(uint32_t viewportID, uint32_t width, uint32_t height, uint32_t samples, uint32_t drawPhase);
+    void render(unsigned int viewportID, unsigned int width, unsigned int height, unsigned int samples, unsigned int drawPhase);
     
     /// Propagates the events.
     /// \param event The event.
-    bool onEvent(uint32_t viewportID, QEvent *event, bool &redrawAllViewports, bool dragging);
+    bool onEvent(unsigned int viewportID, QEvent *event, bool &redrawAllViewports, bool dragging);
     
     /// Returns a reference to the ToolDispatcher.
     FabricCore::RTVal getToolDispatcher();
