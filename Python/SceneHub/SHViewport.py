@@ -16,6 +16,7 @@ class SHViewport(Viewports.ViewportWidget):
     self.orthographic = orthographic
     self.shGLScene = scene
     self.qglContext = context
+    self.samples = self.qglContext.format().samples()
     self.viewportIndex = index
     self.viewport = None
     self.orthographic = False
@@ -24,7 +25,6 @@ class SHViewport(Viewports.ViewportWidget):
     self.shWindow = mainwindow   
     super(SHViewport, self).__init__(renderer.getClient(), QtGui.QColor(), self.qglContext, self.shWindow, sharedWidget, self.shWindow.settings)
 
-    self.samples = self.qglContext.format().samples()
     # Force to track mouse movment when not clicking
     self.setMouseTracking(True)
     self.setAcceptDrops(True)
