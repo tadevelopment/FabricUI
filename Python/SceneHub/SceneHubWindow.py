@@ -13,13 +13,16 @@ from HelpWidget import HelpWidget
 
 class SceneHubWindow(CanvasWindow):
 
-  def __init__(self, settings, unguarded, noopt, klFile):
+  def __init__(self, settings, unguarded, noopt, klFile, canvasFile):
     self.noopt = noopt
     self.klFile = klFile
     self.viewport = None
     self.shDFGBinding = None
     self.isCanvas = False
+
     super(SceneHubWindow, self).__init__(settings, unguarded)
+
+    if canvasFile is not "": self.loadGraph(canvasFile)
 
   def _initKL(self, unguarded):
     super(SceneHubWindow, self)._initKL(unguarded)
@@ -38,8 +41,9 @@ class SceneHubWindow(CanvasWindow):
     self.viewportsManager.update()
     
     self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGBinding.onTreeItemSelected)
+    self.shDFGBinding.sceneChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
     self.shTreesManager.sceneUpdated.connect(self.onSceneUpdated)
-   
+  
     self.shCmdHandler = SceneHub.SHCmdHandler(
       self.shTreesManager.getScene(), 
       SceneHub.SHCmdRegistration(),
@@ -51,18 +55,22 @@ class SceneHubWindow(CanvasWindow):
     self.valueEditor.log.connect(self._onLog)
     self.valueEditor.modelItemValueChanged.connect(self._onModelValueChanged)
     self.valueEditor.canvasSidePanelInspectRequested.connect(self._onCanvasSidePanelInspectRequested)
-    
+
     self.shTreesManager.sceneHierarchyChanged.connect(self.valueEditor.onSceneChanged)
     self.shTreesManager.sceneUpdated.connect(self.valueEditor.onSceneChanged)
-
-    #for( ViewportSet::iterator it = m_viewports.begin() it != m_viewports.end() ++it )
-    #  QObject::connect( *it, SIGNAL( sceneChanged() ), m_valueEditor, SLOT( onSceneChanged() ) )
+    self.shDFGBinding.sceneChanged.connect(self.valueEditor.onSceneChanged)
 
   def _initGL(self):
     self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(0, False, False, None)
     self.setCentralWidget(intermediateOwnerWidget)
     self.viewport.makeCurrent()  
 
+  def _initTimeLine(self):
+    super(SceneHubWindow, self)._initTimeLine()
+    self.timeLine.playbackChanged.connect(self.viewportsManager.onPlaybackChanged)
+    self.timeLine.setTimeRange(0, 100)
+    self.timeLine.setFrameRate(24)
+  
   def _initDocksAndMenus(self):
     super(SceneHubWindow, self)._initDocksAndMenus()
     shTreeDock = QtGui.QDockWidget("Tree-View", self)

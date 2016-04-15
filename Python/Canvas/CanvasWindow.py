@@ -58,8 +58,8 @@ class CanvasWindow(DFG.DFGMainWindow):
         self._initLog()
         self._initDFG()
         self._initTreeView()
-        self._initGL()
         self._initValueEditor()
+        self._initGL()
         self._initTimeLine()
         self._initDocksAndMenus()
 
