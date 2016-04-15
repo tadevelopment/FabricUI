@@ -4,6 +4,20 @@ from FabricEngine import Core
 from FabricEngine.FabricUI import *
 from SHViewport import SHViewport
 
+
+class SHViewportDock(QtGui.QDockWidget):
+  deleteViewport = QtCore.Signal(int)
+
+  def __init__(self, index, viewportIndex, parent):
+    self.index = index
+    name = str("Viewport " + str(viewportIndex))
+    super(SHViewportDock, self).__init__(name, parent)
+    self.setObjectName(name)
+
+  def closeEvent(self, event):
+    self.deleteViewport.emit(self.index)
+
+
 class SHViewportsManager():
 
   def __init__(self, mainwindow):
@@ -81,16 +95,16 @@ class SHViewportsManager():
       intermediateLayout.removeWidget(sharedWidget)
       self.viewports.remove(sharedWidget)
       sharedWidget.deleteLater()
+
     self.viewports.append(newViewport)
 
-    newViewport.viewportDestroying.connect(self._onViewportDestroying)
     newViewport.sceneChanged.connect(self.onRefreshAllViewports)
+    newViewport.sceneChanged.connect(self.shWindow.shTreesManager.onSceneHierarchyChanged)
     newViewport.manipsAcceptedEvent.connect(self.onRefreshAllViewports)
+    newViewport.manipsAcceptedEvent.connect(self.shWindow.shTreesManager.onUpdateFrom3DSelection)
 
     self.shWindow.shTreesManager.sceneHierarchyChanged.connect(self.onRefreshAllViewports)
     self.shWindow.shTreesManager.sceneUpdated.connect(newViewport.onSceneUpdated)
-    newViewport.sceneChanged.connect(self.shWindow.shTreesManager.onSceneHierarchyChanged)
-    newViewport.manipsAcceptedEvent.connect(self.shWindow.shTreesManager.onUpdateFrom3DSelection)
     
     self.shWindow.qUndoStack.indexChanged.connect(self.onRefreshAllViewports)
     newViewport.addCommands.connect(self.shWindow.shCmdHandler.onAddCommands)
@@ -100,19 +114,27 @@ class SHViewportsManager():
 
     return newViewport, intermediateOwnerWidget;
 
+  def _onDeleteViewport(self, index):
+    self.viewports[index].detachFromRTRViewport()
+    del self.viewports[index]
+    for i in range(0, len(self.viewports)):
+      self.viewports[i].index = i
+
   def _addViewport(self, orthographic):
-    index = self.nextViewportIndex
+    viewportIndex = self.nextViewportIndex
     self.nextViewportIndex = self.nextViewportIndex + 1
-    _, intermediateOwnerWidget = self.createViewport(index, orthographic, False, self.shWindow.viewport)
-    
-    name = str("Viewport " + str(index))
-    viewportDock = QtGui.QDockWidget(name, self.shWindow)
-    viewportDock.setObjectName(name)
+    _, intermediateOwnerWidget = self.createViewport(
+      viewportIndex, 
+      orthographic, 
+      False, 
+      self.shWindow.viewport)
+ 
+    viewportDock = SHViewportDock(len(self.viewports)-1, viewportIndex, self.shWindow)
     viewportDock.setWidget(intermediateOwnerWidget)
-    #viewportDock.setFeatures(self.dockFeatures)
-    viewportDock.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+    viewportDock.setFloating( True )
+    viewportDock.deleteViewport.connect(self._onDeleteViewport)
     self.shWindow.addDockWidget(QtCore.Qt.TopDockWidgetArea, viewportDock)
-    
+
   def _updateSampleChecks(self):
     self.sampleActions[0].setChecked(False)
     self.sampleActions[1].setChecked(False)
@@ -127,13 +149,6 @@ class SHViewportsManager():
     self.shGLRenderer.setPlayback(isPlaying)
     # Refresh viewports: because there might be a "one frame behind" if were are drawing while computing
     self.onRefreshAllViewports()
-
-  def _onViewportDestroying(self):
-    pass
-    #del self.viewports[index]
-    #viewport = self.sender()
-    #if i, viewport in self.viewports: 
-    #  self.viewports.remove(viewport)
   
   def onRefreshAllViewports(self):
     self.shWindow.shTreesManager.getScene().prepareSceneForRender()

@@ -7,7 +7,7 @@ from SHInteractionMenu import SHInteractionMenu
 
 class SHViewport(Viewports.ViewportWidget):
   sceneChanged = QtCore.Signal()
-  viewportDestroying = QtCore.Signal()
+  deleteViewport = QtCore.Signal(int)
   addCommands = QtCore.Signal()
   manipsAcceptedEvent = QtCore.Signal(bool)
 
@@ -30,15 +30,11 @@ class SHViewport(Viewports.ViewportWidget):
     self.setAcceptDrops(True)
     self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
     self.viewport = self.shGLRenderer.getOrAddViewport(self.viewportIndex)
-
+ 
   def detachFromRTRViewport(self):
     if(self.viewportIndex > -1): self.shGLRenderer.removeViewport(self.viewportIndex)
     self.viewportIndex = -1
-  
-  def closeEvent(self): 
-    detachFromRTRViewport()
-    self.viewportDestroying.emit(self.viewportIndex)
-   
+
   def setOrthographic(self, orthographic): 
     self.orthographic = orthographic
     self.shGLRenderer.setOrthographicViewport(self.viewportIndex, self.orthographic)
