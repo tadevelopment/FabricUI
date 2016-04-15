@@ -7,7 +7,7 @@ from SHViewport import SHViewport
 class SHViewportsManager():
 
   def __init__(self, parent):
-    self.samples = 1
+    self.samples = 2
     self.parentApp = parent
     self.viewports = []
     self.sampleActions = []
