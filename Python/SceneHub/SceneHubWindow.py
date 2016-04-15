@@ -140,9 +140,7 @@ class SceneHubWindow(CanvasWindow):
       self.dfgWidget.getUIController().logError(message)
  
   def updateFPS(self):
-    #super(SceneHubWindow, self).updateFPS()
-    #FabricCore::RTVal scene = m_shMainGLScene->getSHGLScene()
-    if not self.viewport: return # || !scene.isValid() ) return
+    if not self.viewport: return 
     caption = str(float("{0:.2f}".format(self.viewport.fps())))
     caption += " FPS"
     
