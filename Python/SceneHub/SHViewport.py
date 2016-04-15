@@ -11,7 +11,7 @@ class SHViewport(Viewports.ViewportWidget):
   addCommands = QtCore.Signal()
   manipsAcceptedEvent = QtCore.Signal(bool)
 
-  def __init__(self, renderer, scene, index, orthographic, context, parentApp, sharedWidget):
+  def __init__(self, renderer, scene, index, orthographic, context, mainwindow, sharedWidget):
     # Need to hold the context
     self.orthographic = orthographic
     self.shGLScene = scene
@@ -21,8 +21,8 @@ class SHViewport(Viewports.ViewportWidget):
     self.orthographic = False
     self.alwaysRefresh = False
     self.shGLRenderer = renderer
-    self.parentApp = parentApp   
-    super(SHViewport, self).__init__(renderer.getClient(), QtGui.QColor(), self.qglContext, self.parentApp, sharedWidget, self.parentApp.settings)
+    self.shWindow = mainwindow   
+    super(SHViewport, self).__init__(renderer.getClient(), QtGui.QColor(), self.qglContext, self.shWindow, sharedWidget, self.shWindow.settings)
 
     self.samples = self.qglContext.format().samples()
     # Force to track mouse movment when not clicking
@@ -93,7 +93,7 @@ class SHViewport(Viewports.ViewportWidget):
   def mousePressEvent(self, event):
     if self.shGLScene.hasSG():
       if not self.__onEvent(event) and event.button() == QtCore.Qt.RightButton:
-        menu = SHContextualMenu(self.shGLScene, self.parentApp.shTreesManager.shTreeView)
+        menu = SHContextualMenu(self.shGLScene, self.shWindow.shTreesManager.shTreeView)
         menu.addMenu(SHInteractionMenu(self.shGLRenderer))
         menu.exec_(self.mapToGlobal(event.pos()))
         self.sceneChanged.emit()

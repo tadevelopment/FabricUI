@@ -34,7 +34,8 @@ void SHGLRenderer::update() {
   }
 }
 
-void SHGLRenderer::getDrawStats(unsigned int viewportID, unsigned int &obj, unsigned int &pt, unsigned int &li, unsigned int &tr) {
+QList<unsigned int>  SHGLRenderer::getDrawStats(unsigned int viewportID) {
+  QList<unsigned int> stats;
   try 
   {
     RTVal args[5] = {
@@ -45,15 +46,16 @@ void SHGLRenderer::getDrawStats(unsigned int viewportID, unsigned int &obj, unsi
       RTVal::ConstructUInt32(m_client, 0)
     };
     m_shGLRendererVal.callMethod("Boolean", "getDrawStats", 5, &args[0]);
-    obj = args[1].getUInt32();
-    pt = args[2].getUInt32();
-    li = args[3].getUInt32();
-    tr = args[4].getUInt32();
+    stats.append(args[1].getUInt32());
+    stats.append(args[2].getUInt32());
+    stats.append(args[3].getUInt32());
+    stats.append(args[4].getUInt32());
   }
   catch(Exception e)
   {
     printf("SHGLRenderer::getDrawStats: exception: %s\n", e.getDesc_cstr());
   }
+  return stats;
 }
 
 RTVal SHGLRenderer::getViewport(unsigned int viewportID) {

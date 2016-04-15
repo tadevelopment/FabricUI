@@ -6,13 +6,13 @@ from SHViewport import SHViewport
 
 class SHViewportsManager():
 
-  def __init__(self, parent):
+  def __init__(self, mainwindow):
     self.samples = 1
-    self.parentApp = parent
+    self.shWindow = mainwindow
     self.viewports = []
     self.sampleActions = []
     self.nextViewportIndex = 1
-    self.shGLRenderer = SceneHub.SHGLRenderer(self.parentApp.client)
+    self.shGLRenderer = SceneHub.SHGLRenderer(self.shWindow.client)
 
   def initMenu(self, menuBar):
     menus = menuBar.findChildren(QtGui.QMenu)
@@ -44,7 +44,7 @@ class SHViewportsManager():
     
     if not replace:
       # initializing
-      intermediateOwnerWidget = QtGui.QWidget(self.parentApp)
+      intermediateOwnerWidget = QtGui.QWidget(self.shWindow)
       intermediateLayout = QtGui.QStackedLayout()
       intermediateOwnerWidget.setLayout(intermediateLayout)
        
@@ -64,14 +64,14 @@ class SHViewportsManager():
       format.setSampleBuffers(self.samples > 1)
       qglContext = Viewports.RTRGLContext(format)
 
-    scene = self.parentApp.shTreesManager.getScene()
+    scene = self.shWindow.shTreesManager.getScene()
     newViewport = SHViewport(
       self.shGLRenderer,
       scene,
       index, 
       ortho,
       qglContext, 
-      self.parentApp, 
+      self.shWindow, 
       sharedWidget)
 
     intermediateLayout.addWidget(newViewport)
@@ -87,31 +87,31 @@ class SHViewportsManager():
     newViewport.sceneChanged.connect(self.onRefreshAllViewports)
     newViewport.manipsAcceptedEvent.connect(self.onRefreshAllViewports)
 
-    self.parentApp.shTreesManager.sceneHierarchyChanged.connect(self.onRefreshAllViewports)
-    self.parentApp.shTreesManager.sceneUpdated.connect(newViewport.onSceneUpdated)
-    newViewport.sceneChanged.connect(self.parentApp.shTreesManager.onSceneHierarchyChanged)
-    newViewport.manipsAcceptedEvent.connect(self.parentApp.shTreesManager.onUpdateFrom3DSelection)
+    self.shWindow.shTreesManager.sceneHierarchyChanged.connect(self.onRefreshAllViewports)
+    self.shWindow.shTreesManager.sceneUpdated.connect(newViewport.onSceneUpdated)
+    newViewport.sceneChanged.connect(self.shWindow.shTreesManager.onSceneHierarchyChanged)
+    newViewport.manipsAcceptedEvent.connect(self.shWindow.shTreesManager.onUpdateFrom3DSelection)
     
-    self.parentApp.qUndoStack.indexChanged.connect(self.onRefreshAllViewports)
-    newViewport.addCommands.connect(self.parentApp.shCmdHandler.onAddCommands)
+    self.shWindow.qUndoStack.indexChanged.connect(self.onRefreshAllViewports)
+    newViewport.addCommands.connect(self.shWindow.shCmdHandler.onAddCommands)
     
-    #if self.parentApp.valueEditor is not None:
-    #  newViewport.sceneChanged.connect(self.parentApp.valueEditor.onSceneChanged);
+    #if self.shWindow.valueEditor is not None:
+    #  newViewport.sceneChanged.connect(self.shWindow.valueEditor.onSceneChanged);
 
     return newViewport, intermediateOwnerWidget;
 
   def _addViewport(self, orthographic):
     index = self.nextViewportIndex
     self.nextViewportIndex = self.nextViewportIndex + 1
-    _, intermediateOwnerWidget = self.createViewport(index, orthographic, False, self.parentApp.viewport)
+    _, intermediateOwnerWidget = self.createViewport(index, orthographic, False, self.shWindow.viewport)
     
     name = str("Viewport " + str(index))
-    viewportDock = QtGui.QDockWidget(name, self.parentApp)
+    viewportDock = QtGui.QDockWidget(name, self.shWindow)
     viewportDock.setObjectName(name)
     viewportDock.setWidget(intermediateOwnerWidget)
     #viewportDock.setFeatures(self.dockFeatures)
     viewportDock.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-    self.parentApp.addDockWidget(QtCore.Qt.TopDockWidgetArea, viewportDock)
+    self.shWindow.addDockWidget(QtCore.Qt.TopDockWidgetArea, viewportDock)
     
   def _updateSampleChecks(self):
     self.sampleActions[0].setChecked(False)
@@ -136,7 +136,7 @@ class SHViewportsManager():
     #  self.viewports.remove(viewport)
   
   def onRefreshAllViewports(self):
-    self.parentApp.shTreesManager.getScene().prepareSceneForRender()
+    self.shWindow.shTreesManager.getScene().prepareSceneForRender()
     for viewport in self.viewports: viewport.update()
 
   def onRefreshViewport(self, refreshAll):
@@ -167,7 +167,7 @@ class SHViewportsManager():
           orthographic = viewport.isOrthographic();
           
           newViewport, _ = self.createViewport(index, orthographic, True, viewport)
-          if(index == 0): self.parentApp.viewport = newViewport
+          if(index == 0): self.shWindow.viewport = newViewport
 
   def onSceneUpdated(self, scene):
     for i in range(0, len(self.viewports)):

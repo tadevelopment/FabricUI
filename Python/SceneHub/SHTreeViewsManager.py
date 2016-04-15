@@ -18,20 +18,20 @@ class SHTreeViewsManager(QtGui.QWidget):
   sceneHierarchyChanged = QtCore.Signal()
   sceneUpdated = QtCore.Signal(SceneHub.SHGLScene)
   
-  def __init__(self, parent, klFile):
-    self.parentApp = parent
+  def __init__(self, mainwindow, klFile):
+    self.shWindow = mainwindow
     self.showProperties = True
     self.showOperators = True
 
     super(SHTreeViewsManager, self).__init__()
-    self.shMainGLScene = SceneHub.SHGLScene(self.parentApp.client, klFile)
-    self.shGLScene = SceneHub.SHGLScene(self.parentApp.client)
+    self.shMainGLScene = SceneHub.SHGLScene(self.shWindow.client, klFile)
+    self.shGLScene = SceneHub.SHGLScene(self.shWindow.client)
 
     self.treeModel = None
     self.bUpdatingSelectionFrom3D = False
 
     self.comboBox = SHTreeComboBox()
-    self.shTreeView = SHTreeView(self.parentApp.client, self.shGLScene)
+    self.shTreeView = SHTreeView(self.shWindow.client, self.shGLScene)
     
     layout = QtGui.QVBoxLayout()
     layout.addWidget(self.comboBox)
@@ -94,8 +94,8 @@ class SHTreeViewsManager(QtGui.QWidget):
       self._constructTree()
       self.sceneUpdated.emit(self.shGLScene)
     
-    elif self.parentApp.dfgWidget.getDFGController().getBinding().getExec().hasVar(str(sceneName)):
-      self.shGLScene.setSHGLScene(self.parentApp.dfgWidget.getDFGController().getBinding(), sceneName)
+    elif self.shWindow.dfgWidget.getDFGController().getBinding().getExec().hasVar(str(sceneName)):
+      self.shGLScene.setSHGLScene(self.shWindow.dfgWidget.getDFGController().getBinding(), sceneName)
       self._constructTree()
       self.sceneUpdated.emit(self.shGLScene)
     
@@ -106,7 +106,7 @@ class SHTreeViewsManager(QtGui.QWidget):
   def onUpdateSceneList(self):
     self.comboBox.clear()
     
-    binding = self.parentApp.dfgWidget.getDFGController().getBinding()
+    binding = self.shWindow.dfgWidget.getDFGController().getBinding()
     sceneNameList = self.shGLScene.getSceneNamesFromBinding(binding)
       
     if len(sceneNameList) == 0 and not self.shGLScene.hasSG():

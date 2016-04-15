@@ -38,7 +38,7 @@ class SHGLRenderer {
     /// \param point the total number of renderer points
     /// \param line the total number of renderer lines
     /// \param triangle the total number of renderer triangless
-    void getDrawStats(unsigned int viewportID, unsigned int &obj, unsigned int &pt, unsigned int &li, unsigned int &tr);
+    QList<unsigned int> getDrawStats(unsigned int viewportID);
     
     /// Fast getter to the viewport at this viewportID.
     /// \param viewportID The viewport ID.

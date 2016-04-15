@@ -97,7 +97,6 @@ class SceneHubWindow(CanvasWindow):
     togglePlaybackAction.triggered.connect(self._onTogglePlayback)
     self.interactionMenu.addMenu(SHInteractionMenu(self.viewportsManager.shGLRenderer))
 
-
     helpMenu = self.menuBar().addMenu("&Help")
     usageAction = helpMenu.addAction("Show Usage")
     usageAction.triggered.connect(self._onShowUsage)
@@ -141,28 +140,21 @@ class SceneHubWindow(CanvasWindow):
       self.dfgWidget.getUIController().logError(message)
  
   def updateFPS(self):
-    pass
-    '''
     #super(SceneHubWindow, self).updateFPS()
     #FabricCore::RTVal scene = m_shMainGLScene->getSHGLScene()
-    if ( !self.viewport ) return # || !scene.isValid() ) return
-    caption = str(self.viewport.fps())
+    if not self.viewport: return # || !scene.isValid() ) return
+    caption = str(float("{0:.2f}".format(self.viewport.fps())))
     caption += " FPS"
     
-    obj = int point, line, triangle
     # Viewport 0
-    stats = m_shGLRenderer.getDrawStats(0)
-
-    std::ostringstream ss
-    ss << " Drawn obj: " << stats[0]
-    if( point ) ss << " pt: " << stats[1]
-    if( line ) ss << " li: " << stats[2]
-    if( triangle ) ss << " tri: " << stats[3]
-    caption += ss.str().c_str()
-   
+    stats = self.viewportsManager.shGLRenderer.getDrawStats(0)
+    caption += " Drawn obj: "+ str(stats[0])
+    if stats[1] > 0: caption += " pt: "  + str(stats[1])
+    if stats[2] > 0: caption += " li: "  + str(stats[2])
+    if stats[3] > 0: caption += " tri: " + str(stats[3])
+    
     self.fpsLabel.setText( caption )
-    '''
-  
+    
   def _onShowUsage(self):
     helpWidget = HelpWidget(self)
     helpWidget.show()

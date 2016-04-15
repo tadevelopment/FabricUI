@@ -94,11 +94,8 @@ class SHContextualMenu(SHBaseMenu):
             #  visAction.setChecked( True )
             #visMenu.addAction( visAction )
             
-        else:
-          menu.addMenu(SHAssetsMenu(self.shGLScene))
-          menu.addMenu(SHLightsMenu(self.shGLScene))
         
-    if len(selectedTreeItemIndexes) == 0 or len(selectedViewItemIndexes) == 0:
+    elif len(selectedTreeItemIndexes) == 0 or len(selectedViewItemIndexes) == 0:
       assetMenu = SHAssetsMenu(self.shGLScene)
       lightsMenu = SHLightsMenu(self.shGLScene)
       self.addMenu(assetMenu)
