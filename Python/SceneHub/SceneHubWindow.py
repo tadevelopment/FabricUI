@@ -26,38 +26,37 @@ class SceneHubWindow(CanvasWindow):
     self.client.loadExtension('SceneHub')
     # Create the renderer
     self.viewportsManager = SHViewportsManager(self)
-    self.shTreesManager = SHTreeViewsManager(self, self.klFile)
 
   def _initDFG(self):
     super(SceneHubWindow, self)._initDFG()
     self.shDFGBinding = SceneHub.SHDFGBinding(self.mainBinding, self.dfgWidget.getUIController(), self.client)
-    self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGBinding.onTreeItemSelected)
-
+  
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
     # Update the renderer in case it has been overriden by the main scene.
+    self.shTreesManager = SHTreeViewsManager(self, self.klFile)
     self.viewportsManager.update()
+    
+    self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGBinding.onTreeItemSelected)
     self.shTreesManager.sceneUpdated.connect(self.onSceneUpdated)
-
-    self.shCmdRegistration = SceneHub.SHCmdRegistration()
-
+   
     self.shCmdHandler = SceneHub.SHCmdHandler(
       self.shTreesManager.getScene(), 
-      self.shCmdRegistration,
+      SceneHub.SHCmdRegistration(),
       self.qUndoStack)
- 
+
   def _initValueEditor(self):
     self.valueEditor = SceneHub.SHVEEditorOwner(self.dfgWidget, self.shTreesManager.shTreeView, None)
-    if self.shTreesManager is not None:
-      self.shTreesManager.sceneHierarchyChanged.connect(self.valueEditor.onSceneChanged)
-      self.shTreesManager.sceneUpdated.connect(self.valueEditor.onSceneChanged)
-    
-    #for( ViewportSet::iterator it = m_viewports.begin() it != m_viewports.end() ++it )
-    #  QObject::connect( *it, SIGNAL( sceneChanged() ), m_valueEditor, SLOT( onSceneChanged() ) )
 
     self.valueEditor.log.connect(self._onLog)
     self.valueEditor.modelItemValueChanged.connect(self._onModelValueChanged)
     self.valueEditor.canvasSidePanelInspectRequested.connect(self._onCanvasSidePanelInspectRequested)
+    
+    self.shTreesManager.sceneHierarchyChanged.connect(self.valueEditor.onSceneChanged)
+    self.shTreesManager.sceneUpdated.connect(self.valueEditor.onSceneChanged)
+
+    #for( ViewportSet::iterator it = m_viewports.begin() it != m_viewports.end() ++it )
+    #  QObject::connect( *it, SIGNAL( sceneChanged() ), m_valueEditor, SLOT( onSceneChanged() ) )
 
   def _initGL(self):
     self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(0, False, False, None)
@@ -128,12 +127,9 @@ class SceneHubWindow(CanvasWindow):
     self.shCmdHandler.onSceneUpdated(scene)
 
   def onDirty(self):
-    if self.shDFGBinding is not None:
-      accepted = bool()
-      refresh = bool()
-      m_shDFGBinding.setDirty(accepted, refresh)
-      if not accepted: super(SceneHubWindow, self).onDirty()
-      if refresh: self.viewportsManager.onRefreshAllViewports()
+    dirtyList = self.shDFGBinding.setDirty()
+    if not dirtyList[0]: super(SceneHubWindow, self).onDirty()
+    if dirtyList[1]: self.viewportsManager.onRefreshAllViewports()
 
   def _onLog(self, message):
     if self.dfgWidget is not None:

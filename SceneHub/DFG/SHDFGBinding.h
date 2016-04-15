@@ -5,6 +5,7 @@
 #ifndef __UI_SCENEHUB_DFG_CANVAS_H__
 #define __UI_SCENEHUB_DFG_CANVAS_H__
 
+#include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <FabricCore.h>
@@ -37,7 +38,7 @@ class SHDFGBinding : public QObject{
 
     bool isOperatorValid() { return m_dfgCanvasOperator.isValid(); }
 
-    void setDirty( bool& accepted, bool& refresh );
+    QList<bool> setDirty();
 
 
   signals:

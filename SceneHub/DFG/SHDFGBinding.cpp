@@ -19,24 +19,29 @@ SHDFGBinding::SHDFGBinding(
   m_computeContextVal = FabricCore::RTVal::Create( m_client, "ComputeContextRTValWrapper", 0, 0 );
 }
 
-void SHDFGBinding::setDirty( bool& accepted, bool& refresh ) {
-  accepted = m_dfgCanvasOperator.isValid();
-  refresh = false;
-  if( accepted )
+QList<bool> SHDFGBinding::setDirty() {
+  QList<bool> dirtyList;
+  // accepted
+  dirtyList.append(m_dfgCanvasOperator.isValid());
+  // refresh
+  dirtyList.append(false);
+  if( dirtyList[0] )
   {
     try
     {
-      if( m_computeContextVal.callMethod( "Boolean", "hasExecutingKLDFGBinding", 0, 0 ).getBoolean() )
-        return;//Ignore: this is from runtime KL Bindings computation (we are already redrawing)
-
-      refresh = true;
-      m_dfgCanvasOperator.callMethod("", "setDirty", 0, 0);
+      //Ignore: this is from runtime KL Bindings computation (we are already redrawing)
+      if( ! m_computeContextVal.callMethod( "Boolean", "hasExecutingKLDFGBinding", 0, 0 ).getBoolean() )
+      {
+        dirtyList[1] = true;
+        m_dfgCanvasOperator.callMethod("", "setDirty", 0, 0);
+      }
     }
     catch(Exception e)
     {
       printf("SHDFGBinding::setDirty: exception: %s\n", e.getDesc_cstr());
     }
   }
+  return dirtyList;
 }
 
 void SHDFGBinding::connectBindingNotifier() {
