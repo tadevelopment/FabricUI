@@ -28,9 +28,9 @@ class SceneHubWindow(CanvasWindow):
     self.viewportsManager = SHViewportsManager(self)
     self.shTreesManager = SHTreeViewsManager(self, self.klFile)
 
-  def _intDFG(self):
-    super(SceneHubWindow, self)._intDFG()
-    self.shDFGBinding = SceneHub.SHDFGCanvas(self.mainBinding, self.dfgWidget.getUIController(), self.client)
+  def _initDFG(self):
+    super(SceneHubWindow, self)._initDFG()
+    self.shDFGBinding = SceneHub.SHDFGBinding(self.mainBinding, self.dfgWidget.getUIController(), self.client)
     self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGBinding.onTreeItemSelected)
 
   def _initTreeView(self):
