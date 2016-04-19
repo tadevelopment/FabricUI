@@ -6,7 +6,6 @@
 #define __UI_SCENEHUB_SGADDOBJECTCMD_H__
 
 #include "SHCmd.h"
-using namespace std;
 using namespace FabricCore;
 
 namespace FabricUI {
@@ -15,34 +14,29 @@ namespace SceneHub {
 class SGAddObjectCmd : public SHCmd {
     
   public:  
-    SGAddObjectCmd() : SHCmd() {
-      m_desctiption.cmdName = "addObjectCmd";
-      m_desctiption.cmdType = "SGAddObjectCmd";
-    }
+    SGAddObjectCmd() : SHCmd() {}
 
-    virtual SHCmdDescription registerCommand() {
-      if(QMetaType::type(m_desctiption.cmdType.toUtf8().constData()) == 0)
-        qRegisterMetaType<FabricUI::SceneHub::SGAddObjectCmd>(m_desctiption.cmdType.toUtf8().constData());
-      return SHCmd::registerCommand();
+    virtual void registerCommand() {
+      if(QMetaType::type("SGAddObjectCmd") == 0)
+        qRegisterMetaType<FabricUI::SceneHub::SGAddObjectCmd>("SGAddObjectCmd");
     }
       
-    virtual QString getFromRTVal(RTVal sgCmd) {
-      QString cmd;
+    virtual void setFromRTVal(Client client, RTVal sgCmd) {
       try 
       {
-        RTVal keyVal = RTVal::ConstructString(m_shGLScene->getClient(), "name");
+        m_client = client;
+        RTVal keyVal = RTVal::ConstructString(m_client, "name");
         RTVal nameVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
         QString name = QString(nameVal.getStringCString());
 
-        keyVal = RTVal::ConstructString(m_shGLScene->getClient(), "isGlobal");
+        keyVal = RTVal::ConstructString(m_client, "isGlobal");
         bool isGlobal = sgCmd.callMethod("Boolean", "getBooleanParam", 1, &keyVal).getBoolean();
-        cmd = QString( m_desctiption.cmdName + "(" + name + ", " + QString(isGlobal) + ")" );
+        m_description = QString( "addObjectCmd(" + name + ", " + QString(isGlobal) + ")" );
       }
       catch(Exception e)
       {
         printf("SGAddObjectCmd::Get: exception: %s\n", e.getDesc_cstr());
       }
-      return cmd;
     }
 };
 

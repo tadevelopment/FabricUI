@@ -6,7 +6,6 @@
 #define __UI_SCENEHUB_SGSETPROPERTYCMD_H__
 
 #include "SHCmd.h"
-using namespace std;
 using namespace FabricCore;
  
 namespace FabricUI {
@@ -16,31 +15,55 @@ namespace SceneHub {
 class SGSetPropertyCmd : public SHCmd {
 
   public:   
-    SGSetPropertyCmd() : SHCmd() {
-      m_desctiption.cmdName = "setPropertyCmd";
-      m_desctiption.cmdType = "SGSetPropertyCmd";
-    }
+    SGSetPropertyCmd(): SHCmd() {}
 
-    virtual SHCmdDescription registerCommand() {
-      if(QMetaType::type(m_desctiption.cmdType.toUtf8().constData()) == 0)
-        qRegisterMetaType<FabricUI::SceneHub::SGSetPropertyCmd>(m_desctiption.cmdType.toUtf8().constData());
-      return SHCmd::registerCommand();
-    }
-
-    virtual QString getFromRTVal(RTVal sgCmd) {
-      QString res;
+    SGSetPropertyCmd(
+      Client client, 
+      RTVal sg, 
+      QString propertyPath, 
+      RTVal prevValue,
+      RTVal newValue)
+    : SHCmd() 
+    {
       try 
       {
-        RTVal keyVal = RTVal::ConstructString(m_shGLScene->getClient(), "fullPath");
-        RTVal fullPathVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
-        QString fullPath = QString(fullPathVal.getStringCString());
-        res = QString( m_desctiption.cmdName + "(" + fullPath + ")" );   
+        m_client = client; 
+        RTVal args[7] = {
+          RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
+          prevValue.callMethod("Type", "type", 0, 0),
+          prevValue.callMethod("Data", "data", 0, 0),
+          prevValue.callMethod("UInt64", "dataSize", 0, 0),
+          newValue.callMethod("Type", "type", 0, 0),
+          newValue.callMethod("Data", "data", 0, 0),
+          newValue.callMethod("UInt64", "dataSize", 0, 0),
+        };
+        sg.callMethod("Cmd", "setPropertyCmd", 7, args);
+
       }
       catch(FabricCore::Exception e)
       {
         printf("SGSetPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
       }
-      return res;
+    }
+
+    virtual void registerCommand() {
+      if(QMetaType::type("SGSetPropertyCmd") == 0)
+        qRegisterMetaType<FabricUI::SceneHub::SGSetPropertyCmd>("SGSetPropertyCmd");
+    }
+
+    virtual void setFromRTVal(Client client, RTVal sgCmd) {
+      try 
+      {
+        m_client = client;
+        RTVal keyVal = RTVal::ConstructString(m_client, "fullPath");
+        RTVal fullPathVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
+        QString fullPath = QString(fullPathVal.getStringCString());
+        m_description = QString( "setPropertyCmd(" + fullPath + ")" );   
+      }
+      catch(FabricCore::Exception e)
+      {
+        printf("SGSetPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
+      }
     }    
 
 };
