@@ -20,28 +20,21 @@ class SHCmdHandler : public QObject {
 
 
   public:
-    SHCmdHandler(
-      SHGLScene *scene, 
-      SHCmdRegistration *cmdRegistration,
-      QUndoStack *qUndoStack);
+    /// Constructs a command handler.
+    SHCmdHandler(FabricCore::Client client, QUndoStack *qUndoStack);
 
     virtual ~SHCmdHandler() {};
-
   
+
   public slots:
-    void onSceneUpdated(SHGLScene *scene);
-
+    /// Synchronizes the KL and the Qt stack.
+    /// Must be called after adding a commands to the kl stack.
     void onSynchronizeCommands();
-
-    void onAddCommands();
 
 
   protected:       
-    void addCommand(QString command);
-  
     unsigned int m_stackSize;
-    SHGLScene *m_shGLScene;
-    SHCmdRegistration *m_shCmdRegistration;
+    FabricCore::Client m_client;
     QUndoStack *m_qUndoStack;
 };
 

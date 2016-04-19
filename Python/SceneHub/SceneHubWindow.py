@@ -13,16 +13,20 @@ from HelpWidget import HelpWidget
 
 class SceneHubWindow(CanvasWindow):
 
-  def __init__(self, settings, unguarded, noopt, klFile):
-    self.noopt = noopt
+  def __init__(self, settings, unguarded, noopt, klFile, canvasFile):
     self.klFile = klFile
     self.viewport = None
     self.shDFGBinding = None
     self.isCanvas = False
-    super(SceneHubWindow, self).__init__(settings, unguarded)
 
-  def _initKL(self, unguarded):
-    super(SceneHubWindow, self)._initKL(unguarded)
+    super(SceneHubWindow, self).__init__(settings, unguarded, noopt)
+
+    isCanvas = canvasFile is not ""
+    self._initApp(isCanvas)
+    if isCanvas: self.loadGraph(canvasFile)
+
+  def _initKL(self, unguarded, noopt):
+    super(SceneHubWindow, self)._initKL(unguarded, noopt)
     self.client.loadExtension('SceneHub')
     # Create the renderer
     self.viewportsManager = SHViewportsManager(self)
@@ -32,6 +36,16 @@ class SceneHubWindow(CanvasWindow):
     super(SceneHubWindow, self)._initDFG()
     self.shDFGBinding = SceneHub.SHDFGBinding(self.mainBinding, self.dfgWidget.getUIController(), self.client)
   
+  def _initCommands(self):
+    cmdRegistration = SceneHub.SHCmdRegistration()
+
+  def _initLog(self):
+    super(SceneHubWindow, self)._initLog()
+    self._initCommands()
+    self.shCmdHandler = SceneHub.SHCmdHandler(
+      self.client, 
+      self.qUndoStack)
+
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
     # Update the renderer in case it has been overriden by the main scene.
@@ -39,44 +53,47 @@ class SceneHubWindow(CanvasWindow):
     self.viewportsManager.update()
     
     #JCG self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGBinding.onTreeItemSelected)
-    #JCG self.shTreesManager.sceneUpdated.connect(self.onSceneUpdated)
-   
-    self.shCmdHandler = SceneHub.SHCmdHandler(
-      self.shTreesManager.getScene(), 
-      SceneHub.SHCmdRegistration(),
-      self.qUndoStack)
+    #JCG self.shDFGBinding.sceneChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
 
   def _initValueEditor(self):
-    self.valueEditor = SceneHub.SHVEEditorOwner(self.dfgWidget, self.shTreesManager.shTreeView, None)
+    self.valueEditor = SceneHub.SHVEEditorOwner(self.dfgWidget, self.shTreesManager.shTreeView)
 
     self.valueEditor.log.connect(self._onLog)
     self.valueEditor.modelItemValueChanged.connect(self._onModelValueChanged)
     self.valueEditor.canvasSidePanelInspectRequested.connect(self._onCanvasSidePanelInspectRequested)
-    
+    self.valueEditor.synchronizeCommands.connect(self.shCmdHandler.onSynchronizeCommands)
+
     self.shTreesManager.sceneHierarchyChanged.connect(self.valueEditor.onSceneChanged)
     self.shTreesManager.sceneUpdated.connect(self.valueEditor.onSceneChanged)
-
-    #for( ViewportSet::iterator it = m_viewports.begin() it != m_viewports.end() ++it )
-    #  QObject::connect( *it, SIGNAL( sceneChanged() ), m_valueEditor, SLOT( onSceneChanged() ) )
+    self.shDFGBinding.sceneChanged.connect(self.valueEditor.onSceneChanged)
 
   def _initGL(self):
     self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(0, False, False, None)
     self.setCentralWidget(intermediateOwnerWidget)
     self.viewport.makeCurrent()  
 
-  def _initDocksAndMenus(self):
-    super(SceneHubWindow, self)._initDocksAndMenus()
-    shTreeDock = QtGui.QDockWidget("Tree-View", self)
-    shTreeDock.setObjectName("Tree-View")
-    shTreeDock.setFeatures(self.dockFeatures)
-    shTreeDock.setWidget(self.shTreesManager)
-    self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, shTreeDock, QtCore.Qt.Vertical)
+  def _initTimeLine(self):
+    super(SceneHubWindow, self)._initTimeLine()
+    self.timeLine.playbackChanged.connect(self.viewportsManager.onPlaybackChanged)
+    self.timeLine.setTimeRange(0, 100)
+    self.timeLine.setFrameRate(24)
+  
+  def _initDocks(self):
+    super(SceneHubWindow, self)._initDocks()
+    self.shTreeDock = QtGui.QDockWidget("Tree-View", self)
+    self.shTreeDock.setObjectName("Tree-View")
+    self.shTreeDock.setFeatures(self.dockFeatures)
+    self.shTreeDock.setWidget(self.shTreesManager)
+    self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.shTreeDock, QtCore.Qt.Vertical)
+
+  def _initMenus(self):
+    super(SceneHubWindow, self)._initMenus()
 
     self.treeViewMenu = SHTreeViewMenu(self.shTreesManager)
     menus = self.menuBar().findChildren(QtGui.QMenu)
     for menu in menus:      
       if menu.title() == "&Window":
-        toggleAction = shTreeDock.toggleViewAction()
+        toggleAction = self.shTreeDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
         menu.addAction(toggleAction)
         menu.addSeparator()
@@ -100,6 +117,30 @@ class SceneHubWindow(CanvasWindow):
     helpMenu = self.menuBar().addMenu("&Help")
     usageAction = helpMenu.addAction("Show Usage")
     usageAction.triggered.connect(self._onShowUsage)
+
+  def _initApp(self, isCanvas):
+    show, level = self.shTreesManager.getScene().showTreeViewByDefault()
+    if show:
+      self.shTreesManager.expandTree(level)
+      self.shTreeDock.show()
+    
+    else: self.shTreeDock.hide()
+   
+    if not isCanvas:
+      self.treeDock.hide()
+      self.logDockWidget.hide()
+      self.valueEditorDockWidget.hide()
+      self.dfgDock.hide()
+      self.scriptEditorDock.hide()
+
+    if self.shTreesManager.getScene().enableTimelineByDefault():
+      startFrame, endFrame = self.shTreesManager.getScene().getFrameState()
+      self.timeLine.setTimeRange(startFrame, endFrame)
+      self.timeLine.setFrameRate(self.shTreesManager.getScene().getFPS())
+      self.timeLineDock.show()
+    else: selftimeLineDock.hide()
+    
+    if self.shTreesManager.getScene().playbackByDefault(): self._onTogglePlayback()
 
   def _contentChanged(self) :
     self.valueEditor.onOutputsChanged()

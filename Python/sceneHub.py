@@ -37,14 +37,21 @@ opt_parser.add_option('-s', '--scene',
                       dest='scene',
                       type='str',
                       default='',
-                      help='execute Python script on startup')
+                      help='execute a scene.kl on startup')
+
+opt_parser.add_option('-g', '--graph',
+                      action='store',
+                      dest='graph',
+                      type='str',
+                      default='',
+                      help='execute a graph.canvas on startup')
 
 (opts, args) = opt_parser.parse_args()
 
 unguarded = opts.unguarded is True
 noopt = opts.noopt is True
 scene = opts.scene
-print "--scene " + str(scene)
+graph = opts.graph
 
 settings = QtCore.QSettings()
 settings.setValue("mainWindow/lastPresetFolder", str("."))
@@ -52,11 +59,11 @@ settings.setValue("mainWindow/lastPresetFolder", str("."))
 qglFormat = QtOpenGL.QGLFormat()
 qglContext = Viewports.RTRGLContext( qglFormat )
 
-sceneHubWin = SceneHubWindow(settings, unguarded, noopt, scene)
+sceneHubWin = SceneHubWindow(settings, unguarded, noopt, scene, graph)
 sceneHubWin.show()
 
 if opts.script:
-    with open(opts.script, "r") as f:
-        sceneHubWin.scriptEditor.exec_(f.read())
+  with open(opts.script, "r") as f:
+    sceneHubWin.scriptEditor.exec_(f.read())
 
 app.exec_()

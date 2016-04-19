@@ -148,7 +148,8 @@ RTVal SHGLScene::getAssetLibraryRoot() {
   return libRootVal;
 }
 
-void SHGLScene::getSceneStats(unsigned int &mesh, unsigned int &triangle, unsigned int &light) {
+QList<unsigned int> SHGLScene::getSceneStats() {
+  QList<unsigned int> stats;
   try 
   {
     RTVal args[3] = {
@@ -157,14 +158,18 @@ void SHGLScene::getSceneStats(unsigned int &mesh, unsigned int &triangle, unsign
       RTVal::ConstructUInt32(getClient(), 0)
     };
     m_shGLSceneVal.callMethod("", "getSceneStats", 3, &args[0]);
-    mesh = args[0].getUInt32();
-    triangle = args[1].getUInt32();
-    light = args[2].getUInt32();
+    // Mesh
+    stats.append(args[0].getUInt32());
+    // Triangles
+    stats.append(args[1].getUInt32());
+    // Lights
+    stats.append(args[2].getUInt32());
   }
   catch(Exception e)
   {
     printf("SHGLScene::getSceneStats: exception: %s\n", e.getDesc_cstr());
   }
+  return stats;
 }
 
 void SHGLScene::prepareSceneForRender() {
@@ -209,6 +214,28 @@ void SHGLScene::getInitialTimelineState(bool &enable, int &start, int &end, floa
   {
     printf("SHGLScene::getInitialTimelineState: exception: %s\n", e.getDesc_cstr());
   }
+}
+
+bool SHGLScene::enableTimelineByDefault() {
+  int start, end; 
+  float fps; bool enable;
+  getInitialTimelineState(enable, start, end, fps);
+  return enable;
+}
+
+float SHGLScene::getFPS() {
+  int start, end; 
+  float fps; bool enable;
+  getInitialTimelineState(enable, start, end, fps);
+  return fps;
+}
+
+QList<int> SHGLScene::getFrameState() {
+  int start, end; 
+  float fps; bool enable;
+  getInitialTimelineState(enable, start, end, fps);
+  QList<int> state; state.append(start); state.append(end);
+  return state;
 }
 
 void SHGLScene::setFrame(int frame) {
@@ -389,19 +416,22 @@ QString SHGLScene::getSelectionCategory() {
   return QString();
 }
 
-bool SHGLScene::showTreeViewByDefault(unsigned int &level) {
-  bool show = false;
+QPair<bool, unsigned int> SHGLScene::showTreeViewByDefault() {
+  QPair<bool, unsigned int> pair;
+  // Show the treeView
+  pair.first = false;
+  pair.second = 1;
   try 
   {
-    RTVal levelVal = RTVal::ConstructUInt32(getClient(), level); 
-    show = m_shGLSceneVal.callMethod("Boolean", "showTreeViewByDefault", 1, &levelVal).getBoolean();
-    level = levelVal.getUInt32();
+    RTVal levelVal = RTVal::ConstructUInt32(getClient(), pair.second); 
+    pair.first = m_shGLSceneVal.callMethod("Boolean", "showTreeViewByDefault", 1, &levelVal).getBoolean();
+    pair.second = levelVal.getUInt32();
   }
   catch(Exception e)
   {
     printf("SHGLScene::showTreeViewByDefault: exception: %s\n", e.getDesc_cstr());
   }
-  return show;
+  return pair;
 }
 
 bool SHGLScene::showValueEditorByDefault( FabricCore::RTVal &defaultTarget ) {

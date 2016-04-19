@@ -11,7 +11,6 @@
       <object-type name="SGAddPropertyCmd" copyable="false"/>
       <object-type name="SGSetPaintToolAttributeCmd" copyable="false"/>
       <object-type name="SGSetPropertyCmd" copyable="false"/>
-      <primitive-type name="SHCmdDescription" copyable="false"/>
       <object-type name="SHCmdRegistration" copyable="false"/>
       <object-type name="SHCmdHandler" copyable="false"/>
       <object-type name="SHTreeItem" copyable="false"/>

@@ -12,13 +12,11 @@ namespace SceneHub {
 
 //////////////////////////////////////////////////////////////////////////
 SGObjectPropertyModelItem::SGObjectPropertyModelItem(
-  SHCmdHandler * cmdViewWidget,
   FabricCore::Client client,
   FabricCore::RTVal rtVal,
   bool isRootItem
   )
-  : m_cmdViewWidget( cmdViewWidget )
-  , m_client( client )
+  : m_client( client )
   , m_rtVal( rtVal )
   , m_lastValueVersion(0)
   , m_rootItem( isRootItem )
@@ -436,32 +434,22 @@ void SGObjectPropertyModelItem::setValue(
   if(!m_rtVal.isValid())
     return;
 
-  if (commit && m_cmdViewWidget != NULL)
+  if (commit )
   {
-
-    FabricCore::RTVal valueAtInteractionBeginVal;
-    if(!FabricUI::ValueEditor::RTVariant::toRTVal(valueAtInteractionBegin, valueAtInteractionBeginVal))
-      return;
-
     try
     {
+      FabricCore::RTVal valueAtInteractionBeginVal;
+      FabricUI::ValueEditor::RTVariant::toRTVal(valueAtInteractionBegin, valueAtInteractionBeginVal);
+
       /* special case for Mat44 */
       if(getRTValType() == FTL_STR("Mat44"))
         valueAtInteractionBeginVal = valueAtInteractionBeginVal.callMethod("Mat44", "toMat44", 0, 0);
 
-      std::vector<FabricCore::RTVal> params(6);
-      params[0] = m_rtVal.callMethod("String", "getFullPath", 0, 0);
-      params[1] = varVal.callMethod("Type", "type", 0, 0);
-      params[2] = valueAtInteractionBeginVal.callMethod("Data", "data", 0, 0);
-      params[3] = valueAtInteractionBeginVal.callMethod("UInt64", "dataSize", 0, 0);
-      params[4] = varVal.callMethod("Data", "data", 0, 0);
-      params[5] = varVal.callMethod("UInt64", "dataSize", 0, 0);
+      FabricCore::RTVal sgVal = m_rtVal.maybeGetMember("SG");
+      QString fullPath( m_rtVal.callMethod("String", "getFullPath", 0, 0).getStringCString() );
+      SGSetPropertyCmd cmd(m_client, sgVal, fullPath, valueAtInteractionBeginVal, varVal);
 
-      //SHCmd * cmd = new SGSetPropertyCmd(m_cmdViewWidget->getScene(), "SetValue", params, true);
-      //cmd->addRTValDependency(varVal);
-      //cmd->addRTValDependency(valueAtInteractionBeginVal);
-      //m_cmdViewWidget->addCommand(cmd);
-
+      emit synchronizeCommands();
       emitModelValueChanged(var);
     }
     catch(FabricCore::Exception e)

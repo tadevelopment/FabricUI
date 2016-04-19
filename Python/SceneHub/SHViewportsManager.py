@@ -102,15 +102,12 @@ class SHViewportsManager():
     newViewport.sceneChanged.connect(self.shWindow.shTreesManager.onSceneHierarchyChanged)
     newViewport.manipsAcceptedEvent.connect(self.onRefreshAllViewports)
     newViewport.manipsAcceptedEvent.connect(self.shWindow.shTreesManager.onUpdateFrom3DSelection)
+    newViewport.synchronizeCommands.connect(self.shWindow.shCmdHandler.onSynchronizeCommands)
+    newViewport.sceneChanged.connect(self.shWindow.valueEditor.onSceneChanged)
 
     self.shWindow.shTreesManager.sceneHierarchyChanged.connect(self.onRefreshAllViewports)
     self.shWindow.shTreesManager.sceneUpdated.connect(newViewport.onSceneUpdated)
-    
     self.shWindow.qUndoStack.indexChanged.connect(self.onRefreshAllViewports)
-    newViewport.addCommands.connect(self.shWindow.shCmdHandler.onAddCommands)
-    
-    #if self.shWindow.valueEditor is not None:
-    #  newViewport.sceneChanged.connect(self.shWindow.valueEditor.onSceneChanged);
 
     return newViewport, intermediateOwnerWidget;
 
@@ -145,7 +142,7 @@ class SHViewportsManager():
     elif( self.samples == 4 ): self.sampleActions[2].setChecked(True)
     elif( self.samples == 8 ): self.sampleActions[3].setChecked(True)
 
-  def _onPlaybackChanged(self, isPlaying):
+  def onPlaybackChanged(self, isPlaying):
     self.shGLRenderer.setPlayback(isPlaying)
     # Refresh viewports: because there might be a "one frame behind" if were are drawing while computing
     self.onRefreshAllViewports()

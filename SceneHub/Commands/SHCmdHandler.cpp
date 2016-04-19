@@ -27,9 +27,9 @@ class SHCmdHandler::WrappedCmd : public QUndoCommand {
           m_didit = true;
           m_shCmd->doit();
         }
-        QUndoCommand::setText( m_shCmd->getCommand() );
+        QUndoCommand::setText( m_shCmd->getDescription() );
       }
-      catch (FabricCore::Exception e) {
+      catch (Exception e) {
         printf("SHCmdHandler::WrappedCmd error: %s\n", e.getDesc_cstr() );
       }
     }
@@ -40,7 +40,7 @@ class SHCmdHandler::WrappedCmd : public QUndoCommand {
         assert(m_didit);
         m_shCmd->undo();
       }
-      catch (FabricCore::Exception e) {
+      catch (Exception e) {
         printf("SHCmdHandler::WrappedCmd error: %s\n", e.getDesc_cstr() );
       }
     }
@@ -49,80 +49,41 @@ class SHCmdHandler::WrappedCmd : public QUndoCommand {
     bool m_didit;
 };
 
-SHCmdHandler::SHCmdHandler(
-  SHGLScene *scene, 
-  SHCmdRegistration *cmdRegistration,
-  QUndoStack *qUndoStack)
+SHCmdHandler::SHCmdHandler(Client client, QUndoStack *qUndoStack)
   : m_stackSize(0)
-  , m_shGLScene(scene)
-  , m_shCmdRegistration(cmdRegistration)
+  , m_client(client)
   , m_qUndoStack(qUndoStack) {
 }
 
-QString inline ExtractCommandName(QString command) {
-  QString name;
-  QStringList split = command.split("(");
-  if(split.size() > 1) name = split[0];
-  return name;
-}
-
-void SHCmdHandler::addCommand(QString command) {
- 
-  QString name = ExtractCommandName(command).toLower();
-   
-  QList<SHCmdDescription> list = m_shCmdRegistration->getCmdDescriptionSet();
-  for(int i=0; i<list.count(); ++i)
+void SHCmdHandler::onSynchronizeCommands() {
+  try 
   {
-    SHCmdDescription cmdDescription = list[i];
-    if(name == cmdDescription.cmdName.toLower()) 
-    {
-      int id = QMetaType::type(cmdDescription.cmdType.toUtf8().constData());
+    RTVal cmdManager = RTVal::Create(m_client, "CmdManager", 0, 0);
+    cmdManager = cmdManager.callMethod("CmdManager", "getOrCreateCmdManager", 0, 0);
+
+    unsigned int currentStackSize = cmdManager.callMethod("Size", "getNumCmdInUndoStack", 0, 0).getUInt32();
+
+    // Get the number of commands already done in the KL stack
+    for(unsigned int i=m_stackSize; i<currentStackSize; ++i)
+    {        
+      RTVal indexVal = RTVal::ConstructUInt32(m_client, i);
+      RTVal cmdVal = cmdManager.callMethod("SGBaseCmd", "getCmdInUndoStack", 1, &indexVal);
+
+      QString type = QString(cmdVal.callMethod("String", "type", 0, 0).getStringCString());
+
+      int id = QMetaType::type(type.toUtf8().constData());
       if(id != 0) 
       {
         SHCmd *cmd = static_cast <SHCmd*>(QMetaType::construct(id));
-        cmd->setScene(m_shGLScene);
-        cmd->setCommand(command);
+        cmd->setFromRTVal(m_client, cmdVal);
         m_qUndoStack->push(new WrappedCmd(cmd));
-        break;
       }
     }
+
+    m_stackSize = currentStackSize;
   }
-}
-
-void SHCmdHandler::onAddCommands() {
-
-  // Get the number of commands already done in the KL stack
-  for(unsigned int i=m_stackSize; i<m_shGLScene->getNumCmdInUndoStack(); ++i)
-  {        
-    FabricCore::RTVal sgCmd = m_shGLScene->retrieveCmd(i);
-    QString type = QString(sgCmd.callMethod("String", "type", 0, 0).getStringCString()).toLower();
-
-    QList<SHCmdDescription> list = m_shCmdRegistration->getCmdDescriptionSet();
-    for(int j=0; j<list.count(); ++j)
-    {
-      SHCmdDescription cmdDescription = list[j];
-      if(type == cmdDescription.cmdType.toLower()) 
-      {
-        int id = QMetaType::type(cmdDescription.cmdType.toUtf8().constData());
-        if(id != 0) 
-        {
-          SHCmd *cmd = static_cast <SHCmd*>(QMetaType::construct(id));
-          cmd->setScene(m_shGLScene);
-          addCommand(cmd->getFromRTVal(sgCmd));
-          delete cmd;
-          break;
-        }
-      }
-    }
+  catch(Exception e)
+  {
+    printf("SHCmdHandler::onSynchronizeCommands: exception: %s\n", e.getDesc_cstr());
   }
-
-  onSynchronizeCommands();
-}
-
-void SHCmdHandler::onSynchronizeCommands() {
-  m_stackSize = m_shGLScene->getNumCmdInUndoStack();
-}
-
-void SHCmdHandler::onSceneUpdated(SHGLScene *scene) { 
-  m_shGLScene = scene; 
 }

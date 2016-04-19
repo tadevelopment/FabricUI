@@ -5,7 +5,6 @@
 #ifndef __UI_SCENEHUB_CMD_REGISTRATION_H__
 #define __UI_SCENEHUB_CMD_REGISTRATION_H__
 
-#include <QtCore/QList>
 #include "SGAddObjectCmd.h"
 #include "SGAddPropertyCmd.h"
 #include "SGSetPropertyCmd.h"
@@ -19,28 +18,19 @@ class SHCmdRegistration  {
   public:
     SHCmdRegistration() { 
       SGAddObjectCmd addObjectCmd;
-      registerCommand(&addObjectCmd);
+      addObjectCmd.registerCommand();
 
       SGAddPropertyCmd addPropertyCmd;
-      registerCommand(&addPropertyCmd);
+      addPropertyCmd.registerCommand();
 
       SGSetPropertyCmd setPropertyCmd;
-      registerCommand(&setPropertyCmd);
+      setPropertyCmd.registerCommand();
  
       SGSetPaintToolAttributeCmd setPaintToolAttributeCmd;
-      registerCommand(&setPaintToolAttributeCmd);
+      setPaintToolAttributeCmd.registerCommand();
     }
 
     ~SHCmdRegistration() {}
-
-    QList<SHCmdDescription> getCmdDescriptionSet() { return m_cmdDescriptionSet; }
-
-    void registerCommand(SHCmd *cmd) {
-      m_cmdDescriptionSet.append(cmd->registerCommand());
-    }
-
-  private:
-    QList<SHCmdDescription> m_cmdDescriptionSet;
 };
 
 } // SceneHub

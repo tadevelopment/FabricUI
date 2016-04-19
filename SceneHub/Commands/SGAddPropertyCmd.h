@@ -14,35 +14,30 @@ namespace SceneHub {
 class SGAddPropertyCmd : public SHCmd {
   
   public:        
-    SGAddPropertyCmd() : SHCmd() {
-      m_description.cmdName = "addPropertyCmd";
-      m_description.cmdType = "SGAddPropertyCmd";
+    SGAddPropertyCmd() : SHCmd() {}
+
+    virtual void registerCommand() {
+      if(QMetaType::type("SGAddPropertyCmd") == 0)
+        qRegisterMetaType<FabricUI::SceneHub::SGAddPropertyCmd>("SGAddPropertyCmd");
     }
 
-    virtual SHCmdDescription registerCommand() {
-      if(QMetaType::type(m_description.cmdType.toUtf8().constData()) == 0)
-        qRegisterMetaType<FabricUI::SceneHub::SGAddPropertyCmd>(m_description.cmdType.toUtf8().constData());
-      return SHCmd::registerCommand();
-    }
-
-    virtual QString getFromRTVal(RTVal sgCmd) {
-      QString cmd;
+    virtual void setFromRTVal(Client client, RTVal sgCmd) {
       try 
       {
-        RTVal keyVal = RTVal::ConstructString(m_shGLScene->getClient(), "ownerPath");
+        m_client = client;
+        RTVal keyVal = RTVal::ConstructString(m_client, "ownerPath");
         RTVal nameVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
         QString ownerPath = QString(nameVal.getStringCString());
 
-        keyVal = RTVal::ConstructString(m_shGLScene->getClient(), "name");
+        keyVal = RTVal::ConstructString(m_client, "name");
         nameVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
         QString name = QString(nameVal.getStringCString());
-        cmd = QString( m_description.cmdName + "(" + ownerPath + ", " + name + ")" );
+        m_description = QString( "addPropertyCmd(" + ownerPath + ", " + name + ")" );
       }
       catch(Exception e)
       {
         printf("SGAddPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
       }
-      return cmd;
     }
 };
 
