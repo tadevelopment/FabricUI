@@ -11,19 +11,25 @@
 namespace FabricUI {
 namespace SceneHub {
 
+
 class SHCmd {
   
   public:
+    /// Constructors.
     SHCmd();
 
     virtual ~SHCmd() {}
 
+    /// Registers the commands.
+    /// Must be called so that the commands appears within the undo stack.
+    /// To override.
     virtual void registerCommand() {}
 
-    /// Gets the command
+    /// Sets/creates the command from the commands RTVal.
+    /// To override.
     virtual void setFromRTVal(FabricCore::Client client, FabricCore::RTVal command) {}
         
-    /// Gets the command
+    /// Gets the command description.
     QString getDescription();
 
     /// Does nothing (don't call the command in KL).

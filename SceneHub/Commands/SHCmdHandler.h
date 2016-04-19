@@ -20,12 +20,15 @@ class SHCmdHandler : public QObject {
 
 
   public:
+    /// Constructs a command handler.
     SHCmdHandler(FabricCore::Client client, QUndoStack *qUndoStack);
 
     virtual ~SHCmdHandler() {};
   
 
   public slots:
+    /// Synchronizes the KL and the Qt stack.
+    /// Must be called after adding a commands to the kl stack.
     void onSynchronizeCommands();
 
 
