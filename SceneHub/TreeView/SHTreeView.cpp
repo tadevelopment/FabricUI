@@ -20,7 +20,7 @@ SHTreeView::SHTreeView(FabricCore::Client &client, QWidget *parent)
   this->setAcceptDrops(true);
 
   setHeaderHidden( true );
-  setSelectionMode( QAbstractItemView::SingleSelection );
+  setSelectionMode( QAbstractItemView::ExtendedSelection );
   setContextMenuPolicy( Qt::CustomContextMenu );
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenu(const QPoint &)) );
 }

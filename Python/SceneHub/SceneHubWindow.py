@@ -26,6 +26,7 @@ class SceneHubWindow(CanvasWindow):
     self.client.loadExtension('SceneHub')
     # Create the renderer
     self.viewportsManager = SHViewportsManager(self)
+    self.shStates = SceneHub.SHStates(self.client)
 
   def _initDFG(self):
     super(SceneHubWindow, self)._initDFG()
@@ -37,8 +38,8 @@ class SceneHubWindow(CanvasWindow):
     self.shTreesManager = SHTreeViewsManager(self, self.klFile)
     self.viewportsManager.update()
     
-    self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGBinding.onTreeItemSelected)
-    self.shTreesManager.sceneUpdated.connect(self.onSceneUpdated)
+    #JCG self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGBinding.onTreeItemSelected)
+    #JCG self.shTreesManager.sceneUpdated.connect(self.onSceneUpdated)
    
     self.shCmdHandler = SceneHub.SHCmdHandler(
       self.shTreesManager.getScene(), 
