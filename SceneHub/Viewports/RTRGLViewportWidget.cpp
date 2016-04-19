@@ -78,7 +78,6 @@ void RTRGLViewportWidget::leaveEvent(QEvent * event) {
 void RTRGLViewportWidget::mousePressEvent(QMouseEvent *event) {
   if(m_shGLScene)
   {  
-    emit synchronizeCommands(); 
     if(!onEvent(event) && event->button() == Qt::RightButton) 
     {
       SHEditorWidget *editor = new SHEditorWidget(
@@ -93,7 +92,7 @@ void RTRGLViewportWidget::mousePressEvent(QMouseEvent *event) {
  
 void RTRGLViewportWidget::mouseReleaseEvent(QMouseEvent *event) { 
   onEvent(event); 
-  emit addCommands(); 
+  emit synchronizeCommands(); 
 }
 
 bool RTRGLViewportWidget::onEvent(QEvent *event) {

@@ -68,8 +68,6 @@ namespace FabricUI
         
         void synchronizeCommands();
 
-        void addCommands();
-
 
       private:
         bool onEvent(QEvent *event);
