@@ -6,7 +6,6 @@
 
 #include <FabricUI/DFG/DFGVEEditorOwner.h>
 #include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
-#include <FabricUI/SceneHub/Commands/SHCmdHandler.h>
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
 
@@ -19,16 +18,19 @@ class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
   Q_OBJECT
 
   public:
-    SHVEEditorOwner(DFG::DFGWidget *dfgWidget, SHBaseTreeView *baseTreeView, SHCmdHandler *cmdViewWidget = 0);
+    SHVEEditorOwner(DFG::DFGWidget *dfgWidget, SHBaseTreeView *baseTreeView);
     
-    ~SHVEEditorOwner();
+    virtual ~SHVEEditorOwner();
 
     virtual void initConnections();
 
     void updateSGObject( const FabricCore::RTVal& sgObject );
 
+
   signals:
     void canvasSidePanelInspectRequested();
+
+    void synchronizeCommands();
 
 
   public slots:
@@ -42,6 +44,8 @@ class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
     
     void onSceneChanged();
 
+    void onSynchronizeCommands();
+
 
   protected slots:
     virtual void onSidePanelInspectRequested();
@@ -52,7 +56,6 @@ class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
     void updateSGObjectProperty( const FabricCore::RTVal& sgObjectProperty );
 
     SceneHub::SHBaseTreeView *m_baseTreeView;
-    SHCmdHandler *m_cmdViewWidget;
     SGObjectPropertyModelItem *m_objectPropertyItem;//Defined if "root" is a single property
 };
 

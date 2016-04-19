@@ -32,6 +32,6 @@ void SHDFGCombinedWidget::initDocks() {
 }
 
 void SHDFGCombinedWidget::initValueEditor() {
-  m_valueEditor = new FabricUI::SceneHub::SHVEEditorOwner( getDfgWidget(), m_shTreeViewWidget->getTreeView(), 0 );
+  m_valueEditor = new FabricUI::SceneHub::SHVEEditorOwner( getDfgWidget(), m_shTreeViewWidget->getTreeView());
   QObject::connect( m_valueEditor, SIGNAL( log( const char * ) ), this, SLOT( log ( const char * ) ) );
 }

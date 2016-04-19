@@ -11,12 +11,10 @@ namespace SceneHub {
 
 //////////////////////////////////////////////////////////////////////////
 SGObjectModelItem::SGObjectModelItem(
-  SHCmdHandler * cmdViewWidget,
   FabricCore::Client client,
   FabricCore::RTVal rtVal
   )
-  : m_cmdViewWidget( cmdViewWidget )
-  , m_client( client )
+  : m_client( client )
   , m_rtVal( rtVal )
 {
   m_lastStructureVersionRtVal = FabricCore::RTVal::ConstructUInt32( m_client, 0 );
@@ -82,7 +80,10 @@ FabricUI::ValueEditor::BaseModelItem *SGObjectModelItem::createChild( FTL::CStrR
         return NULL;
 
       FabricCore::RTVal propRtVal = m_propertiesRtVal.getArrayElement(it->second);
-      FabricUI::ValueEditor::BaseModelItem * child = pushChild(new SGObjectPropertyModelItem(m_cmdViewWidget, m_client, propRtVal, false));
+      SGObjectPropertyModelItem *objectPropertyItem = new SGObjectPropertyModelItem(m_client, propRtVal, false);
+      connect( objectPropertyItem, SIGNAL( synchronizeCommands( ) ), this, SLOT( onSynchronizeCommands( ) ) );
+
+      FabricUI::ValueEditor::BaseModelItem * child = pushChild(objectPropertyItem);
       emit propertyItemInserted(child);
       return child;
     }
@@ -125,6 +126,10 @@ void SGObjectModelItem::onRenamed(
   FTL::CStrRef newName
   )
 {
+}
+
+void SGObjectModelItem::onSynchronizeCommands() {
+  emit synchronizeCommands();
 }
 
 QVariant SGObjectModelItem::getValue()

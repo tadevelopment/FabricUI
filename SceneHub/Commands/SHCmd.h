@@ -5,7 +5,7 @@
 #ifndef __UI_SCENEHUB_CMD_H__
 #define __UI_SCENEHUB_CMD_H__
 
-#include "SHCmdDescription.h"
+
 #include <FabricUI/SceneHub/SHGLScene.h>
 
 namespace FabricUI {
@@ -16,21 +16,16 @@ class SHCmd {
   public:
     SHCmd();
 
-    virtual ~SHCmd();
+    virtual ~SHCmd() {}
 
-    virtual SHCmdDescription registerCommand();
+    virtual void registerCommand() {}
 
     /// Gets the command
-    virtual QString getFromRTVal(FabricCore::RTVal command);
+    virtual void setFromRTVal(FabricCore::Client client, FabricCore::RTVal command) {}
         
-    void setScene(SHGLScene *scene);
-
     /// Gets the command
-    QString getCommand();
-    
-    /// Sets the command
-    void setCommand(QString command);
-    
+    QString getDescription();
+
     /// Does nothing (don't call the command in KL).
     void doit();
     
@@ -42,15 +37,6 @@ class SHCmd {
 
 
   protected:
-    /// Extracts the parameters from the command string.
-    /// \param command The command
-    QStringList extractParams(QString command);
-
-    void execute(QString command); 
-
-    /// Checks if the command has been already applied.
-    bool wasInvoked();
-
     /// Command states
     enum State {
       State_New,
@@ -60,10 +46,9 @@ class SHCmd {
     };
 
     State m_state;
-    QString m_command;
+    QString m_description;
     unsigned m_coreUndoCount;
-    SHGLScene *m_shGLScene;
-    SHCmdDescription m_description;
+    FabricCore::Client m_client;
 };
 
 } // SceneHub

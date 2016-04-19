@@ -14,10 +14,9 @@ using namespace SceneHub;
 using namespace ModelItems;
 
 
-SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHBaseTreeView* baseTreeView, SHCmdHandler *cmdViewWidget)
+SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHBaseTreeView* baseTreeView)
   : DFG::DFGVEEditorOwner(dfgWidget)
   , m_baseTreeView(baseTreeView)
-  , m_cmdViewWidget(cmdViewWidget)
   , m_objectPropertyItem(0) {
 }
 
@@ -108,7 +107,8 @@ void SHVEEditorOwner::updateSGObject( const FabricCore::RTVal& sgObject ) {
   objectItem = 0;
 
   if( sgObject.isValid() && isValid ) {
-    objectItem = new SGObjectModelItem( m_cmdViewWidget, getDFGController()->getClient(), sgObject );
+    objectItem = new SGObjectModelItem( getDFGController()->getClient(), sgObject );
+    QObject::connect( objectItem, SIGNAL( synchronizeCommands( ) ), this, SLOT( onSynchronizeCommands( ) ) );
     QObject::connect( objectItem, SIGNAL( propertyItemInserted( FabricUI::ValueEditor::BaseModelItem * ) ), this, SLOT( onSGObjectPropertyItemInserted( FabricUI::ValueEditor::BaseModelItem * ) ) );
   }
 
@@ -152,10 +152,15 @@ void SHVEEditorOwner::updateSGObjectProperty( const FabricCore::RTVal& sgObjectP
   }
 
   if( sgObjectProperty.isValid() && isValid ) {
-    m_objectPropertyItem = new SGObjectPropertyModelItem( m_cmdViewWidget, getDFGController()->getClient(), sgObjectProperty, true );
-    connect( m_objectPropertyItem, SIGNAL( modelValueChanged( QVariant const & ) ), this, SLOT( onModelValueChanged( QVariant const & ) ) );
+    m_objectPropertyItem = new SGObjectPropertyModelItem( getDFGController()->getClient(), sgObjectProperty, true );
+    QObject::connect( m_objectPropertyItem, SIGNAL( modelValueChanged( QVariant const & ) ), this, SLOT( onModelValueChanged( QVariant const & ) ) );
+    QObject::connect( m_objectPropertyItem, SIGNAL( synchronizeCommands( ) ), this, SLOT( onSynchronizeCommands( ) ) );
   }
   emit replaceModelRoot( m_objectPropertyItem );
+}
+
+void SHVEEditorOwner::onSynchronizeCommands() { 
+  emit synchronizeCommands(); 
 }
 
 void SHVEEditorOwner::onSGObjectPropertyItemInserted( FabricUI::ValueEditor::BaseModelItem * item ) {

@@ -119,8 +119,12 @@ class SHTreeViewsManager(QtGui.QWidget):
       self.comboBox.addItem(sceneName)
     
   def expandTree(self, level):
-    if(level == -1): self.shTreeView.expandAll()
-    elif(level>0): self.shTreeView.expandToDepth(level-1)
+    # Out of range unsigned int in KL.
+    if level == 4294967295: 
+      self.shTreeView.expandAll()
+    else: 
+      if level > 0: 
+        self.shTreeView.expandToDepth(level-1)
 
   def onSceneHierarchyChanged(self):
     #Check if it actually changed, to reduce number of notifications

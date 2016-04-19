@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <FabricUI/SceneHub/Commands/SHCmdHandler.h>
 #include <FabricUI/ModelItems/RootModelItem.h>
 
 namespace FabricUI {
@@ -17,7 +16,6 @@ class SGObjectModelItem : public ModelItems::RootModelItem
   
   private:
 
-    SHCmdHandler * m_cmdViewWidget;
     FabricCore::Client m_client;
     FabricCore::RTVal m_rtVal;
 
@@ -34,11 +32,10 @@ class SGObjectModelItem : public ModelItems::RootModelItem
   public:
 
     SGObjectModelItem(
-      SHCmdHandler * cmdViewWidget,
       FabricCore::Client client,
       FabricCore::RTVal rtVal
       );
-    ~SGObjectModelItem();
+    virtual ~SGObjectModelItem();
 
     BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
 
@@ -86,11 +83,18 @@ class SGObjectModelItem : public ModelItems::RootModelItem
                               const char* value, 
                               bool canUndo )/*override*/;
 
+
+  public slots:
+    void onSynchronizeCommands();
+
+
   signals:
     void propertyItemInserted( FabricUI::ValueEditor::BaseModelItem * item );
 
-  protected:
+    void synchronizeCommands();
 
+
+  protected:
     virtual void setValue(
       QVariant var,
       bool commit,

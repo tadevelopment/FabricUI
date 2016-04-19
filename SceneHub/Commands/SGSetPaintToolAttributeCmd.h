@@ -14,31 +14,26 @@ namespace SceneHub {
 class SGSetPaintToolAttributeCmd : public SHCmd {
 
   public: 
-    SGSetPaintToolAttributeCmd() : SHCmd() {
-      m_description.cmdName = "setPaintToolAttributeCmd";
-      m_description.cmdType = "SGSetPaintToolAttributeCmd";
+    SGSetPaintToolAttributeCmd() : SHCmd() {}
+
+    virtual void registerCommand() {
+      if(QMetaType::type("SGSetPaintToolAttributeCmd") == 0)
+        qRegisterMetaType<FabricUI::SceneHub::SGSetPaintToolAttributeCmd>("SGSetPaintToolAttributeCmd");
     }
 
-    virtual SHCmdDescription registerCommand() {
-      if(QMetaType::type(m_description.cmdType.toUtf8().constData()) == 0)
-        qRegisterMetaType<FabricUI::SceneHub::SGSetPaintToolAttributeCmd>(m_description.cmdType.toUtf8().constData());
-      return SHCmd::registerCommand();
-    }
-
-    virtual QString getFromRTVal(RTVal sgCmd) {
-      QString cmd;
+    virtual void setFromRTVal(Client client, RTVal sgCmd) {
       try 
       {
-        RTVal keyVal = RTVal::ConstructString(m_shGLScene->getClient(), "fullPath");
+        m_client = client;
+        RTVal keyVal = RTVal::ConstructString(m_client, "fullPath");
         RTVal fullPathVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
         QString fullPath = QString(fullPathVal.getStringCString());
-        cmd = QString( m_description.cmdName + "(" + fullPath + ")" );
+        m_description = QString( "setPaintToolAttributeCmd(" + fullPath + ")" );
       }
       catch(Exception e)
       {
         printf("SGSetPaintToolAttributeCmd::Get: exception: %s\n", e.getDesc_cstr());
       }
-      return cmd;
     }
 };
 

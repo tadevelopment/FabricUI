@@ -102,7 +102,7 @@ class SHViewportsManager():
     newViewport.sceneChanged.connect(self.shWindow.shTreesManager.onSceneHierarchyChanged)
     newViewport.manipsAcceptedEvent.connect(self.onRefreshAllViewports)
     newViewport.manipsAcceptedEvent.connect(self.shWindow.shTreesManager.onUpdateFrom3DSelection)
-    newViewport.addCommands.connect(self.shWindow.shCmdHandler.onAddCommands)
+    newViewport.synchronizeCommands.connect(self.shWindow.shCmdHandler.onSynchronizeCommands)
     newViewport.sceneChanged.connect(self.shWindow.valueEditor.onSceneChanged)
 
     self.shWindow.shTreesManager.sceneHierarchyChanged.connect(self.onRefreshAllViewports)

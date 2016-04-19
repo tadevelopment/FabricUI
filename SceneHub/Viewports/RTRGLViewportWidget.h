@@ -64,9 +64,7 @@ class RTRGLViewportWidget : public ViewportWidget {
     void manipsAcceptedEvent(bool);
     
     void synchronizeCommands();
-
-    void addCommands();
-
+ 
 
   private:
     bool onEvent(QEvent *event);

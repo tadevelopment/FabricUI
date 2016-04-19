@@ -9,6 +9,7 @@
 #include <QtGui/QColor>
 #include <QtGui/QVector3D>
 #include <QtGui/QMouseEvent>
+#include <QtCore/QPair>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <FabricCore.h>
@@ -63,18 +64,27 @@ class SHGLScene {
     FabricCore::RTVal getAssetLibraryRoot();
 
     /// Gets the drawing statistics.
-    void getSceneStats(unsigned int &meshCount, unsigned int &triangleCount, unsigned int &lightCount);
+    QList<unsigned int> getSceneStats();
     
     /// Prepares for rendering. 
     /// This must be called once before re-drawing all viewports.
     void prepareSceneForRender();
 
-    /// Gets the initiale   time-line state, for playback.
+    /// Gets the initiale time-line state, for playback.
     /// \param enable Is the playback active.
     /// \param startFrame The timeline first frame.
     /// \param endFrame The timeline last frame.
     /// \param fps The number of frames per second.
     void getInitialTimelineState(bool &enable, int &startFrame, int &endFrame, float &fps);
+
+    /// Enables the time line when the app opens.
+    bool enableTimelineByDefault();
+
+    /// Gets the frame per second
+    float getFPS();
+
+    /// Gets the start-end frames
+    QList<int> getFrameState();
 
     /// Activates the playback at app opening.
     bool playbackByDefault();
@@ -157,10 +167,10 @@ class SHGLScene {
 
     /// Shows the treeView when the app opens.
     /// \param level Iniitial level of expension
-    bool showTreeViewByDefault(unsigned int &level);
+    QPair<bool, unsigned int> showTreeViewByDefault();
 
     /// If true, show the value editor when initializing, and set its target to defaultTarget
-    bool showValueEditorByDefault( FabricCore::RTVal &defaultTarget );
+    bool showValueEditorByDefault(FabricCore::RTVal &defaultTarget);
 
     /// Gets the command manager.
     FabricCore::RTVal getCmdManager();

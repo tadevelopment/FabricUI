@@ -20,28 +20,18 @@ class SHCmdHandler : public QObject {
 
 
   public:
-    SHCmdHandler(
-      SHGLScene *scene, 
-      SHCmdRegistration *cmdRegistration,
-      QUndoStack *qUndoStack);
+    SHCmdHandler(FabricCore::Client client, QUndoStack *qUndoStack);
 
     virtual ~SHCmdHandler() {};
-
   
+
   public slots:
-    void onSceneUpdated(SHGLScene *scene);
-
     void onSynchronizeCommands();
-
-    void onAddCommands();
 
 
   protected:       
-    void addCommand(QString command);
-  
     unsigned int m_stackSize;
-    SHGLScene *m_shGLScene;
-    SHCmdRegistration *m_shCmdRegistration;
+    FabricCore::Client m_client;
     QUndoStack *m_qUndoStack;
 };
 

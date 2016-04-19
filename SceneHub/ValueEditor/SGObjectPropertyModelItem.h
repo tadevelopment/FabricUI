@@ -6,7 +6,6 @@
 
 #include <FabricUI/ValueEditor/BaseModelItem.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
-#include <FabricUI/SceneHub/Commands/SHCmdHandler.h>
 #include <FTL/StrRef.h>
 
 namespace FabricUI {
@@ -19,8 +18,6 @@ class SGObjectPropertyModelItem : public FabricUI::ValueEditor::BaseModelItem
   Q_OBJECT
   
   protected:
-
-    SHCmdHandler * m_cmdViewWidget;
     FabricCore::Client m_client;
     FabricCore::RTVal m_rtVal;
     std::string m_name;
@@ -31,12 +28,11 @@ class SGObjectPropertyModelItem : public FabricUI::ValueEditor::BaseModelItem
   public:
 
     SGObjectPropertyModelItem(
-      SHCmdHandler * cmdViewWidget,
       FabricCore::Client client,
       FabricCore::RTVal rtVal,
       bool isRootItem
       );
-    ~SGObjectPropertyModelItem();
+    virtual ~SGObjectPropertyModelItem();
 
     BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
 
@@ -85,6 +81,10 @@ class SGObjectPropertyModelItem : public FabricUI::ValueEditor::BaseModelItem
     virtual void setMetadataImp( const char* key, 
                               const char* value, 
                               bool canUndo )/*override*/;
+
+  signals:                    
+    void synchronizeCommands();
+
 
   protected:
 
