@@ -14,20 +14,19 @@ from HelpWidget import HelpWidget
 class SceneHubWindow(CanvasWindow):
 
   def __init__(self, settings, unguarded, noopt, klFile, canvasFile):
-    self.noopt = noopt
     self.klFile = klFile
     self.viewport = None
     self.shDFGBinding = None
     self.isCanvas = False
 
-    super(SceneHubWindow, self).__init__(settings, unguarded)
+    super(SceneHubWindow, self).__init__(settings, unguarded, noopt)
 
     isCanvas = canvasFile is not ""
     self._initApp(isCanvas)
     if isCanvas: self.loadGraph(canvasFile)
 
-  def _initKL(self, unguarded):
-    super(SceneHubWindow, self)._initKL(unguarded)
+  def _initKL(self, unguarded, noopt):
+    super(SceneHubWindow, self)._initKL(unguarded, noopt)
     self.client.loadExtension('SceneHub')
     # Create the renderer
     self.viewportsManager = SHViewportsManager(self)
@@ -79,13 +78,16 @@ class SceneHubWindow(CanvasWindow):
     self.timeLine.setTimeRange(0, 100)
     self.timeLine.setFrameRate(24)
   
-  def _initDocksAndMenus(self):
-    super(SceneHubWindow, self)._initDocksAndMenus()
+  def _initDocks(self):
+    super(SceneHubWindow, self)._initDocks()
     self.shTreeDock = QtGui.QDockWidget("Tree-View", self)
     self.shTreeDock.setObjectName("Tree-View")
     self.shTreeDock.setFeatures(self.dockFeatures)
     self.shTreeDock.setWidget(self.shTreesManager)
     self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.shTreeDock, QtCore.Qt.Vertical)
+
+  def _initMenus(self):
+    super(SceneHubWindow, self)._initMenus()
 
     self.treeViewMenu = SHTreeViewMenu(self.shTreesManager)
     menus = self.menuBar().findChildren(QtGui.QMenu)

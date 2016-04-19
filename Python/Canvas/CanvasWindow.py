@@ -118,7 +118,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.fpsTimer.timeout.connect(self.updateFPS)
         self.fpsTimer.start()
 
-    def _reportCallback(self, source, level, line):
+    def __reportCallback(self, source, level, line):
         if self.dfgWidget:
             self.dfgWidget.getDFGController().log(line)
         else:
