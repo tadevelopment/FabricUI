@@ -56,9 +56,6 @@ graph = opts.graph
 settings = QtCore.QSettings()
 settings.setValue("mainWindow/lastPresetFolder", str("."))
 
-qglFormat = QtOpenGL.QGLFormat()
-qglContext = Viewports.RTRGLContext( qglFormat )
-
 sceneHubWin = SceneHubWindow(settings, unguarded, noopt, scene, graph)
 sceneHubWin.show()
 
