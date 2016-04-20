@@ -16,6 +16,7 @@ class SHTreeComboBox(QtGui.QComboBox):
 
 class SHTreeViewsManager(QtGui.QWidget):
   sceneHierarchyChanged = QtCore.Signal()
+  sceneChanged = QtCore.Signal()
   activeSceneChanged = QtCore.Signal(SceneHub.SHGLScene)
   
   def __init__(self, mainwindow, shStates, klFile):
@@ -61,9 +62,9 @@ class SHTreeViewsManager(QtGui.QWidget):
     self._resetTree()
 
     self.treeModel = SceneHub.SHTreeModel(
-     self.shGLScene.getClient(), 
+      self.shGLScene.getClient(), 
       self.shGLScene.getSG(), 
-     self.shTreeView)
+      self.shTreeView)
 
     self.setShowProperties(self.showProperties)
     self.setShowOperators(self.showOperators)
@@ -131,45 +132,29 @@ class SHTreeViewsManager(QtGui.QWidget):
         self.shTreeView.expandToDepth(level-1)
 
   def onSceneHierarchyChanged(self):
-    #Check if it actually changed, to reduce number of notifications
-    if self.shGLScene.hasSG() and self.shGLScene.sceneHierarchyChanged():
-      self.sceneHierarchyChanged.emit()
+    self.sceneHierarchyChanged.emit()
 
   def onSceneChanged(self):
-    if self.shGLScene.hasSG():
-      # No filter on this one
-      #Use that signal for now; to be refactored with SH-227
-      self.sceneHierarchyChanged.emit()
-
+    self.sceneChanged.emit()
 
   def onSelectionCleared(self):
-    self.shStates.clearSelection()
+    if not self.bUpdatingSelection:
+      self.shStates.clearSelection()
 
   def onTreeItemSelected(self, item):
     if not self.bUpdatingSelection:
       self.bUpdatingSelection = True
       if item.isReference():
-        print "A0"
-        val = item.getSGCanvasOperator()
-        print "A"
-        print type(val)
-        #print "A2"
-        #print val.type('Type')
-        #print "B"
-        #val = item.getSGObject()
-        #print "C"
-        #print val.type('Type')
-        #print "D"
-        #if val:
-        #  self.shStates.addSGObjectToSelection(val)
-      #else:
-      #  val = item.getSGObjectProperty()
-      #  if val:
-      #    if item.isGenerator():
-      #      self.shStates.addSGObjectPropertyGeneratorToSelection(val)
-      #    else:
-      #      self.shStates.addSGObjectPropertyToSelection(val)
-
+        val = item.getSGObject()
+        #if val: # this is not supported, and crashes if we try to get the type/print
+        self.shStates.addSGObjectToSelection(val)
+      else:
+        val = item.getSGObjectProperty()
+        #if val: # this is not supported, and crashes if we try to get the type/print
+        if item.isGenerator():
+          self.shStates.addSGObjectPropertyGeneratorToSelection(val)
+        else:
+          self.shStates.addSGObjectPropertyToSelection(val)
       self.bUpdatingSelection = False
      
   def onTreeItemDeselected(self, item):
@@ -177,16 +162,15 @@ class SHTreeViewsManager(QtGui.QWidget):
       self.bUpdatingSelection = True
       if item.isReference():
         val = item.getSGObject()
-        if val:
-          self.shStates.removeSGObjectFromSelection(val)
+        #if val: # this is not supported, and crashes if we try to get the type/print
+        self.shStates.removeSGObjectFromSelection(val)
       else:
         val = item.getSGObjectProperty()
-        if val:
-          if item.isGenerator():
-            self.shStates.removeSGObjectPropertyGeneratorFromSelection(val)
-          else:
-            self.shStates.removeSGObjectPropertyFromSelection(val)
-
+        #if val: # this is not supported, and crashes if we try to get the type/print
+        if item.isGenerator():
+          self.shStates.removeSGObjectPropertyGeneratorFromSelection(val)
+        else:
+          self.shStates.removeSGObjectPropertyFromSelection(val)
       self.bUpdatingSelection = False
 
   def onSelectionChanged(self):
@@ -195,4 +179,3 @@ class SHTreeViewsManager(QtGui.QWidget):
       self.bUpdatingSelection = True
       self.shTreeView.setSelectedObjects(self.shStates.getSelectedObjects())
       self.bUpdatingSelection = False
-  

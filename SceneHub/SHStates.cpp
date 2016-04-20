@@ -11,7 +11,6 @@ using namespace FabricUI::SceneHub;
 SHStates::SHStates( Client client ) :
   m_client( client ),
   m_activeSHGLScene( 0 ) {
-printf("SHStates::SHStates\n");
   FABRIC_TRY( "SHStates::SHStates",
     m_shStateVal = RTVal::Create( client, "SHStates", 0, 0 );
   );
@@ -22,7 +21,6 @@ FabricCore::Client SHStates::getClient() {
 }
 
 FabricCore::RTVal SHStates::getSelectedObjects() {
-printf( "SHStates::getSelectedObjects\n" );
   RTVal selectedObject;
   FABRIC_TRY_IGNORE( "SHStates::getSelectedObjects",
     selectedObject = m_shStateVal.callMethod( "SGObject[]", "getSelectedObjects", 0, 0 );
@@ -31,7 +29,6 @@ printf( "SHStates::getSelectedObjects\n" );
 }
 
 bool SHStates::isInspectingSGObject() {
-printf( "SHStates::isInspectingSGObject\n" );
   bool result = false;
   FABRIC_TRY_IGNORE( "SHStates::isInspectingSGObject",
     result = m_shStateVal.callMethod( "SGObject[]", "isInspectingObject", 0, 0 ).getBoolean();
@@ -40,7 +37,6 @@ printf( "SHStates::isInspectingSGObject\n" );
 }
 
 bool SHStates::isInspectingSGObjectProperty() {
-  printf( "SHStates::isInspectingSGObjectProperty\n" );
   bool result = false;
   FABRIC_TRY_IGNORE( "SHStates::isInspectingSGObjectProperty",
     result = m_shStateVal.callMethod( "SGObject[]", "isInspectingObject", 0, 0 ).getBoolean();
@@ -49,7 +45,6 @@ bool SHStates::isInspectingSGObjectProperty() {
 }
 
 bool SHStates::isInspectingSGCanvasOperator() {
-  printf( "SHStates::isInspectingSGCanvasOperator\n" );
   bool result = false;
   FABRIC_TRY_IGNORE( "SHStates::isInspectingSGCanvasOperator",
     result = m_shStateVal.callMethod( "SGObject[]", "isInspectingSGCanvasOperator", 0, 0 ).getBoolean();
@@ -58,7 +53,6 @@ bool SHStates::isInspectingSGCanvasOperator() {
 }
 
 FabricCore::RTVal SHStates::getInspectedSGObject() {
-  printf( "SHStates::getInspectedSGObject\n" );
   FabricCore::RTVal result;
   FABRIC_TRY_IGNORE( "SHStates::getInspectedSGObject",
     FabricCore::RTVal validRTVal = FabricCore::RTVal::ConstructBoolean( m_client, false );
@@ -70,7 +64,6 @@ FabricCore::RTVal SHStates::getInspectedSGObject() {
 }
 
 FabricCore::RTVal SHStates::getInspectedSGObjectProperty() {
-  printf( "SHStates::getInspectedSGObjectProperty\n" );
   FabricCore::RTVal result;
   FABRIC_TRY_IGNORE( "SHStates::getInspectedSGObjectProperty",
     FabricCore::RTVal validRTVal = FabricCore::RTVal::ConstructBoolean( m_client, false );
@@ -82,7 +75,6 @@ FabricCore::RTVal SHStates::getInspectedSGObjectProperty() {
 }
 
 FabricCore::RTVal SHStates::getInspectedSGCanvasOperator() {
-  printf( "SHStates::getInspectedSGCanvasOperator\n" );
   FabricCore::RTVal result;
   FABRIC_TRY_IGNORE( "SHStates::getInspectedSGObject",
     result = m_shStateVal.callMethod( "SGCanvasOperator", "getInspectedObjectPropertyGenerator", 0, 0 );
@@ -93,29 +85,21 @@ FabricCore::RTVal SHStates::getInspectedSGCanvasOperator() {
 }
 
 SHGLScene* SHStates::getActiveScene() {
-  printf( "SHStatesSHStates::getActiveScene\n" );
   return m_activeSHGLScene;
 }
 
 void SHStates::onStateChanged() {
   FABRIC_TRY( "SHStates::onStateChanged",
-    if( m_shStateVal.callMethod( "Boolean", "sceneHierarchyChanged", 0, 0 ).getBoolean() ) {
-      printf( "SHStates::onStateChanged emit sceneHierarchyChanged\n" );
+    if( m_shStateVal.callMethod( "Boolean", "sceneHierarchyChanged", 0, 0 ).getBoolean() )
       emit sceneHierarchyChanged();
-    }
-    if( m_shStateVal.callMethod( "Boolean", "sceneChanged", 0, 0 ).getBoolean() ) {
-      printf( "SHStates::onStateChanged emit sceneChanged\n" );
+    if( m_shStateVal.callMethod( "Boolean", "sceneChanged", 0, 0 ).getBoolean() )
       emit sceneChanged();
-    }
-    if( m_shStateVal.callMethod( "Boolean", "selectionChanged", 0, 0 ).getBoolean() ) {
-      printf( "SHStates::onStateChanged emit selectionChanged\n" );
+    if( m_shStateVal.callMethod( "Boolean", "selectionChanged", 0, 0 ).getBoolean() )
       emit selectionChanged();
-    }
   );
 }
 
 void SHStates::onInspectedSGObject( FabricCore::RTVal sgObject ) {
-  printf( "SHStates::onInspectedSGObject\n" );
   FABRIC_TRY( "SHStates::onInspectedSGObject",
     if( m_shStateVal.callMethod( "Boolean", "setInspectedObject", 1, &sgObject ).getBoolean() )
       emit inspectedChanged();
@@ -123,7 +107,6 @@ void SHStates::onInspectedSGObject( FabricCore::RTVal sgObject ) {
 }
 
 void SHStates::onInspectedSGObjectProperty( FabricCore::RTVal sgObjectProperty ) {
-  printf( "SHStates::onInspectedSGObjectProperty\n" );
   FABRIC_TRY( "SHStates::onInspectedSGObjectProperty",
     if( m_shStateVal.callMethod( "Boolean", "setInspectedObjectProperty", 1, &sgObjectProperty ).getBoolean() )
       emit inspectedChanged();
@@ -131,7 +114,6 @@ void SHStates::onInspectedSGObjectProperty( FabricCore::RTVal sgObjectProperty )
 }
 
 void SHStates::onInspectedSGObjectPropertyGenerator( FabricCore::RTVal sgObjectProperty ) {
-  printf( "SHStates::onInspectedSGObjectPropertyGenerator\n" );
   FABRIC_TRY( "SHStates::onInspectedSGObjectPropertyGenerator",
     if( m_shStateVal.callMethod( "Boolean", "setInspectedObjectPropertyGenerator", 1, &sgObjectProperty ).getBoolean() )
       emit inspectedChanged();
@@ -139,7 +121,6 @@ void SHStates::onInspectedSGObjectPropertyGenerator( FabricCore::RTVal sgObjectP
 }
 
 void SHStates::onActiveSceneChanged( SHGLScene* scene ) {
-  printf( "SHStates::onActiveSceneChanged\n" );
   FABRIC_TRY( "SHStates::onActiveSceneChanged",
     m_activeSHGLScene = scene;
     FabricCore::RTVal sceneRTVal = scene->getSHGLScene();
@@ -149,7 +130,6 @@ void SHStates::onActiveSceneChanged( SHGLScene* scene ) {
 }
 
 void SHStates::onFrameChanged( int frame ) {
-  printf( "SHStates::onFrameChanged\n" );
   FABRIC_TRY( "SHStates::onFrameChanged",
     RTVal arg = RTVal::ConstructSInt32( getClient(), frame );
     if( m_shStateVal.callMethod( "Boolean", "setFrame", 1, &arg ).getBoolean() )
@@ -158,7 +138,6 @@ void SHStates::onFrameChanged( int frame ) {
 }
 
 void SHStates::clearSelection() {
-  printf( "SHStates::clearSelection\n" );
   FABRIC_TRY( "SHStates::clearSelection",
     m_shStateVal.callMethod( "", "clearSelection", 0, 0 );
   );

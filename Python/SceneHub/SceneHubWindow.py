@@ -50,12 +50,16 @@ class SceneHubWindow(CanvasWindow):
 
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
-    # Update the renderer in case it has been overriden by the main scene.
+
     self.shTreesManager = SHTreeViewsManager(self, self.shStates, self.klFile)
-    
-    #JCG self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGBinding.onTreeItemSelected)
+
+    # scene changed -> tree view changed
     self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
     self.shStates.selectionChanged.connect(self.shTreesManager.onSelectionChanged)
+
+    # tree view changed -> scene changed
+    self.shTreesManager.sceneHierarchyChanged.connect(self.shStates.onStateChanged)
+    self.shTreesManager.sceneChanged.connect(self.shStates.onStateChanged)
 
   def _initValueEditor(self):
     self.valueEditor = SceneHub.SHVEEditorOwner(self.dfgWidget, self.shTreesManager.shTreeView)
@@ -165,8 +169,6 @@ class SceneHubWindow(CanvasWindow):
   def onFrameChanged(self, frame):
     super(SceneHubWindow, self).onFrameChanged(frame)
     self.shStates.onFrameChanged(frame)
-    #JCG self.shTreesManager.getScene().setFrame(frame)
-    #JCG self.viewportsManager.onRefreshAllViewports()
 
   def onDirty(self):
     dirtyList = self.shDFGBinding.setDirty()

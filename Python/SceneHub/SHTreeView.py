@@ -25,7 +25,9 @@ class SHTreeView(SceneHub.SHBaseTreeView):
     menu.exec_(self.mapToGlobal(point))
   
   def selectionChanged(self, selected, deselected):
-    clear = len(self.selectionModel().selectedIndexes()) == len(deselected.indexes())
+    # clear selection (make sure 3D view is synchronized) if all elements are newly added
+    clear = len(self.selectionModel().selectedIndexes()) == len(selected.indexes())
+
     super(SHTreeView, self).selectionChanged(selected, deselected)
     for index in deselected.indexes(): self.itemDeselected.emit(SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index))
     if clear:

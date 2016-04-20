@@ -75,10 +75,6 @@ SHBaseTreeView::SHBaseTreeView(FabricCore::Client &client, QWidget *parent)
   this->setAcceptDrops(true);
 }
 
-void SHBaseTreeView::setSelectedObjects( SHGLScene *scene ) {
-  setSelectedObjects(scene->getSelectedObjects());
-}
-
 void SHBaseTreeView::setSelectedObjects( FabricCore::RTVal selectedSGObjectArray ) {
   SHTreeModel* treeModel = (SHTreeModel*)model();
   try 

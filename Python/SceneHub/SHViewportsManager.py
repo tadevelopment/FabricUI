@@ -30,6 +30,7 @@ class SHViewportsManager():
     self.shGLRenderer = SceneHub.SHGLRenderer(self.shWindow.client)
 
     self.shStates.sceneChanged.connect(self.onRefreshAllViewports)
+    self.shStates.selectionChanged.connect(self.onRefreshAllViewports)
 
   def initMenu(self, menuBar):
     menus = menuBar.findChildren(QtGui.QMenu)
@@ -105,20 +106,7 @@ class SHViewportsManager():
 
     # Manips can need to be redrawn even if the scene didn't change
     newViewport.manipsAcceptedEvent.connect( self.onRefreshAllViewports )
-
-    #JCG newViewport.sceneChanged.connect(self.onRefreshAllViewports)
-    #JCG newViewport.sceneChanged.connect(self.shWindow.shTreesManager.onSceneHierarchyChanged)
-    #JCG newViewport.manipsAcceptedEvent.connect(self.shWindow.shTreesManager.onUpdateFrom3DSelection)
-
     newViewport.synchronizeCommands.connect(self.shWindow.shCmdHandler.onSynchronizeCommands)
-
-    #JCG newViewport.sceneChanged.connect(self.shWindow.valueEditor.onSceneChanged)
-
-
-
-    #JCG self.shWindow.shTreesManager.sceneHierarchyChanged.connect(self.onRefreshAllViewports)
-    #JCG self.shWindow.shTreesManager.sceneUpdated.connect(newViewport.onSceneUpdated)
-    #JCG self.shWindow.qUndoStack.indexChanged.connect(self.onRefreshAllViewports)
 
     return newViewport, intermediateOwnerWidget;
 

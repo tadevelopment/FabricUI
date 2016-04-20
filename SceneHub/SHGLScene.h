@@ -88,39 +88,7 @@ class SHGLScene {
 
     /// Activates the playback at app opening.
     bool playbackByDefault();
-    
-    /// Sets the current frame, for animation.
-    /// \param frame The frame number
-    void setFrame(int frame);
 
-    /// Returns true if the structure of the SceneGraph changed since the last call to this function.
-    /// This allows the C++ app to filter multiple consecutive "sceneChanged" notifications.
-    bool sceneHierarchyChanged(); 
-
-    /// Returns an array of SGObject that are currently in the 'selection' set. 
-    /// This is used for reflecting the 3D selection to the TreeView (which might or not have these as UI nodes).
-    FabricCore::RTVal getSelectedObjects(); 
-
-    /// Updates the tree-view when selection from the scene.
-    /// \param sgObject The selected scenegraph object
-    void sceneItemSelected(FabricCore::RTVal sgObject); 
-
-    /// Updates the tree-view when selection from the scene.
-    /// \param item The selected SHTreeItem
-    void treeItemSelected(SHTreeItem *item); 
-
-    /// Updates the 'selection' from TreeView's selection.
-    /// \param sgObject The selected scenegraph object
-    void treeItemSelected(FabricCore::RTVal sgObject); 
-
-    /// Updates the 'selection' from TreeView's selection.
-    /// \param item The deselected SHTreeItem
-    void treeItemDeselected(SHTreeItem *item); 
-    
-    /// Updates the 'selection' from TreeView's selection.
-    /// \param sgObject The deselected scenegraph object
-    void treeItemDeselected(FabricCore::RTVal sgObject); 
-                
     /// Gets the path of the current selected object.
     QString getTreeItemPath(SHTreeItem *item);
 
@@ -129,15 +97,6 @@ class SHGLScene {
 
     /// Gets the path of the current selected object.
     QStringList getSceneNamesFromBinding(FabricCore::DFGBinding &binding);
-
-    /// Checks if the selection changed from the manipulation system.
-    /// Synchronizes with the tree-view.
-    bool selectionChangedFromManips();
-    
-    /// Gets the category of the selection.
-    /// Used to know what type of element is selected.
-    /// For showing the right contextual menu.
-    QString getSelectionCategory();
 
     /// Adds texture or asset files.
     /// Contains a list of file paths associated with a mouse position. 

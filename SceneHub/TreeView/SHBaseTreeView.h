@@ -66,8 +66,6 @@ class SHBaseTreeView : public QTreeView {
 
     virtual ~SHBaseTreeView() {}
 
-    void setSelectedObjects( SHGLScene *scene );
-
     void setSelectedObjects( FabricCore::RTVal selectedSGObjectArray );
 
     FabricCore::Client getClient() { return m_client; }
