@@ -3,14 +3,14 @@ from PySide import QtCore, QtGui
 
 class SHBaseMenu(QtGui.QMenu):
 
-  def __init__(self, shStates, title = None, parent = None):
-    self.shStates = shStates
+  def __init__(self, scene, title = None, parent = None):
+    self.shGLScene = scene
     super(SHBaseMenu, self).__init__(parent)
     if title is not None : self.setTitle(title)
     self._constructMenu()
     
-  def getScene(self):
-    return self.shStates.getActiveScene()
+  def onActiveSceneChanged(self, scene):
+    self.shGLScene = scene
 
   def _constructMenu(self):
     pass

@@ -12,16 +12,20 @@ class SHTreeView(SceneHub.SHBaseTreeView):
   itemSelected = QtCore.Signal(SceneHub.SHTreeItem)
   itemDeselected = QtCore.Signal(SceneHub.SHTreeItem)
   
-  def __init__(self, client, scene):
+  def __init__(self, client, shStates, scene):
     super(SHTreeView, self).__init__(client)
+    self.client = client # Keep a ref: the C++ wrapped one from the parent doesn't have .RT
     self.shGLScene = scene
+    self.shStates = shStates
     self.setHeaderHidden(True)
     self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
     self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
     self.customContextMenuRequested.connect(self.onCustomContextMenu)
   
   def onCustomContextMenu(self, point):
-    menu = SHContextualMenu(self.shGLScene, self)
+    index = self.indexAt( point );
+    item = SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index)
+    menu = SHContextualMenu(self.client, self.shGLScene, self.shStates, item.getSGObject())
     menu.exec_(self.mapToGlobal(point))
   
   def selectionChanged(self, selected, deselected):

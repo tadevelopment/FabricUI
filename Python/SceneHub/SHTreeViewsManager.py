@@ -33,7 +33,7 @@ class SHTreeViewsManager(QtGui.QWidget):
     self.bUpdatingSelection = False
 
     self.comboBox = SHTreeComboBox()
-    self.shTreeView = SHTreeView(self.shWindow.client, self.shGLScene)
+    self.shTreeView = SHTreeView(self.shWindow.client, self.shStates, self.shGLScene)
     
     layout = QtGui.QVBoxLayout()
     layout.addWidget(self.comboBox)
@@ -146,15 +146,15 @@ class SHTreeViewsManager(QtGui.QWidget):
       self.bUpdatingSelection = True
       if item.isReference():
         val = item.getSGObject()
-        #if val: # this is not supported, and crashes if we try to get the type/print
-        self.shStates.addSGObjectToSelection(val)
+        if val is not None:
+          self.shStates.addSGObjectToSelection(val)
       else:
         val = item.getSGObjectProperty()
-        #if val: # this is not supported, and crashes if we try to get the type/print
-        if item.isGenerator():
-          self.shStates.addSGObjectPropertyGeneratorToSelection(val)
-        else:
-          self.shStates.addSGObjectPropertyToSelection(val)
+        if val is not None:
+          if item.isGenerator():
+            self.shStates.addSGObjectPropertyGeneratorToSelection(val)
+          else:
+            self.shStates.addSGObjectPropertyToSelection(val)
       self.bUpdatingSelection = False
      
   def onTreeItemDeselected(self, item):
@@ -162,15 +162,15 @@ class SHTreeViewsManager(QtGui.QWidget):
       self.bUpdatingSelection = True
       if item.isReference():
         val = item.getSGObject()
-        #if val: # this is not supported, and crashes if we try to get the type/print
-        self.shStates.removeSGObjectFromSelection(val)
+        if val is not None:
+          self.shStates.removeSGObjectFromSelection(val)
       else:
         val = item.getSGObjectProperty()
-        #if val: # this is not supported, and crashes if we try to get the type/print
-        if item.isGenerator():
-          self.shStates.removeSGObjectPropertyGeneratorFromSelection(val)
-        else:
-          self.shStates.removeSGObjectPropertyFromSelection(val)
+        if val is not None:
+          if item.isGenerator():
+            self.shStates.removeSGObjectPropertyGeneratorFromSelection(val)
+          else:
+            self.shStates.removeSGObjectPropertyFromSelection(val)
       self.bUpdatingSelection = False
 
   def onSelectionChanged(self):

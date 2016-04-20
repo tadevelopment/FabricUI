@@ -209,6 +209,26 @@ QList<float> SHGLRenderer::get3DScenePosFrom2DScreenPos(unsigned int viewportID,
   return list;
 }
 
+RTVal SHGLRenderer::getSGObjectFrom2DScreenPos( unsigned int viewportID, QPoint pos ) {
+  RTVal result;
+  try {
+    RTVal posVal = QtToKLMousePosition( pos, m_client, getOrAddViewport( viewportID ), true );
+    RTVal validVal = RTVal::ConstructBoolean( m_client, false );
+    RTVal args[3] = {
+      RTVal::ConstructUInt32( m_client, viewportID ),
+      posVal,
+      validVal
+    };
+    result = m_shGLRendererVal.callMethod( "SGObject", "getSGObjectFrom2DScreenPos", 3, args );
+    if( !validVal.getBoolean() )
+      result = RTVal();//set as empty
+  }
+  catch( Exception e ) {
+    printf( "SHGLRenderer::getSGObjectFrom2DScreenPos: exception: %s\n", e.getDesc_cstr() );
+  }
+  return result;
+}
+
 void SHGLRenderer::render(unsigned int viewportID, unsigned int width, unsigned int height, unsigned int samples) {
   try 
   {

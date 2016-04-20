@@ -6,8 +6,8 @@ from SHBaseMenu import SHBaseMenu
 
 class SHAssetsMenu(SHBaseMenu):
 
-  def __init__(self, shStates, title = None, parent = None):
-    super(SHAssetsMenu, self).__init__(shStates, "Assets", parent)
+  def __init__(self, scene, title = None, parent = None):
+    super(SHAssetsMenu, self).__init__(scene, "Assets", parent)
  
   def _constructMenu(self):
     addAction = self.addAction("Add Asset")
@@ -25,8 +25,7 @@ class SHAssetsMenu(SHBaseMenu):
     dialog.setNameFilter("Files (*.abc *.fbx)")
     if dialog.exec_():
       pathList = Util.StringUtils.ProcessPathQStringForOsX(dialog.selectedFiles())
-      scene = self.getScene()
-      scene.addExternalFileList(pathList, self.sender().text() != "Add Asset")
+      self.shGLScene.addExternalFileList(pathList, self.sender().text() != "Add Asset")
   
   def exportToAlembic(self):   
     fileName = QtGui.QFileDialog.getSaveFileName(self, "Export to Alembic", "", "Files (*.abc)")
@@ -34,6 +33,5 @@ class SHAssetsMenu(SHBaseMenu):
       pathList = []
       pathList.append(fileName)
       pathList = Util.StringUtils.ProcessPathQStringForOsX(pathList)
-      scene = self.getScene()
-      scene.exportToAlembic(pathList[0])
+      self.shGLScene.exportToAlembic(pathList[0])
   

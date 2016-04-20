@@ -64,17 +64,23 @@ class SHGLRenderer {
     /// \param viewportID The viewport ID.
     FabricCore::RTVal getCamera(unsigned int viewportID);
     
-    /// Casts a ray from a Viewport and a position in camera space.
+    /// Returns a ray from a Viewport and a position in camera space.
     /// \param viewportID The ID of the viewport.
     /// \param pos The mouse's position in the viewport
     FabricCore::RTVal castRay(unsigned int viewportID, QPoint pos);
 
     /// This helper method will raycast in the scene. 
-    // If no result is found, it will intersect with the Y = 0 plane. 
-    // If this is outside the near/far camera range, it will return the origin.
-    // \param viewportID The ID of the viewport.
-    // \param pos The mouse's position in the viewport
+    /// If no result is found, it will intersect with the Y = 0 plane. 
+    /// If this is outside the near/far camera range, it will return the origin.
+    /// \param viewportID The ID of the viewport.
+    /// \param pos The mouse's position in the viewport
     QList<float> get3DScenePosFrom2DScreenPos(unsigned int viewportID, QPoint pos);
+
+    /// This helper method will raycast in the scene and
+    /// return the closest hit SGObject (which might be invalid).
+    /// \param viewportID The ID of the viewport.
+    /// \param pos The mouse's position in the viewport
+    FabricCore::RTVal getSGObjectFrom2DScreenPos( unsigned int viewportID, QPoint pos );
 
     /// Activates the playback.
     /// \param playback It true, playback.
