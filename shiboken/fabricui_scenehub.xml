@@ -4,6 +4,7 @@
     <namespace-type name="SceneHub"  generate="yes">
       <object-type name="SHGLRenderer" copyable="false"/>
       <object-type name="SHGLScene" copyable="false"/>
+      <object-type name="SHStates" copyable="false"/>
       <object-type name="SHDFGBinding" copyable="false"/>
       <object-type name="SHCmd" copyable="false"/>
       <object-type name="SGAddObjectCmd" copyable="false"/>

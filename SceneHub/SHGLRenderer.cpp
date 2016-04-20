@@ -14,7 +14,7 @@ SHGLRenderer::SHGLRenderer(Client client) : m_client(client) {
   try 
   {
     RTVal dummyGLRendererVal = RTVal::Construct( m_client, "SHGLRenderer", 0, 0 );
-    m_shGLRendererVal = dummyGLRendererVal.callMethod( "SHRenderer_Virtual", "create", 0, 0);
+    m_shGLRendererVal = dummyGLRendererVal.callMethod( "SHRenderer", "create", 0, 0);
   }
   catch(Exception e)
   {
@@ -26,7 +26,7 @@ void SHGLRenderer::update() {
   try 
   {
     RTVal dummyGLRendererVal = RTVal::Construct( m_client, "SHGLRenderer", 0, 0 );
-    m_shGLRendererVal = dummyGLRendererVal.callMethod( "SHRenderer_Virtual", "getOrCreate", 0, 0);
+    m_shGLRendererVal = dummyGLRendererVal.callMethod( "SHRenderer", "getOrCreate", 0, 0);
   }
   catch(Exception e)
   {

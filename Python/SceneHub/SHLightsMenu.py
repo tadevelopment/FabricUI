@@ -6,8 +6,8 @@ from SHBaseMenu import SHBaseMenu
 
 class SHLightsMenu(SHBaseMenu):
 
-  def __init__(self, scene, title = None, parent = None):
-    super(SHLightsMenu, self).__init__(scene, "Lights", parent)
+  def __init__(self, shStates, title = None, parent = None):
+    super(SHLightsMenu, self).__init__(shStates, "Lights", parent)
  
   def _constructMenu(self):
     addSpotLightAction = self.addAction("Add Spot")
@@ -25,10 +25,11 @@ class SHLightsMenu(SHBaseMenu):
     
   def addLight(self):   
     # Get the light we want to add
-    if(self.sender().text() == "Add Point"): self.shGLScene.addLight(0)
-    elif(self.sender().text() == "Add Spot"): self.shGLScene.addLight(1)
-    elif(self.sender().text() == "Add Directional"): self.shGLScene.addLight(2)
-    elif(self.sender().text() == "Add Shadow Point"): self.shGLScene.addLight(3)
-    elif(self.sender().text() == "Add Shadow Spot"): self.shGLScene.addLight(4)
-    elif(self.sender().text() == "Add Shadow Directional"): self.shGLScene.addLight(5)
+    scene = self.getScene()
+    if(self.sender().text() == "Add Point"): scene.addLight(0)
+    elif(self.sender().text() == "Add Spot"): scene.addLight(1)
+    elif(self.sender().text() == "Add Directional"): scene.addLight(2)
+    elif(self.sender().text() == "Add Shadow Point"): scene.addLight(3)
+    elif(self.sender().text() == "Add Shadow Spot"): scene.addLight(4)
+    elif(self.sender().text() == "Add Shadow Directional"): scene.addLight(5)
   

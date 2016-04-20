@@ -16,10 +16,12 @@ class SHTreeComboBox(QtGui.QComboBox):
 
 class SHTreeViewsManager(QtGui.QWidget):
   sceneHierarchyChanged = QtCore.Signal()
-  sceneUpdated = QtCore.Signal(SceneHub.SHGLScene)
+  sceneChanged = QtCore.Signal()
+  activeSceneChanged = QtCore.Signal(SceneHub.SHGLScene)
   
-  def __init__(self, mainwindow, klFile):
+  def __init__(self, mainwindow, shStates, klFile):
     self.shWindow = mainwindow
+    self.shStates = shStates
     self.showProperties = True
     self.showOperators = True
 
@@ -28,7 +30,7 @@ class SHTreeViewsManager(QtGui.QWidget):
     self.shGLScene = SceneHub.SHGLScene(self.shWindow.client)
 
     self.treeModel = None
-    self.bUpdatingSelectionFrom3D = False
+    self.bUpdatingSelection = False
 
     self.comboBox = SHTreeComboBox()
     self.shTreeView = SHTreeView(self.shWindow.client, self.shGLScene)
@@ -39,11 +41,14 @@ class SHTreeViewsManager(QtGui.QWidget):
     self.setLayout(layout)
     self.comboBox.addItem("Main Scene")
 
+    self.shTreeView.selectionCleared.connect(self.onSelectionCleared)
     self.shTreeView.itemSelected.connect(self.onTreeItemSelected)
     self.shTreeView.itemDeselected.connect(self.onTreeItemDeselected)
     self.comboBox.updateList.connect(self.onUpdateSceneList)
     self.comboBox.currentIndexChanged.connect(self.onUpdateScene)
  
+    self.activeSceneChanged.connect( self.shStates.onActiveSceneChanged )
+
     self.onUpdateScene()
  
   def getScene(self):
@@ -57,9 +62,9 @@ class SHTreeViewsManager(QtGui.QWidget):
     self._resetTree()
 
     self.treeModel = SceneHub.SHTreeModel(
-     self.shGLScene.getClient(), 
+      self.shGLScene.getClient(), 
       self.shGLScene.getSG(), 
-     self.shTreeView)
+      self.shTreeView)
 
     self.setShowProperties(self.showProperties)
     self.setShowOperators(self.showOperators)
@@ -92,12 +97,12 @@ class SHTreeViewsManager(QtGui.QWidget):
     if str(sceneName) == "Main Scene":
       self.shGLScene.setSHGLScene(self.shMainGLScene)
       self._constructTree()
-      self.sceneUpdated.emit(self.shGLScene)
+      self.activeSceneChanged.emit(self.shGLScene)
     
     elif self.shWindow.dfgWidget.getDFGController().getBinding().getExec().hasVar(str(sceneName)):
       self.shGLScene.setSHGLScene(self.shWindow.dfgWidget.getDFGController().getBinding(), sceneName)
       self._constructTree()
-      self.sceneUpdated.emit(self.shGLScene)
+      self.activeSceneChanged.emit(self.shGLScene)
     
     else:
       self.comboBox.clear()
@@ -127,33 +132,50 @@ class SHTreeViewsManager(QtGui.QWidget):
         self.shTreeView.expandToDepth(level-1)
 
   def onSceneHierarchyChanged(self):
-    #Check if it actually changed, to reduce number of notifications
-    if self.shGLScene.hasSG() and self.shGLScene.sceneHierarchyChanged():
-      self.sceneHierarchyChanged.emit()
+    self.sceneHierarchyChanged.emit()
 
   def onSceneChanged(self):
-    if self.shGLScene.hasSG():
-      # No filter on this one
-      #Use that signal for now; to be refactored with SH-227
-      self.sceneHierarchyChanged.emit()
+    self.sceneChanged.emit()
+
+  def onSelectionCleared(self):
+    if not self.bUpdatingSelection:
+      self.shStates.clearSelection()
 
   def onTreeItemSelected(self, item):
-    if self.shGLScene.hasSG() and not self.bUpdatingSelectionFrom3D:
-      self.shGLScene.treeItemSelected(item)
-      self.sceneHierarchyChanged.emit()
+    if not self.bUpdatingSelection:
+      self.bUpdatingSelection = True
+      if item.isReference():
+        val = item.getSGObject()
+        #if val: # this is not supported, and crashes if we try to get the type/print
+        self.shStates.addSGObjectToSelection(val)
+      else:
+        val = item.getSGObjectProperty()
+        #if val: # this is not supported, and crashes if we try to get the type/print
+        if item.isGenerator():
+          self.shStates.addSGObjectPropertyGeneratorToSelection(val)
+        else:
+          self.shStates.addSGObjectPropertyToSelection(val)
+      self.bUpdatingSelection = False
      
   def onTreeItemDeselected(self, item):
-    if self.shGLScene.hasSG() and not self.bUpdatingSelectionFrom3D:
-      self.shGLScene.treeItemDeselected(item) 
-      self.sceneHierarchyChanged.emit()
+    if not self.bUpdatingSelection:
+      self.bUpdatingSelection = True
+      if item.isReference():
+        val = item.getSGObject()
+        #if val: # this is not supported, and crashes if we try to get the type/print
+        self.shStates.removeSGObjectFromSelection(val)
+      else:
+        val = item.getSGObjectProperty()
+        #if val: # this is not supported, and crashes if we try to get the type/print
+        if item.isGenerator():
+          self.shStates.removeSGObjectPropertyGeneratorFromSelection(val)
+        else:
+          self.shStates.removeSGObjectPropertyFromSelection(val)
+      self.bUpdatingSelection = False
 
-  def onUpdateFrom3DSelection(self):
-    if self.shGLScene.hasSG():
-      #Ensure there's not a loopback from TreeView selection change to 3D view
-      self.bUpdatingSelectionFrom3D = True
-      #Ensure it really changed we will be called for any accepted event only a few will be selection changes
-      if self.shGLScene.selectionChangedFromManips():
-        self.shTreeView.setSelectedObjects(self.shGLScene)
-        self.sceneHierarchyChanged.emit()
-      self.bUpdatingSelectionFrom3D = False
-  
+  def onSelectionChanged(self):
+    if not self.bUpdatingSelection:
+      # Ensure there's not a loopback when the selection is being updated
+      self.bUpdatingSelection = True
+      self.shTreeView.setSelectedObjects(self.shStates.getSelectedObjects())
+      self.bUpdatingSelection = False

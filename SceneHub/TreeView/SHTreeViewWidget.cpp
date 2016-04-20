@@ -169,11 +169,12 @@ void SHTreeViewWidget::expandTree(uint32_t level) {
 
 void SHTreeViewWidget::onSceneHierarchyChanged() {
   // Check if it actually changed, to reduce number of notifications
-  if(m_shGLScene)
+  // TODO: use SHStates: see sceneHub.py
+  /*if(m_shGLScene)
   {
     if(m_shGLScene->sceneHierarchyChanged())
       emit sceneHierarchyChanged();
-  }
+  }*/
 }
 
 void SHTreeViewWidget::onSceneChanged() {
@@ -182,7 +183,8 @@ void SHTreeViewWidget::onSceneChanged() {
 }
 
 void SHTreeViewWidget::treeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {
-  if(m_shGLScene)
+  // TODO: use SHStates: see sceneHub.py
+  /*if(m_shGLScene)
   {
     if( !m_bUpdatingSelectionFrom3D )
     {
@@ -192,11 +194,12 @@ void SHTreeViewWidget::treeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {
         emit sceneHierarchyChanged();//Should only be a "repaint"...
       }
     }
-  }
+  }*/
 }
 
 void SHTreeViewWidget::treeItemDeselected(FabricUI::SceneHub::SHTreeItem *item) {
-  if(m_shGLScene)
+  // TODO: use SHStates: see sceneHub.py
+  /*if( m_shGLScene )
   {
     if(!m_bUpdatingSelectionFrom3D) 
     {
@@ -206,11 +209,12 @@ void SHTreeViewWidget::treeItemDeselected(FabricUI::SceneHub::SHTreeItem *item) 
         emit sceneHierarchyChanged();//Should only be a "repaint"...
       }
     }
-  }
+  }*/
 }
 
 void SHTreeViewWidget::updateFrom3DSelection() {
-  if(m_shGLScene)
+  // TODO: use SHStates: see sceneHub.py
+  /*if( m_shGLScene )
   {
     // Ensure there's not a loopback from TreeView selection change to 3D view
     m_bUpdatingSelectionFrom3D = true;
@@ -221,5 +225,5 @@ void SHTreeViewWidget::updateFrom3DSelection() {
       emit sceneHierarchyChanged();
     }
     m_bUpdatingSelectionFrom3D = false;
-  }
+  }*/
 }

@@ -238,87 +238,6 @@ QList<int> SHGLScene::getFrameState() {
   return state;
 }
 
-void SHGLScene::setFrame(int frame) {
-  try 
-  {
-    RTVal arg = RTVal::ConstructSInt32(getClient(), frame);    
-    m_shGLSceneVal.callMethod("", "setFrame", 1, &arg);
-  }
-  catch(Exception e)
-  {
-    printf("SHGLScene::setOrthographicViewport: exception: %s\n", e.getDesc_cstr());
-  }
-}
-
-bool SHGLScene::sceneHierarchyChanged() {
-  try 
-  {
-    return m_shGLSceneVal.callMethod("Boolean", "sceneHierarchyChanged", 0, 0).getBoolean();
-  }
-  catch(Exception e)
-  {
-    printf("SHGLScene::sceneHierarchyChanged: sceneHierarchyChanged: %s\n", e.getDesc_cstr());
-  }
-  return false;
-}
-
-RTVal SHGLScene::getSelectedObjects() {
-  RTVal selectedObject;
-  try 
-  {
-    selectedObject = m_shGLSceneVal.callMethod("SGObject[]", "getSelectedObjects", 0, 0);
-  }
-  catch(Exception e)
-  {
-    printf("SHGLScene::setPlayback: exception: %s\n", e.getDesc_cstr());
-  }
-  return selectedObject;
-}
-
-void SHGLScene::sceneItemSelected(RTVal sgObject) {
-  if(!sgObject.isValid()) return;
-  try 
-  {
-    m_shGLSceneVal.callMethod("", "sceneItemSelected", 1, &sgObject);
-  }
-  catch(Exception e)
-  {
-    printf("SHGLScene::sceneItemSelected: exception: %s\n", e.getDesc_cstr());
-  }
-}
-
-void SHGLScene::treeItemSelected(SHTreeItem *item) {
-  if(item) treeItemSelected(item->getSGObject());
-}
-
-void SHGLScene::treeItemSelected(RTVal sgObject) {
-  if(!sgObject.isValid()) return;
-  try 
-  {
-    m_shGLSceneVal.callMethod("", "treeItemSelected", 1, &sgObject);
-  }
-  catch(Exception e)
-  {
-    printf("SHGLScene::treeItemSelected: exception: %s\n", e.getDesc_cstr());
-  }
-}
-
-void SHGLScene::treeItemDeselected(SHTreeItem *item) {
-  if(item) treeItemDeselected(item->getSGObject());
-}
-
-void SHGLScene::treeItemDeselected(RTVal sgObject) {
-  if(!sgObject.isValid()) return;
-  try 
-  {
-    m_shGLSceneVal.callMethod("", "treeItemDeselected", 1, &sgObject);
-  }
-  catch(Exception e)
-  {
-    printf("SHGLScene::treeItemDeselected: exception: %s\n", e.getDesc_cstr());
-  }
-}
-
 QString SHGLScene::getTreeItemPath(SHTreeItem *item) {
   return (item) ? getTreeItemPath(item->getSGObject()): "none";
 }
@@ -390,30 +309,6 @@ QStringList SHGLScene::getSceneNamesFromBinding(DFGBinding &binding) {
     }
   }
   return sceneNameList;
-}
-
-bool SHGLScene::selectionChangedFromManips() {
-  try 
-  {
-    return m_shGLSceneVal.callMethod("Boolean", "selectionChangedFromManips", 0, 0).getBoolean();
-  }
-  catch(Exception e)
-  {
-    printf("SHGLScene::selectionChangedFromManips: exception: %s\n", e.getDesc_cstr());
-  }
-  return false;
-}
-
-QString SHGLScene::getSelectionCategory() {
-  try 
-  {
-    return QString(m_shGLSceneVal.callMethod("String", "getSelectionCategory", 0, 0).getStringCString());
-  }
-  catch(Exception e)
-  {
-    printf("SHGLScene::getSelectionCategory: exception: %s\n", e.getDesc_cstr());
-  }
-  return QString();
 }
 
 QPair<bool, unsigned int> SHGLScene::showTreeViewByDefault() {

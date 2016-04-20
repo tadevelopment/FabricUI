@@ -8,6 +8,7 @@ from SHLightsMenu import SHLightsMenu
 from SHContextualMenu import SHContextualMenu
 
 class SHTreeView(SceneHub.SHBaseTreeView):
+  selectionCleared = QtCore.Signal()
   itemSelected = QtCore.Signal(SceneHub.SHTreeItem)
   itemDeselected = QtCore.Signal(SceneHub.SHTreeItem)
   
@@ -24,8 +25,13 @@ class SHTreeView(SceneHub.SHBaseTreeView):
     menu.exec_(self.mapToGlobal(point))
   
   def selectionChanged(self, selected, deselected):
+    # clear selection (make sure 3D view is synchronized) if all elements are newly added
+    clear = len(self.selectionModel().selectedIndexes()) == len(selected.indexes())
+
     super(SHTreeView, self).selectionChanged(selected, deselected)
     for index in deselected.indexes(): self.itemDeselected.emit(SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index))
+    if clear:
+      self.selectionCleared.emit()
     for index in selected.indexes(): self.itemSelected.emit(SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index))
  
   def mousePressEvent(self, event):

@@ -29,14 +29,17 @@ class SceneHubWindow(CanvasWindow):
     super(SceneHubWindow, self)._initKL(unguarded, noopt)
     self.client.loadExtension('SceneHub')
     # Create the renderer
-    self.viewportsManager = SHViewportsManager(self)
+    self.shStates = SceneHub.SHStates(self.client)
+    self.viewportsManager = SHViewportsManager(self, self.shStates)
 
   def _initDFG(self):
     super(SceneHubWindow, self)._initDFG()
     self.shDFGBinding = SceneHub.SHDFGBinding(self.mainBinding, self.dfgWidget.getUIController(), self.client)
+    self.shDFGBinding.sceneChanged.connect(self.shStates.onStateChanged)
   
   def _initCommands(self):
     cmdRegistration = SceneHub.SHCmdRegistration()
+    self.qUndoStack.indexChanged.connect(self.shStates.onStateChanged)
 
   def _initLog(self):
     super(SceneHubWindow, self)._initLog()
@@ -47,13 +50,16 @@ class SceneHubWindow(CanvasWindow):
 
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
-    # Update the renderer in case it has been overriden by the main scene.
-    self.shTreesManager = SHTreeViewsManager(self, self.klFile)
-    self.viewportsManager.update()
-    
-    self.shTreesManager.shTreeView.itemSelected.connect(self.shDFGBinding.onTreeItemSelected)
-    self.shDFGBinding.sceneChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
-    self.shTreesManager.sceneUpdated.connect(self.onSceneUpdated)
+
+    self.shTreesManager = SHTreeViewsManager(self, self.shStates, self.klFile)
+
+    # scene changed -> tree view changed
+    self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
+    self.shStates.selectionChanged.connect(self.shTreesManager.onSelectionChanged)
+
+    # tree view changed -> scene changed
+    self.shTreesManager.sceneHierarchyChanged.connect(self.shStates.onStateChanged)
+    self.shTreesManager.sceneChanged.connect(self.shStates.onStateChanged)
 
   def _initValueEditor(self):
     self.valueEditor = SceneHub.SHVEEditorOwner(self.dfgWidget, self.shTreesManager.shTreeView)
@@ -63,9 +69,12 @@ class SceneHubWindow(CanvasWindow):
     self.valueEditor.canvasSidePanelInspectRequested.connect(self._onCanvasSidePanelInspectRequested)
     self.valueEditor.synchronizeCommands.connect(self.shCmdHandler.onSynchronizeCommands)
 
-    self.shTreesManager.sceneHierarchyChanged.connect(self.valueEditor.onSceneChanged)
-    self.shTreesManager.sceneUpdated.connect(self.valueEditor.onSceneChanged)
-    self.shDFGBinding.sceneChanged.connect(self.valueEditor.onSceneChanged)
+    self.shStates.activeSceneChanged.connect(self.valueEditor.onSceneChanged)
+    self.shStates.sceneChanged.connect(self.valueEditor.onSceneChanged)
+
+    #self.shTreesManager.sceneHierarchyChanged.connect(self.valueEditor.onSceneChanged)
+    #self.shTreesManager.activeSceneChanged.connect(self.valueEditor.onSceneChanged)
+    #self.shDFGBinding.sceneChanged.connect(self.valueEditor.onSceneChanged)
 
   def _initGL(self):
     self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(0, False, False, None)
@@ -104,8 +113,8 @@ class SceneHubWindow(CanvasWindow):
     self.viewportsManager.initMenu(self.menuBar())
 
     sceneMenus = self.menuBar().addMenu("&Scene")    
-    self.assetMenu = SHAssetsMenu(self.shTreesManager.getScene())
-    self.lightsMenu = SHLightsMenu(self.shTreesManager.getScene())
+    self.assetMenu = SHAssetsMenu(self.shStates)
+    self.lightsMenu = SHLightsMenu(self.shStates)
     sceneMenus.addMenu(self.assetMenu)
     sceneMenus.addMenu(self.lightsMenu)
 
@@ -159,14 +168,7 @@ class SceneHubWindow(CanvasWindow):
 
   def onFrameChanged(self, frame):
     super(SceneHubWindow, self).onFrameChanged(frame)
-    self.shTreesManager.getScene().setFrame(frame)
-    self.viewportsManager.onRefreshAllViewports()
-
-  def onSceneUpdated(self, scene):
-    self.viewportsManager.onSceneUpdated(scene)
-    self.assetMenu.onSceneUpdated(scene)
-    self.lightsMenu.onSceneUpdated(scene)
-    self.shCmdHandler.onSceneUpdated(scene)
+    self.shStates.onFrameChanged(frame)
 
   def onDirty(self):
     dirtyList = self.shDFGBinding.setDirty()

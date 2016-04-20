@@ -100,6 +100,7 @@
 #include <FabricUI/Util/StringUtils.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>
+#include <FabricUI/SceneHub/SHStates.h>
 #include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
 #include <FabricUI/SceneHub/Commands/SHCmd.h>
 #include <FabricUI/SceneHub/Commands/SGAddObjectCmd.h>
