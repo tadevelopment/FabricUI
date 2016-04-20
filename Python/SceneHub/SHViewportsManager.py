@@ -20,13 +20,16 @@ class SHViewportDock(QtGui.QDockWidget):
 
 class SHViewportsManager():
 
-  def __init__(self, mainwindow):
+  def __init__(self, mainwindow, shStates):
     self.samples = 2
+    self.shStates = shStates
     self.shWindow = mainwindow
     self.viewports = []
     self.sampleActions = []
     self.nextViewportIndex = 1
     self.shGLRenderer = SceneHub.SHGLRenderer(self.shWindow.client)
+
+    self.shStates.sceneChanged.connect(self.onRefreshAllViewports)
 
   def initMenu(self, menuBar):
     menus = menuBar.findChildren(QtGui.QMenu)
@@ -78,10 +81,9 @@ class SHViewportsManager():
       format.setSampleBuffers(self.samples > 1)
       qglContext = Viewports.RTRGLContext(format)
 
-    scene = self.shWindow.shTreesManager.getScene()
     newViewport = SHViewport(
       self.shGLRenderer,
-      scene,
+      self.shStates,
       index, 
       ortho,
       qglContext, 
@@ -98,16 +100,25 @@ class SHViewportsManager():
 
     self.viewports.append(newViewport)
 
-    newViewport.sceneChanged.connect(self.onRefreshAllViewports)
-    newViewport.sceneChanged.connect(self.shWindow.shTreesManager.onSceneHierarchyChanged)
-    newViewport.manipsAcceptedEvent.connect(self.onRefreshAllViewports)
-    newViewport.manipsAcceptedEvent.connect(self.shWindow.shTreesManager.onUpdateFrom3DSelection)
-    newViewport.synchronizeCommands.connect(self.shWindow.shCmdHandler.onSynchronizeCommands)
-    newViewport.sceneChanged.connect(self.shWindow.valueEditor.onSceneChanged)
+    newViewport.sceneChanged.connect( self.shStates.onStateChanged )
+    newViewport.manipsAcceptedEvent.connect( self.shStates.onStateChanged )
 
-    self.shWindow.shTreesManager.sceneHierarchyChanged.connect(self.onRefreshAllViewports)
-    self.shWindow.shTreesManager.sceneUpdated.connect(newViewport.onSceneUpdated)
-    self.shWindow.qUndoStack.indexChanged.connect(self.onRefreshAllViewports)
+    # Manips can need to be redrawn even if the scene didn't change
+    newViewport.manipsAcceptedEvent.connect( self.onRefreshAllViewports )
+
+    #JCG newViewport.sceneChanged.connect(self.onRefreshAllViewports)
+    #JCG newViewport.sceneChanged.connect(self.shWindow.shTreesManager.onSceneHierarchyChanged)
+    #JCG newViewport.manipsAcceptedEvent.connect(self.shWindow.shTreesManager.onUpdateFrom3DSelection)
+
+    newViewport.synchronizeCommands.connect(self.shWindow.shCmdHandler.onSynchronizeCommands)
+
+    #JCG newViewport.sceneChanged.connect(self.shWindow.valueEditor.onSceneChanged)
+
+
+
+    #JCG self.shWindow.shTreesManager.sceneHierarchyChanged.connect(self.onRefreshAllViewports)
+    #JCG self.shWindow.shTreesManager.sceneUpdated.connect(newViewport.onSceneUpdated)
+    #JCG self.shWindow.qUndoStack.indexChanged.connect(self.onRefreshAllViewports)
 
     return newViewport, intermediateOwnerWidget;
 
@@ -180,7 +191,3 @@ class SHViewportsManager():
           
           newViewport, _ = self.createViewport(index, orthographic, True, viewport)
           if(index == 0): self.shWindow.viewport = newViewport
-
-  def onSceneUpdated(self, scene):
-    for i in range(0, len(self.viewports)):
-      self.viewports[i].onSceneUpdated(scene)

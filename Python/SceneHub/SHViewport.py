@@ -11,10 +11,10 @@ class SHViewport(Viewports.ViewportWidget):
   synchronizeCommands = QtCore.Signal()
   manipsAcceptedEvent = QtCore.Signal(bool)
 
-  def __init__(self, renderer, scene, index, orthographic, context, mainwindow, sharedWidget):
+  def __init__(self, renderer, shStates, index, orthographic, context, mainwindow, sharedWidget):
     # Need to hold the context
     self.orthographic = orthographic
-    self.shGLScene = scene
+    self.shStates = shStates
     self.qglContext = context
     self.samples = self.qglContext.format().samples()
     self.viewportIndex = index
@@ -87,9 +87,10 @@ class SHViewport(Viewports.ViewportWidget):
     self.synchronizeCommands.emit()
     
   def mousePressEvent(self, event):
-    if self.shGLScene.hasSG():
+    shGLScene = self.shStates.getActiveScene()
+    if shGLScene.hasSG():
       if not self.__onEvent(event) and event.button() == QtCore.Qt.RightButton:
-        menu = SHContextualMenu(self.shGLScene, self.shWindow.shTreesManager.shTreeView)
+        menu = SHContextualMenu(shGLScene, self.shWindow.shTreesManager.shTreeView)
         menu.addMenu(SHInteractionMenu(self.shGLRenderer))
         menu.exec_(self.mapToGlobal(event.pos()))
         self.sceneChanged.emit()
@@ -115,7 +116,8 @@ class SHViewport(Viewports.ViewportWidget):
         self.manipsAcceptedEvent.emit(redrawAllViewports)
 
   def dropEvent(self, event):
-    if self.shGLScene.hasSG(): 
+    shGLScene = self.shStates.getActiveScene()
+    if shGLScene.hasSG(): 
       myData = event.mimeData()
       if myData is None: return
       if event.mimeData().hasUrls() == False: return
@@ -127,7 +129,7 @@ class SHViewport(Viewports.ViewportWidget):
        
       pos = self.shGLRenderer.get3DScenePosFrom2DScreenPos(self.viewportIndex, event.pos())
       pathList = Util.StringUtils.ProcessPathQStringForOsX(pathList)
-      self.shGLScene.addExternalFileList(
+      shGLScene.addExternalFileList(
         pathList, 
         event.keyboardModifiers() & QtCore.Qt.ControlModifier, 
         pos[0],
@@ -135,6 +137,3 @@ class SHViewport(Viewports.ViewportWidget):
         pos[2])
       event.acceptProposedAction()
       self.sceneChanged.emit()
-
-  def onSceneUpdated(self, scene):
-    self.shGLScene = scene

@@ -8,6 +8,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <FabricCore.h>
+#include <FabricUI/SceneHub/SHGLScene.h>
 
 namespace FabricUI {
 namespace SceneHub {
@@ -47,6 +48,24 @@ class SHStates : public QObject {
     /// Might be valid even if !isInspectingSGCanvasOperator() (eg: generator writing to inspected property)
     FabricCore::RTVal getInspectedSGCanvasOperator();
 
+    /// Returns the active SHBaseScene (which can be driven by the TreeView)
+    SHGLScene* getActiveScene();
+
+    /// Clears the selection
+    void clearSelection();
+    /// Adds a SGObject to the selection
+    void addSGObjectToSelection( FabricCore::RTVal sgObject );
+    /// Removes a SGObject to the selection
+    void removeSGObjectFromSelection( FabricCore::RTVal sgObject );
+    /// Adds a SGObjectProperty to the selection
+    void addSGObjectPropertyToSelection( FabricCore::RTVal sgObject );
+    /// Removes a SGObjectProperty to the selection
+    void removeSGObjectPropertyFromSelection( FabricCore::RTVal sgObject );
+    /// Adds a SGObjectProperty generator to the selection
+    void addSGObjectPropertyGeneratorToSelection( FabricCore::RTVal sgObject );
+    /// Removes a SGObjectProperty generator to the selection
+    void removeSGObjectPropertyGeneratorFromSelection( FabricCore::RTVal sgObject );
+
   signals:
     void sceneHierarchyChanged() const;
 
@@ -55,6 +74,8 @@ class SHStates : public QObject {
     void selectionChanged() const;
 
     void inspectedChanged() const;
+
+    void activeSceneChanged() const;
 
   public slots:
     /// This should be called when the state of selection or scene might have changed
@@ -66,12 +87,18 @@ class SHStates : public QObject {
 
     void onInspectedSGObjectPropertyGenerator( FabricCore::RTVal sgObjectProperty );
 
+    void onActiveSceneChanged( SHGLScene* scene );
+
+    void onFrameChanged( int frame );
+
   private:
 
     /// \internal
     FabricCore::Client m_client;    
     /// \internal
     FabricCore::RTVal m_shStateVal;
+    /// \internal
+    SHGLScene* m_activeSHGLScene;
 };
 
 } // namespace SceneHub
