@@ -52,3 +52,9 @@ class SHTreeView(SceneHub.SHBaseTreeView):
         drag.exec_(QtCore.Qt.CopyAction)
 
     super(SHTreeView, self).mousePressEvent(event)
+
+  def mouseDoubleClickEvent(self, event):
+    for index in self.selectedIndexes():
+      item = SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index)
+      if item is not None:
+        self.itemDoubleClicked.emit(item)   

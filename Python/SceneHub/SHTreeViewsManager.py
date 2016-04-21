@@ -1,6 +1,8 @@
 from PySide import QtCore, QtGui
-from FabricEngine import Core, FabricUI
+from FabricEngine import Core, FabricUI, Util, CAPI
 from FabricEngine.FabricUI import *
+from FabricEngine.Util import *
+from FabricEngine.CAPI import *
 from SHTreeView import SHTreeView
 
 class SHTreeComboBox(QtGui.QComboBox):
@@ -15,8 +17,9 @@ class SHTreeComboBox(QtGui.QComboBox):
  
 
 class SHTreeViewsManager(QtGui.QWidget):
-  sceneHierarchyChanged = QtCore.Signal()
   sceneChanged = QtCore.Signal()
+  sceneHierarchyChanged = QtCore.Signal()
+  itemDoubleClicked = QtCore.Signal(SceneHub.SHTreeItem)
   activeSceneChanged = QtCore.Signal(SceneHub.SHGLScene)
   
   def __init__(self, mainwindow, shStates, klFile):
@@ -24,6 +27,7 @@ class SHTreeViewsManager(QtGui.QWidget):
     self.shStates = shStates
     self.showProperties = True
     self.showOperators = True
+    self.client = mainwindow.client
 
     super(SHTreeViewsManager, self).__init__()
     self.shMainGLScene = SceneHub.SHGLScene(self.shWindow.client, klFile)
@@ -44,6 +48,8 @@ class SHTreeViewsManager(QtGui.QWidget):
     self.shTreeView.selectionCleared.connect(self.onSelectionCleared)
     self.shTreeView.itemSelected.connect(self.onTreeItemSelected)
     self.shTreeView.itemDeselected.connect(self.onTreeItemDeselected)
+    self.shTreeView.itemDoubleClicked.connect(self.onTreeItemDoubleClicked)
+
     self.comboBox.updateList.connect(self.onUpdateSceneList)
     self.comboBox.currentIndexChanged.connect(self.onUpdateScene)
  
@@ -73,11 +79,10 @@ class SHTreeViewsManager(QtGui.QWidget):
     self.treeModel.sceneHierarchyChanged.connect(self.onSceneHierarchyChanged)
     self.treeModel.sceneChanged.connect(self.onSceneChanged)
 
-    sceneRootIndex = self.treeModel.addRootItemsFromScene(self.shGLScene)
-    #sceneRootIndex = self.treeModel.addRootItem(self.shGLScene.getSceneRoot())
-    #self.treeModel.addRootItem(self.shGLScene.getAssetLibraryRoot())
-    #self.treeModel.addRootItem(self.shGLScene.getMaterialLibraryRoot())
-    #self.treeModel.addRootItem(self.shGLScene.getImageLibraryRoot())
+    sceneRootIndex = self.treeModel.addRootItem(self.shGLScene.getSceneRoot())
+    self.treeModel.addRootItem(self.shGLScene.getAssetLibraryRoot())
+    self.treeModel.addRootItem(self.shGLScene.getMaterialLibraryRoot())
+    self.treeModel.addRootItem(self.shGLScene.getImageLibraryRoot())
 
     self.shTreeView.setModel(self.treeModel)
     self.shTreeView.setExpanded(sceneRootIndex, True)
@@ -110,17 +115,13 @@ class SHTreeViewsManager(QtGui.QWidget):
     
   def onUpdateSceneList(self):
     self.comboBox.clear()
-    
     binding = self.shWindow.dfgWidget.getDFGController().getBinding()
     sceneNameList = self.shGLScene.getSceneNamesFromBinding(binding)
-      
-    if len(sceneNameList) == 0 and not self.shGLScene.hasSG():
+    if len(sceneNameList) == 0 and not self.shGLScene.hasSG(): 
       self._resetTree()
-
     if self.shMainGLScene.hasSG(): 
       self.comboBox.addItem("Main Scene")
-
-    for sceneName in sceneNameList:
+    for sceneName in sceneNameList: 
       self.comboBox.addItem(sceneName)
     
   def expandTree(self, level):
@@ -146,32 +147,47 @@ class SHTreeViewsManager(QtGui.QWidget):
       self.bUpdatingSelection = True
       if item.isReference():
         val = item.getSGObject()
-        #if val: # this is not supported, and crashes if we try to get the type/print
-        self.shStates.addSGObjectToSelection(val)
+        if pyObjectToRTVal( self.client.getContext(), val).isValid():
+          self.shStates.addSGObjectToSelection(val)
       else:
         val = item.getSGObjectProperty()
-        #if val: # this is not supported, and crashes if we try to get the type/print
-        if item.isGenerator():
-          self.shStates.addSGObjectPropertyGeneratorToSelection(val)
-        else:
-          self.shStates.addSGObjectPropertyToSelection(val)
+        if pyObjectToRTVal( self.client.getContext(), val).isValid():
+          if item.isGenerator():
+            self.shStates.addSGObjectPropertyGeneratorToSelection(val)
+          else:
+            self.shStates.addSGObjectPropertyToSelection(val)
       self.bUpdatingSelection = False
      
   def onTreeItemDeselected(self, item):
     if not self.bUpdatingSelection:
       self.bUpdatingSelection = True
+
       if item.isReference():
         val = item.getSGObject()
-        #if val: # this is not supported, and crashes if we try to get the type/print
-        self.shStates.removeSGObjectFromSelection(val)
+        if pyObjectToRTVal( self.client.getContext(), val).isValid():
+          self.shStates.removeSGObjectFromSelection(val)
       else:
         val = item.getSGObjectProperty()
-        #if val: # this is not supported, and crashes if we try to get the type/print
-        if item.isGenerator():
-          self.shStates.removeSGObjectPropertyGeneratorFromSelection(val)
-        else:
-          self.shStates.removeSGObjectPropertyFromSelection(val)
+        if pyObjectToRTVal( self.client.getContext(), val).isValid():
+          if item.isGenerator():
+            self.shStates.removeSGObjectPropertyGeneratorFromSelection(val)
+          else:
+            self.shStates.removeSGObjectPropertyFromSelection(val)
       self.bUpdatingSelection = False
+
+  def onTreeItemDoubleClicked(self, item):
+    if not self.bUpdatingSelection:
+      if item.isReference():
+        val = item.getSGObject()
+        #if pyObjectToRTVal( self.client.getContext(), val).isValid():
+        self.shStates.onInspectedSGObject(val)
+      else:
+        val = item.getSGObjectProperty()
+        #if pyObjectToRTVal( self.client.getContext(), val).isValid():
+        if item.isGenerator():
+          self.shStates.onInspectedSGObjectPropertyGenerator(val)
+        else:
+          self.shStates.onInspectedSGObjectProperty(val)
 
   def onSelectionChanged(self):
     if not self.bUpdatingSelection:

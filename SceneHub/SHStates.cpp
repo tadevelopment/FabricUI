@@ -31,7 +31,7 @@ FabricCore::RTVal SHStates::getSelectedObjects() {
 bool SHStates::isInspectingSGObject() {
   bool result = false;
   FABRIC_TRY_IGNORE( "SHStates::isInspectingSGObject",
-    result = m_shStateVal.callMethod( "SGObject[]", "isInspectingObject", 0, 0 ).getBoolean();
+    result = m_shStateVal.callMethod( "Boolean", "isInspectingObject", 0, 0 ).getBoolean();
   );
   return result;
 }
@@ -39,7 +39,7 @@ bool SHStates::isInspectingSGObject() {
 bool SHStates::isInspectingSGObjectProperty() {
   bool result = false;
   FABRIC_TRY_IGNORE( "SHStates::isInspectingSGObjectProperty",
-    result = m_shStateVal.callMethod( "SGObject[]", "isInspectingObject", 0, 0 ).getBoolean();
+    result = m_shStateVal.callMethod( "Boolean", "isInspectingObjectProperty", 0, 0 ).getBoolean();
   );
   return result;
 }
@@ -47,7 +47,7 @@ bool SHStates::isInspectingSGObjectProperty() {
 bool SHStates::isInspectingSGCanvasOperator() {
   bool result = false;
   FABRIC_TRY_IGNORE( "SHStates::isInspectingSGCanvasOperator",
-    result = m_shStateVal.callMethod( "SGObject[]", "isInspectingSGCanvasOperator", 0, 0 ).getBoolean();
+    result = m_shStateVal.callMethod( "Boolean", "isInspectingSGCanvasOperator", 0, 0 ).getBoolean();
   );
   return result;
 }
@@ -67,7 +67,7 @@ FabricCore::RTVal SHStates::getInspectedSGObjectProperty() {
   FabricCore::RTVal result;
   FABRIC_TRY_IGNORE( "SHStates::getInspectedSGObjectProperty",
     FabricCore::RTVal validRTVal = FabricCore::RTVal::ConstructBoolean( m_client, false );
-    result = m_shStateVal.callMethod( "SGObject", "getInspectedSGObjectProperty", 1, &validRTVal );
+    result = m_shStateVal.callMethod( "SGObjectProperty", "getInspectedObjectProperty", 1, &validRTVal );
     if( !validRTVal.getBoolean() )
       result = FabricCore::RTVal();
   );

@@ -17,7 +17,10 @@
       <object-type name="SHTreeModel" copyable="false"/>
       <object-type name="SHTreeView_ViewIndexTarget" copyable="false"/>
       <object-type name="SHBaseTreeView" copyable="false"/>
+      <object-type name="SGObjectModelItem" copyable="false"/>
+      <object-type name="SGObjectPropertyModelItem" copyable="false"/>
       <object-type name="SHVEEditorOwner" copyable="false"/>
+      <object-type name="SHBaseVEEditorOwner" copyable="false"/>
     </namespace-type>
   </namespace-type>
 </typesystem>

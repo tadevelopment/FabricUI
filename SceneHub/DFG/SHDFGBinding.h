@@ -13,7 +13,7 @@
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONValue.h>
 #include <FabricUI/DFG/DFGController.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeItem.h>
+#include <FabricUI/SceneHub/SHStates.h>
 
 namespace FabricUI {
 namespace SceneHub {
@@ -25,18 +25,18 @@ class SHDFGBinding : public QObject{
   public:
     SHDFGBinding(
       FabricCore::DFGBinding &binding, 
-      FabricUI::DFG::DFGController *controller, 
-      FabricCore::Client client);
+      FabricUI::DFG::DFGController *controller,
+      FabricUI::SceneHub::SHStates *shStates);
 
     ~SHDFGBinding() {}
     
-    FabricCore::RTVal getSgObject() { return m_dfgCanvasSgObject; }
+    FabricCore::RTVal getSgObject();
     
-    FabricCore::RTVal getOperator() { return  m_dfgCanvasOperator; }
+    FabricCore::RTVal getOperator();
 
-    bool isSgObjectValid() { return m_dfgCanvasSgObject.isValid(); }
+    bool isSgObjectValid();
 
-    bool isOperatorValid() { return m_dfgCanvasOperator.isValid(); }
+    bool isOperatorValid();
 
     QList<bool> setDirty();
 
@@ -52,7 +52,7 @@ class SHDFGBinding : public QObject{
 
     void onArgTypeChanged(unsigned index, FTL::CStrRef name, FTL::CStrRef newTypeName);
 
-    void onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item);
+    void onInspectChanged();
 
 
   protected:         
@@ -60,7 +60,7 @@ class SHDFGBinding : public QObject{
 
     FabricCore::DFGBinding m_binding;
     FabricUI::DFG::DFGController *m_controller;
-    FabricCore::Client m_client;
+    FabricUI::SceneHub::SHStates *m_shStates;
     FabricCore::RTVal m_dfgCanvasSgObject;
     FabricCore::RTVal m_dfgCanvasOperator;
     FabricCore::RTVal m_computeContextVal;

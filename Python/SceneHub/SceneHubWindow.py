@@ -10,6 +10,8 @@ from SHLightsMenu import SHLightsMenu
 from SHTreeViewMenu import SHTreeViewMenu
 from SHInteractionMenu import SHInteractionMenu
 from HelpWidget import HelpWidget
+from SHVEEditorOwner import SHVEEditorOwner
+
 
 class SceneHubWindow(CanvasWindow):
 
@@ -34,9 +36,13 @@ class SceneHubWindow(CanvasWindow):
 
   def _initDFG(self):
     super(SceneHubWindow, self)._initDFG()
-    self.shDFGBinding = SceneHub.SHDFGBinding(self.mainBinding, self.dfgWidget.getUIController(), self.client)
+    self.shDFGBinding = SceneHub.SHDFGBinding(
+      self.mainBinding, 
+      self.dfgWidget.getUIController(),
+      self.shStates)
     self.shDFGBinding.sceneChanged.connect(self.shStates.onStateChanged)
-  
+    self.shStates.inspectedChanged.connect(self.shDFGBinding.onInspectChanged)
+
   def _initCommands(self):
     cmdRegistration = SceneHub.SHCmdRegistration()
     self.qUndoStack.indexChanged.connect(self.shStates.onStateChanged)
@@ -62,20 +68,17 @@ class SceneHubWindow(CanvasWindow):
     self.shTreesManager.sceneChanged.connect(self.shStates.onStateChanged)
 
   def _initValueEditor(self):
-    self.valueEditor = SceneHub.SHVEEditorOwner(self.dfgWidget, self.shTreesManager.shTreeView)
+    self.valueEditor = SHVEEditorOwner(self.dfgWidget, self.shStates)
 
     self.valueEditor.log.connect(self._onLog)
     self.valueEditor.modelItemValueChanged.connect(self._onModelValueChanged)
     self.valueEditor.canvasSidePanelInspectRequested.connect(self._onCanvasSidePanelInspectRequested)
     self.valueEditor.synchronizeCommands.connect(self.shCmdHandler.onSynchronizeCommands)
 
+    self.shStates.inspectedChanged.connect(self.valueEditor.onInspectChanged)
     self.shStates.activeSceneChanged.connect(self.valueEditor.onSceneChanged)
     self.shStates.sceneChanged.connect(self.valueEditor.onSceneChanged)
-
-    #self.shTreesManager.sceneHierarchyChanged.connect(self.valueEditor.onSceneChanged)
-    #self.shTreesManager.activeSceneChanged.connect(self.valueEditor.onSceneChanged)
-    #self.shDFGBinding.sceneChanged.connect(self.valueEditor.onSceneChanged)
-
+  
   def _initGL(self):
     self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(0, False, False, None)
     self.setCentralWidget(intermediateOwnerWidget)
@@ -161,7 +164,7 @@ class SceneHubWindow(CanvasWindow):
    
   def _onCanvasSidePanelInspectRequested(self):
     if self.shDFGBinding is not None and self.shDFGBinding.isSgObjectValid(): 
-      self.valueEditor.updateSGObject(self.shDFGBinding)
+      self.valueEditor.onUpdateSGObject(self.shDFGBinding)
   
   def _onModelValueChanged(self, item, var):
     self.viewportsManager.onRefreshAllViewports()

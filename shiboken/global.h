@@ -46,6 +46,7 @@
 #include <FabricUI/ValueEditor/ViewItemFactory.h>
 #include <FabricUI/ValueEditor/VEEditorOwner.h>
 #include <FabricUI/ValueEditor/VTreeWidget.h>
+#include <FabricUI/ModelItems/RootModelItem.h>
 #include <FabricUI/DFG/DFGConfig.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGHotkeys.h>

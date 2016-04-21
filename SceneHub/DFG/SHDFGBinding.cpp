@@ -4,19 +4,36 @@
 
 #include "SHDFGBinding.h"
 using namespace FabricCore;
-using namespace FabricUI::SceneHub;
+using namespace FabricUI;
+using namespace SceneHub;
  
 
 SHDFGBinding::SHDFGBinding(
-  FabricCore::DFGBinding &binding, 
-  FabricUI::DFG::DFGController *controller, 
-  FabricCore::Client client) 
+  DFGBinding &binding, 
+  DFG::DFGController *controller,
+  SHStates *shStates) 
   : m_binding(binding)
   , m_controller(controller) 
-  , m_client(client)
+  , m_shStates(shStates)
 { 
   connectBindingNotifier();
-  m_computeContextVal = FabricCore::RTVal::Create( m_client, "ComputeContextRTValWrapper", 0, 0 );
+  m_computeContextVal = RTVal::Create( controller->getClient(), "ComputeContextRTValWrapper", 0, 0 );
+}
+
+RTVal SHDFGBinding::getSgObject() { 
+  return m_dfgCanvasSgObject; 
+}
+
+RTVal SHDFGBinding::getOperator() { 
+  return  m_dfgCanvasOperator; 
+}
+
+bool SHDFGBinding::isSgObjectValid() { 
+  return m_dfgCanvasSgObject.isValid(); 
+}
+
+bool SHDFGBinding::isOperatorValid() { 
+  return m_dfgCanvasOperator.isValid(); 
 }
 
 QList<bool> SHDFGBinding::setDirty() {
@@ -90,31 +107,30 @@ void SHDFGBinding::onArgTypeChanged(unsigned index, FTL::CStrRef name, FTL::CStr
   emit sceneChanged();
 }
 
-void SHDFGBinding::onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {
+void SHDFGBinding::onInspectChanged() {
 
-  m_dfgCanvasSgObject = FabricCore::RTVal();
+  m_dfgCanvasSgObject = RTVal();
 
-  // try to see if this object has a DFGBinding behind it
   try 
   {
-    m_dfgCanvasOperator = item->getSGCanvasOperator();
-    if( m_dfgCanvasOperator.isValid() ) 
+    m_dfgCanvasOperator = m_shStates->getInspectedSGCanvasOperator();
+    if(m_dfgCanvasOperator.isValid())
     {
-      FabricCore::RTVal dfgBindingVal = m_dfgCanvasOperator.callMethod( "DFGBinding", "getDFGBinding", 0, 0 );
-      FabricCore::DFGBinding binding = dfgBindingVal.getDFGBinding();
-      FabricCore::DFGExec exec = binding.getExec();
+      RTVal dfgBindingVal = m_dfgCanvasOperator.callMethod( "DFGBinding", "getDFGBinding", 0, 0 );
+      DFGBinding binding = dfgBindingVal.getDFGBinding();
+      DFGExec exec = binding.getExec();
       m_controller->setBindingExec( binding, "", exec );
-      m_dfgCanvasSgObject = item->getSGObject();
-    } 
+      m_dfgCanvasSgObject = m_shStates->getInspectedSGObject();
+    }
     else 
     {
+      m_dfgCanvasOperator = RTVal();
       // return to the standard binding
-      m_dfgCanvasOperator = FabricCore::RTVal();
-      FabricCore::DFGExec exec = m_binding.getExec();
+      DFGExec exec = m_binding.getExec();
       m_controller->setBindingExec( m_binding, "", exec );
     }
   } 
-  catch( FabricCore::Exception e ) 
+  catch( Exception e ) 
   {
     printf( "SceneHubWindow::treeItemSelected: exception: %s\n", e.getDesc_cstr() );
   }

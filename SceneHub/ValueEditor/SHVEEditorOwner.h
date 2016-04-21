@@ -4,17 +4,14 @@
 
 #pragma once
 
-#include <FabricUI/DFG/DFGVEEditorOwner.h>
-#include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
+#include "SHBaseVEEditorOwner.h"
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
 
 namespace FabricUI {
 namespace SceneHub {
     
-class SGObjectPropertyModelItem;
 
-class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
+class SHVEEditorOwner : public SHBaseVEEditorOwner {
   Q_OBJECT
 
   public:
@@ -24,27 +21,19 @@ class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
 
     virtual void initConnections();
 
-    void updateSGObject( const FabricCore::RTVal& sgObject );
-
 
   signals:
     void canvasSidePanelInspectRequested();
-
-    void synchronizeCommands();
 
 
   public slots:
     virtual void onStructureChanged();
     
     void onSceneItemSelected(FabricUI::SceneHub::SHTreeItem *item);
-    
-    void updateSGObject(SHDFGBinding *shDFGBinding);
-    
-    void onSGObjectPropertyItemInserted(FabricUI::ValueEditor::BaseModelItem * item);
-    
-    void onSceneChanged();
+            
+    void onUpdateSGObject(SHDFGBinding *shDFGBinding);
 
-    void onSynchronizeCommands();
+    void onSceneChanged();
 
 
   protected slots:
@@ -52,11 +41,8 @@ class SHVEEditorOwner : public DFG::DFGVEEditorOwner {
 
 
   protected:
-
-    void updateSGObjectProperty( const FabricCore::RTVal& sgObjectProperty );
-
     SceneHub::SHBaseTreeView *m_baseTreeView;
-    SGObjectPropertyModelItem *m_objectPropertyItem;//Defined if "root" is a single property
+
 };
 
 } // namespace SceneHub
