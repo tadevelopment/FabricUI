@@ -31,8 +31,6 @@ class SHVEEditorOwner : public SHBaseVEEditorOwner {
     
     void onSceneItemSelected(FabricUI::SceneHub::SHTreeItem *item);
             
-    void onUpdateSGObject(SHDFGBinding *shDFGBinding);
-
     void onSceneChanged();
 
 

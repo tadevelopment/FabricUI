@@ -42,7 +42,7 @@ class SceneHubWindow(CanvasWindow):
       self.dfgWidget.getUIController(),
       self.shStates)
     self.shDFGBinding.sceneChanged.connect(self.shStates.onStateChanged)
-    self.shStates.inspectedChanged.connect(self.shDFGBinding.onInspectChanged)
+    self.shStates.inspectedChanged.connect(self.onInspectChanged)
 
   def _initCommands(self):
     cmdRegistration = SceneHub.SHCmdRegistration()
@@ -150,6 +150,11 @@ class SceneHubWindow(CanvasWindow):
     if self.shStates.getActiveScene().showValueEditorByDefault():
       self.valueEditor.updateSGObject(self.shStates.getActiveScene().getValueEditorDefaultTarget())
       self.valueEditorDockWidget.show();
+
+    defaultCanvasOp = self.shStates.getActiveScene().getDefaultSGCanvasOperator()
+    if defaultCanvasOp is not None:
+      self.dfgDock.show()
+      self.shDFGBinding.setCanvasOperator(defaultCanvasOp)
     
     if self.shTreesManager.getScene().enableTimelineByDefault():
       startFrame, endFrame = self.shTreesManager.getScene().getFrameState()
@@ -170,6 +175,14 @@ class SceneHubWindow(CanvasWindow):
     if height < 300: height = 300
     return QtCore.QSize(width, height)  
 
+  def loadGraph(self, filePath):
+    super(SceneHubWindow, self).loadGraph(filePath)
+    self.shDFGBinding.setMainBinding(self.dfgWidget.getDFGController().getBinding())
+    
+  def onNewGraph(self, skip_save=False):
+    super(SceneHubWindow, self).onNewGraph(skip_save)
+    self.shDFGBinding.setMainBinding(self.dfgWidget.getDFGController().getBinding())
+
   def _contentChanged(self) :
     self.valueEditor.onOutputsChanged()
     self.viewportsManager.onRefreshAllViewports()
@@ -179,8 +192,10 @@ class SceneHubWindow(CanvasWindow):
     self.timeLine.play()
    
   def _onCanvasSidePanelInspectRequested(self):
-    if self.shDFGBinding is not None and self.shDFGBinding.isSgObjectValid(): 
-      self.valueEditor.onUpdateSGObject(self.shDFGBinding)
+    if self.shDFGBinding is not None:
+      parameterObject = self.shDFGBinding.getCanvasOperatorParameterObject()
+      if parameterObject is not None: 
+        self.valueEditor.updateSGObject(parameterObject)
   
   def _onModelValueChanged(self, item, var):
     self.viewportsManager.onRefreshAllViewports()
@@ -188,6 +203,12 @@ class SceneHubWindow(CanvasWindow):
   def onActiveSceneChanged(self, scene):
     self.assetMenu.onActiveSceneChanged(scene)
     self.lightsMenu.onActiveSceneChanged(scene)
+
+  def onInspectChanged(self):
+    # shDFGBinding might change the active binding
+    self.shDFGBinding.onInspectChanged()
+    binding = self.dfgWidget.getDFGController().getBinding()
+    self.scriptEditor.updateBinding(binding)
 
   def onFrameChanged(self, frame):
     super(SceneHubWindow, self).onFrameChanged(frame)

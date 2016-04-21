@@ -11,9 +11,6 @@ class SHVEEditorOwner(SceneHub.SHBaseVEEditorOwner):
 		self.shStates = shStates
 		super(SHVEEditorOwner, self).__init__(dfgWidget)
  
-	def onUpdateSGObject(self, shDFGBinding):
-		self.updateSGObject(shDFGBinding.getSgObject())
-	
 	def onStructureChanged(self):
 		super(SHVEEditorOwner, self).onStructureChanged()
 		objectItem = self.castToSGModelItem( self.m_modelRoot )

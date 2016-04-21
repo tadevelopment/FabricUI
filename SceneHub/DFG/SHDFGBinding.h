@@ -30,13 +30,13 @@ class SHDFGBinding : public QObject{
 
     ~SHDFGBinding() {}
     
-    FabricCore::RTVal getSgObject();
-    
-    FabricCore::RTVal getOperator();
+    void setCanvasOperator( FabricCore::RTVal &canvasOperator );
 
-    bool isSgObjectValid();
+    FabricCore::RTVal getCanvasOperator() { return m_dfgCanvasOperator; }
 
-    bool isOperatorValid();
+    FabricCore::RTVal getCanvasOperatorParameterObject();
+
+    void setMainBinding( FabricCore::DFGBinding &binding );
 
     QList<bool> setDirty();
 
@@ -61,7 +61,6 @@ class SHDFGBinding : public QObject{
     FabricCore::DFGBinding m_binding;
     FabricUI::DFG::DFGController *m_controller;
     FabricUI::SceneHub::SHStates *m_shStates;
-    FabricCore::RTVal m_dfgCanvasSgObject;
     FabricCore::RTVal m_dfgCanvasOperator;
     FabricCore::RTVal m_computeContextVal;
 };

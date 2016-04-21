@@ -15,7 +15,6 @@ class SHTreeViewMenu(SHBaseMenu):
     self.showProperty.setCheckable( True )
     self.showProperty.setChecked( True )
     
-    self.addSeparator()
     self.showPropertyGenerator = self.addAction("Show property generators")
     self.showPropertyGenerator.setCheckable( True )
     self.showPropertyGenerator.setChecked( True )
