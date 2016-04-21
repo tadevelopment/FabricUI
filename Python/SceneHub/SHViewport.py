@@ -96,6 +96,13 @@ class SHViewport(Viewports.ViewportWidget):
         menu.exec_(self.mapToGlobal(event.pos()))
         self.sceneChanged.emit()
     
+  def mouseDoubleClickEvent(self, event):
+    sgObjectlist = self.shStates.getSelectedObjects()
+    #We only can diplay one object in the value editor
+    # Take the first
+    if len(sgObjectlist) > 0:
+      self.shStates.onInspectedSGObject(sgObjectlist[0])  
+
   def __onEvent(self, event):
     redrawAllViewports = False
     if self.shGLRenderer.onEvent(self.viewportIndex, event, redrawAllViewports, False):
