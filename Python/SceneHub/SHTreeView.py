@@ -43,9 +43,11 @@ class SHTreeView(SceneHub.SHBaseTreeView):
       urlsList = []
       for index in self.selectedIndexes():
         item = SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index)
-        url = self.shGLScene.getTreeItemPath(item.getSGObject())
-        if url is not None: 
-          urlsList.append(QtCore.QUrl(url))
+        sgObj = item.getSGObject()
+        if sgObj is not None:
+          url = self.shGLScene.getTreeItemPath(item.getSGObject())
+          if url is not None: 
+            urlsList.append(QtCore.QUrl(url))
 
       if len(urlsList) > 0:
         mimeData = QtCore.QMimeData()

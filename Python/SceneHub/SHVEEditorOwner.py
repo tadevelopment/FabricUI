@@ -22,7 +22,7 @@ class SHVEEditorOwner(SceneHub.SHBaseVEEditorOwner):
 			self.replaceModelRoot.emit( self.m_modelRoot )
 
 	def onInspectChanged(self):
-		if self.shStates.isInspectingSGObject():
+		if self.shStates.isInspectingSGObject() or self.shStates.isInspectingSGCanvasOperator():
 			sgObject = self.shStates.getInspectedSGObject()
 			self.updateSGObject( sgObject )
 

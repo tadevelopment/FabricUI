@@ -22,21 +22,22 @@ class SHTreeViewsManager(QtGui.QWidget):
   itemDoubleClicked = QtCore.Signal(SceneHub.SHTreeItem)
   activeSceneChanged = QtCore.Signal(SceneHub.SHGLScene)
   
-  def __init__(self, dfgWidget, shStates, klFile):
+  def __init__(self, client, dfgWidget, shStates, klFile):
     self.dfgWidget = dfgWidget
     self.shStates = shStates
     self.showProperties = True
     self.showOperators = True
+    self.client = client
  
     super(SHTreeViewsManager, self).__init__()
-    self.shMainGLScene = SceneHub.SHGLScene(self.shStates.getClient(), klFile)
-    self.shGLScene = SceneHub.SHGLScene(self.shStates.getClient())
+    self.shMainGLScene = SceneHub.SHGLScene(client, klFile)
+    self.shGLScene = SceneHub.SHGLScene(client)
 
     self.treeModel = None
     self.bUpdatingSelection = False
 
     self.comboBox = SHTreeComboBox()
-    self.shTreeView = SHTreeView(self.shStates.getClient(), self.shStates, self.shGLScene)
+    self.shTreeView = SHTreeView(self.client, self.shStates, self.shGLScene)
     
     layout = QtGui.QVBoxLayout()
     layout.addWidget(self.comboBox)
