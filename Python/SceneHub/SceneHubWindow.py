@@ -57,7 +57,7 @@ class SceneHubWindow(CanvasWindow):
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
 
-    self.shTreesManager = SHTreeViewsManager(self.dfgWidget, self.shStates, self.klFile)
+    self.shTreesManager = SHTreeViewsManager(self.client, self.dfgWidget, self.shStates, self.klFile)
     self.shTreesManager.activeSceneChanged.connect( self.onActiveSceneChanged )
 
     # scene changed -> tree view changed

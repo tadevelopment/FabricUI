@@ -27,21 +27,25 @@ class SHContextualMenu(SHBaseMenu):
       self.addAction(loadAction)
 
       visMenu = self.addMenu("Visibility")
-      showLocalAction = QtGui.QAction("Show", visMenu)
-      showLocalAction.setCheckable( True )
-      visMenu.addAction( showLocalAction )
 
-      showPropagatedAction = QtGui.QAction("Show (propagated)", visMenu)
+      showPropagatedAction = QtGui.QAction("Show", visMenu)
       showPropagatedAction.setCheckable( True )
       visMenu.addAction( showPropagatedAction )
 
-      hideLocalAction = QtGui.QAction("Hide", visMenu)
+      showLocalAction = QtGui.QAction("Show (local only)", visMenu)
+      showLocalAction.setCheckable( True )
+      visMenu.addAction( showLocalAction )
+
+      hidePropagatedAction = QtGui.QAction("Hide", visMenu)
+      hidePropagatedAction.setCheckable( True )
+      visMenu.addAction( hidePropagatedAction )
+
+      hideLocalAction = QtGui.QAction("Hide (local only)", visMenu)
       hideLocalAction.setCheckable( True )
       visMenu.addAction( hideLocalAction )
 
-      hidePropagatedAction = QtGui.QAction("Hide (propagated)", visMenu)
-      hidePropagatedAction.setCheckable( True )
-      visMenu.addAction( hidePropagatedAction )
+      resetVisibilityAction = QtGui.QAction("Reset recursively", visMenu)
+      visMenu.addAction( resetVisibilityAction )
 
       if self.treeView is not None:
         viewIndexTarget = SceneHub.SHTreeView_ViewIndexTarget(self.treeView, index, self)
@@ -85,6 +89,8 @@ class SHContextualMenu(SHBaseMenu):
       #if( !visible and propagType == 2 )
       #  visAction.setChecked( True )
       #visMenu.addAction( visAction )
+
+      resetVisibilityAction.triggered.connect(self.resetVisibilityRecursively)
       
     else:
       assetMenu = SHAssetsMenu(self.shGLScene)
@@ -94,6 +100,10 @@ class SHContextualMenu(SHBaseMenu):
 
   def loadRecursively(self):
     self.targetSGObject.forceHierarchyExpansion("")
+    self.shStates.onStateChanged()
+
+  def resetVisibilityRecursively(self):
+    self.targetSGObject.resetVisibilityRecursively("")
     self.shStates.onStateChanged()
 
   def setVisibility(self, visible, propagationType):

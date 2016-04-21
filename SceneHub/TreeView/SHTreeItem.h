@@ -62,8 +62,6 @@ public:
   
   FabricCore::RTVal getSGObjectProperty();
   
-  FabricCore::RTVal getSGCanvasOperator();
-
   void loadRecursively();
 
   void updateChildItemsIfNeeded();
