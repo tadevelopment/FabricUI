@@ -238,12 +238,8 @@ QList<int> SHGLScene::getFrameState() {
   return state;
 }
 
-QString SHGLScene::getTreeItemPath(SHTreeItem *item) {
-  return (item) ? getTreeItemPath(item->getSGObject()): "none";
-}
-
 QString SHGLScene::getTreeItemPath(RTVal sgObject) {
-  QString url = "none";
+  QString url;
   if(!sgObject.isValid()) return url;
   try 
   {

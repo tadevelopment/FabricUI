@@ -89,13 +89,23 @@ SHGLScene* SHStates::getActiveScene() {
 }
 
 void SHStates::onStateChanged() {
+  std::cerr << "SHStates::onStateChanged"  << std::endl;
   FABRIC_TRY( "SHStates::onStateChanged",
     if( m_shStateVal.callMethod( "Boolean", "sceneHierarchyChanged", 0, 0 ).getBoolean() )
+    {
+      std::cerr << "sceneHierarchyChanged"  << std::endl;
       emit sceneHierarchyChanged();
+    }
     if( m_shStateVal.callMethod( "Boolean", "sceneChanged", 0, 0 ).getBoolean() )
+    {
+      std::cerr << "sceneChanged"  << std::endl;
       emit sceneChanged();
+    }
     if( m_shStateVal.callMethod( "Boolean", "selectionChanged", 0, 0 ).getBoolean() )
+    {
+      std::cerr << "selectionChanged"  << std::endl;
       emit selectionChanged();
+    }
   );
 }
 

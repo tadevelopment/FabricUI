@@ -6,13 +6,13 @@ from FabricEngine.CAPI import *
 from SHTreeView import SHTreeView
 
 class SHTreeComboBox(QtGui.QComboBox):
-  updateList = QtCore.Signal()
+  constructSceneList = QtCore.Signal()
 
   def __init__(self): 
     super(SHTreeComboBox, self).__init__()
 
   def showPopup(self):
-    self.updateList.emit()
+    self.constructSceneList.emit()
     super(SHTreeComboBox, self).showPopup()
  
 
@@ -22,22 +22,21 @@ class SHTreeViewsManager(QtGui.QWidget):
   itemDoubleClicked = QtCore.Signal(SceneHub.SHTreeItem)
   activeSceneChanged = QtCore.Signal(SceneHub.SHGLScene)
   
-  def __init__(self, mainwindow, shStates, klFile):
-    self.shWindow = mainwindow
+  def __init__(self, dfgWidget, shStates, klFile):
+    self.dfgWidget = dfgWidget
     self.shStates = shStates
     self.showProperties = True
     self.showOperators = True
-    self.client = mainwindow.client
-
+ 
     super(SHTreeViewsManager, self).__init__()
-    self.shMainGLScene = SceneHub.SHGLScene(self.shWindow.client, klFile)
-    self.shGLScene = SceneHub.SHGLScene(self.shWindow.client)
+    self.shMainGLScene = SceneHub.SHGLScene(self.shStates.getClient(), klFile)
+    self.shGLScene = SceneHub.SHGLScene(self.shStates.getClient())
 
     self.treeModel = None
     self.bUpdatingSelection = False
 
     self.comboBox = SHTreeComboBox()
-    self.shTreeView = SHTreeView(self.shWindow.client, self.shGLScene)
+    self.shTreeView = SHTreeView(self.shStates.getClient(), self.shStates, self.shGLScene)
     
     layout = QtGui.QVBoxLayout()
     layout.addWidget(self.comboBox)
@@ -50,12 +49,12 @@ class SHTreeViewsManager(QtGui.QWidget):
     self.shTreeView.itemDeselected.connect(self.onTreeItemDeselected)
     self.shTreeView.itemDoubleClicked.connect(self.onTreeItemDoubleClicked)
 
-    self.comboBox.updateList.connect(self.onUpdateSceneList)
-    self.comboBox.currentIndexChanged.connect(self.onUpdateScene)
- 
+    self.comboBox.constructSceneList.connect(self._onConstructSceneList)
+    self.comboBox.currentIndexChanged.connect(self._onConstructScene)
+
     self.activeSceneChanged.connect( self.shStates.onActiveSceneChanged )
 
-    self.onUpdateScene()
+    self._onConstructScene()
  
   def getScene(self):
     return self.shGLScene
@@ -68,7 +67,7 @@ class SHTreeViewsManager(QtGui.QWidget):
     self._resetTree()
 
     self.treeModel = SceneHub.SHTreeModel(
-      self.shGLScene.getClient(), 
+      self.shStates.getClient(), 
       self.shGLScene.getSG(), 
       self.shTreeView)
 
@@ -97,15 +96,15 @@ class SHTreeViewsManager(QtGui.QWidget):
     if self.treeModel is not None:
       self.treeModel.setShowOperators(show)
 
-  def onUpdateScene(self):
+  def _onConstructScene(self):
     sceneName = self.comboBox.currentText()
     if str(sceneName) == "Main Scene":
       self.shGLScene.setSHGLScene(self.shMainGLScene)
       self._constructTree()
       self.activeSceneChanged.emit(self.shGLScene)
     
-    elif self.shWindow.dfgWidget.getDFGController().getBinding().getExec().hasVar(str(sceneName)):
-      self.shGLScene.setSHGLScene(self.shWindow.dfgWidget.getDFGController().getBinding(), sceneName)
+    elif self.dfgWidget.getDFGController().getBinding().getExec().hasVar(str(sceneName)):
+      self.shGLScene.setSHGLScene(self.dfgWidget.getDFGController().getBinding(), sceneName)
       self._constructTree()
       self.activeSceneChanged.emit(self.shGLScene)
     
@@ -113,9 +112,9 @@ class SHTreeViewsManager(QtGui.QWidget):
       self.comboBox.clear()
       self._resetTree()
     
-  def onUpdateSceneList(self):
+  def _onConstructSceneList(self):
     self.comboBox.clear()
-    binding = self.shWindow.dfgWidget.getDFGController().getBinding()
+    binding = self.dfgWidget.getDFGController().getBinding()
     sceneNameList = self.shGLScene.getSceneNamesFromBinding(binding)
     if len(sceneNameList) == 0 and not self.shGLScene.hasSG(): 
       self._resetTree()
@@ -147,11 +146,11 @@ class SHTreeViewsManager(QtGui.QWidget):
       self.bUpdatingSelection = True
       if item.isReference():
         val = item.getSGObject()
-        if pyObjectToRTVal( self.client.getContext(), val).isValid():
+        if val is not None:
           self.shStates.addSGObjectToSelection(val)
       else:
         val = item.getSGObjectProperty()
-        if pyObjectToRTVal( self.client.getContext(), val).isValid():
+        if val is not None:
           if item.isGenerator():
             self.shStates.addSGObjectPropertyGeneratorToSelection(val)
           else:
@@ -164,11 +163,11 @@ class SHTreeViewsManager(QtGui.QWidget):
 
       if item.isReference():
         val = item.getSGObject()
-        if pyObjectToRTVal( self.client.getContext(), val).isValid():
+        if val is not None:
           self.shStates.removeSGObjectFromSelection(val)
       else:
         val = item.getSGObjectProperty()
-        if pyObjectToRTVal( self.client.getContext(), val).isValid():
+        if val is not None:
           if item.isGenerator():
             self.shStates.removeSGObjectPropertyGeneratorFromSelection(val)
           else:
@@ -179,15 +178,15 @@ class SHTreeViewsManager(QtGui.QWidget):
     if not self.bUpdatingSelection:
       if item.isReference():
         val = item.getSGObject()
-        #if pyObjectToRTVal( self.client.getContext(), val).isValid():
-        self.shStates.onInspectedSGObject(val)
+        if val is not None:
+          self.shStates.onInspectedSGObject(val)
       else:
         val = item.getSGObjectProperty()
-        #if pyObjectToRTVal( self.client.getContext(), val).isValid():
-        if item.isGenerator():
-          self.shStates.onInspectedSGObjectPropertyGenerator(val)
-        else:
-          self.shStates.onInspectedSGObjectProperty(val)
+        if val is not None:
+          if item.isGenerator():
+            self.shStates.onInspectedSGObjectPropertyGenerator(val)
+          else:
+            self.shStates.onInspectedSGObjectProperty(val)
 
   def onSelectionChanged(self):
     if not self.bUpdatingSelection:

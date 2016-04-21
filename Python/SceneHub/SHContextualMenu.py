@@ -10,19 +10,17 @@ from SHAssetsMenu import SHAssetsMenu
 
 class SHContextualMenu(SHBaseMenu):
 
-  def __init__(self, scene, treeView):
+  def __init__(self, client, scene, shStates, targetSGObject, treeView = None):
+    self.targetSGObject = targetSGObject
+    self.client = client
+
     self.treeView = treeView
+    self.shStates = shStates
     super(SHContextualMenu, self).__init__(scene)
  
   def _constructMenu(self):
 
-    client = self.shGLScene.getClient()
-    # TreeView Selection
-    selectedTreeItemIndexes = self.treeView.selectedIndexes()
-    # 3D View Selection
-    selectedViewItemIndexes = self.shGLScene.getSelectedObjects()
-
-    if len(selectedTreeItemIndexes) > 0 and len(selectedViewItemIndexes) > 0:
+    if self.targetSGObject is not None:
       expandAction = QtGui.QAction("Expand recursively", self)
       self.addAction(expandAction)
       loadAction = QtGui.QAction("Load recursively", self)
@@ -45,58 +43,77 @@ class SHContextualMenu(SHBaseMenu):
       hidePropagatedAction.setCheckable( True )
       visMenu.addAction( hidePropagatedAction )
 
-      for index in selectedTreeItemIndexes:
-        
-        if index.isValid():
-          item = SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index)
-          sgObjectVal = pyObjectToRTVal( client.getContext(), item.getSGObject())
+      if self.treeView is not None:
+        viewIndexTarget = SceneHub.SHTreeView_ViewIndexTarget(self.treeView, index, self)
+        expandAction.triggered.connect(viewIndexTarget.expandRecursively)
 
-          if sgObjectVal.isValid():
-            viewIndexTarget = SceneHub.SHTreeView_ViewIndexTarget(self.treeView, index, self)
-           
-            expandAction.triggered.connect(viewIndexTarget.expandRecursively)
-            loadAction.triggered.connect(viewIndexTarget.loadRecursively)
+      loadAction.triggered.connect(self.loadRecursively)
 
-            visible = False
-            propagVal = RTVal_ConstructUInt8(client, 0)
-            visible = sgObjectVal.callMethod("Boolean", "getVisibility", 1, propagVal).getBoolean()
-            propagType = propagVal.getUInt8()
-                
-            showLocalAction.triggered.connect(viewIndexTarget.showLocal)
-            if visible and not propagType:
-              showLocalAction.setChecked( True )
+      visible = False
+      propagVal = self.client.RT.types.UInt8(0)
+      visible = self.targetSGObject.getVisibility("Boolean", propagVal).getSimpleType()
+      propagType = propagVal.getSimpleType()
+      
+      showLocalAction.triggered.connect(self.showLocal)
+      if visible and not propagType:
+        showLocalAction.setChecked( True )
 
-            showPropagatedAction.triggered.connect(viewIndexTarget.showPropagated)
-            if visible and propagType:
-              showPropagatedAction.setChecked(True)
+      showPropagatedAction.triggered.connect(self.showPropagated)
+      if visible and propagType:
+        showPropagatedAction.setChecked(True)
 
-            # THERE ARE BUGS WITH OVERRIDES
-            #visAction = new QAction( "Show (override)", 0 )
-            #connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( showOverride() ) )
-            #visAction.setCheckable( True )
-            #if( visible and propagType == 2 )
-            #  visAction.setChecked( True )
-            #visMenu.addAction( visAction )
+      # THERE ARE BUGS WITH OVERRIDES
+      #visAction = new QAction( "Show (override)", 0 )
+      #connect( visAction, SIGNAL( triggered() ), self, SLOT( showOverride() ) )
+      #visAction.setCheckable( True )
+      #if( visible and propagType == 2 )
+      #  visAction.setChecked( True )
+      #visMenu.addAction( visAction )
             
-            hideLocalAction.triggered.connect(viewIndexTarget.hideLocal)
-            if not visible and not propagType:
-              hideLocalAction.setChecked( True )
+      hideLocalAction.triggered.connect(self.hideLocal)
+      if not visible and not propagType:
+        hideLocalAction.setChecked( True )
 
-            hidePropagatedAction.triggered.connect(viewIndexTarget.hidePropagated)
-            if not visible and propagType:
-              hidePropagatedAction.setChecked( True )
+      hidePropagatedAction.triggered.connect(self.hidePropagated)
+      if not visible and propagType:
+        hidePropagatedAction.setChecked( True )
             
-            # THERE ARE BUGS WITH OVERRIDES
-            #visAction = new QAction( "Hide (override)", 0 )
-            #connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( hideOverride() ) )
-            #visAction.setCheckable( True )
-            #if( !visible and propagType == 2 )
-            #  visAction.setChecked( True )
-            #visMenu.addAction( visAction )
-            
-        
-    elif len(selectedTreeItemIndexes) == 0 or len(selectedViewItemIndexes) == 0:
+      # THERE ARE BUGS WITH OVERRIDES
+      #visAction = new QAction( "Hide (override)", 0 )
+      #connect( visAction, SIGNAL( triggered() ), self, SLOT( hideOverride() ) )
+      #visAction.setCheckable( True )
+      #if( !visible and propagType == 2 )
+      #  visAction.setChecked( True )
+      #visMenu.addAction( visAction )
+      
+    else:
       assetMenu = SHAssetsMenu(self.shGLScene)
       lightsMenu = SHLightsMenu(self.shGLScene)
       self.addMenu(assetMenu)
       self.addMenu(lightsMenu)
+
+  def loadRecursively(self):
+    self.targetSGObject.forceHierarchyExpansion("")
+    self.shStates.onStateChanged()
+
+  def setVisibility(self, visible, propagationType):
+    self.targetSGObject.setVisibility("", visible, propagationType)
+    self.shStates.onStateChanged()
+
+  def showLocal(self):
+    self.setVisibility( True, 0 )
+    
+  def showPropagated(self):
+    self.setVisibility( True, 1 )
+    
+  def showOverride(self):
+    self.setVisibility( True, 2 )
+
+  def hideLocal(self):
+    self.setVisibility( False, 0 )
+    
+  def hidePropagated(self):
+    self.setVisibility( False, 1 )
+    
+  def hideOverride(self):
+    self.setVisibility( False, 2 )

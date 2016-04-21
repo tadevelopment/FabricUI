@@ -17,8 +17,7 @@
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONValue.h>
 #include <FabricUI/DFG/DFGController.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeItem.h>
-
+ 
 namespace FabricUI {
 namespace SceneHub {
     
@@ -88,9 +87,6 @@ class SHGLScene {
 
     /// Activates the playback at app opening.
     bool playbackByDefault();
-
-    /// Gets the path of the current selected object.
-    QString getTreeItemPath(SHTreeItem *item);
 
     /// Gets the path of the current selected object.
     QString getTreeItemPath(FabricCore::RTVal sgObject);

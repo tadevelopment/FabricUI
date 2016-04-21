@@ -23,6 +23,7 @@ class SHViewport(Viewports.ViewportWidget):
     self.alwaysRefresh = False
     self.shGLRenderer = renderer
     self.shWindow = mainwindow   
+    self.client = mainwindow.client
     super(SHViewport, self).__init__(renderer.getClient(), QtGui.QColor(), self.qglContext, self.shWindow, sharedWidget, self.shWindow.settings)
 
     # Force to track mouse movment when not clicking
@@ -90,7 +91,7 @@ class SHViewport(Viewports.ViewportWidget):
     shGLScene = self.shStates.getActiveScene()
     if shGLScene.hasSG():
       if not self.__onEvent(event) and event.button() == QtCore.Qt.RightButton:
-        menu = SHContextualMenu(shGLScene, self.shWindow.shTreesManager.shTreeView)
+        menu = SHContextualMenu(self.client, self.shStates.getActiveScene(), self.shStates, self.shGLRenderer.getSGObjectFrom2DScreenPos(self.viewportIndex, event.pos()))
         menu.addMenu(SHInteractionMenu(self.shGLRenderer))
         menu.exec_(self.mapToGlobal(event.pos()))
         self.sceneChanged.emit()

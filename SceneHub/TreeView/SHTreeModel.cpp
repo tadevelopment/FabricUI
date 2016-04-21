@@ -60,14 +60,6 @@ SHTreeModel::~SHTreeModel() {
   }
 }
 
-QModelIndex SHTreeModel::addRootItemsFromScene(SHGLScene *shGLScene) {
-  QModelIndex sceneRootIndex = addRootItem(shGLScene->getSceneRoot());
-  addRootItem(shGLScene->getAssetLibraryRoot());
-  addRootItem(shGLScene->getMaterialLibraryRoot());
-  addRootItem(shGLScene->getImageLibraryRoot());
-  return sceneRootIndex;
-}
-
 QModelIndex SHTreeModel::addRootItem(FabricCore::RTVal rootSGObject) {
   SHTreeItem *item = new SHTreeItem( this, 0 /* parentItem */, m_client );
   try 

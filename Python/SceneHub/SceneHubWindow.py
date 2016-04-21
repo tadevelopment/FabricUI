@@ -57,7 +57,8 @@ class SceneHubWindow(CanvasWindow):
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
 
-    self.shTreesManager = SHTreeViewsManager(self, self.shStates, self.klFile)
+    self.shTreesManager = SHTreeViewsManager(self.dfgWidget, self.shStates, self.klFile)
+    self.shTreesManager.activeSceneChanged.connect( self.onActiveSceneChanged )
 
     # scene changed -> tree view changed
     self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
@@ -116,8 +117,8 @@ class SceneHubWindow(CanvasWindow):
     self.viewportsManager.initMenu(self.menuBar())
 
     sceneMenus = self.menuBar().addMenu("&Scene")    
-    self.assetMenu = SHAssetsMenu(self.shStates)
-    self.lightsMenu = SHLightsMenu(self.shStates)
+    self.assetMenu = SHAssetsMenu(self.shStates.getActiveScene())
+    self.lightsMenu = SHLightsMenu(self.shStates.getActiveScene())
     sceneMenus.addMenu(self.assetMenu)
     sceneMenus.addMenu(self.lightsMenu)
 
@@ -168,6 +169,10 @@ class SceneHubWindow(CanvasWindow):
   
   def _onModelValueChanged(self, item, var):
     self.viewportsManager.onRefreshAllViewports()
+
+  def onActiveSceneChanged(self, scene):
+    self.assetMenu.onActiveSceneChanged(scene)
+    self.lightsMenu.onActiveSceneChanged(scene)
 
   def onFrameChanged(self, frame):
     super(SceneHubWindow, self).onFrameChanged(frame)
