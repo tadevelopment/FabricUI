@@ -133,6 +133,8 @@
 #include <FabricUI/SceneHub/Commands/SGAddPropertyCmd.h>
 #include <FabricUI/SceneHub/Commands/SGSetPaintToolAttributeCmd.h>
 #include <FabricUI/SceneHub/Commands/SGSetPropertyCmd.h>
+#include <FabricUI/SceneHub/Commands/SGSetBooleanPropertyCmd.h>
+#include <FabricUI/SceneHub/Commands/SGSetObjectPropertyCmd.h>
 #include <FabricUI/SceneHub/Commands/SHCmdRegistration.h>
 #include <FabricUI/SceneHub/Commands/SHCmdHandler.h>
 #include <FabricUI/SceneHub/Viewports/RTRGLContext.h>

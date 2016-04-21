@@ -6,6 +6,7 @@
 #include "SGObjectPropertyModelItem.h"
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 #include <FabricUI/SceneHub/Commands/SGSetPropertyCmd.h>
+#include <FabricUI/SceneHub/Commands/SGSetBooleanPropertyCmd.h>
 
 namespace FabricUI {
 namespace SceneHub {
@@ -448,10 +449,20 @@ void SGObjectPropertyModelItem::setValue(
       FabricCore::RTVal sgVal = m_rtVal.maybeGetMember("SG");
       QString fullPath( m_rtVal.callMethod("String", "getFullPath", 0, 0).getStringCString() );
 
-      if(valueAtInteractionBeginVal.isValid())
-        SGSetPropertyCmd cmd(m_client, sgVal, fullPath, valueAtInteractionBeginVal, varVal);
+      if(getRTValType() == "Boolean")
+      {
+        if(valueAtInteractionBeginVal.isValid())
+          SGSetBooleanPropertyCmd cmd(m_client, sgVal, fullPath, valueAtInteractionBeginVal, varVal);
+        else
+          SGSetBooleanPropertyCmd cmd(m_client, sgVal, fullPath, varVal);
+      }
       else
-        SGSetPropertyCmd cmd(m_client, sgVal, fullPath, varVal);
+      {
+        if(valueAtInteractionBeginVal.isValid())
+          SGSetPropertyCmd cmd(m_client, sgVal, fullPath, valueAtInteractionBeginVal, varVal);
+        else
+          SGSetPropertyCmd cmd(m_client, sgVal, fullPath, varVal);
+      }
 
       emit synchronizeCommands();
       emitModelValueChanged(var);

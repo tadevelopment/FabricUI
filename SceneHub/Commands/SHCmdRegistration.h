@@ -8,6 +8,8 @@
 #include "SGAddObjectCmd.h"
 #include "SGAddPropertyCmd.h"
 #include "SGSetPropertyCmd.h"
+#include "SGSetBooleanPropertyCmd.h"
+#include "SGSetObjectPropertyCmd.h"
 #include "SGSetPaintToolAttributeCmd.h"
 
 namespace FabricUI {
@@ -25,6 +27,12 @@ class SHCmdRegistration  {
 
       SGSetPropertyCmd setPropertyCmd;
       setPropertyCmd.registerCommand();
+
+      SGSetBooleanPropertyCmd setBooleanPropertyCmd;
+      setBooleanPropertyCmd.registerCommand();
+
+      SGSetObjectPropertyCmd setObjectPropertyCmd;
+      setObjectPropertyCmd.registerCommand();
  
       SGSetPaintToolAttributeCmd setPaintToolAttributeCmd;
       setPaintToolAttributeCmd.registerCommand();

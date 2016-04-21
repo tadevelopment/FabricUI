@@ -5,69 +5,65 @@
 #ifndef __UI_SCENEHUB_SGSETPROPERTYCMD_H__
 #define __UI_SCENEHUB_SGSETPROPERTYCMD_H__
 
-#include "SHCmd.h"
+#include "SGBaseSetPropertyCmd.h"
 using namespace FabricCore;
  
 namespace FabricUI {
 namespace SceneHub {
 
 
-class SGSetPropertyCmd : public SHCmd {
+class SGSetPropertyCmd : public SGBaseSetPropertyCmd {
 
   public:   
-    SGSetPropertyCmd(): SHCmd() {}
+    SGSetPropertyCmd(): SGBaseSetPropertyCmd() {}
 
-    SGSetPropertyCmd(
-      Client client, 
-      RTVal sg, 
-      QString propertyPath, 
-      RTVal prevValue,
-      RTVal newValue)
-    : SHCmd() 
+    SGSetPropertyCmd(Client client, RTVal sg, QString propertyPath, RTVal prevValue, RTVal newValue)
+      : SGBaseSetPropertyCmd() 
     {
       try 
       {
         m_client = client; 
-        RTVal args[7] = {
-          RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
-          prevValue.callMethod("Type", "type", 0, 0),
-          prevValue.callMethod("Data", "data", 0, 0),
-          prevValue.callMethod("UInt64", "dataSize", 0, 0),
-          newValue.callMethod("Type", "type", 0, 0),
-          newValue.callMethod("Data", "data", 0, 0),
-          newValue.callMethod("UInt64", "dataSize", 0, 0),
-        };
-        sg.callMethod("Cmd", "setPropertyCmd", 7, args);
-
+        if(newValue.isStruct())
+        {
+          RTVal args[7] = {
+            RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
+            prevValue.callMethod("Type", "type", 0, 0),
+            prevValue.callMethod("Data", "data", 0, 0),
+            prevValue.callMethod("UInt64", "dataSize", 0, 0),
+            newValue.callMethod("Type", "type", 0, 0),
+            newValue.callMethod("Data", "data", 0, 0),
+            newValue.callMethod("UInt64", "dataSize", 0, 0),
+          };
+          sg.callMethod("Cmd", "setPropertyCmd", 7, args);
+        }
       }
       catch(FabricCore::Exception e)
       {
-        printf("SGSetPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
+        printf("SGSetPropertyCmd::SGSetPropertyCmd: exception: %s\n", e.getDesc_cstr());
       }
     }
 
-    SGSetPropertyCmd(
-      Client client, 
-      RTVal sg, 
-      QString propertyPath, 
-      RTVal newValue)
-    : SHCmd() 
+    SGSetPropertyCmd(Client client, RTVal sg, QString propertyPath, RTVal newValue)
+      : SGBaseSetPropertyCmd() 
     {
       try 
       {
         m_client = client; 
-        RTVal args[4] = {
-          RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
-          newValue.callMethod("Type", "type", 0, 0),
-          newValue.callMethod("Data", "data", 0, 0),
-          newValue.callMethod("UInt64", "dataSize", 0, 0),
-        };
-        sg.callMethod("Cmd", "setPropertyCmd", 4, args);
+        if(newValue.isStruct())
+        {
+          RTVal args[4] = {
+            RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
+            newValue.callMethod("Type", "type", 0, 0),
+            newValue.callMethod("Data", "data", 0, 0),
+            newValue.callMethod("UInt64", "dataSize", 0, 0),
+          };
+          sg.callMethod("Cmd", "setPropertyCmd", 4, args);
+        }
 
       }
       catch(FabricCore::Exception e)
       {
-        printf("SGSetPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
+        printf("SGSetPropertyCmd::SGSetPropertyCmd: exception: %s\n", e.getDesc_cstr());
       }
     }
 
@@ -75,21 +71,6 @@ class SGSetPropertyCmd : public SHCmd {
       if(QMetaType::type("SGSetPropertyCmd") == 0)
         qRegisterMetaType<FabricUI::SceneHub::SGSetPropertyCmd>("SGSetPropertyCmd");
     }
-
-    virtual void setFromRTVal(Client client, RTVal sgCmd) {
-      try 
-      {
-        m_client = client;
-        RTVal keyVal = RTVal::ConstructString(m_client, "fullPath");
-        RTVal fullPathVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
-        QString fullPath = QString(fullPathVal.getStringCString());
-        m_description = QString( "setPropertyCmd(" + fullPath + ")" );   
-      }
-      catch(FabricCore::Exception e)
-      {
-        printf("SGSetPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
-      }
-    }    
 
 };
 
