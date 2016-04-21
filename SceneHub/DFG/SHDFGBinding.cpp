@@ -20,22 +20,6 @@ SHDFGBinding::SHDFGBinding(
   m_computeContextVal = RTVal::Create( controller->getClient(), "ComputeContextRTValWrapper", 0, 0 );
 }
 
-RTVal SHDFGBinding::getSgObject() { 
-  return m_dfgCanvasSgObject; 
-}
-
-RTVal SHDFGBinding::getOperator() { 
-  return  m_dfgCanvasOperator; 
-}
-
-bool SHDFGBinding::isSgObjectValid() { 
-  return m_dfgCanvasSgObject.isValid(); 
-}
-
-bool SHDFGBinding::isOperatorValid() { 
-  return m_dfgCanvasOperator.isValid(); 
-}
-
 QList<bool> SHDFGBinding::setDirty() {
   QList<bool> dirtyList;
   // accepted
@@ -107,33 +91,45 @@ void SHDFGBinding::onArgTypeChanged(unsigned index, FTL::CStrRef name, FTL::CStr
   emit sceneChanged();
 }
 
-void SHDFGBinding::onInspectChanged() {
-
-  m_dfgCanvasSgObject = RTVal();
-
-  try 
-  {
-    m_dfgCanvasOperator = m_shStates->getInspectedSGCanvasOperator();
-    if(m_dfgCanvasOperator.isValid())
-    {
+void SHDFGBinding::setCanvasOperator( FabricCore::RTVal &canvasOperator ) {
+  try {
+    m_dfgCanvasOperator = canvasOperator;
+    if( m_dfgCanvasOperator.isValid() ) {
       RTVal dfgBindingVal = m_dfgCanvasOperator.callMethod( "DFGBinding", "getDFGBinding", 0, 0 );
       DFGBinding binding = dfgBindingVal.getDFGBinding();
       DFGExec exec = binding.getExec();
       m_controller->setBindingExec( binding, "", exec );
-      m_dfgCanvasSgObject = m_shStates->getInspectedSGObject();
-    }
-    else 
-    {
-      m_dfgCanvasOperator = RTVal();
+    } else {
       // return to the standard binding
       DFGExec exec = m_binding.getExec();
       m_controller->setBindingExec( m_binding, "", exec );
     }
-  } 
-  catch( Exception e ) 
-  {
-    printf( "SceneHubWindow::treeItemSelected: exception: %s\n", e.getDesc_cstr() );
   }
-
+  catch( Exception e ) {
+    printf( "SceneHubWindow::setCanvasOperator: exception: %s\n", e.getDesc_cstr() );
+  }
   connectBindingNotifier();
+}
+
+FabricCore::RTVal SHDFGBinding::getCanvasOperatorParameterObject() {
+  try {
+    if( m_dfgCanvasOperator.isValid() ) {
+      RTVal parameterObject = m_dfgCanvasOperator.callMethod( "SGObject", "getParameterContainer", 0, 0 );
+      if( parameterObject.callMethod( "Boolean", "isValid", 0, 0 ).getBoolean() )
+        return parameterObject;
+    }
+  }
+  catch( Exception e ) {
+    printf( "SceneHubWindow::getCanvasOperatorParameterObject: exception: %s\n", e.getDesc_cstr() );
+  }
+  return RTVal();
+}
+
+void SHDFGBinding::onInspectChanged() {
+  setCanvasOperator( m_shStates->getInspectedSGCanvasOperator() );
+}
+
+void SHDFGBinding::setMainBinding( FabricCore::DFGBinding &binding ) {
+  m_dfgCanvasOperator = RTVal();
+  m_binding = binding;
 }

@@ -33,10 +33,6 @@ void SHVEEditorOwner::initConnections() {
     );
 }
 
-void SHVEEditorOwner::onUpdateSGObject(SHDFGBinding *shDFGBinding) {
-  updateSGObject(shDFGBinding->getSgObject());
-}
-
 void SHVEEditorOwner::onStructureChanged() {
   DFG::DFGVEEditorOwner::onStructureChanged();
 

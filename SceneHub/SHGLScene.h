@@ -127,6 +127,9 @@ class SHGLScene {
     /// If true, show the value editor when initializing, and set its target to defaultTarget
     bool showValueEditorByDefault();
 
+    /// If valid, this RTVal contains the SGCanvasOperator to show by default in the DFG
+    FabricCore::RTVal getDefaultSGCanvasOperator();
+
     /// Gets the value-editor default target for this scene.
     FabricCore::RTVal getValueEditorDefaultTarget();
   

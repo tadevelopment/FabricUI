@@ -337,6 +337,19 @@ bool SHGLScene::showValueEditorByDefault() {
   return show;
 }
 
+FabricCore::RTVal SHGLScene::getDefaultSGCanvasOperator() {
+  FabricCore::RTVal result;
+  try {
+    result = m_shGLSceneVal.callMethod( "SGCanvasOperator", "getDefaultSGCanvasOperator", 0, 0 );
+    if( result.isNullObject() )
+      result = FabricCore::RTVal();
+  }
+  catch( Exception e ) {
+    printf( "SHGLScene::getDefaultSGCanvasOperator: exception: %s\n", e.getDesc_cstr() );
+  }
+  return result;
+}
+
 FabricCore::RTVal SHGLScene::getValueEditorDefaultTarget() {
   FabricCore::RTVal defaultTarget;
   try {
