@@ -46,6 +46,31 @@ class SGSetPropertyCmd : public SHCmd {
       }
     }
 
+    SGSetPropertyCmd(
+      Client client, 
+      RTVal sg, 
+      QString propertyPath, 
+      RTVal newValue)
+    : SHCmd() 
+    {
+      try 
+      {
+        m_client = client; 
+        RTVal args[4] = {
+          RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
+          newValue.callMethod("Type", "type", 0, 0),
+          newValue.callMethod("Data", "data", 0, 0),
+          newValue.callMethod("UInt64", "dataSize", 0, 0),
+        };
+        sg.callMethod("Cmd", "setPropertyCmd", 4, args);
+
+      }
+      catch(FabricCore::Exception e)
+      {
+        printf("SGSetPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
+      }
+    }
+
     virtual void registerCommand() {
       if(QMetaType::type("SGSetPropertyCmd") == 0)
         qRegisterMetaType<FabricUI::SceneHub::SGSetPropertyCmd>("SGSetPropertyCmd");

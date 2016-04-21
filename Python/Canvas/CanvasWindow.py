@@ -56,7 +56,7 @@ class CanvasWindow(DFG.DFGMainWindow):
 
     """
 
-	isCanvas = True
+    isCanvas = True
     defaultFrameIn = 1
     defaultFrameOut = 50
     autosaveIntervalSecs = 30
@@ -217,7 +217,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         client.loadExtension('Math')
         client.loadExtension('Parameters')
         client.loadExtension('Util')
-        client.setStatusCallback(self._statusCallback)
+        client.setStatusCallback(self.__statusCallback)
         self.client = client
         self.qUndoStack = QtGui.QUndoStack()
  

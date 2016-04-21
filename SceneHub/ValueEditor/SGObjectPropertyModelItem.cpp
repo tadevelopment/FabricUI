@@ -447,7 +447,11 @@ void SGObjectPropertyModelItem::setValue(
 
       FabricCore::RTVal sgVal = m_rtVal.maybeGetMember("SG");
       QString fullPath( m_rtVal.callMethod("String", "getFullPath", 0, 0).getStringCString() );
-      SGSetPropertyCmd cmd(m_client, sgVal, fullPath, valueAtInteractionBeginVal, varVal);
+
+      if(valueAtInteractionBeginVal.isValid())
+        SGSetPropertyCmd cmd(m_client, sgVal, fullPath, valueAtInteractionBeginVal, varVal);
+      else
+        SGSetPropertyCmd cmd(m_client, sgVal, fullPath, varVal);
 
       emit synchronizeCommands();
       emitModelValueChanged(var);

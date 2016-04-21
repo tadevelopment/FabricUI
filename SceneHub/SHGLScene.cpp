@@ -325,16 +325,28 @@ QPair<bool, unsigned int> SHGLScene::showTreeViewByDefault() {
   return pair;
 }
 
-bool SHGLScene::showValueEditorByDefault( FabricCore::RTVal &defaultTarget ) {
+bool SHGLScene::showValueEditorByDefault() {
   bool show = false;
   try {
-    defaultTarget = FabricCore::RTVal::Construct( m_client, "SGObject", 0, 0 );
+    FabricCore::RTVal defaultTarget = FabricCore::RTVal::Construct( m_client, "SGObject", 0, 0 );
     show = m_shGLSceneVal.callMethod( "Boolean", "showValueEditorByDefault", 1, &defaultTarget ).getBoolean();
   }
   catch( Exception e ) {
     printf( "SHGLScene::showValueEditorByDefault: exception: %s\n", e.getDesc_cstr() );
   }
   return show;
+}
+
+FabricCore::RTVal SHGLScene::getValueEditorDefaultTarget() {
+  FabricCore::RTVal defaultTarget;
+  try {
+    defaultTarget = FabricCore::RTVal::Construct( m_client, "SGObject", 0, 0 );
+    m_shGLSceneVal.callMethod( "Boolean", "showValueEditorByDefault", 1, &defaultTarget );
+  }
+  catch( Exception e ) {
+    printf( "SHGLScene::showValueEditorByDefault: exception: %s\n", e.getDesc_cstr() );
+  }
+  return defaultTarget;
 }
 
 void SHGLScene::addExternalFileList(QStringList pathList, bool expand, float x, float y, float z) {

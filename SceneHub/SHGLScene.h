@@ -125,8 +125,11 @@ class SHGLScene {
     QPair<bool, unsigned int> showTreeViewByDefault();
 
     /// If true, show the value editor when initializing, and set its target to defaultTarget
-    bool showValueEditorByDefault(FabricCore::RTVal &defaultTarget);
+    bool showValueEditorByDefault();
 
+    /// Gets the value-editor default target for this scene.
+    FabricCore::RTVal getValueEditorDefaultTarget();
+  
  
   private:
     /// \internal

@@ -1,7 +1,8 @@
 import os, sys, math
-from FabricEngine import Core, FabricUI
+from FabricEngine import Core, FabricUI, CAPI
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine.FabricUI import *
+from FabricEngine.CAPI import *
 from Canvas.CanvasWindow import CanvasWindow
 from SHTreeViewsManager import SHTreeViewsManager
 from SHViewportsManager import SHViewportsManager
@@ -136,7 +137,6 @@ class SceneHubWindow(CanvasWindow):
     if show:
       self.shTreesManager.expandTree(level)
       self.shTreeDock.show()
-    
     else: self.shTreeDock.hide()
    
     if not isCanvas:
@@ -146,6 +146,11 @@ class SceneHubWindow(CanvasWindow):
       self.dfgDock.hide()
       self.scriptEditorDock.hide()
 
+    # This has to be done after self.valueEditor.initConnections
+    if self.shStates.getActiveScene().showValueEditorByDefault():
+      self.valueEditor.updateSGObject(self.shStates.getActiveScene().getValueEditorDefaultTarget())
+      self.valueEditorDockWidget.show();
+    
     if self.shTreesManager.getScene().enableTimelineByDefault():
       startFrame, endFrame = self.shTreesManager.getScene().getFrameState()
       self.timeLine.setTimeRange(startFrame, endFrame)
@@ -153,7 +158,17 @@ class SceneHubWindow(CanvasWindow):
       self.timeLineDock.show()
     else: selftimeLineDock.hide()
     
-    if self.shTreesManager.getScene().playbackByDefault(): self._onTogglePlayback()
+    if self.shTreesManager.getScene().playbackByDefault(): 
+      self._onTogglePlayback()
+
+    self.adjustSize()
+
+  def sizeHint(self):
+    width = self.size().width()
+    height = self.size().height()
+    if width < 300: width = 300
+    if height < 300: height = 300
+    return QtCore.QSize(width, height)  
 
   def _contentChanged(self) :
     self.valueEditor.onOutputsChanged()

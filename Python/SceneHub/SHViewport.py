@@ -25,7 +25,7 @@ class SHViewport(Viewports.ViewportWidget):
     self.shWindow = mainwindow   
     self.client = mainwindow.client
     super(SHViewport, self).__init__(renderer.getClient(), QtGui.QColor(), self.qglContext, self.shWindow, sharedWidget, self.shWindow.settings)
-
+ 
     # Force to track mouse movment when not clicking
     self.setMouseTracking(True)
     self.setAcceptDrops(True)
