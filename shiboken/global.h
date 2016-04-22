@@ -142,5 +142,6 @@
 #include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
 #include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
+#include <FabricUI/Viewports/ManipulationTool.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>
 #include <FabricUI/Test/RTValCrash.h>
