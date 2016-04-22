@@ -28,7 +28,7 @@ class SHTreeView(SceneHub.SHBaseTreeView):
     sgObject = None
     if item: 
       sgObject = item.getSGObject()   
-    menu = SHContextualMenu(self.client, self.shGLScene, self.shStates, sgObject)
+    menu = SHContextualMenu(self.client, self.shGLScene, self.shStates, sgObject, self)
     menu.exec_(self.mapToGlobal(point))
   
   def selectionChanged(self, selected, deselected):

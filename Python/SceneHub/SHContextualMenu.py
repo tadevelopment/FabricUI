@@ -48,8 +48,9 @@ class SHContextualMenu(SHBaseMenu):
       visMenu.addAction( resetVisibilityAction )
 
       if self.treeView is not None:
-        viewIndexTarget = SceneHub.SHTreeView_ViewIndexTarget(self.treeView, index, self)
-        expandAction.triggered.connect(viewIndexTarget.expandRecursively)
+        for index in self.treeView.selectedIndexes():
+          viewIndexTarget = SceneHub.SHTreeView_ViewIndexTarget(self.treeView, index, self)
+          expandAction.triggered.connect(viewIndexTarget.expandRecursively)
 
       loadAction.triggered.connect(self.loadRecursively)
 
