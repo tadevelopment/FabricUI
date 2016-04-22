@@ -67,7 +67,7 @@ void SHCmdHandler::onSynchronizeCommands() {
     for(unsigned int i=m_stackSize; i<currentStackSize; ++i)
     {        
       RTVal indexVal = RTVal::ConstructUInt32(m_client, i);
-      RTVal cmdVal = cmdManager.callMethod("SGBaseCmd", "getCmdInUndoStack", 1, &indexVal);
+      RTVal cmdVal = cmdManager.callMethod("Cmd", "getCmdInUndoStack", 1, &indexVal);
 
       QString type = QString(cmdVal.callMethod("String", "type", 0, 0).getStringCString());
 
