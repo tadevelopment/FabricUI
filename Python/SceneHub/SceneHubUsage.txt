@@ -1,0 +1,51 @@
+
+SceneHub is a work-in-progress app framework for viewing and editing SceneGraph objects.
+This is in an early 'alpha' state and can serve as an example or for testing.
+
+The following operations are supported:
+
+Tree view:
+
+- generated instances will be created as branches are expanded
+- selection will be reflected in the 3D view, enabling the transform manipulator
+- with an item selected, right-clicking will open a contextual menu to expand or load recursively
+
+3D view:
+
+- partially loaded assets are shown as bounding boxes (if at least one of the child isn't loaded)
+
+- hold 'Alt' key to navigate the camera:
+
+- click & drag: orbit
+- middle-click & drag: pan
+- wheel or right-click & drag: zoom
+- arrow keys to orbit and zoom
+
+- click on a geometry to select it. This will activate the transform tool:
+
+- press S, R, T to change transform mode (might need to first click in the 3D view)
+- click & drag the gizmos to change the transform
+
+- With a selected geometry, right-click to have a contextual menu for:
+
+- light: changing the color or intensity
+- geometry: setting the color (shared), local color (instance specific) or texture
+- parent: setting the color (propagated to children)
+
+- click in the background to un-select. Then, right-click to have a contextual menu for:
+
+- adding a geometry from a file (Fbx, Alembic)
+- creating a light
+
+- drag & drop to the 3D view:
+
+- Fbx or Alembic file:
+  - adds the asset as a child of the 'root'
+  - bounding box'es bottom placed under mouse's cursor (raycast)
+  - assets dropped multiple times share their content in the SceneGraph (load once)
+  - if holding `Ctrl` key: will load recursively (expand)
+
+- Image file:
+  - set as a textured color if dropped on a geometry with UVs
+  - images dropped multiple times share their content in the SceneGraph (load once)
+  - if holding `Ctrl` key: will set as a local texture (instance specific)

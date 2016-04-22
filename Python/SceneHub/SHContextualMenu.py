@@ -4,9 +4,9 @@ from FabricEngine import Core, FabricUI, Util, CAPI
 from FabricEngine.FabricUI import SceneHub
 from FabricEngine.Util import *
 from FabricEngine.CAPI import *
-from SHBaseMenu import SHBaseMenu
-from SHLightsMenu import SHLightsMenu
-from SHAssetsMenu import SHAssetsMenu
+from FabricEngine.SceneHub.SHBaseMenu import SHBaseMenu
+from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
+from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
 
 class SHContextualMenu(SHBaseMenu):
 

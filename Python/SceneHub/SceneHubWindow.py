@@ -3,37 +3,37 @@ from FabricEngine import Core, FabricUI, CAPI
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine.FabricUI import *
 from FabricEngine.CAPI import *
-from Canvas.CanvasWindow import CanvasWindow
-from SHTreeViewsManager import SHTreeViewsManager
-from SHViewportsManager import SHViewportsManager
-from SHAssetsMenu import SHAssetsMenu
-from SHLightsMenu import SHLightsMenu
-from SHTreeViewMenu import SHTreeViewMenu
-from SHInteractionMenu import SHInteractionMenu
-from HelpWidget import HelpWidget
-from SHVEEditorOwner import SHVEEditorOwner
+from FabricEngine.Canvas.CanvasWindow import CanvasWindow
+from FabricEngine.SceneHub.SHTreeViewsManager import SHTreeViewsManager
+from FabricEngine.SceneHub.SHViewportsManager import SHViewportsManager
+from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
+from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
+from FabricEngine.SceneHub.SHTreeViewMenu import SHTreeViewMenu
+from FabricEngine.SceneHub.SHInteractionMenu import SHInteractionMenu
+from FabricEngine.SceneHub.HelpWidget import HelpWidget
+from FabricEngine.SceneHub.SHVEEditorOwner import SHVEEditorOwner
 
 
 class SceneHubWindow(CanvasWindow):
 
-  def __init__(self, settings, unguarded, noopt, klFile, canvasFile):
+  def __init__(self, settings, unguarded, noopt, klFile, canvasFile, samples):
     self.klFile = klFile
     self.viewport = None
     self.shDFGBinding = None
     self.isCanvas = False
-
+    self.initSamples = samples
     super(SceneHubWindow, self).__init__(settings, unguarded, noopt)
 
-    isCanvas = canvasFile is not ""
-    self._initApp(isCanvas)
-    if isCanvas: self.loadGraph(canvasFile)
+    loadCanvas = canvasFile is not ""
+    self._initApp(loadCanvas)
+    if loadCanvas: self.loadGraph(canvasFile)
 
   def _initKL(self, unguarded, noopt):
     super(SceneHubWindow, self)._initKL(unguarded, noopt)
     self.client.loadExtension('SceneHub')
-    # Create the renderer
+    # Create the renderer manager
     self.shStates = SceneHub.SHStates(self.client)
-    self.viewportsManager = SHViewportsManager(self, self.shStates)
+    self.viewportsManager = SHViewportsManager(self, self.shStates, self.initSamples)
 
   def _initDFG(self):
     super(SceneHubWindow, self)._initDFG()
@@ -51,9 +51,7 @@ class SceneHubWindow(CanvasWindow):
   def _initLog(self):
     super(SceneHubWindow, self)._initLog()
     self._initCommands()
-    self.shCmdHandler = SceneHub.SHCmdHandler(
-      self.client, 
-      self.qUndoStack)
+    self.shCmdHandler = SceneHub.SHCmdHandler(self.client, self.qUndoStack)
 
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
@@ -82,7 +80,11 @@ class SceneHubWindow(CanvasWindow):
     self.shStates.sceneChanged.connect(self.valueEditor.onSceneChanged)
   
   def _initGL(self):
-    self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(0, False, False, None)
+    self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(
+      0, 
+      False, 
+      False, 
+      None)
     self.setCentralWidget(intermediateOwnerWidget)
     self.viewport.makeCurrent()  
 

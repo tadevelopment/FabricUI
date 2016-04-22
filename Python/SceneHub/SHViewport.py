@@ -2,8 +2,8 @@ import math
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core
 from FabricEngine.FabricUI import *  
-from SHContextualMenu import SHContextualMenu
-from SHInteractionMenu import SHInteractionMenu
+from FabricEngine.SceneHub.SHContextualMenu import SHContextualMenu
+from FabricEngine.SceneHub.SHInteractionMenu import SHInteractionMenu
 
 class SHViewport(Viewports.ViewportWidget):
   sceneChanged = QtCore.Signal()

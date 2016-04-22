@@ -3,9 +3,9 @@ from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import *
 from FabricEngine.Util import *
 from FabricEngine.CAPI import *
-from SHAssetsMenu import SHAssetsMenu
-from SHLightsMenu import SHLightsMenu
-from SHContextualMenu import SHContextualMenu
+from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
+from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
+from FabricEngine.SceneHub.SHContextualMenu import SHContextualMenu
 
 class SHTreeView(SceneHub.SHBaseTreeView):
   selectionCleared = QtCore.Signal()
@@ -25,7 +25,10 @@ class SHTreeView(SceneHub.SHBaseTreeView):
   def onCustomContextMenu(self, point):
     index = self.indexAt( point );
     item = SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index)
-    menu = SHContextualMenu(self.client, self.shGLScene, self.shStates, item.getSGObject())
+    sgObject = None
+    if item: 
+      sgObject = item.getSGObject()   
+    menu = SHContextualMenu(self.client, self.shGLScene, self.shStates, sgObject)
     menu.exec_(self.mapToGlobal(point))
   
   def selectionChanged(self, selected, deselected):

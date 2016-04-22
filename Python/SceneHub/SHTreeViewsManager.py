@@ -3,7 +3,7 @@ from FabricEngine import Core, FabricUI, Util, CAPI
 from FabricEngine.FabricUI import *
 from FabricEngine.Util import *
 from FabricEngine.CAPI import *
-from SHTreeView import SHTreeView
+from FabricEngine.SceneHub.SHTreeView import SHTreeView
 
 class SHTreeComboBox(QtGui.QComboBox):
   constructSceneList = QtCore.Signal()

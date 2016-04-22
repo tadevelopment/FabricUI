@@ -126,7 +126,8 @@ FabricCore::RTVal SHDFGBinding::getCanvasOperatorParameterObject() {
 }
 
 void SHDFGBinding::onInspectChanged() {
-  setCanvasOperator( m_shStates->getInspectedSGCanvasOperator() );
+  FabricCore::RTVal canvasOperator = m_shStates->getInspectedSGCanvasOperator();
+  setCanvasOperator( canvasOperator );
 }
 
 void SHDFGBinding::setMainBinding( FabricCore::DFGBinding &binding ) {

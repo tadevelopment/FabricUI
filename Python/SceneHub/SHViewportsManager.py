@@ -2,7 +2,7 @@ import math
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core
 from FabricEngine.FabricUI import *
-from SHViewport import SHViewport
+from FabricEngine.SceneHub.SHViewport import SHViewport
 
 
 class SHViewportDock(QtGui.QDockWidget):
@@ -20,8 +20,8 @@ class SHViewportDock(QtGui.QDockWidget):
 
 class SHViewportsManager():
 
-  def __init__(self, mainwindow, shStates):
-    self.samples = 2
+  def __init__(self, mainwindow, shStates, samples):
+    self.samples = samples
     self.shStates = shStates
     self.shWindow = mainwindow
     self.viewports = []

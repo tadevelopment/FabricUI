@@ -2,7 +2,7 @@
 from PySide import QtCore, QtGui
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
-from SHBaseMenu import SHBaseMenu
+from FabricEngine.SceneHub.SHBaseMenu import SHBaseMenu
 
 class SHTreeViewMenu(SHBaseMenu):
 
