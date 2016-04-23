@@ -4,7 +4,7 @@ import os
 import sys
 
 from PySide import QtCore, QtGui, QtOpenGL
-from FabricEngine import Core, FabricUI
+from FabricEngine import Core, FabricUI, Util
 from FabricEngine.FabricUI import DFG, KLASTManager, Viewports, TimeLine
 from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
@@ -437,6 +437,36 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.valueEditor.onOutputsChanged()
         self.viewport.redraw()
 
+    def onPortManipulationRequested_2(self, portName):
+        """Generic method to trigger value changes that are requested form manipulators
+        in the viewport.
+
+        Arguments:
+            portName (str): Name of the port that is being driven.
+
+        """
+        success = False
+        print "allo mama"
+        try:
+            controller = self.dfgWidget.getDFGController()
+            exec_ = controller.getBinding().getExec()
+
+            if exec_.haveExecPort(str(portName)):
+                structParam = self.viewport.getManipTool().getLastManipVal()
+                if structParam.getTypeName().getSimpleType() == "StructParam":
+                    paramType = str(structParam.getValueType("String").getSimpleType())
+                    structVal = getattr(self.client.RT.types, paramType)
+                    #dataVal = structVal.getSimpleType()
+                    #temp = structParam.getAsRTVal("RTVal")
+                    #structParam.getValue("", dataVal)
+                    #controller.cmdSetArgValue(str(portName), structVal)
+                success = True
+ 
+        except Exception as e:
+            self.dfgWidget.getDFGController().logError(str(e))
+
+        return success
+
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested form manipulators
         in the viewport.
@@ -445,6 +475,9 @@ class CanvasWindow(DFG.DFGMainWindow):
             portName (str): Name of the port that is being driven.
 
         """
+
+        if self.onPortManipulationRequested_2(portName):
+            return
 
         try:
             controller = self.dfgWidget.getDFGController()

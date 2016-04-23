@@ -22,15 +22,12 @@ class SGSetBooleanPropertyCmd : public SGBaseSetPropertyCmd {
       try 
       {
         m_client = client; 
-        if(newValue.isBoolean())
-        {
-          RTVal args[3] = {
-            RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
-            prevValue,
-            newValue
-          };
-          sg.callMethod("Cmd", "setPropertyCmd", 3, args);
-        }
+        RTVal args[3] = {
+          RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
+          prevValue,
+          newValue
+        };
+        sg.callMethod("Cmd", "setPropertyCmd", 3, args);
       }
       catch(FabricCore::Exception e)
       {
@@ -44,15 +41,11 @@ class SGSetBooleanPropertyCmd : public SGBaseSetPropertyCmd {
       try 
       {
         m_client = client; 
-        if(newValue.isBoolean())
-        {
-          RTVal args[2] = {
-            RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
-            newValue
-          };
-          sg.callMethod("Cmd", "setPropertyCmd", 2, args);
-        }
-
+        RTVal args[2] = {
+          RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
+          newValue
+        };
+        sg.callMethod("Cmd", "setPropertyCmd", 2, args);
       }
       catch(FabricCore::Exception e)
       {

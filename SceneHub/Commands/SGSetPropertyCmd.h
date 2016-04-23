@@ -23,19 +23,16 @@ class SGSetPropertyCmd : public SGBaseSetPropertyCmd {
       try 
       {
         m_client = client; 
-        if(newValue.isStruct())
-        {
-          RTVal args[7] = {
-            RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
-            prevValue.callMethod("Type", "type", 0, 0),
-            prevValue.callMethod("Data", "data", 0, 0),
-            prevValue.callMethod("UInt64", "dataSize", 0, 0),
-            newValue.callMethod("Type", "type", 0, 0),
-            newValue.callMethod("Data", "data", 0, 0),
-            newValue.callMethod("UInt64", "dataSize", 0, 0),
-          };
-          sg.callMethod("Cmd", "setPropertyCmd", 7, args);
-        }
+        RTVal args[7] = {
+          RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
+          prevValue.callMethod("Type", "type", 0, 0),
+          prevValue.callMethod("Data", "data", 0, 0),
+          prevValue.callMethod("UInt64", "dataSize", 0, 0),
+          newValue.callMethod("Type", "type", 0, 0),
+          newValue.callMethod("Data", "data", 0, 0),
+          newValue.callMethod("UInt64", "dataSize", 0, 0),
+        };
+        sg.callMethod("Cmd", "setPropertyCmd", 7, args);
       }
       catch(FabricCore::Exception e)
       {
@@ -49,17 +46,13 @@ class SGSetPropertyCmd : public SGBaseSetPropertyCmd {
       try 
       {
         m_client = client; 
-        if(newValue.isStruct())
-        {
-          RTVal args[4] = {
-            RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
-            newValue.callMethod("Type", "type", 0, 0),
-            newValue.callMethod("Data", "data", 0, 0),
-            newValue.callMethod("UInt64", "dataSize", 0, 0),
-          };
-          sg.callMethod("Cmd", "setPropertyCmd", 4, args);
-        }
-
+        RTVal args[4] = {
+          RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
+          newValue.callMethod("Type", "type", 0, 0),
+          newValue.callMethod("Data", "data", 0, 0),
+          newValue.callMethod("UInt64", "dataSize", 0, 0),
+        };
+        sg.callMethod("Cmd", "setPropertyCmd", 4, args);
       }
       catch(FabricCore::Exception e)
       {
