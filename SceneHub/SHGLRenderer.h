@@ -21,6 +21,8 @@ class SHGLRenderer {
   public:
     SHGLRenderer(FabricCore::Client client);
 
+    SHGLRenderer( FabricCore::Client client, FabricCore::RTVal shRenderer );
+
     ~SHGLRenderer() {}
 
     /// Updates the Renderer, if set externally

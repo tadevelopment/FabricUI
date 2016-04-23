@@ -22,7 +22,7 @@ class SHTreeViewsManager(QtGui.QWidget):
   itemDoubleClicked = QtCore.Signal(SceneHub.SHTreeItem)
   activeSceneChanged = QtCore.Signal(SceneHub.SHGLScene)
   
-  def __init__(self, client, dfgWidget, shStates, klFile):
+  def __init__(self, client, dfgWidget, shStates, shMainGLScene):
     self.dfgWidget = dfgWidget
     self.shStates = shStates
     self.showProperties = True
@@ -30,7 +30,7 @@ class SHTreeViewsManager(QtGui.QWidget):
     self.client = client
  
     super(SHTreeViewsManager, self).__init__()
-    self.shMainGLScene = SceneHub.SHGLScene(client, klFile)
+    self.shMainGLScene = shMainGLScene
     self.shGLScene = SceneHub.SHGLScene(client)
 
     self.treeModel = None

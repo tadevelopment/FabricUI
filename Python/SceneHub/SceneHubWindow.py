@@ -31,9 +31,15 @@ class SceneHubWindow(CanvasWindow):
   def _initKL(self, unguarded, noopt):
     super(SceneHubWindow, self)._initKL(unguarded, noopt)
     self.client.loadExtension('SceneHub')
-    # Create the renderer manager
+    # Create the main scene and states
     self.shStates = SceneHub.SHStates(self.client)
-    self.viewportsManager = SHViewportsManager(self, self.shStates, self.initSamples)
+    self.shMainGLScene = SceneHub.SHGLScene(self.client, self.klFile)
+
+    # The scene might create a specialized renderer type; get it from the scene
+    shRenderer = self.shMainGLScene.getSHGLRenderer()
+
+    # Create the renderer manager
+    self.viewportsManager = SHViewportsManager(self, self.shStates, shRenderer, self.initSamples)
 
   def _initDFG(self):
     super(SceneHubWindow, self)._initDFG()
@@ -56,7 +62,7 @@ class SceneHubWindow(CanvasWindow):
   def _initTreeView(self):
     super(SceneHubWindow, self)._initTreeView()
 
-    self.shTreesManager = SHTreeViewsManager(self.client, self.dfgWidget, self.shStates, self.klFile)
+    self.shTreesManager = SHTreeViewsManager(self.client, self.dfgWidget, self.shStates, self.shMainGLScene)
     self.shTreesManager.activeSceneChanged.connect( self.onActiveSceneChanged )
 
     # scene changed -> tree view changed
