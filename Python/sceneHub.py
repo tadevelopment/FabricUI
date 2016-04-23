@@ -1,4 +1,4 @@
-import optparse, os, sys
+import argparse, os, sys
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
 from PySide import QtCore, QtGui, QtOpenGL
@@ -16,58 +16,58 @@ if fabricDir:
     logoPath = os.path.join(fabricDir, 'Resources', 'fe_logo.png')
     app.setWindowIcon(QtGui.QIcon(logoPath))
 
-opt_parser = optparse.OptionParser()
+
+class Parser(argparse.ArgumentParser):
+  def error(self, message):
+    sys.stderr.write('error %s\n' %  message)
+    self.print_help()
+    sys.exit(2)
+
+parser = Parser()
 
 
-opt_parser.add_option('-u', '--unguarded',
-                      action='store_true',
-                      dest='unguarded',
-                      help='compile KL code in unguarded mode')
+parser.add_argument('-u', '--unguarded',
+                    action='store_true',
+                    help='compile KL code in unguarded mode')
 
-opt_parser.add_option('-n', '--noopt',
-                      action='store_true',
-                      dest='noopt',
-                      help='compile KL code wihout brackground optimization')
+parser.add_argument('-n', '--noopt',
+                    action='store_true',
+                    help='compile KL code wihout brackground optimization')
 
-opt_parser.add_option('-d', '--documemtation',
-                      action='store_true',
-                      dest='documemtation',
-                      help='show the documentation and quit')
+parser.add_argument('-d', '--documemtation',
+                    action='store_true',
+                    help='show the documentation and quit')
 
-opt_parser.add_option('-e', '--exec',
-                      action='store',
-                      dest='script',
-                      help='execute Python script on startup')
- 
-opt_parser.add_option('-s', '--scene',
-                      action='store',
-                      dest='scene',
-                      type='str',
-                      default='',
-                      help='execute a scene.kl on startup')
+parser.add_argument('-e', '--script',
+                    type=str,
+                    default='',
+                    help='execute Python script on startup')
 
-opt_parser.add_option('-g', '--graph',
-                      action='store',
-                      dest='graph',
-                      type='str',
-                      default='',
-                      help='execute a graph.canvas on startup')
+parser.add_argument('-s', '--scene',
+                    type=str,
+                    default='',
+                    help='execute a scene.kl on startup')
 
-opt_parser.add_option('-m', '--multisampling',
-                      action='store',
-                      dest='multisampling',
-                      type='int',
-                      default='2',
-                      help='multisampling (1|2|4|8)')
+parser.add_argument('-g', '--graph',
+                    type=str,
+                    default='',
+                    help='execute a graph.canvas on startup')
 
-(opts, args) = opt_parser.parse_args()
+parser.add_argument('-m', '--multisampling',
+                    type=int,
+                    default=2,
+                    choices=[1, 2, 4, 8],
+                    help='initial multisampling on startup')
 
-unguarded = opts.unguarded is True
-noopt = opts.noopt is True
-doc = opts.documemtation is True
-scene = opts.scene
-graph = opts.graph
-samples = opts.multisampling
+args = parser.parse_args()
+
+unguarded = args.unguarded is True
+noopt = args.noopt is True
+doc = args.documemtation is True
+scene = args.scene
+graph = args.graph
+samples = args.multisampling
+script = args.script
 
 #Check the options
 if samples is not 1 and samples is not 2 and samples is not 4 and samples is not 8:
@@ -102,8 +102,8 @@ sceneHubWin = SceneHubWindow(
 
 sceneHubWin.show()
 
-if opts.script:
-  with open(opts.script, "r") as f:
+if script:
+  with open(script, "r") as f:
     sceneHubWin.scriptEditor.exec_(f.read())
 
 app.exec_()
