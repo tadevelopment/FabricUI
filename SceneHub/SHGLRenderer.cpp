@@ -22,6 +22,9 @@ SHGLRenderer::SHGLRenderer(Client client) : m_client(client) {
   }
 }
 
+SHGLRenderer::SHGLRenderer( Client client, RTVal shRenderer ) : m_client( client ), m_shGLRendererVal( shRenderer ) {
+}
+
 void SHGLRenderer::update() {
   try 
   {

@@ -20,14 +20,14 @@ class SHViewportDock(QtGui.QDockWidget):
 
 class SHViewportsManager():
 
-  def __init__(self, mainwindow, shStates, samples):
+  def __init__(self, mainwindow, shStates, shRenderer, samples):
     self.samples = samples
     self.shStates = shStates
     self.shWindow = mainwindow
     self.viewports = []
     self.sampleActions = []
     self.nextViewportIndex = 1
-    self.shGLRenderer = SceneHub.SHGLRenderer(self.shWindow.client)
+    self.shGLRenderer = SceneHub.SHGLRenderer(self.shWindow.client, shRenderer)
 
     self.shStates.sceneChanged.connect(self.onRefreshAllViewports)
     self.shStates.selectionChanged.connect(self.onRefreshAllViewports)

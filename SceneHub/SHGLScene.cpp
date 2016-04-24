@@ -67,6 +67,17 @@ FabricCore::RTVal SHGLScene::getSHGLScene() {
   return m_shGLSceneVal; 
 }
 
+FabricCore::RTVal SHGLScene::getSHGLRenderer() {
+  FabricCore::RTVal val;
+  try {
+    val = m_shGLSceneVal.callMethod( "SHGLRenderer", "getSHRenderer", 0, 0 );
+  }
+  catch( Exception e ) {
+    printf( "SHGLScene::getSHGLRenderer: exception: %s\n", e.getDesc_cstr() );
+  }
+  return val;
+}
+
 void SHGLScene::setSHGLScene(FabricCore::RTVal shGLSceneVal) { 
   m_shGLSceneVal = shGLSceneVal; 
 }

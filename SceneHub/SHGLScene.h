@@ -36,6 +36,9 @@ class SHGLScene {
     /// Gets a reference to the scenegraph.
     FabricCore::RTVal getSHGLScene();
 
+    /// Gets a reference to the renderer.
+    FabricCore::RTVal getSHGLRenderer();
+
     /// Sets a reference to the scenegraph.
     void setSHGLScene(FabricCore::RTVal shGLSceneVal);
 
