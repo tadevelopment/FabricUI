@@ -83,7 +83,7 @@ if __name__ == "__main__":
     settings = QtCore.QSettings()
     settings.setValue("mainWindow/lastPresetFolder", str("."))
 
-    sceneHubWin = SceneHubWindow(
+    mainWin = SceneHubWindow(
         settings, 
         args.unguarded, 
         args.noopt, 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         args.multisampling,
         usageFilePath)
 
-    sceneHubWin.show()
+    mainWin.show()
 
     if args.exec_:
         mainWin.scriptEditor.exec_(args.exec_)

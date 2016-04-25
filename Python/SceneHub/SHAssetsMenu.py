@@ -1,4 +1,5 @@
 
+import os
 from PySide import QtCore, QtGui
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
@@ -45,10 +46,17 @@ class SHAssetsMenu(SHBaseMenu):
     def exportToAlembic(self):   
         """Exports the current scene to alembic.
         """
-        fileName = QtGui.QFileDialog.getSaveFileName(self, "Export to Alembic", "", "Files (*.abc)")
-        if dialog.exec_():
-            pathList = []
-            pathList.append(fileName)
-            pathList = Util.StringUtils.ProcessPathQStringForOsX(pathList)
-            self.shGLScene.exportToAlembic(pathList[0])
+        fileName, _ = QtGui.QFileDialog.getSaveFileName(self, "Export to Alembic", "", "Files (*.abc)")
+        if not fileName: 
+            return
+            
+        baseName, extension = os.path.splitext(fileName)
+ 
+        if extension != ".abc":
+            fileName = baseName + ".abc"
+
+        pathList = []
+        pathList.append(fileName)
+        pathList = Util.StringUtils.ProcessPathQStringForOsX(pathList)
+        self.shGLScene.exportToAlembic(pathList[0])
       
