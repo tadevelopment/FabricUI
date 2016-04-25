@@ -1,109 +1,112 @@
+#!/usr/bin/env python
+
+"""SceneHub launcher script."""
+
 import argparse, os, sys
-from FabricEngine import Core, FabricUI
-from FabricEngine.FabricUI import *
-from PySide import QtCore, QtGui, QtOpenGL
+
+if sys.version_info < (2, 7):
+    raise Exception('canvas.py currently requires Python 2.7')
+
+from PySide import QtCore, QtGui
 from FabricEngine.SceneHub.SceneHubWindow import SceneHubWindow
-from canvas import FabricStyle
+from FabricEngine.Canvas.FabricStyle import FabricStyle
+from FabricEngine.Canvas.FabricParser import FabricParser
+from FabricEngine.Canvas.FabricParser import CheckExtension
 
-app = QtGui.QApplication([])
-app.setOrganizationName('Fabric Software Inc')
-app.setApplicationName('Fabric SceneHub Standalone')
-app.setApplicationVersion('2.0.0')
-app.setStyle( FabricStyle() )
+if __name__ == "__main__":
+    # This only runs when launched directly from the command line.
+    # A QApplication is setup and the SceneHub Window is instanced and attached to
+    # the QApplication and shown.
+     
+    app = QtGui.QApplication([])
+    app.setOrganizationName('Fabric Software Inc')
+    app.setApplicationName('Fabric SceneHub Standalone')
+    app.setApplicationVersion('2.0.0')
+    app.setStyle( FabricStyle() )
 
-fabricDir = os.environ.get('FABRIC_DIR', None)
-if fabricDir:
-    logoPath = os.path.join(fabricDir, 'Resources', 'fe_logo.png')
-    app.setWindowIcon(QtGui.QIcon(logoPath))
+    fabricDir = os.environ.get('FABRIC_DIR', None)
+    if fabricDir:
+        logoPath = os.path.join(fabricDir, 'Resources', 'fe_logo.png')
+        app.setWindowIcon(QtGui.QIcon(logoPath))
+     
+    parser = Parser()
 
+    parser.add_argument('scene',
+                        nargs='?',
+                        action=CheckExtension({'kl'}),
+                        help='SceneHub scene to load')
 
-class Parser(argparse.ArgumentParser):
-  def error(self, message):
-    sys.stderr.write('error %s\n' %  message)
-    self.print_help()
-    sys.exit(2)
+    parser.add_argument('-g', '--graph',
+                        type=str,
+                        default='',
+                        action=CheckExtension({'canvas'}),
+                        help='execute a graph.canvas on startup')
 
-parser = Parser()
+    parser.add_argument('-u', '--unguarded',
+                        action='store_true',
+                        help='compile KL code in unguarded mode')
 
+    parser.add_argument('-n', '--noopt',
+                        action='store_true',
+                        help='compile KL code wihout brackground optimization')
 
-parser.add_argument('-u', '--unguarded',
-                    action='store_true',
-                    help='compile KL code in unguarded mode')
+    parser.add_argument('-e', '--exec',
+                        action='store',
+                        dest='exec_',
+                        help='Python code to execute on startup')
 
-parser.add_argument('-n', '--noopt',
-                    action='store_true',
-                    help='compile KL code wihout brackground optimization')
+    parser.add_argument('-s', '--script',
+                        action='store',
+                        dest='script',
+                        help='Python script file to execute on startup')
 
-parser.add_argument('-d', '--documemtation',
-                    action='store_true',
-                    help='show the documentation and quit')
+    parser.add_argument('-d', '--documemtation',
+                        action='store_true',
+                        help='show the documentation and quit')
 
-parser.add_argument('-e', '--script',
-                    type=str,
-                    default='',
-                    help='execute Python script on startup')
+    parser.add_argument('-m', '--multisampling',
+                        type=int,
+                        default=2,
+                        choices=[1, 2, 4, 8],
+                        help='initial multisampling on startup')
 
-parser.add_argument('-s', '--scene',
-                    type=str,
-                    default='',
-                    help='execute a scene.kl on startup')
+    args = parser.parse_args()
 
-parser.add_argument('-g', '--graph',
-                    type=str,
-                    default='',
-                    help='execute a graph.canvas on startup')
+    unguarded = args.unguarded is True
+    noopt = args.noopt is True
+    samples = args.multisampling
+    script = args.script
 
-parser.add_argument('-m', '--multisampling',
-                    type=int,
-                    default=2,
-                    choices=[1, 2, 4, 8],
-                    help='initial multisampling on startup')
+    #Check the options
+    if samples is not 1 and samples is not 2 and samples is not 4 and samples is not 8:
+        print "Unsuported samples number :" + str(samples) + " , use (1|2|4|8) "
+        sys.exit()
+ 
+    #Display the documentation if asked
+    if args.documemtation is True:
+        file_ = open(os.path.expandvars('${FABRIC_DIR}/Python/2.7/FabricEngine/SceneHub/SceneHubUsage.txt'), 'r')
+        print file_.read()
+        sys.exit()
 
-args = parser.parse_args()
+    #Starts the app
+    settings = QtCore.QSettings()
+    settings.setValue("mainWindow/lastPresetFolder", str("."))
 
-unguarded = args.unguarded is True
-noopt = args.noopt is True
-doc = args.documemtation is True
-scene = args.scene
-graph = args.graph
-samples = args.multisampling
-script = args.script
+    sceneHubWin = SceneHubWindow(
+        settings, 
+        unguarded, 
+        noopt, 
+        args.scene, 
+        args.graph,
+        sceneamples)
 
-#Check the options
-if samples is not 1 and samples is not 2 and samples is not 4 and samples is not 8:
-  print "Unsuported samples number :" + str(samples) + " , use (1|2|4|8) "
-  sys.exit()
+    sceneHubWin.show()
 
-if scene != "" and os.path.splitext(scene)[1] != ".kl":
-  print str(scene) + " is an unsupported scene format, use a .kl extension file"
-  sys.exit()
+    if args.exec_:
+        mainWin.scriptEditor.exec_(args.exec_)
 
-if graph != "" and os.path.splitext(graph)[1] != ".canvas":
-  print str(graph) + " is an unsupported graph format, use a .canvas extension file"
-  sys.exit()
+    if args.script:
+        with open(args.script, "r") as f:
+            mainWin.scriptEditor.exec_(f.read())
 
-#Display the usage if asked
-if doc:
-  file_ = open(os.path.expandvars('${FABRIC_DIR}/Python/2.7/FabricEngine/SceneHub/SceneHubUsage.txt'), 'r')
-  print file_.read()
-  sys.exit()
-
-#Starts the app
-settings = QtCore.QSettings()
-settings.setValue("mainWindow/lastPresetFolder", str("."))
-
-sceneHubWin = SceneHubWindow(
-  settings, 
-  unguarded, 
-  noopt, 
-  scene, 
-  graph,
-  samples)
-
-sceneHubWin.show()
-
-if script:
-  with open(script, "r") as f:
-    sceneHubWin.scriptEditor.exec_(f.read())
-
-app.exec_()
+    app.exec_()
