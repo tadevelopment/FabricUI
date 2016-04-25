@@ -3,7 +3,7 @@
  */
 
 #include <FabricUI/Viewports/QtToKLEvent.h>
-#include <FabricUI/SceneHub/Editors/SHEditorWidget.h>
+//#include <FabricUI/SceneHub/Editors/SHEditorWidget.h>
 #include "FabricUI/SceneHub/Viewports/RTRGLViewportWidget.h"
 
 using namespace FabricUI::SceneHub;
