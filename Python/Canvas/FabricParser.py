@@ -22,7 +22,7 @@ def CheckExtension(choices):
                 ext = os.path.splitext(fname)[1][1:]
                 if ext not in choices:
                     option_string = '({})'.format(option_string) if option_string else ''
-                    parser.error("File doesn't end with one of {}{}".format(choices,option_string))
+                    parser.error(str(ext) + " isn't supported, please use " + str(choices) + " files")
                 else:
                     setattr(namespace,self.dest,fname)
 
