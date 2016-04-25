@@ -11,7 +11,7 @@ class SHInteractionMenu(SHBaseMenu):
     self.shGLRenderer = renderer
     super(SHInteractionMenu, self).__init__(None, "Tools", parent)
  
-  def _constructMenu(self):
+  def constructMenu(self):
     tools = self.shGLRenderer.getRegisteredTools()
     for i in range(0, len(tools[0])):
       toolAction = self.addAction(tools[0][i] + "\t" + tools[1][i])

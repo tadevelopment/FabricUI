@@ -10,7 +10,7 @@ class SHTreeViewMenu(SHBaseMenu):
     self.shTreeViewWidget = treeViewWidget
     super(SHTreeViewMenu, self).__init__(None, "Tree View", parent)
  
-  def _constructMenu(self):
+  def constructMenu(self):
     self.showProperty = self.addAction("Show properties")
     self.showProperty.setCheckable( True )
     self.showProperty.setChecked( True )

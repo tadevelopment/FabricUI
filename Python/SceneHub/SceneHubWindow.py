@@ -4,24 +4,34 @@ from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine.FabricUI import *
 from FabricEngine.CAPI import *
 from FabricEngine.Canvas.CanvasWindow import CanvasWindow
+from FabricEngine.Canvas.HelpWidget import HelpWidget
 from FabricEngine.SceneHub.SHTreeViewsManager import SHTreeViewsManager
 from FabricEngine.SceneHub.SHViewportsManager import SHViewportsManager
 from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
 from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
 from FabricEngine.SceneHub.SHTreeViewMenu import SHTreeViewMenu
 from FabricEngine.SceneHub.SHInteractionMenu import SHInteractionMenu
-from FabricEngine.SceneHub.HelpWidget import HelpWidget
 from FabricEngine.SceneHub.SHVEEditorOwner import SHVEEditorOwner
 
 
 class SceneHubWindow(CanvasWindow):
 
-  def __init__(self, settings, unguarded, noopt, klFile, canvasFile, samples):
+  def __init__(
+    self, 
+    settings, 
+    unguarded, 
+    noopt, 
+    klFile, 
+    canvasFile, 
+    samples, 
+    usageFilePath = None):
+
     self.klFile = klFile
     self.viewport = None
     self.shDFGBinding = None
     self.isCanvas = False
     self.initSamples = samples
+    self.usageFilePath = usageFilePath
     super(SceneHubWindow, self).__init__(settings, unguarded, noopt)
 
     loadCanvas = canvasFile is not ""
@@ -246,5 +256,6 @@ class SceneHubWindow(CanvasWindow):
     self.fpsLabel.setText( caption )
     
   def _onShowUsage(self):
-    helpWidget = HelpWidget(self)
-    helpWidget.show()
+    if self.usageFilePath is not None:
+      helpWidget = HelpWidget(self.usageFilePath, self)
+      helpWidget.show()

@@ -9,7 +9,7 @@ class SHLightsMenu(SHBaseMenu):
   def __init__(self, scene, title = None, parent = None):
     super(SHLightsMenu, self).__init__(scene, "Lights", parent)
  
-  def _constructMenu(self):
+  def constructMenu(self):
     addSpotLightAction = self.addAction("Add Spot")
     addSpotLightAction.triggered.connect(self.addLight)
     addPointLightAction = self.addAction("Add Point")

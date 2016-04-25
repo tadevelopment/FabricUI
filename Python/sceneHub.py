@@ -23,24 +23,25 @@ if __name__ == "__main__":
     app.setApplicationName('Fabric SceneHub Standalone')
     app.setApplicationVersion('2.0.0')
     app.setStyle( FabricStyle() )
+    usageFilePath = os.path.expandvars('${FABRIC_DIR}/Python/2.7/FabricEngine/SceneHub/SceneHubUsage.txt')
 
     fabricDir = os.environ.get('FABRIC_DIR', None)
     if fabricDir:
         logoPath = os.path.join(fabricDir, 'Resources', 'fe_logo.png')
         app.setWindowIcon(QtGui.QIcon(logoPath))
      
-    parser = Parser()
+    parser = FabricParser()
 
     parser.add_argument('scene',
                         nargs='?',
-                        action=CheckExtension({'kl'}),
-                        help='SceneHub scene to load')
+                        action=CheckExtension(['kl']),
+                        help='sceneHub scene (.kl) to load on startup')
 
     parser.add_argument('-g', '--graph',
                         type=str,
                         default='',
-                        action=CheckExtension({'canvas'}),
-                        help='execute a graph.canvas on startup')
+                        action=CheckExtension(['canvas']),
+                        help='canvas graph (.canvas) to load on startup')
 
     parser.add_argument('-u', '--unguarded',
                         action='store_true',
@@ -49,6 +50,12 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--noopt',
                         action='store_true',
                         help='compile KL code wihout brackground optimization')
+
+    parser.add_argument('-m', '--multisampling',
+                        type=int,
+                        default=2,
+                        choices=[1, 2, 4, 8],
+                        help='initial multisampling on startup')
 
     parser.add_argument('-e', '--exec',
                         action='store',
@@ -64,27 +71,11 @@ if __name__ == "__main__":
                         action='store_true',
                         help='show the documentation and quit')
 
-    parser.add_argument('-m', '--multisampling',
-                        type=int,
-                        default=2,
-                        choices=[1, 2, 4, 8],
-                        help='initial multisampling on startup')
-
     args = parser.parse_args()
 
-    unguarded = args.unguarded is True
-    noopt = args.noopt is True
-    samples = args.multisampling
-    script = args.script
-
-    #Check the options
-    if samples is not 1 and samples is not 2 and samples is not 4 and samples is not 8:
-        print "Unsuported samples number :" + str(samples) + " , use (1|2|4|8) "
-        sys.exit()
- 
-    #Display the documentation if asked
+    #Display the documentation if asked and exit
     if args.documemtation is True:
-        file_ = open(os.path.expandvars('${FABRIC_DIR}/Python/2.7/FabricEngine/SceneHub/SceneHubUsage.txt'), 'r')
+        file_ = open(usageFilePath, 'r')
         print file_.read()
         sys.exit()
 
@@ -94,11 +85,12 @@ if __name__ == "__main__":
 
     sceneHubWin = SceneHubWindow(
         settings, 
-        unguarded, 
-        noopt, 
+        args.unguarded, 
+        args.noopt, 
         args.scene, 
         args.graph,
-        sceneamples)
+        args.multisampling,
+        usageFilePath)
 
     sceneHubWin.show()
 

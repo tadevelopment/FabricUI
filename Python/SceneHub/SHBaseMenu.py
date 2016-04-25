@@ -1,17 +1,27 @@
 
-from PySide import QtCore, QtGui
-
-class SHBaseMenu(QtGui.QMenu):
-
-  def __init__(self, scene, title = None, parent = None):
-    self.shGLScene = scene
-    super(SHBaseMenu, self).__init__(parent)
-    if title is not None : self.setTitle(title)
-    self._constructMenu()
+from FabricEngine.Canvas.BaseMenu import BaseMenu
     
-  def onActiveSceneChanged(self, scene):
-    self.shGLScene = scene
+class SHBaseMenu(BaseMenu):
 
-  def _constructMenu(self):
-    pass
+    """SHBaseMenu
 
+    SHBaseMenu is a specialization of BaseMenu.
+    It owns a reference to a SceneHub.SHGLScene scene to edit.
+
+    Arguments:
+        shGLScene (SceneHub.SHGLScene): A reference to a shGLScene.
+        title (String): The menu title, can be None.
+        parent (QWidget): The menu widget parent, can be None.
+
+    """
+
+    def __init__(self, shGLScene, title = None, parent = None):
+        self.shGLScene = shGLScene
+        super(SHBaseMenu, self).__init__(title, parent)
+    
+    def onActiveSceneChanged(self, shGLScene):
+        """Update the current scene menu.
+           Can be used as a public slot.
+        """
+        self.shGLScene = shGLScene
+ 

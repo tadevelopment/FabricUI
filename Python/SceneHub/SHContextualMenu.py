@@ -17,7 +17,7 @@ class SHContextualMenu(SHBaseMenu):
     self.shStates = shStates
     super(SHContextualMenu, self).__init__(scene)
  
-  def _constructMenu(self):
+  def constructMenu(self):
 
     if self.targetSGObject is not None:
       expandAction = QtGui.QAction("Expand recursively", self)
