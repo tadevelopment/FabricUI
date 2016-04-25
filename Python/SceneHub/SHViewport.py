@@ -19,7 +19,6 @@ class SHViewport(Viewports.ViewportWidget):
     self.samples = self.qglContext.format().samples()
     self.viewportIndex = index
     self.viewport = None
-    self.orthographic = False
     self.alwaysRefresh = False
     self.shGLRenderer = renderer
     self.shWindow = mainwindow   
@@ -31,6 +30,7 @@ class SHViewport(Viewports.ViewportWidget):
     self.setAcceptDrops(True)
     self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
     self.viewport = self.shGLRenderer.getOrAddViewport(self.viewportIndex)
+    self.setOrthographic( orthographic )
  
   def detachFromRTRViewport(self):
     if(self.viewportIndex > -1): self.shGLRenderer.removeViewport(self.viewportIndex)
