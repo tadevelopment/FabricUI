@@ -13,7 +13,6 @@ from FabricEngine.SceneHub.SHTreeViewMenu import SHTreeViewMenu
 from FabricEngine.SceneHub.SHInteractionMenu import SHInteractionMenu
 from FabricEngine.SceneHub.SHVEEditorOwner import SHVEEditorOwner
 
-
 class SceneHubWindow(CanvasWindow):
 
     """SceneHubWindow
@@ -347,11 +346,23 @@ class SceneHubWindow(CanvasWindow):
         if stats[3] > 0: caption += " tri: " + str(stats[3])
         
         self.fpsLabel.setText( caption )
+
+
+    class SHHelpWidget(HelpWidget):
+        closeSignal = QtCore.Signal()
+
+        def __init__(self, usagetFilePath, parent = None, width = 800, height = 500):
+            super(SHHelpWidget, self).__init__(usagetFilePath, parent, width, height)
+
+        def closeEvent(self, event):
+            self.closeSignal.emit()
         
     def _onShowUsage(self):
         """ Displays the application usage.
         """
 
         if self.usageFilePath is not None:
-            helpWidget = HelpWidget(self.usageFilePath, self)
-            helpWidget.show()
+            dialog = QtGui.QDialog(self)
+            helpWidget = SHHelpWidget(self.usageFilePath, dialog)
+            helpWidget.closeSignal.connect(dialog.close)
+            dialog.show()

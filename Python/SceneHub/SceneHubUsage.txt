@@ -1,51 +1,87 @@
 
-SceneHub is a work-in-progress app framework for viewing and editing SceneGraph objects.
-This is in an early 'alpha' state and can serve as an example or for testing.
+sceneHub.py is a work-in-progress app framework for viewing and editing SceneGraph objects.
+This is in an early 'alpha' state and serves as a base for developing custom apps
+or for testing SceneHub features.
+
+Several samples pre-populate the scene with various content. These must be
+specified at launch time since they might initialize the app with various options.
+To run a sample from a bash, the environment must be set up (environment.sh) and then
+you can invoke: python sceneHub.py Samples/SceneHub/<samplename.kl>
 
 The following operations are supported:
 
 Tree view:
 
-- generated instances will be created as branches are expanded
-- selection will be reflected in the 3D view, enabling the transform manipulator
-- with an item selected, right-clicking will open a contextual menu to expand or load recursively
+- shows the content of the scene.
+
+- the Menu->View->Tree View shows options to show or hide properties (blue) and property generators (red)
+
+- selection will be reflected in the 3D view and vice versa
+
+- double-clicking on an item will show its value in the Value Editor, 
+  and its associated Canvas graph when applicable (generators can be a Canvas graph)
+
+- right-clicking on an item will show a contextual menu with various actions including changing
+  visibility, exporting to Alembic**, loading recursively.
+
+- for loaded assets, generated instances will be created as branches are expanded
+
+- when there is more than one SceneGraph (eg: some created by a Canvas graph), the combo box
+  on the top allows to switch the tree view from one to another
+
+** Exporting to Alembic will export the geometry and transform hierarchy, and will also include
+  several meta-data allowing sceneHub to properly recreate lights, image paths, materials and 
+  other properties when reloading. However, these will be ignored by other apps that can load Alembic
+  files.
 
 3D view:
 
-- partially loaded assets are shown as bounding boxes (if at least one of the child isn't loaded)
-
 - hold 'Alt' key to navigate the camera:
+  - click & drag: orbit
+  - middle-click & drag: pan
+  - wheel or right-click & drag: zoom
+  - arrow keys to orbit and zoom
 
-- click & drag: orbit
-- middle-click & drag: pan
-- wheel or right-click & drag: zoom
-- arrow keys to orbit and zoom
+- 'q' will enable the transform tool, and 'w', 'e' and 'r' will select the transform mode
+  - click & drag the gizmos to change the transform
 
-- click on a geometry to select it. This will activate the transform tool:
+- click on an item to select it, or in the background to un-select
 
-- press S, R, T to change transform mode (might need to first click in the 3D view)
-- click & drag the gizmos to change the transform
+- double-clicking on an asset will show its properties in the Value Editor,
+  and its associated Canvas graph when applicable (generators can be a Canvas graph)
 
-- With a selected geometry, right-click to have a contextual menu for:
+- more perspective or orthographic viewports can be added to the layout with
+  Menu->Window->Add Viewport
 
-- light: changing the color or intensity
-- geometry: setting the color (shared), local color (instance specific) or texture
-- parent: setting the color (propagated to children)
+- multisampling settings can be changed with Menu->Window->Multisampling
 
-- click in the background to un-select. Then, right-click to have a contextual menu for:
+- partially loaded assets are shown as bounding boxes (if at least one of the child isn't loaded)
+  Selecting a shared asset will select its 'root' to avoid changing the shared hierarchy
 
-- adding a geometry from a file (Fbx, Alembic)
-- creating a light
+- right-clicking over the background will open general contextual menu for:
+  - adding a geometry from a file (Fbx, Alembic)
+  - creating a light
 
-- drag & drop to the 3D view:
+- drag & drop to the 3D view supports the following:
 
-- Fbx or Alembic file:
-  - adds the asset as a child of the 'root'
-  - bounding box'es bottom placed under mouse's cursor (raycast)
-  - assets dropped multiple times share their content in the SceneGraph (load once)
-  - if holding `Ctrl` key: will load recursively (expand)
+  - Fbx or Alembic file:
+    - adds the asset as a child of the 'root'
+    - bounding box'es bottom placed under mouse's cursor (raycast)
+    - assets dropped multiple times share their content in the SceneGraph (load once)
+    - if holding `Ctrl` key: will load recursively (expand)
 
-- Image file:
-  - set as a textured color if dropped on a geometry with UVs
-  - images dropped multiple times share their content in the SceneGraph (load once)
-  - if holding `Ctrl` key: will set as a local texture (instance specific)
+  - Image file:
+    - set as a textured color if dropped on a geometry with UVs
+    - images dropped multiple times share their content in the SceneGraph (load once)
+    - if holding `Ctrl` key: will set as a local texture (instance specific)
+
+Visibility options (from tree view or 3D view contextual menu) work for both lights
+and assets.
+
+- Show/Hide: will create and set a "visible" property that is propagated to children as a default
+
+- Show/Hide (local only): will create a "visible" property that is local (not propagated to children).
+  This will have no effect if the node is not a geometry.
+
+- Reset recursively: will remove the "visible" property and recursively for for its all children,
+  resulting in the value inherited by its parents (or "show" by default)
