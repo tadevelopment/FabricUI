@@ -14,21 +14,20 @@ class SHViewportDock(QtGui.QDockWidget):
     can be properly deleted.
     
     Arguments:
-        index (int): The viewport index in the SHViewportsManager viewports list.
         viewportIndex (int): The internal viewport index (used in KL).
         parent (QMainWindow): A reference to the QDock parent.
     """
 
     deleteViewport = QtCore.Signal(int)
 
-    def __init__(self, index, viewportIndex, parent):
-        self.index = index
+    def __init__(self, viewportIndex, parent):
+        self.viewportIndex = viewportIndex
         name = str("Viewport " + str(viewportIndex))
         super(SHViewportDock, self).__init__(name, parent)
         self.setObjectName(name)
 
     def closeEvent(self, event):
-        self.deleteViewport.emit(self.index)
+        self.deleteViewport.emit(self.viewportIndex)
 
 
 class SHViewportsManager():
@@ -156,17 +155,17 @@ class SHViewportsManager():
 
         return newViewport, intermediateOwnerWidget;
 
-    def __onDeleteViewport(self, index):
-        """ Deletes the viewport at index.
-        The index refers to the index of the viewport in the list self.viewports,
+    def __onDeleteViewport(self, viewportIndex):
+        """ Deletes the viewport viewportIndex.
 
         Arguments:
-            index (int): The viewport index in self.viewports list.
+            viewportIndex (int): Viewport's getViewportIndex()
         """
-        self.viewports[index].detachFromRTRViewport()
-        del self.viewports[index]
-        for i in range(0, len(self.viewports)):
-            self.viewports[i].index = i
+        for i in range(len(self.viewports)):
+          if self.viewports[i].getViewportIndex() == viewportIndex:
+            self.viewports[i].detachFromRTRViewport()
+            del self.viewports[i]
+            break
 
     def __addViewport(self, orthographic):
         """ Adds a new viewport.
@@ -183,7 +182,7 @@ class SHViewportsManager():
           False, 
           self.shWindow.viewport)
      
-        viewportDock = SHViewportDock(len(self.viewports)-1, viewportIndex, self.shWindow)
+        viewportDock = SHViewportDock(viewportIndex, self.shWindow)
         viewportDock.setWidget(intermediateOwnerWidget)
         viewportDock.setFloating( True )
         viewportDock.deleteViewport.connect(self.__onDeleteViewport)
@@ -251,9 +250,8 @@ class SHViewportsManager():
         """
 
         for i in range(0, 4):
-            if self.sampleActions[i].isChecked() and self.samples != int(math.pow(2, i)):
-     
-                self.samples = int(math.pow(2, i))
+            if self.sampleActions[i].isChecked() and self.samples != i:
+                self.samples = i
                 self.__updateSampleChecks()
 
                 # We need to recreate all viewports widgets with the new sampling setting
@@ -263,6 +261,8 @@ class SHViewportsManager():
                     index = viewport.getViewportIndex()
                     orthographic = viewport.isOrthographic();
               
-                newViewport, _ = self.createViewport(index, orthographic, True, viewport)
-                if(index == 0): 
-                    self.shWindow.viewport = newViewport
+                    newViewport, _ = self.createViewport(index, orthographic, True, viewport)
+                    if(index == 0): 
+                        self.shWindow.viewport = newViewport
+
+                break

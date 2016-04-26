@@ -27,7 +27,7 @@ class SHAssetsMenu(SHBaseSceneMenu):
         """
 
         addAction = self.addAction("Add Asset")
-        addExpandAction = self.addAction("Add Asset (Force Expand)")
+        addExpandAction = self.addAction("Add Asset & load recursively")
         self.addSeparator()
         exportAlembicAction = self.addAction("Export to Alembic")
 
