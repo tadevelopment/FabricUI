@@ -2,7 +2,7 @@
 # Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 #
 
-import os
+import os, subprocess
 Import(
   'buildOS',
   'buildArch',
@@ -46,6 +46,20 @@ if buildOS == 'Darwin':
   env.Append(CXXFLAGS = ['-stdlib=libstdc++'])
   env.Append(CXXFLAGS = ['-fvisibility=hidden'])
   env.Append(LINKFLAGS = ['-stdlib=libstdc++'])
+
+  frameworkPath = os.path.join(
+    os.path.split(
+      subprocess.Popen(
+        'xcodebuild -version -sdk macosx10.8 Path',
+        shell=True,
+        stdout=subprocess.PIPE
+        ).stdout.read()
+      )[0],
+    'MacOSX10.7.sdk',
+    )
+  env.Append(CCFLAGS = ["-isysroot", frameworkPath])
+  env.Append(FRAMEWORKS = ['OpenGL', 'Cocoa', 'Foundation'])
+
 
 if buildOS == 'Linux':
   env.Replace( CC = '/opt/centos5/usr/bin/gcc' )
@@ -128,11 +142,13 @@ strheaders = []
 for d in dirs:
   headers = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.h')))
   dirsrc = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.cpp')))
+  dirsrcMM = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.mm')))
   for h in headers:
     strheaders.append(str(h))
   for c in dirsrc:
     strsources.append(str(c))
   sources += dirsrc
+  sources += dirsrcMM
   sources += env.GlobQObjectSources(os.path.join(env.Dir('.').abspath, d, '*.h'))
   if uiLibPrefix == 'ui':
     installedHeaders += env.Install(stageDir.Dir('include').Dir('FabricUI').Dir(d), headers)
