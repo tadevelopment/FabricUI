@@ -19,7 +19,7 @@ class SHStates : public QObject {
     SHStates is a helper class wrapping :kl-ref:`SHStates`.
     It allows easy and safe access in C++ to the KL methods.
 
-    When possible, the logic is write most of the code in :kl-ref:`SHStates`, 
+    When possible, the logic is to write most of the code in :kl-ref:`SHStates`.
   */
     
   Q_OBJECT
