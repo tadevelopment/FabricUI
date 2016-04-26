@@ -23,5 +23,6 @@ class BaseMenu(QtGui.QMenu):
     def constructMenu(self):
         """Construct the Menu, to override.
         """
-        pass
+        
+        raise Exception('You have to override the BaseMenu class')
 

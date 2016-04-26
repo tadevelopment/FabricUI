@@ -3,27 +3,29 @@ import os
 from PySide import QtCore, QtGui
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
-from FabricEngine.SceneHub.SHBaseMenu import SHBaseMenu
+from FabricEngine.SceneHub.SHBaseSceneMenu import SHBaseSceneMenu
 
-class SHAssetsMenu(SHBaseMenu):
+class SHAssetsMenu(SHBaseSceneMenu):
 
     """SHAssetsMenu
 
-    SHAssetsMenu is a specialization of SHBaseMenu.
-    It supports : importing Alembic/Fbx archives within the SceneHub.SHGLScene scene.
+    SHAssetsMenu specializes SHBaseSceneMenu for importing/exporting assets in a SceneHub.SHGLScene.
+    It supports : importing Alembic/Fbx archives within scene.
                   exporting the scene to an Alembic archive.
 
     Arguments:
-        shGLScene (SceneHub.SHGLScene): A reference to a shGLScene.
-        title (String): The menu title, can be None.
+        shGLScene (SceneHub.SHGLScene): A reference to a SHGLScene.
         parent (QWidget): The menu widget parent, can be None.
 
     """
 
-    def __init__(self, shGLScene, title = None, parent = None):
+    def __init__(self, shGLScene, parent = None):
         super(SHAssetsMenu, self).__init__(shGLScene, "Assets", parent)
      
     def constructMenu(self):
+        """Implementation of BaseMenu.
+        """
+
         addAction = self.addAction("Add Asset")
         addExpandAction = self.addAction("Add Asset (Force Expand)")
         self.addSeparator()
@@ -36,6 +38,7 @@ class SHAssetsMenu(SHBaseMenu):
     def addArchive(self):   
         """Import an archive (alembic or fbx) in the current scene.
         """
+
         dialog = QtGui.QFileDialog(self)
         dialog.setFileMode(QtGui.QFileDialog.ExistingFiles)
         dialog.setNameFilter("Files (*.abc *.fbx)")
@@ -46,6 +49,7 @@ class SHAssetsMenu(SHBaseMenu):
     def exportToAlembic(self):   
         """Exports the current scene to alembic.
         """
+        
         fileName, _ = QtGui.QFileDialog.getSaveFileName(self, "Export to Alembic", "", "Files (*.abc)")
         if not fileName: 
             return

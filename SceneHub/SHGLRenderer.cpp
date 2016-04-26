@@ -159,7 +159,7 @@ void SHGLRenderer::setPlayback(bool playback) {
   }
 }
 
-bool SHGLRenderer::isPlayback(bool playback) {
+bool SHGLRenderer::isPlayback() {
   try 
   {
     return m_shGLRendererVal.callMethod("Boolean", "isPlayback", 0, 0).getBoolean();

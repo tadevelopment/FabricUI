@@ -18,12 +18,23 @@ namespace SceneHub {
 
 class SHGLRenderer {
 
+  /**
+    SHGLRenderer is a helper class wrapping :kl-ref:`SHGLRenderer`.
+    It allows easy and safe access in C++ to the KL methods.
+
+    When possible, the logic is write most of the code in :kl-ref:`SHGLRenderer`, 
+    to provide app-independent example code and behavior.
+  */
+  
   public:
+    /// Constructor.
+    /// \param client A reference to the FabricCore::Client.
     SHGLRenderer(FabricCore::Client client);
 
+    /// Constructor.
+    /// \param client A reference to the FabricCore::Client.
+    /// \param shRenderer A reference to the SHGLRenderer.
     SHGLRenderer( FabricCore::Client client, FabricCore::RTVal shRenderer );
-
-    ~SHGLRenderer() {}
 
     /// Updates the Renderer, if set externally
     void update();
@@ -89,7 +100,7 @@ class SHGLRenderer {
     void setPlayback(bool playback);
     
     /// Checks if the playback is active.
-    bool isPlayback(bool playback);
+    bool isPlayback();
     
     /// Renders within this viewport.
     /// \param viewportID The viewport ID.
@@ -108,6 +119,8 @@ class SHGLRenderer {
     
     /// Propagates the events.
     /// \param event The event.
+    /// \param redrawAllViewports It true, refresh the render.
+    /// \param dragging If true when dragging an asset or texture in the scene.
     bool onEvent(unsigned int viewportID, QEvent *event, bool &redrawAllViewports, bool dragging);
     
     /// Returns a reference to the ToolDispatcher.

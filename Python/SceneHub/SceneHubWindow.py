@@ -16,246 +16,342 @@ from FabricEngine.SceneHub.SHVEEditorOwner import SHVEEditorOwner
 
 class SceneHubWindow(CanvasWindow):
 
-  def __init__(
-    self, 
-    settings, 
-    unguarded, 
-    noopt, 
-    klFile, 
-    canvasFile, 
-    samples, 
-    usageFilePath = None):
+    """SceneHubWindow
 
-    self.klFile = klFile
-    self.viewport = None
-    self.shDFGBinding = None
-    self.isCanvas = False
-    self.initSamples = samples
-    self.usageFilePath = usageFilePath
-    super(SceneHubWindow, self).__init__(settings, unguarded, noopt)
+    This window encompasses the entire SceneHub application.
 
-    loadCanvas = canvasFile is not ""
-    self._initApp(loadCanvas)
-    if loadCanvas: self.loadGraph(canvasFile)
+    Arguments:
+        settings (QtCore.QSettings): Settings object that is used to store and
+            retrieve settings for the application.
+        unguarded (bool): Whether to create the Fabric client in unguarded mode.
+        noopt (bool): Whether to create the Fabric client in noopt mode.
+        klFile (str): Path of a SceneHub scene to load on stratup.
+        canvasFile (str): Path of a Canvas graph to load on stratup.
+        samples (int): Number of multi-sampling on startup.
+        usageFilePath (str): The path of the application usage file.
 
-  def _initKL(self, unguarded, noopt):
-    super(SceneHubWindow, self)._initKL(unguarded, noopt)
-    self.client.loadExtension('SceneHub')
-    # Create the main scene and states
-    self.shStates = SceneHub.SHStates(self.client)
-    self.shMainGLScene = SceneHub.SHGLScene(self.client, self.klFile)
+    """
 
-    # The scene might create a specialized renderer type; get it from the scene
-    shRenderer = self.shMainGLScene.getSHGLRenderer()
 
-    # Create the renderer manager
-    self.viewportsManager = SHViewportsManager(self, self.shStates, shRenderer, self.initSamples)
+    def __init__(
+        self, 
+        settings, 
+        unguarded, 
+        noopt, 
+        klFile, 
+        canvasFile, 
+        samples, 
+        usageFilePath = None):
 
-  def _initDFG(self):
-    super(SceneHubWindow, self)._initDFG()
-    self.shDFGBinding = SceneHub.SHDFGBinding(
-      self.mainBinding, 
-      self.dfgWidget.getUIController(),
-      self.shStates)
-    self.shDFGBinding.sceneChanged.connect(self.shStates.onStateChanged)
-    self.shStates.inspectedChanged.connect(self.onInspectChanged)
+        self.klFile = klFile
+        self.viewport = None
+        self.shDFGBinding = None
+        self.isCanvas = False
+        self.initSamples = samples
+        self.usageFilePath = usageFilePath
+        super(SceneHubWindow, self).__init__(settings, unguarded, noopt)
 
-  def _initCommands(self):
-    cmdRegistration = SceneHub.SHCmdRegistration()
-    self.qUndoStack.indexChanged.connect(self.shStates.onStateChanged)
+        loadCanvas = canvasFile is not ""
+        self._initApp(loadCanvas)
+        if loadCanvas: self.loadGraph(canvasFile)
 
-  def _initLog(self):
-    super(SceneHubWindow, self)._initLog()
-    self._initCommands()
-    self.shCmdHandler = SceneHub.SHCmdHandler(self.client, self.qUndoStack)
+    def _initKL(self, unguarded, noopt):
+        """ Implementation of Canvas.CanvasWindow.
+        """
 
-  def _initTreeView(self):
-    super(SceneHubWindow, self)._initTreeView()
+        super(SceneHubWindow, self)._initKL(unguarded, noopt)
+        self.client.loadExtension('SceneHub')
+        # Create the main scene and states
+        self.shStates = SceneHub.SHStates(self.client)
+        self.shMainGLScene = SceneHub.SHGLScene(self.client, self.klFile)
 
-    self.shTreesManager = SHTreeViewsManager(self.client, self.dfgWidget, self.shStates, self.shMainGLScene)
-    self.shTreesManager.activeSceneChanged.connect( self.onActiveSceneChanged )
+        # The scene might create a specialized renderer type; get it from the scene
+        shRenderer = self.shMainGLScene.getSHGLRenderer()
 
-    # scene changed -> tree view changed
-    self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
-    self.shStates.selectionChanged.connect(self.shTreesManager.onSelectionChanged)
+        # Create the renderer manager
+        self.viewportsManager = SHViewportsManager(self, self.shStates, shRenderer, self.initSamples)
 
-    # tree view changed -> scene changed
-    self.shTreesManager.sceneHierarchyChanged.connect(self.shStates.onStateChanged)
-    self.shTreesManager.sceneChanged.connect(self.shStates.onStateChanged)
+    def _initDFG(self):
+        """ Implementation of Canvas.CanvasWindow.
+        """
 
-  def _initValueEditor(self):
-    self.valueEditor = SHVEEditorOwner(self.dfgWidget, self.shStates)
+        super(SceneHubWindow, self)._initDFG()
+        self.shDFGBinding = SceneHub.SHDFGBinding(
+            self.mainBinding, 
+            self.dfgWidget.getUIController(),
+            self.shStates)
+        self.shDFGBinding.sceneChanged.connect(self.shStates.onStateChanged)
+        self.shStates.inspectedChanged.connect(self.onInspectChanged)
 
-    self.valueEditor.log.connect(self._onLog)
-    self.valueEditor.modelItemValueChanged.connect(self._onModelValueChanged)
-    self.valueEditor.canvasSidePanelInspectRequested.connect(self._onCanvasSidePanelInspectRequested)
-    self.valueEditor.synchronizeCommands.connect(self.shCmdHandler.onSynchronizeCommands)
+    def _initCommands(self):
+        """ Initializes the command manager.
+        """
 
-    self.shStates.inspectedChanged.connect(self.valueEditor.onInspectChanged)
-    self.shStates.activeSceneChanged.connect(self.valueEditor.onSceneChanged)
-    self.shStates.sceneChanged.connect(self.valueEditor.onSceneChanged)
+        cmdRegistration = SceneHub.SHCmdRegistration()
+        self.qUndoStack.indexChanged.connect(self.shStates.onStateChanged)
+
+    def _initLog(self):
+        """ Implementation of Canvas.CanvasWindow.
+        """
+
+        super(SceneHubWindow, self)._initLog()
+        self._initCommands()
+        self.shCmdHandler = SceneHub.SHCmdHandler(self.client, self.qUndoStack)
+
+    def _initTreeView(self):
+        """ Implementation of Canvas.CanvasWindow.
+        """
+
+        super(SceneHubWindow, self)._initTreeView()
+
+        self.shTreesManager = SHTreeViewsManager(self.client, self.dfgWidget, self.shStates, self.shMainGLScene)
+        self.shTreesManager.activeSceneChanged.connect( self.onActiveSceneChanged )
+
+        # scene changed -> tree view changed
+        self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
+        self.shStates.selectionChanged.connect(self.shTreesManager.onSelectionChanged)
+
+        # tree view changed -> scene changed
+        self.shTreesManager.sceneHierarchyChanged.connect(self.shStates.onStateChanged)
+        self.shTreesManager.sceneChanged.connect(self.shStates.onStateChanged)
+
+    def _initValueEditor(self):
+        """ Override of Canvas.CanvasWindow.
+        """
+
+        self.valueEditor = SHVEEditorOwner(self.dfgWidget, self.shStates)
+
+        self.valueEditor.log.connect(self._onLog)
+        self.valueEditor.modelItemValueChanged.connect(self._onModelValueChanged)
+        self.valueEditor.canvasSidePanelInspectRequested.connect(self._onCanvasSidePanelInspectRequested)
+        self.valueEditor.synchronizeCommands.connect(self.shCmdHandler.onSynchronizeCommands)
+
+        self.shStates.inspectedChanged.connect(self.valueEditor.onInspectChanged)
+        self.shStates.activeSceneChanged.connect(self.valueEditor.onSceneChanged)
+        self.shStates.sceneChanged.connect(self.valueEditor.onSceneChanged)
   
-  def _initGL(self):
-    self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(
-      0, 
-      False, 
-      False, 
-      None)
-    self.setCentralWidget(intermediateOwnerWidget)
-    self.viewport.makeCurrent()  
+    def _initGL(self):
+        """ Override of Canvas.CanvasWindow.
+        """
 
-  def _initTimeLine(self):
-    super(SceneHubWindow, self)._initTimeLine()
-    self.timeLine.playbackChanged.connect(self.viewportsManager.onPlaybackChanged)
-    self.timeLine.setTimeRange(0, 100)
-    self.timeLine.setFrameRate(24)
+        # Create the first viewports
+        self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(
+            0, 
+            False, 
+            False, 
+            None)
+        self.setCentralWidget(intermediateOwnerWidget)
+        self.viewport.makeCurrent()  
+
+    def _initTimeLine(self):
+        """ Implementation of Canvas.CanvasWindow.
+        """
+
+        super(SceneHubWindow, self)._initTimeLine()
+        self.timeLine.playbackChanged.connect(self.viewportsManager.onPlaybackChanged)
+        self.timeLine.setTimeRange(0, 100)
+        self.timeLine.setFrameRate(24)
+      
+    def _initDocks(self):
+        """ Implementation of Canvas.CanvasWindow.
+        """
+
+        super(SceneHubWindow, self)._initDocks()
+        self.shTreeDock = QtGui.QDockWidget("Tree-View", self)
+        self.shTreeDock.setObjectName("Tree-View")
+        self.shTreeDock.setFeatures(self.dockFeatures)
+        self.shTreeDock.setWidget(self.shTreesManager)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.shTreeDock, QtCore.Qt.Vertical)
+
+    def _initMenus(self):
+        """ Final initilization of the app, just before running.
+        """
+
+        super(SceneHubWindow, self)._initMenus()
+
+        self.treeViewMenu = SHTreeViewMenu(self.shTreesManager)
+        menus = self.menuBar().findChildren(QtGui.QMenu)
+        for menu in menus:      
+            if menu.title() == "&Window":
+                toggleAction = self.shTreeDock.toggleViewAction()
+                toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
+                menu.addAction(toggleAction)
+                menu.addSeparator()
+            if menu.title() == "&View":
+                menu.addSeparator()
+                menu.addMenu(self.treeViewMenu)
+
+        self.viewportsManager.initMenu(self.menuBar())
+
+        sceneMenus = self.menuBar().addMenu("&Scene")    
+        self.assetMenu = SHAssetsMenu(self.shStates.getActiveScene())
+        self.lightsMenu = SHLightsMenu(self.shStates.getActiveScene())
+        sceneMenus.addMenu(self.assetMenu)
+        sceneMenus.addMenu(self.lightsMenu)
+
+        self.interactionMenu = self.menuBar().addMenu("&Interaction")
+        togglePlaybackAction = self.interactionMenu.addAction("Toggle Playback")
+        togglePlaybackAction.triggered.connect(self._onTogglePlayback)
+        self.interactionMenu.addMenu(SHInteractionMenu(self.viewportsManager.shGLRenderer))
+
+        helpMenu = self.menuBar().addMenu("&Help")
+        usageAction = helpMenu.addAction("Show Usage")
+        usageAction.triggered.connect(self._onShowUsage)
+
+    def _initApp(self, isCanvas):
+        """ Final initilization of the app, just before running.
+        """
+
+        show, level = self.shTreesManager.getScene().showTreeViewByDefault()
+        if show:
+            self.shTreesManager.expandTree(level)
+            self.shTreeDock.show()
+        else: self.shTreeDock.hide()
+       
+        if not isCanvas:
+            self.treeDock.hide()
+            self.logDockWidget.hide()
+            self.valueEditorDockWidget.hide()
+            self.dfgDock.hide()
+            self.scriptEditorDock.hide()
+
+        # This has to be done after self.valueEditor.initConnections
+        if self.shStates.getActiveScene().showValueEditorByDefault():
+            self.valueEditor.updateSGObject(self.shStates.getActiveScene().getValueEditorDefaultTarget())
+            self.valueEditorDockWidget.show();
+
+        defaultCanvasOp = self.shStates.getActiveScene().getDefaultSGCanvasOperator()
+        if defaultCanvasOp is not None:
+            self.dfgDock.show()
+            self.shDFGBinding.setCanvasOperator(defaultCanvasOp)
+        
+        if self.shTreesManager.getScene().enableTimelineByDefault():
+            startFrame, endFrame = self.shTreesManager.getScene().getFrameState()
+            self.timeLine.setTimeRange(startFrame, endFrame)
+            self.timeLine.setFrameRate(self.shTreesManager.getScene().getFPS())
+            self.timeLineDock.show()
+        else: selftimeLineDock.hide()
+        
+        if self.shTreesManager.getScene().playbackByDefault(): 
+            self._onTogglePlayback()
+
+        self.adjustSize()
+
+    def sizeHint(self):
+        """ Returns the default windows size on startup.
+        """
+
+        width = self.size().width()
+        height = self.size().height()
+        if width < 300: width = 300
+        if height < 300: height = 300
+        return QtCore.QSize(width, height)  
+
+    def loadGraph(self, filePath):
+        """ Implementation of Canvas.CanvasWindow.
+        """
+
+        super(SceneHubWindow, self).loadGraph(filePath)
+        self.shDFGBinding.setMainBinding(self.dfgWidget.getDFGController().getBinding())
+    
+    def onNewGraph(self, skip_save=False):
+        """ Implementation of Canvas.CanvasWindow.
+        """
+
+        super(SceneHubWindow, self).onNewGraph(skip_save)
+        self.shDFGBinding.setMainBinding(self.dfgWidget.getDFGController().getBinding())
+
+    def _contentChanged(self):
+        """ Implementation of Canvas.CanvasWindow.
+        """
+
+        self.valueEditor.onOutputsChanged()
+        self.viewportsManager.onRefreshAllViewports()
+
+    def _onTogglePlayback(self): 
+        """ Toggles the playback.
+        """
+
+        if self.timeLineDock.isVisible() == False: 
+            self.timeLineDock.show()
+        self.timeLine.play()
+       
+    def _onCanvasSidePanelInspectRequested(self):
+        """ Refreshs the valueEditor from DFGBinding.
+        """
+
+        if self.shDFGBinding is not None:
+            parameterObject = self.shDFGBinding.getCanvasOperatorParameterObject()
+            if parameterObject is not None: 
+                self.valueEditor.updateSGObject(parameterObject)
   
-  def _initDocks(self):
-    super(SceneHubWindow, self)._initDocks()
-    self.shTreeDock = QtGui.QDockWidget("Tree-View", self)
-    self.shTreeDock.setObjectName("Tree-View")
-    self.shTreeDock.setFeatures(self.dockFeatures)
-    self.shTreeDock.setWidget(self.shTreesManager)
-    self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.shTreeDock, QtCore.Qt.Vertical)
+    def _onModelValueChanged(self, item, var):
+        """ Refreshs the render when the valueEditor changed.
+        """
 
-  def _initMenus(self):
-    super(SceneHubWindow, self)._initMenus()
+        self.viewportsManager.onRefreshAllViewports()
 
-    self.treeViewMenu = SHTreeViewMenu(self.shTreesManager)
-    menus = self.menuBar().findChildren(QtGui.QMenu)
-    for menu in menus:      
-      if menu.title() == "&Window":
-        toggleAction = self.shTreeDock.toggleViewAction()
-        toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
-        menu.addAction(toggleAction)
-        menu.addSeparator()
-      if menu.title() == "&View":
-        menu.addSeparator()
-        menu.addMenu(self.treeViewMenu)
+    def onActiveSceneChanged(self, scene):
+        """ Updates when the active scene changed from the treeViewManager.
+        """
 
-    self.viewportsManager.initMenu(self.menuBar())
+        self.assetMenu.onActiveSceneChanged(scene)
+        self.lightsMenu.onActiveSceneChanged(scene)
 
-    sceneMenus = self.menuBar().addMenu("&Scene")    
-    self.assetMenu = SHAssetsMenu(self.shStates.getActiveScene())
-    self.lightsMenu = SHLightsMenu(self.shStates.getActiveScene())
-    sceneMenus.addMenu(self.assetMenu)
-    sceneMenus.addMenu(self.lightsMenu)
+    def onInspectChanged(self):
+        """ Updates the valueEditor object/property to edit.
+        """
 
-    self.interactionMenu = self.menuBar().addMenu("&Interaction")
-    togglePlaybackAction = self.interactionMenu.addAction("Toggle Playback")
-    togglePlaybackAction.triggered.connect(self._onTogglePlayback)
-    self.interactionMenu.addMenu(SHInteractionMenu(self.viewportsManager.shGLRenderer))
+        # shDFGBinding might change the active binding
+        self.shDFGBinding.onInspectChanged()
+        binding = self.dfgWidget.getDFGController().getBinding()
+        self.scriptEditor.updateBinding(binding)
 
-    helpMenu = self.menuBar().addMenu("&Help")
-    usageAction = helpMenu.addAction("Show Usage")
-    usageAction.triggered.connect(self._onShowUsage)
+    def onFrameChanged(self, frame):
+        """ Implementation of Canvas.CanvasWindow.
+        """
 
-  def _initApp(self, isCanvas):
-    show, level = self.shTreesManager.getScene().showTreeViewByDefault()
-    if show:
-      self.shTreesManager.expandTree(level)
-      self.shTreeDock.show()
-    else: self.shTreeDock.hide()
-   
-    if not isCanvas:
-      self.treeDock.hide()
-      self.logDockWidget.hide()
-      self.valueEditorDockWidget.hide()
-      self.dfgDock.hide()
-      self.scriptEditorDock.hide()
+        super(SceneHubWindow, self).onFrameChanged(frame)
+        self.shStates.onFrameChanged(frame)
 
-    # This has to be done after self.valueEditor.initConnections
-    if self.shStates.getActiveScene().showValueEditorByDefault():
-      self.valueEditor.updateSGObject(self.shStates.getActiveScene().getValueEditorDefaultTarget())
-      self.valueEditorDockWidget.show();
+    def onDirty(self):
+        """ Implementation of Canvas.CanvasWindow.
+        """
 
-    defaultCanvasOp = self.shStates.getActiveScene().getDefaultSGCanvasOperator()
-    if defaultCanvasOp is not None:
-      self.dfgDock.show()
-      self.shDFGBinding.setCanvasOperator(defaultCanvasOp)
-    
-    if self.shTreesManager.getScene().enableTimelineByDefault():
-      startFrame, endFrame = self.shTreesManager.getScene().getFrameState()
-      self.timeLine.setTimeRange(startFrame, endFrame)
-      self.timeLine.setFrameRate(self.shTreesManager.getScene().getFPS())
-      self.timeLineDock.show()
-    else: selftimeLineDock.hide()
-    
-    if self.shTreesManager.getScene().playbackByDefault(): 
-      self._onTogglePlayback()
+        dirtyList = self.shDFGBinding.setDirty()
+        if not dirtyList[0]: 
+            super(SceneHubWindow, self).onDirty()
+        if dirtyList[1]: 
+            self.viewportsManager.onRefreshAllViewports()
 
-    self.adjustSize()
+    def _onLog(self, message):
+        """ Override of Canvas.CanvasWindow.
+        """
 
-  def sizeHint(self):
-    width = self.size().width()
-    height = self.size().height()
-    if width < 300: width = 300
-    if height < 300: height = 300
-    return QtCore.QSize(width, height)  
+        if self.dfgWidget is not None:
+            self.dfgWidget.getUIController().logError(message)
+         
+    def updateFPS(self):
+        """ Override of Canvas.CanvasWindow.
+        """
 
-  def loadGraph(self, filePath):
-    super(SceneHubWindow, self).loadGraph(filePath)
-    self.shDFGBinding.setMainBinding(self.dfgWidget.getDFGController().getBinding())
-    
-  def onNewGraph(self, skip_save=False):
-    super(SceneHubWindow, self).onNewGraph(skip_save)
-    self.shDFGBinding.setMainBinding(self.dfgWidget.getDFGController().getBinding())
+        if not self.viewport: return 
+        caption = str(float("{0:.2f}".format(self.viewport.fps())))
+        caption += " FPS"
+        
+        # Viewport 0
+        stats = self.viewportsManager.shGLRenderer.getDrawStats(0)
+        caption += " Drawn obj: "+ str(stats[0])
+        if stats[1] > 0: caption += " pt: "  + str(stats[1])
+        if stats[2] > 0: caption += " li: "  + str(stats[2])
+        if stats[3] > 0: caption += " tri: " + str(stats[3])
+        
+        self.fpsLabel.setText( caption )
+        
+    def _onShowUsage(self):
+        """ Displays the application usage.
+        """
 
-  def _contentChanged(self) :
-    self.valueEditor.onOutputsChanged()
-    self.viewportsManager.onRefreshAllViewports()
-
-  def _onTogglePlayback(self):  
-    if self.timeLineDock.isVisible() == False : self.timeLineDock.show()
-    self.timeLine.play()
-   
-  def _onCanvasSidePanelInspectRequested(self):
-    if self.shDFGBinding is not None:
-      parameterObject = self.shDFGBinding.getCanvasOperatorParameterObject()
-      if parameterObject is not None: 
-        self.valueEditor.updateSGObject(parameterObject)
-  
-  def _onModelValueChanged(self, item, var):
-    self.viewportsManager.onRefreshAllViewports()
-
-  def onActiveSceneChanged(self, scene):
-    self.assetMenu.onActiveSceneChanged(scene)
-    self.lightsMenu.onActiveSceneChanged(scene)
-
-  def onInspectChanged(self):
-    # shDFGBinding might change the active binding
-    self.shDFGBinding.onInspectChanged()
-    binding = self.dfgWidget.getDFGController().getBinding()
-    self.scriptEditor.updateBinding(binding)
-
-  def onFrameChanged(self, frame):
-    super(SceneHubWindow, self).onFrameChanged(frame)
-    self.shStates.onFrameChanged(frame)
-
-  def onDirty(self):
-    dirtyList = self.shDFGBinding.setDirty()
-    if not dirtyList[0]: super(SceneHubWindow, self).onDirty()
-    if dirtyList[1]: self.viewportsManager.onRefreshAllViewports()
-
-  def _onLog(self, message):
-    if self.dfgWidget is not None:
-      self.dfgWidget.getUIController().logError(message)
- 
-  def updateFPS(self):
-    if not self.viewport: return 
-    caption = str(float("{0:.2f}".format(self.viewport.fps())))
-    caption += " FPS"
-    
-    # Viewport 0
-    stats = self.viewportsManager.shGLRenderer.getDrawStats(0)
-    caption += " Drawn obj: "+ str(stats[0])
-    if stats[1] > 0: caption += " pt: "  + str(stats[1])
-    if stats[2] > 0: caption += " li: "  + str(stats[2])
-    if stats[3] > 0: caption += " tri: " + str(stats[3])
-    
-    self.fpsLabel.setText( caption )
-    
-  def _onShowUsage(self):
-    if self.usageFilePath is not None:
-      helpWidget = HelpWidget(self.usageFilePath, self)
-      helpWidget.show()
+        if self.usageFilePath is not None:
+            helpWidget = HelpWidget(self.usageFilePath, self)
+            helpWidget.show()

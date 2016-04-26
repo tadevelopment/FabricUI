@@ -23,12 +23,18 @@ namespace SceneHub {
     
 class SHGLScene {
 
+  /**
+    SHGLScene is a helper class wrapping :kl-ref:`SHGLScene`.
+    It allows easy and safe access in C++ to the KL methods.
+
+    When possible, the logic is write most of the code in :kl-ref:`SHGLScene`, 
+  */
+
+
   public:
     SHGLScene(FabricCore::Client client) : m_client(client) {}
 
     SHGLScene(FabricCore::Client client, QString klFile);
-
-    ~SHGLScene() {}
     
     /// Gets the client.
     FabricCore::Client getClient();

@@ -1,15 +1,15 @@
 
 from FabricEngine.Canvas.BaseMenu import BaseMenu
     
-class SHBaseMenu(BaseMenu):
+class SHBaseSceneMenu(BaseMenu):
 
-    """SHBaseMenu
+    """SHBaseSceneMenu
 
-    SHBaseMenu is a specialization of BaseMenu.
+    SHBaseSceneMenu specializes BaseMenu.
     It owns a reference to a SceneHub.SHGLScene scene to edit.
 
     Arguments:
-        shGLScene (SceneHub.SHGLScene): A reference to a shGLScene.
+        shGLScene (SceneHub.SHGLScene): A reference to a SHGLScene.
         title (String): The menu title, can be None.
         parent (QWidget): The menu widget parent, can be None.
 
@@ -17,11 +17,12 @@ class SHBaseMenu(BaseMenu):
 
     def __init__(self, shGLScene, title = None, parent = None):
         self.shGLScene = shGLScene
-        super(SHBaseMenu, self).__init__(title, parent)
+        super(SHBaseSceneMenu, self).__init__(title, parent)
     
     def onActiveSceneChanged(self, shGLScene):
-        """Update the current scene menu.
+        """Updates the current scene menu.
            Can be used as a public slot.
         """
+
         self.shGLScene = shGLScene
  

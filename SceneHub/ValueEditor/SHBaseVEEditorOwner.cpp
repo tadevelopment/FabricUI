@@ -44,7 +44,6 @@ void SHBaseVEEditorOwner::updateSGObject( const FabricCore::RTVal& sgObject ) {
     return;
 
   // Currently we don't support incremental structure changes; we just rebuild all
-
   m_valueEditor->clear();
   if( m_modelRoot ) {
     delete m_modelRoot;
@@ -95,7 +94,6 @@ void SHBaseVEEditorOwner::updateSGObjectProperty( const FabricCore::RTVal& sgObj
   }
 
   // Currently we don't support incremental changes; just rebuild all
-
   m_valueEditor->clear();
 
   if( m_modelRoot ) {
