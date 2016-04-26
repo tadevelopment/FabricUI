@@ -223,6 +223,8 @@ class SceneHubWindow(CanvasWindow):
         if defaultCanvasOp is not None:
             self.dfgDock.show()
             self.shDFGBinding.setCanvasOperator(defaultCanvasOp)
+            binding = self.dfgWidget.getDFGController().getBinding()
+            self.scriptEditor.updateBinding(binding)
         
         if self.shTreesManager.getScene().enableTimelineByDefault():
             startFrame, endFrame = self.shTreesManager.getScene().getFrameState()
