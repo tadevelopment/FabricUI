@@ -123,6 +123,10 @@ class SHGLScene {
     /// \param filePath The path of the alembic file.
     void exportToAlembic(QString filePath);
 
+    /// Exports a scene object to alembic.
+    /// \param filePath The path of the alembic file.
+    void exportToAlembic( FabricCore::RTVal sgObject, QString filePath );
+
     /// Shows the treeView when the app opens.
     /// \param level Iniitial level of expension
     QPair<bool, unsigned int> showTreeViewByDefault();
