@@ -142,13 +142,18 @@ strheaders = []
 for d in dirs:
   headers = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.h')))
   dirsrc = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.cpp')))
-  dirsrcMM = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.mm')))
+  if buildOS == 'Darwin':
+    dirsrcMM = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.mm')))
+  
   for h in headers:
     strheaders.append(str(h))
   for c in dirsrc:
     strsources.append(str(c))
+
   sources += dirsrc
-  sources += dirsrcMM
+  if buildOS == 'Darwin':
+    sources += dirsrcMM
+
   sources += env.GlobQObjectSources(os.path.join(env.Dir('.').abspath, d, '*.h'))
   if uiLibPrefix == 'ui':
     installedHeaders += env.Install(stageDir.Dir('include').Dir('FabricUI').Dir(d), headers)
