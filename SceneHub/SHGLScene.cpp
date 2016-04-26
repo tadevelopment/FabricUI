@@ -472,3 +472,15 @@ void SHGLScene::exportToAlembic(QString filePath) {
     printf("SHGLScene::exportToAlembic: exception: %s\n", e.getDesc_cstr());
   }
 }
+
+void SHGLScene::exportToAlembic( RTVal sgObject, QString filePath ) {
+  try {
+    RTVal args[2];
+    args[0] = sgObject;
+    args[1] = RTVal::ConstructString( getClient(), filePath.toUtf8().constData() );
+    m_shGLSceneVal.callMethod( "", "exportToAlembic", 2, args );
+  }
+  catch( Exception e ) {
+    printf( "SHGLScene::exportToAlembic: exception: %s\n", e.getDesc_cstr() );
+  }
+}

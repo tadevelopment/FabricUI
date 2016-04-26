@@ -1,6 +1,7 @@
-
+import os
 from PySide import QtCore, QtGui
 from FabricEngine import Core, FabricUI, Util
+from FabricEngine.FabricUI import *
 from FabricEngine.FabricUI import SceneHub
 from FabricEngine.Util import *
 from FabricEngine.SceneHub.SHBaseSceneMenu import SHBaseSceneMenu
@@ -23,7 +24,8 @@ class SHContextualMenu(SHBaseSceneMenu):
         targetSGObject (Fabr.RTVal): A reference to the sgObject to edit, pass as a RTVal.
         shTreeView (QWidget): A reference to the SceneHub.SHTreeView, can be None.
     """
-    
+
+   
     def __init__(self, client, shGLScene, shStates, targetSGObject, shTreeView = None):
         self.targetSGObject = targetSGObject
         self.client = client
@@ -39,10 +41,17 @@ class SHContextualMenu(SHBaseSceneMenu):
         # If there is a selected object, either from the shTreeView or the 3View
         # acces/edits its properties.
         if self.targetSGObject is not None:
-            expandAction = QtGui.QAction("Expand recursively", self)
-            self.addAction(expandAction)
+
+            if self.shTreeView is not None:
+                expandAction = QtGui.QAction("Expand recursively", self)
+                self.addAction(expandAction)
+                for index in self.shTreeView.selectedIndexes():
+                    viewIndexTarget = SceneHub.SHTreeView_ViewIndexTarget(self.shTreeView, index, self)
+                    expandAction.triggered.connect(viewIndexTarget.expandRecursively)
+
             loadAction = QtGui.QAction("Load recursively", self)
             self.addAction(loadAction)
+            loadAction.triggered.connect(self.loadRecursively)
 
             visMenu = self.addMenu("Visibility")
 
@@ -64,13 +73,6 @@ class SHContextualMenu(SHBaseSceneMenu):
 
             resetVisibilityAction = QtGui.QAction("Reset recursively", visMenu)
             visMenu.addAction( resetVisibilityAction )
-
-            if self.shTreeView is not None:
-                for index in self.shTreeView.selectedIndexes():
-                    viewIndexTarget = SceneHub.SHshTreeView_ViewIndexTarget(self.shTreeView, index, self)
-                    expandAction.triggered.connect(viewIndexTarget.expandRecursively)
-
-            loadAction.triggered.connect(self.loadRecursively)
 
             visible = False
             propagVal = self.client.RT.types.UInt8(0)
@@ -110,20 +112,44 @@ class SHContextualMenu(SHBaseSceneMenu):
             #visMenu.addAction( visAction )
 
             resetVisibilityAction.triggered.connect(self.resetVisibilityRecursively)
-      
+          
+            self.addSeparator()
+
+            exportAlembicAction = QtGui.QAction("Export to Alembic...", self)
+            self.addAction(exportAlembicAction)
+            exportAlembicAction.triggered.connect(self.exportToAlembic)
+
         # Otherwise, add archive/lights to the scene
         else:
             assetMenu = SHAssetsMenu(self.shGLScene)
             lightsMenu = SHLightsMenu(self.shGLScene)
             self.addMenu(assetMenu)
             self.addMenu(lightsMenu)
-
+ 
     def loadRecursively(self):
         """Loads recursively the object children.
         """
 
         self.targetSGObject.forceHierarchyExpansion("")
         self.shStates.onStateChanged()
+
+    def exportToAlembic(self):
+        """Exports the selected item to alembic.
+        """
+
+        fileName, _ = QtGui.QFileDialog.getSaveFileName(self, "Export to Alembic", "", "Files (*.abc)")
+        if not fileName: 
+            return
+
+        baseName, extension = os.path.splitext(fileName)
+
+        if extension != ".abc":
+            fileName = baseName + ".abc"
+
+        pathList = []
+        pathList.append(fileName)
+        pathList = Util.StringUtils.ProcessPathQStringForOsX(pathList)
+        self.shGLScene.exportToAlembic(self.targetSGObject, pathList[0])
 
     def resetVisibilityRecursively(self):
         """Reset recursively the object visibility.
