@@ -447,7 +447,6 @@ class CanvasWindow(DFG.DFGMainWindow):
 
         """
         success = False
-        print "allo mama"
         try:
             controller = self.dfgWidget.getDFGController()
             exec_ = controller.getBinding().getExec()
