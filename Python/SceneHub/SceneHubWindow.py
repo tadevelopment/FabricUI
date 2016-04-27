@@ -4,7 +4,6 @@ from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine.FabricUI import *
 from FabricEngine.CAPI import *
 from FabricEngine.Canvas.CanvasWindow import CanvasWindow
-from FabricEngine.Canvas.HelpWidget import HelpWidget
 from FabricEngine.SceneHub.SHTreeViewsManager import SHTreeViewsManager
 from FabricEngine.SceneHub.SHViewportsManager import SHViewportsManager
 from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
@@ -12,6 +11,7 @@ from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
 from FabricEngine.SceneHub.SHTreeViewMenu import SHTreeViewMenu
 from FabricEngine.SceneHub.SHInteractionMenu import SHInteractionMenu
 from FabricEngine.SceneHub.SHVEEditorOwner import SHVEEditorOwner
+from FabricEngine.SceneHub.SHHelpWidget import SHHelpWidget
 
 class SceneHubWindow(CanvasWindow):
 
@@ -348,16 +348,6 @@ class SceneHubWindow(CanvasWindow):
         if stats[3] > 0: caption += " tri: " + str(stats[3])
         
         self.fpsLabel.setText( caption )
-
-
-    class SHHelpWidget(HelpWidget):
-        closeSignal = QtCore.Signal()
-
-        def __init__(self, usagetFilePath, parent = None, width = 800, height = 500):
-            super(SHHelpWidget, self).__init__(usagetFilePath, parent, width, height)
-
-        def closeEvent(self, event):
-            self.closeSignal.emit()
         
     def _onShowUsage(self):
         """ Displays the application usage.
