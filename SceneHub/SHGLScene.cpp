@@ -57,6 +57,8 @@ SHGLScene::SHGLScene(Client client, QString klFile) : m_client(client) {
   {
     printf("SHGLScene::SHGLScene: exception: %s\n", e.getDesc_cstr());
   }
+
+  m_lastTicks = FTL::GetCurrentTicks();
 }
 
 FabricCore::Client SHGLScene::getClient() { 
@@ -184,9 +186,16 @@ QList<unsigned int> SHGLScene::getSceneStats() {
 }
 
 void SHGLScene::prepareSceneForRender() {
+  
+  // query the delta in seconds
+  uint64_t currentTicks = FTL::GetCurrentTicks();
+  double delta = FTL::GetSecondsBetweenTicks(m_lastTicks, currentTicks);
+  m_lastTicks = currentTicks;
+
   try 
   {
-    m_shGLSceneVal.callMethod("", "prepareSceneForRender", 0, 0);
+    RTVal deltaVal = RTVal::ConstructFloat64(getClient(), delta);
+    m_shGLSceneVal.callMethod("", "prepareSceneForRender", 1, &deltaVal);
   }
   catch(Exception e)
   {

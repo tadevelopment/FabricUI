@@ -16,6 +16,7 @@
 #include <FTL/JSONEnc.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONValue.h>
+#include <FTL/Ticks.h>
 #include <FabricUI/DFG/DFGController.h>
  
 namespace FabricUI {
@@ -155,6 +156,8 @@ class SHGLScene {
     FabricCore::Client m_client;    
     /// \internal
     FabricCore::RTVal m_shGLSceneVal;
+    /// \internal
+    uint64_t m_lastTicks;
 };
 
 } // namespace SceneHub
