@@ -18,7 +18,7 @@
 namespace FabricUI {
 namespace SceneHub {
     
-class SHDFGBinding : public QObject{
+class SHDFGBinding : public QObject {
 
   Q_OBJECT
 
@@ -27,16 +27,14 @@ class SHDFGBinding : public QObject{
       FabricCore::DFGBinding &binding, 
       FabricUI::DFG::DFGController *controller,
       FabricUI::SceneHub::SHStates *shStates);
-
-    ~SHDFGBinding() {}
     
-    void setCanvasOperator( FabricCore::RTVal &canvasOperator );
+    void setCanvasOperator(FabricCore::RTVal &canvasOperator);
 
-    FabricCore::RTVal getCanvasOperator() { return m_dfgCanvasOperator; }
+    FabricCore::RTVal getCanvasOperator();
 
     FabricCore::RTVal getCanvasOperatorParameterObject();
 
-    void setMainBinding( FabricCore::DFGBinding &binding );
+    void setMainBinding(FabricCore::DFGBinding &binding);
 
     QList<bool> setDirty();
 
@@ -46,13 +44,15 @@ class SHDFGBinding : public QObject{
     
 
   public slots:
+    void onInspectChanged();
+
+
+  protected slots:
     void onArgInserted(unsigned index, FTL::CStrRef name, FTL::CStrRef typeName);
 
     void onArgRemoved(unsigned index, FTL::CStrRef name);
 
     void onArgTypeChanged(unsigned index, FTL::CStrRef name, FTL::CStrRef newTypeName);
-
-    void onInspectChanged();
 
 
   protected:         

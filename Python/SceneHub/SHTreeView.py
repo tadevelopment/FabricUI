@@ -7,11 +7,12 @@ from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
 from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
 from FabricEngine.SceneHub.SHContextualMenu import SHContextualMenu
 
+
 class SHTreeView(SceneHub.SHBaseTreeView):
 
     """SHTreeView
 
-    SHTreeView specializes SceneHub.SHBaseTreeView.
+    SHTreeView specializes SceneHub.SHBaseTreeView.    
     It gives access to the base signals/slots so it can be specialized if needed.
 
     Arguments:
@@ -23,11 +24,11 @@ class SHTreeView(SceneHub.SHBaseTreeView):
     selectionCleared = QtCore.Signal()
     itemSelected = QtCore.Signal(SceneHub.SHTreeItem)
     itemDeselected = QtCore.Signal(SceneHub.SHTreeItem)
+    itemDoubleClicked = QtCore.Signal(SceneHub.SHTreeItem)
 
 
     def __init__(self, client, shStates, shGLScene):
         super(SHTreeView, self).__init__(client)
-        self.client = client # Keep a ref: the C++ wrapped one from the parent doesn't have .RT
         self.shGLScene = shGLScene
         self.shStates = shStates
         self.setHeaderHidden(True)
@@ -36,19 +37,22 @@ class SHTreeView(SceneHub.SHBaseTreeView):
         self.customContextMenuRequested.connect(self.onCustomContextMenu)
   
     def onCustomContextMenu(self, point):
-        """ Displays the contextual Menu.
+        print "onCustomContextMenu "
+        """ Implementation of :`QTreeView`,
+            Displays the contextual Menu.
         """
 
-        index = self.indexAt( point );
+        index = self.indexAt(point);
         item = SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index)
         sgObject = None
         if item: 
           sgObject = item.getSGObject()   
-        menu = SHContextualMenu(self.client, self.shGLScene, self.shStates, sgObject, self)
+        menu = SHContextualMenu(self.m_client, self.shGLScene, self.shStates, sgObject, self)
         menu.exec_(self.mapToGlobal(point))
   
     def selectionChanged(self, selected, deselected):
         """ Selects/Unselects treeView items.
+            Implementation of : `SceneHub::SHBaseTreeView`
         """
 
         # clear selection (make sure 3D view is synchronized) if all elements are newly added
@@ -74,7 +78,7 @@ class SHTreeView(SceneHub.SHBaseTreeView):
                 sgObj = item.getSGObject()
                 if sgObj is not None:
                     url = self.shGLScene.getTreeItemPath(item.getSGObject())
-                    if url is not None: 
+                    if url != "": 
                         urlsList.append(QtCore.QUrl(url))
 
             if len(urlsList) > 0:

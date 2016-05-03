@@ -25,7 +25,7 @@ class SHStates : public QObject {
   Q_OBJECT
 
   public:
-    SHStates( FabricCore::Client client );
+    SHStates(FabricCore::Client client);
     
     /// Gets the client.
     FabricCore::Client getClient();
@@ -60,18 +60,25 @@ class SHStates : public QObject {
 
     /// Clears the selection
     void clearSelection();
+
     /// Adds a SGObject to the selection
-    void addSGObjectToSelection( FabricCore::RTVal sgObject );
+    void addSGObjectToSelection(FabricCore::RTVal sgObject);
+
     /// Removes a SGObject to the selection
-    void removeSGObjectFromSelection( FabricCore::RTVal sgObject );
+    void removeSGObjectFromSelection(FabricCore::RTVal sgObject);
+
     /// Adds a SGObjectProperty to the selection
-    void addSGObjectPropertyToSelection( FabricCore::RTVal sgObject );
+    void addSGObjectPropertyToSelection(FabricCore::RTVal sgObject);
+
     /// Removes a SGObjectProperty to the selection
-    void removeSGObjectPropertyFromSelection( FabricCore::RTVal sgObject );
+    void removeSGObjectPropertyFromSelection(FabricCore::RTVal sgObject);
+
     /// Adds a SGObjectProperty generator to the selection
-    void addSGObjectPropertyGeneratorToSelection( FabricCore::RTVal sgObject );
+    void addSGObjectPropertyGeneratorToSelection(FabricCore::RTVal sgObject);
+    
     /// Removes a SGObjectProperty generator to the selection
-    void removeSGObjectPropertyGeneratorFromSelection( FabricCore::RTVal sgObject );
+    void removeSGObjectPropertyGeneratorFromSelection(FabricCore::RTVal sgObject);
+
 
   signals:
     void sceneHierarchyChanged() const;
@@ -84,22 +91,23 @@ class SHStates : public QObject {
 
     void activeSceneChanged() const;
 
+
   public slots:
     /// This should be called when the state of selection or scene might have changed
     void onStateChanged();
 
-    void onInspectedSGObject( FabricCore::RTVal sgObject );
+    void onInspectedSGObject(FabricCore::RTVal sgObject);
 
-    void onInspectedSGObjectProperty( FabricCore::RTVal sgObjectProperty );
+    void onInspectedSGObjectProperty(FabricCore::RTVal sgObjectProperty);
 
-    void onInspectedSGObjectPropertyGenerator( FabricCore::RTVal sgObjectProperty );
+    void onInspectedSGObjectPropertyGenerator(FabricCore::RTVal sgObjectProperty);
 
-    void onActiveSceneChanged( SHGLScene* scene );
+    void onActiveSceneChanged(FabricUI::SceneHub::SHGLScene* scene);
 
-    void onFrameChanged( int frame );
+    void onFrameChanged(int frame);
+
 
   private:
-
     /// \internal
     FabricCore::Client m_client;    
     /// \internal

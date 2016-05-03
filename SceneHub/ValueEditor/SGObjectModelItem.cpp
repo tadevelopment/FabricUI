@@ -9,31 +9,26 @@
 namespace FabricUI {
 namespace SceneHub {
 
-//////////////////////////////////////////////////////////////////////////
-SGObjectModelItem::SGObjectModelItem(
-  FabricCore::Client client,
-  FabricCore::RTVal rtVal
-  )
-  : m_client( client )
-  , m_rtVal( rtVal )
+
+SGObjectModelItem::SGObjectModelItem(FabricCore::Client client, FabricCore::RTVal rtVal)
+  : m_client(client)
+  , m_rtVal(rtVal)
 {
-  m_lastStructureVersionRtVal = FabricCore::RTVal::ConstructUInt32( m_client, 0 );
-  m_lastValuesVersionRtVal = FabricCore::RTVal::ConstructUInt32( m_client, 0 );
-  m_isValidRtVal = FabricCore::RTVal::ConstructBoolean( m_client, false );
-  m_structureChangedRtVal = FabricCore::RTVal::ConstructBoolean( m_client, false );
-  m_valueChangedRtVal = FabricCore::RTVal::ConstructBoolean( m_client, false );
+  m_lastStructureVersionRtVal = FabricCore::RTVal::ConstructUInt32(m_client, 0);
+  m_lastValuesVersionRtVal = FabricCore::RTVal::ConstructUInt32(m_client, 0);
+  m_isValidRtVal = FabricCore::RTVal::ConstructBoolean(m_client, false);
+  m_structureChangedRtVal = FabricCore::RTVal::ConstructBoolean(m_client, false);
+  m_valueChangedRtVal = FabricCore::RTVal::ConstructBoolean(m_client, false);
 
   // Cache initial versions
   bool isValid, structureChanged;
-  updateFromScene( rtVal, isValid, structureChanged );
+  updateFromScene(rtVal, isValid, structureChanged);
 }
 
-SGObjectModelItem::~SGObjectModelItem()
-{
+SGObjectModelItem::~SGObjectModelItem() {
 }
 
-int SGObjectModelItem::getNumChildren()
-{
+int SGObjectModelItem::getNumChildren() {
   ensurePropertiesRTVal();
   if(m_propertiesRtVal.isValid())
   {
@@ -49,8 +44,7 @@ int SGObjectModelItem::getNumChildren()
   return 0;
 }
 
-FTL::CStrRef SGObjectModelItem::getChildName( int i )
-{
+FTL::CStrRef SGObjectModelItem::getChildName(int i) {
   ensurePropertiesRTVal();
 
   std::map<std::string, unsigned int>::iterator it = m_propertyNameMap.begin();
@@ -65,9 +59,14 @@ FTL::CStrRef SGObjectModelItem::getChildName( int i )
   return "";
 }
 
-FabricUI::ValueEditor::BaseModelItem *SGObjectModelItem::createChild( FTL::CStrRef name ) /**/
-{
+const FabricCore::RTVal& SGObjectModelItem::getSGObject() { 
+  return m_rtVal; 
+}
+
+ValueEditor::BaseModelItem *SGObjectModelItem::createChild(FTL::CStrRef name) {
+  
   ensurePropertiesRTVal();
+  
   if(m_propertiesRtVal.isValid())
   {
     std::map<std::string, unsigned int>::iterator it = m_propertyNameMap.find(name);
@@ -81,12 +80,13 @@ FabricUI::ValueEditor::BaseModelItem *SGObjectModelItem::createChild( FTL::CStrR
 
       FabricCore::RTVal propRtVal = m_propertiesRtVal.getArrayElement(it->second);
       SGObjectPropertyModelItem *objectPropertyItem = new SGObjectPropertyModelItem(m_client, propRtVal, false);
-      connect( objectPropertyItem, SIGNAL( synchronizeCommands( ) ), this, SLOT( onSynchronizeCommands( ) ) );
+      connect(objectPropertyItem, SIGNAL(synchronizeCommands()), this, SLOT(onSynchronizeCommands()));
 
-      FabricUI::ValueEditor::BaseModelItem * child = pushChild(objectPropertyItem);
+      ValueEditor::BaseModelItem * child = pushChild(objectPropertyItem);
       emit propertyItemInserted(child);
       return child;
     }
+
     catch(FabricCore::Exception e)
     {
       printf("SGObjectModelItem::createChild, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
@@ -95,8 +95,7 @@ FabricUI::ValueEditor::BaseModelItem *SGObjectModelItem::createChild( FTL::CStrR
   return NULL;
 }
 
-FTL::CStrRef SGObjectModelItem::getName()
-{
+FTL::CStrRef SGObjectModelItem::getName() {
   if(m_rtVal.isValid())
   {
     try
@@ -112,59 +111,40 @@ FTL::CStrRef SGObjectModelItem::getName()
   return FTL_STR("<Root>");
 }
 
-bool SGObjectModelItem::canRename()
-{
+bool SGObjectModelItem::canRename() {
   return false;
 }
 
-void SGObjectModelItem::rename( FTL::CStrRef newName )
-{
+void SGObjectModelItem::rename(FTL::CStrRef newName) {
 }
 
-void SGObjectModelItem::onRenamed(
-  FTL::CStrRef oldName,
-  FTL::CStrRef newName
-  )
-{
+void SGObjectModelItem::onRenamed(FTL::CStrRef oldName, FTL::CStrRef newName) {
 }
 
 void SGObjectModelItem::onSynchronizeCommands() {
   emit synchronizeCommands();
 }
 
-QVariant SGObjectModelItem::getValue()
-{
+QVariant SGObjectModelItem::getValue() {
   return QVariant();
 }
 
-FabricUI::ValueEditor::ItemMetadata* SGObjectModelItem::getMetadata()
-{
+ValueEditor::ItemMetadata* SGObjectModelItem::getMetadata() {
   return NULL;
 }
 
-void SGObjectModelItem::setMetadataImp( 
-  const char* key, 
-  const char* value, 
-  bool canUndo )
-{
+void SGObjectModelItem::setMetadataImp(const char* key, const char* value, bool canUndo) {
 }
 
-void SGObjectModelItem::setValue(
-  QVariant var,
-  bool commit,
-  QVariant valueAtInteractionBegin
-  )
-{
+void SGObjectModelItem::setValue(QVariant var, bool commit, QVariant valueAtInteractionBegin) {
 }
 
-void SGObjectModelItem::onStructureChanged()
-{
+void SGObjectModelItem::onStructureChanged() {
   m_propertyNameMap.clear();
   m_propertiesRtVal = FabricCore::RTVal();
 }
 
-void SGObjectModelItem::ensurePropertiesRTVal()
-{
+void SGObjectModelItem::ensurePropertiesRTVal() {
   if(m_propertiesRtVal.isValid())
     return;
 
@@ -189,8 +169,9 @@ void SGObjectModelItem::ensurePropertiesRTVal()
   }
 }
 
-void SGObjectModelItem::updateFromScene( const FabricCore::RTVal& newSGObject, bool& isValid, bool& structureChanged ) {
-  try {
+void SGObjectModelItem::updateFromScene(const FabricCore::RTVal& newSGObject, bool& isValid, bool& structureChanged) {
+  try 
+  {
     FabricCore::RTVal args[6];
     args[0] = newSGObject;
     args[1] = m_lastStructureVersionRtVal;
@@ -199,22 +180,25 @@ void SGObjectModelItem::updateFromScene( const FabricCore::RTVal& newSGObject, b
     args[4] = m_structureChangedRtVal;
     args[5] = m_valueChangedRtVal;
 
-    m_rtVal.callMethod( "", "synchronize", 6, args );
+    m_rtVal.callMethod("", "synchronize", 6, args);
 
     isValid = m_isValidRtVal.getBoolean();
     structureChanged = m_structureChangedRtVal.getBoolean();
-    if( isValid && !structureChanged && m_valueChangedRtVal.getBoolean() ) {
+    if(isValid && !structureChanged && m_valueChangedRtVal.getBoolean()) 
+    {
       // Update individual property values
       int count = getNumChildren();
-      for( int i = 0; i < count; ++i ) {
-        SGObjectPropertyModelItem * objectItem = dynamic_cast< SGObjectPropertyModelItem * >( getChild( i, false ) );
-        if( objectItem )
+      for(int i = 0; i < count; ++i) 
+      {
+        SGObjectPropertyModelItem * objectItem = dynamic_cast< SGObjectPropertyModelItem * >(getChild(i, false));
+        if(objectItem)
           objectItem->updateFromScene();
       }
     }
   }
-  catch( FabricCore::Exception e ) {
-    printf( "SGObjectModelItem::updateFromScene, FabricCore::Exception: '%s'\n", e.getDesc_cstr() );
+  catch(FabricCore::Exception e) 
+  {
+    printf("SGObjectModelItem::updateFromScene, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
   }
 }
 

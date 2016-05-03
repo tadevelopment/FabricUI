@@ -18,10 +18,10 @@ class SHBaseVEEditorOwner : public DFG::DFGVEEditorOwner
 {
 
   /**
-    SHBaseVEEditorOwner spcialized the DFG::DFGVEEditorOwner.
-    It defines a base class to the SHVEEditorOwner defined in C++ and python.
+    SHBaseVEEditorOwner specializes the DFG::DFGVEEditorOwner.
+    It defines a base class for the SHVEEditorOwner defined in C++ and python.
 
-    It defines the base methods to edit the properties of a SceneHub ojbects:
+    It defines the base methods to edit the properties of a SceneGraph objects:
       - SGObjects
       - SGObjectProperty
   */
@@ -30,7 +30,7 @@ class SHBaseVEEditorOwner : public DFG::DFGVEEditorOwner
 
   public:
     /// Constructor.
-    /// \param dfgWidget A reference to the DFG.DFGWidget
+    /// \param dfgWidget A reference to the DFG.DFGWidget.
     SHBaseVEEditorOwner(DFG::DFGWidget *dfgWidget);
       
     /// Destructor.
@@ -38,6 +38,9 @@ class SHBaseVEEditorOwner : public DFG::DFGVEEditorOwner
 
     /// Gets the current SGObjectPropertyModelItem.
     SGObjectPropertyModelItem *getSGObjectPropertyModelItem();
+   
+    /// Updates the valueEditor root-item.
+    void updateSGObject(const FabricCore::RTVal& sgObject);
 
 
   signals:
@@ -47,25 +50,23 @@ class SHBaseVEEditorOwner : public DFG::DFGVEEditorOwner
 
 
   protected slots:
-    /// Synchronized the commands.
+    /// Synchronizes the commands.
     /// Dumb slot to emit the synchronizeCommands signal.
     void onSynchronizeCommands();
 
     /// Update the valueEditor structure when a property of an object is displayed.
-    void onSGObjectPropertyItemInserted(FabricUI::ValueEditor::BaseModelItem * item);
+    void onSGObjectPropertyItemInserted(FabricUI::ValueEditor::BaseModelItem *item);
     
 
   protected:
     /// Casts a ValueEditor::BaseModelItem to a SGObjectModelItem.
+    /// Helper for Python call.
     SGObjectModelItem* castToSGModelItem(ValueEditor::BaseModelItem *item);
-    
-    /// Updates the valueEditor root-item
-    void updateSGObject( const FabricCore::RTVal& sgObject );
-    
-    /// Updates the current SGObjectPropertyModelItem
-    void updateSGObjectProperty( const FabricCore::RTVal& sgObjectProperty );
+     
+    /// Updates the current SGObjectProperty.
+    void updateSGObjectProperty(const FabricCore::RTVal& sgObjectProperty);
 
-    /// Defined if "root" is a single property
+    /// Defined if "root" is a single property.
     SGObjectPropertyModelItem *m_objectPropertyItem;
 };
 
@@ -73,4 +74,3 @@ class SHBaseVEEditorOwner : public DFG::DFGVEEditorOwner
 } // namespace FabricUI
 
 #endif //__UI_SCENEHUB_SHBASEVEEDITOROWNER_H__
-

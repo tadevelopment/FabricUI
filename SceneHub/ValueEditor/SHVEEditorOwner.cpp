@@ -9,63 +9,52 @@ using namespace SceneHub;
 using namespace ModelItems;
 
 
-SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget * dfgWidget, SceneHub::SHBaseTreeView* baseTreeView)
+SHVEEditorOwner::SHVEEditorOwner(DFG::DFGWidget *dfgWidget, SHStates* shStates)
   : SHBaseVEEditorOwner(dfgWidget)
-  , m_baseTreeView(baseTreeView) {
+  , m_shStates(shStates) {
 }
 
 SHVEEditorOwner::~SHVEEditorOwner() {}
-
-void SHVEEditorOwner::initConnections() {
-  DFG::DFGVEEditorOwner::initConnections();
-  connect(
-    m_baseTreeView,
-    SIGNAL(itemSelected( FabricUI::SceneHub::SHTreeItem * )),
-    this,
-    SLOT(onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * ))
-    );
-
-  connect(
-    m_baseTreeView,
-    SIGNAL(itemDoubleClicked( FabricUI::SceneHub::SHTreeItem * )),
-    this,
-    SLOT(onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * ))
-    );
-}
-
+ 
 void SHVEEditorOwner::onStructureChanged() {
   DFG::DFGVEEditorOwner::onStructureChanged();
 
   // refresh!
-  SGObjectModelItem * objectItem = castToSGModelItem( m_modelRoot );
+  SGObjectModelItem * objectItem = castToSGModelItem(m_modelRoot);
   if(objectItem) 
   {
     objectItem->onStructureChanged();
-    emit replaceModelRoot( m_modelRoot );
+    emit replaceModelRoot(m_modelRoot);
   }
 }
 
-void SHVEEditorOwner::onSceneItemSelected( FabricUI::SceneHub::SHTreeItem * item ) {
-  FabricCore::RTVal sgObject = item->getSGObject();
-  if( sgObject.isValid() )
-    updateSGObject( sgObject );
-  else {
-    FabricCore::RTVal sgObjectProperty = item->getSGObjectProperty();
-    if( sgObjectProperty.isValid() )
-      updateSGObjectProperty( sgObjectProperty );
+void SHVEEditorOwner::onInspectChanged() {
+  if(m_shStates->isInspectingSGObject() || m_shStates->isInspectingSGCanvasOperator())
+  {
+    FabricCore::RTVal sgObject = m_shStates->getInspectedSGObject();
+    updateSGObject(sgObject);
+  }
+
+  else if(m_shStates->isInspectingSGObjectProperty())
+  { 
+    FabricCore::RTVal sgObjectProperty = m_shStates->getInspectedSGObjectProperty();
+    updateSGObjectProperty(sgObjectProperty);
   }
 }
 
 void SHVEEditorOwner::onSceneChanged() {
-  SGObjectModelItem * objectItem = castToSGModelItem( m_modelRoot );
-  if( objectItem ) {
+  SGObjectModelItem *objectItem = castToSGModelItem(m_modelRoot);
+  if(objectItem) 
+  {
     //Important: take a value copy since passed by ref and sgObject might be deleted
     FabricCore::RTVal sgObject = objectItem->getSGObject();
-    updateSGObject( sgObject );
-  } else if( m_objectPropertyItem ) {
-      //Important: take a value copy since passed by ref and sgObject might be deleted
+    updateSGObject(sgObject);
+  } 
+  else if(m_objectPropertyItem) 
+  {
+    //Important: take a value copy since passed by ref and sgObject might be deleted
     FabricCore::RTVal sgObjectProperty = m_objectPropertyItem->getSGObjectProperty();
-    updateSGObjectProperty( sgObjectProperty );
+    updateSGObjectProperty(sgObjectProperty);
   }
 }
 

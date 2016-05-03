@@ -20,72 +20,98 @@ namespace SceneHub {
 class SHBaseTreeView;
 
 class SHTreeView_ViewIndexTarget : public QObject {
+
+  /**
+    SHTreeView_ViewIndexTarget synchronizes a SHTreeModel 
+    with a QAbstractItemModel.
+  */
+
   Q_OBJECT
 
   public:
-    SHTreeView_ViewIndexTarget(SHBaseTreeView *view, QModelIndex const &index, QObject *parent);
+    /// Constructor.
+    /// \param shStates A reference to the FabricUI::SceneHub::SHBaseTreeView.
+    /// \param QModelIndex The index of the item.
+    /// \param parent A reference to the QObject parent.
+    SHTreeView_ViewIndexTarget(
+      SHBaseTreeView *view, 
+      QModelIndex const &index, 
+      QObject *parent);
 
-    void setVisibility( bool visible, unsigned char propagationType );
+    /// Sets the visibilty of the SGObject.
+    /// \param visible Show the object if true.
+    /// \param propagationType Local-Propagated-Override
+    void setVisibility(bool visible, unsigned char propagationType);
 
 
   public slots:
-    void expandRecursively() { expandRecursively( m_index ); }
-    
+    /// Loads recursively the SGObject.
     void loadRecursively();
+    
+    /// Expands recursively the SGObject.
+    void expandRecursively();
 
-    void showLocal() { setVisibility( true, 0 ); }
+    /// Shows the SGObject.
+    void showLocal();
     
-    void showPropagated() { setVisibility( true, 1 ); }
+    /// Shows the SGObject and its instances.
+    void showPropagated();
     
-    void showOverride() { setVisibility( true, 2 ); }
+    /// Shows the SGObject override.
+    void showOverride();
 
-    void hideLocal() { setVisibility( false, 0 ); }
+    /// Hides the SGObject.
+    void hideLocal();
     
-    void hidePropagated() { setVisibility( false, 1 ); }
+    /// Hides the SGObject and its instances.
+    void hidePropagated();
     
-    void hideOverride() { setVisibility( false, 2 ); }
+    /// Hides the SGObject override.
+    void hideOverride();
 
 
   protected:
-    void expandRecursively( QModelIndex const &index );
+    /// Expands recursvely the treeItem at index.
+    void expandRecursively(QModelIndex const &index);
 
-
-  private:
+    /// Reference to the FabricUI::SceneHub::SHBaseTreeView
     SHBaseTreeView *m_view;
+    /// QModelIndex to get the SGObject from.
     QModelIndex m_index;
 };
 
+
 class SHBaseTreeView : public QTreeView {
   
+  /**
+    SHBaseTreeView specializes the QtGui::QTreeView.
+    It defines a base class for the SHTreeView defined in C++ and python.
+  */
+
   Q_OBJECT
 
+  /// \internal
   friend class SHTreeView_ViewIndexTarget;
 
   public:
-    SHBaseTreeView(FabricCore::Client &client, QWidget *parent = 0 );
+    /// Constructor.
+    /// \param client A reference to the FabricCore::Client.
+    /// \param parent A pointor to the QWidget parent.    
+    SHBaseTreeView(FabricCore::Client &client, QWidget *parent = 0);
 
-    virtual ~SHBaseTreeView() {}
+    /// Gets a reference to the FabricCore::Client.
+    FabricCore::Client getClient();
 
-    void setSelectedObjects( FabricCore::RTVal selectedSGObjectArray );
+    /// Sets the selected treeView items.
+    /// Updates from 3DView.
+    void setSelectedObjects(FabricCore::RTVal selectedSGObjectArray);
 
-    FabricCore::Client getClient() { return m_client; }
-
+    /// Gets a SHTreeItem at treeView index.
     static SHTreeItem *GetTreeItemAtIndex(QModelIndex index);
-   
-    
-
-  signals:
-    void itemSelected( FabricUI::SceneHub::SHTreeItem *item );
-    
-    void itemDeselected( FabricUI::SceneHub::SHTreeItem *item );
-    
-    void itemDoubleClicked( FabricUI::SceneHub::SHTreeItem *item );
-
 
 
   protected:
-    SHTreeItem *getTreeItemAtIndex(QModelIndex index);
-
+    /// Reference to the FabricCore::Client.
     FabricCore::Client m_client;
 };
 

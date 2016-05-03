@@ -98,6 +98,7 @@ namespace FabricUI
       ValueEditor::VEEditorOwner *m_valueEditor;
       DFG::DFGConfig m_config;
       QMenuBar *m_menuBar;
+      FabricCore::DFGBinding m_mainDFGBinding;
     };
   };
 };

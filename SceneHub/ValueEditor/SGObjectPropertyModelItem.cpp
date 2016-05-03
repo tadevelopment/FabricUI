@@ -11,52 +11,49 @@
 namespace FabricUI {
 namespace SceneHub {
 
-//////////////////////////////////////////////////////////////////////////
+
 SGObjectPropertyModelItem::SGObjectPropertyModelItem(
   FabricCore::Client client,
   FabricCore::RTVal rtVal,
-  bool isRootItem
-  )
-  : m_client( client )
-  , m_rtVal( rtVal )
+  bool isRootItem)
+  : m_client(client)
+  , m_rtVal(rtVal)
   , m_lastValueVersion(0)
-  , m_rootItem( isRootItem )
+  , m_rootItem(isRootItem)
 {
 }
 
-SGObjectPropertyModelItem::~SGObjectPropertyModelItem()
-{
+SGObjectPropertyModelItem::~SGObjectPropertyModelItem() {
 }
 
-
-int SGObjectPropertyModelItem::getNumChildren()
-{
+int SGObjectPropertyModelItem::getNumChildren() {
   return 0; // todo
 }
 
-FTL::CStrRef SGObjectPropertyModelItem::getChildName( int i )
-{
+FTL::CStrRef SGObjectPropertyModelItem::getChildName(int i) {
   return ""; // todo
 }
 
-FabricUI::ValueEditor::BaseModelItem *SGObjectPropertyModelItem::createChild( FTL::CStrRef name ) /**/
-{
+const FabricCore::RTVal& SGObjectPropertyModelItem::getSGObjectProperty() { 
+  return m_rtVal; 
+}
+
+FabricUI::ValueEditor::BaseModelItem *SGObjectPropertyModelItem::createChild(FTL::CStrRef name) {
   // return new ArgModelItem(
   //   m_dfgUICmdHandler,
   //   m_binding,
   //   name
-  //   );
+  //  );
   return NULL; // todo
 }
 
-FTL::CStrRef SGObjectPropertyModelItem::getName()
-{
+FTL::CStrRef SGObjectPropertyModelItem::getName() {
   if(m_rtVal.isValid())
   {
     try
     {
-      if( m_rootItem )
-        m_name = m_rtVal.callMethod( "String", "getFullPath", 0, 0 ).getStringCString();
+      if(m_rootItem)
+        m_name = m_rtVal.callMethod("String", "getFullPath", 0, 0).getStringCString();
       else
         m_name = m_rtVal.callMethod("String", "getName", 0, 0).getStringCString();
       return m_name;
@@ -69,45 +66,34 @@ FTL::CStrRef SGObjectPropertyModelItem::getName()
   return FTL_STR("<Root>");
 }
 
-bool SGObjectPropertyModelItem::canRename()
-{
+bool SGObjectPropertyModelItem::canRename() {
   return false;
 }
 
-void SGObjectPropertyModelItem::rename( FTL::CStrRef newName )
-{
+void SGObjectPropertyModelItem::rename(FTL::CStrRef newName) {
 }
 
-void SGObjectPropertyModelItem::onRenamed(
-  FTL::CStrRef oldName,
-  FTL::CStrRef newName
-  )
-{
+void SGObjectPropertyModelItem::onRenamed(FTL::CStrRef oldName, FTL::CStrRef newName) {
 }
 
-FabricUI::ValueEditor::ItemMetadata* SGObjectPropertyModelItem::getMetadata()
-{
+FabricUI::ValueEditor::ItemMetadata* SGObjectPropertyModelItem::getMetadata() {
   return NULL;
 }
 
-void SGObjectPropertyModelItem::setMetadataImp( 
+void SGObjectPropertyModelItem::setMetadataImp(
   const char* key, 
   const char* value, 
-  bool canUndo ) /**/
-{
+  bool canUndo) {
 }
 
-bool SGObjectPropertyModelItem::hasDefault()
-{
+bool SGObjectPropertyModelItem::hasDefault() {
   return false;
 }
 
-void SGObjectPropertyModelItem::resetToDefault()
-{
+void SGObjectPropertyModelItem::resetToDefault() {
 }
 
-FTL::CStrRef SGObjectPropertyModelItem::getRTValType()
-{
+FTL::CStrRef SGObjectPropertyModelItem::getRTValType() {
   if(m_rtValType.length() > 0)
     return m_rtValType;
 
@@ -117,7 +103,7 @@ FTL::CStrRef SGObjectPropertyModelItem::getRTValType()
   try
   {
     m_rtValType = m_rtVal.callMethod("String", "_getPropertyTypeAsString", 0, 0).getStringCString();
-    if( strcmp( m_rtValType.c_str(), "None" ) == 0 )
+    if(strcmp(m_rtValType.c_str(), "None") == 0)
       m_rtValType = std::string();
   }
   catch(FabricCore::Exception e)
@@ -129,12 +115,12 @@ FTL::CStrRef SGObjectPropertyModelItem::getRTValType()
 }
 
 void SGObjectPropertyModelItem::updateFromScene() {
-  if( !m_rtVal.isValid() )
+  if(!m_rtVal.isValid())
     return;
 
   try {
-    int valueVersion = m_rtVal.callMethod( "UInt32", "getValueVersion", 0, 0 ).getUInt32();
-    if( m_lastValueVersion != valueVersion ) {
+    int valueVersion = m_rtVal.callMethod("UInt32", "getValueVersion", 0, 0).getUInt32();
+    if(m_lastValueVersion != valueVersion) {
       // Value changed.
       m_lastValueVersion = valueVersion;
 
@@ -142,21 +128,20 @@ void SGObjectPropertyModelItem::updateFromScene() {
       std::string prevType = m_rtValType;
       m_rtValType = std::string();
       getRTValType();
-      if( prevType != m_rtValType ) {
+      if(prevType != m_rtValType) {
         // TODO: notify that the type changed...
       }
 
-      emitModelValueChanged( getValue() );
+      emitModelValueChanged(getValue());
       // Check if type changed (todo!)
     }
   }
-  catch( FabricCore::Exception e ) {
-    printf( "SGObjectPropertyModelItem::updateFromScene, FabricCore::Exception: '%s'\n", e.getDesc_cstr() );
+  catch(FabricCore::Exception e) {
+    printf("SGObjectPropertyModelItem::updateFromScene, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
   }
 }
 
-QVariant SGObjectPropertyModelItem::getValue()
-{
+QVariant SGObjectPropertyModelItem::getValue() {
   FTL::CStrRef type = getRTValType();
 
   FabricCore::RTVal value;
@@ -279,18 +264,16 @@ QVariant SGObjectPropertyModelItem::getValue()
     printf("SGObjectPropertyModelItem::getValue, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
   }
 
-  if( !value.isValid() )
+  if(!value.isValid())
     return QVariant();// Might be another object type
 
   return toVariant(value);
 }
 
 void SGObjectPropertyModelItem::setValue(
-  QVariant var,
-  bool commit,
-  QVariant valueAtInteractionBegin
-  )
-{
+  QVariant var, 
+  bool commit, 
+  QVariant valueAtInteractionBegin) {
   FabricCore::RTVal varVal;
   if(!isRTVal(var))
   {
@@ -412,7 +395,7 @@ void SGObjectPropertyModelItem::setValue(
     {
       printf("SGObjectPropertyModelItem::setValue, FabricCore::Exception: '%s'\n", e.getDesc_cstr());
     }
-    if( !varVal.isValid() )
+    if(!varVal.isValid())
       return; //Might be another Object type
   }
 
@@ -435,7 +418,7 @@ void SGObjectPropertyModelItem::setValue(
   if(!m_rtVal.isValid())
     return;
 
-  if (commit )
+  if (commit)
   {
     try
     {
@@ -447,7 +430,7 @@ void SGObjectPropertyModelItem::setValue(
         valueAtInteractionBeginVal = valueAtInteractionBeginVal.callMethod("Mat44", "toMat44", 0, 0);
 
       FabricCore::RTVal sgVal = m_rtVal.maybeGetMember("SG");
-      QString fullPath( m_rtVal.callMethod("String", "getFullPath", 0, 0).getStringCString() );
+      QString fullPath(m_rtVal.callMethod("String", "getFullPath", 0, 0).getStringCString());
 
       if(getRTValType() == "Boolean")
       {

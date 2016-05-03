@@ -121,6 +121,7 @@ void DFGCombinedWidget::init(
 
   try
   {
+    m_mainDFGBinding = binding;
     m_config = config;
     m_client = client;
     m_manager = manager;
@@ -129,7 +130,7 @@ void DFGCombinedWidget::init(
       this,
       m_client,
       host,
-      binding,
+      m_mainDFGBinding,
       execPath,
       exec,
       m_manager,

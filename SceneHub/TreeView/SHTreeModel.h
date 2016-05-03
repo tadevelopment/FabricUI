@@ -5,70 +5,115 @@
 #ifndef __UI_SCENEHUB_SHTREEMODEL_H__
 #define __UI_SCENEHUB_SHTREEMODEL_H__
 
-#include <QtCore/QAbstractItemModel>
-#include <QtGui/QMenu>
-#include <QtGui/QTreeView>
-#include <FTL/OwnedPtr.h>
-#include <FTL/SharedPtr.h>
-#include <FabricCore.h>
 #include <vector>
 #include <assert.h>
-#include <iostream>
 #include "SHTreeItem.h"
+#include <FabricCore.h>
+#include <FTL/OwnedPtr.h>
+#include <FTL/SharedPtr.h>
+#include <QtGui/QMenu>
+#include <QtGui/QTreeView>
+#include <QtCore/QAbstractItemModel>
+
  
 namespace FabricUI {
 namespace SceneHub {
 
 class SHTreeModel : public QAbstractItemModel {
+
+  /**
+    SHTreeModel specializes the QtCore::QAbstractItemModel  
+    to properly displayed the SceneHuib objects.
+
+    The model has the following structure:
+      - root
+        - SGObjects:
+          - SGProperty
+          - generators/operators
+    
+    The SGProperties as the generators/operators can be shown/hidden.
+  */
+
   Q_OBJECT
 
   friend class SHTreeItem;
 
-  typedef std::vector<SHTreeItem *> RootItemsVec;
+  typedef std::vector<SHTreeItem*> RootItemsVec;
+
 
   public:
-    SHTreeModel( int , FabricCore::Client client, QObject *parent );
+    /// Constructor.
+    /// \param client A reference to the FabricCore::Client.
+    /// \param sceneGraph A reference to the QObject parent.
+    /// \param parent A reference to the QObject parent (can be null).
+    SHTreeModel(
+      FabricCore::Client client, 
+      FabricCore::RTVal sceneGraph, 
+      QObject *parent = 0);
 
-    SHTreeModel( FabricCore::Client client, FabricCore::RTVal sceneGraph, QObject *parent = 0 );
+    /// Destructor.
+    virtual ~SHTreeModel();
 
-    ~SHTreeModel();
-
+    /// Adds a root to the model.
     QModelIndex addRootItem(FabricCore::RTVal rootSGObject);
 
-    void setShowProperties( bool show );
+    /// Shows the SGObjectProperties in the TreeView.
+    void setShowProperties(bool show);
 
-    void setShowOperators( bool show );
+    /// Shows the generators/operators in the TreeView.
+    void setShowOperators(bool show);
 
-    void setPropertyColor( QColor color ) { m_propertyColorVariant = QVariant( color ); }
+    /// Sets the SGObjectProperties color in the TreeView.
+    void setPropertyColor(QColor color);
     
-    void setReferenceColor( QColor color ) { m_referenceColorVariant = QVariant( color ); }
+    /// Sets the SGObject color in the TreeView if it's a reference.
+    void setReferenceColor(QColor color);
     
-    void setOperatorColor( QColor color ) { m_operatorColorVariant = QVariant( color ); }
+    /// Sets the canvas operator color in the TreeView.
+    void setOperatorColor(QColor color);
 
-    std::vector< QModelIndex > getIndicesFromSGObject( FabricCore::RTVal sgObject );
+    /// Gets the indexes (SGObject, SGObjectProperty, CanvasOperators) 
+    /// of the sgObject in the TreeView. 
+    std::vector<QModelIndex> getIndicesFromSGObject(FabricCore::RTVal sgObject);
 
+    /// Implementation of QtGui::QAbstractItemModel.
     virtual QVariant data(const QModelIndex &index, int role) const;
 
-    virtual Qt::ItemFlags flags( const QModelIndex &index ) const;
+    /// Implementation of QtGui::QAbstractItemModel.
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    virtual QModelIndex index(int row, int col, const QModelIndex &parentIndex = QModelIndex() ) const;
+    /// Implementation of QtGui::QAbstractItemModel.
+    virtual QModelIndex index(
+      int row, 
+      int col, 
+      const QModelIndex &parentIndex = QModelIndex()) const;
     
-    virtual QModelIndex parent( const QModelIndex &childIndex ) const;
+    /// Implementation of QtGui::QAbstractItemModel.
+    virtual QModelIndex parent(const QModelIndex &childIndex) const;
 
-    virtual int rowCount( const QModelIndex &index ) const;
+    /// Implementation of QtGui::QAbstractItemModel.
+    virtual int rowCount(const QModelIndex &index) const;
 
-    virtual int columnCount( const QModelIndex &index ) const { return 1; }
+    /// Implementation of QtGui::QAbstractItemModel.
+    virtual int columnCount(const QModelIndex &index) const;
 
+    /// Safely signal emission when the scene hierachy changed.
+    void emitSceneHierarchyChanged();
+
+    /// Safely signal emission when the scene changed.
+    void emitSceneChanged();
+
+    /// \internal
     class SceneHierarchyChangedBlocker  {
       public:
-        SceneHierarchyChangedBlocker(SHTreeModel *model) : m_model( model ) {
-          if ( m_model->m_sceneHierarchyChangedBlockCount++ == 0 )
+        SceneHierarchyChangedBlocker(SHTreeModel *model) : m_model(model) {
+          if(m_model->m_sceneHierarchyChangedBlockCount++ == 0)
             m_model->m_sceneHierarchyChangedPending = false;
         }
 
         ~SceneHierarchyChangedBlocker() {
-          if( --m_model->m_sceneHierarchyChangedBlockCount == 0
-            && m_model->m_sceneHierarchyChangedPending ) {
+          if(--m_model->m_sceneHierarchyChangedBlockCount == 0
+            && m_model->m_sceneHierarchyChangedPending) {
             emit m_model->sceneHierarchyChanged();
           }
         }
@@ -77,29 +122,24 @@ class SHTreeModel : public QAbstractItemModel {
         SHTreeModel *m_model;
     };
 
-    void emitSceneHierarchyChanged()  {
-      if ( m_sceneHierarchyChangedBlockCount > 0 )
-        m_sceneHierarchyChangedPending = true;
-      else
-        emit sceneHierarchyChanged();
-    }
-
-    void emitSceneChanged() { emit sceneChanged(); }
-
 
   signals:
-    void sceneHierarchyChanged() const;
+    /// Emitted when the scene structure changed.
+    /// Used to synchronize with the TreeView-3Dview.
+    void sceneHierarchyChanged();
     
-    void sceneChanged() const;
+    /// Emitted when the scene changed (selection).
+    /// Used to synchronize with the TreeView-3Dview.
+    void sceneChanged();
 
 
   public slots:
+    /// Updates the model when the scene changed.
+    /// Update from 3Dview.
     void onSceneHierarchyChanged();
 
     
   private:
-    void initStyle();
-
     RootItemsVec m_rootItems;
     FabricCore::Client m_client;
     FabricCore::RTVal m_treeViewDataRTVal;
@@ -117,12 +157,11 @@ class SHTreeModel : public QAbstractItemModel {
     FabricCore::RTVal m_getUpdatedChildDataArgs[7];
     FabricCore::RTVal m_updateArgs[3];
 
-    uint32_t m_sceneHierarchyChangedBlockCount;
+    unsigned int m_sceneHierarchyChangedBlockCount;
     bool m_sceneHierarchyChangedPending;
-
 };
 
 } // namespace SceneHub
 } // namespace FabricUI
 
-#endif // __UI_SCENEHUB_SHTREEMODEL_H__
+#endif// __UI_SCENEHUB_SHTREEMODEL_H__

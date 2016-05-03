@@ -1,37 +1,93 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <iostream>
-
-#include <QtGui/QMenu>
-#include <QtGui/QLabel>
-#include <QtGui/QMenuBar>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
 
 #include "SHDFGCombinedWidget.h"
-#include <FabricUI/Style/FabricStyle.h>
-#include <FabricUI/DFG/Dialogs/DFGNodePropertiesDialog.h>
-#include <FabricUI/DFG/DFGActions.h>
 #include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
  
-using namespace FabricUI::DFG;
+using namespace FabricUI;
+using namespace DFG;
 
+
+SHDFGCombinedWidget::SHDFGCombinedWidget(QWidget * parent) 
+  : DFGCombinedWidget(parent) {
+}
+
+void SHDFGCombinedWidget::initDFG() {
+  DFGCombinedWidget::initDFG(); 
+
+  m_shStates = new SceneHub::SHStates(m_client);
+
+  m_shDFGBinding = new SceneHub::SHDFGBinding(
+    m_mainDFGBinding,
+    m_dfgWidget->getDFGController(),
+    m_shStates);
+
+  QObject::connect(m_shDFGBinding, SIGNAL(sceneChanged()), m_shStates, SLOT(onStateChanged()));
+  QObject::connect(m_shStates, SIGNAL(inspectedChanged()), this, SLOT(onInspectChanged()));
+}
 
 void SHDFGCombinedWidget::initTreeView() {
   DFGCombinedWidget::initTreeView(); 
-  m_shTreeViewWidget = new SceneHub::SHTreeViewWidget(
+  m_SHTreeViewManager = new SceneHub::SHTreeViewManager(
     m_client,
-    m_dfgWidget->getUIController(),
-    this);
-  QObject::connect(m_shTreeViewWidget, SIGNAL(sceneHierarchyChanged()), this, SLOT(onRefreshScene()));
+    m_dfgWidget,
+    m_shStates);
+
+  QObject::connect(m_SHTreeViewManager, SIGNAL(activeSceneChanged(FabricUI::SceneHub::SHGLScene *)), this, SLOT(onActiveSceneChanged(FabricUI::SceneHub::SHGLScene *)));
+  //scene changed -> tree view changed
+  QObject::connect(m_shStates, SIGNAL(sceneHierarchyChanged()), m_SHTreeViewManager, SLOT(onSceneHierarchyChanged()));
+  QObject::connect(m_shStates, SIGNAL(selectionChanged()), m_SHTreeViewManager, SLOT(onSelectionChanged()));
+  // tree view changed -> scene changed
+  QObject::connect(m_SHTreeViewManager, SIGNAL(sceneHierarchyChanged()), m_shStates, SLOT(onStateChanged()));
+  QObject::connect(m_SHTreeViewManager, SIGNAL(sceneChanged()), m_shStates, SLOT(onStateChanged()));
+}
+
+void SHDFGCombinedWidget::initValueEditor() {
+
+  FabricUI::SceneHub::SHVEEditorOwner* valueEditor = 
+    new FabricUI::SceneHub::SHVEEditorOwner(getDfgWidget(), m_shStates);
+
+  m_valueEditor = valueEditor;
+  QObject::connect(valueEditor, SIGNAL(log(const char *)), this, SLOT(log(const char *)));
+  QObject::connect(valueEditor, SIGNAL(canvasSidePanelInspectRequested()), this, SLOT(onCanvasSidePanelInspectRequested()));
+  QObject::connect(
+    valueEditor, 
+    SIGNAL(modelItemValueChanged(FabricUI::ValueEditor::BaseModelItem *, QVariant const &)), 
+    this, 
+    SLOT(onModelValueChanged(FabricUI::ValueEditor::BaseModelItem *, QVariant const &)));
+
+  QObject::connect(m_shStates, SIGNAL(inspectedChanged()), valueEditor, SLOT(onInspectChanged()));
+  QObject::connect(m_shStates, SIGNAL(activeSceneChanged()), valueEditor, SLOT(onSceneChanged()));
+  QObject::connect(m_shStates, SIGNAL(sceneChanged()), valueEditor, SLOT(onSceneChanged()));
 }
 
 void SHDFGCombinedWidget::initDocks() { 
   DFGCombinedWidget::initDocks(); 
-  m_hSplitter->addWidget(m_shTreeViewWidget);
+  m_hSplitter->addWidget(m_SHTreeViewManager);
 }
 
-void SHDFGCombinedWidget::initValueEditor() {
-  m_valueEditor = new FabricUI::SceneHub::SHVEEditorOwner( getDfgWidget(), m_shTreeViewWidget->getTreeView());
-  QObject::connect( m_valueEditor, SIGNAL( log( const char * ) ), this, SLOT( log ( const char * ) ) );
+void SHDFGCombinedWidget::onInspectChanged() {
+  // shDFGBinding might change the active binding
+  m_shDFGBinding->onInspectChanged();
+  FabricCore::DFGBinding binding = m_dfgWidget->getDFGController()->getBinding();
+  //self.scriptEditor.updateBinding(binding)
+}
+
+void SHDFGCombinedWidget::onCanvasSidePanelInspectRequested() {
+  if(m_shDFGBinding)
+  {
+    FabricUI::SceneHub::SHVEEditorOwner* valueEditor = dynamic_cast< FabricUI::SceneHub::SHVEEditorOwner*>(m_valueEditor);
+
+    FabricCore::RTVal parameterObject = m_shDFGBinding->getCanvasOperatorParameterObject();
+    if(parameterObject.isValid())
+      valueEditor->updateSGObject(parameterObject);
+  }
+}
+ 
+void SHDFGCombinedWidget::onModelValueChanged(FabricUI::ValueEditor::BaseModelItem * item, QVariant const &newValue) {
+  refreshScene();
+}
+
+void SHDFGCombinedWidget::onActiveSceneChanged(FabricUI::SceneHub::SHGLScene *scene) {
+
 }

@@ -28,10 +28,10 @@ class SHVEEditorOwner(SceneHub.SHBaseVEEditorOwner):
         """
 
 		super(SHVEEditorOwner, self).onStructureChanged()
-		objectItem = self.castToSGModelItem( self.m_modelRoot )
+		objectItem = self.castToSGModelItem(self.m_modelRoot)
 		if objectItem is not None: 
 			objectItem.onStructureChanged()
-			self.replaceModelRoot.emit( self.m_modelRoot )
+			self.replaceModelRoot.emit(self.m_modelRoot)
 
 	def onInspectChanged(self):
 	 	""" Override, uses to display the selection properties in the valueEditor.
@@ -39,25 +39,25 @@ class SHVEEditorOwner(SceneHub.SHBaseVEEditorOwner):
 
 		if self.shStates.isInspectingSGObject() or self.shStates.isInspectingSGCanvasOperator():
 			sgObject = self.shStates.getInspectedSGObject()
-			self.updateSGObject( sgObject )
+			self.updateSGObject(sgObject)
 
 		elif self.shStates.isInspectingSGObjectProperty():
 			sgObjectProperty = self.shStates.getInspectedSGObjectProperty()
-			self.updateSGObjectProperty( sgObjectProperty )
+			self.updateSGObjectProperty(sgObjectProperty)
 		
 	def onSceneChanged(self):
 		""" Updates the valuesEdditor Tree when the root_item changed.
         """
 
-		objectItem = self.castToSGModelItem( self.m_modelRoot )
+		objectItem = self.castToSGModelItem(self.m_modelRoot)
 		if objectItem is not None: 
 			#Important: take a value copy since passed by ref and sgObject might be deleted
 			sgObject = objectItem.getSGObject()
-			self.updateSGObject( sgObject )
+			self.updateSGObject(sgObject)
 	 	elif self.getSGObjectPropertyModelItem() is not None:
 			#Important: take a value copy since passed by ref and sgObject might be deleted
 			sgObjectProperty = self.getSGObjectPropertyModelItem().getSGObjectProperty()
-			self.updateSGObjectProperty( sgObjectProperty )	
+			self.updateSGObjectProperty(sgObjectProperty)	
 
 	def onSidePanelInspectRequested(self):
 		execPath = self.getDFGController().getExecPath()

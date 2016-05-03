@@ -5,15 +5,14 @@
 #ifndef __UI_SCENEHUB_SGOBJECTPROPERTYMODELITEM_H__
 #define __UI_SCENEHUB_SGOBJECTPROPERTYMODELITEM_H__
 
+#include <FTL/StrRef.h>
 #include <FabricUI/ValueEditor/BaseModelItem.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
-#include <FTL/StrRef.h>
 
 namespace FabricUI {
 namespace SceneHub {
  
-class SGObjectPropertyModelItem : public FabricUI::ValueEditor::BaseModelItem
-{
+class SGObjectPropertyModelItem : public ValueEditor::BaseModelItem {
 
   /**
     SGObjectPropertyModelItem spcialized the ModelItems::BaseModelItem to edit 
@@ -36,19 +35,19 @@ class SGObjectPropertyModelItem : public FabricUI::ValueEditor::BaseModelItem
     virtual ~SGObjectPropertyModelItem();
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
-    virtual BaseModelItem *createChild( FTL::CStrRef name );
+    virtual BaseModelItem *createChild(FTL::CStrRef name);
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
     virtual int getNumChildren();
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
-    virtual FTL::CStrRef getChildName( int i );
+    virtual FTL::CStrRef getChildName(int i);
 
     // Detects changes for this SGObjectProperty and updates the value.
     void updateFromScene();
 
     /// Gets the current SGObjectProperty.
-    const FabricCore::RTVal& getSGObjectProperty() { return m_rtVal; }
+    const FabricCore::RTVal& getSGObjectProperty();
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
     virtual FTL::CStrRef getName();
@@ -57,7 +56,7 @@ class SGObjectPropertyModelItem : public FabricUI::ValueEditor::BaseModelItem
     virtual bool canRename();
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
-    virtual void rename( FTL::CStrRef newName );
+    virtual void rename(FTL::CStrRef newName);
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
     virtual void onRenamed(FTL::CStrRef oldName, FTL::CStrRef newName);
@@ -77,7 +76,10 @@ class SGObjectPropertyModelItem : public FabricUI::ValueEditor::BaseModelItem
     virtual FabricUI::ValueEditor::ItemMetadata* getMetadata();
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
-    virtual void setMetadataImp( const char* key, const char* value,  bool canUndo );
+    virtual void setMetadataImp(
+      const char* key, 
+      const char* value, 
+      bool canUndo);
 
   signals: 
     /// Emitted when the value of the current SGObjectProeprty changed.

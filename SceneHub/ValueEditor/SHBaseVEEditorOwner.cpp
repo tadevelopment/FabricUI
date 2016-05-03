@@ -28,66 +28,73 @@ SGObjectPropertyModelItem *SHBaseVEEditorOwner::getSGObjectPropertyModelItem() {
 }
 
 SGObjectModelItem* SHBaseVEEditorOwner::castToSGModelItem(ValueEditor::BaseModelItem *item) {
-  return dynamic_cast< SGObjectModelItem * >( item );
+  return dynamic_cast< SGObjectModelItem * >(item);
 }
 
-void SHBaseVEEditorOwner::updateSGObject( const FabricCore::RTVal& sgObject ) {
+void SHBaseVEEditorOwner::updateSGObject(const FabricCore::RTVal& sgObject) {
   
   bool isValid = true;
   bool structureChanged = true;
 
-  SGObjectModelItem * objectItem = castToSGModelItem( m_modelRoot );
-  if( objectItem )
-    objectItem->updateFromScene( sgObject, isValid, structureChanged );
+  SGObjectModelItem * objectItem = castToSGModelItem(m_modelRoot);
+  if(objectItem)
+    objectItem->updateFromScene(sgObject, isValid, structureChanged);
 
-  if( !structureChanged )
+  if(!structureChanged)
     return;
 
   // Currently we don't support incremental structure changes; we just rebuild all
   m_valueEditor->clear();
-  if( m_modelRoot ) {
+  if(m_modelRoot) 
+  {
     delete m_modelRoot;
     m_modelRoot = 0;
   }
 
-  if( m_objectPropertyItem ) {
+  if(m_objectPropertyItem) 
+  {
     delete m_objectPropertyItem;
     m_objectPropertyItem = 0;
   }
 
   objectItem = 0;
 
-  if( sgObject.isValid() && isValid ) {
-    objectItem = new SGObjectModelItem( getDFGController()->getClient(), sgObject );
-    QObject::connect( objectItem, SIGNAL( synchronizeCommands( ) ), this, SLOT( onSynchronizeCommands( ) ) );
-    QObject::connect( objectItem, SIGNAL( propertyItemInserted( FabricUI::ValueEditor::BaseModelItem * ) ), this, SLOT( onSGObjectPropertyItemInserted( FabricUI::ValueEditor::BaseModelItem * ) ) );
+  if(sgObject.isValid() && isValid) 
+  {
+    objectItem = new SGObjectModelItem(getDFGController()->getClient(), sgObject);
+    QObject::connect(objectItem, SIGNAL(synchronizeCommands()), this, SLOT(onSynchronizeCommands()));
+    QObject::connect(objectItem, SIGNAL(propertyItemInserted(FabricUI::ValueEditor::BaseModelItem *)), this, SLOT(onSGObjectPropertyItemInserted(FabricUI::ValueEditor::BaseModelItem *)));
   }
 
   m_modelRoot = objectItem;
-  emit replaceModelRoot( m_modelRoot );
+  emit replaceModelRoot(m_modelRoot);
 }
 
-void SHBaseVEEditorOwner::onSGObjectPropertyItemInserted( FabricUI::ValueEditor::BaseModelItem * item ) {
+void SHBaseVEEditorOwner::onSGObjectPropertyItemInserted(FabricUI::ValueEditor::BaseModelItem * item) {
   if(item)
-    emit modelItemInserted( m_modelRoot, 0, item->getName().c_str() );
+    emit modelItemInserted(m_modelRoot, 0, item->getName().c_str());
 }
 
-void SHBaseVEEditorOwner::updateSGObjectProperty( const FabricCore::RTVal& sgObjectProperty ) {
+void SHBaseVEEditorOwner::updateSGObjectProperty(const FabricCore::RTVal& sgObjectProperty) {
   bool isValid = true;
   //bool structureChanged = true;
 
-  if( m_objectPropertyItem ) {
+  if(m_objectPropertyItem) 
+  {
     // Check if it is the same property
     bool sameProperty = false;
-    try {
+    try 
+    {
       FabricCore::RTVal prevSGObjectProperty = m_objectPropertyItem->getSGObjectProperty();
       FabricCore::RTVal newSGObjectProperty = sgObjectProperty;
-      sameProperty = newSGObjectProperty.callMethod( "Boolean", "equals_noContext", 1, &prevSGObjectProperty ).getBoolean();
+      sameProperty = newSGObjectProperty.callMethod("Boolean", "equals_noContext", 1, &prevSGObjectProperty).getBoolean();
     }
-    catch( FabricCore::Exception e ) {
-      printf( "SHBaseVEEditorOwner::updateSGObjectProperty: Error: %s\n", e.getDesc_cstr() );
+    catch(FabricCore::Exception e) 
+    {
+      printf("SHBaseVEEditorOwner::updateSGObjectProperty: Error: %s\n", e.getDesc_cstr());
     }
-    if( sameProperty ) {
+    if(sameProperty) 
+    {
       m_objectPropertyItem->updateFromScene();
       return;
     }
@@ -96,22 +103,25 @@ void SHBaseVEEditorOwner::updateSGObjectProperty( const FabricCore::RTVal& sgObj
   // Currently we don't support incremental changes; just rebuild all
   m_valueEditor->clear();
 
-  if( m_modelRoot ) {
+  if(m_modelRoot) 
+  {
     delete m_modelRoot;
     m_modelRoot = 0;
   }
 
-  if( m_objectPropertyItem ) {
+  if(m_objectPropertyItem) 
+  {
     delete m_objectPropertyItem;
     m_objectPropertyItem = 0;
   }
 
-  if( sgObjectProperty.isValid() && isValid ) {
-    m_objectPropertyItem = new SGObjectPropertyModelItem( getDFGController()->getClient(), sgObjectProperty, true );
-    QObject::connect( m_objectPropertyItem, SIGNAL( modelValueChanged( QVariant const & ) ), this, SLOT( onModelValueChanged( QVariant const & ) ) );
-    QObject::connect( m_objectPropertyItem, SIGNAL( synchronizeCommands( ) ), this, SLOT( onSynchronizeCommands( ) ) );
+  if(sgObjectProperty.isValid() && isValid) 
+  {
+    m_objectPropertyItem = new SGObjectPropertyModelItem(getDFGController()->getClient(), sgObjectProperty, true);
+    QObject::connect(m_objectPropertyItem, SIGNAL(modelValueChanged(QVariant const &)), this, SLOT(onModelValueChanged(QVariant const &)));
+    QObject::connect(m_objectPropertyItem, SIGNAL(synchronizeCommands()), this, SLOT(onSynchronizeCommands()));
   }
-  emit replaceModelRoot( m_objectPropertyItem );
+  emit replaceModelRoot(m_objectPropertyItem);
 }
 
 void SHBaseVEEditorOwner::onSynchronizeCommands() {

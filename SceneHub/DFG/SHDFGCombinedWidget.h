@@ -3,66 +3,56 @@
 #ifndef _SHDFGCOMBINEDWIDGET_H_
 #define _SHDFGCOMBINEDWIDGET_H_
  
+#include <FabricUI/SceneHub/SHStates.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/DFG/DFGCombinedWidget.h>
-#include <FabricUI/ValueEditor/VEEditorOwner.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeViewWidget.h>
+#include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeViewManager.h>
 
 using namespace FabricServices;
  
 namespace FabricUI {
 namespace DFG {
     
-class SHDFGCombinedWidget : public FabricUI::DFG::DFGCombinedWidget
-{
+class SHDFGCombinedWidget : public DFGCombinedWidget {
+    
   Q_OBJECT
   
   public:
-    SHDFGCombinedWidget(QWidget * parent) : DFGCombinedWidget(parent) {};
+    SHDFGCombinedWidget(QWidget * parent);
 
-    ~SHDFGCombinedWidget() {};
-
-
-  public slots:
-    virtual void onUndo() {};
-    
-    virtual void onRedo() {};
-
-    virtual void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifier, QString str) { DFGCombinedWidget::onHotkeyPressed(key, modifier, str); }
-    
-    virtual void onGraphSet(FabricUI::GraphView::Graph * graph) { DFGCombinedWidget::onGraphSet(graph); };
-    
-    virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeInspectRequested(node); };
-    
-    virtual void onNodeEditRequested(FabricUI::GraphView::Node * node) { DFGCombinedWidget::onNodeEditRequested(node); };
-    
-    virtual void onAdditionalMenuActionsRequested(QString name, QMenu * menu, bool prefix) { DFGCombinedWidget::onAdditionalMenuActionsRequested(name, menu, prefix); }; 
-
-    virtual void onRefreshScene() { refreshScene(); }
+    virtual ~SHDFGCombinedWidget() {};
 
 
   protected slots:
-    void onPortEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog) { DFGCombinedWidget::onPortEditDialogCreated(dialog); }
-    
-    void onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData) { DFGCombinedWidget::onPortEditDialogInvoked(dialog, additionalMetaData); }
+    void onInspectChanged();
+
+    void onCanvasSidePanelInspectRequested();
+
+    void onModelValueChanged(FabricUI::ValueEditor::BaseModelItem *item, QVariant const &newValue);
+
+    void onActiveSceneChanged(FabricUI::SceneHub::SHGLScene *scene);
   
 
   protected:
     virtual void refreshScene() = 0;  
 
-    /// Initializes the DFG widget.
-    virtual void initValueEditor();
+    /// Implementation of DFG::DFGCombinedWidget.
+    virtual void initDFG();
 
-    /// Initializes the treeView widget.
+    /// Implementation of DFG::DFGCombinedWidget.
     virtual void initTreeView();
+
+    /// Implementation of DFG::DFGCombinedWidget.
+    virtual void initValueEditor();
     
-    /// Initializes the windows docks.
+    /// Implementation of DFG::DFGCombinedWidget.
     virtual void initDocks();
-   
-    void addSceneHubAsPort();
-    
-    SceneHub::SHGLScene *m_shGLScene;
-    SceneHub::SHTreeViewWidget *m_shTreeViewWidget;
+  
+
+    SceneHub::SHStates *m_shStates;
+    SceneHub::SHDFGBinding *m_shDFGBinding;
+    SceneHub::SHTreeViewManager *m_SHTreeViewManager;
 };
 
 } // namespace DFG

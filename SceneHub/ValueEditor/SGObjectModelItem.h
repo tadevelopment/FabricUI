@@ -12,20 +12,18 @@ namespace FabricUI {
 namespace SceneHub {
 
 
-class SGObjectModelItem : public ModelItems::RootModelItem
-{
+class SGObjectModelItem : public ModelItems::RootModelItem {
 
   /**
-    SGObjectModelItem spcialized the ModelItems::RootModelItem to edit 
-    the propertis of a SGObject.
+    SGObjectModelItem specializes the ModelItems::RootModelItem 
+    to edit the propertis of a SGObject.
   */
-
 
   Q_OBJECT
  
   public:
     /// Constructor.
-    /// \param client A reference to the FabricCore::Client
+    /// \param client A reference to the FabricCore::Client.
     /// \param rtVal the SGObject to edit.
     SGObjectModelItem(FabricCore::Client client, FabricCore::RTVal rtVal);
 
@@ -33,25 +31,28 @@ class SGObjectModelItem : public ModelItems::RootModelItem
     virtual ~SGObjectModelItem();
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
-    virtual BaseModelItem *createChild( FTL::CStrRef name );
+    virtual BaseModelItem *createChild(FTL::CStrRef name);
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
     virtual int getNumChildren();
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
-    virtual FTL::CStrRef getChildName( int i );
+    virtual FTL::CStrRef getChildName(int i);
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
     virtual void onStructureChanged();
 
     /// Gets the current edited SGObject.
-    const FabricCore::RTVal& getSGObject() { return m_rtVal; }
+    const FabricCore::RTVal& getSGObject();
 
     // Detects potential scene changes for this SGObject.
     // If structureChanged, this object must be recreated
-    // (incremental update is not supported right now). Otherwise, property values will 
-    // be updated if required.
-    void updateFromScene( const FabricCore::RTVal& newSGObject, bool& isValid, bool& structureChanged );
+    // (incremental update is not supported right now). 
+    // Otherwise, property values will be updated if required.
+    void updateFromScene(
+      const FabricCore::RTVal& newSGObject, 
+      bool& isValid, 
+      bool& structureChanged);
  
     /// Implementation of :`ValueEditor::BaseModelItem`.
     virtual FTL::CStrRef getName();
@@ -60,7 +61,7 @@ class SGObjectModelItem : public ModelItems::RootModelItem
     virtual bool canRename();
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
-    virtual void rename( FTL::CStrRef newName );
+    virtual void rename(FTL::CStrRef newName);
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
     virtual void onRenamed(FTL::CStrRef oldName, FTL::CStrRef newName);
@@ -72,20 +73,23 @@ class SGObjectModelItem : public ModelItems::RootModelItem
     virtual FabricUI::ValueEditor::ItemMetadata* getMetadata();
     
     /// Implementation of :`ValueEditor::BaseModelItem`.
-    virtual void setMetadataImp( const char* key, const char* value, bool canUndo );
+    virtual void setMetadataImp(
+      const char* key, 
+      const char* value, 
+      bool canUndo);
 
 
   public slots:
     /// Synchronizes the commands.
-    /// Shall be emit when a SGObjectProperty changed,
+    /// Shall be emitted when a SGObjectProperty changed.
     void onSynchronizeCommands();
 
 
   signals:
     /// Emitted when a SGObjectProperty of the current SGObject is inspected.
-    void propertyItemInserted( FabricUI::ValueEditor::BaseModelItem * item );
+    void propertyItemInserted(FabricUI::ValueEditor::BaseModelItem * item);
 
-    /// Synchronized the commands.
+    /// Synchronizes the commands.
     /// Dumb slot to emit the synchronizeCommands signal.
     void synchronizeCommands();
 
@@ -96,8 +100,7 @@ class SGObjectModelItem : public ModelItems::RootModelItem
     virtual void setValue(
       QVariant var,
       bool commit,
-      QVariant valueAtInteractionBegin
-      );
+      QVariant valueAtInteractionBegin);
 
     /// Safe call to get the SGObjectProperty of the current SGObject. 
     void ensurePropertiesRTVal();
