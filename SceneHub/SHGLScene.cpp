@@ -227,6 +227,18 @@ bool SHGLScene::refreshAlways() {
   return false;
 }
 
+double SHGLScene::getHardwareFrameRate() {
+  try 
+  {
+    return m_shGLSceneVal.callMethod("Float64", "getHardwareFrameRate", 0, 0).getFloat64();
+  }
+  catch(Exception e)
+  {
+    printf("SHGLScene::getHardwareFrameRate: exception: %s\n", e.getDesc_cstr());
+  }
+  return 0.0;
+}
+
 void SHGLScene::getInitialTimelineState(bool &enable, int &start, int &end, float &fps) {
   try 
   {

@@ -101,6 +101,9 @@ class SHGLScene {
     /// Refresh the viewport constantly as fast as possible
     bool refreshAlways();
 
+    /// Returns the hardware refresh rate limit
+    double getHardwareFrameRate();
+
     /// Gets the path of the current selected object.
     QString getTreeItemPath(FabricCore::RTVal sgObject);
 
