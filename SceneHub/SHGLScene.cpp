@@ -206,6 +206,18 @@ bool SHGLScene::playbackByDefault() {
   return false;
 }
 
+bool SHGLScene::refreshAlways() {
+  try 
+  {
+    return m_shGLSceneVal.callMethod("Boolean", "refreshAlways", 0, 0).getBoolean();
+  }
+  catch(Exception e)
+  {
+    printf("SHGLScene::refreshAlways: exception: %s\n", e.getDesc_cstr());
+  }
+  return false;
+}
+
 void SHGLScene::getInitialTimelineState(bool &enable, int &start, int &end, float &fps) {
   try 
   {
