@@ -15,6 +15,9 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
   static HandlerMap handlerMap;
   if ( handlerMap.empty() )
   {
+    handlerMap[FTL_STR("execBlockInserted")] = &DFGExecNotifier::handler_execBlockInserted;
+    handlerMap[FTL_STR("execBlockRemoved")] = &DFGExecNotifier::handler_execBlockRemoved;
+    handlerMap[FTL_STR("execBlockMetadataChanged")] = &DFGExecNotifier::handler_execBlockMetadataChanged;
     handlerMap[FTL_STR("nodeInserted")] = &DFGExecNotifier::handler_nodeInserted;
     handlerMap[FTL_STR("nodeRenamed")] = &DFGExecNotifier::handler_nodeRenamed;
     handlerMap[FTL_STR("nodeRemoved")] = &DFGExecNotifier::handler_nodeRemoved;
@@ -106,6 +109,29 @@ void DFGExecNotifier::handle( FTL::CStrRef jsonStr )
       e.getDescCStr()
       );
   }
+}
+
+void DFGExecNotifier::handler_execBlockInserted( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("name") );
+
+  emit blockInserted( blockName );
+}
+
+void DFGExecNotifier::handler_execBlockRemoved( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("name") );
+
+  emit nodeRemoved( blockName );
+}
+
+void DFGExecNotifier::handler_execBlockMetadataChanged( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("name") );
+  FTL::CStrRef key = jsonObject->getString( FTL_STR("key") );
+  FTL::CStrRef value = jsonObject->getString( FTL_STR("value") );
+
+  emit blockMetadataChanged( blockName, key, value );
 }
 
 void DFGExecNotifier::handler_nodeInserted( FTL::JSONObject const *jsonObject )
