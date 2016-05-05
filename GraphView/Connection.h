@@ -37,12 +37,20 @@ namespace FabricUI
 
       virtual int type() const { return QGraphicsItemType_Connection; }
 
-      Graph * graph();
-      const Graph * graph() const;
-      ConnectionTarget * src();
-      const ConnectionTarget * src() const;
-      ConnectionTarget * dst();
-      const ConnectionTarget * dst() const;
+      Graph *graph()
+        { return m_graph; }
+      Graph const *graph() const
+        { return m_graph; }
+
+      ConnectionTarget *src()
+        { return m_src; }
+      ConnectionTarget const *src() const
+        { return m_src; }
+        
+      ConnectionTarget *dst()
+        { return m_dst; }
+      ConnectionTarget const *dst() const
+        { return m_dst; }
 
       virtual QColor color() const
         { return m_color; }
@@ -59,6 +67,8 @@ namespace FabricUI
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
       virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 
+      bool isHovered()  { return m_hovered; }
+
     public slots:
 
       virtual void dependencyMoved();
@@ -68,9 +78,9 @@ namespace FabricUI
 
       float computeTangentLength() const;
 
-      Graph * m_graph;
-      ConnectionTarget * m_src;
-      ConnectionTarget * m_dst;
+      Graph * const m_graph;
+      ConnectionTarget * const m_src;
+      ConnectionTarget * const m_dst;
 
       QColor m_color;
       QPen m_defaultPen;

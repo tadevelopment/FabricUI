@@ -17,6 +17,7 @@ namespace FabricUI
     #define DFG_EDIT_PRESET_PROPERTIES  "Properties - F2"
     #define DFG_DELETE_PRESET           "Delete - Del"
     #define DFG_SELECT_ALL_PRESET       "Select all - Ctrl+A"
+    #define DFG_DISCONNECT_ALL_PORTS    "Disconnect all ports - D"
     #define DFG_COPY_PRESET             "Copy - Ctrl+C"
     #define DFG_CUT_PRESET              "Cut - Ctrl+X"
     #define DFG_PASTE_PRESET            "Paste - Ctrl+V"
@@ -37,10 +38,6 @@ namespace FabricUI
     #define DFG_CREATE_PORT             "Create port"
     #define DFG_SCROLL_UP               "Scroll up"
     #define DFG_SCROLL_DOWN             "Scroll down"
-    #define DFG_MOVE_TOP                "Move top"
-    #define DFG_MOVE_UP                 "Move up"
-    #define DFG_MOVE_DOWN               "Move down"
-    #define DFG_MOVE_BOTTOM             "Move bottom"
     #define DFG_MOVE_INPUTS_TO_END      "Move inputs to end"
     #define DFG_MOVE_OUTPUTS_TO_END     "Move outputs to end"
   };

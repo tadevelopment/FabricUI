@@ -33,6 +33,11 @@ bool ConnectionTarget::isConnected() const
   return graph()->isConnected(this);
 }
 
+bool ConnectionTarget::isConnectedAsSource() const
+{
+  return graph()->isConnectedAsSource(this);
+}
+
 void ConnectionTarget::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
   PinCircle * circle = findPinCircle(event->pos());
@@ -110,4 +115,9 @@ PinCircle * ConnectionTarget::findPinCircle(QPointF pos)
     }
   }
   return m_lastPinCircle;
+}
+
+bool ConnectionTarget::selected() const
+{
+  return false;
 }

@@ -1,18 +1,25 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <FabricUI/GraphView/SidePanel.h>
-#include <FabricUI/GraphView/Pin.h>
-#include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/Pin.h>
+#include <FabricUI/GraphView/Port.h>
+#include <FabricUI/GraphView/PortLabel.h>
+#include <FabricUI/GraphView/SidePanel.h>
 
+#include <QtCore/QDebug>
 #include <QtGui/QPainter>
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtGui/QGraphicsView>
 
+#include <float.h>
+#include <math.h>
+
 using namespace FabricUI::GraphView;
 
 SidePanel::SidePanel(Graph * parent, PortType portType, QColor color)
-: QGraphicsWidget(parent)
+  : QGraphicsWidget( parent )
+  , m_dragDstY( 0 )
 {
   m_itemGroup = new SidePanelItemGroup(this);
   m_itemGroup->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding));
@@ -31,6 +38,7 @@ SidePanel::SidePanel(Graph * parent, PortType portType, QColor color)
   setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding));
   setMinimumWidth(config.sidePanelCollapsedWidth);
   setContentsMargins(0, 0, 0, 0);
+  setAcceptDrops( true );
 
   m_proxyPort = new ProxyPort(this, m_portType);
 
@@ -118,11 +126,17 @@ bool SidePanel::removePort(Port * port)
 
 void SidePanel::reorderPorts(QStringList names)
 {
-  std::vector<Port*> ports;
-  for(int i=0;i<names.length();i++)
+  std::vector<Port *> ports;
+  ports.reserve( names.length() );
+  for ( int i = 0; i < names.length(); ++i )
   {
-    ports.push_back(port(names[i].toUtf8().constData()));
-    ports[i]->setIndex(i);
+    QByteArray nameByteArray = names[i].toUtf8();
+    FTL::CStrRef nameCStr = nameByteArray.constData();
+    Port *portPtr = port( nameCStr );
+    if ( !portPtr )
+      continue; // "exec" port
+    portPtr->setIndex( i );
+    ports.push_back( portPtr );
   }
 
   m_ports = ports;
@@ -159,6 +173,8 @@ void SidePanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
       menu->exec(QCursor::pos());
       menu->deleteLater();
     }
+    event->accept();
+    return;
   }
 
   if(event->button() == Qt::LeftButton)
@@ -217,10 +233,22 @@ void SidePanel::paint(QPainter * painter, const QStyleOptionGraphicsItem * optio
     }
     m_requiresToSendSignalsForPorts = false;
   }
+
+  if ( !m_dragSrcPortName.isEmpty() )
+  {
+    QList<QGraphicsItem *> portLabels = m_itemGroup->childItems();
+    painter->setPen( QPen( Qt::white ) );
+    painter->drawLine(
+      QPointF( rect.left(), m_dragDstY ), QPointF( rect.right(), m_dragDstY )
+      );
+  }
 }
 
 void SidePanel::onItemGroupResized()
 {
+  // Reset the layout.
+  // Needed because the content of m_itemGroup may have changed.
+  resetLayout();
   setMinimumWidth(m_itemGroup->size().width());
   setMaximumWidth(m_itemGroup->size().width());
 }
@@ -251,10 +279,14 @@ void SidePanel::resetLayout()
   {
     portsLayout->addItem(m_ports[i]);
     portsLayout->setAlignment(m_ports[i], Qt::AlignRight | Qt::AlignTop);
+    QObject::connect(m_ports[i], SIGNAL(contentChanged()), this, SLOT(onItemGroupResized()));
   }
   portsLayout->addStretch(2);
 
   m_itemGroup->setLayout(portsLayout);
+
+  // Set the group size according to its content
+  m_itemGroup->adjustSize();
 
   m_requiresToSendSignalsForPorts = true;
 }
@@ -298,7 +330,7 @@ void SidePanel::updateItemGroupScroll(float height)
       m_itemGroupScroll = 0.0;
   }
 
-  m_itemGroup->setTransform(QTransform::fromTranslate(0, m_itemGroupScroll), false);
+  //m_itemGroup->setTransform(QTransform::fromTranslate(0, m_itemGroupScroll), false);
 
   // [Julien]
   // Update the image overlay when panels are resized.
@@ -306,4 +338,126 @@ void SidePanel::updateItemGroupScroll(float height)
   graph()->updateOverlays(graph()->rect().width(), graph()->rect().height());
 
   emit scrolled();
+}
+
+void SidePanel::dragMoveEvent( QGraphicsSceneDragDropEvent *event )
+{
+  QString oldDragSrcPortName = m_dragSrcPortName;
+  QString oldDragDstPortName = m_dragDstPortName;
+
+  m_dragSrcPortName = QString();
+  m_dragDstPortName = QString();
+  event->ignore();
+
+  QMimeData const *mimeData = event->mimeData();
+  if ( mimeData->hasFormat( Port::MimeType ) )
+  {
+    Port::MimeData const *portMimeData =
+      static_cast<Port::MimeData const *>( mimeData );
+    Port *draggedPort = portMimeData->port();
+    // Check that we are in the same sidepanel
+    if ( draggedPort->sidePanel() == this
+      && draggedPort->allowEdits() )
+    {
+      QString draggedPortName = draggedPort->nameQString();
+
+      qreal eventY = event->pos().y();
+      QString oldDragDstPortName = m_dragDstPortName;
+      m_dragDstPortName = QString();
+      qreal bestDist = FLT_MAX;
+
+      for ( size_t i = 0; i < m_ports.size(); ++i )
+      {
+        Port *port = static_cast<Port *>( m_ports[i] );
+        qreal portY = m_itemGroup->mapToParent( port->pos() ).y() - 5;
+        qreal portDist = fabs( portY - eventY );
+        if ( portDist < bestDist )
+        {
+          bestDist = portDist;
+          if ( port == draggedPort
+            || ( i > 0 && m_ports[i-1] == draggedPort ) )
+          {
+            m_dragSrcPortName = QString();
+          }
+          else
+          {
+            m_dragSrcPortName = draggedPortName;
+            m_dragDstPortName = port->nameQString();
+            m_dragDstY = portY;
+          }
+        }
+        // If this port is non-editable (ie. "exec") then don't allow
+        // moves before it
+        if ( !port->allowEdits() )
+          m_dragSrcPortName = QString();
+      }
+
+      // See if drag is to end
+      QGraphicsItem *lastPort = m_ports.back();
+      qreal lastPortBottomY =
+          m_itemGroup->mapToParent( lastPort->pos() ).y()
+        + lastPort->boundingRect().height() + 7;
+      qreal lastPortDist = fabs( lastPortBottomY - eventY );
+      if ( lastPortDist < bestDist )
+      {
+        bestDist = lastPortDist;
+        if ( lastPort == draggedPort )
+        {
+          m_dragSrcPortName = QString();
+        }
+        else
+        {
+          m_dragSrcPortName = draggedPortName;
+          m_dragDstPortName = QString();
+          m_dragDstY = lastPortBottomY;
+        }
+      }
+
+      if ( !m_dragSrcPortName.isEmpty() )
+      {
+        event->acceptProposedAction();
+        event->accept();
+      }
+    }
+  }
+
+  if ( m_dragSrcPortName != oldDragSrcPortName
+    || m_dragDstPortName != oldDragDstPortName )
+    update();
+
+  if ( !event->isAccepted() )
+    QGraphicsWidget::dragMoveEvent( event );
+}
+
+void SidePanel::dragLeaveEvent( QGraphicsSceneDragDropEvent *event )
+{
+  if ( !m_dragSrcPortName.isEmpty() )
+  {
+    m_dragSrcPortName = QString();
+    m_dragDstPortName = QString();
+    m_dragDstY = 0;
+    update();
+  }
+
+  QGraphicsWidget::dragLeaveEvent( event );
+}
+
+void SidePanel::dropEvent( QGraphicsSceneDragDropEvent *event )
+{
+  if ( !m_dragSrcPortName.isEmpty() )
+  {
+    graph()->controller()->gvcDoMoveExecPort(
+      m_dragSrcPortName,
+      m_dragDstPortName
+      );
+
+    m_dragSrcPortName = QString();
+    m_dragDstPortName = QString();
+    m_dragDstY = 0;
+    update();
+
+    return;
+  }
+
+  QGraphicsWidget::dropEvent( event );
 }

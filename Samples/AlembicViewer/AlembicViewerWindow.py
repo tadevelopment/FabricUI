@@ -5,9 +5,7 @@ import os
 
 from PySide import QtCore, QtGui
 
-from FabricEngine import Core, FabricUI
-from FabricEngine.FabricUI import DFG, KLASTManager, TimeLine, Viewports
-from FabricEngine.Canvas.ScriptEditor import ScriptEditor
+from FabricEngine import Core
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.CanvasWindow import CanvasWindow
 
@@ -51,18 +49,33 @@ class AlembicViewerWindow(CanvasWindow):
 
             QDockWidget {
                 titlebar-close-icon: url(close.png);
+                titlebar-normal-icon: url(float.png);
             }
 
             QDockWidget::close-button {
-                min-width: 11px;
-                min-height: 11px;
                 border: none;
-                icon-size: 11px;
                 background: transparent;
 
-                position: relative;
-                top: 6px;
-                left: -8px;
+                subcontrol-position: top right;
+                subcontrol-origin: margin;
+                position: absolute;
+                top: 0px; right: 8px; bottom: 0px;
+                width: 14px;
+            }
+
+            QDockWidget::float-button {
+                border: none;
+                background: transparent;
+
+                subcontrol-position: top right;
+                subcontrol-origin: margin;
+                position: absolute;
+                top: 0px; right: 24px; bottom: 0px;
+                width: 14px;
+            }
+
+            QDockWidget::close-button:pressed, QDockWidget::float-button:pressed {
+                padding: 1px -1px -1px 1px;
             }
 
             QSlider#sceneScaleSlider::groove:horizontal {

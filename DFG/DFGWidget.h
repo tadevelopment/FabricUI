@@ -83,10 +83,12 @@ namespace FabricUI
       void portEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog);
       void portEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData);
       void nodeInspectRequested(FabricUI::GraphView::Node *);
-
+      void urlDropped( QUrl url, bool bypassUnsavedChanges );
+      
     public slots:
 
       void onExecChanged();
+      void onExecSplitChanged();
       void onGoUpPressed();
       void onGraphAction(QAction * action);
       void onNodeAction(QAction * action);
@@ -99,6 +101,7 @@ namespace FabricUI
       void onKeyReleased(QKeyEvent * event);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
       void onSelectAll();
+      void onRemoveConnections();
       void onCut();
       void onCopy();
       void onPaste();

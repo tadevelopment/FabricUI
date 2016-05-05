@@ -33,7 +33,8 @@ GLViewportWidget::GLViewportWidget(
   {
     printf("Error: %s\n", e.getDesc_cstr());
   }
-
+  
+  m_resizedOnce  = false;
   resetRTVals( false /*shouldUpdateGL*/ );
 }
 
@@ -231,6 +232,7 @@ void GLViewportWidget::mousePressEvent(QMouseEvent *event)
   if(m_manipTool->onEvent(event))
     return;
   ViewportWidget::mousePressEvent(event);
+  FabricCore::FlagUserInteraction();
 }
 
 void GLViewportWidget::mouseMoveEvent(QMouseEvent *event)

@@ -1,5 +1,6 @@
 from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import DFG
+from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 
 class UndoCmd(QtGui.QUndoCommand):
     def __init__(self, cmd):
@@ -26,9 +27,12 @@ class BindingWrapper:
         self.client = client
         self.binding = binding
         self.qUndoStack = qUndoStack
+        self.rtvalEncoderDecoder = RTValEncoderDecoder(self.client)
 
     @staticmethod
     def splitInts(packedIndices):
+        if not packedIndices:
+            return []
         return map(
             lambda indexStr: int(indexStr),
             packedIndices.split('|')
@@ -36,10 +40,14 @@ class BindingWrapper:
 
     @staticmethod
     def splitNames(names):
+        if not names:
+            return []
         return names.split('|')
 
     @staticmethod
     def splitPoss(posXs, posYs):
+        if not posXs:
+            return []
         if isinstance(posXs, basestring):
             posXs = map(
                 lambda str: float(str),
@@ -298,14 +306,14 @@ class BindingWrapper:
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
-        cmd = DFG.DFGUICmd_Explode(
+        cmd = DFG.DFGUICmd_ExplodeNode(
             self.binding,
             execPath,
             exec_,
             nodeName
             )
         InvokeCmd(cmd, self.qUndoStack)
-        return "|".join(cmd.getExplodedNodeNames())
+        return cmd.getExplodedNodeNames()
 
     def connect(
         self,
@@ -327,17 +335,19 @@ class BindingWrapper:
     def disconnect(
         self,
         execPath,
-        srcPort,
-        dstPort,
+        packedSrcPorts,
+        packedDstPorts,
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
+        srcPorts = BindingWrapper.splitNames(packedSrcPorts)
+        dstPorts = BindingWrapper.splitNames(packedDstPorts)
         cmd = DFG.DFGUICmd_Disconnect(
             self.binding,
             execPath,
             exec_,
-            srcPort,
-            dstPort
+            srcPorts,
+            dstPorts
             )
         InvokeCmd(cmd, self.qUndoStack)
 
@@ -522,7 +532,7 @@ class BindingWrapper:
             QtCore.QPointF(cursorPosX, cursorPosY),
             )
         InvokeCmd(cmd, self.qUndoStack)
-        return "|".join(cmd.getPastedNodeNames())
+        return cmd.getPastedNodeNames()
 
     def setArgValue(
         self,
@@ -530,8 +540,7 @@ class BindingWrapper:
         typeName,
         valueJSON,
         ):
-        value = getattr(self.client.RT.types, typeName)()
-        value.setJSON(valueJSON)
+        value = self.rtvalEncoderDecoder.getFromString(typeName, valueJSON)
         cmd = DFG.DFGUICmd_SetArgValue(
             self.binding,
             argName,
@@ -548,8 +557,7 @@ class BindingWrapper:
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
-        value = getattr(self.client.RT.types, typeName)()
-        value.setJSON(valueJSON)
+        value = self.rtvalEncoderDecoder.getFromString(typeName, valueJSON)
         cmd = DFG.DFGUICmd_SetPortDefaultValue(
             self.binding,
             execPath,
@@ -588,6 +596,18 @@ class BindingWrapper:
             self.binding,
             execPath,
             exec_,
+            indices,
+            )
+        InvokeCmd(cmd, self.qUndoStack)
+
+    def dismissLoadDiags(
+        self,
+        packedIndices,
+        ):
+        rootExec = self.binding.getExec()
+        indices = BindingWrapper.splitInts(packedIndices)
+        cmd = DFG.DFGUICmd_DismissLoadDiags(
+            self.binding,
             indices,
             )
         InvokeCmd(cmd, self.qUndoStack)

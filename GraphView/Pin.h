@@ -73,16 +73,30 @@ namespace FabricUI
       virtual TargetType targetType() const { return TargetType_Pin; }
       virtual QPointF connectionPos(PortType pType) const;
 
-      virtual void setDrawState(bool flag);
-      virtual bool drawState() const;
+      void setDrawState(bool flag);
+      bool drawState() const
+        { return m_drawState; }
+
       virtual void setDaisyChainCircleVisible(bool flag);
 
+      virtual bool selected() const /*override*/;
+
       // accessed by controller
-      Pin(Node * parent, char const *name, PortType pType, QColor color, const char * label = "");
+      Pin(
+        Node * parent,
+        FTL::StrRef name,
+        PortType pType,
+        QColor color,
+        FTL::StrRef label = FTL::StrRef()
+        );
       
     signals:
 
       void colorChanged(Pin*, QColor);
+
+      void inCircleScenePositionChanged();
+      void outCircleScenePositionChanged();
+      void drawStateChanged();
 
     private:
 

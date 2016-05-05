@@ -101,10 +101,20 @@ Connection::Connection(
     {
       Pin * pin = (Pin*)target;
       Node * node = pin->node();
-      QObject::connect(pin, SIGNAL(visibleChanged()), this, SLOT(dependencyMoved()), Qt::QueuedConnection);
-      QObject::connect(pin, SIGNAL(yChanged()), this, SLOT(dependencyMoved()), Qt::QueuedConnection);
-      QObject::connect(node, SIGNAL(positionChanged(FabricUI::GraphView::Node *, QPointF)), this, SLOT(dependencyMoved()));
-      QObject::connect(node, SIGNAL(geometryChanged()), this, SLOT(dependencyMoved()));
+      connect(
+        pin, SIGNAL(drawStateChanged()),
+        this, SLOT(dependencyMoved())
+        );
+      if ( i == 0 )
+        QObject::connect(
+          pin, SIGNAL(outCircleScenePositionChanged()),
+          this, SLOT(dependencyMoved())
+          );
+      else
+        QObject::connect(
+          pin, SIGNAL(inCircleScenePositionChanged()),
+          this, SLOT(dependencyMoved())
+          );
       QObject::connect(node, SIGNAL(selectionChanged(FabricUI::GraphView::Node *, bool)), this, SLOT(dependencySelected()));
     }
     else if(target->targetType() == TargetType_MouseGrabber)
@@ -123,36 +133,6 @@ Connection::Connection(
 
 Connection::~Connection()
 {
-}
-
-Graph * Connection::graph()
-{
-  return m_graph;
-}
-
-const Graph * Connection::graph() const
-{
-  return m_graph;
-}
-
-ConnectionTarget * Connection::src()
-{
-  return m_src;
-}
-
-const ConnectionTarget * Connection::src() const
-{
-  return m_src;
-}
-
-ConnectionTarget * Connection::dst()
-{
-  return m_dst;
-}
-
-const ConnectionTarget * Connection::dst() const
-{
-  return m_dst;
 }
 
 void Connection::setColor(QColor color)
@@ -231,7 +211,9 @@ void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
   {
     if(graph()->config().middleClickDeletesConnections)
     {
-      graph()->controller()->gvcDoRemoveConnection(this);
+      std::vector<Connection*> conns;
+      conns.push_back(this);
+      graph()->controller()->gvcDoRemoveConnections(conns);
       event->accept();
       return;
     }
@@ -264,14 +246,16 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     if(delta.x() < 0 || delta.x() > 0)
     {
       // create local variables
-      // since "this" might be deleted after the removeConnection call
+      // since "this" might be deleted after the removeConnections call
       ConnectionTarget * src = m_src;
       ConnectionTarget * dst = m_dst;
       Graph * graph = m_graph;
 
       graph->controller()->beginInteraction();
 
-      if(graph->controller()->gvcDoRemoveConnection(this))
+      std::vector<Connection*> conns;
+      conns.push_back(this);
+      if(graph->controller()->gvcDoRemoveConnections(conns))
       {
         // todo: review the features for disconnecting input vs output based on gesture
         if(delta.x() < 0)

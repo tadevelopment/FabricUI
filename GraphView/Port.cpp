@@ -22,6 +22,7 @@ Port::Port(
   , m_sidePanel( parent )
   , m_name( name )
   , m_labelCaption( !label.empty()? label: name )
+  , m_allowEdits( true )
 {
   // if(parent->graph()->path().length() > 0)
   //   m_path = parent->graph()->path() + parent->graph()->config().pathSep + m_path;
@@ -45,7 +46,13 @@ void Port::init()
   layout->setOrientation(Qt::Horizontal);
   setLayout(layout);
 
-  m_label = new TextContainer(this, QSTRING_FROM_STL_UTF8(m_labelCaption), config.sidePanelFontColor, config.sidePanelFontHighlightColor, config.sidePanelFont);
+  m_label = new PortLabel(
+    this,
+    QSTRING_FROM_STL_UTF8(m_labelCaption),
+    config.sidePanelFontColor,
+    config.sidePanelFontHighlightColor,
+    config.sidePanelFont
+    );
   m_circle = new PinCircle(this, m_portType, color());
 
   if(m_portType == PortType_Input)
@@ -66,34 +73,14 @@ void Port::init()
   }
 }
 
-SidePanel * Port::sidePanel()
-{
-  return m_sidePanel;
-}
-
-const SidePanel * Port::sidePanel() const
-{
-  return m_sidePanel;
-}
-
-Graph * Port::graph()
+Graph *Port::graph()
 {
   return sidePanel()->graph();
 }
 
-const Graph * Port::graph() const
+Graph const *Port::graph() const
 {
   return sidePanel()->graph();
-}
-
-PinCircle * Port::circle()
-{
-  return m_circle;
-}
-
-const PinCircle * Port::circle() const
-{
-  return m_circle;
 }
 
 void Port::setName( FTL::CStrRef name )
@@ -104,6 +91,8 @@ void Port::setName( FTL::CStrRef name )
     setLabel(name.c_str());
   else
     update();
+
+  emit contentChanged();
 }
 
 char const * Port::label() const
@@ -204,7 +193,7 @@ QPointF Port::connectionPos(PortType pType) const
   return m_circle->centerInSceneCoords();
 }
 
-void Port::mousePressEvent(QGraphicsSceneMouseEvent * event)
+void Port::mousePressEvent( QGraphicsSceneMouseEvent *event )
 {
   if(event->button() == Qt::RightButton)
   {
@@ -224,4 +213,30 @@ void Port::mousePressEvent(QGraphicsSceneMouseEvent * event)
 std::string Port::path() const
 {
   return m_name;
+}
+
+QString const Port::MimeType( "x-fabric-ui/graph-view-port" );
+
+bool Port::MimeData::hasFormat( QString const &mimeType) const
+{
+  if ( mimeType == MimeType )
+    return true;
+  else return Parent::hasFormat( mimeType );
+}
+
+QStringList Port::MimeData::formats() const
+{
+  QStringList result = Parent::formats();
+  result.append( MimeType );
+  return result;
+}
+
+QVariant Port::MimeData::retrieveData(
+  QString const &mimeType,
+  QVariant::Type type
+  ) const
+{
+  if ( mimeType == MimeType )
+    return QVariant::fromValue( static_cast<void *>( m_port ) );
+  else return Parent::retrieveData( mimeType, type );
 }

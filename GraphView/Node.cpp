@@ -23,10 +23,11 @@ Node::Node(
   FTL::CStrRef title,
   QColor color,
   QColor titleColor,
-  bool isBackDropNode 
+  bool isBackDropNode
   )
   : QGraphicsWidget( parent->itemGroup() )
-  , m_isBackDropNode(isBackDropNode)
+  , m_isInstNode( false )
+  , m_isBackDropNode( isBackDropNode )
   , m_graph( parent )
   , m_name( name )
   , m_title( title )
@@ -248,7 +249,6 @@ void Node::setCollapsedState(Node::CollapseState state)
   emit collapsedStateChanged(this, m_collapsedState);
   m_header->setHeaderButtonState("node_collapse", (int)m_collapsedState);
   updatePinLayout();
-  update();
 }
 
 void Node::toggleCollapsedState()
@@ -687,15 +687,23 @@ bool Node::onMouseRelease(Qt::MouseButton button, Qt::KeyboardModifiers modifier
       emit positionChanged(this, graphPos());
     else
     {
-      m_graph->controller()->gvcDoMoveNodes(
-        m_nodesToMove,
-        m_mouseDownPos - lastScenePos,
-        false // allowUndo
-        );
+      QPointF delta;
+
+      delta = m_mouseDownPos - lastScenePos;
+      delta *= 1.0f / graph()->mainPanel()->canvasZoom();
 
       m_graph->controller()->gvcDoMoveNodes(
         m_nodesToMove,
-        scenePos - m_mouseDownPos,
+        delta,
+        false // allowUndo
+        );
+
+      delta = scenePos - m_mouseDownPos;
+      delta *= 1.0f / graph()->mainPanel()->canvasZoom();
+
+      m_graph->controller()->gvcDoMoveNodes(
+        m_nodesToMove,
+        delta,
         true // allowUndo
         );
     }
@@ -752,6 +760,8 @@ void Node::onBubbleEditRequested(FabricUI::GraphView::NodeBubble * bubble)
 
 void Node::updatePinLayout()
 {
+  prepareGeometryChange();
+
   int count = m_pinsLayout->count();
   if(count > 0)
   {
@@ -762,9 +772,12 @@ void Node::updatePinLayout()
 
   for(size_t i=0;i<m_pins.size();i++)
   {
-    bool showPin = m_collapsedState == CollapseState_Expanded;
-    if(!showPin && m_collapsedState == CollapseState_OnlyConnections)
-      showPin = m_pins[i]->isConnected();
+    bool showPin =
+      ( !m_isInstNode || i > 0 ) // don't show exec port ever
+      && ( m_collapsedState == CollapseState_Expanded
+        || ( m_collapsedState == CollapseState_OnlyConnections
+          && m_pins[i]->isConnected() ) );
+
     m_pins[i]->setDrawState(showPin);
     if(showPin)
     {
@@ -781,7 +794,9 @@ void Node::updatePinLayout()
 
   for(size_t i=0;i<m_pins.size();i++)
   {
-    m_pins[i]->setDaisyChainCircleVisible(m_alwaysShowDaisyChainPorts);
+    m_pins[i]->setDaisyChainCircleVisible(
+      m_alwaysShowDaisyChainPorts || m_pins[i]->isConnectedAsSource()
+      );
   }
 }
 

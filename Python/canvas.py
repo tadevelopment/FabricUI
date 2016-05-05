@@ -9,8 +9,8 @@ if sys.version_info < (2, 7):
     raise Exception('canvas.py currently requires Python 2.7')
 
 from PySide import QtCore, QtGui
+from FabricEngine.FabricUI import Application
 from FabricEngine.Canvas.CanvasWindow import CanvasWindow
-from FabricEngine.Canvas.FabricStyle import FabricStyle
 from FabricEngine.Canvas.FabricParser import FabricParser
 from FabricEngine.Canvas.FabricParser import CheckExtension
 
@@ -23,11 +23,10 @@ if __name__ == "__main__":
     # execute, and a Python script to execute are also available to be called on
     # startup.
 
-    app = QtGui.QApplication([])
+    app = Application.FabricApplication()
     app.setOrganizationName('Fabric Software Inc')
     app.setApplicationName('Fabric Canvas Standalone')
-    app.setApplicationVersion('2.0.0')
-    app.setStyle( FabricStyle() )
+    app.setApplicationVersion('2.2.0')
 
     fabricDir = os.environ.get('FABRIC_DIR', None)
     if fabricDir:
@@ -47,7 +46,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-n', '--noopt',
                         action='store_true',
-                        help='compile KL code wihout brackground optimization')
+                        help='compile KL code without background optimization')
 
     parser.add_argument('-e', '--exec',
                           action='store',
@@ -76,7 +75,6 @@ if __name__ == "__main__":
         mainWin.scriptEditor.exec_(args.exec_)
 
     if args.script:
-        with open(args.script, "r") as f:
-            mainWin.scriptEditor.exec_(f.read())
+        mainWin.scriptEditor.loadScript(args.script)
 
     app.exec_()

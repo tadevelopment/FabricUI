@@ -1,11 +1,17 @@
+#!/usr/bin/env python
+
 """Alembic Viewer launcher script."""
 
-import optparse
 import os
+import sys
+
+if sys.version_info < (2, 7):
+    raise Exception('alembic_viewer.py currently requires Python 2.7')
 
 from PySide import QtGui
 
-from FabricEngine.Canvas.FabricStyle import FabricStyle
+from FabricEngine.FabricUI import Application
+from FabricEngine.Canvas.FabricParser import FabricParser
 
 from AlembicViewer.AlembicViewerWindow import AlembicViewerWindow
 
@@ -18,26 +24,26 @@ if __name__ == "__main__":
     # Optional command line arguments for the initial directory are also
     # available to be called on startup.
 
-    app = QtGui.QApplication([])
+    app = Application.FabricApplication()
     app.setOrganizationName('Fabric Software Inc')
     app.setApplicationName('Alembic Viewer')
     app.setApplicationVersion('1.0.0')
-    app.setStyle( FabricStyle() )
 
     fabricDir = os.environ.get('FABRIC_DIR', None)
     if fabricDir:
         logoPath = os.path.join(fabricDir, 'Resources', 'fe_logo.png')
         app.setWindowIcon(QtGui.QIcon(logoPath))
 
-    opt_parser = optparse.OptionParser(usage='Usage: %prog [options] [graph]')
-    opt_parser.add_option('-d', '--initDir',
-                          action='store',
-                          dest='initDir',
-                          help='Initial directory to load alembic files from.')
+    parser = FabricParser()
 
-    (opts, args) = opt_parser.parse_args()
+    parser.add_argument('-d', '--initDir',
+                        action='store',
+                        dest='initDir',
+                        help='initial directory to open')
 
-    initDir = opts.initDir
+    args = parser.parse_args()
+
+    initDir = args.initDir
 
     mainWin = AlembicViewerWindow(initDir=initDir)
     mainWin.show()

@@ -113,7 +113,7 @@ dirs = [
   'Viewports',
   'KLEditor',
   'Menus',
-
+  'Application',
   'TreeView',
   'ValueEditor_Legacy',
   'ValueEditor',
@@ -207,13 +207,13 @@ Export(uiLibPrefix + 'Lib', uiLibPrefix + 'IncludeDir', uiLibPrefix + 'Flags')
 
 env.Alias(uiLibPrefix + 'Lib', uiFiles)
 
+if uiLibPrefix == 'uiModo901' and buildOS == 'Darwin':
+  env.Append(CCFLAGS = ['-Wno-#warnings'])
+  env.Append(CCFLAGS = ['-Wno-unused-private-field'])
+
 if uiLibPrefix == 'ui':
 
   fabricDir = env.Dir(os.environ['FABRIC_DIR'])
-
-  if uiLibPrefix == 'uiModo901' and buildOS == 'Darwin':
-    env.Append(CCFLAGS = ['-Wno-#warnings'])
-    env.Append(CCFLAGS = ['-Wno-unused-private-field'])
 
   pysideGens = []
   installedPySideLibs = []
@@ -318,11 +318,12 @@ if uiLibPrefix == 'ui':
         pysideEnv.Dir('DFG/DFGUICmd').srcnode(),
         pysideEnv.Dir('GraphView').srcnode(),
         pysideEnv.Dir('Licensing').srcnode(),
-        pysideEnv.Dir('Style').srcnode(),
+        pysideEnv.Dir('Application').srcnode(),
         pysideEnv.Dir('ModelItems').srcnode(),
         pysideEnv.Dir('ValueEditor').srcnode(),
         pysideEnv.Dir('ValueEditor_Legacy').srcnode(),
         pysideEnv.Dir('Viewports').srcnode(),
+        pysideEnv.Dir('Util').srcnode(),
         pysideEnv.Dir('Test').srcnode(),
         pysideEnv.Dir('SceneHub').srcnode(),
         pysideEnv.Dir('SceneHub/DFG').srcnode(),
@@ -338,6 +339,7 @@ if uiLibPrefix == 'ui':
     if buildOS == 'Darwin':
       pysideEnv.Append(LIBPATH = [pythonConfig['libDir']])
       pysideEnv.Append(LIBS = [pythonConfig['lib']])
+      pysideEnv.Append(FRAMEWORKS = ['CoreFoundation'])
     
     pysideEnv.Append(LIBS = [
       'FabricUI',
@@ -509,8 +511,15 @@ if uiLibPrefix == 'ui':
         pysideEnv.Dir('Python').File('sceneHub.py')
         )
       )
-
+      
+    installedPySideLibs.append(
+      pysideEnv.Install(
+        pysideEnv['STAGE_DIR'].Dir('Samples').Dir('Python').Dir('AlembicViewer'),
+        Glob(os.path.join(pysideEnv.Dir('Samples').Dir('AlembicViewer').abspath, '*'))
+        )
+      )
+      
   pysideEnv.Alias('pysideGen', pysideGens)
-  pysideEnv.Alias('pysideLib', installedPySideLibs)
+  pysideEnv.Alias('pyside', installedPySideLibs)
 
 Return('uiFiles')

@@ -1,5 +1,6 @@
 """Canvas Window."""
 
+import json
 import os
 import sys
 
@@ -8,6 +9,7 @@ from FabricEngine import Core, FabricUI, Util
 from FabricEngine.FabricUI import DFG, KLASTManager, Viewports, TimeLine
 from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
+from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -93,11 +95,13 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.installEventFilter(CanvasWindowEventFilter(self))
 
     def __init(self):
-        """Initinalizes the settings and config for the application.
+        """Initializes the settings and config for the application.
 
         The autosave directory and file name are established here.
 
         """
+
+        self.setAcceptDrops(True)
 
         DFG.DFGWidget.setSettings(self.settings)
         self.config = DFG.DFGConfig()
@@ -207,21 +211,25 @@ class CanvasWindow(DFG.DFGMainWindow):
 
         """
 
+        self.rtvalEncoderDecoder = RTValEncoderDecoder(None)
         clientOpts = {
           'guarded': not unguarded,
           'noOptimization': noopt,
-          'reportCallback': self.__reportCallback
+          'interactive': True,
+          'reportCallback': self.__reportCallback,
+          'rtValToJSONEncoder': self.rtvalEncoderDecoder.encode,
+          'rtValFromJSONDecoder': self.rtvalEncoderDecoder.decode,
           }
 
         client = Core.createClient(clientOpts)
-        #options.licenseType = FabricCore::ClientLicenseType_Interactive
         client.loadExtension('Math')
         client.loadExtension('Parameters')
         client.loadExtension('Util')
         client.setStatusCallback(self.__statusCallback)
         self.client = client
         self.qUndoStack = QtGui.QUndoStack()
- 
+        self.rtvalEncoderDecoder.client = self.client
+
     def _initDFG(self):
         """Initializes the Data Flow Graph.
 
@@ -245,9 +253,14 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.evalContext.host = 'Canvas'
         self.evalContext.graph = ''
 
+        self.astManager = KLASTManager(self.client)
         self.host = self.client.getDFGHost()
         self.mainBinding = self.host.createBindingToNewGraph()
-        self.scriptEditor = ScriptEditor(self.client, self.mainBinding, self.qUndoStack, self.logWidget)
+        self.lastSavedBindingVersion = self.mainBinding.getVersion()
+        self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
+
+        graph = self.mainBinding.getExec()
+        self.scriptEditor = ScriptEditor(self.client, self.mainBinding, self.qUndoStack, self.logWidget, self.settings, self)
         self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
 
         astManager = KLASTManager(self.client)
@@ -256,7 +269,7 @@ class CanvasWindow(DFG.DFGMainWindow):
    
         graph = self.mainBinding.getExec()
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
-                                       self.mainBinding, '', graph, astManager,
+                                       self.mainBinding, '', graph, self.astManager,
                                        self.dfguiCommandHandler, self.config)
 
         tabSearchWidget = self.dfgWidget.getTabSearchWidget()
@@ -264,6 +277,7 @@ class CanvasWindow(DFG.DFGMainWindow):
 
         self.dfgWidget.onGraphSet.connect(self.onGraphSet)
         self.dfgWidget.additionalMenuActionsRequested.connect(self.onAdditionalMenuActionsRequested)
+        self.dfgWidget.urlDropped.connect(self.onUrlDropped)
 
     def _initTreeView(self):
         """Initializes the preset TreeView.
@@ -277,6 +291,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.dfgWidget.newPresetSaved.connect(self.treeWidget.refresh)
         controller.varsChanged.connect(self.treeWidget.refresh)
         controller.dirty.connect(self.onDirty)
+        controller.topoDirty.connect(self.onTopoDirty)
 
     def _initGL(self):
         """Initializes the Open GL viewport widget."""
@@ -381,6 +396,15 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.scriptEditorDock.setObjectName('Script Editor')
         self.scriptEditorDock.setFeatures(self.dockFeatures)
         self.scriptEditorDock.setWidget(self.scriptEditor)
+        def scriptEditorTitleDataChanged(filename, isModified):
+            windowTitle = "Script Editor"
+            if filename:
+                windowTitle += ' - '
+                windowTitle += filename
+            if isModified:
+                windowTitle += ' (modified)'
+            self.scriptEditorDock.setWindowTitle(windowTitle)
+        self.scriptEditor.titleDataChanged.connect(scriptEditorTitleDataChanged)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.scriptEditorDock, QtCore.Qt.Vertical)
 
     def _initMenus(self):
@@ -428,15 +452,6 @@ class CanvasWindow(DFG.DFGMainWindow):
         toggleAction = self.scriptEditorDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_7)
         windowMenu.addAction(toggleAction)
-
-    def _contentChanged(self) :
-        """Method called to tell the application services that content has been
-        changed.
-
-        """
-
-        self.valueEditor.onOutputsChanged()
-        self.viewport.redraw()
 
     def onPortManipulationRequested_2(self, portName):
         """Generic method to trigger value changes that are requested form manipulators
@@ -508,7 +523,11 @@ class CanvasWindow(DFG.DFGMainWindow):
         """Method called when the graph is dirtied."""
 
         self.dfgWidget.getDFGController().execute()
-        self._contentChanged()
+        self.valueEditor.onOutputsChanged()
+        self.viewport.redraw()
+
+    def onTopoDirty(self):
+        self.onDirty()
 
     def loadGraph(self, filePath):
         """Method to load a graph from disk.
@@ -543,7 +562,6 @@ class CanvasWindow(DFG.DFGMainWindow):
             self.scriptEditor.updateBinding(binding)
 
             self.evalContext.currentFilePath = filePath
-            dfgController.execute()
 
             tl_start = dfgExec.getMetadata("timeline_start")
             tl_end = dfgExec.getMetadata("timeline_end")
@@ -581,9 +599,10 @@ class CanvasWindow(DFG.DFGMainWindow):
                 except Exception as e:
                     sys.stderr.write("Exception: " + str(e) + "\n")
 
-            self._contentChanged()
-
+            dfgController.emitDirty()
             self.onFileNameChanged(filePath)
+
+            QtCore.QCoreApplication.processEvents()
 
             # then set it to the current value if we still have it.
             # this will ensure that sim mode scenes will play correctly.
@@ -591,8 +610,6 @@ class CanvasWindow(DFG.DFGMainWindow):
                 self.timeLine.updateTime(int(tl_current), True)
             else:
                 self.timeLine.updateTime(CanvasWindow.defaultFrameIn, True)
-
-            self.viewport.update()
 
         except Exception as e:
             sys.stderr.write("Exception: " + str(e) + "\n")
@@ -627,13 +644,17 @@ class CanvasWindow(DFG.DFGMainWindow):
         if not self.checkUnsavedChanges():
             event.ignore()
             return
-
+        if not self.scriptEditor.checkUnsavedChanges():
+            event.ignore()
+            return
+            
         self.viewport.setManipulationActive(False)
         self.settings.setValue("mainWindow/geometry", self.saveGeometry())
         self.settings.setValue("mainWindow/state", self.saveState())
 
         QtGui.QMainWindow.closeEvent(self, event)
 
+        self.astManager = None
         self.client.close()
 
         if os.path.exists(self.autosaveFilename):
@@ -685,7 +706,7 @@ class CanvasWindow(DFG.DFGMainWindow):
             frame (float): The new frame the user has changed to.
 
         """
-
+ 
         try:
             self.evalContext.time = frame
         except Exception as e:
@@ -747,6 +768,18 @@ class CanvasWindow(DFG.DFGMainWindow):
                     os.rename(tmpAutosaveFilename, self.autosaveFilename)
                     self.lastAutosaveBindingVersion = bindingVersion
 
+    def execNewGraph(self, skip_save=False):
+        """Callback Executed when a key or menu command has requested a new graph.
+
+        This simply executes the corresponding script command.
+
+        Arguments:
+            skip_save (bool): Whether to skip the check for unsaved changes.
+
+        """
+
+        self.scriptEditor.exec_("newGraph(skip_save=%s)" % str(skip_save))
+
     def onNewGraph(self, skip_save=False):
         """Callback Executed when a call to create a new graph has been made.
 
@@ -795,14 +828,10 @@ class CanvasWindow(DFG.DFGMainWindow):
             self.timeLine.setSimulationMode(0)
             self.timeLine.updateTime(CanvasWindow.defaultFrameIn, True)
 
-            QtCore.QCoreApplication.processEvents()
             self.qUndoView.setEmptyLabel("New Graph")
 
-            self._contentChanged()
-
+            dfgController.emitDirty()
             self.onFileNameChanged('')
-
-            self.viewport.update()
 
         except Exception as e:
             print 'Exception: ' + str(e)
@@ -922,8 +951,15 @@ class CanvasWindow(DFG.DFGMainWindow):
 
         binding = self.dfgWidget.getDFGController().getBinding()
 
-        if self.performSave(binding, filePath):
-            self.evalContext.currentFilePath = filePath
+        if not self.performSave(binding, filePath):
+            if self.dfgWidget:
+                self.dfgWidget.getDFGController().log("ERROR: failed to save graph, unable to open file.")
+            return False
+
+        if self.dfgWidget:
+            self.dfgWidget.getDFGController().log("graph saved.")
+
+        self.evalContext.currentFilePath = filePath
 
         self.lastFileName = filePath
 
@@ -1010,7 +1046,7 @@ class CanvasWindow(DFG.DFGMainWindow):
                 menu.addAction(self.saveGraphAction)
                 menu.addAction(self.saveGraphAsAction)
 
-                self.newGraphAction.triggered.connect(self.onNewGraph)
+                self.newGraphAction.triggered.connect(self.execNewGraph)
                 self.loadGraphAction.triggered.connect(self.onLoadGraph)
                 self.saveGraphAction.triggered.connect(self.onSaveGraph)
                 self.saveGraphAsAction.triggered.connect(self.onSaveGraphAs)
@@ -1023,20 +1059,10 @@ class CanvasWindow(DFG.DFGMainWindow):
                 self.quitAction.triggered.connect(self.close)
         elif name == 'Edit':
             if prefix:
-                undoAction = QtGui.QAction("Undo", self)
-                def onUndo():
-                    self.scriptEditor.eval("undo()")
-                undoAction.triggered.connect(onUndo)
-                undoAction.setEnabled(self.qUndoStack.canUndo())
-                self.qUndoStack.canUndoChanged.connect(undoAction.setEnabled)
+                undoAction = self.qUndoStack.createUndoAction(self)
                 undoAction.setShortcut(QtGui.QKeySequence.Undo)
                 menu.addAction(undoAction)
-                redoAction = QtGui.QAction("Redo", self)
-                def onRedo():
-                    self.scriptEditor.eval("redo()")
-                redoAction.triggered.connect(onRedo)
-                redoAction.setEnabled(self.qUndoStack.canRedo())
-                self.qUndoStack.canRedoChanged.connect(redoAction.setEnabled)
+                redoAction = self.qUndoStack.createRedoAction(self)
                 redoAction.setShortcut(QtGui.QKeySequence.Redo)
                 menu.addAction(redoAction)
             else:
@@ -1108,7 +1134,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         if hotkey == DFG.DFGHotkeys.EXECUTE:
             self.onDirty()
         elif hotkey == DFG.DFGHotkeys.NEW_SCENE:
-            self.onNewGraph()
+            self.execNewGraph()
         elif hotkey == DFG.DFGHotkeys.OPEN_SCENE:
             self.onLoadGraph()
         elif hotkey == DFG.DFGHotkeys.SAVE_SCENE:
@@ -1145,6 +1171,8 @@ class CanvasWindow(DFG.DFGMainWindow):
                                DFG.DFGHotkeys.TAB_SEARCH)
             graph.defineHotkey(QtCore.Qt.Key_A, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.SELECT_ALL)
+            graph.defineHotkey(QtCore.Qt.Key_D, QtCore.Qt.NoModifier,
+                               DFG.DFGHotkeys.DISCONNECT_ALL_PORTS)
             graph.defineHotkey(QtCore.Qt.Key_C, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.COPY)
             graph.defineHotkey(QtCore.Qt.Key_V, QtCore.Qt.ControlModifier,
@@ -1175,3 +1203,38 @@ class CanvasWindow(DFG.DFGMainWindow):
             graph.nodeEditRequested.connect(self.onNodeEditRequested)
 
             self.currentGraph = graph
+
+    def dragEnterEvent(self, event):
+        # we accept the proposed action only if we
+        # are dealing with a single '.canvas' file.
+        if event.mimeData().hasUrls():
+            urls = event.mimeData().urls()
+            if len(urls) == 1:
+                url = urls[0];
+                filename = FabricUI.Util.GetFilenameForFileURL(url)
+                if filename.endswith(".canvas"):
+                    event.acceptProposedAction()
+                    return
+
+        DFG.DFGMainWindow.dragEnterEvent(self, event)
+
+    def dropEvent(self, event):
+        # The mimeData was already checked in the dragEnterEvent(), so we simply get the filepath and load the graph.
+        # We also check if the Control key is down and, if it is, we load the scene without prompting.
+        url = event.mimeData().urls()[0]
+        event.acceptProposedAction()
+
+        bypassUnsavedChanges = event.keyboardModifiers() & QtCore.Qt.ControlModifier
+        self.onUrlDropped(url, bypassUnsavedChanges)
+
+    def onUrlDropped(self, url, bypassUnsavedChanges):
+        filename = FabricUI.Util.GetFilenameForFileURL(url)
+        if not filename:
+            return
+
+        self.timeLine.pause()
+
+        if not (bypassUnsavedChanges or self.checkUnsavedChanges()):
+            return
+
+        self.loadGraph(filename)

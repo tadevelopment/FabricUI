@@ -95,6 +95,7 @@
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_Connect.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_CreatePreset.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_Disconnect.h>
+#include <FabricUI/DFG/DFGUICmd/DFGUICmd_DismissLoadDiags.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_EditNode.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_EditPort.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_Exec.h>
@@ -117,10 +118,10 @@
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_SplitFromPreset.h>
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGMainWindow.h>
-#include <FabricUI/DFG/DFGValueEditor.h>
 #include <FabricUI/DFG/PresetTreeWidget.h>
 #include <FabricUI/Licensing/Licensing.h>
 #include <FabricUI/Style/FabricStyle.h>
+#include <FabricUI/Application/FabricApplication.h>
 #include <FabricUI/Viewports/GLViewportWidget.h>
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Viewports/TimeLineWidget.h>
@@ -147,4 +148,6 @@
 #include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
 #include <FabricUI/Viewports/ManipulationTool.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>
+#include <FabricUI/Util/GetFilenameForFileURL.h>
+#include <FabricUI/Util/QTSignalBlocker.h>
 #include <FabricUI/Test/RTValCrash.h>

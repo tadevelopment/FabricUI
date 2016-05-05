@@ -15,6 +15,7 @@
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <streambuf>
 #include <memory>
@@ -25,7 +26,6 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <FabricUI/Util/macros.h>
 
 namespace FabricUI
 {
@@ -151,10 +151,6 @@ namespace FabricUI
       if(IsNumber(number)) {
         std::stringstream stream(number);
         stream >> value;
-        if(stream.fail()) {
-          std::runtime_error e(number);
-          throw e;
-        }
       }
       return value;
     }

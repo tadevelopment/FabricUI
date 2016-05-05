@@ -49,8 +49,7 @@ void Graph::requestSidePanelInspect(
   FabricUI::GraphView::SidePanel *sidePanel
   )
 {
-  if ( m_isEditable )
-    emit sidePanelInspectRequested();
+  emit sidePanelInspectRequested();
 }
 
 void Graph::initialize()
@@ -229,7 +228,11 @@ bool Graph::removeNode(Node * node, bool quiet)
     }
 
     if(found)
-      controller()->gvcDoRemoveConnection(con);
+    {
+      std::vector<Connection*> conns;
+      conns.push_back(con);
+      controller()->gvcDoRemoveConnections(conns);
+    }
   }
 
   size_t index = it->second;
@@ -378,6 +381,16 @@ bool Graph::isConnected(const ConnectionTarget * target) const
   return false;
 }
 
+bool Graph::isConnectedAsSource(const ConnectionTarget * target) const
+{
+  for(size_t i=0;i<m_connections.size();i++)
+  {
+    if(m_connections[i]->src() == target)
+      return true;
+  }
+  return false;
+}
+
 void Graph::updateColorForConnections(const ConnectionTarget * target) const
 {
   if(!m_config.connectionUsePinColor)
@@ -407,26 +420,6 @@ Connection * Graph::addConnection(ConnectionTarget * src, ConnectionTarget * dst
   {
     if(m_connections[i]->src() == src && m_connections[i]->dst() == dst)
       return NULL;
-  }
-
-  if(m_config.disconnectInputsAutomatically)
-  {
-    for(size_t i=0;i<m_connections.size();i++)
-    {
-      if(m_connections[i]->dst() == dst)
-      {
-        // filter out IO ports
-        if(m_connections[i]->src()->targetType() == TargetType_Port && m_connections[i]->dst()->targetType() == TargetType_Port)
-        {
-          if(((Port*)m_connections[i]->src())->name() == ((Port*)m_connections[i]->dst())->name())
-            continue;
-        }
-
-        if(!controller()->gvcDoRemoveConnection(m_connections[i]))
-          return NULL;
-        break;
-      }
-    }
   }
 
   prepareGeometryChange();
@@ -544,6 +537,35 @@ bool Graph::removeConnection(Connection * connection, bool quiet)
   return true;
 }
 
+bool Graph::removeConnections()
+{
+  std::vector<Connection*> conns;
+
+  // we first check if there are hovered connections.
+  // If there are none, we do the regular 'disconnect
+  // all ports' thing.
+
+  for(int i=0;i<(int)m_connections.size();i++)
+    if (m_connections[i]->isHovered())
+        conns.push_back(m_connections[i]);
+
+  if (!conns.size())
+  {
+    for(int i=0;i<(int)m_connections.size();i++)
+    {
+      ConnectionTarget *srcCT = m_connections[i]->src();
+      bool srcIsSelected = srcCT && srcCT->selected();
+
+      ConnectionTarget *dstCT = m_connections[i]->dst();
+      bool dstIsSelected = dstCT && dstCT->selected();
+
+      if (srcIsSelected != dstIsSelected)
+        conns.push_back(m_connections[i]);
+    }
+  }
+
+  return (conns.size() ? controller()->gvcDoRemoveConnections(conns) : true);
+}
 
 MouseGrabber * Graph::constructMouseGrabber(QPointF pos, ConnectionTarget * target, PortType portType)
 {
@@ -673,13 +695,10 @@ bool Graph::releaseHotkey(Qt::Key key, Qt::KeyboardModifier modifiers)
 
 void Graph::onNodeDoubleClicked(FabricUI::GraphView::Node * node, Qt::MouseButton button, Qt::KeyboardModifiers modifiers)
 {
-  if(m_isEditable)
-  {
-    if(modifiers.testFlag(Qt::ShiftModifier))
-      emit nodeEditRequested(node);
-    else
-      emit nodeInspectRequested(node);
-  }
+  if ( modifiers.testFlag( Qt::ShiftModifier ) )
+    emit nodeEditRequested( node );
+  else
+    emit nodeInspectRequested( node );
 }
 
 void Graph::onBubbleEditRequested(FabricUI::GraphView::Node * node)

@@ -62,7 +62,7 @@ QVariant NodePortModelItem::getValue()
   try
   {
     // TODO: Find a way to show values of connected ports
-    if (m_exec.hasSrcPort( m_portPath.c_str() ))
+    if (m_exec.hasSrcPorts( m_portPath.c_str() ))
       return QVariant();
 
     // If we have a resolved type, allow getting the default val
@@ -90,7 +90,7 @@ void NodePortModelItem::setValue(
 {
   try
   {
-    if ( m_exec.hasSrcPort( m_portPath.c_str() ) )
+    if ( m_exec.hasSrcPorts( m_portPath.c_str() ) )
       return;
 
     const char* resolvedTypeName =
@@ -100,7 +100,6 @@ void NodePortModelItem::setValue(
       return;
 
     FabricCore::DFGHost host = m_binding.getHost();
-    FabricCore::DFGNotifBracket _( host );
     FabricCore::Context context = host.getContext();
     FabricCore::RTVal rtVal =
       FabricCore::RTVal::Construct( context, resolvedTypeName, 0, 0 );
@@ -109,25 +108,42 @@ void NodePortModelItem::setValue(
     {
       if ( valueAtInteractionBegin.isValid() )
       {
+        m_binding.suspendDirtyNotifs();
+
         FabricUI::ValueEditor::RTVariant::toRTVal( valueAtInteractionBegin, rtVal );
         m_exec.setPortDefaultValue(
           m_portPath.c_str(),
           rtVal,
           false // canUndo
           );
-      }
 
-      FabricUI::ValueEditor::RTVariant::toRTVal( value, rtVal );
-      m_dfgUICmdHandler->dfgDoSetPortDefaultValue(
-        m_binding,
-        QString::fromUtf8( m_execPath.data(), m_execPath.size() ),
-        m_exec,
-        QString::fromUtf8( m_portPath.data(), m_portPath.size() ),
-        rtVal
-        );
+        FabricUI::ValueEditor::RTVariant::toRTVal( value, rtVal );
+        m_dfgUICmdHandler->dfgDoSetPortDefaultValue(
+          m_binding,
+          QString::fromUtf8( m_execPath.data(), m_execPath.size() ),
+          m_exec,
+          QString::fromUtf8( m_portPath.data(), m_portPath.size() ),
+          rtVal
+          );
+
+        m_binding.resumeDirtyNotifs();
+      }
+      else
+      {
+        FabricCore::DFGNotifBracket _( host );
+        FabricUI::ValueEditor::RTVariant::toRTVal( value, rtVal );
+        m_dfgUICmdHandler->dfgDoSetPortDefaultValue(
+          m_binding,
+          QString::fromUtf8( m_execPath.data(), m_execPath.size() ),
+          m_exec,
+          QString::fromUtf8( m_portPath.data(), m_portPath.size() ),
+          rtVal
+          );
+      }
     }
     else
     {
+      FabricCore::DFGNotifBracket _( host );
       FabricUI::ValueEditor::RTVariant::toRTVal( value, rtVal );
       m_exec.setPortDefaultValue(
         m_portPath.c_str(),
