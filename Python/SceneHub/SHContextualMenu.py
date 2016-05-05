@@ -4,18 +4,14 @@ from FabricEngine import Core, FabricUI, Util
 from FabricEngine.FabricUI import *
 from FabricEngine.FabricUI import SceneHub
 from FabricEngine.Util import *
-from FabricEngine.SceneHub.SHBaseSceneMenu import SHBaseSceneMenu
 from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
 from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
 
-class SHContextualMenu(SHBaseSceneMenu):
+class SHContextualMenu(SceneHub.SHBaseContextualMenu):
 
     """SHContextualMenu
 
-    SHContextualMenu specializes SHBaseSceneMenu and defines the contextual menu 
-    used from either the treeView or the 3DView (viewports).
-    It supports : Edit SGObject/SGObjectProperties if selected.
-                  Add assets/ligths to the scene if no selection.
+    SHContextualMenu specializes SHBaseContextualMenu.
 
     Arguments:
         client (FabricEngine.Core.Client): A reference to the FabricCore.Client.
@@ -23,180 +19,46 @@ class SHContextualMenu(SHBaseSceneMenu):
         shStates (SceneHub.SHStates): A reference to the SHStates.
         targetSGObject (Fabr.RTVal): A reference to the sgObject to edit, pass as a RTVal.
         shTreeView (QWidget): A reference to the SceneHub.SHTreeView, can be None.
+        shTreeView (QWidget): A reference to parent, can be None.
+
     """
-
    
-    def __init__(self, client, shGLScene, shStates, targetSGObject, shTreeView = None):
-        self.targetSGObject = targetSGObject
-        self.client = client
+    def __init__(self, shGLScene, shStates, targetSGObject, shTreeView = None, parent = None):
+        super(SHContextualMenu, self).__init__(shGLScene, shStates, targetSGObject, shTreeView, parent)
+        self.constructMenu()
 
-        self.shTreeView = shTreeView
-        self.shStates = shStates
-        super(SHContextualMenu, self).__init__(shGLScene)
- 
     def constructMenu(self):
         """Implementation of BaseMenu.
         """
 
-        # If there is a selected object, either from the shTreeView or the 3View
-        # acces/edits its properties.
-        if self.targetSGObject is not None:
+        # Construct the base contextual menu.
+        super(SHContextualMenu, self).constructMenu()
 
-            if self.shTreeView is not None:
-                expandAction = QtGui.QAction("Expand recursively", self)
-                self.addAction(expandAction)
-                for index in self.shTreeView.selectedIndexes():
-                    viewIndexTarget = SceneHub.SHTreeView_ViewIndexTarget(self.shTreeView, index, self)
-                    expandAction.triggered.connect(viewIndexTarget.expandRecursively)
-
-            loadAction = QtGui.QAction("Load recursively", self)
-            self.addAction(loadAction)
-            loadAction.triggered.connect(self.loadRecursively)
-
-            visMenu = self.addMenu("Visibility")
-
-            showPropagatedAction = QtGui.QAction("Show", visMenu)
-            showPropagatedAction.setCheckable( True )
-            visMenu.addAction( showPropagatedAction )
-
-            showLocalAction = QtGui.QAction("Show (local only)", visMenu)
-            showLocalAction.setCheckable( True )
-            visMenu.addAction( showLocalAction )
-
-            hidePropagatedAction = QtGui.QAction("Hide", visMenu)
-            hidePropagatedAction.setCheckable( True )
-            visMenu.addAction( hidePropagatedAction )
-
-            hideLocalAction = QtGui.QAction("Hide (local only)", visMenu)
-            hideLocalAction.setCheckable( True )
-            visMenu.addAction( hideLocalAction )
-
-            resetVisibilityAction = QtGui.QAction("Reset recursively", visMenu)
-            visMenu.addAction( resetVisibilityAction )
-
-            visible = False
-            propagVal = self.client.RT.types.UInt8(0)
-            visible = self.targetSGObject.getVisibility("Boolean", propagVal).getSimpleType()
-            propagType = propagVal.getSimpleType()
-          
-            showLocalAction.triggered.connect(self.showLocal)
-            if visible and not propagType:
-                showLocalAction.setChecked( True )
-
-            showPropagatedAction.triggered.connect(self.showPropagated)
-            if visible and propagType:
-                showPropagatedAction.setChecked(True)
-
-            # THERE ARE BUGS WITH OVERRIDES
-            #visAction = new QAction( "Show (override)", 0 )
-            #connect( visAction, SIGNAL( triggered() ), self, SLOT( showOverride() ) )
-            #visAction.setCheckable( True )
-            #if( visible and propagType == 2 )
-            #  visAction.setChecked( True )
-            #visMenu.addAction( visAction )
-                
-            hideLocalAction.triggered.connect(self.hideLocal)
-            if not visible and not propagType:
-                hideLocalAction.setChecked( True )
-
-            hidePropagatedAction.triggered.connect(self.hidePropagated)
-            if not visible and propagType:
-                hidePropagatedAction.setChecked( True )
-                
-            # THERE ARE BUGS WITH OVERRIDES
-            #visAction = new QAction( "Hide (override)", 0 )
-            #connect( visAction, SIGNAL( triggered() ), self, SLOT( hideOverride() ) )
-            #visAction.setCheckable( True )
-            #if( !visible and propagType == 2 )
-            #  visAction.setChecked( True )
-            #visMenu.addAction( visAction )
-
-            resetVisibilityAction.triggered.connect(self.resetVisibilityRecursively)
-          
+        if str(self.m_targetSGObject.type("String").getSimpleType()) == "SGObject":
             self.addSeparator()
-
             exportAlembicAction = QtGui.QAction("Export to Alembic...", self)
             self.addAction(exportAlembicAction)
             exportAlembicAction.triggered.connect(self.exportToAlembic)
 
-        # Otherwise, add archive/lights to the scene
-        else:
-            assetMenu = SHAssetsMenu(self.shGLScene)
-            lightsMenu = SHLightsMenu(self.shGLScene)
-            self.addMenu(assetMenu)
-            self.addMenu(lightsMenu)
- 
-    def loadRecursively(self):
-        """Loads recursively the object children.
+        elif str(self.m_targetSGObject.type("String").getSimpleType()) == "None":
+            self.addMenu(SHAssetsMenu(self.m_shGLScene))
+            self.addMenu(SHLightsMenu(self.m_shGLScene))
+
+    
+    def exportToAlembic(self):      
+        """Exports the current scene to alembic.
         """
-
-        self.targetSGObject.forceHierarchyExpansion("")
-        self.shStates.onStateChanged()
-
-    def exportToAlembic(self):
-        """Exports the selected item to alembic.
-        """
-
+        
         fileName, _ = QtGui.QFileDialog.getSaveFileName(self, "Export to Alembic", "", "Files (*.abc)")
         if not fileName: 
             return
-
+            
         baseName, extension = os.path.splitext(fileName)
-
+ 
         if extension != ".abc":
             fileName = baseName + ".abc"
 
         pathList = []
         pathList.append(fileName)
         pathList = Util.StringUtils.ProcessPathQStringForOsX(pathList)
-        self.shGLScene.exportToAlembic(self.targetSGObject, pathList[0])
-
-    def resetVisibilityRecursively(self):
-        """Reset recursively the object visibility.
-        """
-        
-        self.targetSGObject.resetVisibilityRecursively("")
-        self.shStates.onStateChanged()
-
-    def setVisibility(self, visible, propagationType):
-        """Sets the object visibility.
-        """
-        
-        self.targetSGObject.setVisibility("", visible, propagationType)
-        self.shStates.onStateChanged()
-
-    def showLocal(self):
-        """Shows the object.
-        """
-        
-        self.setVisibility( True, 0 )
-
-    def showPropagated(self):
-        """Shows the object, propagates to it's instances.
-        """
-
-        self.setVisibility( True, 1 )
-
-    def showOverride(self):
-        """Shows the object parent override.
-        """
-        
-        self.setVisibility( True, 2 )
-
-    def hideLocal(self):
-        """Hides the object.
-        """
-        
-        self.setVisibility( False, 0 )
-
-    def hidePropagated(self):
-        """Hides the object, propagates to it's instances.
-        """
-        
-        self.setVisibility( False, 1 )
-
-    def hideOverride(self):
-        """Hides the object parent override.
-        """
-        
-        self.setVisibility( False, 2 )
+        self.m_shGLScene.exportToAlembic(pathList[0])

@@ -8,9 +8,11 @@
 #include <QtGui/QDrag>
 #include <QtGui/QTreeWidgetItem>
 #include <QtCore/QAbstractItemModel>
- 
+#include <FabricUI/SceneHub/Menus/SHContextualMenu.h>
+
+using namespace FabricCore;
 using namespace FabricUI;
-using namespace FabricUI::SceneHub;
+using namespace SceneHub;
 
 
 SHTreeView::SHTreeView(
@@ -49,91 +51,12 @@ void SHTreeView::selectionChanged(const QItemSelection &selected, const QItemSel
 }
 
 void SHTreeView::onCustomContextMenu(const QPoint &point) {
-  QModelIndex index = indexAt(point);
-  /*
-  if (index.isValid())
-  {
-    SHTreeItem *item = static_cast<SHTreeItem *>(index.internalPointer());
-    FabricCore::RTVal sgObjectVal = item->getSGObject();
-    if(sgObjectVal.isValid()) 
-    {
-      //NOTE: all this is probably leaking... these should at least be reused
-      QMenu *menu = new QMenu(this);
-
-      SHTreeView_ViewIndexTarget *viewIndexTarget =
-        new SHTreeView_ViewIndexTarget( this, index, menu );
-
-      QAction *expandAction = new QAction( "Expand recursively", 0 );
-      connect( expandAction, SIGNAL(triggered()), viewIndexTarget, SLOT(expandRecursively()) );
-      menu->addAction( expandAction );
-
-      QAction *loadAction = new QAction( "Load recursively", 0 );
-      connect(loadAction, SIGNAL(triggered()), viewIndexTarget, SLOT(loadRecursively()) );
-      menu->addAction( loadAction );
-
-      bool visible = false;
-      unsigned char propagType = 0;
-      try {
-        FabricCore::RTVal propagVal = FabricCore::RTVal::ConstructUInt8( m_client, 0 );
-        visible = sgObjectVal.callMethod( "Boolean", "getVisibility", 1, &propagVal ).getBoolean();
-        propagType = propagVal.getUInt8();
-      }
-      catch( FabricCore::Exception e ) {
-        printf( "SHTreeView::onCustomContextMenu: Error: %s\n", e.getDesc_cstr() );
-      }
-
-      QMenu *visMenu = menu->addMenu( tr( "Visibility" ) );
-
-      QAction *visAction = new QAction( "Show", 0 );
-      connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( showLocal() ) );
-      visAction->setCheckable( true );
-      if( visible && propagType == 0 )
-        visAction->setChecked( true );
-      visMenu->addAction( visAction );
-
-      visAction = new QAction( "Show (propagated)", 0 );
-      connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( showPropagated() ) );
-      visAction->setCheckable( true );
-      if( visible && propagType == 1 )
-        visAction->setChecked(true);
-      visMenu->addAction( visAction );
-
-      // THERE ARE BUGS WITH OVERRIDES
-      //visAction = new QAction( "Show (override)", 0 );
-      //connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( showOverride() ) );
-      //visAction->setCheckable( true );
-      //if( visible && propagType == 2 )
-      //  visAction->setChecked( true );
-      //visMenu->addAction( visAction );
-      //
-
-      visAction = new QAction( "Hide", 0 );
-      connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( hideLocal() ) );
-      visAction->setCheckable( true );
-      if( !visible && propagType == 0 )
-        visAction->setChecked( true );
-      visMenu->addAction( visAction );
-
-      visAction = new QAction( "Hide (propagated)", 0 );
-      connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( hidePropagated() ) );
-      visAction->setCheckable( true );
-      if( !visible && propagType == 1 )
-        visAction->setChecked( true );
-      visMenu->addAction( visAction );
-
-      // THERE ARE BUGS WITH OVERRIDES
-      //visAction = new QAction( "Hide (override)", 0 );
-      //connect( visAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( hideOverride() ) );
-      //visAction->setCheckable( true );
-      //if( !visible && propagType == 2 )
-      //  visAction->setChecked( true );
-      //visMenu->addAction( visAction );
-      //
-
-      menu->popup( mapToGlobal( point ) );
-    }
-  }
-  */
+  SHTreeItem *item = GetTreeItemAtIndex(indexAt(point));
+  RTVal sgObject = RTVal();
+  if(item) sgObject = item->getSGObject();
+  SHContextualMenu *menu = new SHContextualMenu(m_shGLScene, m_shStates, sgObject, this, this);
+  menu->constructMenu();
+  menu->exec(mapToGlobal(point));
 }
  
 void SHTreeView::mouseDoubleClickEvent(QMouseEvent *event) {

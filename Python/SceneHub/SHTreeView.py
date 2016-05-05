@@ -29,6 +29,7 @@ class SHTreeView(SceneHub.SHBaseTreeView):
 
     def __init__(self, client, shStates, shGLScene):
         super(SHTreeView, self).__init__(client)
+        self.client = client
         self.shGLScene = shGLScene
         self.shStates = shStates
         self.setHeaderHidden(True)
@@ -37,18 +38,23 @@ class SHTreeView(SceneHub.SHBaseTreeView):
         self.customContextMenuRequested.connect(self.onCustomContextMenu)
   
     def onCustomContextMenu(self, point):
-        print "onCustomContextMenu "
         """ Implementation of :`QTreeView`,
             Displays the contextual Menu.
         """
 
         index = self.indexAt(point);
         item = SceneHub.SHBaseTreeView.GetTreeItemAtIndex(index)
-        sgObject = None
+
+        # SHContextualMenu being based on the C++ class SHBaseContexctualMenu
+        # We need to explicitly construct a RTVal for the parameter sgObject
+        sgObject = self.client.RT.types.Object()
         if item: 
-          sgObject = item.getSGObject()   
-        menu = SHContextualMenu(self.m_client, self.shGLScene, self.shStates, sgObject, self)
-        menu.exec_(self.mapToGlobal(point))
+            sgObject = item.getSGObject()   
+
+        if (item is not None and sgObject is not None) or item is None:
+            menu = SHContextualMenu(self.shGLScene, self.shStates, sgObject, self, self)
+            menu.exec_(self.mapToGlobal(point))
+    
   
     def selectionChanged(self, selected, deselected):
         """ Selects/Unselects treeView items.

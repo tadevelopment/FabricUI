@@ -6,7 +6,8 @@ class SHHelpWidget(HelpWidget):
 
     """SHHelpWidget
 
-    Simple specialization of SHHelpWidget to allow closing the owner dialog with its 'close' button
+    Simple specialization of HelpWidget to allow closing the owner dialog with its 'close' button
+    
     """
 
     closeSignal = QtCore.Signal()

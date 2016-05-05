@@ -23,11 +23,10 @@ class SHTreeItem : public FTL::Shareable {
   /**
     SHTreeItem wrapps SceneHub objects:
       - SGObject
-      - SGObjectPrperty
+      - SGObjectProperty
       - Generators
     to organize and display them in the treeView.
   */
-
 
   public:
     enum ItemType { Object, Property, Operator };

@@ -112,6 +112,7 @@ dirs = [
   'Style',
   'Viewports',
   'KLEditor',
+  'Menus',
 
   'TreeView',
   'ValueEditor_Legacy',
@@ -129,6 +130,7 @@ dirs = [
   'SceneHub/Viewports',
   'SceneHub/Commands',
   'SceneHub/ValueEditor',
+  'SceneHub/Menus',
 
   'Licensing',
   'ModelItems',
@@ -311,6 +313,7 @@ if uiLibPrefix == 'ui':
 
     pysideEnv.Append(CPPPATH = [
         pysideEnv.Dir('Util').srcnode(),
+        pysideEnv.Dir('Menus').srcnode(),
         pysideEnv.Dir('DFG').srcnode(),
         pysideEnv.Dir('DFG/DFGUICmd').srcnode(),
         pysideEnv.Dir('GraphView').srcnode(),
@@ -323,6 +326,7 @@ if uiLibPrefix == 'ui':
         pysideEnv.Dir('Test').srcnode(),
         pysideEnv.Dir('SceneHub').srcnode(),
         pysideEnv.Dir('SceneHub/DFG').srcnode(),
+        pysideEnv.Dir('SceneHub/Menus').srcnode(),
         pysideEnv.Dir('SceneHub/Editors').srcnode(),
         pysideEnv.Dir('SceneHub/Commands').srcnode(),
         pysideEnv.Dir('SceneHub/TreeView').srcnode(),

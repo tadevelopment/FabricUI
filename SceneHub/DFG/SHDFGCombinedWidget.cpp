@@ -70,7 +70,6 @@ void SHDFGCombinedWidget::onInspectChanged() {
   // shDFGBinding might change the active binding
   m_shDFGBinding->onInspectChanged();
   FabricCore::DFGBinding binding = m_dfgWidget->getDFGController()->getBinding();
-  //self.scriptEditor.updateBinding(binding)
 }
 
 void SHDFGCombinedWidget::onCanvasSidePanelInspectRequested() {

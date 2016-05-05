@@ -13,17 +13,12 @@ namespace FabricUI {
 namespace SceneHub {
 
 class SHCmdHandler : public QObject {
+ 
   Q_OBJECT
-
-  protected:
-    class WrappedCmd;
-
-
+ 
   public:
     /// Constructs a command handler.
     SHCmdHandler(FabricCore::Client client, QUndoStack *qUndoStack);
-
-    virtual ~SHCmdHandler() {};
   
 
   public slots:
@@ -32,7 +27,9 @@ class SHCmdHandler : public QObject {
     void onSynchronizeCommands();
 
 
-  protected:       
+  protected:   
+    class WrappedCmd;
+    
     unsigned int m_stackSize;
     FabricCore::Client m_client;
     QUndoStack *m_qUndoStack;

@@ -2,9 +2,9 @@
 from PySide import QtCore, QtGui
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
-from FabricEngine.Canvas.BaseMenu import BaseMenu
+from FabricEngine.FabricUI import Menus
 
-class SHInteractionMenu(BaseMenu):
+class SHInteractionMenu(Menus.BaseMenu):
 
     """SHAssetsMenu
 
@@ -22,8 +22,9 @@ class SHInteractionMenu(BaseMenu):
 
     def __init__(self, shGLRenderer, parent = None):
         self.shGLRenderer = shGLRenderer
-        super(SHInteractionMenu, self).__init__("Tools", parent)
-     
+        super(SHInteractionMenu, self).__init__(self.shGLRenderer.getClient(), "Tools", parent)
+        self.constructMenu()
+
     def constructMenu(self):
         """Implementation of BaseMenu.
         """

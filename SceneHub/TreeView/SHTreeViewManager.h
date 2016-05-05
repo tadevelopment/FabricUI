@@ -20,6 +20,7 @@ class SHTreeComboBox : public QComboBox {
   /**
     SHTreeComboBox specializes QtGui::QComboBox.
     When the combobox is manipulated, a signal is emitted before it's displayed.
+    
     It's used to look for SHGLScene that can be defined in the canvas graph
     and update the combobox items list.
   */

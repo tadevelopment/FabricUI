@@ -2,9 +2,9 @@
 from PySide import QtCore, QtGui
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
-from FabricEngine.SceneHub.SHBaseSceneMenu import SHBaseSceneMenu
+from FabricEngine.FabricUI import SceneHub
 
-class SHLightsMenu(SHBaseSceneMenu):
+class SHLightsMenu(SceneHub.SHBaseSceneMenu):
 
     """SHLightsMenu
 
@@ -18,7 +18,8 @@ class SHLightsMenu(SHBaseSceneMenu):
 
     def __init__(self, shGLScene, parent = None):
         super(SHLightsMenu, self).__init__(shGLScene, "Lights", parent)
- 
+        self.constructMenu()
+
     def constructMenu(self):
         """Implementation of BaseMenu.
         """
@@ -40,10 +41,10 @@ class SHLightsMenu(SHBaseSceneMenu):
         """Adds a light to the current scene.
         """
 
-        if(self.sender().text() == "Add Point"): self.shGLScene.addLight(0)
-        elif(self.sender().text() == "Add Spot"): self.shGLScene.addLight(1)
-        elif(self.sender().text() == "Add Directional"): self.shGLScene.addLight(2)
-        elif(self.sender().text() == "Add Shadow Point"): self.shGLScene.addLight(3)
-        elif(self.sender().text() == "Add Shadow Spot"): self.shGLScene.addLight(4)
-        elif(self.sender().text() == "Add Shadow Directional"): self.shGLScene.addLight(5)
+        if(self.sender().text() == "Add Point"): self.m_shGLScene.addLight(0)
+        elif(self.sender().text() == "Add Spot"): self.m_shGLScene.addLight(1)
+        elif(self.sender().text() == "Add Directional"): self.m_shGLScene.addLight(2)
+        elif(self.sender().text() == "Add Shadow Point"): self.m_shGLScene.addLight(3)
+        elif(self.sender().text() == "Add Shadow Spot"): self.m_shGLScene.addLight(4)
+        elif(self.sender().text() == "Add Shadow Directional"): self.m_shGLScene.addLight(5)
   

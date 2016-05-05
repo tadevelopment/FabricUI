@@ -16,7 +16,6 @@ class HelpWidget(QtGui.QWidget):
 
     """
 
-
     def __init__(self, usagetFilePath, parent = None, width = 800, height = 500):
         super(HelpWidget, self).__init__(parent)
         

@@ -6,6 +6,7 @@
 #endif
 
 #include "pyside_global.h"
+#include <FabricUI/Menus/BaseMenu.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/Controller.h>
 #include <FabricUI/GraphView/GraphConfig.h>
@@ -128,6 +129,8 @@
 #include <FabricUI/SceneHub/SHGLRenderer.h>
 #include <FabricUI/SceneHub/SHStates.h>
 #include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
+#include <FabricUI/SceneHub/Menus/SHBaseSceneMenu.h>
+#include <FabricUI/SceneHub/Menus/SHBaseContextualMenu.h>
 #include <FabricUI/SceneHub/Commands/SHCmd.h>
 #include <FabricUI/SceneHub/Commands/SGAddObjectCmd.h>
 #include <FabricUI/SceneHub/Commands/SGAddPropertyCmd.h>

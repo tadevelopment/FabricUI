@@ -168,13 +168,21 @@ class SHViewport(Viewports.ViewportWidget):
         shGLScene = self.shStates.getActiveScene()
         if shGLScene.hasSG():
             if not self.__onEvent(event) and event.button() == QtCore.Qt.RightButton:
+                # SHContextualMenu being based on the C++ class SHBaseContexctualMenu
+                # We need to explicitly construct a RTVal for the parameter sgObject
+                sgObject = self.shGLRenderer.getSGObjectFrom2DScreenPos(
+                    self.viewportIndex, 
+                    event.pos())
+                if sgObject is None:
+                    sgObject = self.client.RT.types.Object()
+
                 menu = SHContextualMenu(
-                    self.client, 
                     self.shStates.getActiveScene(), 
                     self.shStates, 
-                    self.shGLRenderer.getSGObjectFrom2DScreenPos(
-                        self.viewportIndex, 
-                        event.pos()))
+                    sgObject,
+                    None,
+                    self)
+
                 menu.addMenu(SHInteractionMenu(self.shGLRenderer))
                 menu.exec_(self.mapToGlobal(event.pos()))
                 self.sceneChanged.emit()

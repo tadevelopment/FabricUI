@@ -3,9 +3,9 @@ import os
 from PySide import QtCore, QtGui
 from FabricEngine import Core, FabricUI
 from FabricEngine.FabricUI import *
-from FabricEngine.SceneHub.SHBaseSceneMenu import SHBaseSceneMenu
+from FabricEngine.FabricUI import SceneHub
 
-class SHAssetsMenu(SHBaseSceneMenu):
+class SHAssetsMenu(SceneHub.SHBaseSceneMenu):
 
     """SHAssetsMenu
 
@@ -21,6 +21,7 @@ class SHAssetsMenu(SHBaseSceneMenu):
 
     def __init__(self, shGLScene, parent = None):
         super(SHAssetsMenu, self).__init__(shGLScene, "Assets", parent)
+        self.constructMenu()
      
     def constructMenu(self):
         """Implementation of BaseMenu.
@@ -44,7 +45,7 @@ class SHAssetsMenu(SHBaseSceneMenu):
         dialog.setNameFilter("Files (*.abc *.fbx)")
         if dialog.exec_():
             pathList = Util.StringUtils.ProcessPathQStringForOsX(dialog.selectedFiles())
-            self.shGLScene.addExternalFileList(pathList, self.sender().text() != "Add Asset")
+            self.m_shGLScene.addExternalFileList(pathList, self.sender().text() != "Add Asset")
       
     def exportToAlembic(self):   
         """Exports the current scene to alembic.
@@ -62,5 +63,5 @@ class SHAssetsMenu(SHBaseSceneMenu):
         pathList = []
         pathList.append(fileName)
         pathList = Util.StringUtils.ProcessPathQStringForOsX(pathList)
-        self.shGLScene.exportToAlembic(pathList[0])
+        self.m_shGLScene.exportToAlembic(pathList[0])
       

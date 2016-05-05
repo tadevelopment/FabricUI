@@ -5,14 +5,11 @@
 #ifndef __UI_SCENEHUB_SHBASETREEVIEW_H__
 #define __UI_SCENEHUB_SHBASETREEVIEW_H__
 
-
 #include <FabricCore.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/SharedPtr.h>
-#include <FabricUI/SceneHub/SHHotkeys.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
-
 
 namespace FabricUI {
 namespace SceneHub {
@@ -105,6 +102,9 @@ class SHBaseTreeView : public QTreeView {
     /// Sets the selected treeView items.
     /// Updates from 3DView.
     void setSelectedObjects(FabricCore::RTVal selectedSGObjectArray);
+
+    /// Gets the selected treeView items.
+    QModelIndexList getSelectedIndexes();
 
     /// Gets a SHTreeItem at treeView index.
     static SHTreeItem *GetTreeItemAtIndex(QModelIndex index);

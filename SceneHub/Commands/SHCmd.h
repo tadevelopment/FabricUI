@@ -5,7 +5,6 @@
 #ifndef __UI_SCENEHUB_CMD_H__
 #define __UI_SCENEHUB_CMD_H__
 
-
 #include <FabricUI/SceneHub/SHGLScene.h>
 
 namespace FabricUI {
@@ -32,7 +31,8 @@ class SHCmd {
     /// Gets the command description.
     QString getDescription();
 
-    /// Does nothing (don't call the command in KL).
+    /// Executes the command the first time.
+    /// Does nothing (the command is executed from KL).
     void doit();
     
     /// Undoes the command.

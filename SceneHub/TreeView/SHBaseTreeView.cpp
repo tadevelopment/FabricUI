@@ -134,6 +134,10 @@ void SHBaseTreeView::setSelectedObjects(FabricCore::RTVal selectedSGObjectArray)
   }
 }
 
+QModelIndexList SHBaseTreeView::getSelectedIndexes() {
+  return selectedIndexes();
+}
+
 SHTreeItem *SHBaseTreeView::GetTreeItemAtIndex(QModelIndex index) {
   return static_cast<SHTreeItem *>(index.internalPointer());
 }
