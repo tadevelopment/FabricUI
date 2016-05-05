@@ -24,7 +24,8 @@ namespace FabricUI
       TargetType_Port,
       TargetType_ProxyPort,
       TargetType_MouseGrabber,
-      TargetType_NodeHeader
+      TargetType_NodeHeader,
+      TargetType_InstBlockHeader
     };
 
     class ConnectionTarget : public QGraphicsWidget

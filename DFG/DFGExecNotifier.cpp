@@ -15,6 +15,8 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
   static HandlerMap handlerMap;
   if ( handlerMap.empty() )
   {
+    handlerMap[FTL_STR("instBlockInserted")] = &DFGExecNotifier::handler_instBlockInserted;
+    handlerMap[FTL_STR("instBlockRemoved")] = &DFGExecNotifier::handler_instBlockRemoved;
     handlerMap[FTL_STR("execBlockInserted")] = &DFGExecNotifier::handler_execBlockInserted;
     handlerMap[FTL_STR("execBlockRemoved")] = &DFGExecNotifier::handler_execBlockRemoved;
     handlerMap[FTL_STR("execBlockMetadataChanged")] = &DFGExecNotifier::handler_execBlockMetadataChanged;
@@ -109,6 +111,24 @@ void DFGExecNotifier::handle( FTL::CStrRef jsonStr )
       e.getDescCStr()
       );
   }
+}
+
+void DFGExecNotifier::handler_instBlockInserted( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
+  unsigned blockIndex = unsigned( jsonObject->getSInt32( FTL_STR("blockIndex") ) );
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+
+  emit instBlockInserted( instName, blockIndex, blockName );
+}
+
+void DFGExecNotifier::handler_instBlockRemoved( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
+  unsigned blockIndex = unsigned( jsonObject->getSInt32( FTL_STR("blockIndex") ) );
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+
+  emit instBlockRemoved( instName, blockIndex, blockName );
 }
 
 void DFGExecNotifier::handler_execBlockInserted( FTL::JSONObject const *jsonObject )

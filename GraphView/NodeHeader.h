@@ -19,7 +19,6 @@ namespace FabricUI
     // forward declarations
     class Node;
     class NodeLabel;
-    class NodeEditButton;
 
     class NodeHeader : public ConnectionTarget
     {

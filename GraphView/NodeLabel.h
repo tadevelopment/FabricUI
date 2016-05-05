@@ -10,8 +10,6 @@ namespace FabricUI
 
   namespace GraphView
   {
-    // forward declarations
-    class NodeHeader;
 
     class NodeLabel : public TextContainer
     {
@@ -20,7 +18,7 @@ namespace FabricUI
     public:
 
       NodeLabel(
-        NodeHeader * parent,
+        QGraphicsWidget * parent,
         QString const &text,
         QColor color,
         QColor highlightColor,

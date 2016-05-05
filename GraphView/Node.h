@@ -25,6 +25,7 @@ namespace FabricUI
 
     // forward declarations
     class Graph;
+    class InstBlock;
     class NodeBubble;
 
     class Node : public QGraphicsWidget
@@ -74,8 +75,11 @@ namespace FabricUI
       bool isBackDropNode() const
         { return m_nodeType == NodeType_BackDrop; }
 
-      Graph * graph();
-      const Graph * graph() const;
+      Graph *graph()
+        { return m_graph; }
+      Graph const *graph() const
+        { return m_graph; }
+
       NodeHeader * header();
       const NodeHeader * header() const;
       NodeBubble * bubble();
@@ -95,15 +99,23 @@ namespace FabricUI
       QColor color() const;
       virtual void setColor(QColor col);
       virtual void setColorAsGradient(QColor a, QColor b);
-      QColor titleColor() const;
+
+      QColor titleColor() const
+        { return m_titleColor; }
       virtual void setTitleColor(QColor col);
+
       QColor fontColor() const;
       virtual void setFontColor(QColor col);
-      QPen defaultPen() const;
-      QPen selectedPen() const;
+
+      QPen defaultPen() const
+        { return m_defaultPen; }
+      QPen selectedPen() const
+        { return m_selectedPen; }
+
       QString comment() const;
 
-      virtual bool selected() const;
+      bool selected() const
+        { return m_selected; }
 
       virtual CollapseState collapsedState() const;
       virtual void setCollapsedState(CollapseState state);
@@ -158,6 +170,9 @@ namespace FabricUI
 
       Pin *renamePin( FTL::StrRef oldName, FTL::StrRef newName );
       virtual void reorderPins(QStringList names);
+
+      void insertInstBlockAtIndex( unsigned index, InstBlock *instBlock );
+      void removeInstBlockAtIndex( unsigned index );
 
       virtual std::vector<Node*> upStreamNodes(bool sortForPins = false, std::vector<Node*> rootNodes = std::vector<Node*>());
       // temporary information around row and col
@@ -228,6 +243,8 @@ namespace FabricUI
       int m_row;
       int m_col;
       bool m_alwaysShowDaisyChainPorts;
+
+      std::vector<InstBlock *> m_instBlocks;
     };
 
 

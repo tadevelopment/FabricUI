@@ -1,7 +1,10 @@
+//
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+//
 
-#include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/BackDropNode.h>
+#include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGNotificationRouter.h>
@@ -348,6 +351,22 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
     {
       FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
       onInstExecEditWouldSplitFromPresetMayHaveChanged( instName );
+    }
+    else if( descStr == FTL_STR("instBlockInserted") )
+    {
+      onInstBlockInserted(
+        jsonObject->getString( FTL_STR("instName") ),
+        jsonObject->getSInt32( FTL_STR("blockIndex") ),
+        jsonObject->getString( FTL_STR("blockName") )
+        );
+    }
+    else if( descStr == FTL_STR("instBlockRemoved") )
+    {
+      onInstBlockRemoved(
+        jsonObject->getString( FTL_STR("instName") ),
+        jsonObject->getSInt32( FTL_STR("blockIndex") ),
+        jsonObject->getString( FTL_STR("blockName") )
+        );
     }
     else if( descStr == FTL_STR("execBlockInserted") )
     {
@@ -718,6 +737,27 @@ void DFGNotificationRouter::onNodePortInserted(
   checkAndFixNodePortOrder(subExec, uiNode);  // [FE-5716]
 }
 
+void DFGNotificationRouter::onInstBlockInserted(
+  FTL::CStrRef instName,
+  int blockIndex,
+  FTL::CStrRef blockName
+  )
+{
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+  GraphView::Node *uiNode = uiGraph->node( instName );
+  if ( !uiNode )
+    return;
+
+  GraphView::InstBlock *uiInstBlock =
+    new GraphView::InstBlock(
+      uiNode,
+      QString::fromUtf8( blockName.data(), blockName.size() )
+      );
+  uiNode->insertInstBlockAtIndex( blockIndex, uiInstBlock );
+}
+
 void DFGNotificationRouter::onNodePortRemoved(
   FTL::CStrRef nodeName,
   FTL::CStrRef portName
@@ -734,6 +774,23 @@ void DFGNotificationRouter::onNodePortRemoved(
   if(!uiPin)
     return;
   uiNode->removePin( uiPin );
+}
+
+void DFGNotificationRouter::onInstBlockRemoved(
+  FTL::CStrRef instName,
+  int blockIndex,
+  FTL::CStrRef blockName
+  )
+{
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+
+  GraphView::Node *uiNode = uiGraph->node( instName );
+  if ( !uiNode )
+    return;
+
+  uiNode->removeInstBlockAtIndex( blockIndex );
 }
 
 void DFGNotificationRouter::onExecPortInserted(

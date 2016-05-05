@@ -127,4 +127,7 @@ GraphConfig::GraphConfig()
   infoOverlayFont = nodeFont;
   infoOverlayFont.setBold(false);
   infoOverlayFont.setPointSizeF(7.0);
+
+  instBlockMinWidth = 80.0f;
+  instBlockMinHeight = 24.0f;
 }

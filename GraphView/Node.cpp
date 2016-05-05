@@ -4,6 +4,7 @@
 #include <FabricUI/GraphView/BlockRectangle.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/HighlightEffect.h>
+#include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/NodeLabel.h>
@@ -15,6 +16,8 @@
 #include <QtGui/QLinearGradient>
 #include <QtGui/QGraphicsDropShadowEffect>
 #include <QtCore/QDebug>
+
+#include <algorithm>
 
 using namespace FabricUI::GraphView;
 
@@ -117,16 +120,6 @@ Node::~Node()
   delete m_bubble;
 }
 
-Graph * Node::graph()
-{
-  return m_graph;
-}
-
-const Graph * Node::graph() const
-{
-  return m_graph;
-}
-
 NodeHeader * Node::header()
 {
   return m_header;
@@ -184,11 +177,6 @@ void Node::setColorAsGradient(QColor a, QColor b)
     m_mainWidget->update();
 }
 
-QColor Node::titleColor() const
-{
-  return m_titleColor;
-}
-
 void Node::setTitleColor(QColor col)
 {
   m_titleColor = col;
@@ -215,26 +203,11 @@ void Node::setFontColor(QColor col)
   }
 }
 
-QPen Node::defaultPen() const
-{
-  return m_defaultPen;
-}
-
-QPen Node::selectedPen() const
-{
-  return m_selectedPen;
-}
-
 QString Node::comment() const
 {
   if(m_bubble == NULL)
     return "";
   return m_bubble->text();
-}
-
-bool Node::selected() const
-{
-  return m_selected;
 }
 
 Node::CollapseState Node::collapsedState() const
@@ -316,6 +289,36 @@ void Node::setTopLeftGraphPos(QPointF pos, bool quiet)
     emit positionChanged( this, graphPos() );
     emit m_graph->nodeMoved( this, graphPos() );
   }
+}
+
+void Node::insertInstBlockAtIndex( unsigned index, InstBlock *instBlock )
+{
+  assert( std::find(
+    m_instBlocks.begin(),
+    m_instBlocks.end(),
+    instBlock
+    ) == m_instBlocks.end() );
+
+  m_instBlocks.insert( m_instBlocks.begin() + index, instBlock );
+
+  updatePinLayout();
+}
+
+void Node::removeInstBlockAtIndex( unsigned index )
+{
+  assert( index < m_instBlocks.size() );
+  InstBlock *instBlock = m_instBlocks[index];
+  m_instBlocks.erase( m_instBlocks.begin() + index );
+  updatePinLayout();
+  scene()->removeItem( instBlock );
+  delete instBlock;
+
+  // [pzion 20160216] Workaround for possible bug in QGraphicsScene
+  // Without this, we get pretty consistent crashes walking the BSP
+  // after pin removal.  After lots of debugging I believe this is 
+  // a bug in QGraphicsScene, but I am not certain.
+  scene()->setItemIndexMethod( QGraphicsScene::NoIndex );
+  scene()->setItemIndexMethod( QGraphicsScene::BspTreeIndex );
 }
 
 bool Node::addPin( Pin *pin )
@@ -791,6 +794,13 @@ void Node::updatePinLayout()
       m_pinsLayout->addItem(m_pins[i]);
       m_pinsLayout->setAlignment(m_pins[i], Qt::AlignLeft | Qt::AlignTop);
     }
+  }
+
+  for ( size_t i = 0; i < m_instBlocks.size(); ++i )
+  {
+    InstBlock *instBlock = m_instBlocks[i];
+    m_pinsLayout->addItem( instBlock );
+    m_pinsLayout->setAlignment( instBlock, Qt::AlignLeft | Qt::AlignTop );
   }
 
   if(m_pinsLayout->count() == 0 && m_pins.size() > 0)

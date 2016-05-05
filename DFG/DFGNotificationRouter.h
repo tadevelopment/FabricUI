@@ -65,6 +65,16 @@ namespace FabricUI
         int index,
         FTL::CStrRef portName
         );
+      void onInstBlockInserted(
+        FTL::CStrRef instName,
+        int blockIndex,
+        FTL::CStrRef blockName
+        );
+      void onInstBlockRemoved(
+        FTL::CStrRef instName,
+        int blockIndex,
+        FTL::CStrRef blockName
+        );
       void onExecBlockInserted(
         FTL::CStrRef name
         );

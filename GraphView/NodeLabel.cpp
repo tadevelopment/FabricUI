@@ -9,7 +9,7 @@
 using namespace FabricUI::GraphView;
 
 NodeLabel::NodeLabel(
-  NodeHeader * parent,
+  QGraphicsWidget * parent,
   QString const &text,
   QColor color,
   QColor highlightColor,

@@ -78,16 +78,6 @@ void Graph::initialize()
   setLayout(layout);
 }
 
-const GraphConfig & Graph::config() const
-{
-  return m_config;
-}
-
-GraphConfig & Graph::config()
-{
-  return m_config;
-}
-
 Controller * Graph::controller()
 {
   return m_controller;

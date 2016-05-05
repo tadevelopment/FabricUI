@@ -86,6 +86,9 @@ namespace FabricUI
       bool pinInputUsesFullCircle;
       bool pinOutputUsesFullCircle;
       float pinClickableDistance;
+      
+      float instBlockMinWidth;
+      float instBlockMinHeight;
 
       bool dimConnectionLines;
       QPen connectionDefaultPen;

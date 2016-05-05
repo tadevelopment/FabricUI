@@ -138,6 +138,18 @@ signals:
     FTL::CStrRef value
     );
 
+  void instBlockInserted(
+    FTL::CStrRef instName,
+    unsigned blockIndex,
+    FTL::CStrRef blockName
+    );
+
+  void instBlockRemoved(
+    FTL::CStrRef instName,
+    unsigned blockIndex,
+    FTL::CStrRef blockName
+    );
+
   void blockInserted(
     FTL::CStrRef blockName
     );
@@ -257,6 +269,8 @@ private:
   void handler_execTitleChanged( FTL::JSONObject const *jsonObject );
   void handler_instExecEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject );
   void handler_instExecTitleChanged( FTL::JSONObject const *jsonObject );
+  void handler_instBlockInserted( FTL::JSONObject const *jsonObject );
+  void handler_instBlockRemoved( FTL::JSONObject const *jsonObject );
   void handler_execBlockInserted( FTL::JSONObject const *jsonObject );
   void handler_execBlockRemoved( FTL::JSONObject const *jsonObject );
   void handler_execBlockMetadataChanged( FTL::JSONObject const *jsonObject );

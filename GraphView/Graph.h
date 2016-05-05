@@ -49,8 +49,11 @@ namespace FabricUI
 
       virtual void initialize();
 
-      virtual const GraphConfig & config() const;
-      virtual GraphConfig & config();
+      GraphConfig const &config() const
+        { return m_config; }
+      GraphConfig &config()
+        { return m_config; }
+
       QGraphicsWidget * itemGroup();
       virtual Controller * controller();
       virtual void setController(Controller * c);
