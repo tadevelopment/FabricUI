@@ -203,7 +203,9 @@ DFGExecHeaderWidget * DFGWidget::getHeaderWidget()
 QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, void* userData)
 {
   DFGWidget * graphWidget = (DFGWidget*)userData;
-  if(graph->controller() == NULL)
+  DFGController *controller =
+    static_cast<DFGController *>( graph->controller() );
+  if ( !controller )
     return NULL;
   if ( !graphWidget->isEditable() )
     return NULL;
@@ -213,7 +215,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   result->addAction(DFG_NEW_FUNCTION);
   result->addAction(DFG_NEW_BACKDROP);
 
-  const std::vector<GraphView::Node*> & nodes = graphWidget->getUIController()->graph()->selectedNodes();
+  const std::vector<GraphView::Node*> & nodes = graph->selectedNodes();
   if(nodes.size() > 0)
   {
     result->addSeparator();
@@ -225,8 +227,14 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   result->addAction(DFG_READ_VARIABLE);
   result->addAction(DFG_WRITE_VARIABLE);
   result->addAction(DFG_CACHE_NODE);
-  result->addSeparator();
 
+  if ( controller->getExec().allowsBlocks() )
+  {
+    result->addSeparator();
+    result->addAction(DFG_NEW_BLOCK);
+  }
+
+  result->addSeparator();
   QAction * pasteAction = new QAction(DFG_PASTE_PRESET, graphWidget);
   pasteAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_V) );
   // [Julien] When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
@@ -518,7 +526,32 @@ void DFGWidget::onGraphAction(QAction * action)
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
 
-  if(action->text() == DFG_NEW_GRAPH)
+  if(action->text() == DFG_NEW_BLOCK)
+  {
+    QString text = "block";
+    if (!isCTRL)
+    {
+      DFGGetStringDialog dialog(NULL, text, m_dfgConfig, true); 
+      if(dialog.exec() != QDialog::Accepted)
+        return;
+
+      text = dialog.text();
+      if(text.length() == 0)
+      { m_uiController->log("Warning: block not created (empty name).");
+        return; }
+    }
+
+    QString blockName =
+      m_uiController->cmdAddBlock(
+        text,
+        QPointF(pos.x(), pos.y())
+        );
+
+    m_uiGraph->clearSelection();
+    // if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    //   uiNode->setSelected( true );
+  }
+  else if(action->text() == DFG_NEW_GRAPH)
   {
     QString text = "graph";
     if (!isCTRL)

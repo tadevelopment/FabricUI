@@ -1680,6 +1680,23 @@ QString DFGController::cmdAddInstFromPreset(
     );
 }
 
+QString DFGController::cmdAddBlock(
+  QString desiredName,
+  QPointF pos
+  )
+{
+  if(!validPresetSplit())
+    return "";
+
+  return m_cmdHandler->dfgDoAddBlock(
+    getBinding(),
+    getExecPath_QS(),
+    getExec(),
+    desiredName,
+    pos
+    );
+}
+
 QString DFGController::cmdAddVar(
   QString desiredNodeName,
   QString dataType,

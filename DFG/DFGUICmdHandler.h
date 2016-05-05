@@ -283,6 +283,14 @@ public:
     FabricCore::DFGBinding const &binding,
     QList<int> diagIndices
     ) = 0;
+
+  virtual QString dfgDoAddBlock(
+    FabricCore::DFGBinding const &binding,
+    QString execPath,
+    FabricCore::DFGExec const &exec,
+    QString desiredName,
+    QPointF pos
+    ) = 0;
 };
 
 FABRIC_UI_DFG_NAMESPACE_END

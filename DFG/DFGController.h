@@ -311,6 +311,11 @@ namespace FabricUI
 
       void cmdSplitFromPreset();
 
+      QString cmdAddBlock(
+        QString desiredName,
+        QPointF pos
+        );
+
       virtual QString reloadCode();
 
       virtual bool zoomCanvas(float zoom);

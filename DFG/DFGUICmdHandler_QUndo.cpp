@@ -665,4 +665,24 @@ void DFGUICmdHandler_QUndo::dfgDoDismissLoadDiags(
   m_qUndoStack->push( new WrappedCommand( cmd ) );
 }
 
+QString DFGUICmdHandler_QUndo::dfgDoAddBlock(
+  FabricCore::DFGBinding const &binding,
+  QString execPath,
+  FabricCore::DFGExec const &exec,
+  QString desiredName,
+  QPointF pos
+  )
+{
+  DFGUICmd_AddBlock *cmd =
+    new DFGUICmd_AddBlock(
+      binding,
+      execPath,
+      exec,
+      desiredName,
+      pos
+      );
+  m_qUndoStack->push( new WrappedCommand( cmd ) );
+  return cmd->getActualName();
+}
+
 FABRIC_UI_DFG_NAMESPACE_END

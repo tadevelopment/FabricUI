@@ -6,6 +6,7 @@
 #define FABRICUI_DFG_DFGUICMD_DFGUICMDS_H
 
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddBackDrop.h>
+#include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddBlock.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddFunc.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddGet.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddGraph.h>
