@@ -181,13 +181,55 @@ Node * Graph::addNode(Node * node, bool quiet)
   return node;
 }
 
-Node * Graph::addNode(
+Node *Graph::addPlainNode(
   FTL::CStrRef name,
   FTL::CStrRef title,
   bool quiet
   )
 {
-  return addNode(new Node(this, name, title), quiet);
+  return addNode(
+    new Node(
+      this,
+      Node::NodeType_Plain,
+      name,
+      title
+      ),
+    quiet
+    );
+}
+
+Node *Graph::addInstNode(
+  FTL::CStrRef name,
+  FTL::CStrRef title,
+  bool quiet
+  )
+{
+  return addNode(
+    new Node(
+      this,
+      Node::NodeType_Inst,
+      name,
+      title
+      ),
+    quiet
+    );
+}
+
+Node *Graph::addBlockNode(
+  FTL::CStrRef name,
+  FTL::CStrRef title,
+  bool quiet
+  )
+{
+  return addNode(
+    new Node(
+      this,
+      Node::NodeType_Block,
+      name,
+      title
+      ),
+    quiet
+    );
 }
 
 BackDropNode *Graph::addBackDropNode(

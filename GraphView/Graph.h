@@ -122,7 +122,21 @@ namespace FabricUI
 
       // interaction
       virtual Node * addNode(Node * node, bool quiet = false);
-      virtual Node * addNode(FTL::CStrRef name, FTL::CStrRef preset, bool quiet = false);
+      Node *addInstNode(
+        FTL::CStrRef name,
+        FTL::CStrRef preset,
+        bool quiet = false
+        );
+      Node *addBlockNode(
+        FTL::CStrRef name,
+        FTL::CStrRef preset,
+        bool quiet = false
+        );
+      Node *addPlainNode(
+        FTL::CStrRef name,
+        FTL::CStrRef preset,
+        bool quiet = false
+        );
       virtual BackDropNode * addBackDropNode( FTL::CStrRef name, bool quiet = false );
       virtual bool removeNode(Node * node, bool quiet = false);
       virtual bool addPort(Port * port, bool quiet = false);

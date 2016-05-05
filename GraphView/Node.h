@@ -38,6 +38,14 @@ namespace FabricUI
 
     public:
 
+      enum NodeType
+      {
+        NodeType_Plain,
+        NodeType_Inst,
+        NodeType_BackDrop,
+        NodeType_Block
+      };
+
       enum CollapseState
       {
         CollapseState_Expanded,
@@ -48,25 +56,22 @@ namespace FabricUI
 
       Node(
         Graph * parent,
+        NodeType nodeType,
         FTL::CStrRef name,
         FTL::CStrRef title,
         QColor color = QColor(),
-        QColor titleColor = QColor(),
-        bool isBackDropNode = false
+        QColor titleColor = QColor()
         );
       virtual ~Node();
 
       virtual int type() const { return QGraphicsItemType_Node; }
 
-      bool isBackDropNode() const
-        { return m_isBackDropNode; }
-      void setIsBackDropNode( bool isBackDropNode )
-        { m_isBackDropNode = isBackDropNode; }
-
+      NodeType getNodeType() const
+        { return m_nodeType; }
       bool isInstNode() const
-        { return m_isInstNode; }
-      void setIsInstNode( bool isInstNode )
-        { m_isInstNode = isInstNode; }
+        { return m_nodeType == NodeType_Inst; }
+      bool isBackDropNode() const
+        { return m_nodeType == NodeType_BackDrop; }
 
       Graph * graph();
       const Graph * graph() const;
@@ -190,9 +195,8 @@ namespace FabricUI
       bool onMouseRelease(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
       bool onMouseDoubleClicked(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
 
-      bool m_isInstNode;
-      bool m_isBackDropNode;
       Graph * m_graph;
+      NodeType m_nodeType;
       std::string m_name;
       std::string m_title;
       std::string m_titleSuffix;

@@ -65,6 +65,12 @@ namespace FabricUI
         int index,
         FTL::CStrRef portName
         );
+      void onExecBlockInserted(
+        FTL::CStrRef name
+        );
+      void onExecBlockRemoved(
+        FTL::CStrRef name
+        );
       void onPortsConnected(
         FTL::CStrRef srcPath,
         FTL::CStrRef dstPath
@@ -75,6 +81,11 @@ namespace FabricUI
         );
       void onNodeMetadataChanged(
         FTL::CStrRef nodePath,
+        FTL::CStrRef key,
+        FTL::CStrRef value
+        );
+      void onExecBlockMetadataChanged(
+        FTL::CStrRef name,
         FTL::CStrRef key,
         FTL::CStrRef value
         );

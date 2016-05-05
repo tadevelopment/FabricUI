@@ -18,11 +18,11 @@ BackDropNode::BackDropNode(
   )
   : Node(
     parent,
+    NodeType_BackDrop,
     name,
     title,
     color,
-    titleColor,
-    true // isBackDropNode
+    titleColor
     )
 {
   m_mainWidget->setMinimumWidth(graph()->config().nodeMinWidth * 2.0f);

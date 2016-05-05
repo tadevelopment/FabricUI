@@ -19,16 +19,15 @@ using namespace FabricUI::GraphView;
 
 Node::Node(
   Graph * parent,
+  NodeType nodeType,
   FTL::CStrRef name,
   FTL::CStrRef title,
   QColor color,
-  QColor titleColor,
-  bool isBackDropNode
+  QColor titleColor
   )
   : QGraphicsWidget( parent->itemGroup() )
-  , m_isInstNode( false )
-  , m_isBackDropNode( isBackDropNode )
   , m_graph( parent )
+  , m_nodeType( nodeType )
   , m_name( name )
   , m_title( title )
   , m_bubble( NULL )
@@ -80,7 +79,7 @@ Node::Node(
   layout->addItem(m_header);
   layout->setAlignment(m_header, Qt::AlignHCenter | Qt::AlignVCenter);
 
-  if(!m_isBackDropNode)
+  if ( !isBackDropNode() )
   {
     QObject::connect(m_header, SIGNAL(headerButtonTriggered(FabricUI::GraphView::NodeHeaderButton*)), 
       m_graph->controller(), SLOT(onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderButton*)));
@@ -777,7 +776,7 @@ void Node::updatePinLayout()
   for(size_t i=0;i<m_pins.size();i++)
   {
     bool showPin =
-      ( !m_isInstNode || i > 0 ) // don't show exec port ever
+      ( !isInstNode() || i > 0 ) // don't show exec port ever
       && ( m_collapsedState == CollapseState_Expanded
         || ( m_collapsedState == CollapseState_OnlyConnections
           && m_pins[i]->isConnected() ) );

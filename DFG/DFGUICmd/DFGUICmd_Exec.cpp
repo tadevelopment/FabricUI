@@ -93,7 +93,7 @@ void DFGUICmd_Exec::moveNodes(
         FTL::JSONFloat64Enc<std::string> yJFE( yJE, newTopLeftPos.y() );
       }
     }
-    exec.setNodeMetadata(
+    exec.setItemMetadata(
       nodeName.c_str(),
       "uiGraphPos",
       json.c_str(),

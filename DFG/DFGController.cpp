@@ -1946,7 +1946,7 @@ void DFGController::gvcDoMoveNodes(
         }
       }
 
-      getExec().setNodeMetadata(
+      getExec().setItemMetadata(
         nodeName.c_str(),
         "uiGraphPos",
         newPosJSON.c_str(),

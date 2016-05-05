@@ -115,6 +115,14 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->getString( FTL_STR("value") )
         );
     }
+    else if(descStr == FTL_STR("execBlockMetadataChanged"))
+    {
+      onExecBlockMetadataChanged(
+        jsonObject->getString( FTL_STR("name") ),
+        jsonObject->getString( FTL_STR("key") ),
+        jsonObject->getString( FTL_STR("value") )
+        );
+    }
     else if(descStr == FTL_STR("instExecTitleChanged"))
     {
       onNodeTitleChanged(
@@ -341,6 +349,18 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
       FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
       onInstExecEditWouldSplitFromPresetMayHaveChanged( instName );
     }
+    else if( descStr == FTL_STR("execBlockInserted") )
+    {
+      onExecBlockInserted(
+        jsonObject->getString( FTL_STR("name") )
+        );
+    }
+    else if( descStr == FTL_STR("execBlockRemoved") )
+    {
+      onExecBlockRemoved(
+        jsonObject->getString( FTL_STR("name") )
+        );
+    }
     else
     {
       printf(
@@ -471,12 +491,10 @@ void DFGNotificationRouter::onNodeInserted(
   GraphView::Node * uiNode;
   if ( nodeType == FabricCore::DFGNodeType_User )
     uiNode = uiGraph->addBackDropNode( nodeName );
+  else if ( nodeType == FabricCore::DFGNodeType_Inst )
+    uiNode = uiGraph->addInstNode( nodeName, FTL::CStrRef() );
   else
-  {
-    uiNode = uiGraph->addNode( nodeName, FTL::CStrRef() );
-    if ( nodeType == FabricCore::DFGNodeType_Inst )
-      uiNode->setIsInstNode( true );
-  }
+    uiNode = uiGraph->addPlainNode( nodeName, FTL::CStrRef() );
   if(!uiNode)
     return;
 
@@ -582,6 +600,29 @@ void DFGNotificationRouter::onNodeInserted(
   }
 }
 
+void DFGNotificationRouter::onExecBlockInserted(
+  FTL::CStrRef name
+  )
+{
+  FabricCore::DFGExec &exec = m_dfgController->getExec();
+  if ( !exec )
+    return;
+
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+
+  GraphView::Node *uiNode = uiGraph->addBlockNode( name, name );
+  if ( !uiNode )
+    return;
+
+  uiNode->setColor( m_config.blockNodeDefaultColor );
+  uiNode->setTitleColor( m_config.blockLabelDefaultColor );
+
+  uiNode->setTitle( name );
+  uiNode->setTitleSuffixAsterisk();
+}
+
 void DFGNotificationRouter::onNodeRemoved(
   FTL::CStrRef nodeName
   )
@@ -598,6 +639,21 @@ void DFGNotificationRouter::onNodeRemoved(
   // m_dfgController->updatePresetDB(true);
 
   m_dfgController->emitNodeRemoved( nodeName );
+}
+
+void DFGNotificationRouter::onExecBlockRemoved(
+  FTL::CStrRef name
+  )
+{
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+  GraphView::Node *uiNode = uiGraph->node( name );
+  if ( !uiNode )
+    return;
+  uiGraph->removeNode( uiNode );
+
+  m_dfgController->emitNodeRemoved( name );
 }
 
 void DFGNotificationRouter::onNodePortInserted(
@@ -1048,6 +1104,15 @@ void DFGNotificationRouter::onNodeMetadataChanged(
       uiNode->setAlwaysShowDaisyChainPorts(true);
     }
   }
+}
+
+void DFGNotificationRouter::onExecBlockMetadataChanged(
+  FTL::CStrRef name,
+  FTL::CStrRef key,
+  FTL::CStrRef value
+  )
+{
+  onNodeMetadataChanged( name, key, value );
 }
 
 void DFGNotificationRouter::onNodeTitleChanged(

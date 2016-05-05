@@ -28,6 +28,8 @@ DFGConfig::DFGConfig()
   searchFontColor = QColor(0, 0, 0);
   varNodeDefaultColor = QColor(214, 191, 103);
   varLabelDefaultColor = QColor(188, 129, 83);
+  blockNodeDefaultColor = QColor(103, 214, 191);
+  blockLabelDefaultColor = QColor(83, 188, 129);
 
   klEditorConfig.codeBackgroundColor = defaultFontColor;
   klEditorConfig.codeFontColor = defaultBackgroundColor;

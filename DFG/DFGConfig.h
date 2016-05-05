@@ -39,6 +39,8 @@ namespace FabricUI
 
       QColor varNodeDefaultColor;
       QColor varLabelDefaultColor;
+      QColor blockNodeDefaultColor;
+      QColor blockLabelDefaultColor;
 
       KLEditor::EditorConfig klEditorConfig;
       GraphView::GraphConfig graphConfig;
