@@ -32,6 +32,7 @@ namespace FabricUI
       Q_OBJECT
 
       friend class Graph;
+      friend class BlockRectangle;
       friend class NodeRectangle;
       friend class NodeBubble;
       friend class NodeHeaderButton;
@@ -214,7 +215,7 @@ namespace FabricUI
       CollapseState m_collapsedState;
 
       NodeHeader * m_header;
-      NodeRectangle * m_mainWidget;
+      QGraphicsWidget *m_mainWidget;
       QGraphicsWidget * m_pinsWidget;
       QGraphicsLinearLayout * m_pinsLayout;
       bool m_selected;

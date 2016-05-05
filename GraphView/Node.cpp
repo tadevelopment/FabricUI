@@ -1,6 +1,7 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include <FabricUI/GraphView/BackDropNode.h>
+#include <FabricUI/GraphView/BlockRectangle.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/HighlightEffect.h>
 #include <FabricUI/GraphView/Node.h>
@@ -55,7 +56,10 @@ Node::Node(
 
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-  m_mainWidget = new NodeRectangle(this);
+  if ( m_nodeType == NodeType_Block )
+    m_mainWidget = new BlockRectangle( this );
+  else
+    m_mainWidget = new NodeRectangle( this );
   m_mainWidget->setMinimumWidth(m_graph->config().nodeMinWidth);
   m_mainWidget->setMinimumHeight(m_graph->config().nodeMinHeight);
   m_mainWidget->setSizePolicy(

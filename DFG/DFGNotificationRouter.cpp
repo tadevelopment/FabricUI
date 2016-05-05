@@ -621,6 +621,18 @@ void DFGNotificationRouter::onExecBlockInserted(
 
   uiNode->setTitle( name );
   uiNode->setTitleSuffixAsterisk();
+
+  // FIXME fake a pin
+  GraphView::Pin *uiPin =
+    new GraphView::Pin(
+      uiNode,
+      "index",
+      GraphView::PortType_Input,
+      m_config.getColorForDataType( "Integer" ),
+      "index"
+      );
+  uiPin->setDataType( "Integer" );
+  uiNode->addPin( uiPin );
 }
 
 void DFGNotificationRouter::onNodeRemoved(
