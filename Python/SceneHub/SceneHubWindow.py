@@ -82,20 +82,14 @@ class SceneHubWindow(CanvasWindow):
         self.shDFGBinding.sceneChanged.connect(self.shStates.onStateChanged)
         self.shStates.inspectedChanged.connect(self.onInspectChanged)
 
-    def _initCommands(self):
-        """ Initializes the command manager.
-        """
-
-        cmdRegistration = SceneHub.SHCmdRegistration()
-        self.qUndoStack.indexChanged.connect(self.shStates.onStateChanged)
-
     def _initLog(self):
         """ Implementation of Canvas.CanvasWindow.
         """
 
         super(SceneHubWindow, self)._initLog()
-        self._initCommands()
+        self.qUndoStack.indexChanged.connect(self.shStates.onStateChanged)
         self.shCmdHandler = SceneHub.SHCmdHandler(self.client, self.qUndoStack)
+        self.shCmdHandler.registerCommands()
 
     def _initTreeView(self):
         """ Implementation of Canvas.CanvasWindow.

@@ -12,6 +12,24 @@ SHCmd::SHCmd()
   , m_coreUndoCount(0) {
 }
 
+SHCmd::~SHCmd() {
+}
+
+void SHCmd::registerCommand() {
+}
+
+void SHCmd::setFromRTVal(FabricCore::Client client, FabricCore::RTVal cmd) {
+  try 
+  {
+    m_client = client;
+    m_description = QString(cmd.callMethod("String", "type", 0, 0).getStringCString());
+  }
+  catch(FabricCore::Exception e)
+  {
+    printf("SHCmd::setFromRTVal: exception: %s\n", e.getDesc_cstr());
+  }
+}
+        
 QString SHCmd::getDescription() { 
   assert( m_state != State_New ); 
   return m_description; 

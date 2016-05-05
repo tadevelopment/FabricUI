@@ -24,7 +24,7 @@ class SGAddPropertyCmd : public SHCmd {
     virtual void setFromRTVal(Client client, RTVal sgCmd) {
       try 
       {
-        m_client = client;
+        SHCmd::setFromRTVal(client, sgCmd);
         RTVal keyVal = RTVal::ConstructString(m_client, "ownerPath");
         RTVal nameVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
         QString ownerPath = QString(nameVal.getStringCString());
@@ -32,11 +32,11 @@ class SGAddPropertyCmd : public SHCmd {
         keyVal = RTVal::ConstructString(m_client, "name");
         nameVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
         QString name = QString(nameVal.getStringCString());
-        m_description = QString( "addPropertyCmd(" + ownerPath + ", " + name + ")" );
+        m_description += QString( "(" + ownerPath + ", " + name + ")" );
       }
       catch(Exception e)
       {
-        printf("SGAddPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
+        printf("SGAddPropertyCmd::setFromRTVal: exception: %s\n", e.getDesc_cstr());
       }
     }
 };

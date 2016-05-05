@@ -13,7 +13,6 @@
       <object-type name="SGSetPropertyCmd" copyable="false"/>
       <object-type name="SGSetObjectPropertyCmd" copyable="false"/>
       <object-type name="SGSetBooleanPropertyCmd" copyable="false"/>
-      <object-type name="SHCmdRegistration" copyable="false"/>
       <object-type name="SHCmdHandler" copyable="false"/>
       <object-type name="SHTreeItem" copyable="false"/>
       <object-type name="SHTreeModel" copyable="false"/>

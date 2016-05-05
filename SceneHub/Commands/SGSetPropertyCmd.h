@@ -11,19 +11,26 @@ using namespace FabricCore;
 namespace FabricUI {
 namespace SceneHub {
 
-
 class SGSetPropertyCmd : public SGBaseSetPropertyCmd {
 
   public:   
-    SGSetPropertyCmd(): SGBaseSetPropertyCmd() {}
+    SGSetPropertyCmd()
+      : SGBaseSetPropertyCmd() {
+    }
 
-    SGSetPropertyCmd(Client client, RTVal sg, QString propertyPath, RTVal prevValue, RTVal newValue)
+    SGSetPropertyCmd(
+      Client client, 
+      RTVal sg, 
+      QString propertyPath,
+      RTVal prevValue, 
+      RTVal newValue)
       : SGBaseSetPropertyCmd() 
     {
       try 
       {
         m_client = client; 
-        RTVal args[7] = {
+        RTVal args[7] = 
+        {
           RTVal::ConstructString(m_client, propertyPath.toUtf8().constData()),
           prevValue.callMethod("Type", "type", 0, 0),
           prevValue.callMethod("Data", "data", 0, 0),
@@ -40,7 +47,11 @@ class SGSetPropertyCmd : public SGBaseSetPropertyCmd {
       }
     }
 
-    SGSetPropertyCmd(Client client, RTVal sg, QString propertyPath, RTVal newValue)
+    SGSetPropertyCmd(
+      Client client, 
+      RTVal sg, 
+      QString propertyPath, 
+      RTVal newValue)
       : SGBaseSetPropertyCmd() 
     {
       try 
