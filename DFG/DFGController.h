@@ -342,6 +342,11 @@ namespace FabricUI
 
       virtual DFGNotificationRouter *createRouter();
 
+      static QStringList getVariableWordsFromBinding(
+        FabricCore::DFGBinding & binding, 
+        FTL::CStrRef currentExecPath,
+        QStringList varTypes);
+
       static QStringList getVariableWordsFromBinding(FabricCore::DFGBinding & binding, FTL::CStrRef currentExecPath);
 
       void emitVarsChanged()
