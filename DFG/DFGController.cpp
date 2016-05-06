@@ -1474,7 +1474,10 @@ DFGNotificationRouter * DFGController::createRouter()
   return new DFGNotificationRouter( this );
 }
 
-QStringList DFGController::getVariableWordsFromBinding(FabricCore::DFGBinding & binding, FTL::CStrRef currentExecPath)
+QStringList DFGController::getVariableWordsFromBinding(
+  FabricCore::DFGBinding & binding, 
+  FTL::CStrRef currentExecPath,
+  QStringList varTypes)
 {
   QStringList words;
 
@@ -1507,7 +1510,22 @@ QStringList DFGController::getVariableWordsFromBinding(FabricCore::DFGBinding & 
         path += key.c_str();
         if(words.contains(path.c_str()))
           continue;
-        words.append(path.c_str());
+
+        if(varTypes.size() == 0) 
+          words.append(path.c_str());
+
+        else
+        {
+          FTL::JSONObject const *value = it->second->cast<FTL::JSONObject>();
+          for(FTL::JSONObject::const_iterator jt = value->begin(); jt != value->end(); jt++) 
+          {
+            for(int j=0; j<varTypes.size(); ++j)
+            {
+              if(QString(jt->second->getStringValue().c_str()) == varTypes[j])
+                words.append(path.c_str());
+            }
+          }
+        }
       }
     }
 
@@ -1556,6 +1574,12 @@ QStringList DFGController::getVariableWordsFromBinding(FabricCore::DFGBinding & 
   }
 
   return words;
+}
+
+QStringList DFGController::getVariableWordsFromBinding(FabricCore::DFGBinding & binding, FTL::CStrRef currentExecPath)
+{
+  QStringList varTypes;
+  return getVariableWordsFromBinding(binding, currentExecPath, varTypes);
 }
 
 void DFGController::cmdRemoveNodes(
