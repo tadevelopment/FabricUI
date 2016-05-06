@@ -76,9 +76,12 @@ namespace FabricUI
         FTL::CStrRef blockName
         );
       void onExecBlockInserted(
-        FTL::CStrRef name
+        unsigned index,
+        FTL::CStrRef name,
+        FTL::JSONObject const *metadata
         );
       void onExecBlockRemoved(
+        unsigned index,
         FTL::CStrRef name
         );
       void onPortsConnected(

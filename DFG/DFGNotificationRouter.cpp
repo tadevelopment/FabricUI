@@ -371,12 +371,15 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
     else if( descStr == FTL_STR("execBlockInserted") )
     {
       onExecBlockInserted(
-        jsonObject->getString( FTL_STR("name") )
+        jsonObject->getSInt32( FTL_STR("index") ),
+        jsonObject->getString( FTL_STR("name") ),
+        jsonObject->maybeGet( FTL_STR("metadata") )->castOrNull<FTL::JSONObject>()
         );
     }
     else if( descStr == FTL_STR("execBlockRemoved") )
     {
       onExecBlockRemoved(
+        jsonObject->getSInt32( FTL_STR("index") ),
         jsonObject->getString( FTL_STR("name") )
         );
     }
@@ -435,6 +438,22 @@ void DFGNotificationRouter::onGraphSet()
         portObject->getString( FTL_STR("name") ),
         portObject
         );
+    }
+
+    if ( FTL::JSONValue const *blocksValue =
+      rootObject->maybeGet( FTL_STR("blocks") ) )
+    {
+      FTL::JSONArray const *blocksArray = blocksValue->cast<FTL::JSONArray>();
+      for ( size_t i = 0; i < blocksArray->size(); ++i )
+      {
+        FTL::JSONObject const *blockObject =
+          blocksArray->get( i )->cast<FTL::JSONObject>();
+        onExecBlockInserted(
+          i,
+          blockObject->getString( FTL_STR("name") ),
+          blockObject->maybeGet( FTL_STR("metadata") )->castOrNull<FTL::JSONObject>()
+          );
+      }
     }
 
     if ( rootObject->getString( FTL_STR("objectType") ) == FTL_STR("Graph") )
@@ -620,7 +639,9 @@ void DFGNotificationRouter::onNodeInserted(
 }
 
 void DFGNotificationRouter::onExecBlockInserted(
-  FTL::CStrRef name
+  unsigned index,
+  FTL::CStrRef name,
+  FTL::JSONObject const *metadata
   )
 {
   FabricCore::DFGExec &exec = m_dfgController->getExec();
@@ -640,6 +661,17 @@ void DFGNotificationRouter::onExecBlockInserted(
 
   uiNode->setTitle( name );
   uiNode->setTitleSuffixAsterisk();
+
+  if ( metadata )
+  {
+    for ( FTL::JSONObject::const_iterator it = metadata->begin();
+      it != metadata->end(); ++it )
+    {
+      FTL::CStrRef key = it->first;
+      FTL::CStrRef value = it->second->cast<FTL::JSONString>()->getValue();
+      onExecBlockMetadataChanged( name, key, value );
+    }
+  }
 
   // FIXME fake a pin
   GraphView::Pin *uiPin =
@@ -673,6 +705,7 @@ void DFGNotificationRouter::onNodeRemoved(
 }
 
 void DFGNotificationRouter::onExecBlockRemoved(
+  unsigned index,
   FTL::CStrRef name
   )
 {
