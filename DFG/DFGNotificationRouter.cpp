@@ -440,10 +440,9 @@ void DFGNotificationRouter::onGraphSet()
         );
     }
 
-    if ( FTL::JSONValue const *blocksValue =
-      rootObject->maybeGet( FTL_STR("blocks") ) )
+    if ( FTL::JSONArray const *blocksArray =
+      rootObject->maybeGet( FTL_STR("blocks") )->castOrNull<FTL::JSONArray>() )
     {
-      FTL::JSONArray const *blocksArray = blocksValue->cast<FTL::JSONArray>();
       for ( size_t i = 0; i < blocksArray->size(); ++i )
       {
         FTL::JSONObject const *blockObject =
@@ -556,6 +555,21 @@ void DFGNotificationRouter::onNodeInserted(
     {
       uiNode->setTitle( nodeName );
       uiNode->setTitleSuffixAsterisk();
+    }
+
+    if ( FTL::JSONArray const *blocksArray =
+      jsonObject->maybeGet( FTL_STR("blocks") )->castOrNull<FTL::JSONArray>() )
+    {
+      for ( size_t i = 0; i < blocksArray->size(); ++i )
+      {
+        FTL::JSONObject const *blockObject =
+          blocksArray->get( i )->cast<FTL::JSONObject>();
+        onInstBlockInserted(
+          nodeName,
+          i,
+          blockObject->getString( FTL_STR("name") )
+          );
+      }
     }
   }
   else if(nodeType == FabricCore::DFGNodeType_Var)
