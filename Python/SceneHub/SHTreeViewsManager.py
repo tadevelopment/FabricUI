@@ -153,7 +153,11 @@ class SHTreeViewsManager(QtGui.QWidget):
 
         self.comboBox.clear()
         binding = self.dfgWidget.getDFGController().getBinding()
-        sceneNameList = self.shGLScene.getSceneNamesFromBinding(binding)
+        # sceneNameList = self.shGLScene.getSceneNamesFromBinding(binding)
+
+        sceneNameList = FabricUI.DFG.DFGController.getVariableWordsFromBinding(binding, '.')
+
+        print "sceneNameList " + str(sceneNameList)
         if len(sceneNameList) == 0 and not self.shGLScene.hasSG(): 
             self.__resetTree()
         if self.shMainGLScene is not None and self.shMainGLScene.hasSG(): 
