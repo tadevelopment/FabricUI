@@ -342,11 +342,14 @@ namespace FabricUI
 
       virtual DFGNotificationRouter *createRouter();
 
+      /// Gets the names of all the variables in the graph
+      /// whose type is present in the varTypes list.
       static QStringList getVariableWordsFromBinding(
         FabricCore::DFGBinding & binding, 
         FTL::CStrRef currentExecPath,
         QStringList varTypes);
 
+      /// Gets the names of all the variables in the graph.
       static QStringList getVariableWordsFromBinding(FabricCore::DFGBinding & binding, FTL::CStrRef currentExecPath);
 
       void emitVarsChanged()
