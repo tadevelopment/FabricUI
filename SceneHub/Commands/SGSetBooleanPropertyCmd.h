@@ -14,9 +14,16 @@ namespace SceneHub {
 class SGSetBooleanPropertyCmd : public SGBaseSetPropertyCmd {
 
   public:   
-    SGSetBooleanPropertyCmd(): SGBaseSetPropertyCmd() {}
+    SGSetBooleanPropertyCmd()
+      : SGBaseSetPropertyCmd() {
+    }
 
-    SGSetBooleanPropertyCmd(Client client, RTVal sg, QString propertyPath, RTVal prevValue, RTVal newValue)
+    SGSetBooleanPropertyCmd(
+      Client client, 
+      RTVal sg, 
+      QString propertyPath, 
+      RTVal prevValue, 
+      RTVal newValue)
       : SGBaseSetPropertyCmd() 
     {
       try 
@@ -31,11 +38,15 @@ class SGSetBooleanPropertyCmd : public SGBaseSetPropertyCmd {
       }
       catch(FabricCore::Exception e)
       {
-        printf("SGSetBooleanPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
+        printf("SGSetBooleanPropertyCmd::SGSetBooleanPropertyCmd: exception: %s\n", e.getDesc_cstr());
       }
     }
 
-    SGSetBooleanPropertyCmd(Client client, RTVal sg, QString propertyPath, RTVal newValue)
+    SGSetBooleanPropertyCmd(
+      Client client, 
+      RTVal sg, 
+      QString propertyPath, 
+      RTVal newValue)
       : SGBaseSetPropertyCmd() 
     {
       try 

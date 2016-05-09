@@ -3,13 +3,20 @@
  */
 
 #include "SHCmdHandler.h"
-   
+#include "SGAddObjectCmd.h"
+#include "SGAddPropertyCmd.h"
+#include "SGSetPropertyCmd.h"
+#include "SGSetBooleanPropertyCmd.h"
+#include "SGSetObjectPropertyCmd.h"
+#include "SGSetPaintToolAttributeCmd.h"
+
 using namespace FabricCore;
 using namespace FabricUI;
 using namespace SceneHub;
 
 
 class SHCmdHandler::WrappedCmd : public QUndoCommand {
+  
   public:
     WrappedCmd(SHCmd *shCmd) 
       : QUndoCommand()
@@ -55,6 +62,29 @@ SHCmdHandler::SHCmdHandler(Client client, QUndoStack *qUndoStack)
   , m_qUndoStack(qUndoStack) {
 }
 
+SHCmdHandler::~SHCmdHandler() {
+}
+
+void SHCmdHandler::registerCommands() { 
+  SGAddObjectCmd addObjectCmd;
+  addObjectCmd.registerCommand();
+
+  SGAddPropertyCmd addPropertyCmd;
+  addPropertyCmd.registerCommand();
+
+  SGSetPropertyCmd setPropertyCmd;
+  setPropertyCmd.registerCommand();
+
+  SGSetBooleanPropertyCmd setBooleanPropertyCmd;
+  setBooleanPropertyCmd.registerCommand();
+
+  SGSetObjectPropertyCmd setObjectPropertyCmd;
+  setObjectPropertyCmd.registerCommand();
+
+  SGSetPaintToolAttributeCmd setPaintToolAttributeCmd;
+  setPaintToolAttributeCmd.registerCommand();
+}
+
 void SHCmdHandler::onSynchronizeCommands() {
   try 
   {
@@ -69,12 +99,19 @@ void SHCmdHandler::onSynchronizeCommands() {
       RTVal indexVal = RTVal::ConstructUInt32(m_client, i);
       RTVal cmdVal = cmdManager.callMethod("Cmd", "getCmdInUndoStack", 1, &indexVal);
 
-      QString type = QString(cmdVal.callMethod("String", "type", 0, 0).getStringCString());
-
-      int id = QMetaType::type(type.toUtf8().constData());
-      if(id != 0) 
+      if(cmdVal.isValid() && !cmdVal.isNullObject())
       {
-        SHCmd *cmd = static_cast <SHCmd*>(QMetaType::construct(id));
+        SHCmd *cmd = 0;
+   
+        // Check if the command is registered
+        int id = QMetaType::type(cmdVal.callMethod("String", "type", 0, 0).getStringCString());
+        if(id != 0) 
+          cmd = static_cast <SHCmd*>(QMetaType::construct(id));
+          
+        // Otherwise, create generic command
+        else 
+          cmd = new SHCmd();
+ 
         cmd->setFromRTVal(m_client, cmdVal);
         m_qUndoStack->push(new WrappedCmd(cmd));
       }
@@ -82,6 +119,7 @@ void SHCmdHandler::onSynchronizeCommands() {
 
     m_stackSize = currentStackSize;
   }
+
   catch(Exception e)
   {
     printf("SHCmdHandler::onSynchronizeCommands: exception: %s\n", e.getDesc_cstr());

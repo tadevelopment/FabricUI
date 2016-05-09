@@ -15,16 +15,18 @@ namespace SceneHub {
 class SGBaseSetPropertyCmd : public SHCmd {
 
   public:   
-    SGBaseSetPropertyCmd(): SHCmd() {}
+    SGBaseSetPropertyCmd()
+      : SHCmd() {
+    }
 
     virtual void setFromRTVal(Client client, RTVal sgCmd) {
       try 
       {
-        m_client = client;
+        SHCmd::setFromRTVal(client, sgCmd);
         RTVal keyVal = RTVal::ConstructString(m_client, "fullPath");
         RTVal fullPathVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
         QString fullPath = QString(fullPathVal.getStringCString());
-        m_description = QString( "setPropertyCmd(" + fullPath + ")" );   
+        m_description += QString( "(" + fullPath + ")" );   
       }
       catch(FabricCore::Exception e)
       {

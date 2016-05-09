@@ -14,9 +14,17 @@ namespace SceneHub {
 class SGSetObjectPropertyCmd : public SGBaseSetPropertyCmd {
 
   public:   
-    SGSetObjectPropertyCmd(): SGBaseSetPropertyCmd() {}
+    SGSetObjectPropertyCmd()
+      : SGBaseSetPropertyCmd() {
+      }
 
-    SGSetObjectPropertyCmd(Client client, RTVal sg, QString propertyPath, RTVal prevValue, RTVal newValue)
+    SGSetObjectPropertyCmd(
+      Client client, 
+      RTVal sg, 
+      QString 
+      propertyPath, 
+      RTVal prevValue, 
+      RTVal newValue)
       : SGBaseSetPropertyCmd() 
     {
       try 
@@ -34,11 +42,15 @@ class SGSetObjectPropertyCmd : public SGBaseSetPropertyCmd {
       }
       catch(FabricCore::Exception e)
       {
-        printf("SGSetObjectPropertyCmd::Get: exception: %s\n", e.getDesc_cstr());
+        printf("SGSetObjectPropertyCmd::SGSetObjectPropertyCmd: exception: %s\n", e.getDesc_cstr());
       }
     }
 
-    SGSetObjectPropertyCmd(Client client, RTVal sg, QString propertyPath, RTVal newValue)
+    SGSetObjectPropertyCmd(
+      Client client, 
+      RTVal sg, 
+      QString propertyPath, 
+      RTVal newValue)
       : SGBaseSetPropertyCmd() 
     {
       try 

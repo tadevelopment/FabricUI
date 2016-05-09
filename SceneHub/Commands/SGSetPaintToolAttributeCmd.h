@@ -21,20 +21,6 @@ class SGSetPaintToolAttributeCmd : public SHCmd {
         qRegisterMetaType<FabricUI::SceneHub::SGSetPaintToolAttributeCmd>("SGSetPaintToolAttributeCmd");
     }
 
-    virtual void setFromRTVal(Client client, RTVal sgCmd) {
-      try 
-      {
-        m_client = client;
-        RTVal keyVal = RTVal::ConstructString(m_client, "fullPath");
-        RTVal fullPathVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
-        QString fullPath = QString(fullPathVal.getStringCString());
-        m_description = QString( "setPaintToolAttributeCmd(" + fullPath + ")" );
-      }
-      catch(Exception e)
-      {
-        printf("SGSetPaintToolAttributeCmd::Get: exception: %s\n", e.getDesc_cstr());
-      }
-    }
 };
 
 } // SceneHub

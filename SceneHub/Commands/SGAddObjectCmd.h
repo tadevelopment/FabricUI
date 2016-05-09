@@ -24,18 +24,18 @@ class SGAddObjectCmd : public SHCmd {
     virtual void setFromRTVal(Client client, RTVal sgCmd) {
       try 
       {
-        m_client = client;
+        SHCmd::setFromRTVal(client, sgCmd);
         RTVal keyVal = RTVal::ConstructString(m_client, "name");
         RTVal nameVal = sgCmd.callMethod("String", "getStringParam", 1, &keyVal);
         QString name = QString(nameVal.getStringCString());
 
         keyVal = RTVal::ConstructString(m_client, "isGlobal");
         bool isGlobal = sgCmd.callMethod("Boolean", "getBooleanParam", 1, &keyVal).getBoolean();
-        m_description = QString( "addObjectCmd(" + name + ", " + QString(isGlobal) + ")" );
+        m_description += QString( "(" + name + ", " + QString(isGlobal) + ")" );
       }
       catch(Exception e)
       {
-        printf("SGAddObjectCmd::Get: exception: %s\n", e.getDesc_cstr());
+        printf("SGAddObjectCmd::setFromRTVal: exception: %s\n", e.getDesc_cstr());
       }
     }
 };
