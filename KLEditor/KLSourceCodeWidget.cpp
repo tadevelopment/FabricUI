@@ -14,6 +14,8 @@
 #include <QtGui/QDesktopServices>
 #include <QtCore/QUrl>
 
+#include <FTL/Config.h>
+
 #include <limits.h>
 
 using namespace FabricServices;
@@ -378,7 +380,11 @@ void KLSourceCodeWidget::keyPressEvent(QKeyEvent * event)
   }
   else if(event->key() == Qt::Key_Space)
   {
+#if defined(FTL_OS_DARWIN)
+    if(event->modifiers().testFlag(Qt::MetaModifier))
+#else
     if(event->modifiers().testFlag(Qt::ControlModifier))
+#endif
     {
       int pos = textCursor().position();
       std::string charAtCursor = m_codeAssistant->getCharAtCursor(pos);
@@ -438,6 +444,8 @@ void KLSourceCodeWidget::mouseDoubleClickEvent(QMouseEvent * event)
 
 void KLSourceCodeWidget::mousePressEvent(QMouseEvent * event)
 {
+  hidePopup();
+
   if(event->button() == Qt::MiddleButton)
   {
     // [FABMODO-3]
@@ -748,7 +756,11 @@ bool KLSourceCodeWidget::showPopup(bool forParen)
 
   QPoint cursorPos = mapToGlobal(cursorRect().bottomLeft());
   m_popup->setPosFromCursor(cursorPos);
+#if defined(FTL_OS_LINUX)
+  m_popup->setWindowFlags(Qt::X11BypassWindowManagerHint);
+#endif
   m_popup->show();
+  m_popup->updateSearch();
 
   return true;
 }
@@ -763,4 +775,9 @@ bool KLSourceCodeWidget::hidePopup()
     return true;
   }
   return false;
+}
+
+void KLSourceCodeWidget::focusOutEvent(QFocusEvent * event)
+{
+  hidePopup();
 }
