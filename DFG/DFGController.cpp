@@ -1511,9 +1511,12 @@ QStringList DFGController::getVariableWordsFromBinding(
         if(words.contains(path.c_str()))
           continue;
 
+        /// If varTypes list is empty, we don't check the variable type
         if(varTypes.size() == 0) 
           words.append(path.c_str());
 
+        /// Otherwise, check if the type of the current variable
+        /// is listed.
         else
         {
           FTL::JSONObject const *value = it->second->cast<FTL::JSONObject>();
