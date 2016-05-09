@@ -16,7 +16,6 @@
 #include <FTL/JSONEnc.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONValue.h>
-#include <FTL/Ticks.h>
 #include <FabricUI/DFG/DFGController.h>
  
 namespace FabricUI {
@@ -101,9 +100,6 @@ class SHGLScene {
     /// Refresh the viewport constantly as fast as possible
     bool refreshAlways();
 
-    /// Returns the hardware refresh rate limit
-    double getHardwareFrameRate();
-
     /// Gets the path of the current selected object.
     QString getTreeItemPath(FabricCore::RTVal sgObject);
 
@@ -159,8 +155,6 @@ class SHGLScene {
     FabricCore::Client m_client;    
     /// \internal
     FabricCore::RTVal m_shGLSceneVal;
-    /// \internal
-    uint64_t m_lastTicks;
 };
 
 } // namespace SceneHub

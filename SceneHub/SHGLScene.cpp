@@ -57,8 +57,6 @@ SHGLScene::SHGLScene(Client client, QString klFile) : m_client(client) {
   {
     printf("SHGLScene::SHGLScene: exception: %s\n", e.getDesc_cstr());
   }
-
-  m_lastTicks = FTL::GetCurrentTicks();
 }
 
 FabricCore::Client SHGLScene::getClient() { 
@@ -187,15 +185,9 @@ QList<unsigned int> SHGLScene::getSceneStats() {
 
 void SHGLScene::prepareSceneForRender() {
   
-  // query the delta in seconds
-  uint64_t currentTicks = FTL::GetCurrentTicks();
-  double delta = FTL::GetSecondsBetweenTicks(m_lastTicks, currentTicks);
-  m_lastTicks = currentTicks;
-
   try 
   {
-    RTVal deltaVal = RTVal::ConstructFloat64(getClient(), delta);
-    m_shGLSceneVal.callMethod("", "prepareSceneForRender", 1, &deltaVal);
+    m_shGLSceneVal.callMethod("", "prepareSceneForRender", 0, NULL);
   }
   catch(Exception e)
   {
@@ -225,18 +217,6 @@ bool SHGLScene::refreshAlways() {
     printf("SHGLScene::refreshAlways: exception: %s\n", e.getDesc_cstr());
   }
   return false;
-}
-
-double SHGLScene::getHardwareFrameRate() {
-  try 
-  {
-    return m_shGLSceneVal.callMethod("Float64", "getHardwareFrameRate", 0, 0).getFloat64();
-  }
-  catch(Exception e)
-  {
-    printf("SHGLScene::getHardwareFrameRate: exception: %s\n", e.getDesc_cstr());
-  }
-  return 0.0;
 }
 
 void SHGLScene::getInitialTimelineState(bool &enable, int &start, int &end, float &fps) {
