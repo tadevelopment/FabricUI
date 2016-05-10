@@ -152,6 +152,7 @@ class SHViewportsManager():
         # Manips can need to be redrawn even if the scene didn't change
         newViewport.manipsAcceptedEvent.connect( self.onRefreshAllViewports )
         newViewport.synchronizeCommands.connect(self.shWindow.shCmdHandler.onSynchronizeCommands)
+        newViewport.redrawOnAlwaysRefresh.connect( self.onRefreshAllViewports, QtCore.Qt.QueuedConnection )
 
         return newViewport, intermediateOwnerWidget;
 
@@ -231,7 +232,13 @@ class SHViewportsManager():
         else:
             viewport = self.sender()
             viewport.update()
- 
+
+    def onAlwaysRefresh(self):
+        """ Enables alwaysRefresh all viewports.
+        """
+        for viewport in self.viewports:
+            viewport.toggleAlwaysRefresh()
+
     def __onAddViewport(self):
         """ Adds a viewport with perspective camera.
         """

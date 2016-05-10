@@ -18,7 +18,7 @@
 #include <FTL/MapCharSingle.h>
 #include <FabricCore.h>
 
-#include <Core/Build.h>
+// #include <Core/Build.h>
 #include <QtCore/QString>
 
 #ifdef FABRIC_SPLICE_TRACE

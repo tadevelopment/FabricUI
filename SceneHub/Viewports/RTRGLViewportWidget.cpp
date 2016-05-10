@@ -51,7 +51,7 @@ void RTRGLViewportWidget::setOrthographic(bool orthographic) {
 void RTRGLViewportWidget::paintGL() {
   ViewportWidget::computeFPS();
   m_shGLRenderer->render(m_viewportIndex, m_width, m_height, m_samples);
-  if(m_alwaysRefresh) update();
+  if(m_alwaysRefresh) emit redrawOnAlwaysRefresh();
 }
 
 void RTRGLViewportWidget::resizeGL(int width, int height) {

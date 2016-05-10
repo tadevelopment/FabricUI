@@ -184,9 +184,10 @@ QList<unsigned int> SHGLScene::getSceneStats() {
 }
 
 void SHGLScene::prepareSceneForRender() {
+  
   try 
   {
-    m_shGLSceneVal.callMethod("", "prepareSceneForRender", 0, 0);
+    m_shGLSceneVal.callMethod("", "prepareSceneForRender", 0, NULL);
   }
   catch(Exception e)
   {
@@ -202,6 +203,18 @@ bool SHGLScene::playbackByDefault() {
   catch(Exception e)
   {
     printf("SHGLScene::playbackByDefault: exception: %s\n", e.getDesc_cstr());
+  }
+  return false;
+}
+
+bool SHGLScene::refreshAlways() {
+  try 
+  {
+    return m_shGLSceneVal.callMethod("Boolean", "refreshAlways", 0, 0).getBoolean();
+  }
+  catch(Exception e)
+  {
+    printf("SHGLScene::refreshAlways: exception: %s\n", e.getDesc_cstr());
   }
   return false;
 }
