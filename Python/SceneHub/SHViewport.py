@@ -22,6 +22,7 @@ class SHViewport(Viewports.ViewportWidget):
     sceneChanged = QtCore.Signal()
     deleteViewport = QtCore.Signal(int)
     synchronizeCommands = QtCore.Signal()
+    redrawOnAlwaysRefresh = QtCore.Signal()
     manipsAcceptedEvent = QtCore.Signal(bool)
 
     def __init__(self, renderer, shStates, index, orthographic, context, mainwindow, sharedWidget):
@@ -67,7 +68,7 @@ class SHViewport(Viewports.ViewportWidget):
         self.computeFPS()
         self.shGLRenderer.render(self.viewportIndex, self.width, self.height, self.samples)
         if(self.alwaysRefresh): 
-            self.update()
+            self.redrawOnAlwaysRefresh.emit()
       
     def resizeGL(self, width, height): 
         """ Override QtGui.QGLWidget resizeGL.

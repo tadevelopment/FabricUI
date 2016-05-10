@@ -225,10 +225,14 @@ class SceneHubWindow(CanvasWindow):
             self.timeLine.setTimeRange(startFrame, endFrame)
             self.timeLine.setFrameRate(self.shTreesManager.getScene().getFPS())
             self.timeLineDock.show()
-        else: selftimeLineDock.hide()
+        else: 
+            self.timeLineDock.hide()
         
         if self.shTreesManager.getScene().playbackByDefault(): 
             self._onTogglePlayback()
+
+        if self.shTreesManager.getScene().refreshAlways(): 
+            self._onRefreshAlways()
 
         self.adjustSize()
 
@@ -268,8 +272,17 @@ class SceneHubWindow(CanvasWindow):
         """
 
         if self.timeLineDock.isVisible() == False: 
-            self.timeLineDock.show()
+            self.timeLineDock.hide()
         self.timeLine.play()
+
+    def _onRefreshAlways(self): 
+        """ Notifies all viewports that they should always refresh
+        """
+
+        self.timeLineDock.hide()
+        self.timeLine.pause()
+
+        self.viewportsManager.onAlwaysRefresh()
        
     def _onCanvasSidePanelInspectRequested(self):
         """ Refreshs the valueEditor from DFGBinding.

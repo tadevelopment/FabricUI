@@ -97,6 +97,9 @@ class SHGLScene {
     /// Activates the playback at app opening.
     bool playbackByDefault();
 
+    /// Refresh the viewport constantly as fast as possible
+    bool refreshAlways();
+
     /// Gets the path of the current selected object.
     QString getTreeItemPath(FabricCore::RTVal sgObject);
 

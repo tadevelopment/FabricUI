@@ -64,7 +64,8 @@ class RTRGLViewportWidget : public ViewportWidget {
     void manipsAcceptedEvent(bool);
     
     void synchronizeCommands();
- 
+
+    void redrawOnAlwaysRefresh(); 
 
   private:
     bool onEvent(QEvent *event);
