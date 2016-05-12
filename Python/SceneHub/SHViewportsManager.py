@@ -128,13 +128,13 @@ class SHViewportsManager():
             qglContext = Viewports.RTRGLContext(format)
 
         newViewport = SHViewport(
-        self.shGLRenderer,
-        self.shStates,
-        index, 
-        ortho,
-        qglContext, 
-        self.shWindow, 
-        sharedWidget)
+            self.shGLRenderer,
+            self.shStates,
+            index, 
+            ortho,
+            qglContext, 
+            self.shWindow, 
+            sharedWidget)
 
         intermediateLayout.addWidget(newViewport)
 

@@ -28,7 +28,7 @@ class SHTreeViewsManager(FabricUI.SceneHub.SHBaseTreeViewsManager):
         layout.addWidget(self.m_comboBox)
         layout.addWidget(self.m_shTreeView)
         self.setLayout(layout)
-   
+ 
         self.m_shTreeView.selectionCleared.connect(self.onSelectionCleared)
         self.m_shTreeView.itemSelected.connect(self.onTreeItemSelected)
         self.m_shTreeView.itemDeselected.connect(self.onTreeItemDeselected)

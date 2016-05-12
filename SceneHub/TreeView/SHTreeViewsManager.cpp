@@ -21,7 +21,7 @@ SHTreeViewsManager::SHTreeViewsManager(
   layout->addWidget(m_comboBox);
   layout->addWidget(m_shTreeView);
   this->setLayout(layout);
- 
+  
   QObject::connect(m_shTreeView, SIGNAL(selectionCleared()), this, SLOT(onSelectionCleared()));
   QObject::connect(m_shTreeView, SIGNAL(itemSelected(FabricUI::SceneHub::SHTreeItem *)), this, SLOT(onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *)));
   QObject::connect(m_shTreeView, SIGNAL(itemDeselected(FabricUI::SceneHub::SHTreeItem *)), this, SLOT(onTreeItemDeselected(FabricUI::SceneHub::SHTreeItem *)));

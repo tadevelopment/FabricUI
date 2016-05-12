@@ -116,7 +116,7 @@ class SHBaseTreeViewsManager : public QWidget {
     void activeSceneChanged(FabricUI::SceneHub::SHGLScene *scene);
 
 
-  protected slots:
+  public slots:
     /// Constructs the TreeView from the selected scene,
     /// the main scene, or from a scene defined in a DFG node.
     virtual void onConstructScene(const QString &sceneName);

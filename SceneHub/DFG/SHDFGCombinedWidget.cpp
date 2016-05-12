@@ -3,7 +3,8 @@
 
 #include "SHDFGCombinedWidget.h"
 #include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
- 
+#include <FabricUI/SceneHub/TreeView/SHTreeViewsManager.h>
+
 using namespace FabricUI;
 using namespace DFG;
 
@@ -28,18 +29,18 @@ void SHDFGCombinedWidget::initDFG() {
 
 void SHDFGCombinedWidget::initTreeView() {
   DFGCombinedWidget::initTreeView(); 
-  m_SHTreeViewsManager = new SceneHub::SHTreeViewsManager(
+  m_shTreeViewsManager = new SceneHub::SHTreeViewsManager(
     m_client,
     m_dfgWidget,
     m_shStates);
 
-  QObject::connect(m_SHTreeViewsManager, SIGNAL(activeSceneChanged(FabricUI::SceneHub::SHGLScene *)), this, SLOT(onActiveSceneChanged(FabricUI::SceneHub::SHGLScene *)));
+  QObject::connect(m_shTreeViewsManager, SIGNAL(activeSceneChanged(FabricUI::SceneHub::SHGLScene *)), this, SLOT(onActiveSceneChanged(FabricUI::SceneHub::SHGLScene *)));
   //scene changed -> tree view changed
-  QObject::connect(m_shStates, SIGNAL(sceneHierarchyChanged()), m_SHTreeViewsManager, SLOT(onSceneHierarchyChanged()));
-  QObject::connect(m_shStates, SIGNAL(selectionChanged()), m_SHTreeViewsManager, SLOT(onSelectionChanged()));
+  QObject::connect(m_shStates, SIGNAL(sceneHierarchyChanged()), m_shTreeViewsManager, SLOT(onSceneHierarchyChanged()));
+  QObject::connect(m_shStates, SIGNAL(selectionChanged()), m_shTreeViewsManager, SLOT(onSelectionChanged()));
   // tree view changed -> scene changed
-  QObject::connect(m_SHTreeViewsManager, SIGNAL(sceneHierarchyChanged()), m_shStates, SLOT(onStateChanged()));
-  QObject::connect(m_SHTreeViewsManager, SIGNAL(sceneChanged()), m_shStates, SLOT(onStateChanged()));
+  QObject::connect(m_shTreeViewsManager, SIGNAL(sceneHierarchyChanged()), m_shStates, SLOT(onStateChanged()));
+  QObject::connect(m_shTreeViewsManager, SIGNAL(sceneChanged()), m_shStates, SLOT(onStateChanged()));
 }
 
 void SHDFGCombinedWidget::initValueEditor() {
@@ -63,7 +64,7 @@ void SHDFGCombinedWidget::initValueEditor() {
 
 void SHDFGCombinedWidget::initDocks() { 
   DFGCombinedWidget::initDocks(); 
-  m_hSplitter->addWidget(m_SHTreeViewsManager);
+  m_hSplitter->addWidget(m_shTreeViewsManager);
 }
 
 void SHDFGCombinedWidget::onInspectChanged() {

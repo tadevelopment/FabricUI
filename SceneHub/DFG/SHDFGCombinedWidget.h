@@ -7,7 +7,7 @@
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/DFG/DFGCombinedWidget.h>
 #include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeViewsManager.h>
+#include <FabricUI/SceneHub/TreeView/SHBaseTreeViewsManager.h>
 
 using namespace FabricServices;
  
@@ -52,7 +52,7 @@ class SHDFGCombinedWidget : public DFGCombinedWidget {
 
     SceneHub::SHStates *m_shStates;
     SceneHub::SHDFGBinding *m_shDFGBinding;
-    SceneHub::SHTreeViewsManager *m_SHTreeViewsManager;
+    SceneHub::SHBaseTreeViewsManager *m_shTreeViewsManager;
 };
 
 } // namespace DFG

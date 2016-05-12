@@ -2,6 +2,7 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
+#include <iostream>
 #include <QtCore/QString>
 #include <QtGui/QVBoxLayout>
 #include "SHBaseTreeViewsManager.h"
@@ -74,31 +75,6 @@ void SHBaseTreeViewsManager::onSceneChanged() {
 void SHBaseTreeViewsManager::onSelectionCleared() {
   if(!m_bUpdatingSelection)
     m_shStates->clearSelection();
-}
-
-void SHBaseTreeViewsManager::onConstructScene(const QString &sceneName) {
-  if(m_dfgWidget->getDFGController()->getBinding().getExec().hasVar(sceneName.toUtf8().constData()))
-  {
-    m_shGLScene->setSHGLScene(m_dfgWidget->getDFGController()->getBinding().getExec().getVarValue(sceneName.toUtf8().constData()));
-    constructTree();
-    emit activeSceneChanged(m_shGLScene);
-  }
-  else 
-  {
-    m_comboBox->clear();
-    resetTree();
-  }
-}
-
-void SHBaseTreeViewsManager::onUpdateSceneList() {
-  m_comboBox->clear();
-  QStringList sceneNameList = m_shGLScene->getSceneNamesFromBinding(m_dfgWidget->getDFGController()->getBinding());
-      
-  if(sceneNameList.size() == 0)
-    resetTree();
- 
-  for(int i=0; i<sceneNameList.size(); ++i)
-    m_comboBox->addItem(sceneNameList[i]);
 }
 
 void SHBaseTreeViewsManager::onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {
@@ -223,4 +199,35 @@ void SHBaseTreeViewsManager::constructTree() {
 
   m_shTreeView->setModel(m_treeModel);
   m_shTreeView->setExpanded(sceneRootIndex, true);
+}
+
+void SHBaseTreeViewsManager::onConstructScene(const QString &sceneName) {
+  if(m_dfgWidget->getDFGController()->getBinding().getExec().hasVar(sceneName.toUtf8().constData()))
+  {
+    m_shGLScene->setSHGLScene(m_dfgWidget->getDFGController()->getBinding().getExec().getVarValue(sceneName.toUtf8().constData()));
+    constructTree();
+    emit activeSceneChanged(m_shGLScene);
+  }
+  else 
+  {
+    m_comboBox->clear();
+    resetTree();
+  }
+}
+
+void SHBaseTreeViewsManager::onUpdateSceneList() {
+  m_comboBox->clear();
+ 
+  QStringList typeList;
+  typeList.append("SHGLScene");
+  QStringList sceneNameList = DFG::DFGController::getVariableWordsFromBinding( 
+    m_dfgWidget->getDFGController()->getBinding(), 
+    ".", 
+    typeList);
+
+  if(sceneNameList.size() == 0)
+    resetTree();
+ 
+  for(int i=0; i<sceneNameList.size(); ++i)
+    m_comboBox->addItem(sceneNameList[i]);
 }
