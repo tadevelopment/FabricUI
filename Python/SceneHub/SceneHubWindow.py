@@ -10,7 +10,7 @@ from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
 from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
 from FabricEngine.SceneHub.SHTreeViewMenu import SHTreeViewMenu
 from FabricEngine.SceneHub.SHInteractionMenu import SHInteractionMenu
-from FabricEngine.SceneHub.SHVEEditorOwner import SHVEEditorOwner
+#from FabricEngine.SceneHub.SHVEEditorOwner import SHVEEditorOwner
 from FabricEngine.SceneHub.SHHelpWidget import SHHelpWidget
 
 class SceneHubWindow(CanvasWindow):
@@ -112,7 +112,7 @@ class SceneHubWindow(CanvasWindow):
         """ Override of Canvas.CanvasWindow.
         """
 
-        self.valueEditor = SHVEEditorOwner(self.dfgWidget, self.shStates)
+        self.valueEditor = SceneHub.SHVEEditorOwner(self.dfgWidget, self.shStates)
 
         self.valueEditor.log.connect(self._onLog)
         self.valueEditor.modelItemValueChanged.connect(self._onModelValueChanged)
