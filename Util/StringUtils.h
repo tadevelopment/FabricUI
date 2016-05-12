@@ -102,7 +102,7 @@ inline std::string ToLower(const std::string &s) {
 /// \param s The string to check
 inline bool IsNumber(const std::string& s) {
   std::string::const_iterator it = s.begin();
-  while (it != s.end() && std::isdigit(*it)) ++it;
+  while( it != s.end() && *it >= '0' && *it <= '9' ) ++it;
   return !s.empty() && it == s.end();
 }
 
