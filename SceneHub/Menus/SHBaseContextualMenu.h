@@ -72,8 +72,13 @@ class SHBaseContextualMenu : public SHBaseSceneMenu {
 
 
   protected:
+    /// Constructs the menus/actions to recursively
+    /// load and expand archives.
+    /// Called from constructMenu, can be overriden.
     virtual void constructExpandMenu();
 
+    /// Constructs the menus/actions to edit the SGObjects visibility.
+    /// Called from constructMenu, can be overriden.
     virtual void constructVisibilityMenu();
 
     /// Sets the object visibility.

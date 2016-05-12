@@ -46,8 +46,8 @@ class SHTreeViewsManager(FabricUI.SceneHub.SHTreeViewsManager):
             self.constructTree()
             self.activeSceneChanged.emit(self.m_shGLScene)
         
-        elif self.dfgWidget.getDFGController().getBinding().getExec().hasVar(str(sceneName)):
-            self.m_shGLScene.setSHGLScene(self.dfgWidget.getDFGController().getBinding(), sceneName)
+        elif self.m_dfgWidget.getDFGController().getBinding().getExec().hasVar(str(sceneName)):
+            self.m_shGLScene.setSHGLScene(self.m_dfgWidget.getDFGController().getBinding(), sceneName)
             self.constructTree()
             self.activeSceneChanged.emit(self.m_shGLScene)
         
@@ -61,7 +61,7 @@ class SHTreeViewsManager(FabricUI.SceneHub.SHTreeViewsManager):
         """
 
         self.m_comboBox.clear()
-        binding = self.dfgWidget.getDFGController().getBinding()
+        binding = self.m_dfgWidget.getDFGController().getBinding()
 
         typeList = []
         typeList.append('SHGLScene')
