@@ -6,7 +6,7 @@ from FabricEngine.CAPI import *
 from FabricEngine.SceneHub.SHTreeView import SHTreeView
 
 
-class SHTreeViewsManager(FabricUI.SceneHub.SHTreeViewsManager):
+class SHTreeViewsManager(FabricUI.SceneHub.SHBaseTreeViewsManager):
 
     """SHTreeViewsManager
 
@@ -28,9 +28,20 @@ class SHTreeViewsManager(FabricUI.SceneHub.SHTreeViewsManager):
     """
 
     def __init__(self, client, dfgWidget, shStates, shMainGLScene = None):
-        self.client = client
+        
         super(SHTreeViewsManager, self).__init__(client, dfgWidget, shStates)
- 
+        
+        self.m_shTreeView = SHTreeView(client, self.m_shStates, shMainGLScene)
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(self.m_comboBox)
+        layout.addWidget(self.m_shTreeView)
+        self.setLayout(layout)
+   
+        self.m_shTreeView.selectionCleared.connect(self.onSelectionCleared)
+        self.m_shTreeView.itemSelected.connect(self.onTreeItemSelected)
+        self.m_shTreeView.itemDeselected.connect(self.onTreeItemDeselected)
+        self.m_shTreeView.itemDoubleClicked.connect(self.onTreeItemDoubleClicked)
+
         # Shows the main-scene (owns by the application) in the treeView.
         self.shMainGLScene = shMainGLScene
         self.m_comboBox.addItem("Main Scene")

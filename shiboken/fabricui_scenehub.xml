@@ -21,7 +21,7 @@
       <object-type name="SHTreeView_ViewIndexTarget" copyable="false"/>
       <object-type name="SHBaseTreeView" copyable="false"/>
       <object-type name="SHTreeComboBox" copyable="false"/>
-      <object-type name="SHTreeViewsManager" copyable="false"/>
+      <object-type name="SHBaseTreeViewsManager" copyable="false"/>
       <object-type name="SGObjectModelItem" copyable="false"/>
       <object-type name="SGObjectPropertyModelItem" copyable="false"/>
       <object-type name="SHVEEditorOwner" copyable="false"/>

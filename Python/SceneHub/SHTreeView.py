@@ -26,7 +26,6 @@ class SHTreeView(SceneHub.SHBaseTreeView):
     itemDeselected = QtCore.Signal(SceneHub.SHTreeItem)
     itemDoubleClicked = QtCore.Signal(SceneHub.SHTreeItem)
 
-
     def __init__(self, client, shStates, shGLScene):
         super(SHTreeView, self).__init__(client)
         self.client = client

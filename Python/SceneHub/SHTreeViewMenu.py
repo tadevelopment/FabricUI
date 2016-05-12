@@ -19,7 +19,7 @@ class SHTreeViewMenu(Menus.BaseMenu):
 
     def __init__(self, SHTreeViewsManager, parent = None):
         self.SHTreeViewsManager = SHTreeViewsManager
-        super(SHTreeViewMenu, self).__init__(self.SHTreeViewsManager.client, "Tree View", parent)
+        super(SHTreeViewMenu, self).__init__(self.SHTreeViewsManager.m_client, "Tree View", parent)
         self.constructMenu()
 
     def constructMenu(self):
