@@ -41,7 +41,7 @@ class SHBaseContextualMenu : public SHBaseSceneMenu {
     /// Destructor.
     virtual ~SHBaseContextualMenu();
  
-    /// Implementation of BaseMenu
+    /// Implementation of BaseMenu.
     virtual void constructMenu();
 
 
@@ -72,6 +72,10 @@ class SHBaseContextualMenu : public SHBaseSceneMenu {
 
 
   protected:
+    virtual void constructExpandMenu();
+
+    virtual void constructVisibilityMenu();
+
     /// Sets the object visibility.
     /// \param visible If true, show the SGObject.
     /// \param propagationType Propagation type (0:local, 1:propagated, 2:override).

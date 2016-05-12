@@ -19,13 +19,18 @@ class BaseMenu : public QMenu {
 
     The class defines the constructMenu method where the Menu items 
     should be created. Construct the menu in this mehod instead of 
-    within the class constructor allows inheritance.
+    within the constructor allows inheritance.
+
+    Thus, it's a two steps construction :
+      BaseMenu *menu = BaseMenu(client, "", 0);
+      mennu->constructMenu();
   */
 
   Q_OBJECT
  
   public:
     /// Constructor.
+    /// \param client A reference to the FabricCore::Client.
     /// \param title The menu title, can be None.
     /// \param parent The menu parent, can be null.
     BaseMenu(
