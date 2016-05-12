@@ -1,12 +1,13 @@
+"""
+The FabricParser handles parsing command line options for the Canvas standalone.
+"""
 
 import argparse, sys, os
 import os.path
 
 def CheckExtension(choices):
 
-    """CheckExtension
-
-    Argparse action to check a file extension at loading.
+    """Argparse action to check a file extension at loading.
 
     Arguments:
         choices (Dictionary): List of allowed extensions {'ext1, ext2, ...'}.
@@ -31,12 +32,9 @@ def CheckExtension(choices):
 
 class FabricParser(argparse.ArgumentParser):
 
-    """FabricParser
-
-    Specialize the argparse.ArgumentParser class.
+    """Specialize the argparse.ArgumentParser class.
     If an error occurs when parsing the arguments, 
     the available options will be diplayed before exiting.
-
     """
 
     def error(self, message):

@@ -1,6 +1,10 @@
-"""Canvas Window."""
+"""
+This module adds the CanvasWindow which encompasses most of the UI
+required to build a Python application. Users building their own
+custom apps may want to subclass the CanvasWindow and simply override
+relevant methods to change behavior as needed.
+"""
 
-import json
 import os
 import sys
 
@@ -42,9 +46,7 @@ class CanvasWindowEventFilter(QtCore.QObject):
         return QtCore.QObject.eventFilter(obj, event)
 
 class CanvasWindow(DFG.DFGMainWindow):
-    """CanvasWindow
-
-    This window encompasses the entire Canvas application.
+    """This window encompasses the entire Canvas application.
 
     Attributes:
         defaultFrameIn (int): Default in frame.
@@ -52,10 +54,9 @@ class CanvasWindow(DFG.DFGMainWindow):
         autosaveIntervalSecs (int): Interval at which to autosave the current graph.
 
     Arguments:
-        settings (QtCore.QSettings): Settings object that is used to store and
-            retrieve settings for the application.
+        settings (QtCore.QSettings): Settings object that is used to store and retrieve settings for the application.
         unguarded (bool): Whether to create the Fabric client in unguarded mode.
-        noopt (bool): Whether to create the Fabric client in noopt mode.
+        noopt (bool): Whether to create the Fabric client in unoptimized mode.
 
     """
 
@@ -74,7 +75,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.autosaveTimer.start(CanvasWindow.autosaveIntervalSecs * 1000)
         self.dockFeatures = QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable | QtGui.QDockWidget.DockWidgetClosable
 
-        self.__init()
+        self._init()
         self._initWindow()
         self._initKL(unguarded, noopt)
         self._initLog()
@@ -94,11 +95,10 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.valueEditor.initConnections()
         self.installEventFilter(CanvasWindowEventFilter(self))
 
-    def __init(self):
+    def _init(self):
         """Initializes the settings and config for the application.
 
         The autosave directory and file name are established here.
-
         """
 
         self.setAcceptDrops(True)
@@ -120,7 +120,6 @@ class CanvasWindow(DFG.DFGMainWindow):
     def _initWindow(self):
         """Initializes the window attributes, window widgets, actions, and the
         fps timer.
-
         """
 
         self.viewport = None
@@ -152,25 +151,23 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.fpsTimer.timeout.connect(self.updateFPS)
         self.fpsTimer.start()
 
-    def __reportCallback(self, source, level, line):
-        """Call back method that fires when the client emits reports.
+    def _reportCallback(self, source, level, line):
+        """Callback method that fires when the client sends output.
 
         Report sources:
-            NONE = 0
-            System = 1
-            User = 2
-            ALL = 3
+            Core.ReportSource.System
+            Core.ReportSource.User
 
         Report levels:
-            Error = 0
-            Warning = 1
-            Info = 2
-            Debug = 3
+            Core.ReportLevel.Error
+            Core.ReportLevel.Warning
+            Core.ReportLevel.Info
+            Core.ReportLevel.Debug
 
         Arguments:
             source (int): Source of the report call.
             level (int): Level of the report.
-            line (int): Line number where the report was called.
+            line (int): Text of the output.
 
         """
 
@@ -182,7 +179,7 @@ class CanvasWindow(DFG.DFGMainWindow):
             else:
                 sys.stderr.write(line + "\n")
 
-    def __statusCallback(self, target, data):
+    def _statusCallback(self, target, data):
         """Status callback used for KL code to communicate status messages back
         to the client.
 
@@ -216,7 +213,7 @@ class CanvasWindow(DFG.DFGMainWindow):
           'guarded': not unguarded,
           'noOptimization': noopt,
           'interactive': True,
-          'reportCallback': self.__reportCallback,
+          'reportCallback': self._reportCallback,
           'rtValToJSONEncoder': self.rtvalEncoderDecoder.encode,
           'rtValFromJSONDecoder': self.rtvalEncoderDecoder.decode,
           }
@@ -225,7 +222,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         client.loadExtension('Math')
         client.loadExtension('Parameters')
         client.loadExtension('Util')
-        client.setStatusCallback(self.__statusCallback)
+        client.setStatusCallback(self._statusCallback)
         self.client = client
         self.qUndoStack = QtGui.QUndoStack()
         self.rtvalEncoderDecoder.client = self.client
@@ -245,7 +242,6 @@ class CanvasWindow(DFG.DFGMainWindow):
 
         The DFGWidget is the UI that reflects the binding to the graph that is
         created and changed through the application.
-
         """
 
         self.evalContext = self.client.RT.types.EvalContext.create()
@@ -283,7 +279,6 @@ class CanvasWindow(DFG.DFGMainWindow):
         """Initializes the preset TreeView.
 
         Also connects the DFG Controller's dirty signal to the onDirty method.
-
         """
 
         controller = self.dfgWidget.getDFGController()
@@ -326,7 +321,6 @@ class CanvasWindow(DFG.DFGMainWindow):
 
         The frameChanged signal is connected to the onFrameChanged method along
         with the Value Editor's onFrameChanged method too.
-
         """
 
         self.timeLinePortIndex = -1
@@ -344,7 +338,6 @@ class CanvasWindow(DFG.DFGMainWindow):
         to be toggled on and off via the menu items that are created. Some
         widgets that are hosted in dock widgets are instanced here and some have
         already been created such as the DFGWidget and TimeLineWidget.
-
         """
 
         # Undo Dock Widget
@@ -408,9 +401,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.scriptEditorDock, QtCore.Qt.Vertical)
 
     def _initMenus(self):
-        """Initializes all of menus for the application.
-
-        """
+        """Initializes all menus for the application."""
 
         # Main Menu Bar
         self.dfgWidget.populateMenuBar(self.menuBar())
@@ -532,7 +523,7 @@ class CanvasWindow(DFG.DFGMainWindow):
     def loadGraph(self, filePath):
         """Method to load a graph from disk.
 
-        Files are tyipcally *.canvas files.
+        Files are typically *.canvas files.
 
         Arguments:
             filePath (str): Path to the graph to load.
@@ -624,7 +615,6 @@ class CanvasWindow(DFG.DFGMainWindow):
     def onSaveGraphAs(self):
         """Method called when the graph is to be saved under a different file
         name.
-
         """
 
         self.saveGraph(True)
@@ -665,7 +655,6 @@ class CanvasWindow(DFG.DFGMainWindow):
 
         If there are changes that haven't been saved the user is prompted with a
         dialog asking them if the graph should be saved.
-
         """
 
         binding = self.dfgWidget.getDFGController().getBinding()
@@ -691,7 +680,6 @@ class CanvasWindow(DFG.DFGMainWindow):
     def onNodeEditRequested(self, node):
         """Method that is called when a request to edit the specified node has
         been emitted.
-
         """
 
         self.dfgWidget.maybeEditNode(node)
@@ -842,7 +830,6 @@ class CanvasWindow(DFG.DFGMainWindow):
 
         A file dialog is opened and users can select the file to load. The last
         directory the user saved or opened a graph from is used.
-
         """
 
         self.timeLine.pause()
@@ -984,7 +971,6 @@ class CanvasWindow(DFG.DFGMainWindow):
         """Callback for when the file name has changed.
 
         This method updates the window title to reflect the new file path.
-
         """
 
         if not fileName:
