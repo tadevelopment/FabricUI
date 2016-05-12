@@ -46,7 +46,7 @@ class SHTreeComboBox : public QComboBox {
 };
 
 
-class SHTreeViewManager : public QWidget { 
+class SHTreeViewsManager : public QWidget { 
 
   /**
     SHTreeViewsManager owns a SHTreeView and allows to display 
@@ -66,10 +66,12 @@ class SHTreeViewManager : public QWidget {
     /// \param client A reference to the FabricCore::Client.
     /// \param dfgWidget A reference to the DFG::DFGWidget.
     /// \param shStates A reference to the SceneHub::SHStates.
-    SHTreeViewManager(
+    SHTreeViewsManager(
       FabricCore::Client client,
       DFG::DFGWidget *dfgWidget, 
       SHStates *shStates);
+
+    ~SHTreeViewsManager();
     
     /// Gets a pointer to the treeView.
     SHTreeView* getTreeView();
@@ -115,11 +117,11 @@ class SHTreeViewManager : public QWidget {
   protected slots:
     /// Constructs the TreeView from the selected scene,
     /// the main scene, or from a scene defined in a DFG node.
-    void onConstructScene(const QString &sceneName);
+    virtual void onConstructScene(const QString &sceneName);
 
     /// Finds all the SHGLScenes (in the app and in the canvas graph)
     /// and populates the combobox with their name.
-    void onUpdateSceneList();
+    virtual void onUpdateSceneList();
 
     /// Called when the selection is cleared.
     /// Updates the SHStates.

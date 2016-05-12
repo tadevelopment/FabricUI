@@ -4,14 +4,14 @@
 
 #include <QtCore/QString>
 #include <QtGui/QVBoxLayout>
-#include "SHTreeViewManager.h"
+#include "SHTreeViewsManager.h"
 
 using namespace FabricCore;
 using namespace FabricUI;
 using namespace FabricUI::SceneHub;
 
 
-SHTreeViewManager::SHTreeViewManager(
+SHTreeViewsManager::SHTreeViewsManager(
   FabricCore::Client client,
   DFG::DFGWidget *dfgWidget, 
   SHStates *shStates)
@@ -43,47 +43,50 @@ SHTreeViewManager::SHTreeViewManager(
   QObject::connect(this, SIGNAL(activeSceneChanged(FabricUI::SceneHub::SHGLScene *)), m_shStates, SLOT(onActiveSceneChanged(FabricUI::SceneHub::SHGLScene *)));
 }
 
-SHTreeView* SHTreeViewManager::getTreeView() { 
+SHTreeViewsManager::~SHTreeViewsManager() {
+}
+
+SHTreeView* SHTreeViewsManager::getTreeView() { 
   return m_shTreeView; 
 }
 
-SHGLScene* SHTreeViewManager::getScene() { 
+SHGLScene* SHTreeViewsManager::getScene() { 
   return m_shGLScene; 
 }
 
-void SHTreeViewManager::setShowProperties(bool show) {
+void SHTreeViewsManager::setShowProperties(bool show) {
   m_showProperties = show;
   if(m_treeModel)
     m_treeModel->setShowProperties(show);
 }
 
-void SHTreeViewManager::setShowOperators(bool show) {
+void SHTreeViewsManager::setShowOperators(bool show) {
   m_showOperators = show;
   if(m_treeModel)
     m_treeModel->setShowOperators(show);
 }
 
-void SHTreeViewManager::expandTree(uint32_t level) {
+void SHTreeViewsManager::expandTree(uint32_t level) {
   if(level == uint32_t(-1)) 
     m_shTreeView->expandAll();
   else if(level > 0) 
     m_shTreeView->expandToDepth(level - 1);
 }
 
-void SHTreeViewManager::onSceneHierarchyChanged() {
+void SHTreeViewsManager::onSceneHierarchyChanged() {
   emit sceneHierarchyChanged();
 }
 
-void SHTreeViewManager::onSceneChanged() {
+void SHTreeViewsManager::onSceneChanged() {
   emit sceneChanged();
 }
 
-void SHTreeViewManager::onSelectionCleared() {
+void SHTreeViewsManager::onSelectionCleared() {
   if(!m_bUpdatingSelection)
     m_shStates->clearSelection();
 }
 
-void SHTreeViewManager::onConstructScene(const QString &sceneName) {
+void SHTreeViewsManager::onConstructScene(const QString &sceneName) {
   if(m_dfgWidget->getDFGController()->getBinding().getExec().hasVar(sceneName.toUtf8().constData()))
   {
     m_shGLScene->setSHGLScene(m_dfgWidget->getDFGController()->getBinding().getExec().getVarValue(sceneName.toUtf8().constData()));
@@ -97,7 +100,7 @@ void SHTreeViewManager::onConstructScene(const QString &sceneName) {
   }
 }
 
-void SHTreeViewManager::onUpdateSceneList() {
+void SHTreeViewsManager::onUpdateSceneList() {
   m_comboBox->clear();
   QStringList sceneNameList = m_shGLScene->getSceneNamesFromBinding(m_dfgWidget->getDFGController()->getBinding());
       
@@ -108,7 +111,7 @@ void SHTreeViewManager::onUpdateSceneList() {
     m_comboBox->addItem(sceneNameList[i]);
 }
 
-void SHTreeViewManager::onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {
+void SHTreeViewsManager::onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item) {
   if(!m_bUpdatingSelection)
   {
     m_bUpdatingSelection = true;
@@ -135,7 +138,7 @@ void SHTreeViewManager::onTreeItemSelected(FabricUI::SceneHub::SHTreeItem *item)
   }
 }
 
-void SHTreeViewManager::onTreeItemDeselected(FabricUI::SceneHub::SHTreeItem *item) {
+void SHTreeViewsManager::onTreeItemDeselected(FabricUI::SceneHub::SHTreeItem *item) {
   if(!m_bUpdatingSelection)
   {
     m_bUpdatingSelection = true;
@@ -162,7 +165,7 @@ void SHTreeViewManager::onTreeItemDeselected(FabricUI::SceneHub::SHTreeItem *ite
   }
 }
 
-void SHTreeViewManager::onTreeItemDoubleClicked(FabricUI::SceneHub::SHTreeItem *item) {
+void SHTreeViewsManager::onTreeItemDoubleClicked(FabricUI::SceneHub::SHTreeItem *item) {
   if(!m_bUpdatingSelection)
   {
     m_bUpdatingSelection = true;
@@ -190,7 +193,7 @@ void SHTreeViewManager::onTreeItemDoubleClicked(FabricUI::SceneHub::SHTreeItem *
   }
 }
 
-void SHTreeViewManager::onSelectionChanged() {
+void SHTreeViewsManager::onSelectionChanged() {
   if(!m_bUpdatingSelection)
   {
     m_bUpdatingSelection = true;
@@ -199,7 +202,7 @@ void SHTreeViewManager::onSelectionChanged() {
   }
 }
 
-void SHTreeViewManager::resetTree() {
+void SHTreeViewsManager::resetTree() {
   m_shTreeView->reset();
   if(m_treeModel)
   {
@@ -208,7 +211,7 @@ void SHTreeViewManager::resetTree() {
   }
 }
 
-void SHTreeViewManager::constructTree() {
+void SHTreeViewsManager::constructTree() {
   resetTree();
 
   m_treeModel = new FabricUI::SceneHub::SHTreeModel(

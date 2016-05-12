@@ -12,14 +12,14 @@ class SHTreeViewMenu(Menus.BaseMenu):
     It's used to show/hides the properties/generators under the SGObjects.
 
     Arguments:
-        shTreeViewsManager (SceneHub.SHTreeViewsManager): A reference to a SHTreeViewsManager.
+        SHTreeViewsManager (SceneHub.SHTreeViewsManager): A reference to a SHTreeViewsManager.
         parent (QWidget): The menu widget parent, can be None.
 
     """
 
-    def __init__(self, shTreeViewsManager, parent = None):
-        self.shTreeViewsManager = shTreeViewsManager
-        super(SHTreeViewMenu, self).__init__(self.shTreeViewsManager.client, "Tree View", parent)
+    def __init__(self, SHTreeViewsManager, parent = None):
+        self.SHTreeViewsManager = SHTreeViewsManager
+        super(SHTreeViewMenu, self).__init__(self.SHTreeViewsManager.client, "Tree View", parent)
         self.constructMenu()
 
     def constructMenu(self):
@@ -41,5 +41,5 @@ class SHTreeViewMenu(Menus.BaseMenu):
         """Shows/hides the treeView items properties/generators.
         """
 
-        self.shTreeViewsManager.setShowProperties(self.showProperty.isChecked())
-        self.shTreeViewsManager.setShowOperators(self.showPropertyGenerator.isChecked())
+        self.SHTreeViewsManager.setShowProperties(self.showProperty.isChecked())
+        self.SHTreeViewsManager.setShowOperators(self.showPropertyGenerator.isChecked())
