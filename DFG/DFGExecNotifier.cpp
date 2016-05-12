@@ -133,7 +133,8 @@ void DFGExecNotifier::handler_instBlockRemoved( FTL::JSONObject const *jsonObjec
 
 void DFGExecNotifier::handler_execBlockInserted( FTL::JSONObject const *jsonObject )
 {
-  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("name") );
+  FTL::CStrRef blockName =
+    jsonObject->getObject( FTL_STR("execBlockDesc") )->getString( FTL_STR("name") );
 
   emit blockInserted( blockName );
 }

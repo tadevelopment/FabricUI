@@ -371,16 +371,23 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
     else if( descStr == FTL_STR("execBlockInserted") )
     {
       onExecBlockInserted(
-        jsonObject->getSInt32( FTL_STR("index") ),
-        jsonObject->getString( FTL_STR("name") ),
-        jsonObject->maybeGet( FTL_STR("metadata") )->castOrNull<FTL::JSONObject>()
+        jsonObject->getSInt32( FTL_STR("execBlockIndex") ),
+        jsonObject->getObject( FTL_STR("execBlockDesc") )
+        );
+    }
+    else if( descStr == FTL_STR("execBlockPortInserted") )
+    {
+      onExecBlockPortInserted(
+        jsonObject->getString( FTL_STR("execBlockName") ),
+        jsonObject->getSInt32( FTL_STR("execBlockPortIndex") ),
+        jsonObject->getObject( FTL_STR("execBlockPortDesc") )
         );
     }
     else if( descStr == FTL_STR("execBlockRemoved") )
     {
       onExecBlockRemoved(
-        jsonObject->getSInt32( FTL_STR("index") ),
-        jsonObject->getString( FTL_STR("name") )
+        jsonObject->getSInt32( FTL_STR("execBlockIndex") ),
+        jsonObject->getString( FTL_STR("execBlockName") )
         );
     }
     else
@@ -447,11 +454,7 @@ void DFGNotificationRouter::onGraphSet()
       {
         FTL::JSONObject const *blockObject =
           blocksArray->get( i )->cast<FTL::JSONObject>();
-        onExecBlockInserted(
-          i,
-          blockObject->getString( FTL_STR("name") ),
-          blockObject->maybeGet( FTL_STR("metadata") )->castOrNull<FTL::JSONObject>()
-          );
+        onExecBlockInserted( i, blockObject );
       }
     }
 
@@ -654,8 +657,7 @@ void DFGNotificationRouter::onNodeInserted(
 
 void DFGNotificationRouter::onExecBlockInserted(
   unsigned index,
-  FTL::CStrRef name,
-  FTL::JSONObject const *metadata
+  FTL::JSONObject const *desc
   )
 {
   FabricCore::DFGExec &exec = m_dfgController->getExec();
@@ -666,37 +668,77 @@ void DFGNotificationRouter::onExecBlockInserted(
   if ( !uiGraph )
     return;
 
-  GraphView::Node *uiNode = uiGraph->addBlockNode( name, name );
+  FTL::CStrRef blockName = desc->getString( FTL_STR("name") );
+
+  GraphView::Node *uiNode = uiGraph->addBlockNode( blockName, blockName );
   if ( !uiNode )
     return;
 
   uiNode->setColor( m_config.blockNodeDefaultColor );
   uiNode->setTitleColor( m_config.blockLabelDefaultColor );
 
-  uiNode->setTitle( name );
+  uiNode->setTitle( blockName );
   uiNode->setTitleSuffixAsterisk();
 
-  if ( metadata )
+  if ( FTL::JSONObject const *metadata =
+    desc->maybeGetObject( FTL_STR("metadata") ) )
   {
     for ( FTL::JSONObject::const_iterator it = metadata->begin();
       it != metadata->end(); ++it )
     {
       FTL::CStrRef key = it->first;
       FTL::CStrRef value = it->second->cast<FTL::JSONString>()->getValue();
-      onExecBlockMetadataChanged( name, key, value );
+      onExecBlockMetadataChanged( blockName, key, value );
     }
   }
 
-  // FIXME fake a pin
+  if ( FTL::JSONArray const *portsJSONArray =
+    desc->maybeGetArray( FTL_STR("ports") ) )
+  {
+    unsigned portCount = portsJSONArray->size();
+    for ( unsigned portIndex = 0; portIndex < portCount; ++portIndex )
+    {
+      FTL::JSONObject const *portJSONObject =
+        portsJSONArray->get( portIndex )->cast<FTL::JSONObject>();
+      onExecBlockPortInserted(
+        blockName,
+        portIndex,
+        portJSONObject
+        );
+    }
+  }
+}
+
+void DFGNotificationRouter::onExecBlockPortInserted(
+  FTL::CStrRef blockName,
+  unsigned portIndex,
+  FTL::JSONObject const *portDesc
+  )
+{
+  FabricCore::DFGExec &exec = m_dfgController->getExec();
+  if ( !exec )
+    return;
+
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+
+  GraphView::Node *uiNode = uiGraph->node( blockName );
+  if ( !uiNode )
+    return;
+
+  FTL::CStrRef portName = portDesc->getString( FTL_STR("name") );
+  FTL::CStrRef resolvedType = portDesc->getStringOrEmpty( FTL_STR("type") );
+
   GraphView::Pin *uiPin =
     new GraphView::Pin(
       uiNode,
-      "index",
+      portName,
       GraphView::PortType_Input,
-      m_config.getColorForDataType( "Integer" ),
-      "index"
+      m_config.getColorForDataType( resolvedType ),
+      portName
       );
-  uiPin->setDataType( "Integer" );
+  uiPin->setDataType( resolvedType );
   uiNode->addPin( uiPin );
 }
 
