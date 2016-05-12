@@ -51,6 +51,8 @@ class SHBaseTreeViewsManager : public QWidget {
   /**
     SHBaseTreeViewsManager owns a SHTreeView and allows to display 
     the ojects/properties of a SHGLScene.
+
+    It defines a base class for the SHTreeViewsManager defined in C++ and python.
     
     The SHGLScenes are defined within the canvas graph as canvas nodes.
     A SHTreeComboBox is used to display all the available scenes in the app and switch among them.

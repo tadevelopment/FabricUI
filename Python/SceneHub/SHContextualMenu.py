@@ -30,13 +30,8 @@ class SHContextualMenu(SceneHub.SHBaseContextualMenu):
     def constructMenu(self):
         """Implementation of BaseMenu.
         """
-
-        print "constructMenu 1 "
-
         # Construct the base contextual menu.
         super(SHContextualMenu, self).constructMenu()
-
-        print "constructMenu 2 "
 
         if str(self.m_targetSGObject.type("String").getSimpleType()) == "SGObject":
             self.addSeparator()

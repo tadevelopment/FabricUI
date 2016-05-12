@@ -15,14 +15,7 @@ namespace SceneHub {
 class SHTreeViewsManager : public SHBaseTreeViewsManager { 
 
   /**
-    SHTreeViewsManager owns a SHTreeView and allows to display 
-    the ojects/properties of a SHGLScene.
-    
-    The SHGLScenes are defined within the canvas graph as canvas nodes.
-    A SHTreeComboBox is used to display all the available scenes in the app and switch among them.
-    The treeView is then updated to display the objects of the selected scene.
-
-    The class gives also access to the base signals/slots so it can be specialized if needed.
+    SHTreeViewsManager specializes SceneHub.SHBaseTreeViewsManager for C++ applications.
   */
 
   Q_OBJECT

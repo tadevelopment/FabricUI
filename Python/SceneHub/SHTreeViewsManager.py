@@ -10,15 +10,7 @@ class SHTreeViewsManager(FabricUI.SceneHub.SHBaseTreeViewsManager):
 
     """SHTreeViewsManager
 
-    SHTreeViewsManager owns a SHTreeView and allows to display 
-    the ojects/properties of a SHGLScene.
-    
-    In SceneHub, the app owns a SHGLScene by default (the main scene).
-    However, other SHGLScenes can be defined within the canvas graph as canvas nodes.
-    A SHTreeComboBox is used to display all the available scenes in the app and switch among them.
-    The treeView is then updated to display the objects of the selected scene.
-
-    The class gives also access to the base signals/slots so it can be specialized if needed.
+    SHTreeViewsManager specializes SceneHub.SHBaseTreeViewsManager for python applications.
 
     Arguments:
         client (FabricEngine.Core.Client): A reference to the FabricCore.Client.
@@ -48,8 +40,7 @@ class SHTreeViewsManager(FabricUI.SceneHub.SHBaseTreeViewsManager):
         self.onConstructScene("Main Scene")
 
     def onConstructScene(self, sceneName):
-        """ Constructs the TreeView from the selected scene,
-            the main scene, or from a scene defined in a DFG node.
+        """ Implementation of SceneHub.SHBaseTreeViewsManager
         """
 
         if self.shMainGLScene is not None and str(sceneName) == "Main Scene":
@@ -67,8 +58,7 @@ class SHTreeViewsManager(FabricUI.SceneHub.SHBaseTreeViewsManager):
             self.resetTree()
     
     def onUpdateSceneList(self):
-        """ Finds all the SHGLScenes (in the app and in the canvas graph)
-            and populates the combobox with their name.
+        """ Implementation of SceneHub.SHBaseTreeViewsManager
         """
 
         self.m_comboBox.clear()
