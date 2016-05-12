@@ -84,6 +84,7 @@
 #include <FabricUI/DFG/DFGVEEditorOwner.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddBackDrop.h>
+#include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddBlock.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddFunc.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddGet.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddGraph.h>
