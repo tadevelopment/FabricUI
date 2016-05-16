@@ -304,6 +304,14 @@ void Node::insertInstBlockAtIndex( unsigned index, InstBlock *instBlock )
   updatePinLayout();
 }
 
+InstBlock *Node::instBlockAtIndex( unsigned index ) const
+{
+  if ( index < m_instBlocks.size() )
+    return m_instBlocks[index];
+  else
+    return 0;
+}
+
 void Node::removeInstBlockAtIndex( unsigned index )
 {
   assert( index < m_instBlocks.size() );

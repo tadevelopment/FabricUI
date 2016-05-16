@@ -365,7 +365,17 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
       onInstBlockInserted(
         jsonObject->getString( FTL_STR("instName") ),
         jsonObject->getSInt32( FTL_STR("blockIndex") ),
-        jsonObject->getString( FTL_STR("blockName") )
+        jsonObject->getObject( FTL_STR("blockDesc") )
+        );
+    }
+    else if( descStr == FTL_STR("instBlockPortInserted") )
+    {
+      onInstBlockPortInserted(
+        jsonObject->getString( FTL_STR("instName") ),
+        jsonObject->getSInt32( FTL_STR("blockIndex") ),
+        jsonObject->getString( FTL_STR("blockName") ),
+        jsonObject->getSInt32( FTL_STR("portIndex") ),
+        jsonObject->getObject( FTL_STR("portDesc") )
         );
     }
     else if( descStr == FTL_STR("instBlockRemoved") )
@@ -379,23 +389,24 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
     else if( descStr == FTL_STR("execBlockInserted") )
     {
       onExecBlockInserted(
-        jsonObject->getSInt32( FTL_STR("execBlockIndex") ),
-        jsonObject->getObject( FTL_STR("execBlockDesc") )
+        jsonObject->getSInt32( FTL_STR("blockIndex") ),
+        jsonObject->getObject( FTL_STR("blockDesc") )
         );
     }
     else if( descStr == FTL_STR("execBlockPortInserted") )
     {
       onExecBlockPortInserted(
-        jsonObject->getString( FTL_STR("execBlockName") ),
-        jsonObject->getSInt32( FTL_STR("execBlockPortIndex") ),
-        jsonObject->getObject( FTL_STR("execBlockPortDesc") )
+        jsonObject->getSInt32( FTL_STR("blockIndex") ),
+        jsonObject->getString( FTL_STR("blockName") ),
+        jsonObject->getSInt32( FTL_STR("portIndex") ),
+        jsonObject->getObject( FTL_STR("portDesc") )
         );
     }
     else if( descStr == FTL_STR("execBlockRemoved") )
     {
       onExecBlockRemoved(
-        jsonObject->getSInt32( FTL_STR("execBlockIndex") ),
-        jsonObject->getString( FTL_STR("execBlockName") )
+        jsonObject->getSInt32( FTL_STR("blockIndex") ),
+        jsonObject->getString( FTL_STR("blockName") )
         );
     }
     else
@@ -578,7 +589,7 @@ void DFGNotificationRouter::onNodeInserted(
         onInstBlockInserted(
           nodeName,
           i,
-          blockObject->getString( FTL_STR("name") )
+          blockObject
           );
       }
     }
@@ -664,7 +675,7 @@ void DFGNotificationRouter::onNodeInserted(
 }
 
 void DFGNotificationRouter::onExecBlockInserted(
-  unsigned index,
+  unsigned blockIndex,
   FTL::JSONObject const *desc
   )
 {
@@ -709,6 +720,7 @@ void DFGNotificationRouter::onExecBlockInserted(
       FTL::JSONObject const *portJSONObject =
         portsJSONArray->get( portIndex )->cast<FTL::JSONObject>();
       onExecBlockPortInserted(
+        blockIndex,
         blockName,
         portIndex,
         portJSONObject
@@ -718,8 +730,9 @@ void DFGNotificationRouter::onExecBlockInserted(
 }
 
 void DFGNotificationRouter::onExecBlockPortInserted(
+  int blockIndex,
   FTL::CStrRef blockName,
-  unsigned portIndex,
+  int portIndex,
   FTL::JSONObject const *portDesc
   )
 {
@@ -834,18 +847,68 @@ void DFGNotificationRouter::onNodePortInserted(
   checkAndFixNodePortOrder(subExec, uiNode);  // [FE-5716]
 }
 
+void DFGNotificationRouter::onInstBlockPortInserted(
+  FTL::CStrRef instName,
+  int blockIndex,
+  FTL::CStrRef blockName,
+  int portIndex,
+  FTL::JSONObject const *portDesc
+  )
+{
+  GraphView::Graph *graph = m_dfgController->graph();
+  if ( !graph )
+    return;
+
+  GraphView::Node *uiNode = graph->node( instName );
+  if ( !uiNode )
+    return;
+
+  GraphView::InstBlock *uiInstBlock = uiNode->instBlockAtIndex( blockIndex );
+  if ( !uiInstBlock )
+    return;
+
+  // FTL::CStrRef dataType = jsonObject->getStringOrEmpty( FTL_STR("type") );
+
+  // QColor color = m_config.getColorForDataType(dataType);
+
+  // FTL::CStrRef nodePortType =
+  //   jsonObject->getStringOrEmpty( FTL_STR("outsidePortType") );
+  // GraphView::PortType pType = GraphView::PortType_Input;
+  // if(nodePortType == FTL_STR("Out"))
+  //   pType = GraphView::PortType_Output;
+  // else if(nodePortType == FTL_STR("IO"))
+  //   pType = GraphView::PortType_IO;
+
+  // GraphView::InstBlock * uiInstBlock =
+  //   new GraphView::InstBlock(
+  //     uiNode,
+  //     portName,
+  //     pType,
+  //     color,
+  //     portName
+  //     );
+  // if ( !dataType.empty() )
+  //   uiPin->setDataType(dataType);
+  // uiNode->addPin( uiPin );
+
+  // checkAndFixNodePortOrder(subExec, uiNode);  // [FE-5716]
+}
+
 void DFGNotificationRouter::onInstBlockInserted(
   FTL::CStrRef instName,
   int blockIndex,
-  FTL::CStrRef blockName
+  FTL::JSONObject const *blockDesc
   )
 {
   GraphView::Graph *uiGraph = m_dfgController->graph();
   if ( !uiGraph )
     return;
+
   GraphView::Node *uiNode = uiGraph->node( instName );
   if ( !uiNode )
     return;
+
+  FTL::CStrRef blockName = blockDesc->getString( FTL_STR("name") );
 
   GraphView::InstBlock *uiInstBlock =
     new GraphView::InstBlock(
@@ -853,6 +916,19 @@ void DFGNotificationRouter::onInstBlockInserted(
       QString::fromUtf8( blockName.data(), blockName.size() )
       );
   uiNode->insertInstBlockAtIndex( blockIndex, uiInstBlock );
+
+  FTL::JSONArray const *portsDesc = blockDesc->getArray( FTL_STR("ports") );
+  for ( unsigned portIndex = 0; portIndex < portsDesc->size(); ++portIndex )
+  {
+    FTL::JSONObject const *portDesc = portsDesc->getObject( portIndex );
+    onInstBlockPortInserted(
+      instName,
+      blockIndex,
+      blockName,
+      portIndex,
+      portDesc
+      );
+  }
 }
 
 void DFGNotificationRouter::onNodePortRemoved(

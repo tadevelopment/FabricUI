@@ -118,7 +118,8 @@ void DFGExecNotifier::handler_instBlockInserted( FTL::JSONObject const *jsonObje
 {
   FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
   unsigned blockIndex = unsigned( jsonObject->getSInt32( FTL_STR("blockIndex") ) );
-  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+  FTL::CStrRef blockName =
+    jsonObject->getObject( FTL_STR("blockDesc") )->getString( FTL_STR("name") );
 
   emit instBlockInserted( instName, blockIndex, blockName );
 }
@@ -135,14 +136,14 @@ void DFGExecNotifier::handler_instBlockRemoved( FTL::JSONObject const *jsonObjec
 void DFGExecNotifier::handler_execBlockInserted( FTL::JSONObject const *jsonObject )
 {
   FTL::CStrRef blockName =
-    jsonObject->getObject( FTL_STR("execBlockDesc") )->getString( FTL_STR("name") );
+    jsonObject->getObject( FTL_STR("blockDesc") )->getString( FTL_STR("name") );
 
   emit blockInserted( blockName );
 }
 
 void DFGExecNotifier::handler_execBlockRemoved( FTL::JSONObject const *jsonObject )
 {
-  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("name") );
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
 
   emit nodeRemoved( blockName );
 }

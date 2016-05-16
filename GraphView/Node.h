@@ -172,6 +172,7 @@ namespace FabricUI
       virtual void reorderPins(QStringList names);
 
       void insertInstBlockAtIndex( unsigned index, InstBlock *instBlock );
+      InstBlock *instBlockAtIndex( unsigned index ) const;
       void removeInstBlockAtIndex( unsigned index );
 
       virtual std::vector<Node*> upStreamNodes(bool sortForPins = false, std::vector<Node*> rootNodes = std::vector<Node*>());

@@ -68,7 +68,14 @@ namespace FabricUI
       void onInstBlockInserted(
         FTL::CStrRef instName,
         int blockIndex,
-        FTL::CStrRef blockName
+        FTL::JSONObject const *blockDesc
+        );
+      void onInstBlockPortInserted(
+        FTL::CStrRef nodeName,
+        int blockIndex,
+        FTL::CStrRef blockName,
+        int portIndex,
+        FTL::JSONObject const *portDesc
         );
       void onInstBlockRemoved(
         FTL::CStrRef instName,
@@ -80,8 +87,9 @@ namespace FabricUI
         FTL::JSONObject const *blockDesc
         );
       void onExecBlockPortInserted(
+        int blockIndex,
         FTL::CStrRef blockName,
-        unsigned portIndex,
+        int portIndex,
         FTL::JSONObject const *portDesc
         );
       void onExecBlockRemoved(
