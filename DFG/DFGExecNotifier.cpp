@@ -15,45 +15,46 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
   static HandlerMap handlerMap;
   if ( handlerMap.empty() )
   {
-    handlerMap[FTL_STR("instBlockInserted")] = &DFGExecNotifier::handler_instBlockInserted;
-    handlerMap[FTL_STR("instBlockRemoved")] = &DFGExecNotifier::handler_instBlockRemoved;
     handlerMap[FTL_STR("execBlockInserted")] = &DFGExecNotifier::handler_execBlockInserted;
-    handlerMap[FTL_STR("execBlockRemoved")] = &DFGExecNotifier::handler_execBlockRemoved;
     handlerMap[FTL_STR("execBlockMetadataChanged")] = &DFGExecNotifier::handler_execBlockMetadataChanged;
-    handlerMap[FTL_STR("nodeInserted")] = &DFGExecNotifier::handler_nodeInserted;
-    handlerMap[FTL_STR("nodeRenamed")] = &DFGExecNotifier::handler_nodeRenamed;
-    handlerMap[FTL_STR("nodeRemoved")] = &DFGExecNotifier::handler_nodeRemoved;
-    handlerMap[FTL_STR("nodePortInserted")] = &DFGExecNotifier::handler_nodePortInserted;
-    handlerMap[FTL_STR("nodePortRenamed")] = &DFGExecNotifier::handler_nodePortRenamed;
-    handlerMap[FTL_STR("nodePortRemoved")] = &DFGExecNotifier::handler_nodePortRemoved;
+    handlerMap[FTL_STR("execBlockPortResolvedTypeChanged")] = &DFGExecNotifier::handler_execBlockPortResolvedTypeChanged;
+    handlerMap[FTL_STR("execBlockRemoved")] = &DFGExecNotifier::handler_execBlockRemoved;
+    handlerMap[FTL_STR("execDidAttachPreset")] = &DFGExecNotifier::handler_execDidAttachPreset;
+    handlerMap[FTL_STR("execEditWouldSplitFromPresetMayHaveChanged")] = &DFGExecNotifier::handler_execEditWouldSplitFromPresetMayHaveChanged;
+    handlerMap[FTL_STR("execMetadataChanged")] = &DFGExecNotifier::handler_execMetadataChanged;
+    handlerMap[FTL_STR("execPortDefaultValuesChanged")] = &DFGExecNotifier::handler_execPortDefaultValuesChanged;
     handlerMap[FTL_STR("execPortInserted")] = &DFGExecNotifier::handler_execPortInserted;
-    handlerMap[FTL_STR("execPortRenamed")] = &DFGExecNotifier::handler_execPortRenamed;
+    handlerMap[FTL_STR("execPortMetadataChanged")] = &DFGExecNotifier::handler_execPortMetadataChanged;
     handlerMap[FTL_STR("execPortRemoved")] = &DFGExecNotifier::handler_execPortRemoved;
-    handlerMap[FTL_STR("execPortTypeSpecChanged")] = &DFGExecNotifier::handler_execPortTypeSpecChanged;
-    handlerMap[FTL_STR("nodePortResolvedTypeChanged")] = &DFGExecNotifier::handler_nodePortResolvedTypeChanged;
-    handlerMap[FTL_STR("nodePortDefaultValuesChanged")] = &DFGExecNotifier::handler_nodePortDefaultValuesChanged;
+    handlerMap[FTL_STR("execPortRenamed")] = &DFGExecNotifier::handler_execPortRenamed;
     handlerMap[FTL_STR("execPortResolvedTypeChanged")] = &DFGExecNotifier::handler_execPortResolvedTypeChanged;
     handlerMap[FTL_STR("execPortsReordered")] = &DFGExecNotifier::handler_execPortsReordered;
-    handlerMap[FTL_STR("nodePortsReordered")] = &DFGExecNotifier::handler_nodePortsReordered;
-    handlerMap[FTL_STR("execEditWouldSplitFromPresetMayHaveChanged")] = &DFGExecNotifier::handler_execEditWouldSplitFromPresetMayHaveChanged;
-    handlerMap[FTL_STR("instExecEditWouldSplitFromPresetMayHaveChanged")] = &DFGExecNotifier::handler_instExecEditWouldSplitFromPresetMayHaveChanged;
-    handlerMap[FTL_STR("execMetadataChanged")] = &DFGExecNotifier::handler_execMetadataChanged;
+    handlerMap[FTL_STR("execPortTypeChanged")] = &DFGExecNotifier::handler_execPortTypeChanged;
+    handlerMap[FTL_STR("execPortTypeSpecChanged")] = &DFGExecNotifier::handler_execPortTypeSpecChanged;
     handlerMap[FTL_STR("execTitleChanged")] = &DFGExecNotifier::handler_execTitleChanged;
-    handlerMap[FTL_STR("execPortDefaultValuesChanged")] = &DFGExecNotifier::handler_execPortDefaultValuesChanged;
+    handlerMap[FTL_STR("execWillDetachPreset")] = &DFGExecNotifier::handler_execWillDetachPreset;
+    handlerMap[FTL_STR("extDepsChanged")] = &DFGExecNotifier::handler_extDepsChanged;
+    handlerMap[FTL_STR("funcCodeChanged")] = &DFGExecNotifier::handler_funcCodeChanged;
+    handlerMap[FTL_STR("instBlockInserted")] = &DFGExecNotifier::handler_instBlockInserted;
+    handlerMap[FTL_STR("instBlockRemoved")] = &DFGExecNotifier::handler_instBlockRemoved;
+    handlerMap[FTL_STR("instExecDidAttachPreset")] = &DFGExecNotifier::handler_instExecDidAttachPreset;
+    handlerMap[FTL_STR("instExecEditWouldSplitFromPresetMayHaveChanged")] = &DFGExecNotifier::handler_instExecEditWouldSplitFromPresetMayHaveChanged;
     handlerMap[FTL_STR("instExecTitleChanged")] = &DFGExecNotifier::handler_instExecTitleChanged;
+    handlerMap[FTL_STR("nodeInserted")] = &DFGExecNotifier::handler_nodeInserted;
     handlerMap[FTL_STR("nodeMetadataChanged")] = &DFGExecNotifier::handler_nodeMetadataChanged;
-    handlerMap[FTL_STR("execPortMetadataChanged")] = &DFGExecNotifier::handler_execPortMetadataChanged;
+    handlerMap[FTL_STR("nodePortDefaultValuesChanged")] = &DFGExecNotifier::handler_nodePortDefaultValuesChanged;
+    handlerMap[FTL_STR("nodePortInserted")] = &DFGExecNotifier::handler_nodePortInserted;
     handlerMap[FTL_STR("nodePortMetadataChanged")] = &DFGExecNotifier::handler_nodePortMetadataChanged;
+    handlerMap[FTL_STR("nodePortRemoved")] = &DFGExecNotifier::handler_nodePortRemoved;
+    handlerMap[FTL_STR("nodePortRenamed")] = &DFGExecNotifier::handler_nodePortRenamed;
+    handlerMap[FTL_STR("nodePortResolvedTypeChanged")] = &DFGExecNotifier::handler_nodePortResolvedTypeChanged;
+    handlerMap[FTL_STR("nodePortsReordered")] = &DFGExecNotifier::handler_nodePortsReordered;
+    handlerMap[FTL_STR("nodePortTypeChanged")] = &DFGExecNotifier::handler_nodePortTypeChanged;
+    handlerMap[FTL_STR("nodeRemoved")] = &DFGExecNotifier::handler_nodeRemoved;
+    handlerMap[FTL_STR("nodeRenamed")] = &DFGExecNotifier::handler_nodeRenamed;
     handlerMap[FTL_STR("portsConnected")] = &DFGExecNotifier::handler_portsConnected;
     handlerMap[FTL_STR("portsDisconnected")] = &DFGExecNotifier::handler_portsDisconnected;
     handlerMap[FTL_STR("refVarPathChanged")] = &DFGExecNotifier::handler_refVarPathChanged;
-    handlerMap[FTL_STR("funcCodeChanged")] = &DFGExecNotifier::handler_funcCodeChanged;
-    handlerMap[FTL_STR("nodePortTypeChanged")] = &DFGExecNotifier::handler_nodePortTypeChanged;
-    handlerMap[FTL_STR("execPortTypeChanged")] = &DFGExecNotifier::handler_execPortTypeChanged;
-    handlerMap[FTL_STR("instExecDidAttachPreset")] = &DFGExecNotifier::handler_instExecDidAttachPreset;
-    handlerMap[FTL_STR("execDidAttachPreset")] = &DFGExecNotifier::handler_execDidAttachPreset;
-    handlerMap[FTL_STR("execWillDetachPreset")] = &DFGExecNotifier::handler_execWillDetachPreset;
-    handlerMap[FTL_STR("extDepsChanged")] = &DFGExecNotifier::handler_extDepsChanged;
   }
   return handlerMap;
 }
@@ -285,6 +286,15 @@ void DFGExecNotifier::handler_nodePortDefaultValuesChanged( FTL::JSONObject cons
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
 
   emit nodePortDefaultValuesChanged( nodeName, portName );
+}
+
+void DFGExecNotifier::handler_execBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+  FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
+  FTL::CStrRef newResolvedTypeName = jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") );
+
+  emit blockPortResolvedTypeChanged( blockName, portName, newResolvedTypeName );
 }
 
 void DFGExecNotifier::handler_execPortResolvedTypeChanged( FTL::JSONObject const *jsonObject )
