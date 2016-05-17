@@ -4,6 +4,7 @@
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/Util/LoadPixmap.h>
 
 #include <QtGui/QPainter>
 #include <QtGui/QCursor>
@@ -311,13 +312,38 @@ void MouseGrabber::invokeConnect(ConnectionTarget * source, ConnectionTarget * t
   }
 }
 
+class ExposePortAction : public QAction
+{
+public:
+
+  ExposePortAction(
+    QObject *parent,
+    Node *node,
+    ConnectionTarget *other,
+    PortType nodeRole
+    )
+    : QAction( parent )
+    // , m_node( node )
+    // , m_other( other )
+    // , m_nodeRole( nodeRole )
+  {
+    setText( "Expose new port" );
+    setIcon( FabricUI::LoadPixmap( "expose-new-port.png" ) );
+  }
+
+private:
+
+  // Node *m_node;
+  // ConnectionTarget *m_other;
+  // PortType m_nodeRole;
+};
+
 QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other, PortType nodeRole)
 {
   QMenu *menu = new QMenu(NULL);
 
   // go through all the node's pins and add
   // those to the menu that can be connected.
-  unsigned int count = 0;
   for(unsigned int i=0;i<node->pinCount();i++)
   {
     Pin *pin = node->pin(i);
@@ -360,15 +386,14 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
     QAction * action = new QAction(label, NULL);
     action->setData(name);
     menu->addAction(action);
-    count++;
   }
 
-  // do we have an empty menu?
-  if (count == 0)
-  {
-    delete menu;
-    menu = NULL;
-  }
+  menu->addSeparator();
+
+  QAction *exposeNewPortAction =
+    new ExposePortAction( menu, node, other, nodeRole );
+  exposeNewPortAction->setEnabled( node->canAddPorts() );
+  menu->addAction( exposeNewPortAction );
 
   // done.
   return menu;

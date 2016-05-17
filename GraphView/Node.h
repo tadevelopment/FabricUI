@@ -187,6 +187,11 @@ namespace FabricUI
       QGraphicsWidget * mainWidget();
       QGraphicsWidget * pinsWidget();
 
+      bool canAddPorts() const
+        { return m_canAddPorts; }
+      void setCanAddPorts( bool canAddPorts )
+        { m_canAddPorts = canAddPorts; }
+
     public slots:
 
       void onConnectionsChanged();
@@ -246,6 +251,8 @@ namespace FabricUI
       bool m_alwaysShowDaisyChainPorts;
 
       std::vector<InstBlock *> m_instBlocks;
+
+      bool m_canAddPorts;
     };
 
 
