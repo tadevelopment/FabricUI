@@ -88,6 +88,7 @@
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddFunc.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddGet.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddGraph.h>
+#include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddInstPort.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddNode.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddPort.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddSet.h>

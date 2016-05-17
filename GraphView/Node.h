@@ -87,6 +87,8 @@ namespace FabricUI
 
       FTL::CStrRef name() const
         { return m_name; }
+      QString name_QS() const
+        { return QString::fromUtf8( m_name.data(), m_name.size() ); }
         
       FTL::CStrRef title() const
         { return m_title; }

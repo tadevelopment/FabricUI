@@ -594,6 +594,9 @@ void DFGNotificationRouter::onNodeInserted(
           );
       }
     }
+
+    FabricCore::DFGExec subExec = exec.getSubExec( nodeName.c_str() );
+    uiNode->setCanAddPorts( !subExec.editWouldSplitFromPreset() );
   }
   else if(nodeType == FabricCore::DFGNodeType_Var)
   {

@@ -3,6 +3,7 @@
 #ifndef __UI_GraphView_MouseGrabber__
 #define __UI_GraphView_MouseGrabber__
 
+#include <QtGui/QAction>
 #include <QtGui/QGraphicsWidget>
 #include <QtGui/QToolTip>
 #include "ConnectionTarget.h"
@@ -18,6 +19,30 @@ namespace FabricUI
     class Graph;
     class ConnectionTarget;
     class Connection;
+
+    class ExposePortAction : public QAction
+    {
+      Q_OBJECT
+      
+    public:
+
+      ExposePortAction(
+        QObject *parent,
+        Node *node,
+        ConnectionTarget *other,
+        PortType portType
+        );
+
+    protected slots:
+
+      void onTriggered();
+
+    private:
+
+      Node *m_node;
+      ConnectionTarget *m_other;
+      PortType m_portType;
+    };
 
     class MouseGrabber : public ConnectionTarget
     {

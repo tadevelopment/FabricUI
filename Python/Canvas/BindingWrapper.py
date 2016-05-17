@@ -80,6 +80,16 @@ class BindingWrapper:
             result.append(QtCore.QPointF(posXs[i], posYs[i]))
         return result
 
+    @staticmethod
+    def portTypeStrToPortType(portTypeStr):
+        portTypeStrLower = portTypeStr.lower()
+        if portTypeStrLower == "io":
+            return self.client.DFG.PortTypes.IO
+        elif portTypeStrLower == "out":
+            return self.client.DFG.PortTypes.Out
+        else:
+            return self.client.DFG.PortTypes.In
+
     def undo(
         self,
         ):
@@ -376,6 +386,35 @@ class BindingWrapper:
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
+        cmd = DFG.DFGUICmd_AddPort(
+            self.binding,
+            execPath,
+            exec_,
+            desiredPortName,
+            self.portTypeStrToPortType(portTypeStr),
+            typeSpec,
+            portToConnect,
+            self.portTypeStrToPortType(connectTypeStr),
+            extDep,
+            metaData,
+            )
+        InvokeCmd(cmd, self.qUndoStack)
+        return cmd.getActualPortName()
+
+    def addInstPort(
+        self,
+        execPath,
+        instName,
+        desiredPortName,
+        portTypeStr,
+        typeSpec,
+        pathToConnect,
+        connectTypeStr,
+        extDep,
+        metaData,
+        ):
+        rootExec = self.binding.getExec()
+        exec_ = rootExec.getSubExec(execPath)
         portTypeStrLower = portTypeStr.lower()
         if portTypeStrLower == "io":
             portType = self.client.DFG.PortTypes.IO
@@ -383,14 +422,15 @@ class BindingWrapper:
             portType = self.client.DFG.PortTypes.Out
         else:
             portType = self.client.DFG.PortTypes.In
-        cmd = DFG.DFGUICmd_AddPort(
+        cmd = DFG.DFGUICmd_AddInstPort(
             self.binding,
             execPath,
             exec_,
+            instName,
             desiredPortName,
             portType,
             typeSpec,
-            portToConnect,
+            pathToConnect,
             extDep,
             metaData,
             )

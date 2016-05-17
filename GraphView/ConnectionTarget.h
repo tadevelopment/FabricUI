@@ -38,6 +38,11 @@ namespace FabricUI
       ~ConnectionTarget();
 
       virtual std::string path() const = 0;
+      QString path_QS() const
+      {
+        std::string p = path();
+        return QString::fromUtf8( p.data(), p.size() );
+      }
 
       virtual bool canConnectTo(
         ConnectionTarget * other,

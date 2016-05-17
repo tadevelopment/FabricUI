@@ -1,9 +1,11 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <FabricUI/GraphView/MouseGrabber.h>
-#include <FabricUI/GraphView/Graph.h>
-#include <FabricUI/GraphView/Pin.h>
+#include <FabricUI/DFG/DFGController.h>
+#include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/MouseGrabber.h>
+#include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/Util/LoadPixmap.h>
 
 #include <QtGui/QPainter>
@@ -312,31 +314,78 @@ void MouseGrabber::invokeConnect(ConnectionTarget * source, ConnectionTarget * t
   }
 }
 
-class ExposePortAction : public QAction
+ExposePortAction::ExposePortAction(
+  QObject *parent,
+  Node *node,
+  ConnectionTarget *other,
+  PortType portType
+  )
+  : QAction( parent )
+  , m_node( node )
+  , m_other( other )
+  , m_portType( portType )
 {
-public:
+  setText( "Expose new port" );
+  setIcon( FabricUI::LoadPixmap( "expose-new-port.png" ) );
+  connect(
+    this, SIGNAL(triggered()),
+    this, SLOT(onTriggered())
+    );
+}
 
-  ExposePortAction(
-    QObject *parent,
-    Node *node,
-    ConnectionTarget *other,
-    PortType nodeRole
-    )
-    : QAction( parent )
-    // , m_node( node )
-    // , m_other( other )
-    // , m_nodeRole( nodeRole )
+void ExposePortAction::onTriggered()
+{
+  QString desiredPortName;
+  QString typeSpec;
+  QString extDep;
+  switch ( m_other->targetType() )
   {
-    setText( "Expose new port" );
-    setIcon( FabricUI::LoadPixmap( "expose-new-port.png" ) );
+    case TargetType_Pin:
+    {
+      FTL::StrRef desiredPortNameStr = static_cast<Pin *>( m_other )->name();
+      desiredPortName =
+        QString::fromUtf8(
+          desiredPortNameStr.data(),
+          desiredPortNameStr.size()
+          );
+    }
+    break;
+
+    case TargetType_Port:
+    {
+      FTL::StrRef desiredPortNameStr = static_cast<Port *>( m_other )->name();
+      desiredPortName =
+        QString::fromUtf8(
+          desiredPortNameStr.data(),
+          desiredPortNameStr.size()
+          );
+    }
+    break;
+
+    default: break;
   }
+  if ( desiredPortName.isEmpty() )
+    return;
 
-private:
-
-  // Node *m_node;
-  // ConnectionTarget *m_other;
-  // PortType m_nodeRole;
-};
+  FabricUI::DFG::DFGController *controller =
+    static_cast<FabricUI::DFG::DFGController *>(
+      m_node->graph()->controller()
+      );
+  FabricUI::DFG::DFGUICmdHandler *cmdHandler = controller->getCmdHandler();
+  cmdHandler->dfgDoAddInstPort(
+    controller->getBinding(),
+    controller->getExecPath_QS(),
+    controller->getExec(),
+    m_node->name_QS(),
+    desiredPortName,
+    PortTypeToDFGPortType( m_portType ),
+    typeSpec,
+    m_other->path_QS(),
+    PortTypeToDFGPortType( m_portType ),
+    extDep,
+    QString() // metadata
+    );
+}
 
 QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other, PortType nodeRole)
 {
@@ -391,7 +440,12 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
   menu->addSeparator();
 
   QAction *exposeNewPortAction =
-    new ExposePortAction( menu, node, other, nodeRole );
+    new ExposePortAction(
+      menu,
+      node,
+      other,
+      nodeRole
+      );
   exposeNewPortAction->setEnabled( node->canAddPorts() );
   menu->addAction( exposeNewPortAction );
 

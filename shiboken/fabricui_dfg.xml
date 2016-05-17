@@ -20,6 +20,7 @@
       <object-type name="DFGUICmd_AddFunc" />
       <object-type name="DFGUICmd_AddGet" />
       <object-type name="DFGUICmd_AddGraph" />
+      <object-type name="DFGUICmd_AddInstPort" />
       <object-type name="DFGUICmd_AddNode" />
       <object-type name="DFGUICmd_AddPort" />
       <object-type name="DFGUICmd_AddSet" />
