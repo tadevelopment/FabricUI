@@ -5,6 +5,7 @@
 
 #include <FabricUI/GraphView/ConnectionTarget.h>
 
+#include <FTL/StrRef.h>
 #include <QtCore/QString>
 #include <QtGui/QColor>
 
@@ -23,7 +24,7 @@ public:
 
   InstBlockHeader(
     InstBlock *instBlock,
-    QString name
+    FTL::StrRef name
     );
 
   InstBlock *instBlock()

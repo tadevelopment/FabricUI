@@ -1101,14 +1101,14 @@ void DFGController::updateNodeErrors()
   }
 }
 
-void DFGController::log(const char * message)
+void DFGController::log(const char * message) const
 {
   DFGLogWidget::log(message);
   if(m_logFunc)
     (*m_logFunc)(message);
 }
 
-void DFGController::logError(const char * message)
+void DFGController::logError(const char * message) const
 {
   std::string m = "Error: ";
   m += message;
@@ -1224,12 +1224,12 @@ bool DFGController::canConnectTo(
   char const *pathA,
   char const *pathB,
   std::string &failureReason
-  )
+  ) const
 {
   try
   {
     FabricCore::DFGStringResult result =
-      getExec().canConnectTo( pathA, pathB, "\n" );
+      m_exec.canConnectTo( pathA, pathB, "\n" );
     char const *resultData;
     uint32_t resultSize;
     result.getStringDataAndLength( resultData, resultSize );

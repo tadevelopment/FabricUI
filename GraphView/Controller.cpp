@@ -195,7 +195,7 @@ bool Controller::canConnectTo(
   char const *pathA,
   char const *pathB,
   std::string &failureReason
-  )
+  ) const
 {
   return true;
 }

@@ -10,7 +10,7 @@
 #include <FTL/CStrRef.h>
 
 #include "PortType.h"
-#include "PinLabel.h"
+#include "TextContainer.h"
 #include "PinCircle.h"
 #include "ConnectionTarget.h"
 #include "GraphicItemTypes.h"
@@ -48,7 +48,7 @@ namespace FabricUI
       virtual std::string path() const;
 
       virtual char const * label() const;
-      PinLabel * labelWidget() { return m_label; }
+      TextContainer * labelWidget() { return m_label; }
       virtual PortType portType() const;
       QColor color() const;
       void setColor(QColor color, bool quiet = false, bool performUpdate = true);
@@ -109,7 +109,7 @@ namespace FabricUI
       bool m_highlighted;
       QColor m_color;
       int m_index;
-      PinLabel * m_label;
+      TextContainer * m_label;
       PinCircle * m_inCircle;
       PinCircle * m_outCircle;
       bool m_drawState;

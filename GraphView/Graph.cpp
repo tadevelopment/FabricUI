@@ -78,16 +78,6 @@ void Graph::initialize()
   setLayout(layout);
 }
 
-Controller * Graph::controller()
-{
-  return m_controller;
-}
-
-void Graph::setController(Controller * c)
-{
-  m_controller = c;
-}
-
 QGraphicsWidget * Graph::itemGroup()
 {
   return m_mainPanel->itemGroup();

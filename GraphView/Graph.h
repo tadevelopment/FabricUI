@@ -55,8 +55,13 @@ namespace FabricUI
         { return m_config; }
 
       QGraphicsWidget * itemGroup();
-      virtual Controller * controller();
-      virtual void setController(Controller * c);
+
+      Controller *controller()
+        { return m_controller; }
+      Controller const *controller() const
+        { return m_controller; }
+      void setController( Controller * c )
+        { m_controller = c; }
 
       bool isEditable() const { return m_isEditable; }
       void setEditable(bool state) { m_isEditable = state; }

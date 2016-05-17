@@ -5,6 +5,7 @@
 #include <FabricUI/GraphView/BackDropNode.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGNotificationRouter.h>
@@ -867,31 +868,28 @@ void DFGNotificationRouter::onInstBlockPortInserted(
   if ( !uiInstBlock )
     return;
 
-  // FTL::CStrRef dataType = jsonObject->getStringOrEmpty( FTL_STR("type") );
+  FTL::CStrRef dataType = portDesc->getStringOrEmpty( FTL_STR("type") );
 
-  // QColor color = m_config.getColorForDataType(dataType);
+  QColor color = m_config.getColorForDataType(dataType);
 
-  // FTL::CStrRef nodePortType =
-  //   jsonObject->getStringOrEmpty( FTL_STR("outsidePortType") );
-  // GraphView::PortType pType = GraphView::PortType_Input;
-  // if(nodePortType == FTL_STR("Out"))
-  //   pType = GraphView::PortType_Output;
-  // else if(nodePortType == FTL_STR("IO"))
-  //   pType = GraphView::PortType_IO;
+  FTL::CStrRef nodePortType =
+    portDesc->getStringOrEmpty( FTL_STR("outsidePortType") );
+  GraphView::PortType pType = GraphView::PortType_Input;
+  if(nodePortType == FTL_STR("Out"))
+    pType = GraphView::PortType_Output;
+  else if(nodePortType == FTL_STR("IO"))
+    pType = GraphView::PortType_IO;
 
-  // GraphView::InstBlock * uiInstBlock =
-  //   new GraphView::InstBlock(
-  //     uiNode,
-  //     portName,
-  //     pType,
-  //     color,
-  //     portName
-  //     );
-  // if ( !dataType.empty() )
-  //   uiPin->setDataType(dataType);
-  // uiNode->addPin( uiPin );
-
-  // checkAndFixNodePortOrder(subExec, uiNode);  // [FE-5716]
+  GraphView::InstBlockPort *uiInstBlockPort =
+    new GraphView::InstBlockPort(
+      uiInstBlock,
+      portDesc->getString( FTL_STR("name") ),
+      pType,
+      color
+      );
+  if ( !dataType.empty() )
+    uiInstBlockPort->setDataType( dataType );
+  uiInstBlock->insertInstBlockPortAtIndex( portIndex, uiInstBlockPort );
 }
 
 void DFGNotificationRouter::onInstBlockInserted(
@@ -911,10 +909,7 @@ void DFGNotificationRouter::onInstBlockInserted(
   FTL::CStrRef blockName = blockDesc->getString( FTL_STR("name") );
 
   GraphView::InstBlock *uiInstBlock =
-    new GraphView::InstBlock(
-      uiNode,
-      QString::fromUtf8( blockName.data(), blockName.size() )
-      );
+    new GraphView::InstBlock( uiNode, blockName );
   uiNode->insertInstBlockAtIndex( blockIndex, uiInstBlock );
 
   FTL::JSONArray const *portsDesc = blockDesc->getArray( FTL_STR("ports") );

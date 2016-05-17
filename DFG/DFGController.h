@@ -330,8 +330,8 @@ namespace FabricUI
 
       virtual bool reloadExtensionDependencies(char const * path);
 
-      virtual void log(const char * message);
-      virtual void logError(const char * message);
+      void log(const char * message) const;
+      void logError(const char * message) const;
 
       virtual void setLogFunc(LogFunc func);
 
@@ -341,7 +341,7 @@ namespace FabricUI
         char const *pathA,
         char const *pathB,
         std::string &failureReason
-        );
+        ) const;
 
       virtual QStringList getPresetPathsFromSearch(char const * search, bool includePresets = true, bool includeNameSpaces = false);
 

@@ -5,12 +5,16 @@
 #ifndef __UI_GraphView_InstBlock__
 #define __UI_GraphView_InstBlock__
 
+#include <FTL/StrRef.h>
 #include <QtGui/QGraphicsWidget>
+
+class QGraphicsLinearLayout;
 
 namespace FabricUI {
 namespace GraphView {
 
 class InstBlockHeader;
+class InstBlockPort;
 class Node;
 
 class InstBlock : public QGraphicsWidget
@@ -21,11 +25,29 @@ public:
 
   InstBlock(
     Node *node,
-    QString name
+    FTL::StrRef name
     );
+
+  FTL::CStrRef name() const
+    { return m_name; }
 
   Node *node()
     { return m_node; }
+  Node const *node() const
+    { return m_node; }
+
+  std::string path() const;
+
+  InstBlockHeader *header()
+    { return m_instBlockHeader; }
+
+  void insertInstBlockPortAtIndex(
+    unsigned index,
+    InstBlockPort *instBlockPort
+    );
+  void removeInstBlockPortAtIndex(
+    unsigned index
+    );
 
 protected:
 
@@ -38,7 +60,10 @@ protected:
 private:
 
   Node *m_node;
+  std::string m_name;
   InstBlockHeader *m_instBlockHeader;
+  std::vector<InstBlockPort *> m_instBlockPorts;
+  QGraphicsLinearLayout *m_layout;
 };
 
 } // namespace GraphView

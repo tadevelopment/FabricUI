@@ -13,7 +13,7 @@ using namespace FabricUI::GraphView;
 
 InstBlockHeader::InstBlockHeader(
   InstBlock *instBlock,
-  QString name
+  FTL::StrRef name
   )
   : ConnectionTarget( instBlock )
   , m_instBlock( instBlock )
@@ -41,7 +41,7 @@ InstBlockHeader::InstBlockHeader(
 
   m_nodeLabel = new NodeLabel(
     this,
-    name,
+    QString::fromUtf8( name.data(), name.size() ),
     graphConfig.nodeFontColor,
     graphConfig.nodeFontHighlightColor,
     graphConfig.nodeFont

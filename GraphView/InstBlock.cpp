@@ -5,6 +5,7 @@
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
 #include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/InstBlockHeader.h>
 
 #include <QtGui/QGraphicsLinearLayout>
@@ -15,21 +16,22 @@ namespace GraphView {
 
 InstBlock::InstBlock(
   Node *node,
-  QString name
+  FTL::StrRef name
   )
   : m_node( node )
+  , m_name( name )
 {
   Graph const *graph = node->graph();
   GraphConfig const &config = graph->config();
 
-  QGraphicsLinearLayout *layout = new QGraphicsLinearLayout();
-  layout->setContentsMargins( 0, 0, 0, 0 );
-  layout->setSpacing( 1 );
-  layout->setOrientation( Qt::Vertical );
+  m_layout = new QGraphicsLinearLayout();
+  m_layout->setContentsMargins( 0, 0, 0, 0 );
+  m_layout->setSpacing( 1 );
+  m_layout->setOrientation( Qt::Vertical );
 
   m_instBlockHeader = new InstBlockHeader( this, name );
-  layout->addItem( m_instBlockHeader );
-  layout->setAlignment( m_instBlockHeader, Qt::AlignHCenter | Qt::AlignVCenter );
+  m_layout->addItem( m_instBlockHeader );
+  m_layout->setAlignment( m_instBlockHeader, Qt::AlignHCenter | Qt::AlignVCenter );
 
   setContentsMargins( 8, 1, 8, 1 );
   setMinimumWidth( config.instBlockMinWidth );
@@ -38,7 +40,7 @@ InstBlock::InstBlock(
     QSizePolicy::MinimumExpanding,
     QSizePolicy::MinimumExpanding
     ) );
-  setLayout( layout );
+  setLayout( m_layout );
 
 
   // if ( !isBackDropNode() )
@@ -56,6 +58,31 @@ InstBlock::InstBlock(
   // m_pinsLayout->setContentsMargins(0, m_graph->config().nodeSpaceAbovePorts, 0, m_graph->config().nodeSpaceBelowPorts);
   // m_pinsLayout->setSpacing(m_graph->config().nodePinSpacing);
   // m_pinsWidget->setLayout(m_pinsLayout);
+}
+
+std::string InstBlock::path() const
+{
+  std::string result = m_node->name();
+  result += '.';
+  result += m_name;
+  return result;
+}
+
+void InstBlock::insertInstBlockPortAtIndex(
+  unsigned index,
+  InstBlockPort *instBlockPort
+  )
+{
+  m_instBlockPorts.insert( m_instBlockPorts.begin() + index, instBlockPort );
+  m_layout->insertItem( 1 + index, instBlockPort );
+}
+
+void InstBlock::removeInstBlockPortAtIndex(
+  unsigned index
+  )
+{
+  m_layout->removeAt( 1 + index );
+  m_instBlockPorts.erase( m_instBlockPorts.begin() + index );
 }
 
 void InstBlock::paint(

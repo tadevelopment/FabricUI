@@ -1,8 +1,11 @@
+//
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+//
 
-#include <FabricUI/GraphView/Pin.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/PinCircle.h>
-#include <FabricUI/GraphView/Node.h>
+#include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/InstBlockHeader.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
 #include <FabricUI/GraphView/ProxyPort.h>
@@ -11,21 +14,18 @@
 
 using namespace FabricUI::GraphView;
 
-Pin::Pin(
-  Node * parent,
+InstBlockPort::InstBlockPort(
+  InstBlock *instBlock,
   FTL::StrRef name,
   PortType pType,
-  QColor color,
-  FTL::StrRef label
+  QColor color
   )
-  : ConnectionTarget(parent->pinsWidget())
-  , m_node( parent )
+  : ConnectionTarget( instBlock )
+  , m_instBlock( instBlock )
   , m_name( name.data(), name.size() )
-  , m_labelCaption( label.data(), label.size() )
+  , m_labelCaption( name.data(), name.size() )
 {
   m_portType = pType;
-  if ( m_labelCaption.empty() )
-    m_labelCaption = m_name;
   m_color = color;
   m_index = 0;
 
@@ -48,6 +48,8 @@ Pin::Pin(
   m_inCircle = NULL;
   m_outCircle = NULL;
 
+  Node *parentNode = node();
+
   if(portType() == PortType_Input || portType() == PortType_IO)
   {
     m_inCircle = new PinCircle(this, PortType_Input, m_color);
@@ -68,7 +70,7 @@ Pin::Pin(
           this, SIGNAL(inCircleScenePositionChanged())
           );
       }
-      if ( graphicsItem == m_node )
+      if ( graphicsItem == parentNode )
         break;
       graphicsItem = graphicsItem->parentItem();
     }
@@ -88,13 +90,15 @@ Pin::Pin(
     }
   }
 
-  if(m_labelCaption.length() > 0)
-  {
-    m_label = new TextContainer(this, QSTRING_FROM_STL_UTF8(m_labelCaption), config.pinFontColor, config.pinFontHighlightColor, config.pinFont);
-
-    layout->addItem(m_label);
-    layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
-  }
+  m_label = new TextContainer(
+    this,
+    QSTRING_FROM_STL_UTF8(m_labelCaption),
+    config.pinFontColor,
+    config.pinFontHighlightColor,
+    config.pinFont
+    );
+  layout->addItem(m_label);
+  layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
 
   if(portType() != PortType_Output)
   {
@@ -132,12 +136,12 @@ Pin::Pin(
         this, SIGNAL(outCircleScenePositionChanged())
         );
     }
-    if ( graphicsItem == m_node )
+    if ( graphicsItem == parentNode )
       break;
     graphicsItem = graphicsItem->parentItem();
   }
 
-  graphicsItem = m_node->header()->inCircle();
+  graphicsItem = instBlock->header()->inCircle();
   while ( graphicsItem )
   {
     if ( QGraphicsObject const *graphicsObject = graphicsItem->toGraphicsObject() )
@@ -151,12 +155,12 @@ Pin::Pin(
         this, SIGNAL(inCircleScenePositionChanged())
         );
     }
-    if ( graphicsItem == m_node )
+    if ( graphicsItem == parentNode )
       break;
     graphicsItem = graphicsItem->parentItem();
   }
 
-  graphicsItem = m_node->header()->outCircle();
+  graphicsItem = instBlock->header()->outCircle();
   while ( graphicsItem )
   {
     if ( QGraphicsObject const *graphicsObject = graphicsItem->toGraphicsObject() )
@@ -170,46 +174,56 @@ Pin::Pin(
         this, SIGNAL(outCircleScenePositionChanged())
         );
     }
-    if ( graphicsItem == m_node )
+    if ( graphicsItem == parentNode )
       break;
     graphicsItem = graphicsItem->parentItem();
   }
 }
 
-Graph * Pin::graph()
+Node *InstBlockPort::node()
+{
+  return instBlock()->node();
+}
+
+Node const *InstBlockPort::node() const
+{
+  return instBlock()->node();
+}
+
+Graph *InstBlockPort::graph()
 {
   return node()->graph();
 }
 
-const Graph * Pin::graph() const
+Graph const *InstBlockPort::graph() const
 {
   return node()->graph();
 }
 
-std::string Pin::path() const
+std::string InstBlockPort::path() const
 {
-  std::string result = node()->name();
+  std::string result = instBlock()->path();
   result += graph()->config().pathSep;
   result += m_name;
   return result;
 }
 
-char const * Pin::label() const
+char const * InstBlockPort::label() const
 {
   return m_labelCaption.c_str();
 }
 
-PortType Pin::portType() const
+PortType InstBlockPort::portType() const
 {
   return m_portType;
 }
 
-QColor Pin::color() const
+QColor InstBlockPort::color() const
 {
   return m_color;
 }
 
-void Pin::setColor(QColor color, bool quiet, bool performUpdate)
+void InstBlockPort::setColor(QColor color, bool quiet, bool performUpdate)
 {
   if(inCircle())
     inCircle()->setColor(color);
@@ -225,22 +239,22 @@ void Pin::setColor(QColor color, bool quiet, bool performUpdate)
     update();
 }
 
-int Pin::index() const
+int InstBlockPort::index() const
 {
   return m_index;
 }
 
-void Pin::setIndex(int i)
+void InstBlockPort::setIndex(int i)
 {
   m_index = i;
 }
 
-bool Pin::highlighted() const
+bool InstBlockPort::highlighted() const
 {
   return m_highlighted;
 }
 
-void Pin::setHighlighted(bool state)
+void InstBlockPort::setHighlighted(bool state)
 {
   m_highlighted = state;
   if(inCircle())
@@ -252,7 +266,7 @@ void Pin::setHighlighted(bool state)
   setColor(m_color, true);
 }
 
-void Pin::setDataType(FTL::CStrRef dataType)
+void InstBlockPort::setDataType(FTL::CStrRef dataType)
 {
   m_dataType = dataType;
   setToolTip(dataType.c_str());
@@ -277,41 +291,52 @@ void Pin::setDataType(FTL::CStrRef dataType)
   }
 }
 
-PinCircle * Pin::inCircle()
+PinCircle * InstBlockPort::inCircle()
 {
   return m_inCircle;
 }
 
-const PinCircle * Pin::inCircle() const
+const PinCircle * InstBlockPort::inCircle() const
 {
   return m_inCircle;
 }
 
-PinCircle * Pin::outCircle()
+PinCircle * InstBlockPort::outCircle()
 {
   return m_outCircle;
 }
 
-const PinCircle * Pin::outCircle() const
+const PinCircle * InstBlockPort::outCircle() const
 {
   return m_outCircle;
 }
 
-bool Pin::canConnectTo(
+bool InstBlockPort::canConnectTo(
   ConnectionTarget * other,
   std::string &failureReason
   ) const
 {
   switch(other->targetType())
   {
+    case TargetType_InstBlockPort:
+    {
+      InstBlockPort * otherInstBlockPort = (InstBlockPort *)other;
+      if ( this == otherInstBlockPort
+        || otherInstBlockPort->node() == this->node()
+        || otherInstBlockPort->portType() == PortType_Output )
+        return false;
+      return graph()->controller()->canConnectTo(
+        path().c_str(), otherInstBlockPort->path().c_str(), failureReason
+        );
+    }
     case TargetType_Pin:
     {
       Pin * otherPin = (Pin *)other;
-      if ( this == otherPin
+      if ( this == other
         || otherPin->node() == this->node()
         || otherPin->portType() == PortType_Output )
         return false;
-      return m_node->graph()->controller()->canConnectTo(
+      return graph()->controller()->canConnectTo(
         path().c_str(), otherPin->path().c_str(), failureReason
         );
     }
@@ -321,7 +346,7 @@ bool Pin::canConnectTo(
       if ( this == other
         || otherPort->portType() == PortType_Output )
         return false;
-      return m_node->graph()->controller()->canConnectTo(
+      return graph()->controller()->canConnectTo(
         path().c_str(), otherPort->path().c_str(), failureReason
         );
     }
@@ -342,7 +367,7 @@ bool Pin::canConnectTo(
   }
 }
 
-QPointF Pin::connectionPos(PortType pType) const
+QPointF InstBlockPort::connectionPos(PortType pType) const
 {
   PinCircle const *pinCircle;
   if ( !drawState() )
@@ -366,7 +391,7 @@ QPointF Pin::connectionPos(PortType pType) const
     return QPointF();
 }
 
-void Pin::setDrawState(bool flag)
+void InstBlockPort::setDrawState(bool flag)
 {
   if ( m_drawState != flag )
   {
@@ -392,13 +417,13 @@ void Pin::setDrawState(bool flag)
   }
 }
 
-void Pin::setDaisyChainCircleVisible(bool flag)
+void InstBlockPort::setDaisyChainCircleVisible(bool flag)
 {
   if( portType() == PortType_Input )
     m_outCircle->setDaisyChainCircleVisible( flag );
 }
 
-void Pin::setName( FTL::StrRef newName )
+void InstBlockPort::setName( FTL::StrRef newName )
 {
   if ( newName != m_name )
   {
@@ -410,7 +435,7 @@ void Pin::setName( FTL::StrRef newName )
   }
 }
 
-bool Pin::selected() const
+bool InstBlockPort::selected() const
 {
-  return m_node->selected();
+  return node()->selected();
 }

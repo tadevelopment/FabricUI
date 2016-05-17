@@ -112,7 +112,7 @@ namespace FabricUI
         char const *pathA,
         char const *pathB,
         std::string &failureReason
-        );
+        ) const;
 
       bool gvcDoRemoveConnections(const std::vector<Connection*> & conns);
 
