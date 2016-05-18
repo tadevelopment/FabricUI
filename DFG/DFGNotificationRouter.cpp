@@ -696,6 +696,7 @@ void DFGNotificationRouter::onExecBlockInserted(
   GraphView::Node *uiNode = uiGraph->addBlockNode( blockName, blockName );
   if ( !uiNode )
     return;
+  uiNode->setCanAddPorts( true );
 
   uiNode->setColor( m_config.blockNodeDefaultColor );
   uiNode->setTitleColor( m_config.blockLabelDefaultColor );

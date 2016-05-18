@@ -287,6 +287,20 @@ public:
     QPointF pos
     );
 
+  virtual QString dfgDoAddBlockPort(
+    FabricCore::DFGBinding const &binding,
+    QString execPath,
+    FabricCore::DFGExec const &exec,
+    QString blockName,
+    QString desiredPortName,
+    FabricCore::DFGPortType portType,
+    QString typeSpec,
+    QString pathToConnect,
+    FabricCore::DFGPortType connectType,
+    QString extDep,
+    QString metaData
+    );
+
 protected:
 
   class WrappedCommand;

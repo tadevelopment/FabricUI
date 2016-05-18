@@ -335,56 +335,80 @@ ExposePortAction::ExposePortAction(
 
 void ExposePortAction::onTriggered()
 {
-  QString desiredPortName;
-  QString typeSpec;
-  QString extDep;
+  FTL::StrRef desiredPortNameStr;
+  FTL::StrRef typeSpecStr;
   switch ( m_other->targetType() )
   {
     case TargetType_Pin:
     {
-      FTL::StrRef desiredPortNameStr = static_cast<Pin *>( m_other )->name();
-      desiredPortName =
-        QString::fromUtf8(
-          desiredPortNameStr.data(),
-          desiredPortNameStr.size()
-          );
+      Pin *otherPin = static_cast<Pin *>( m_other );
+      desiredPortNameStr = otherPin->name();
+      typeSpecStr = otherPin->dataType();
     }
     break;
 
     case TargetType_Port:
     {
-      FTL::StrRef desiredPortNameStr = static_cast<Port *>( m_other )->name();
-      desiredPortName =
-        QString::fromUtf8(
-          desiredPortNameStr.data(),
-          desiredPortNameStr.size()
-          );
+      Port *otherPort = static_cast<Port *>( m_other );
+      desiredPortNameStr = otherPort->name();
+      typeSpecStr = otherPort->dataType();
     }
     break;
 
     default: break;
   }
-  if ( desiredPortName.isEmpty() )
+  if ( desiredPortNameStr.empty() )
     return;
+
+  QString desiredPortName =
+    QString::fromUtf8( desiredPortNameStr.data(), desiredPortNameStr.size() );
+  QString typeSpec =
+    QString::fromUtf8( typeSpecStr.data(), typeSpecStr.size() );
+  QString extDep;
 
   FabricUI::DFG::DFGController *controller =
     static_cast<FabricUI::DFG::DFGController *>(
       m_node->graph()->controller()
       );
   FabricUI::DFG::DFGUICmdHandler *cmdHandler = controller->getCmdHandler();
-  cmdHandler->dfgDoAddInstPort(
-    controller->getBinding(),
-    controller->getExecPath_QS(),
-    controller->getExec(),
-    m_node->name_QS(),
-    desiredPortName,
-    PortTypeToDFGPortType( m_portType ),
-    typeSpec,
-    m_other->path_QS(),
-    PortTypeToDFGPortType( m_portType ),
-    extDep,
-    QString() // metadata
-    );
+  switch ( m_node->getNodeType() )
+  {
+    case Node::NodeType_Inst:
+      cmdHandler->dfgDoAddInstPort(
+        controller->getBinding(),
+        controller->getExecPath_QS(),
+        controller->getExec(),
+        m_node->name_QS(),
+        desiredPortName,
+        PortTypeToDFGPortType( m_portType ),
+        typeSpec,
+        m_other->path_QS(),
+        PortTypeToDFGPortType( m_portType ),
+        extDep,
+        QString() // metadata
+        );
+      break;
+      
+    case Node::NodeType_Block:
+      cmdHandler->dfgDoAddBlockPort(
+        controller->getBinding(),
+        controller->getExecPath_QS(),
+        controller->getExec(),
+        m_node->name_QS(),
+        desiredPortName,
+        PortTypeToDFGPortType( m_portType ),
+        typeSpec,
+        m_other->path_QS(),
+        PortTypeToDFGPortType( m_portType ),
+        extDep,
+        QString() // metadata
+        );
+      break;
+
+    default:
+      assert( false );
+      break;
+  }
 }
 
 QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other, PortType nodeRole)
@@ -437,17 +461,27 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
     menu->addAction(action);
   }
 
-  menu->addSeparator();
+  if ( !!other )
+  {
+    menu->addSeparator();
 
-  QAction *exposeNewPortAction =
-    new ExposePortAction(
-      menu,
-      node,
-      other,
-      nodeRole
-      );
-  exposeNewPortAction->setEnabled( node->canAddPorts() );
-  menu->addAction( exposeNewPortAction );
+    QAction *exposeNewPortAction =
+      new ExposePortAction(
+        menu,
+        node,
+        other,
+        nodeRole
+        );
+    exposeNewPortAction->setEnabled( node->canAddPorts() );
+    menu->addAction( exposeNewPortAction );
+  }
+
+  if ( menu->isEmpty() )
+  {
+    QAction *action = new QAction( "No ports can be connected", menu );
+    action->setEnabled( false );
+    menu->addAction( action );
+  }
 
   // done.
   return menu;

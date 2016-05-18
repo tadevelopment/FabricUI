@@ -84,6 +84,15 @@ protected:
     }
   }
 
+  void appendDesc_BlockName(
+    QString blockName,
+    QString &desc
+    )
+  {
+    desc += "block ";
+    appendDesc_Path( blockName, desc );
+  }
+
   void appendDesc_NodeName(
     QString nodeName,
     QString &desc
