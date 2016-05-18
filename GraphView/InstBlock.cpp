@@ -24,16 +24,18 @@ InstBlock::InstBlock(
   Graph const *graph = node->graph();
   GraphConfig const &config = graph->config();
 
+  m_pinRadius = config.pinRadius;
+
   m_layout = new QGraphicsLinearLayout();
-  m_layout->setContentsMargins( 0, 0, 0, 0 );
-  m_layout->setSpacing( 1 );
+  m_layout->setContentsMargins( 0, 0, 0, 4 );
+  m_layout->setSpacing( 4 );
   m_layout->setOrientation( Qt::Vertical );
 
   m_instBlockHeader = new InstBlockHeader( this, name );
   m_layout->addItem( m_instBlockHeader );
   m_layout->setAlignment( m_instBlockHeader, Qt::AlignHCenter | Qt::AlignVCenter );
 
-  setContentsMargins( 8, 1, 8, 1 );
+  setContentsMargins( 7, 1, 7, 1 );
   setMinimumWidth( config.instBlockMinWidth );
   setMinimumHeight( config.instBlockMinHeight );
   setSizePolicy( QSizePolicy(
@@ -99,9 +101,15 @@ void InstBlock::paint(
   painter->setBrush( m_node->titleColor() );
 
   QRectF rect = contentsRect();
-  rect.adjust( 6, 0, -6, 0 );
+  rect.adjust( m_pinRadius, 0, -m_pinRadius, 0 );
 
   painter->drawRect( rect );
+
+  qreal headerHeight = m_instBlockHeader->boundingRect().height();
+  painter->drawLine(
+    rect.topLeft() + QPointF( 0, headerHeight ),
+    rect.topRight() + QPointF( 0, headerHeight )
+    );
 
   QGraphicsWidget::paint(painter, option, widget);
 }

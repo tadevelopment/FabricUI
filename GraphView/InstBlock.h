@@ -64,6 +64,7 @@ private:
   InstBlockHeader *m_instBlockHeader;
   std::vector<InstBlockPort *> m_instBlockPorts;
   QGraphicsLinearLayout *m_layout;
+  qreal m_pinRadius;
 };
 
 } // namespace GraphView
