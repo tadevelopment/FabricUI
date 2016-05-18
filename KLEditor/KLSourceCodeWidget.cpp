@@ -2,6 +2,8 @@
 
 #include "KLSourceCodeWidget.h"
 
+#include <FabricUI/Util/DocUrl.h>
+
 #include <QtGui/QTextEdit>
 #include <QtGui/QPainter>
 #include <QtGui/QPaintEvent>
@@ -11,7 +13,6 @@
 #include <QtGui/QToolTip>
 #include <QtGui/QMenu>
 #include <QtGui/QAction>
-#include <QtGui/QDesktopServices>
 #include <QtCore/QUrl>
 
 #include <FTL/Config.h>
@@ -19,6 +20,7 @@
 #include <limits.h>
 
 using namespace FabricServices;
+using namespace FabricUI;
 using namespace FabricUI::KLEditor;
 
 KLSourceCodeWidget::KLSourceCodeWidget(QWidget * parent, FabricServices::ASTWrapper::KLASTManager * manager, const EditorConfig & config)
@@ -614,8 +616,8 @@ void KLSourceCodeWidget::contextMenuOpenDocs()
 
   if(urlSuffix.length() > 0)
   {
-    QUrl url = (m_config.docUrlPrefix + urlSuffix);
-    QDesktopServices::openUrl(url);
+    QString url = (m_config.docUrlPrefix + urlSuffix);
+    Util::DocUrl::openUrl(url, Util::DocUrl::useLocalDoc());
   }
 }
 

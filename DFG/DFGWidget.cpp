@@ -19,6 +19,7 @@
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 #include <FabricUI/Util/UIRange.h>
+#include <FabricUI/Util/DocUrl.h>
 #include <FTL/FS.h>
 #include <Persistence/RTValToJSONEncoder.hpp>
 #include <QtCore/QCoreApplication>
@@ -27,7 +28,6 @@
 #include <QtGui/QApplication>
 #include <QtGui/QColorDialog>
 #include <QtGui/QCursor>
-#include <QtGui/QDesktopServices>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QSplitter>
@@ -722,8 +722,7 @@ void DFGWidget::onNodeAction(QAction * action)
       FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
       uiDocUrl = subExec.getMetadata( "uiDocUrl" );
     }
-    if(uiDocUrl.length() > 0)
-      QDesktopServices::openUrl(uiDocUrl);
+    Util::DocUrl::openUrl(uiDocUrl, Util::DocUrl::useLocalDoc());
   }
   else if(action->text() == DFG_INSPECT_PRESET)
   {
