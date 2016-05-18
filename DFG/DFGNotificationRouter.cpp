@@ -374,9 +374,16 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
       onInstBlockPortInserted(
         jsonObject->getString( FTL_STR("instName") ),
         jsonObject->getSInt32( FTL_STR("blockIndex") ),
-        jsonObject->getString( FTL_STR("blockName") ),
         jsonObject->getSInt32( FTL_STR("portIndex") ),
         jsonObject->getObject( FTL_STR("portDesc") )
+        );
+    }
+    else if( descStr == FTL_STR("instBlockPortRemoved") )
+    {
+      onInstBlockPortRemoved(
+        jsonObject->getString( FTL_STR("instName") ),
+        jsonObject->getSInt32( FTL_STR("blockIndex") ),
+        jsonObject->getSInt32( FTL_STR("portIndex") )
         );
     }
     else if( descStr == FTL_STR("instBlockRemoved") )
@@ -401,6 +408,15 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->getString( FTL_STR("blockName") ),
         jsonObject->getSInt32( FTL_STR("portIndex") ),
         jsonObject->getObject( FTL_STR("portDesc") )
+        );
+    }
+    else if( descStr == FTL_STR("execBlockPortRemoved") )
+    {
+      onExecBlockPortRemoved(
+        jsonObject->getSInt32( FTL_STR("blockIndex") ),
+        jsonObject->getString( FTL_STR("blockName") ),
+        jsonObject->getSInt32( FTL_STR("portIndex") ),
+        jsonObject->getString( FTL_STR("portName") )
         );
     }
     else if( descStr == FTL_STR("execBlockRemoved") )
@@ -768,6 +784,28 @@ void DFGNotificationRouter::onExecBlockPortInserted(
   uiNode->addPin( uiPin );
 }
 
+void DFGNotificationRouter::onExecBlockPortRemoved(
+  int blockIndex,
+  FTL::CStrRef blockName,
+  int portIndex,
+  FTL::CStrRef portName
+  )
+{
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+
+  GraphView::Node *uiNode = uiGraph->node( blockName );
+  if ( !uiNode )
+    return;
+
+  GraphView::Pin *uiPin = uiNode->pin( portName );
+  if ( !uiPin )
+    return;
+
+  uiNode->removePin( uiPin );
+}
+
 void DFGNotificationRouter::onNodeRemoved(
   FTL::CStrRef nodeName
   )
@@ -855,7 +893,6 @@ void DFGNotificationRouter::onNodePortInserted(
 void DFGNotificationRouter::onInstBlockPortInserted(
   FTL::CStrRef instName,
   int blockIndex,
-  FTL::CStrRef blockName,
   int portIndex,
   FTL::JSONObject const *portDesc
   )
@@ -923,7 +960,6 @@ void DFGNotificationRouter::onInstBlockInserted(
     onInstBlockPortInserted(
       instName,
       blockIndex,
-      blockName,
       portIndex,
       portDesc
       );
@@ -946,6 +982,27 @@ void DFGNotificationRouter::onNodePortRemoved(
   if(!uiPin)
     return;
   uiNode->removePin( uiPin );
+}
+
+void DFGNotificationRouter::onInstBlockPortRemoved(
+  FTL::CStrRef instName,
+  int blockIndex,
+  int portIndex
+  )
+{
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+
+  GraphView::Node *uiNode = uiGraph->node( instName );
+  if ( !uiNode )
+    return;
+
+  GraphView::InstBlock *uiInstBlock = uiNode->instBlockAtIndex( blockIndex );
+  if ( !uiInstBlock )
+    return;
+  
+  uiInstBlock->removeInstBlockPortAtIndex( portIndex );
 }
 
 void DFGNotificationRouter::onInstBlockRemoved(

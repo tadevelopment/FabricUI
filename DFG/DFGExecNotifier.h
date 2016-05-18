@@ -119,20 +119,18 @@ signals:
 
   // The executable's blocks
 
-  void instBlockInserted(
-    FTL::CStrRef instName,
-    unsigned blockIndex,
-    FTL::CStrRef blockName
-    );
-
-  void instBlockRemoved(
-    FTL::CStrRef instName,
-    unsigned blockIndex,
-    FTL::CStrRef blockName
-    );
-
   void blockInserted(
     FTL::CStrRef blockName
+    );
+
+  void blockPortInserted(
+    FTL::CStrRef blockName,
+    FTL::CStrRef portName
+    );
+
+  void blockPortRemoved(
+    FTL::CStrRef blockName,
+    FTL::CStrRef portName
     );
 
   void blockRemoved(
@@ -189,6 +187,28 @@ signals:
   void refVarPathChanged(
     FTL::CStrRef refName,
     FTL::CStrRef newVarPath
+    );
+
+  void instBlockInserted(
+    FTL::CStrRef instName,
+    FTL::CStrRef blockName
+    );
+
+  void instBlockPortInserted(
+    FTL::CStrRef instName,
+    FTL::CStrRef blockName,
+    FTL::CStrRef portName
+    );
+
+  void instBlockPortRemoved(
+    FTL::CStrRef instName,
+    FTL::CStrRef blockName,
+    FTL::CStrRef portName
+    );
+
+  void instBlockRemoved(
+    FTL::CStrRef instName,
+    FTL::CStrRef blockName
     );
 
   // The executable's nodes' ports
@@ -264,6 +284,13 @@ private:
     FTL::JSONObject const *jsonObject
     );
 
+  void handler_execBlockInserted( FTL::JSONObject const *jsonObject );
+  void handler_execBlockMetadataChanged( FTL::JSONObject const *jsonObject );
+  void handler_execBlockPortInserted( FTL::JSONObject const *jsonObject );
+  void handler_execBlockPortRemoved( FTL::JSONObject const *jsonObject );
+  void handler_execBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
+  void handler_execBlockRemoved( FTL::JSONObject const *jsonObject );
+  void handler_execDidAttachPreset( FTL::JSONObject const *jsonObject );
   void handler_execEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject );
   void handler_execMetadataChanged( FTL::JSONObject const *jsonObject );
   void handler_execPortDefaultValuesChanged( FTL::JSONObject const *jsonObject );
@@ -273,16 +300,19 @@ private:
   void handler_execPortRenamed( FTL::JSONObject const *jsonObject );
   void handler_execPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_execPortsReordered( FTL::JSONObject const *jsonObject );
+  void handler_execPortTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_execPortTypeSpecChanged( FTL::JSONObject const *jsonObject );
   void handler_execTitleChanged( FTL::JSONObject const *jsonObject );
+  void handler_execWillDetachPreset( FTL::JSONObject const *jsonObject );
+  void handler_extDepsChanged( FTL::JSONObject const *jsonObject );
+  void handler_funcCodeChanged( FTL::JSONObject const *jsonObject );
+  void handler_instBlockInserted( FTL::JSONObject const *jsonObject );
+  void handler_instBlockPortInserted( FTL::JSONObject const *jsonObject );
+  void handler_instBlockPortRemoved( FTL::JSONObject const *jsonObject );
+  void handler_instBlockRemoved( FTL::JSONObject const *jsonObject );
+  void handler_instExecDidAttachPreset( FTL::JSONObject const *jsonObject );
   void handler_instExecEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject );
   void handler_instExecTitleChanged( FTL::JSONObject const *jsonObject );
-  void handler_instBlockInserted( FTL::JSONObject const *jsonObject );
-  void handler_instBlockRemoved( FTL::JSONObject const *jsonObject );
-  void handler_execBlockInserted( FTL::JSONObject const *jsonObject );
-  void handler_execBlockRemoved( FTL::JSONObject const *jsonObject );
-  void handler_execBlockMetadataChanged( FTL::JSONObject const *jsonObject );
-  void handler_execBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_nodeInserted( FTL::JSONObject const *jsonObject );
   void handler_nodeMetadataChanged( FTL::JSONObject const *jsonObject );
   void handler_nodePortDefaultValuesChanged( FTL::JSONObject const *jsonObject );
@@ -292,18 +322,12 @@ private:
   void handler_nodePortRenamed( FTL::JSONObject const *jsonObject );
   void handler_nodePortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_nodePortsReordered( FTL::JSONObject const *jsonObject );
+  void handler_nodePortTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_nodeRemoved( FTL::JSONObject const *jsonObject );
   void handler_nodeRenamed( FTL::JSONObject const *jsonObject );
   void handler_portsConnected( FTL::JSONObject const *jsonObject );
   void handler_portsDisconnected( FTL::JSONObject const *jsonObject );
   void handler_refVarPathChanged( FTL::JSONObject const *jsonObject );
-  void handler_funcCodeChanged( FTL::JSONObject const *jsonObject );
-  void handler_nodePortTypeChanged( FTL::JSONObject const *jsonObject );
-  void handler_execPortTypeChanged( FTL::JSONObject const *jsonObject );
-  void handler_instExecDidAttachPreset( FTL::JSONObject const *jsonObject );
-  void handler_execDidAttachPreset( FTL::JSONObject const *jsonObject );
-  void handler_execWillDetachPreset( FTL::JSONObject const *jsonObject );
-  void handler_extDepsChanged( FTL::JSONObject const *jsonObject );
 
   FabricCore::DFGView m_view;
 

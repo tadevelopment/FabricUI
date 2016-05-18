@@ -16,9 +16,11 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
   if ( handlerMap.empty() )
   {
     handlerMap[FTL_STR("execBlockInserted")] = &DFGExecNotifier::handler_execBlockInserted;
+    handlerMap[FTL_STR("execBlockPortInserted")] = &DFGExecNotifier::handler_execBlockPortInserted;
     handlerMap[FTL_STR("execBlockMetadataChanged")] = &DFGExecNotifier::handler_execBlockMetadataChanged;
     handlerMap[FTL_STR("execBlockPortResolvedTypeChanged")] = &DFGExecNotifier::handler_execBlockPortResolvedTypeChanged;
     handlerMap[FTL_STR("execBlockRemoved")] = &DFGExecNotifier::handler_execBlockRemoved;
+    handlerMap[FTL_STR("execBlockPortRemoved")] = &DFGExecNotifier::handler_execBlockPortRemoved;
     handlerMap[FTL_STR("execDidAttachPreset")] = &DFGExecNotifier::handler_execDidAttachPreset;
     handlerMap[FTL_STR("execEditWouldSplitFromPresetMayHaveChanged")] = &DFGExecNotifier::handler_execEditWouldSplitFromPresetMayHaveChanged;
     handlerMap[FTL_STR("execMetadataChanged")] = &DFGExecNotifier::handler_execMetadataChanged;
@@ -37,6 +39,8 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
     handlerMap[FTL_STR("funcCodeChanged")] = &DFGExecNotifier::handler_funcCodeChanged;
     handlerMap[FTL_STR("instBlockInserted")] = &DFGExecNotifier::handler_instBlockInserted;
     handlerMap[FTL_STR("instBlockRemoved")] = &DFGExecNotifier::handler_instBlockRemoved;
+    handlerMap[FTL_STR("instBlockPortInserted")] = &DFGExecNotifier::handler_instBlockPortInserted;
+    handlerMap[FTL_STR("instBlockPortRemoved")] = &DFGExecNotifier::handler_instBlockPortRemoved;
     handlerMap[FTL_STR("instExecDidAttachPreset")] = &DFGExecNotifier::handler_instExecDidAttachPreset;
     handlerMap[FTL_STR("instExecEditWouldSplitFromPresetMayHaveChanged")] = &DFGExecNotifier::handler_instExecEditWouldSplitFromPresetMayHaveChanged;
     handlerMap[FTL_STR("instExecTitleChanged")] = &DFGExecNotifier::handler_instExecTitleChanged;
@@ -101,15 +105,17 @@ void DFGExecNotifier::handle( FTL::CStrRef jsonStr )
   catch ( FabricCore::Exception e )
   {
     printf(
-      "DFGExecNotifier::viewCallback: caught Core exception: %s\n",
-      e.getDesc_cstr()
+      "DFGExecNotifier::viewCallback: caught Core exception: %s\n  while handling notification: %s\n",
+      e.getDesc_cstr(),
+      jsonStr.c_str()
       );
   }
   catch ( FTL::JSONException e )
   {
     printf(
-      "DFGExecNotifier::viewCallback: caught FTL::JSONException: %s\n",
-      e.getDescCStr()
+      "DFGExecNotifier::viewCallback: caught FTL::JSONException: %s\n  while handling notification: %s",
+      e.getDescCStr(),
+      jsonStr.c_str()
       );
   }
 }
@@ -117,20 +123,60 @@ void DFGExecNotifier::handle( FTL::CStrRef jsonStr )
 void DFGExecNotifier::handler_instBlockInserted( FTL::JSONObject const *jsonObject )
 {
   FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
-  unsigned blockIndex = unsigned( jsonObject->getSInt32( FTL_STR("blockIndex") ) );
   FTL::CStrRef blockName =
-    jsonObject->getObject( FTL_STR("blockDesc") )->getString( FTL_STR("name") );
+    jsonObject->getObject(
+      FTL_STR("blockDesc")
+      )->getString( FTL_STR("name") );
 
-  emit instBlockInserted( instName, blockIndex, blockName );
+  emit instBlockInserted( instName, blockName );
 }
 
 void DFGExecNotifier::handler_instBlockRemoved( FTL::JSONObject const *jsonObject )
 {
   FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
-  unsigned blockIndex = unsigned( jsonObject->getSInt32( FTL_STR("blockIndex") ) );
   FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
 
-  emit instBlockRemoved( instName, blockIndex, blockName );
+  emit instBlockRemoved( instName, blockName );
+}
+
+void DFGExecNotifier::handler_instBlockPortInserted( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+  FTL::CStrRef portName =
+    jsonObject->getObject(
+      FTL_STR("portDesc")
+      )->getString( FTL_STR("name") );
+
+  emit instBlockPortInserted( instName, blockName, portName );
+}
+
+void DFGExecNotifier::handler_instBlockPortRemoved( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+  FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
+
+  emit instBlockPortRemoved( instName, blockName, portName );
+}
+
+void DFGExecNotifier::handler_execBlockPortInserted( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+  FTL::CStrRef portName =
+    jsonObject->getObject(
+      FTL_STR("portDesc")
+      )->getString( FTL_STR("name") );
+
+  emit blockPortInserted( blockName, portName );
+}
+
+void DFGExecNotifier::handler_execBlockPortRemoved( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+  FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
+
+  emit blockPortRemoved( blockName, portName );
 }
 
 void DFGExecNotifier::handler_execBlockInserted( FTL::JSONObject const *jsonObject )
