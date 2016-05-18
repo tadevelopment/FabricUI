@@ -151,9 +151,9 @@ void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
 
     m_manipulationMode = ManipulationMode_Select;
   }
-  else if((event->button() == Qt::MiddleButton && event->modifiers().testFlag(Qt::AltModifier))
-    || (event->button() == Qt::LeftButton && m_alwaysPan)
-    || (event->button() == Qt::LeftButton && event->modifiers().testFlag(Qt::AltModifier))
+  else if(   event->button() == Qt::MiddleButton
+         || (event->button() == Qt::LeftButton && m_alwaysPan)
+         || (event->button() == Qt::LeftButton && event->modifiers().testFlag(Qt::AltModifier))
     )
   {
     setCursor(Qt::OpenHandCursor);
