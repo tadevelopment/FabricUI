@@ -1826,7 +1826,7 @@ void DFGWidget::refreshExtDeps( FTL::CStrRef extDeps )
   m_uiHeader->refreshExtDeps( extDeps );
 }
 
-void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu)
+void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDCCMenu)
 {
   // [Julien] FE-5244 : Add Save Graph action to the Canvas widget for DCC Integrations
   // Don't add the edit menu if called from DCC
@@ -1850,6 +1850,15 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu)
     editMenu->addSeparator();
   if(viewMenu->actions().count() > 0)
     viewMenu->addSeparator();
+
+  // [Fe-6242] DCC menu.
+  QMenu *dccMenu = 0;
+  if(addDCCMenu) {
+    dccMenu = menuBar->addMenu(tr("&DCC"));
+    emit additionalMenuActionsRequested("DCC", dccMenu, true);
+    if(dccMenu->actions().count() > 0)
+      dccMenu->addSeparator();
+  }
 
   // edit menu
   // [Julien]  When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget

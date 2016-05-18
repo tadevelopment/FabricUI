@@ -334,4 +334,13 @@ void DFGCombinedWidget::onAdditionalMenuActionsRequested(QString name, QMenu * m
   {
     // todo: here we might add view options for the canvas graph
   }
+  else if(name == "DCC")
+  {
+    if(prefix)
+    {
+      QAction *selectCanvasNodeInDCCAction = menu->addAction("Select Canvas Node/Item");
+      menu->addAction( selectCanvasNodeInDCCAction );
+      QObject::connect(selectCanvasNodeInDCCAction, SIGNAL(triggered()), this, SLOT(onSelectCanvasNodeInDCC()));
+    }
+  }
 }

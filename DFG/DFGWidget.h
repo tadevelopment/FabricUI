@@ -69,7 +69,7 @@ namespace FabricUI
       void refreshTitle( FTL::CStrRef title );
       void refreshExtDeps( FTL::CStrRef extDeps );
 
-      void populateMenuBar(QMenuBar * menuBar, bool addFileMenu = true);
+      void populateMenuBar(QMenuBar * menuBar, bool addFileMenu = true, bool addDCCMenu = false);
       bool maybeEditNode(FabricUI::GraphView::Node * node);
 
       void reloadStyles();
