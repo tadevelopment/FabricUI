@@ -772,11 +772,18 @@ void DFGNotificationRouter::onExecBlockPortInserted(
   FTL::CStrRef portName = portDesc->getString( FTL_STR("name") );
   FTL::CStrRef resolvedType = portDesc->getStringOrEmpty( FTL_STR("type") );
 
+  FTL::CStrRef outsidePortType = portDesc->getStringOrEmpty( FTL_STR("outsidePortType") );
+  GraphView::PortType pType = GraphView::PortType_Input;
+  if ( outsidePortType == FTL_STR("Out") )
+    pType = GraphView::PortType_Output;
+  else if ( outsidePortType == FTL_STR("IO") )
+    pType = GraphView::PortType_IO;
+
   GraphView::Pin *uiPin =
     new GraphView::Pin(
       uiNode,
       portName,
-      GraphView::PortType_Input,
+      pType,
       m_config.getColorForDataType( resolvedType ),
       portName
       );
@@ -913,19 +920,19 @@ void DFGNotificationRouter::onInstBlockPortInserted(
 
   QColor color = m_config.getColorForDataType(dataType);
 
-  FTL::CStrRef nodePortType =
+  FTL::CStrRef outsidePortTypeStr =
     portDesc->getStringOrEmpty( FTL_STR("outsidePortType") );
-  GraphView::PortType pType = GraphView::PortType_Input;
-  if(nodePortType == FTL_STR("Out"))
-    pType = GraphView::PortType_Output;
-  else if(nodePortType == FTL_STR("IO"))
-    pType = GraphView::PortType_IO;
+  GraphView::PortType outsidePortType = GraphView::PortType_Input;
+  if ( outsidePortTypeStr == FTL_STR("Out") )
+    outsidePortType = GraphView::PortType_Output;
+  else if ( outsidePortTypeStr == FTL_STR("IO") )
+    outsidePortType = GraphView::PortType_IO;
 
   GraphView::InstBlockPort *uiInstBlockPort =
     new GraphView::InstBlockPort(
       uiInstBlock,
       portDesc->getString( FTL_STR("name") ),
-      pType,
+      outsidePortType,
       color
       );
   if ( !dataType.empty() )

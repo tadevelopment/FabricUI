@@ -200,6 +200,13 @@ signals:
     FTL::CStrRef portName
     );
 
+  void instBlockPortResolvedTypeChanged(
+    FTL::CStrRef instName,
+    FTL::CStrRef blockName,
+    FTL::CStrRef portName,
+    FTL::CStrRef newResolvedTypeName
+    );
+
   void instBlockPortRemoved(
     FTL::CStrRef instName,
     FTL::CStrRef blockName,
@@ -309,6 +316,7 @@ private:
   void handler_instBlockInserted( FTL::JSONObject const *jsonObject );
   void handler_instBlockPortInserted( FTL::JSONObject const *jsonObject );
   void handler_instBlockPortRemoved( FTL::JSONObject const *jsonObject );
+  void handler_instBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_instBlockRemoved( FTL::JSONObject const *jsonObject );
   void handler_instExecDidAttachPreset( FTL::JSONObject const *jsonObject );
   void handler_instExecEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject );

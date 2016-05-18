@@ -84,7 +84,9 @@ void InstBlock::removeInstBlockPortAtIndex(
   )
 {
   m_layout->removeAt( 1 + index );
+  InstBlockPort *instBlockPort = m_instBlockPorts[index];
   m_instBlockPorts.erase( m_instBlockPorts.begin() + index );
+  instBlockPort->deleteLater();
 }
 
 void InstBlock::paint(
