@@ -67,10 +67,12 @@ void DFGCombinedWidget::initTreeView() {
   }
 }
 
-void DFGCombinedWidget::initDFG() {
- 
+void DFGCombinedWidget::initValueEditor() {
   m_valueEditor = new DFG::DFGVEEditorOwner( m_dfgWidget );
   QObject::connect( m_valueEditor, SIGNAL( log( const char * ) ), this, SLOT( log ( const char * ) ) );
+}
+
+void DFGCombinedWidget::initDFG() {
 
   m_dfgWidget->getUIController()->setLogFunc(DFGLogWidget::log);
   m_dfgLogWidget = new DFGLogWidget( m_config );
@@ -119,6 +121,7 @@ void DFGCombinedWidget::init(
 
   try
   {
+    m_mainDFGBinding = binding;
     m_config = config;
     m_client = client;
     m_manager = manager;
@@ -127,7 +130,7 @@ void DFGCombinedWidget::init(
       this,
       m_client,
       host,
-      binding,
+      m_mainDFGBinding,
       execPath,
       exec,
       m_manager,
@@ -141,6 +144,7 @@ void DFGCombinedWidget::init(
     
     initDFG();
     initTreeView();
+    initValueEditor();
     initMenu();
     initDocks();
     onGraphSet(m_dfgWidget->getUIGraph());

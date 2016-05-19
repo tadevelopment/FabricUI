@@ -285,7 +285,7 @@ QString DFGController::cmdEditNode(
 {
   if(!validPresetSplit())
     return oldName;
-
+  
   return m_cmdHandler->dfgDoEditNode(
     getBinding(),
     getExecPath_QS(),
@@ -1474,7 +1474,10 @@ DFGNotificationRouter * DFGController::createRouter()
   return new DFGNotificationRouter( this );
 }
 
-QStringList DFGController::getVariableWordsFromBinding(FabricCore::DFGBinding & binding, FTL::CStrRef currentExecPath)
+QStringList DFGController::getVariableWordsFromBinding(
+  FabricCore::DFGBinding & binding, 
+  FTL::CStrRef currentExecPath,
+  QStringList varTypes)
 {
   QStringList words;
 
@@ -1507,7 +1510,25 @@ QStringList DFGController::getVariableWordsFromBinding(FabricCore::DFGBinding & 
         path += key.c_str();
         if(words.contains(path.c_str()))
           continue;
-        words.append(path.c_str());
+
+        /// If varTypes list is empty, we don't check the variable type
+        if(varTypes.size() == 0) 
+          words.append(path.c_str());
+
+        /// Otherwise, check if the type of the current variable
+        /// is listed.
+        else
+        {
+          FTL::JSONObject const *value = it->second->cast<FTL::JSONObject>();
+          for(FTL::JSONObject::const_iterator jt = value->begin(); jt != value->end(); jt++) 
+          {
+            for(int j=0; j<varTypes.size(); ++j)
+            {
+              if(QString(jt->second->getStringValue().c_str()) == varTypes[j])
+                words.append(path.c_str());
+            }
+          }
+        }
       }
     }
 
@@ -1556,6 +1577,12 @@ QStringList DFGController::getVariableWordsFromBinding(FabricCore::DFGBinding & 
   }
 
   return words;
+}
+
+QStringList DFGController::getVariableWordsFromBinding(FabricCore::DFGBinding & binding, FTL::CStrRef currentExecPath)
+{
+  QStringList varTypes;
+  return getVariableWordsFromBinding(binding, currentExecPath, varTypes);
 }
 
 void DFGController::cmdRemoveNodes(

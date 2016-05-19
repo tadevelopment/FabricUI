@@ -11,9 +11,7 @@ namespace ModelItems {
 //////////////////////////////////////////////////////////////////////////
 RootModelItem::RootModelItem()
 {
-
 }
-
 
 RootModelItem::~RootModelItem()
 {

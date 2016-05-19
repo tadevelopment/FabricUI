@@ -6,6 +6,7 @@
 #endif
 
 #include "pyside_global.h"
+#include <FabricUI/Menus/BaseMenu.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/Controller.h>
 #include <FabricUI/GraphView/GraphConfig.h>
@@ -124,6 +125,27 @@
 #include <FabricUI/Viewports/GLViewportWidget.h>
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Viewports/TimeLineWidget.h>
+#include <FabricUI/Util/StringUtils.h>
+#include <FabricUI/SceneHub/SHGLScene.h>
+#include <FabricUI/SceneHub/SHGLRenderer.h>
+#include <FabricUI/SceneHub/SHStates.h>
+#include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
+#include <FabricUI/SceneHub/Menus/SHBaseSceneMenu.h>
+#include <FabricUI/SceneHub/Menus/SHBaseContextualMenu.h>
+#include <FabricUI/SceneHub/Commands/SHCmd.h>
+#include <FabricUI/SceneHub/Commands/SGAddObjectCmd.h>
+#include <FabricUI/SceneHub/Commands/SGAddPropertyCmd.h>
+#include <FabricUI/SceneHub/Commands/SGSetPaintToolAttributeCmd.h>
+#include <FabricUI/SceneHub/Commands/SGSetPropertyCmd.h>
+#include <FabricUI/SceneHub/Commands/SGSetBooleanPropertyCmd.h>
+#include <FabricUI/SceneHub/Commands/SGSetObjectPropertyCmd.h>
+#include <FabricUI/SceneHub/Commands/SHCmdHandler.h>
+#include <FabricUI/SceneHub/Viewports/RTRGLContext.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeItem.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
+#include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
+#include <FabricUI/SceneHub/TreeView/SHBaseTreeViewsManager.h>
+#include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
 #include <FabricUI/Viewports/ManipulationTool.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>
 #include <FabricUI/Util/GetFilenameForFileURL.h>

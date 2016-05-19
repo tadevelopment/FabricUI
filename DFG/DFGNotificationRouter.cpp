@@ -8,7 +8,6 @@
 #include <FabricUI/DFG/DFGWidget.h>
 
 #include <FTL/JSONValue.h>
-#include <FTL/AutoSet.h>
 
 using namespace FabricServices;
 using namespace FabricUI;
@@ -21,7 +20,6 @@ DFGNotificationRouter::DFGNotificationRouter(
   : m_dfgController( dfgController )
   , m_config( config )
   , m_performChecks( true )
-  , m_settingGraph( false )
 {
   onExecChanged();
 }
@@ -369,8 +367,6 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
 
 void DFGNotificationRouter::onGraphSet()
 {
-  FTL::AutoSet<bool> settingGraph(m_settingGraph, true);
-
   FabricCore::DFGExec &exec = m_dfgController->getExec();
   if ( !exec )
     return;

@@ -56,7 +56,7 @@ namespace FabricUI
       bool  m_active;
       FabricCore::RTVal m_eventDispatcher;
       FabricCore::RTVal m_lastManipValue;
-
+      FabricCore::RTVal m_lastToolValue;
       GLViewportWidget * m_view;
     };
   };

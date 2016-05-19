@@ -9,7 +9,6 @@
 #include <FabricUI/DFG/DFGNotifier.h>
 
 class BaseModelItem;
-class VETreeWidget;
 
 namespace FTL {
   class JSONArray;
@@ -29,6 +28,10 @@ namespace FabricUI {
     class BindingModelItem;
     class NodeModelItem;
     class RootModelItem;
+  }
+
+  namespace ValueEditor {
+    class VETreeWidget;
   }
 
   namespace DFG 
