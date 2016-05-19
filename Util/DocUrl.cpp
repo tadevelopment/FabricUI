@@ -27,8 +27,8 @@ void DocUrl::openUrl(QString url)
     QStringList list = url.split("/HTML/");
     if (!!fabricDir && list.length() >= 2)
     {
-      // construct local version.
-      url = QString(fabricDir) + QString("/Documentation/HTML/") + list[list.length() - 1];
+      // construct local url version.
+      url = QString("file:///") + QString(fabricDir) + QString("/Documentation/HTML/") + list[list.length() - 1];
 
       // for the local version we need to remove "?highlight=".
       list = url.split("?highlight=");
