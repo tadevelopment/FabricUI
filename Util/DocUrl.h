@@ -19,13 +19,11 @@ namespace FabricUI
     public:
 
       // opens an url via QDesktopServices::openUrl().
-      // if useLocalFabricDoc is true then the function will try
-      // to determine if url is a "Fabric link" and use the local
-      // documentation instead of the online one.
-      static void openUrl(QString url, bool useLocalFabricDoc = false);
-
-      // returns true if the environment variable envVar is set.
-      static bool useLocalDoc(QString envVar = "FABRIC_USE_LOCAL_DOCUMENTATION");
+      // this function will first determine if the url is
+      // a "Fabric link" and attempt to open the local
+      // documentation instead of the online one. In case
+      // that fails it will open the url 'as is'.
+      static void openUrl(QString url);
     };
   }
 }

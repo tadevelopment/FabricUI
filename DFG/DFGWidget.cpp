@@ -722,7 +722,7 @@ void DFGWidget::onNodeAction(QAction * action)
       FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
       uiDocUrl = subExec.getMetadata( "uiDocUrl" );
     }
-    Util::DocUrl::openUrl(uiDocUrl, Util::DocUrl::useLocalDoc());
+    Util::DocUrl::openUrl(uiDocUrl);
   }
   else if(action->text() == DFG_INSPECT_PRESET)
   {

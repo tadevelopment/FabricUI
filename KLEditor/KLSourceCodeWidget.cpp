@@ -617,7 +617,7 @@ void KLSourceCodeWidget::contextMenuOpenDocs()
   if(urlSuffix.length() > 0)
   {
     QString url = (m_config.docUrlPrefix + urlSuffix);
-    Util::DocUrl::openUrl(url, Util::DocUrl::useLocalDoc());
+    Util::DocUrl::openUrl(url);
   }
 }
 
