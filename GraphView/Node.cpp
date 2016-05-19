@@ -302,6 +302,13 @@ void Node::insertInstBlockAtIndex( unsigned index, InstBlock *instBlock )
 
   m_instBlocks.insert( m_instBlocks.begin() + index, instBlock );
 
+  QObject::connect(
+    instBlock, 
+    SIGNAL(doubleClicked(FabricUI::GraphView::InstBlock*, Qt::MouseButton, Qt::KeyboardModifiers)), 
+    this, 
+    SLOT(onInstBlockDoubleClicked(FabricUI::GraphView::InstBlock*, Qt::MouseButton, Qt::KeyboardModifiers))
+    );
+
   updatePinLayout();
 }
 
@@ -875,4 +882,16 @@ void Node::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QW
   // }
 
   QGraphicsWidget::paint(painter, option, widget);
+}
+
+void Node::onInstBlockDoubleClicked(
+  FabricUI::GraphView::InstBlock *instBlock,
+  Qt::MouseButton button,
+  Qt::KeyboardModifiers modifiers
+  )
+{
+  if ( modifiers.testFlag( Qt::ShiftModifier ) )
+    emit instBlockEditRequested( instBlock );
+  else
+    emit instBlockInspectRequested( instBlock );
 }

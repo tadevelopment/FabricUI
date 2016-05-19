@@ -72,6 +72,7 @@ namespace FabricUI
       void populateMenuBar(QMenuBar * menuBar, bool addFileMenu = true, bool addDCCMenu = false);
       bool maybeEditNode();
       bool maybeEditNode(FabricUI::GraphView::Node * node);
+      bool maybeEditInstBlock( FabricUI::GraphView::InstBlock *instBlock );
 
       void reloadStyles();
 
@@ -94,6 +95,9 @@ namespace FabricUI
       void onGraphAction(QAction * action);
       void onNodeAction(QAction * action);
       void onNodeEditRequested(FabricUI::GraphView::Node *);
+      void onInstBlockEditRequested(
+        FabricUI::GraphView::InstBlock *instBlock
+        );
       void onExecPortAction(QAction * action);
       void onSidePanelAction(QAction * action);
       void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey);
@@ -133,7 +137,7 @@ namespace FabricUI
       static QMenu* portContextMenuCallback(FabricUI::GraphView::Port* port, void* userData);
       static QMenu* sidePanelContextMenuCallback(FabricUI::GraphView::SidePanel* panel, void* userData);
 
-      bool maybeEditNode(
+      bool maybeEditExec(
         FTL::StrRef execPath,
         FabricCore::DFGExec &exec
         );

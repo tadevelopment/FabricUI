@@ -34,7 +34,7 @@ void DFGUICmd_AddBlock::invoke(
   char const *metadataValues[] = { posJSONString.c_str() };
 
   FTL::CStrRef actualNameCStr =
-    getExec().addExecBlock(
+    getExec().addExecBlockWithMetadata(
       m_desiredName.toUtf8().constData(),
       1, // metadataCount
       &metadataKeys[0],

@@ -33,6 +33,7 @@ namespace FabricUI
       Q_OBJECT
 
       friend class Graph;
+      friend class InstBlock;
       friend class BlockRectangle;
       friend class NodeRectangle;
       friend class NodeBubble;
@@ -198,7 +199,15 @@ namespace FabricUI
 
       void onConnectionsChanged();
       void onBubbleEditRequested(FabricUI::GraphView::NodeBubble * bubble);
-      
+    
+    protected slots:
+
+      void onInstBlockDoubleClicked(
+        FabricUI::GraphView::InstBlock *instBlock,
+        Qt::MouseButton button,
+        Qt::KeyboardModifiers modifiers
+        );
+
     signals:
 
       void selectionChanged(FabricUI::GraphView::Node *, bool);
@@ -207,6 +216,8 @@ namespace FabricUI
       void doubleClicked(FabricUI::GraphView::Node *, Qt::MouseButton, Qt::KeyboardModifiers);
       void bubbleEditRequested(FabricUI::GraphView::Node * nod);
       void geometryChanged();
+      void instBlockEditRequested( FabricUI::GraphView::InstBlock *instBlock );
+      void instBlockInspectRequested( FabricUI::GraphView::InstBlock *instBlock );
 
     protected:
 

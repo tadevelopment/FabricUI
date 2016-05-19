@@ -257,6 +257,10 @@ void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
 
     QObject::connect(graph, SIGNAL(nodeEditRequested(FabricUI::GraphView::Node*)),
       this, SLOT(onNodeEditRequested(FabricUI::GraphView::Node*)));
+    QObject::connect(
+      graph, SIGNAL(instBlockEditRequested(FabricUI::GraphView::InstBlock*)), 
+      this, SLOT(onInstBlockEditRequested(FabricUI::GraphView::InstBlock*))
+      );
 
     m_setGraph = graph;
   }
@@ -279,6 +283,13 @@ void DFGCombinedWidget::onNodeInspectRequested(FabricUI::GraphView::Node * node)
 void DFGCombinedWidget::onNodeEditRequested(FabricUI::GraphView::Node * node)
 {
   m_dfgWidget->maybeEditNode(node);
+}
+
+void DFGCombinedWidget::onInstBlockEditRequested(
+  FabricUI::GraphView::InstBlock *instBlock
+  )
+{
+  m_dfgWidget->maybeEditInstBlock( instBlock );
 }
 
 void DFGCombinedWidget::setLogFunc(DFGController::LogFunc func)

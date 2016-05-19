@@ -16,6 +16,7 @@
 #include <FabricUI/DFG/Dialogs/DFGPickVariableDialog.h>
 #include <FabricUI/DFG/Dialogs/DFGSavePresetDialog.h>
 #include <FabricUI/GraphView/NodeBubble.h>
+#include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 #include <FabricUI/Util/UIRange.h>
 #include <FabricUI/Util/DocUrl.h>
@@ -508,7 +509,7 @@ void DFGWidget::onGoUpPressed()
   std::string selectMe;
   if (parentExecPath.empty()) selectMe = execPath;
   else                        selectMe = split.second;
-  if (maybeEditNode(parentExecPath, parentExec))
+  if (maybeEditExec(parentExecPath, parentExec))
   {
     getUIGraph()->clearSelection();
     if ( GraphView::Node *uiNode = getUIGraph()->node( selectMe ) )
@@ -1100,6 +1101,13 @@ void DFGWidget::onNodeEditRequested(FabricUI::GraphView::Node * node)
   maybeEditNode( node );
 }
 
+void DFGWidget::onInstBlockEditRequested(
+  FabricUI::GraphView::InstBlock *instBlock
+  )
+{
+  maybeEditInstBlock( instBlock );
+}
+
 static inline void DFGAddMetaDataPair(
   FTL::JSONObjectEnc<>& metaDataObjectEnc,
   FTL::StrRef key,
@@ -1673,7 +1681,7 @@ bool DFGWidget::maybeEditNode(
     subExecPath += nodeName;
 
     FabricCore::DFGExec subExec = exec.getSubExec( nodeName.c_str() );
-    return maybeEditNode( subExecPath, subExec );
+    return maybeEditExec( subExecPath, subExec );
   }
   catch(FabricCore::Exception e)
   {
@@ -1682,7 +1690,36 @@ bool DFGWidget::maybeEditNode(
   return false;
 }
 
-bool DFGWidget::maybeEditNode(
+bool DFGWidget::maybeEditInstBlock(
+  FabricUI::GraphView::InstBlock *instBlock
+  )
+{
+  try
+  {
+    FabricUI::GraphView::Node *node = instBlock->node();
+    FTL::CStrRef instName = node->name();
+    FTL::CStrRef blockName = instBlock->name();
+
+    std::string subExecPath = m_uiController->getExecPath();
+    if ( !subExecPath.empty() )
+      subExecPath += '.';
+    subExecPath += instName;
+    subExecPath += '.';
+    subExecPath += blockName;
+
+    FabricCore::DFGExec &exec = m_uiController->getExec();
+    FabricCore::DFGExec subExec =
+      exec.getInstBlockExec( instName.c_str(), blockName.c_str() );
+    return maybeEditExec( subExecPath, subExec );
+  }
+  catch(FabricCore::Exception e)
+  {
+    printf("Exception: %s\n", e.getDesc_cstr());
+  }
+  return false;
+}
+
+bool DFGWidget::maybeEditExec(
   FTL::StrRef execPath,
   FabricCore::DFGExec &exec
   )

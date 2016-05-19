@@ -116,5 +116,65 @@ void InstBlock::paint(
   QGraphicsWidget::paint(painter, option, widget);
 }
 
+void InstBlock::mousePressEvent( QGraphicsSceneMouseEvent *event )
+{
+  if ( node()->onMousePress(
+    event->button(),
+    event->modifiers(),
+    event->scenePos(),
+    event->lastScenePos()
+    ) )
+  {
+    event->accept();
+    return;
+  }
+
+  QGraphicsWidget::mousePressEvent( event );
+}
+
+void InstBlock::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event )
+{
+  if ( event->button() == Qt::LeftButton )
+  {
+    emit doubleClicked( this, event->button(), event->modifiers() );
+    event->accept();
+    return;
+  }
+
+  QGraphicsWidget::mouseDoubleClickEvent( event );
+}
+
+void InstBlock::mouseMoveEvent( QGraphicsSceneMouseEvent *event )
+{
+  if ( node()->onMouseMove(
+    event->button(),
+    event->modifiers(),
+    event->scenePos(),
+    event->lastScenePos()
+    ) )
+  {
+    event->accept();
+    return;
+  }
+
+  QGraphicsWidget::mouseMoveEvent(event);
+}
+
+void InstBlock::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
+{
+  if ( node()->onMouseRelease(
+    event->button(),
+    event->modifiers(),
+    event->scenePos(),
+    event->lastScenePos()
+    ) )
+  {
+    event->accept();
+    return;
+  }
+
+  QGraphicsWidget::mouseReleaseEvent(event);
+}
+
 } // namespace GraphView
 } // namespace FabricUI

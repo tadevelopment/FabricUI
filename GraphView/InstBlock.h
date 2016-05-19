@@ -49,7 +49,20 @@ public:
     unsigned index
     );
 
+signals:
+
+  void doubleClicked(
+    FabricUI::GraphView::InstBlock *,
+    Qt::MouseButton,
+    Qt::KeyboardModifiers
+    );
+
 protected:
+
+  virtual void mousePressEvent( QGraphicsSceneMouseEvent *event );
+  virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event );
+  virtual void mouseMoveEvent( QGraphicsSceneMouseEvent *event );
+  virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent *event );
 
   virtual void paint(
     QPainter *painter,
