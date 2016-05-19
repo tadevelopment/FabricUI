@@ -500,19 +500,26 @@ void DFGWidget::onGoUpPressed()
 
   FTL::StrRef::Split split = execPath.rsplit('.');
   std::string parentExecPath = split.first;
+  std::string parentExecMember = split.second;
 
   FabricCore::DFGBinding &binding = m_uiController->getBinding();
   FabricCore::DFGExec rootExec = binding.getExec();
   FabricCore::DFGExec parentExec =
     rootExec.getSubExec( parentExecPath.c_str() );
 
-  std::string selectMe;
-  if (parentExecPath.empty()) selectMe = execPath;
-  else                        selectMe = split.second;
-  if (maybeEditExec(parentExecPath, parentExec))
+  if ( parentExec.isExecBlock( parentExecMember.c_str() ) )
+  {
+    FTL::StrRef parentExecPathStr( parentExecPath );
+    split = parentExecPathStr.rsplit( '.' );
+    parentExecMember = split.second;
+    parentExecPath = split.first;
+    parentExec = rootExec.getSubExec( parentExecPath.c_str() );
+  }
+
+  if ( maybeEditExec( parentExecPath, parentExec ) )
   {
     getUIGraph()->clearSelection();
-    if ( GraphView::Node *uiNode = getUIGraph()->node( selectMe ) )
+    if ( GraphView::Node *uiNode = getUIGraph()->node( parentExecMember ) )
       uiNode->setSelected( true );
   }
 }

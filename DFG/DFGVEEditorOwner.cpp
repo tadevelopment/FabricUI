@@ -277,24 +277,44 @@ void DFGVEEditorOwner::onSidePanelInspectRequested()
     // we would see if we were outside this node and clicked on it)
     FabricUI::DFG::DFGUICmdHandler *dfgUICmdHandler =
       dfgController->getCmdHandler();
+
     FabricCore::DFGBinding &binding = dfgController->getBinding();
-    FabricCore::DFGExec exec = binding.getExec();
-    std::string nodeName = SplitLast( path );
+    FabricCore::DFGExec rootExec = binding.getExec();
 
-    if (!path.empty())
-      exec = exec.getSubExec( path.c_str() );
+    std::string instName = SplitLast( path );
 
-    setModelRoot(
-      exec,
-      nodeName,
-      new FabricUI::ModelItems::InstModelItem(
-        dfgUICmdHandler,
-        binding,
-        path,
+    FabricCore::DFGExec exec;
+    if ( !path.empty() )
+      exec = rootExec.getSubExec( path.c_str() );
+    else
+      exec = rootExec;
+
+    if ( exec.isExecBlock( instName.c_str() ) )
+    {
+      // [pzion 20160519] For now, simply cannot inspect block instance
+
+      // std::string blockName = instName;
+      // instName = SplitLast( path );
+      // if ( !path.empty() )
+      //   exec = rootExec.getSubExec( path.c_str() );
+      // else
+      //   exec = rootExec;
+      // exec = exec.getInstBlockExec( instName.c_str(), blockName.c_str() );
+    }
+    else
+    {
+      setModelRoot(
         exec,
-        nodeName
-        )
-      );
+        instName,
+        new FabricUI::ModelItems::InstModelItem(
+          dfgUICmdHandler,
+          binding,
+          path,
+          exec,
+          instName
+          )
+        );
+    }
   }
 }
 
