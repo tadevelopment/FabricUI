@@ -1,0 +1,30 @@
+<?xml  version="1.0"?>
+<typesystem package="FabricUI">
+  <namespace-type name="FabricUI"  generate="no">
+    <namespace-type name="SceneHub"  generate="yes">
+      <object-type name="SHGLRenderer" copyable="false"/>
+      <object-type name="SHGLScene" copyable="false"/>
+      <object-type name="SHStates" copyable="false"/>
+      <object-type name="SHDFGBinding" copyable="false"/>
+      <object-type name="SHBaseSceneMenu" copyable="false"/>
+      <object-type name="SHBaseContextualMenu" copyable="false"/>
+      <object-type name="SHCmd" copyable="false"/>
+      <object-type name="SGAddObjectCmd" copyable="false"/>
+      <object-type name="SGAddPropertyCmd" copyable="false"/>
+      <object-type name="SGSetPaintToolAttributeCmd" copyable="false"/>
+      <object-type name="SGSetPropertyCmd" copyable="false"/>
+      <object-type name="SGSetObjectPropertyCmd" copyable="false"/>
+      <object-type name="SGSetBooleanPropertyCmd" copyable="false"/>
+      <object-type name="SHCmdHandler" copyable="false"/>
+      <object-type name="SHTreeItem" copyable="false"/>
+      <object-type name="SHTreeModel" copyable="false"/>
+      <object-type name="SHTreeView_ViewIndexTarget" copyable="false"/>
+      <object-type name="SHBaseTreeView" copyable="false"/>
+      <object-type name="SHTreeComboBox" copyable="false"/>
+      <object-type name="SHBaseTreeViewsManager" copyable="false"/>
+      <object-type name="SGObjectModelItem" copyable="false"/>
+      <object-type name="SGObjectPropertyModelItem" copyable="false"/>
+      <object-type name="SHVEEditorOwner" copyable="false"/>
+    </namespace-type>
+  </namespace-type>
+</typesystem>

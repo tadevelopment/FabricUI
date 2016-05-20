@@ -81,6 +81,8 @@ namespace FabricUI
     protected:
       virtual void initMenu();
       /// Initializes the DFG widget.
+      virtual void initValueEditor();
+      /// Initializes the DFG widget.
       virtual void initDFG();
       /// Initializes the treeView widget.
       virtual void initTreeView();
@@ -97,6 +99,7 @@ namespace FabricUI
       ValueEditor::VEEditorOwner *m_valueEditor;
       DFG::DFGConfig m_config;
       QMenuBar *m_menuBar;
+      FabricCore::DFGBinding m_mainDFGBinding;
     };
   };
 };

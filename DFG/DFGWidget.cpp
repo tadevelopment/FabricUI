@@ -19,6 +19,7 @@
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 #include <FabricUI/Util/UIRange.h>
+#include <FabricUI/Util/DocUrl.h>
 #include <FTL/FS.h>
 #include <Persistence/RTValToJSONEncoder.hpp>
 #include <QtCore/QCoreApplication>
@@ -27,7 +28,6 @@
 #include <QtGui/QApplication>
 #include <QtGui/QColorDialog>
 #include <QtGui/QCursor>
-#include <QtGui/QDesktopServices>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QSplitter>
@@ -722,8 +722,7 @@ void DFGWidget::onNodeAction(QAction * action)
       FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
       uiDocUrl = subExec.getMetadata( "uiDocUrl" );
     }
-    if(uiDocUrl.length() > 0)
-      QDesktopServices::openUrl(uiDocUrl);
+    Util::DocUrl::openUrl(uiDocUrl);
   }
   else if(action->text() == DFG_INSPECT_PRESET)
   {
@@ -1119,6 +1118,14 @@ void DFGWidget::onExecPortAction(QAction * action)
       if ( canEditDataType )
         dialog.setDataType(exec.getExecPortResolvedType(portName));
 
+      FTL::StrRef uiHidden = exec.getExecPortMetadata(portName, "uiHidden");
+      if( uiHidden == "true" )
+        dialog.setHidden();
+
+      FTL::StrRef uiOpaque = exec.getExecPortMetadata(portName, "uiOpaque");
+      if( uiOpaque == "true" )
+        dialog.setOpaque();
+
       FTL::StrRef uiPersistValue = exec.getExecPortMetadata(portName, DFG_METADATA_UIPERSISTVALUE);
       dialog.setPersistValue( uiPersistValue == "true" );
 
@@ -1174,6 +1181,8 @@ void DFGWidget::onExecPortAction(QAction * action)
         FTL::JSONEnc<> metaDataEnc( uiMetadata );
         FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
 
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiHidden", dialog.hidden() ? "true" : "" );//"" will remove the metadata
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiOpaque", dialog.opaque() ? "true" : "" );//"" will remove the metadata
         DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, dialog.persistValue() ? "true" : "" );//"" will remove the metadata
 
         if(dialog.hasSoftRange())
@@ -1311,6 +1320,10 @@ void DFGWidget::onSidePanelAction(QAction * action)
     {
       FTL::JSONEnc<> metaDataEnc( metaData );
       FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
+      if(dialog.hidden())
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiHidden", "true" );
+      if(dialog.opaque())
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiOpaque", "true" );
 
       if(dialog.persistValue())
         DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, "true" );

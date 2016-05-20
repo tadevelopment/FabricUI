@@ -10,9 +10,10 @@
 #include <QtCore/QString>
 #include <QtCore/QVariant>
 
+
 namespace FabricUI {
 namespace ValueEditor {
-
+  
 class ItemMetadata;
 
 // The base model item is the base class for defining

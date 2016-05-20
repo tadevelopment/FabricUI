@@ -26,7 +26,7 @@ if __name__ == "__main__":
     app = Application.FabricApplication()
     app.setOrganizationName('Fabric Software Inc')
     app.setApplicationName('Fabric Canvas Standalone')
-    app.setApplicationVersion('2.0.0')
+    app.setApplicationVersion('2.2.0')
 
     fabricDir = os.environ.get('FABRIC_DIR', None)
     if fabricDir:

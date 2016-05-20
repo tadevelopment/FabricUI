@@ -39,6 +39,10 @@ DFGEditPortDialog::DFGEditPortDialog(
     m_extensionEdit = NULL;
   }
 
+  m_visibilityCombo = new QComboBox(this);
+  m_visibilityCombo->addItem("normal");
+  m_visibilityCombo->addItem("opaque");
+  m_visibilityCombo->addItem("hidden");
   m_persistValue = new QCheckBox(this);
   m_hasSoftRange = new QCheckBox(this);
   m_softRangeMin = new QLineEdit("0.0", this);
@@ -66,6 +70,7 @@ DFGEditPortDialog::DFGEditPortDialog(
     addInput( m_dataTypeEdit, "data type", "required" );
     addInput( m_extensionEdit, "extension", "advanced" );
   }
+  addInput(m_visibilityCombo, "visibility", "metadata");
   addInput(m_persistValue, "persist value", "metadata");
   addInput(m_hasSoftRange, "soft range", "metadata");
   addInput(m_softRangeMin, "soft min", "metadata");
@@ -142,6 +147,26 @@ void DFGEditPortDialog::setExtension(QString value)
     m_extensionEdit->setText( value );
   else
     assert( false );
+}
+
+bool DFGEditPortDialog::hidden() const
+{
+  return m_visibilityCombo->currentText() == "hidden";
+}
+
+void DFGEditPortDialog::setHidden()
+{
+  m_visibilityCombo->setCurrentIndex(2);
+}
+
+bool DFGEditPortDialog::opaque() const
+{
+  return m_visibilityCombo->currentText() == "opaque";
+}
+
+void DFGEditPortDialog::setOpaque()
+{
+  m_visibilityCombo->setCurrentIndex(1);
 }
 
 bool DFGEditPortDialog::persistValue() const
