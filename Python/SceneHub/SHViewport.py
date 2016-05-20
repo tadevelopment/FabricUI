@@ -205,7 +205,12 @@ class SHViewport(Viewports.ViewportWidget):
         """
 
         redrawAllViewports = False
-        if self.shGLRenderer.onEvent(self.viewportIndex, event, redrawAllViewports, False):
+        if self.shGLRenderer.onEvent(
+                self.viewportIndex, 
+                event, 
+                redrawAllViewports, 
+                False,
+                self.shWindow.dfgWidget.getUIController()):
             self.manipsAcceptedEvent.emit(redrawAllViewports)
             return True
         return False

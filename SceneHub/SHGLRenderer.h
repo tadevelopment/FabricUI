@@ -12,7 +12,8 @@
 #include <QtGui/QDrag>
 #include <QtGui/QVector3D>
 #include <QtGui/QMouseEvent>
- 
+#include <FabricUI/DFG/DFGController.h>
+
 namespace FabricUI {
 namespace SceneHub {
 
@@ -34,16 +35,16 @@ class SHGLRenderer {
     /// Constructor.
     /// \param client A reference to the FabricCore::Client.
     /// \param shRenderer A reference to the SHGLRenderer.
-    SHGLRenderer( FabricCore::Client client, FabricCore::RTVal shRenderer );
+    SHGLRenderer(FabricCore::Client client, FabricCore::RTVal shRenderer);
 
     /// Updates the Renderer, if set externally
     void update();
 
     /// Gets the client.
-    FabricCore::Client getClient() { return m_client; }
+    FabricCore::Client getClient();
 
     /// \internal
-    FabricCore::RTVal getSHGLRenderer() { return m_shGLRendererVal; }
+    FabricCore::RTVal getSHGLRenderer();
         
     /// Gets the drawing statistics.
     /// \param viewportID The viewport ID.
@@ -93,7 +94,7 @@ class SHGLRenderer {
     /// return the closest hit SGObject (which might be invalid).
     /// \param viewportID The ID of the viewport.
     /// \param pos The mouse's position in the viewport
-    FabricCore::RTVal getSGObjectFrom2DScreenPos( unsigned int viewportID, QPoint pos );
+    FabricCore::RTVal getSGObjectFrom2DScreenPos(unsigned int viewportID, QPoint pos);
 
     /// Activates the playback.
     /// \param playback It true, playback.
@@ -118,11 +119,17 @@ class SHGLRenderer {
     void render(unsigned int viewportID, unsigned int width, unsigned int height, unsigned int samples, unsigned int drawPhase);
     
     /// Propagates the events.
+    /// \param viewportID The viewport ID.
     /// \param event The event.
     /// \param redrawAllViewports It true, refresh the render.
     /// \param dragging If true when dragging an asset or texture in the scene.
-    bool onEvent(unsigned int viewportID, QEvent *event, bool &redrawAllViewports, bool dragging);
-    
+    bool onEvent(
+      unsigned int viewportID, 
+      QEvent *event, 
+      bool &redrawAllViewports, 
+      bool dragging,
+      DFG::DFGController *controller = 0);
+ 
     /// Returns a reference to the ToolDispatcher.
     FabricCore::RTVal getToolDispatcher();
 

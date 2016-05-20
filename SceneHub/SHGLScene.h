@@ -16,8 +16,7 @@
 #include <FTL/JSONEnc.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONValue.h>
-#include <FabricUI/DFG/DFGController.h>
- 
+  
 namespace FabricUI {
 namespace SceneHub {
     
@@ -51,6 +50,7 @@ class SHGLScene {
     /// Sets a reference to the scenegraph.
     void setSHGLScene(SHGLScene *shGLSceneIn);
 
+    /// Sets a reference to the scenegraph.
     void setSHGLScene(FabricCore::DFGBinding &binding, QString sceneName);
 
     /// Checks a scenegraph is set.

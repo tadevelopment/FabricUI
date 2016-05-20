@@ -7,14 +7,15 @@
 #include <FabricUI/Viewports/QtToKLEvent.h>
 
 using namespace FabricCore;
-using namespace FabricUI::SceneHub;
+using namespace FabricUI;
+using namespace SceneHub;
 
-
-SHGLRenderer::SHGLRenderer(Client client) : m_client(client) {
+SHGLRenderer::SHGLRenderer(Client client) 
+  : m_client(client) {
   try 
   {
-    RTVal dummyGLRendererVal = RTVal::Construct( m_client, "SHGLRenderer", 0, 0 );
-    m_shGLRendererVal = dummyGLRendererVal.callMethod( "SHRenderer", "create", 0, 0);
+    RTVal dummyGLRendererVal = RTVal::Construct(m_client, "SHGLRenderer", 0, 0);
+    m_shGLRendererVal = dummyGLRendererVal.callMethod("SHRenderer", "create", 0, 0);
   }
   catch(Exception e)
   {
@@ -22,14 +23,24 @@ SHGLRenderer::SHGLRenderer(Client client) : m_client(client) {
   }
 }
 
-SHGLRenderer::SHGLRenderer( Client client, RTVal shRenderer ) : m_client( client ), m_shGLRendererVal( shRenderer ) {
+SHGLRenderer::SHGLRenderer(Client client, RTVal shRenderer) 
+  : m_client(client)
+  , m_shGLRendererVal(shRenderer) {
+}
+
+Client SHGLRenderer::getClient() { 
+  return m_client; 
+}
+
+RTVal SHGLRenderer::getSHGLRenderer() { 
+  return m_shGLRendererVal; 
 }
 
 void SHGLRenderer::update() {
   try 
   {
-    RTVal dummyGLRendererVal = RTVal::Construct( m_client, "SHGLRenderer", 0, 0 );
-    m_shGLRendererVal = dummyGLRendererVal.callMethod( "SHRenderer", "getOrCreate", 0, 0);
+    RTVal dummyGLRendererVal = RTVal::Construct(m_client, "SHGLRenderer", 0, 0);
+    m_shGLRendererVal = dummyGLRendererVal.callMethod("SHRenderer", "getOrCreate", 0, 0);
   }
   catch(Exception e)
   {
@@ -37,7 +48,7 @@ void SHGLRenderer::update() {
   }
 }
 
-QList<unsigned int>  SHGLRenderer::getDrawStats(unsigned int viewportID) {
+QList<unsigned int> SHGLRenderer::getDrawStats(unsigned int viewportID) {
   QList<unsigned int> stats;
   try 
   {
@@ -107,9 +118,9 @@ void SHGLRenderer::removeViewport(unsigned int viewportID) {
   try 
   {
     RTVal glRenderer = m_shGLRendererVal;
-    if( glRenderer.isValid() && !glRenderer.isNullObject() ) {
-      RTVal arg = RTVal::ConstructUInt32( m_client, viewportID );
-      m_shGLRendererVal.callMethod( "BaseRTRViewport", "removeViewport", 1, &arg );
+    if(glRenderer.isValid() && !glRenderer.isNullObject()) {
+      RTVal arg = RTVal::ConstructUInt32(m_client, viewportID);
+      m_shGLRendererVal.callMethod("BaseRTRViewport", "removeViewport", 1, &arg);
     }
   }
   catch(Exception e)
@@ -212,22 +223,22 @@ QList<float> SHGLRenderer::get3DScenePosFrom2DScreenPos(unsigned int viewportID,
   return list;
 }
 
-RTVal SHGLRenderer::getSGObjectFrom2DScreenPos( unsigned int viewportID, QPoint pos ) {
+RTVal SHGLRenderer::getSGObjectFrom2DScreenPos(unsigned int viewportID, QPoint pos) {
   RTVal result;
   try {
-    RTVal posVal = QtToKLMousePosition( pos, m_client, getOrAddViewport( viewportID ), true );
-    RTVal validVal = RTVal::ConstructBoolean( m_client, false );
+    RTVal posVal = QtToKLMousePosition(pos, m_client, getOrAddViewport(viewportID), true);
+    RTVal validVal = RTVal::ConstructBoolean(m_client, false);
     RTVal args[3] = {
-      RTVal::ConstructUInt32( m_client, viewportID ),
+      RTVal::ConstructUInt32(m_client, viewportID),
       posVal,
       validVal
     };
-    result = m_shGLRendererVal.callMethod( "SGObject", "getSGObjectFrom2DScreenPos", 3, args );
-    if( !validVal.getBoolean() )
+    result = m_shGLRendererVal.callMethod("SGObject", "getSGObjectFrom2DScreenPos", 3, args);
+    if(!validVal.getBoolean())
       result = RTVal();//set as empty
   }
-  catch( Exception e ) {
-    printf( "SHGLRenderer::getSGObjectFrom2DScreenPos: exception: %s\n", e.getDesc_cstr() );
+  catch(Exception e) {
+    printf("SHGLRenderer::getSGObjectFrom2DScreenPos: exception: %s\n", e.getDesc_cstr());
   }
   return result;
 }
@@ -267,19 +278,61 @@ void SHGLRenderer::render(unsigned int viewportID, unsigned int width, unsigned 
   }
 }
 
-bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool &redrawAllViewports, bool dragging) {
+bool SHGLRenderer::onEvent(
+  unsigned int viewportID, 
+  QEvent *event, 
+  bool &redrawAllViewports, 
+  bool dragging,
+  DFG::DFGController *controller)
+{
   try 
   {
     RTVal viewportVal = getOrAddViewport(viewportID);
 
-    RTVal args[2];
-    args[0] = QtToKLEvent( event, m_client, viewportVal, true );
-    args[1] = RTVal::ConstructBoolean( m_client, dragging );
+    RTVal args[2] = {
+      QtToKLEvent(event, m_client, viewportVal, true),
+      RTVal::ConstructBoolean(m_client, dragging)
+    };
     
-    m_shGLRendererVal.callMethod( "", "onEvent", 2, args );
-    bool result = args[0].callMethod( "Boolean", "isAccepted", 0, 0 ).getBoolean();
+    m_shGLRendererVal.callMethod("", "onEvent", 2, args);
+    bool result = args[0].callMethod("Boolean", "isAccepted", 0, 0).getBoolean();
     event->setAccepted(result);
-    redrawAllViewports = args[0].callMethod( "Boolean", "redrawAllViewports", 0, 0 ).getBoolean();
+    redrawAllViewports = args[0].callMethod("Boolean", "redrawAllViewports", 0, 0).getBoolean();
+
+    
+    if(controller && result)
+    {
+      //std::cerr << "I am here 1 " << std::endl;
+      DFGExec exec = controller->getBinding().getExec();
+
+      RTVal dfgHost = args[0].callMethod("DFGHost", "getHost", 0, 0);
+      if(!dfgHost.isNullObject())
+      {
+        std::cerr << "I am here 2 " << std::endl;
+        QString portName = QString(dfgHost.callMethod("String", "getPortName", 0, 0).getStringCString());
+        QString dataType = QString(dfgHost.callMethod("String", "getDataType", 0, 0).getStringCString());
+        QString portType(exec.getExecPortResolvedType(portName.toUtf8().constData()));
+
+        if( exec.haveExecPort(portName.toUtf8().constData()) )
+        {
+          std::cerr << "I am here 3 " << std::endl;
+          std::cerr << "portName " <<  portName.toStdString() << std::endl;
+          std::cerr << "dataType " <<  dataType.toStdString() << std::endl;
+          std::cerr << "portType " <<  portType.toStdString() << std::endl;
+
+          RTVal resVal = RTVal::Construct(
+            m_client, 
+            dataType.toUtf8().constData(),
+            0, 0);
+
+          RTVal dataVal = resVal.callMethod("Data", "data", 0, 0);
+          dfgHost.callMethod("", "getData", 1, &dataVal);
+          controller->cmdSetArgValue(portName.toUtf8().constData(), resVal);
+        }
+      }
+    }
+    
+
     return result;
   }
   catch(Exception e)
