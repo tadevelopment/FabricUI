@@ -13,7 +13,7 @@ Licensing
 
 The FabricUI library source is made available under the terms of a new (3-clause) BSD open-source license; see the file `LICENSE.txt` for details.
 
-Prerequsites
+Prerequisites
 ----------------
 
 - You must have the C++ compiler toolchain installed for your platform
