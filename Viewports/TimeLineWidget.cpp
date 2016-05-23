@@ -204,14 +204,8 @@ TimeLineWidget::TimeLineWidget()
 
 void TimeLineWidget::setTime(int time)
 {
-  printf("                  m_lastSteppedFrame = %d\n", m_lastSteppedFrame);
-  printf("                                time = %d\n", time);
-
   if(m_settingTime)
-  {
-    printf("return\n");
     return;
-  }
   m_settingTime = true;
 
   m_frameSlider->setValue(time);
@@ -450,7 +444,6 @@ void TimeLineWidget::timerUpdate()
   // however QTimer is really not precise so we cannot rely
   // on its delay.
   double ms = m_lastFrameTime.elapsed();
-printf("ms = %g\n", ms);
   if( m_fps > 0 && ms + 0.5 < 1000.0 / m_fps ) // Add 0.5 so we have a better average framerate (else we are always above)
     return; // Wait longer
 
