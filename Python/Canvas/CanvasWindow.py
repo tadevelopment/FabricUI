@@ -10,7 +10,7 @@ import sys
 
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core, FabricUI, Util
-from FabricEngine.FabricUI import DFG, KLASTManager, Viewports, TimeLine
+from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine
 from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
@@ -723,6 +723,9 @@ class CanvasWindow(DFG.DFGMainWindow):
             frame (float): The new frame the user has changed to.
 
         """
+
+        # [FE-6646] process all events before continuing.
+        QtCore.QCoreApplication.processEvents()
 
         try:
             self.evalContext.time = frame
