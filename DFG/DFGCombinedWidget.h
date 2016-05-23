@@ -63,6 +63,7 @@ namespace FabricUI
       void log(const char * message) const;
       virtual void onUndo() = 0;
       virtual void onRedo() = 0;
+      virtual void onSelectCanvasNodeInDCC() = 0;
       virtual void onHotkeyPressed(Qt::Key, Qt::KeyboardModifier, QString);
       virtual void onGraphSet(FabricUI::GraphView::Graph * graph);
       virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node);
@@ -80,6 +81,8 @@ namespace FabricUI
     protected:
       virtual void initMenu();
       /// Initializes the DFG widget.
+      virtual void initValueEditor();
+      /// Initializes the DFG widget.
       virtual void initDFG();
       /// Initializes the treeView widget.
       virtual void initTreeView();
@@ -96,6 +99,7 @@ namespace FabricUI
       ValueEditor::VEEditorOwner *m_valueEditor;
       DFG::DFGConfig m_config;
       QMenuBar *m_menuBar;
+      FabricCore::DFGBinding m_mainDFGBinding;
     };
   };
 };

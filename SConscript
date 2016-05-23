@@ -2,7 +2,7 @@
 # Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 #
 
-import os
+import os, subprocess
 Import(
   'buildOS',
   'buildArch',
@@ -46,6 +46,20 @@ if buildOS == 'Darwin':
   env.Append(CXXFLAGS = ['-stdlib=libstdc++'])
   env.Append(CXXFLAGS = ['-fvisibility=hidden'])
   env.Append(LINKFLAGS = ['-stdlib=libstdc++'])
+
+  frameworkPath = os.path.join(
+    os.path.split(
+      subprocess.Popen(
+        'xcodebuild -version -sdk macosx10.8 Path',
+        shell=True,
+        stdout=subprocess.PIPE
+        ).stdout.read()
+      )[0],
+    'MacOSX10.7.sdk',
+    )
+  env.Append(CCFLAGS = ["-isysroot", frameworkPath])
+  env.Append(FRAMEWORKS = ['OpenGL', 'Cocoa', 'Foundation'])
+
 
 if buildOS == 'Linux':
   env.Replace( CC = '/opt/centos5/usr/bin/gcc' )
@@ -96,18 +110,28 @@ env.MergeFlags(qtFlags)
 dirs = [
   'Util',
   'Style',
+  'Viewports',
+  'KLEditor',
+  'Menus',
   'Application',
   'TreeView',
   'ValueEditor_Legacy',
   'ValueEditor',
   'GraphView',
   'GraphView/Commands',
-  'KLEditor',
   'DFG',
   'DFG/DFGUICmd',
   'DFG/Dialogs',
+ 
   'SceneHub',
-  'Viewports',
+  'SceneHub/DFG',
+  'SceneHub/Editors',
+  'SceneHub/TreeView',
+  'SceneHub/Viewports',
+  'SceneHub/Commands',
+  'SceneHub/ValueEditor',
+  'SceneHub/Menus',
+
   'Licensing',
   'ModelItems',
   'Test',
@@ -120,11 +144,18 @@ strheaders = []
 for d in dirs:
   headers = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.h')))
   dirsrc = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.cpp')))
+  if buildOS == 'Darwin':
+    dirsrcMM = Flatten(env.Glob(os.path.join(env.Dir('.').abspath, d, '*.mm')))
+  
   for h in headers:
     strheaders.append(str(h))
   for c in dirsrc:
     strsources.append(str(c))
+
   sources += dirsrc
+  if buildOS == 'Darwin':
+    sources += dirsrcMM
+
   sources += env.GlobQObjectSources(os.path.join(env.Dir('.').abspath, d, '*.h'))
   if uiLibPrefix == 'ui':
     installedHeaders += env.Install(stageDir.Dir('include').Dir('FabricUI').Dir(d), headers)
@@ -246,6 +277,8 @@ if uiLibPrefix == 'ui':
         shibokenDir.File('fabricui_core.xml'),
         shibokenDir.File('fabricui_dfg.xml'),
         shibokenDir.File('fabricui_viewports.xml'),
+        shibokenDir.File('fabricui_util.xml'),
+        shibokenDir.File('fabricui_scenehub.xml'),
         ],
       [
           [
@@ -279,6 +312,8 @@ if uiLibPrefix == 'ui':
     pysideGens.append(pysideGen)
 
     pysideEnv.Append(CPPPATH = [
+        pysideEnv.Dir('Util').srcnode(),
+        pysideEnv.Dir('Menus').srcnode(),
         pysideEnv.Dir('DFG').srcnode(),
         pysideEnv.Dir('DFG/DFGUICmd').srcnode(),
         pysideEnv.Dir('GraphView').srcnode(),
@@ -290,6 +325,14 @@ if uiLibPrefix == 'ui':
         pysideEnv.Dir('Viewports').srcnode(),
         pysideEnv.Dir('Util').srcnode(),
         pysideEnv.Dir('Test').srcnode(),
+        pysideEnv.Dir('SceneHub').srcnode(),
+        pysideEnv.Dir('SceneHub/DFG').srcnode(),
+        pysideEnv.Dir('SceneHub/Menus').srcnode(),
+        pysideEnv.Dir('SceneHub/Editors').srcnode(),
+        pysideEnv.Dir('SceneHub/Commands').srcnode(),
+        pysideEnv.Dir('SceneHub/TreeView').srcnode(),
+        pysideEnv.Dir('SceneHub/Viewports').srcnode(),
+        pysideEnv.Dir('SceneHub/ValueEditor').srcnode(),
         fabricDir.Dir('include'),
         ])
     pysideEnv.Append(CPPPATH = [pythonConfig['includeDir']])
@@ -450,6 +493,20 @@ if uiLibPrefix == 'ui':
         )
       )
 
+    if os.environ.get('FABRIC_SCENEHUB', 0):
+      installedPySideLibs.append(
+        pysideEnv.Install(
+          pysideEnv['STAGE_DIR'].Dir('Python').Dir(pythonVersion).Dir('FabricEngine').Dir('SceneHub'),
+          Glob(os.path.join(pysideEnv.Dir('Python').Dir('SceneHub').abspath, '*'))
+          )
+        )
+      installedPySideLibs.append(
+        pysideEnv.Install(
+          pysideEnv['STAGE_DIR'].Dir('bin'),
+          pysideEnv.Dir('Python').File('sceneHub.py')
+          )
+        )
+      
   pysideEnv.Alias('pysideGen', pysideGens)
   pysideEnv.Alias('pyside', installedPySideLibs)
 

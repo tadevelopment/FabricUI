@@ -14,7 +14,7 @@
     <load-typesystem name="fabricui_dfg.xml" generate="yes"/>
     <load-typesystem name="fabricui_viewports.xml" generate="yes"/>
     <load-typesystem name="fabricui_timeline.xml" generate="yes"/>
-
+ 
     <namespace-type name="GraphView" generate="yes">
       <object-type name="Node" />
       <object-type name="Graph" />
@@ -27,9 +27,11 @@
     <namespace-type name="Application" generate="yes">
       <object-type name="FabricApplication" />
     </namespace-type>
-
+  
+    <load-typesystem name="fabricui_menus.xml" generate="yes"/>
     <load-typesystem name="fabricui_modelitems.xml" generate="yes"/>
     <load-typesystem name="fabricui_valueeditor.xml" generate="yes"/>
+    <load-typesystem name="fabricui_scenehub.xml" generate="yes"/>
 
     <namespace-type name="_Test" generate="yes">
       <object-type name="RTValCrash" />
@@ -41,6 +43,7 @@
       </extra-includes>
       <function signature="GetFilenameForFileURL(QUrl)"/>
       <object-type name="QTSignalBlocker"/>
+      <object-type name="StringUtils" copyable="false"/>
     </namespace-type>
   </namespace-type>
 

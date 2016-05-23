@@ -5,95 +5,173 @@
 #ifndef __UI_FABRICUI_STRING_UTILS_H__
 #define __UI_FABRICUI_STRING_UTILS_H__
 
-namespace FabricUI
-{
-  namespace Util
-  {  
-    /// Lower a string
-    /// \param s The string to lower
-    inline std::string ToLower(const std::string &s) {
-      std::string str = s;
-      transform(str.begin(), str.end(), str.begin(),::tolower);
-      return str;
-    }
+#include <FTL/Config.h>
+#include <FabricCore.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <algorithm>
+#include <iterator>
+#include <vector>
+#include <cmath>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <streambuf>
+#include <memory>
+#include <assert.h>
+#if defined(FTL_OS_DARWIN)
+# include <CoreFoundation/CFURL.h>
+#endif
 
-    /// Checks if a string is a number.
-    /// \param s The string to check
-    inline bool IsNumber(const std::string& s) {
-      std::string::const_iterator it = s.begin();
-      while (it != s.end() && std::isdigit(*it)) ++it;
-      return !s.empty() && it == s.end();
-    }
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
-    /// Removes the character within the string.
-    /// \param s The string to check
-    /// \param c The character to remove
-    inline std::string RemoveCharacter(const std::string& s, char c) {
-      std::string str = s;
-      str.erase( std::remove(str.begin(), str.end(), c), str.end());
-      return str;
-    }
+namespace FabricUI {
+namespace Util {  
 
-    /// Removes the newline within the string.
-    /// \param s The string to check
-    inline std::string RemoveNewLine(const std::string& s) {
-      std::string str = s;
-      str.erase( std::remove(str.begin(), str.end(), '\n'), str.end());
-      str.erase( std::remove(str.begin(), str.end(), '\r'), str.end());
-      return str;
-    }
+class StringUtils {
+  
+  public:
+    StringUtils() {}
 
-    /// Removes the white space within the string.
-    /// \param s The string to check
-    inline std::string RemoveSpace(const std::string& s) {
-      std::string str = s;
-      str.erase( std::remove_if(str.begin(), str.end(), ::isspace), str.end());
-      return str;
-    }
-
-    /// Converts a number into to string.
-    /// \param t The number
-    template <typename T> std::string ToStr(T t) { 
-      std::ostringstream os; 
-      os<<t; 
-      return os.str(); 
-    } 
-
-    /// Converts a string into a number.
-    /// \param s The string to check
-    template<typename T> T ToNum(const std::string &number) {
-      T value = 0;
-      if(IsNumber(number)) {
-        std::stringstream stream(number);
-        stream >> value;
-        if(stream.fail()) {
-          std::runtime_error e(number);
-          throw e;
-        }
+    static QStringList ProcessPathQStringForOsX(QStringList pathList) {
+      QStringList pathList_;
+      for(int i=0; i<pathList.size(); ++i) 
+      {
+        QString localFileQString = pathList[i];
+      #if defined(FTL_OS_DARWIN)
+          // [pzion 20150805] Work around
+          // https://bugreports.qt.io/browse/QTBUG-40449
+          if ( localFileQString.startsWith("/.file/id=") )
+          {
+            CFStringRef relCFStringRef =
+              CFStringCreateWithCString(
+                kCFAllocatorDefault,
+                localFileQString.toUtf8().constData(),
+                kCFStringEncodingUTF8
+                );
+            CFURLRef relCFURL =
+              CFURLCreateWithFileSystemPath(
+                kCFAllocatorDefault,
+                relCFStringRef,
+                kCFURLPOSIXPathStyle,
+                false // isDirectory
+                );
+            CFErrorRef error = 0;
+            CFURLRef absCFURL =
+              CFURLCreateFilePathURL(
+                kCFAllocatorDefault,
+                relCFURL,
+                &error
+                );
+            if ( !error )
+            {
+              static const CFIndex maxAbsPathCStrBufLen = 4096;
+              char absPathCStr[maxAbsPathCStrBufLen];
+              if ( CFURLGetFileSystemRepresentation(
+                absCFURL,
+                true, // resolveAgainstBase
+                reinterpret_cast<UInt8 *>( &absPathCStr[0] ),
+                maxAbsPathCStrBufLen
+                ) )
+              {
+                localFileQString = QString( absPathCStr );
+              }
+            }
+            CFRelease( absCFURL );
+            CFRelease( relCFURL );
+            CFRelease( relCFStringRef );
+          }
+      #endif
+        pathList_.append(localFileQString);
       }
-      return value;
+      return pathList_;
     }
-
-    /// Spits a string into a vector.
-    /// \param s The string to split
-    /// \param c The delimiter tat splits the string
-    inline std::vector<std::string> Split(const std::string& s, char c) {
-
-      std::vector<std::string> v;
-      std::string::size_type i = 0;
-      std::string::size_type j = s.find(c);
-
-      while (j != std::string::npos) {
-        v.push_back(s.substr(i, j-i));
-        i = ++j;
-        j = s.find(c, j);
-
-        if (j == std::string::npos)
-         v.push_back(s.substr(i, s.length()));
-      }
-      return v;
-    }
-  };
 };
+
+/// Lower a string
+/// \param s The string to lower
+inline std::string ToLower(const std::string &s) {
+  std::string str = s;
+  transform(str.begin(), str.end(), str.begin(),::tolower);
+  return str;
+}
+
+/// Checks if a string is a number.
+/// \param s The string to check
+inline bool IsNumber(const std::string& s) {
+  std::string::const_iterator it = s.begin();
+  while( it != s.end() && *it >= '0' && *it <= '9' ) ++it;
+  return !s.empty() && it == s.end();
+}
+
+/// Removes the character within the string.
+/// \param s The string to check
+/// \param c The character to remove
+inline std::string RemoveCharacter(const std::string& s, char c) {
+  std::string str = s;
+  str.erase( std::remove(str.begin(), str.end(), c), str.end());
+  return str;
+}
+
+/// Removes the newline within the string.
+/// \param s The string to check
+inline std::string RemoveNewLine(const std::string& s) {
+  std::string str = s;
+  str.erase( std::remove(str.begin(), str.end(), '\n'), str.end());
+  str.erase( std::remove(str.begin(), str.end(), '\r'), str.end());
+  return str;
+}
+
+/// Removes the white space within the string.
+/// \param s The string to check
+inline std::string RemoveSpace(const std::string& s) {
+  std::string str = s;
+  str.erase( std::remove_if(str.begin(), str.end(), ::isspace), str.end());
+  return str;
+}
+
+/// Converts a number into to string.
+/// \param t The number
+template <typename T> std::string ToStr(T t) { 
+  std::ostringstream os; 
+  os<<t; 
+  return os.str(); 
+} 
+
+/// Converts a string into a number.
+/// \param s The string to check
+template<typename T> T ToNum(const std::string &number) {
+  T value = 0;
+  if(IsNumber(number)) {
+    std::stringstream stream(number);
+    stream >> value;
+  }
+  return value;
+}
+
+/// Spits a string into a vector.
+/// \param s The string to split
+/// \param c The delimiter tat splits the string
+inline std::vector<std::string> Split(const std::string& s, char c) {
+
+  std::vector<std::string> v;
+  std::string::size_type i = 0;
+  std::string::size_type j = s.find(c);
+
+  while (j != std::string::npos) {
+    v.push_back(s.substr(i, j-i));
+    i = ++j;
+    j = s.find(c, j);
+
+    if (j == std::string::npos)
+     v.push_back(s.substr(i, s.length()));
+  }
+  return v;
+}
+
+} // namespace Utils
+} // namespace FabricUI
  
 #endif // __UI_FABRICUI_STRING_UTILS_H__

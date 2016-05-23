@@ -160,6 +160,8 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
         {
           "uiRange",
           "uiCombo",
+          "uiHidden",
+          "uiOpaque",
           DFG_METADATA_UIPERSISTVALUE
         };
 
