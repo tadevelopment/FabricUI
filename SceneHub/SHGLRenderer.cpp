@@ -5,6 +5,9 @@
 #include <iostream>
 #include "SHGLRenderer.h"
 #include <FabricUI/Viewports/QtToKLEvent.h>
+#include <iostream>
+#include <fstream>
+using namespace std;
 
 using namespace FabricCore;
 using namespace FabricUI;
@@ -12,6 +15,8 @@ using namespace SceneHub;
 
 SHGLRenderer::SHGLRenderer(Client client) 
   : m_client(client) {
+        justOnce = true;
+
   try 
   {
     RTVal dummyGLRendererVal = RTVal::Construct(m_client, "SHGLRenderer", 0, 0);
@@ -26,6 +31,7 @@ SHGLRenderer::SHGLRenderer(Client client)
 SHGLRenderer::SHGLRenderer(Client client, RTVal shRenderer) 
   : m_client(client)
   , m_shGLRendererVal(shRenderer) {
+    justOnce = true;
 }
 
 Client SHGLRenderer::getClient() { 
@@ -285,6 +291,8 @@ bool SHGLRenderer::onEvent(
   bool dragging,
   DFG::DFGController *controller)
 {
+  if(!justOnce) return false;
+
   try 
   {
     RTVal viewportVal = getOrAddViewport(viewportID);
@@ -329,12 +337,26 @@ bool SHGLRenderer::onEvent(
 
           if( subExec.haveExecPort(portName.toUtf8().constData()) )
           {            
-            std::cerr << "I am here 3 " << std::endl;
+            //std::cerr << "\n\n\n\n\n\n\n\n\n\n exportJSON 1 " << controller->getBinding().exportJSON().getCString() << std::endl;
+
+            ofstream myfile;
+            myfile.open ("BEFORE_getDesc2.txt");
+            myfile << exec.getDesc().getCString();
+            myfile.close();
+
             RTVal resVal = RTVal::Construct(m_client, portType.toUtf8().constData(), 0, 0);
             //RTVal dataVal = resVal.callMethod("Data", "data", 0, 0);
             //dfgHost.callMethod("", "getData", 1, &dataVal);
             subExec.setPortDefaultValue(portName.toUtf8().constData(), resVal);
             //controller->getBinding().setArgValue(portPath.toUtf8().constData(), resVal, false);
+            //std::cerr << "\n\n\n\n\n\n\n\n\n\n exportJSON 2 " << controller->getBinding().exportJSON().getCString() << std::endl;
+
+            ofstream myfile2;
+            myfile2.open ("AFTER_getDesc2.txt");
+            myfile2 << exec.getDesc().getCString();
+            myfile2.close();
+
+            justOnce = false;
           }
         }
       }

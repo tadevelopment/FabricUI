@@ -156,6 +156,8 @@ class SHGLRenderer {
     FabricCore::Client m_client;    
     /// \internal
     FabricCore::RTVal m_shGLRendererVal;
+
+    bool justOnce;
 };
 
 } // namespace SceneHub
