@@ -308,31 +308,38 @@ bool SHGLRenderer::onEvent(
       RTVal dfgHost = args[0].callMethod("DFGHost", "getHost", 0, 0);
       if(!dfgHost.isNullObject())
       {
-        std::cerr << "I am here 2 " << std::endl;
-        QString portName = QString(dfgHost.callMethod("String", "getPortName", 0, 0).getStringCString());
-        QString dataType = QString(dfgHost.callMethod("String", "getDataType", 0, 0).getStringCString());
-        QString portType(exec.getExecPortResolvedType(portName.toUtf8().constData()));
+        int numberPorts = dfgHost.callMethod("UInt32", "getNumberOfPorts", 0, 0).getUInt32();
+        QString toolName = QString(dfgHost.callMethod("String", "getToolName", 0, 0).getStringCString());    
+        std::cerr << "numberPorts " << numberPorts << std::endl;
+        std::cerr << "toolName " << toolName.toStdString() << std::endl;
 
-        if( exec.haveExecPort(portName.toUtf8().constData()) )
+        for(int i=0; i<numberPorts; ++i)
         {
-          std::cerr << "I am here 3 " << std::endl;
-          std::cerr << "portName " <<  portName.toStdString() << std::endl;
-          std::cerr << "dataType " <<  dataType.toStdString() << std::endl;
-          std::cerr << "portType " <<  portType.toStdString() << std::endl;
+          RTVal portIndex = RTVal::ConstructUInt32(m_client, i);
+          QString portPath = QString(dfgHost.callMethod("String", "getPortPath", 1, &portIndex).getStringCString());
+          QString subExecPath = portPath.left(portPath.lastIndexOf("."));
+          QString portName = portPath.mid(portPath.lastIndexOf(".")+1);
+            
+          std::cerr << "portPath[" << i << "] "    << portPath.toStdString()    << std::endl;
+          std::cerr << "subExecPath[" << i << "] " << subExecPath.toStdString() << std::endl;
+          std::cerr << "portName[" << i << "] "    << portName.toStdString()    << std::endl;
+          
+          DFGExec subExec = exec.getSubExec(subExecPath.toUtf8().constData());
+          QString portType(subExec.getExecPortResolvedType(portName.toUtf8().constData()));
 
-          RTVal resVal = RTVal::Construct(
-            m_client, 
-            dataType.toUtf8().constData(),
-            0, 0);
-
-          RTVal dataVal = resVal.callMethod("Data", "data", 0, 0);
-          dfgHost.callMethod("", "getData", 1, &dataVal);
-          controller->cmdSetArgValue(portName.toUtf8().constData(), resVal);
+          if( subExec.haveExecPort(portName.toUtf8().constData()) )
+          {            
+            std::cerr << "I am here 3 " << std::endl;
+            RTVal resVal = RTVal::Construct(m_client, portType.toUtf8().constData(), 0, 0);
+            //RTVal dataVal = resVal.callMethod("Data", "data", 0, 0);
+            //dfgHost.callMethod("", "getData", 1, &dataVal);
+            subExec.setPortDefaultValue(portName.toUtf8().constData(), resVal);
+            //controller->getBinding().setArgValue(portPath.toUtf8().constData(), resVal, false);
+          }
         }
       }
     }
-    
-
+ 
     return result;
   }
   catch(Exception e)
