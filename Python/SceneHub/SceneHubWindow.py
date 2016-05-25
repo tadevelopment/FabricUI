@@ -236,6 +236,12 @@ class SceneHubWindow(CanvasWindow):
 
         self.adjustSize()
 
+        # Create a timer to refresh in case there are asynchronous tasks (eg: background loading)
+        self.checkAsyncSceneStateTimer = QtCore.QTimer( self )
+        self.checkAsyncSceneStateTimer.setInterval( 333 ) # 3 times per second
+        self.checkAsyncSceneStateTimer.timeout.connect(self.shStates.onStateChanged)
+        self.checkAsyncSceneStateTimer.start()
+        
     def sizeHint(self):
         """ Returns the default windows size on startup.
         """
