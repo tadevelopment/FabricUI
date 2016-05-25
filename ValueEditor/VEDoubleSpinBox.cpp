@@ -58,7 +58,6 @@ double VEDoubleSpinBox::updateStep(
   changePerStep = std::min( maxChangePerStep, changePerStep );
 
   setSingleStep( changePerStep );
-  setDecimals( std::max( 0, -int( trunc( base10Exp ) ) ) );
 
   return std::max(
     0.01,
