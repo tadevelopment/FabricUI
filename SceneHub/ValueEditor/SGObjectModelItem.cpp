@@ -101,7 +101,12 @@ FTL::CStrRef SGObjectModelItem::getName() {
     try
     {
       m_name = m_rtVal.callMethod("String", "getFullPath", 0, 0).getStringCString();
-      return m_name;;
+
+      // Temporary fix for FE-6579
+      if(m_name.size() > 30)
+        m_name = std::string("...") + m_name.substr(m_name.size() - 30);
+
+      return m_name;
     }
     catch(FabricCore::Exception e)
     {

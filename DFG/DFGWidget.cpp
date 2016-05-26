@@ -19,6 +19,7 @@
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 #include <FabricUI/Util/UIRange.h>
+#include <FabricUI/Util/DocUrl.h>
 #include <FTL/FS.h>
 #include <Persistence/RTValToJSONEncoder.hpp>
 #include <QtCore/QCoreApplication>
@@ -27,7 +28,6 @@
 #include <QtGui/QApplication>
 #include <QtGui/QColorDialog>
 #include <QtGui/QCursor>
-#include <QtGui/QDesktopServices>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QSplitter>
@@ -265,13 +265,11 @@ QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, voi
   try
   {
     DFGWidget * graphWidget = (DFGWidget*)userData;
-    if ( !graphWidget->isEditable() )
-      return NULL;
 
     FabricCore::DFGExec &exec = graphWidget->m_uiController->getExec();
 
     GraphView::Graph * graph = graphWidget->m_uiGraph;
-    if(graph->controller() == NULL)
+    if (graph->controller() == NULL)
       return NULL;
     graphWidget->m_contextNode = uiNode;
 
@@ -284,7 +282,7 @@ QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, voi
     const std::vector<GraphView::Node*> & nodes = graphWidget->getUIController()->graph()->selectedNodes();
     for(unsigned int i=0;i<nodes.size();i++)
     {
-      if(nodes[i]->isBackDropNode())
+      if (nodes[i]->isBackDropNode())
       {
         userNodeCount++;
         continue;
@@ -293,13 +291,13 @@ QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, voi
       char const * nodeName = nodes[i]->name().c_str();
       FabricCore::DFGNodeType dfgNodeType = exec.getNodeType( nodeName );
       
-      if( dfgNodeType == FabricCore::DFGNodeType_Var)
+      if ( dfgNodeType == FabricCore::DFGNodeType_Var)
         varNodeCount++;
-      else if( dfgNodeType == FabricCore::DFGNodeType_Get)
+      else if ( dfgNodeType == FabricCore::DFGNodeType_Get)
         getNodeCount++;
-      else if( dfgNodeType == FabricCore::DFGNodeType_Set)
+      else if ( dfgNodeType == FabricCore::DFGNodeType_Set)
         setNodeCount++;
-      else if( dfgNodeType == FabricCore::DFGNodeType_Inst)
+      else if ( dfgNodeType == FabricCore::DFGNodeType_Inst)
         instNodeCount++;
       else
         userNodeCount++;
@@ -314,17 +312,18 @@ QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, voi
 
     QMenu* result = new QMenu(NULL);
 
-    if(onlyInstNodes)
+    bool needSeparator = false;
+    if (onlyInstNodes)
     {
-      if(instNodeCount == 1)
+      if (instNodeCount == 1)
       {
         QString uiDocUrl = exec.getNodeMetadata( nodeName, "uiDocUrl" );
-        if(uiDocUrl.length() == 0)
+        if (uiDocUrl.length() == 0)
         {
           FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
           uiDocUrl = subExec.getMetadata( "uiDocUrl" );
         }
-        if(uiDocUrl.length() > 0)
+        if (uiDocUrl.length() > 0)
         {
           result->addAction(DFG_OPEN_PRESET_DOC);
           result->addSeparator();
@@ -333,62 +332,76 @@ QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, voi
 
       result->addAction(DFG_INSPECT_PRESET);
       result->addAction(DFG_EDIT_PRESET);
+      needSeparator = true;
     }
      
-    if(!someVarNodes && !someGetNodes && !someSetNodes)
+    if (nodes.size() == 1 && !someVarNodes && !someGetNodes && !someSetNodes)
     {
       result->addAction(DFG_EDIT_PRESET_PROPERTIES);
+      needSeparator = true;
     }
 
-    result->addAction(DFG_DELETE_PRESET);
-    result->addSeparator();
+    if (graphWidget->isEditable())
+    {
+      result->addAction(DFG_DELETE_PRESET);
+      needSeparator = true;
+    }
 
-    if(!someVarNodes)
+    if (needSeparator)
+      result->addSeparator();
+
+    if (!someVarNodes)
     {
       result->addAction(DFG_COPY_PRESET);
-      result->addAction(DFG_CUT_PRESET);
+      if (graphWidget->isEditable())
+        result->addAction(DFG_CUT_PRESET);
     }
     else
     {
       result->addAction(DFG_SELECT_ALL_PRESET);
-      result->addAction(DFG_PASTE_PRESET);
+      if (graphWidget->isEditable())
+       result->addAction(DFG_PASTE_PRESET);
     }
 
-    if(nodes.size())
+    if (nodes.size() && graphWidget->isEditable())
     {
       result->addSeparator();
       result->addAction(DFG_DISCONNECT_ALL_PORTS);
     }
 
-    if(onlyInstNodes)
+    if (onlyInstNodes)
     {
-      if(instNodeCount == 1)
+      if (instNodeCount == 1)
       {
         result->addSeparator();
-        result->addAction(DFG_CREATE_PRESET);
+        if (graphWidget->isEditable())
+          result->addAction(DFG_CREATE_PRESET);
         result->addAction(DFG_EXPORT_GRAPH);
       }
 
-      result->addSeparator();
-      result->addAction(DFG_IMPLODE_NODE);
-
-      if(instNodeCount == 1)
+      if (graphWidget->isEditable())
       {
-        FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
-        if(subExec.getType() == FabricCore::DFGExecType_Graph)
-        {
-          result->addAction(DFG_EXPLODE_NODE);
-        }
+        result->addSeparator();
+        result->addAction(DFG_IMPLODE_NODE);
 
-        if(subExec.getExtDepCount() > 0)
+        if (instNodeCount == 1)
         {
-          result->addSeparator();
-          result->addAction(DFG_RELOAD_EXTENSION);
+          FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+          if (subExec.getType() == FabricCore::DFGExecType_Graph)
+          {
+            result->addAction(DFG_EXPLODE_NODE);
+          }
+
+          if (subExec.getExtDepCount() > 0)
+          {
+            result->addSeparator();
+            result->addAction(DFG_RELOAD_EXTENSION);
+          }
         }
       }
     }
 
-    if(nodes.size() == 1)
+    if (nodes.size() == 1 && graphWidget->isEditable())
     {
       result->addSeparator();
       result->addAction(DFG_SET_COMMENT);
@@ -722,8 +735,7 @@ void DFGWidget::onNodeAction(QAction * action)
       FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
       uiDocUrl = subExec.getMetadata( "uiDocUrl" );
     }
-    if(uiDocUrl.length() > 0)
-      QDesktopServices::openUrl(uiDocUrl);
+    Util::DocUrl::openUrl(uiDocUrl);
   }
   else if(action->text() == DFG_INSPECT_PRESET)
   {
@@ -1402,9 +1414,7 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     m_uiGraph->mainPanel()->setAlwaysPan(true);
   }
-  else if ( !m_isEditable )
-    return; // exit quickly if we are not editable
-  else if(hotkey == DFGHotkeys::DELETE_1 || hotkey == DFGHotkeys::DELETE_2)
+  else if(m_isEditable && (hotkey == DFGHotkeys::DELETE_1 || hotkey == DFGHotkeys::DELETE_2))
   {
     std::vector<GraphView::Node *> nodes = getUIGraph()->selectedNodes();
     getUIController()->gvcDoRemoveNodes(nodes);
@@ -1417,7 +1427,7 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     getUIController()->frameAllNodes();
   }
-  else if(hotkey == DFGHotkeys::TAB_SEARCH)
+  else if(m_isEditable && hotkey == DFGHotkeys::TAB_SEARCH)
   {
     if (getUIController()->validPresetSplit())
     {
@@ -1430,7 +1440,7 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     onSelectAll();
   }
-  else if(hotkey == DFGHotkeys::DISCONNECT_ALL_PORTS)
+  else if(m_isEditable && hotkey == DFGHotkeys::DISCONNECT_ALL_PORTS)
   {
     onRemoveConnections();
   }
@@ -1438,11 +1448,11 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     onCopy();
   }
-  else if(hotkey == DFGHotkeys::CUT)
+  else if(m_isEditable && hotkey == DFGHotkeys::CUT)
   {
     onCut();
   }
-  else if(hotkey == DFGHotkeys::PASTE)
+  else if(m_isEditable && hotkey == DFGHotkeys::PASTE)
   {
     onPaste();
   }
@@ -1840,7 +1850,7 @@ void DFGWidget::refreshExtDeps( FTL::CStrRef extDeps )
   m_uiHeader->refreshExtDeps( extDeps );
 }
 
-void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu)
+void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDCCMenu)
 {
   // [Julien] FE-5244 : Add Save Graph action to the Canvas widget for DCC Integrations
   // Don't add the edit menu if called from DCC
@@ -1864,6 +1874,15 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu)
     editMenu->addSeparator();
   if(viewMenu->actions().count() > 0)
     viewMenu->addSeparator();
+
+  // [Fe-6242] DCC menu.
+  QMenu *dccMenu = 0;
+  if(addDCCMenu) {
+    dccMenu = menuBar->addMenu(tr("&DCC"));
+    emit additionalMenuActionsRequested("DCC", dccMenu, true);
+    if(dccMenu->actions().count() > 0)
+      dccMenu->addSeparator();
+  }
 
   // edit menu
   // [Julien]  When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget

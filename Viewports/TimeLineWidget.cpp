@@ -28,9 +28,9 @@ TimeLineWidget::TimeLineWidget()
   m_simMode = 0;
 
   //QTimer is not precise at all; just make it call often as 
-  //possible (3 ms) and we will compute the actual elapsed time
+  //possible (1 ms) and we will compute the actual elapsed time
   m_timer = new QTimer(this);
-  m_timer->setInterval(3);
+  m_timer->setInterval(1);
   m_fps = 1000;//max
 
   // layout
@@ -119,9 +119,9 @@ TimeLineWidget::TimeLineWidget()
   layout()->addWidget(m_goToEndFrameButton);
 
   m_frameRateComboBox = new QComboBox(this);
-  m_frameRateComboBox->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  m_frameRateComboBox->setMinimumWidth(70);
-  m_frameRateComboBox->setMaximumWidth(70);
+  //m_frameRateComboBox->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+  //m_frameRateComboBox->setMinimumWidth(70);
+  //m_frameRateComboBox->setMaximumWidth(70);
   m_frameRateComboBox->setFrame(false);
   m_frameRateComboBox->setLayoutDirection(Qt::LeftToRight);
   m_frameRateComboBox->setEditable(false);

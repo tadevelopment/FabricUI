@@ -83,6 +83,12 @@ void DFGLogWidget::callback(
         sLogWidgets[i]->m_text->appendHtml("<font color=\"red\">"+message+"</font>");
       else
         sLogWidgets[i]->m_text->appendPlainText(QString(stringData));
+
+      // [FE-6563] scroll to the last line.
+      QTextCursor cursor = sLogWidgets[i]->m_text->textCursor();
+      cursor.movePosition(QTextCursor::End);
+      sLogWidgets[i]->m_text->setTextCursor(cursor);
+      sLogWidgets[i]->m_text->ensureCursorVisible();
     }
   }
   else

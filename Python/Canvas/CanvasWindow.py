@@ -10,7 +10,7 @@ import sys
 
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core, FabricUI, Util
-from FabricEngine.FabricUI import DFG, KLASTManager, Viewports, TimeLine
+from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine
 from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
@@ -64,6 +64,7 @@ class CanvasWindow(DFG.DFGMainWindow):
     defaultFrameIn = 1
     defaultFrameOut = 50
     autosaveIntervalSecs = 30
+    maxRecentFiles = 10
 
     def __init__(self, settings, unguarded, noopt):
         self.settings = settings
@@ -129,6 +130,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.loadGraphAction = None
         self.saveGraphAction = None
         self.saveGraphAsAction = None
+        self.recentFilesAction = []
         self.quitAction = None
         self.manipAction = None
         self.setGridVisibleAction = None
@@ -262,7 +264,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         astManager = KLASTManager(self.client)
         self.lastSavedBindingVersion = self.mainBinding.getVersion()
         self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
-   
+
         graph = self.mainBinding.getExec()
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
                                        self.mainBinding, '', graph, self.astManager,
@@ -345,7 +347,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         self.undoDockWidget.setObjectName("History")
         self.undoDockWidget.setFeatures(self.dockFeatures)
         self.undoDockWidget.setWidget(self.qUndoView)
-        self.undoDockWidget.hide()     
+        self.undoDockWidget.hide()
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.undoDockWidget)
 
         # Log Dock Widget
@@ -419,7 +421,7 @@ class CanvasWindow(DFG.DFGMainWindow):
 
         # Toggle Value Editor Dock Widget Action
         toggleAction = self.valueEditorDockWidget.toggleViewAction()
-        toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_6)
+        toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_3)
         windowMenu.addAction(toggleAction)
 
         # Toggle Timeline Dock Widget Action
@@ -467,7 +469,7 @@ class CanvasWindow(DFG.DFGMainWindow):
                     #structParam.getValue("", dataVal)
                     #controller.cmdSetArgValue(str(portName), structVal)
                 success = True
- 
+
         except Exception as e:
             self.dfgWidget.getDFGController().logError(str(e))
 
@@ -519,6 +521,31 @@ class CanvasWindow(DFG.DFGMainWindow):
 
     def onTopoDirty(self):
         self.onDirty()
+
+    def setCurrentFile(self, filePath):
+        files = list(self.settings.value('mainWindow/recentFiles', []))
+
+        # Try to remove the entry if it is already in the list
+        try:
+            files.remove(filePath)
+        except ValueError:
+            pass
+
+        # Insert the entry first in the list
+        files.insert(0, filePath)
+        # Update the list and crop it to maxRecentFiles
+        self.settings.setValue('mainWindow/recentFiles', files[:self.maxRecentFiles])
+
+        self.updateRecentFileActions()
+
+    def updateRecentFileActions(self):
+        files = self.settings.value('mainWindow/recentFiles', [])
+
+        for i,filepath in enumerate(files):
+            text = "&%d %s" % (i + 1, filepath)
+            self.recentFilesAction[i].setText(text)
+            self.recentFilesAction[i].setData(filepath)
+            self.recentFilesAction[i].setVisible(True)
 
     def loadGraph(self, filePath):
         """Method to load a graph from disk.
@@ -602,6 +629,8 @@ class CanvasWindow(DFG.DFGMainWindow):
             else:
                 self.timeLine.updateTime(CanvasWindow.defaultFrameIn, True)
 
+            self.setCurrentFile(filePath)
+
         except Exception as e:
             sys.stderr.write("Exception: " + str(e) + "\n")
 
@@ -637,7 +666,7 @@ class CanvasWindow(DFG.DFGMainWindow):
         if not self.scriptEditor.checkUnsavedChanges():
             event.ignore()
             return
-            
+
         self.viewport.setManipulationActive(False)
         self.settings.setValue("mainWindow/geometry", self.saveGeometry())
         self.settings.setValue("mainWindow/state", self.saveState())
@@ -694,7 +723,10 @@ class CanvasWindow(DFG.DFGMainWindow):
             frame (float): The new frame the user has changed to.
 
         """
- 
+
+        # [FE-6646] process all events before continuing.
+        QtCore.QCoreApplication.processEvents()
+
         try:
             self.evalContext.time = frame
         except Exception as e:
@@ -954,6 +986,8 @@ class CanvasWindow(DFG.DFGMainWindow):
 
         self.lastSavedBindingVersion = binding.getVersion()
 
+        self.setCurrentFile(filePath)
+
         return True
 
     def setBlockCompilations(self, blockCompilations):
@@ -1006,6 +1040,11 @@ class CanvasWindow(DFG.DFGMainWindow):
         if self.blockCompilationsAction:
             self.blockCompilationsAction.blockSignals(enabled)
 
+    def openRecentFile(self):
+        action = self.sender()
+        if action:
+            self.loadGraph(action.data())
+
     def onAdditionalMenuActionsRequested(self, name, menu, prefix):
         """Callback for when a request to add additional menu actions is called.
 
@@ -1027,10 +1066,21 @@ class CanvasWindow(DFG.DFGMainWindow):
                 self.saveGraphAsAction = QtGui.QAction('Save Graph As...', menu)
                 self.saveGraphAsAction.setShortcut(QtGui.QKeySequence.SaveAs)
 
+                for i in range(self.maxRecentFiles):
+                    self.recentFilesAction.append(QtGui.QAction(menu))
+                    self.recentFilesAction[-1].setVisible(False)
+                    self.recentFilesAction[-1].triggered.connect(self.openRecentFile)
+
                 menu.addAction(self.newGraphAction)
                 menu.addAction(self.loadGraphAction)
                 menu.addAction(self.saveGraphAction)
                 menu.addAction(self.saveGraphAsAction)
+                self.separator = menu.addSeparator()
+                self.separator.setVisible(True)
+                for i in range(self.maxRecentFiles):
+                    menu.addAction(self.recentFilesAction[i])
+
+                self.updateRecentFileActions()
 
                 self.newGraphAction.triggered.connect(self.execNewGraph)
                 self.loadGraphAction.triggered.connect(self.onLoadGraph)
