@@ -344,6 +344,16 @@ void DFGCombinedWidget::onAdditionalMenuActionsRequested(QString name, QMenu * m
       QAction *selectCanvasNodeInDCCAction = menu->addAction("Select Canvas Node/Item");
       menu->addAction( selectCanvasNodeInDCCAction );
       QObject::connect(selectCanvasNodeInDCCAction, SIGNAL(triggered()), this, SLOT(onSelectCanvasNodeInDCC()));
+
+      menu->addSeparator();
+
+      QAction *importGraphInDCCAction = menu->addAction("Import Graph");
+      menu->addAction( importGraphInDCCAction );
+      QObject::connect(importGraphInDCCAction, SIGNAL(triggered()), this, SLOT(onImportGraphInDCC()));
+
+      QAction *exportGraphInDCCAction = menu->addAction("Export Graph");
+      menu->addAction( exportGraphInDCCAction );
+      QObject::connect(exportGraphInDCCAction, SIGNAL(triggered()), this, SLOT(onExportGraphInDCC()));
     }
   }
 }
