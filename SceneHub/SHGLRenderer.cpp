@@ -344,18 +344,6 @@ RTVal SHGLRenderer::getSelectionSet() {
   return selectionSetVal;
 }
 
-bool SHGLRenderer::selectionChangedFromManips() {
-  try 
-  {
-    return m_shGLRendererVal.callMethod("Boolean", "selectionChangedFromManips", 0, 0).getBoolean();
-  }
-  catch(Exception e)
-  {
-    printf("SHGLRenderer::selectionChangedFromManips: exception: %s\n", e.getDesc_cstr());
-  }
-  return false;
-}
-
 QString SHGLRenderer::getSelectionCategory() {
   try 
   {
@@ -366,4 +354,14 @@ QString SHGLRenderer::getSelectionCategory() {
     printf("SHGLRenderer::getSelectionCategory: exception: %s\n", e.getDesc_cstr());
   }
   return QString();
+}
+
+void SHGLRenderer::enableSharedObjectSelection( bool enable ) {
+  try {
+    RTVal arg = RTVal::ConstructBoolean( m_client, enable );
+    m_shGLRendererVal.callMethod( "", "enableSharedObjectSelection", 1, &arg );
+  }
+  catch( Exception e ) {
+    printf( "SHGLRenderer::enableSharedObjectSelection: exception: %s\n", e.getDesc_cstr() );
+  }
 }

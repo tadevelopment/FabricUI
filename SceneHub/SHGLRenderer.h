@@ -134,15 +134,14 @@ class SHGLRenderer {
     /// Returns the selection set if any.
     FabricCore::RTVal getSelectionSet();
     
-    /// Checks if the selection changed from the manipulation system.
-    /// Synchronizes with the tree-view.
-    bool selectionChangedFromManips();
-    
     /// Gets the category of the selection.
     /// Used to know what type of element is selected.
     /// For showing the right contextual menu.
     QString getSelectionCategory();
 
+    /// If true, selection will be enabled for scene graph shared objects.
+    /// Otherwise, only the last instance level will be selectable.
+    void enableSharedObjectSelection( bool enable );
 
   private:
     /// \internal

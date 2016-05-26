@@ -187,6 +187,11 @@ class SceneHubWindow(CanvasWindow):
         togglePlaybackAction.triggered.connect(self._onTogglePlayback)
         self.interactionMenu.addMenu(SHInteractionMenu(self.viewportsManager.shGLRenderer))
 
+        selectionMenu = self.interactionMenu.addMenu("Selection")
+        self.toggleSharedObjectSelection = selectionMenu.addAction("Allow shared scene object selection")
+        self.toggleSharedObjectSelection.setCheckable(True)
+        self.toggleSharedObjectSelection.triggered.connect(self._onToggleSharedObjectSelection)
+
         helpMenu = self.menuBar().addMenu("&Help")
         usageAction = helpMenu.addAction("Show Usage")
         usageAction.triggered.connect(self._onShowUsage)
@@ -280,6 +285,9 @@ class SceneHubWindow(CanvasWindow):
         if self.timeLineDock.isVisible() == False: 
             self.timeLineDock.hide()
         self.timeLine.play()
+
+    def _onToggleSharedObjectSelection(self):
+        self.viewportsManager.getSHRenderer().enableSharedObjectSelection( self.toggleSharedObjectSelection.isChecked() )
 
     def _onRefreshAlways(self): 
         """ Notifies all viewports that they should always refresh

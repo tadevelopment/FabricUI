@@ -85,6 +85,9 @@ class SHViewportsManager():
 
         self.shGLRenderer.update()
 
+    def getSHRenderer(self):
+        return self.shGLRenderer
+
     def createViewport(self, index, ortho, replace, sharedWidget):
         """ Creates a viewport when adding or replacing one.
         The method is also in charge of creating the 
