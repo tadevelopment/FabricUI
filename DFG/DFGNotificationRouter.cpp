@@ -72,7 +72,7 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
       onNodePortInserted(
         jsonObject->getString( FTL_STR("nodeName") ),
         jsonObject->getString( FTL_STR("portName") ),
-        jsonObject->get( FTL_STR("nodePortDesc") )->cast<FTL::JSONObject>()
+        jsonObject->get( FTL_STR("portDesc") )->cast<FTL::JSONObject>()
         );
     }
     else if(descStr == FTL_STR("nodePortRemoved"))
@@ -87,7 +87,7 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
       onExecPortInserted(
         jsonObject->getSInt32( FTL_STR( "portIndex" ) ),
         jsonObject->getString( FTL_STR( "portName" ) ),
-        jsonObject->get( FTL_STR("execPortDesc") )->cast<FTL::JSONObject>()
+        jsonObject->get( FTL_STR("portDesc") )->cast<FTL::JSONObject>()
         );
     }
     else if(descStr == FTL_STR("execPortRemoved"))
@@ -122,7 +122,7 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
     else if(descStr == FTL_STR("execBlockMetadataChanged"))
     {
       onExecBlockMetadataChanged(
-        jsonObject->getString( FTL_STR("name") ),
+        jsonObject->getString( FTL_STR("blockName") ),
         jsonObject->getString( FTL_STR("key") ),
         jsonObject->getString( FTL_STR("value") )
         );
@@ -138,15 +138,15 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
     {
       onNodeRenamed(
         jsonObject->getString( FTL_STR("oldNodeName") ),
-        jsonObject->getString( FTL_STR("newNodeName") )
+        jsonObject->getString( FTL_STR("nodeName") )
         );
     }
     else if(descStr == FTL_STR("execPortRenamed"))
     {
       onExecPortRenamed(
         jsonObject->getString( FTL_STR("oldPortName") ),
-        jsonObject->getString( FTL_STR("newPortName") ),
-        jsonObject->get( FTL_STR("execPortDesc") )->cast<FTL::JSONObject>()
+        jsonObject->getString( FTL_STR("portName") ),
+        jsonObject->get( FTL_STR("portDesc") )->cast<FTL::JSONObject>()
         );
     }
     else if(descStr == FTL_STR("nodePortRenamed"))
@@ -154,7 +154,7 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
       onNodePortRenamed(
         jsonObject->getString( FTL_STR("nodeName") ),
         jsonObject->getString( FTL_STR("oldPortName") ),
-        jsonObject->getString( FTL_STR("newPortName") )
+        jsonObject->getString( FTL_STR("portName") )
         );
     }
     else if(descStr == FTL_STR("execMetadataChanged"))
@@ -281,7 +281,7 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
     else if( descStr == FTL_STR("execPortDefaultValuesChanged") )
     {
       onExecPortDefaultValuesChanged(
-        jsonObject->getString( FTL_STR("execPortName") )
+        jsonObject->getString( FTL_STR("portName") )
         );
     }
     else if( descStr == FTL_STR("nodePortDefaultValuesChanged") )
