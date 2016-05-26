@@ -15,8 +15,6 @@ using namespace SceneHub;
 
 SHGLRenderer::SHGLRenderer(Client client) 
   : m_client(client) {
-        justOnce = true;
-
   try 
   {
     RTVal dummyGLRendererVal = RTVal::Construct(m_client, "SHGLRenderer", 0, 0);
@@ -31,7 +29,6 @@ SHGLRenderer::SHGLRenderer(Client client)
 SHGLRenderer::SHGLRenderer(Client client, RTVal shRenderer) 
   : m_client(client)
   , m_shGLRendererVal(shRenderer) {
-    justOnce = true;
 }
 
 Client SHGLRenderer::getClient() { 
@@ -291,8 +288,6 @@ bool SHGLRenderer::onEvent(
   bool dragging,
   DFG::DFGController *controller)
 {
-  if(!justOnce) return false;
-
   try 
   {
     RTVal viewportVal = getOrAddViewport(viewportID);
@@ -307,56 +302,32 @@ bool SHGLRenderer::onEvent(
     event->setAccepted(result);
     redrawAllViewports = args[0].callMethod("Boolean", "redrawAllViewports", 0, 0).getBoolean();
 
-    
     if(controller && result)
     {
-      //std::cerr << "I am here 1 " << std::endl;
       DFGExec exec = controller->getBinding().getExec();
 
       RTVal dfgHost = args[0].callMethod("DFGHost", "getHost", 0, 0);
       if(!dfgHost.isNullObject())
       {
-        int numberPorts = dfgHost.callMethod("UInt32", "getNumberOfPorts", 0, 0).getUInt32();
-        QString toolName = QString(dfgHost.callMethod("String", "getToolName", 0, 0).getStringCString());    
-        std::cerr << "numberPorts " << numberPorts << std::endl;
-        std::cerr << "toolName " << toolName.toStdString() << std::endl;
+        QString toolPath(dfgHost.callMethod("String", "getToolPath", 0, 0).getStringCString());    
+        QString subExecPath = toolPath.left(toolPath.lastIndexOf("."));
+        
+        RTVal toolVal = exec.getVarValue(toolPath.toUtf8().constData());
+        RTVal targetVal = toolVal.callMethod("DFGToolTarget", "getTarget", 0, 0);
+        RTVal rtVal = targetVal.callMethod("RTVal", "getRTVal", 0, 0);
+        QString valType(rtVal.callMethod("String", "type", 0, 0).getStringCString());
 
-        for(int i=0; i<numberPorts; ++i)
+        DFGExec subExec = exec.getSubExec(subExecPath.toUtf8().constData());
+        for(unsigned int i=0; i<subExec.getExecPortCount() ; ++i)
         {
-          RTVal portIndex = RTVal::ConstructUInt32(m_client, i);
-          QString portPath = QString(dfgHost.callMethod("String", "getPortPath", 1, &portIndex).getStringCString());
-          QString subExecPath = portPath.left(portPath.lastIndexOf("."));
-          QString portName = portPath.mid(portPath.lastIndexOf(".")+1);
+          if(subExec.getExecPortType(i) == DFGPortType_In)
+          {
+            QString portName(subExec.getExecPortName(i));
+            QString portPath = subExecPath + "." + portName;
+            QString portType(subExec.getExecPortResolvedType(portName.toUtf8().constData()));
             
-          std::cerr << "portPath[" << i << "] "    << portPath.toStdString()    << std::endl;
-          std::cerr << "subExecPath[" << i << "] " << subExecPath.toStdString() << std::endl;
-          std::cerr << "portName[" << i << "] "    << portName.toStdString()    << std::endl;
-          
-          DFGExec subExec = exec.getSubExec(subExecPath.toUtf8().constData());
-          QString portType(subExec.getExecPortResolvedType(portName.toUtf8().constData()));
-
-          if( subExec.haveExecPort(portName.toUtf8().constData()) )
-          {            
-            //std::cerr << "\n\n\n\n\n\n\n\n\n\n exportJSON 1 " << controller->getBinding().exportJSON().getCString() << std::endl;
-
-            ofstream myfile;
-            myfile.open ("BEFORE_getDesc2.txt");
-            myfile << exec.getDesc().getCString();
-            myfile.close();
-
-            RTVal resVal = RTVal::Construct(m_client, portType.toUtf8().constData(), 0, 0);
-            //RTVal dataVal = resVal.callMethod("Data", "data", 0, 0);
-            //dfgHost.callMethod("", "getData", 1, &dataVal);
-            subExec.setPortDefaultValue(portName.toUtf8().constData(), resVal);
-            //controller->getBinding().setArgValue(portPath.toUtf8().constData(), resVal, false);
-            //std::cerr << "\n\n\n\n\n\n\n\n\n\n exportJSON 2 " << controller->getBinding().exportJSON().getCString() << std::endl;
-
-            ofstream myfile2;
-            myfile2.open ("AFTER_getDesc2.txt");
-            myfile2 << exec.getDesc().getCString();
-            myfile2.close();
-
-            justOnce = false;
+            if(portType == valType)
+              exec.setPortDefaultValue(portPath.toUtf8().constData(), rtVal, false);
           }
         }
       }
