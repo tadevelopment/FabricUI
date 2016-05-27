@@ -328,7 +328,7 @@ void KLSourceCodeWidget::keyPressEvent(QKeyEvent * event)
   {
     hidePopup();
   }
-  else if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+  else if(!isReadOnly() && (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return))
   {
     std::string klCode = QStringToStl(code());
     if(klCode.length() > 0)
