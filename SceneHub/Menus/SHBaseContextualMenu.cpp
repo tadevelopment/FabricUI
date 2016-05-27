@@ -61,9 +61,19 @@ void SHBaseContextualMenu::loadRecursively() {
   }
 }
 
+void SHBaseContextualMenu::unloadRecursively() {
+  try {
+    m_targetSGObject.callMethod( "", "unloadRecursively", 0, 0 );
+    m_shStates->onStateChanged();
+  }
+  catch( Exception e ) {
+    printf( "SHBaseContextualMenu::unloadRecursively: exception: %s\n", e.getDesc_cstr() );
+  }
+}
+
 void SHBaseContextualMenu::unload() {
   try {
-    m_targetSGObject.callMethod( "UInt8", "unload", 0, 0 );
+    m_targetSGObject.callMethod( "Boolean", "unload", 0, 0 );
     m_shStates->onStateChanged();
   }
   catch( Exception e ) {
@@ -137,6 +147,10 @@ void SHBaseContextualMenu::constructExpandMenu() {
       addAction( unloadAction );
       QObject::connect( unloadAction, SIGNAL( triggered() ), this, SLOT( unload() ) );
     }
+
+    QAction *unloadRecAction = new QAction( "Unload recursively", this );
+    addAction( unloadRecAction );
+    QObject::connect( unloadRecAction, SIGNAL( triggered() ), this, SLOT( unloadRecursively() ) );
   }
   catch( Exception e ) {
     printf( "SHBaseContextualMenu::constructExpandMenu: exception: %s\n", e.getDesc_cstr() );

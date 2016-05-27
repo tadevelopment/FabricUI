@@ -50,6 +50,7 @@ class SHBaseContextualMenu : public SHBaseSceneMenu {
     void load();
     void loadRecursively();
     void unload();
+    void unloadRecursively();
 
     /// Resets the object visibility.
     void resetVisibilityRecursively();
