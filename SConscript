@@ -16,9 +16,15 @@ Import(
   'stageDir',
   'pythonConfigs',
   'capiSharedLibFlags',
-  'servicesFlags_mt',
   'corePythonModuleFiles',
   )
+
+if buildOS == 'Windows' and buildType == 'Debug':
+  Import('servicesFlags_mtd')
+  servicesFlags = servicesFlags_mtd
+else:
+  Import('servicesFlags_mt')
+  servicesFlags = servicesFlags_mt
 
 qtIncludeDir = os.path.join(qtDir, 'include')
 qtLibDir = os.path.join(qtDir, 'lib')
@@ -225,7 +231,7 @@ if uiLibPrefix == 'ui':
 
     pysideEnv = env.Clone()
     pysideEnv.MergeFlags(capiSharedLibFlags)
-    pysideEnv.MergeFlags(servicesFlags_mt)
+    pysideEnv.MergeFlags(servicesFlags)
     pysideEnv.Append(LIBS = ['FabricSplitSearch'])
     pysideEnv.MergeFlags(pythonConfig['pythonFlags'])
     pysideEnv.MergeFlags(pythonConfig['shibokenFlags'])
