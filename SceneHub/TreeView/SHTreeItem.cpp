@@ -183,8 +183,10 @@ void SHTreeItem::loadRecursively() {
   try
   {
     RTVal sgObject = getSGObject();
-    if(sgObject.isValid())
-      sgObject.callMethod("", "forceHierarchyExpansion", 0, 0);
+    if( sgObject.isValid() ) {
+      RTVal arg = RTVal::ConstructBoolean( m_client, true );
+      sgObject.callMethod( "", "forceHierarchyExpansion", 1, &arg );
+    }
   }
   catch(Exception e) 
   {

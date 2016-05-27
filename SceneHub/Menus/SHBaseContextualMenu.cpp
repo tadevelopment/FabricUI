@@ -40,14 +40,45 @@ void SHBaseContextualMenu::constructMenu() {
   }
 }
 
+void SHBaseContextualMenu::load() {
+  try {
+    m_targetSGObject.callMethod( "UInt8", "load", 0, 0 );
+    m_shStates->onStateChanged();
+  }
+  catch( Exception e ) {
+    printf( "SHBaseContextualMenu::load: exception: %s\n", e.getDesc_cstr() );
+  }
+}
+
 void SHBaseContextualMenu::loadRecursively() {
- 	m_targetSGObject.callMethod("", "forceHierarchyExpansion", 0, 0);
- 	m_shStates->onStateChanged();
+  try {
+    RTVal arg = RTVal::ConstructBoolean( m_client, true );
+    m_targetSGObject.callMethod( "", "forceHierarchyExpansion", 1, &arg );
+    m_shStates->onStateChanged();
+  }
+  catch( Exception e ) {
+    printf( "SHBaseContextualMenu::loadRecursively: exception: %s\n", e.getDesc_cstr() );
+  }
+}
+
+void SHBaseContextualMenu::unload() {
+  try {
+    m_targetSGObject.callMethod( "UInt8", "unload", 0, 0 );
+    m_shStates->onStateChanged();
+  }
+  catch( Exception e ) {
+    printf( "SHBaseContextualMenu::unload: exception: %s\n", e.getDesc_cstr() );
+  }
 }
 
 void SHBaseContextualMenu::resetVisibilityRecursively() {
-  m_targetSGObject.callMethod("", "resetVisibilityRecursively", 0, 0);
-  m_shStates->onStateChanged();
+  try {
+    m_targetSGObject.callMethod( "", "resetVisibilityRecursively", 0, 0 );
+    m_shStates->onStateChanged();
+  }
+  catch( Exception e ) {
+    printf( "SHBaseContextualMenu::resetVisibilityRecursively: exception: %s\n", e.getDesc_cstr() );
+  }
 }
 
 void SHBaseContextualMenu::showLocal() {
@@ -76,89 +107,118 @@ void SHBaseContextualMenu::hideOverride() {
 
 void SHBaseContextualMenu::constructExpandMenu() {
 
-  if(m_shBaseTreeView)
-  {      
-    QAction *expandAction = new QAction("Expand recursively", this);
-    addAction(expandAction);
-    foreach(QModelIndex index, m_shBaseTreeView->getSelectedIndexes())
-    {
-      SHTreeView_ViewIndexTarget *viewIndexTarget = new SHTreeView_ViewIndexTarget(m_shBaseTreeView, index, this);
-      QObject::connect(expandAction, SIGNAL(triggered()), viewIndexTarget, SLOT(expandRecursively()));
+  try {
+    if( m_shBaseTreeView ) {
+      QAction *expandAction = new QAction( "Expand recursively", this );
+      addAction( expandAction );
+      foreach( QModelIndex index, m_shBaseTreeView->getSelectedIndexes() ) {
+        SHTreeView_ViewIndexTarget *viewIndexTarget = new SHTreeView_ViewIndexTarget( m_shBaseTreeView, index, this );
+        QObject::connect( expandAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( expandRecursively() ) );
+      }
+    }
+
+    RTVal args[2];
+    args[0] = RTVal::ConstructBoolean( m_client, false );
+    args[1] = RTVal::ConstructBoolean( m_client, false );
+    m_targetSGObject.callMethod( "", "getLoadCapabilities", 2, args );
+
+    if( args[0].getBoolean() ) {// canLoad
+      QAction *loadAction = new QAction( "Load", this );
+      addAction( loadAction );
+      QObject::connect( loadAction, SIGNAL( triggered() ), this, SLOT( load() ) );
+    }
+
+    QAction *loadRecAction = new QAction( "Load recursively", this );
+    addAction( loadRecAction );
+    QObject::connect( loadRecAction, SIGNAL( triggered() ), this, SLOT( loadRecursively() ) );
+
+    if( args[1].getBoolean() ) {// canUnload
+      QAction *unloadAction = new QAction( "Unload", this );
+      addAction( unloadAction );
+      QObject::connect( unloadAction, SIGNAL( triggered() ), this, SLOT( unload() ) );
     }
   }
-
-  QAction *loadAction = new QAction("Load recursively", this);
-  addAction(loadAction);
-  QObject::connect(loadAction, SIGNAL(triggered()), this, SLOT(loadRecursively()));
+  catch( Exception e ) {
+    printf( "SHBaseContextualMenu::constructExpandMenu: exception: %s\n", e.getDesc_cstr() );
+  }
 }
 
 void SHBaseContextualMenu::constructVisibilityMenu() {
+  try {
+    QMenu *visMenu = addMenu( "Visibility" );
 
-  QMenu *visMenu = addMenu("Visibility");
+    QAction *showPropagatedAction = new QAction( "Show", visMenu );
+    showPropagatedAction->setCheckable( true );
+    visMenu->addAction( showPropagatedAction );
 
-  QAction *showPropagatedAction = new QAction("Show", visMenu);
-  showPropagatedAction->setCheckable(true);
-  visMenu->addAction(showPropagatedAction);
+    QAction *showLocalAction = new QAction( "Show (local only)", visMenu );
+    showLocalAction->setCheckable( true );
+    visMenu->addAction( showLocalAction );
 
-  QAction *showLocalAction = new QAction("Show (local only)", visMenu);
-  showLocalAction->setCheckable(true);
-  visMenu->addAction(showLocalAction);
+    QAction *hidePropagatedAction = new QAction( "Hide", visMenu );
+    hidePropagatedAction->setCheckable( true );
+    visMenu->addAction( hidePropagatedAction );
 
-  QAction *hidePropagatedAction = new QAction("Hide", visMenu);
-  hidePropagatedAction->setCheckable(true);
-  visMenu->addAction(hidePropagatedAction);
+    QAction *hideLocalAction = new QAction( "Hide (local only)", visMenu );
+    hideLocalAction->setCheckable( true );
+    visMenu->addAction( hideLocalAction );
 
-  QAction *hideLocalAction = new QAction("Hide (local only)", visMenu);
-  hideLocalAction->setCheckable(true);
-  visMenu->addAction(hideLocalAction);
+    QAction *resetVisibilityAction = new QAction( "Reset recursively", visMenu );
+    visMenu->addAction( resetVisibilityAction );
 
-  QAction *resetVisibilityAction = new QAction("Reset recursively", visMenu);
-  visMenu->addAction(resetVisibilityAction);
+    RTVal propagVal = RTVal::ConstructUInt8( m_client, 0 );
+    bool visible = m_targetSGObject.callMethod( "Boolean", "getVisibility", 1, &propagVal ).getBoolean();
+    bool propagType = propagVal.getUInt8();
 
-  RTVal propagVal = RTVal::ConstructUInt8(m_client, 0);
-  bool visible = m_targetSGObject.callMethod("Boolean", "getVisibility", 1, &propagVal).getBoolean();
-  bool propagType = propagVal.getUInt8();
+    QObject::connect( showLocalAction, SIGNAL( triggered() ), this, SLOT( showLocal() ) );
+    if( visible && !propagType )
+      showLocalAction->setChecked( true );
 
-  QObject::connect(showLocalAction, SIGNAL(triggered()), this, SLOT(showLocal()));
-  if(visible && !propagType)
-    showLocalAction->setChecked(true);
+    QObject::connect( showPropagatedAction, SIGNAL( triggered() ), this, SLOT( showPropagated() ) );
+    if( visible && propagType )
+      showPropagatedAction->setChecked( true );
 
-  QObject::connect(showPropagatedAction, SIGNAL(triggered()), this, SLOT(showPropagated()));
-  if(visible && propagType)
-    showPropagatedAction->setChecked(true);
+    // THERE ARE BUGS WITH OVERRIDES
+    // visAction = new QAction("Show (override)", 0)
+    // connect(visAction, SIGNAL(triggered()), self, SLOT(showOverride()))
+    // visAction.setCheckable(true)
+    // if(visible and propagType == 2)
+    //   visAction->setChecked(true)
+    // visMenu.addAction(visAction)
 
-  // THERE ARE BUGS WITH OVERRIDES
-  // visAction = new QAction("Show (override)", 0)
-  // connect(visAction, SIGNAL(triggered()), self, SLOT(showOverride()))
-  // visAction.setCheckable(true)
-  // if(visible and propagType == 2)
-  //   visAction->setChecked(true)
-  // visMenu.addAction(visAction)
-      
-  QObject::connect(hideLocalAction, SIGNAL(triggered()), this, SLOT(hideLocal()));
-  if(!visible && !propagType)
-    hideLocalAction->setChecked(true);
+    QObject::connect( hideLocalAction, SIGNAL( triggered() ), this, SLOT( hideLocal() ) );
+    if( !visible && !propagType )
+      hideLocalAction->setChecked( true );
 
-  QObject::connect(hidePropagatedAction, SIGNAL(triggered()), this, SLOT(hidePropagated()));
-  if(!visible && propagType)
-    hidePropagatedAction->setChecked(true);
-      
-  // THERE ARE BUGS WITH OVERRIDES
-  // visAction = new QAction("Hide (override)", 0)
-  // connect(visAction, SIGNAL(triggered()), self, SLOT(hideOverride()))
-  // visAction.setCheckable(true)
-  // if(!visible and propagType == 2)
-  //   visAction->setChecked(true)
-  // visMenu.addAction(visAction)
+    QObject::connect( hidePropagatedAction, SIGNAL( triggered() ), this, SLOT( hidePropagated() ) );
+    if( !visible && propagType )
+      hidePropagatedAction->setChecked( true );
 
-  QObject::connect(resetVisibilityAction, SIGNAL(triggered()), this, SLOT(resetVisibilityRecursively()));
+    // THERE ARE BUGS WITH OVERRIDES
+    // visAction = new QAction("Hide (override)", 0)
+    // connect(visAction, SIGNAL(triggered()), self, SLOT(hideOverride()))
+    // visAction.setCheckable(true)
+    // if(!visible and propagType == 2)
+    //   visAction->setChecked(true)
+    // visMenu.addAction(visAction)
+
+    QObject::connect( resetVisibilityAction, SIGNAL( triggered() ), this, SLOT( resetVisibilityRecursively() ) );
+  }
+  catch( Exception e ) {
+    printf( "SHBaseContextualMenu::constructVisibilityMenu: exception: %s\n", e.getDesc_cstr() );
+  }
 }
 
 void SHBaseContextualMenu::setVisibility(bool visible, unsigned int propagationType) { 
-	RTVal args[2] = {
- 		RTVal::ConstructBoolean(getClient(), visible),
-  	RTVal::ConstructUInt32(getClient(), propagationType)
-	};
-  m_targetSGObject.callMethod("", "setVisibility", 2, args);
-  m_shStates->onStateChanged();
+  try {
+    RTVal args[2] = {
+      RTVal::ConstructBoolean( getClient(), visible ),
+      RTVal::ConstructUInt32( getClient(), propagationType )
+    };
+    m_targetSGObject.callMethod( "", "setVisibility", 2, args );
+    m_shStates->onStateChanged();
+  }
+  catch( Exception e ) {
+    printf( "SHBaseContextualMenu::setVisibility: exception: %s\n", e.getDesc_cstr() );
+  }
 }

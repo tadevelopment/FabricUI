@@ -47,7 +47,9 @@ class SHBaseContextualMenu : public SHBaseSceneMenu {
 
   protected slots:
     /// Load the object hierarchy.
+    void load();
     void loadRecursively();
+    void unload();
 
     /// Resets the object visibility.
     void resetVisibilityRecursively();
