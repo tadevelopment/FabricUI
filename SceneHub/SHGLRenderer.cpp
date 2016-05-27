@@ -310,24 +310,36 @@ bool SHGLRenderer::onEvent(
       if(!dfgHost.isNullObject())
       {
         QString toolPath(dfgHost.callMethod("String", "getToolPath", 0, 0).getStringCString());    
-        QString subExecPath = toolPath.left(toolPath.lastIndexOf("."));
-        
-        RTVal toolVal = exec.getVarValue(toolPath.toUtf8().constData());
-        RTVal targetVal = toolVal.callMethod("DFGToolTarget", "getTarget", 0, 0);
-        RTVal rtVal = targetVal.callMethod("RTVal", "getRTVal", 0, 0);
-        QString valType(rtVal.callMethod("String", "type", 0, 0).getStringCString());
+        bool bakeValue = dfgHost.callMethod("Boolean", "isBakeValue", 0, 0).getBoolean();  
 
+        std::cerr << "bakeValue " << bakeValue << std::endl;  
+        QString subExecPath = toolPath.left(toolPath.lastIndexOf("."));
         DFGExec subExec = exec.getSubExec(subExecPath.toUtf8().constData());
-        for(unsigned int i=0; i<subExec.getExecPortCount() ; ++i)
+        
+        RTVal tool = exec.getVarValue(toolPath.toUtf8().constData());
+        RTVal target = tool.callMethod("DFGToolTarget", "getTarget", 0, 0);
+        RTVal toolData = target.callMethod("DFGToolData", "getToolData", 0, 0);
+
+        int portCount = toolData.callMethod("UInt32", "getPortCount", 0, 0).getUInt32();
+        for(int i=0; i<portCount; ++i)
         {
-          if(subExec.getExecPortType(i) == DFGPortType_In)
+          RTVal index = RTVal::ConstructUInt32(m_client, i);
+          QString portName(toolData.callMethod("String", "getPortAtIndex", 1, &index).getStringCString()); 
+          RTVal rtVal = toolData.callMethod("RTVal", "getRTValAtPortIndex", 1, &index);
+          QString valType(rtVal.callMethod("String", "type", 0, 0).getStringCString());
+
+          if(  subExec.haveExecPort(portName.toUtf8().constData()) && 
+               valType == QString(subExec.getExecPortResolvedType(portName.toUtf8().constData())) && 
+              (
+                subExec.getExecPortType(portName.toUtf8().constData()) == DFGPortType_In ||
+                subExec.getExecPortType(portName.toUtf8().constData()) == DFGPortType_IO)
+              )
           {
-            QString portName(subExec.getExecPortName(i));
             QString portPath = subExecPath + "." + portName;
-            QString portType(subExec.getExecPortResolvedType(portName.toUtf8().constData()));
-            
-            if(portType == valType)
-              exec.setPortDefaultValue(portPath.toUtf8().constData(), rtVal, false);
+            RTVal val = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &rtVal);
+            exec.setPortDefaultValue(portPath.toUtf8().constData(), val, bakeValue);
+            if(bakeValue)
+              controller->emitDefaultValuesChanged();
           }
         }
       }
