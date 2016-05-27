@@ -123,7 +123,13 @@ void DFGKLEditorWidget::onExecChanged()
   
   FabricCore::DFGExec &exec = m_controller->getExec();
   bool isEditable = m_controller->validPresetSplit();
-  setEnabled(isEditable);
+
+  // [FE-5528] instead of disabling the whole widget and
+  // its children we disable only certain widgets and
+  // make others read-only, so that one can for example
+  // inspect the KL code without having to split the preset.
+  m_ports->setEnabled(isEditable);
+  m_klEditor->sourceCodeWidget()->setReadOnly(!isEditable);
 
   if ( exec.getType() == FabricCore::DFGExecType_Func )
   {
