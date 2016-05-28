@@ -28,10 +28,9 @@ TimeLineWidget::TimeLineWidget()
   m_simMode = 0;
 
   //QTimer is not precise at all; just make it call often as 
-  //possible (3 ms) and we will compute the actual elapsed time
+  //possible (1 ms) and we will compute the actual elapsed time
   m_timer = new QTimer(this);
-  m_timer->setInterval(3);
-  m_fps = 1000;//max
+  m_timer->setInterval(1);
 
   // layout
   setLayout(new QHBoxLayout());
@@ -119,9 +118,9 @@ TimeLineWidget::TimeLineWidget()
   layout()->addWidget(m_goToEndFrameButton);
 
   m_frameRateComboBox = new QComboBox(this);
-  m_frameRateComboBox->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  m_frameRateComboBox->setMinimumWidth(70);
-  m_frameRateComboBox->setMaximumWidth(70);
+  //m_frameRateComboBox->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+  //m_frameRateComboBox->setMinimumWidth(70);
+  //m_frameRateComboBox->setMaximumWidth(70);
   m_frameRateComboBox->setFrame(false);
   m_frameRateComboBox->setLayoutDirection(Qt::LeftToRight);
   m_frameRateComboBox->setEditable(false);
@@ -200,6 +199,9 @@ TimeLineWidget::TimeLineWidget()
   connect( m_frameRateComboBox , SIGNAL(activated(int)) , this , SLOT( frameRateChanged(int))  );
   connect( m_loopModeComBox , SIGNAL(activated(int)) , this , SLOT( loopModeChanged(int))  );
   connect( m_simModeComBox , SIGNAL(activated(int)) , this , SLOT( simModeChanged(int))  );
+
+  // [FE-6693] set default framerate to 60 fps.
+  setFrameRate(60.0f);
 }
 
 void TimeLineWidget::setTime(int time)
@@ -310,11 +312,11 @@ void TimeLineWidget::setFrameRate(float framesPerSecond) {
   if( framesPerSecond <= 15 )
     index = 1; // 12 fps
   else if( framesPerSecond <= 30 )
-    index = 2; // 24 fps
+    index = 4; // 25 fps
   else if( framesPerSecond <= 50 )
-    index = 3; // 48 fps
+    index = 7; // 48 fps
   else if( framesPerSecond <= 70 )
-    index = 4; // 60 fps
+    index = 8; // 60 fps
   frameRateChanged( index );
   m_frameRateComboBox->setCurrentIndex( index );
 }

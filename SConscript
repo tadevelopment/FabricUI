@@ -16,9 +16,15 @@ Import(
   'stageDir',
   'pythonConfigs',
   'capiSharedLibFlags',
-  'servicesFlags_mt',
   'corePythonModuleFiles',
   )
+
+if buildOS == 'Windows' and buildType == 'Debug':
+  Import('servicesFlags_mtd')
+  servicesFlags = servicesFlags_mtd
+else:
+  Import('servicesFlags_mt')
+  servicesFlags = servicesFlags_mt
 
 qtIncludeDir = os.path.join(qtDir, 'include')
 qtLibDir = os.path.join(qtDir, 'lib')
@@ -225,7 +231,7 @@ if uiLibPrefix == 'ui':
 
     pysideEnv = env.Clone()
     pysideEnv.MergeFlags(capiSharedLibFlags)
-    pysideEnv.MergeFlags(servicesFlags_mt)
+    pysideEnv.MergeFlags(servicesFlags)
     pysideEnv.Append(LIBS = ['FabricSplitSearch'])
     pysideEnv.MergeFlags(pythonConfig['pythonFlags'])
     pysideEnv.MergeFlags(pythonConfig['shibokenFlags'])
@@ -488,36 +494,24 @@ if uiLibPrefix == 'ui':
       )
     installedPySideLibs.append(
       pysideEnv.Install(
-        pysideEnv['STAGE_DIR'].Dir('Python').Dir(pythonVersion).Dir('FabricEngine').Dir('SceneHub'),
-        Glob(os.path.join(pysideEnv.Dir('Python').Dir('SceneHub').abspath, '*'))
-        )
-      )
-    installedPySideLibs.append(
-      pysideEnv.Install(
-        pysideEnv['STAGE_DIR'].Dir('bin'),
-        pysideEnv.Dir('Python').File('sceneHub.py')
-        )
-      )
-
-    installedPySideLibs.append(
-      pysideEnv.Install(
-        pysideEnv['STAGE_DIR'].Dir('Python').Dir(pythonVersion).Dir('FabricEngine').Dir('SceneHub'),
-        Glob(os.path.join(pysideEnv.Dir('Python').Dir('SceneHub').abspath, '*'))
-        )
-      )
-    installedPySideLibs.append(
-      pysideEnv.Install(
-        pysideEnv['STAGE_DIR'].Dir('bin'),
-        pysideEnv.Dir('Python').File('sceneHub.py')
-        )
-      )
-      
-    installedPySideLibs.append(
-      pysideEnv.Install(
         pysideEnv['STAGE_DIR'].Dir('Samples').Dir('Python').Dir('AlembicViewer'),
         Glob(os.path.join(pysideEnv.Dir('Samples').Dir('AlembicViewer').abspath, '*'))
         )
       )
+
+    if os.environ.get('FABRIC_SCENEHUB', 0):
+      installedPySideLibs.append(
+        pysideEnv.Install(
+          pysideEnv['STAGE_DIR'].Dir('Python').Dir(pythonVersion).Dir('FabricEngine').Dir('SceneHub'),
+          Glob(os.path.join(pysideEnv.Dir('Python').Dir('SceneHub').abspath, '*'))
+          )
+        )
+      installedPySideLibs.append(
+        pysideEnv.Install(
+          pysideEnv['STAGE_DIR'].Dir('bin'),
+          pysideEnv.Dir('Python').File('sceneHub.py')
+          )
+        )
       
   pysideEnv.Alias('pysideGen', pysideGens)
   pysideEnv.Alias('pyside', installedPySideLibs)
