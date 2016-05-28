@@ -5,6 +5,7 @@
 #include <iostream>
 #include "SHGLRenderer.h"
 #include <FabricUI/Viewports/QtToKLEvent.h>
+#include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -304,7 +305,8 @@ bool SHGLRenderer::onEvent(
 
     if(controller && result)
     {
-      DFGExec exec = controller->getBinding().getExec();
+      DFGBinding binding = controller->getBinding();
+      DFGExec exec = binding.getExec();
 
       RTVal dfgHost = args[0].callMethod("DFGHost", "getHost", 0, 0);
       if(!dfgHost.isNullObject())
@@ -312,7 +314,6 @@ bool SHGLRenderer::onEvent(
         QString toolPath(dfgHost.callMethod("String", "getToolPath", 0, 0).getStringCString());    
         bool bakeValue = dfgHost.callMethod("Boolean", "isBakeValue", 0, 0).getBoolean();  
 
-        std::cerr << "bakeValue " << bakeValue << std::endl;  
         QString subExecPath = toolPath.left(toolPath.lastIndexOf("."));
         DFGExec subExec = exec.getSubExec(subExecPath.toUtf8().constData());
         
@@ -337,9 +338,16 @@ bool SHGLRenderer::onEvent(
           {
             QString portPath = subExecPath + "." + portName;
             RTVal val = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &rtVal);
-            exec.setPortDefaultValue(portPath.toUtf8().constData(), val, bakeValue);
-            if(bakeValue)
-              controller->emitDefaultValuesChanged();
+
+            if(!bakeValue)
+              exec.setPortDefaultValue(portPath.toUtf8().constData(), val, false);
+            else
+              controller->getCmdHandler()->dfgDoSetPortDefaultValue(
+                binding,
+                ".",
+                exec,
+                portPath,
+                val);
           }
         }
       }
