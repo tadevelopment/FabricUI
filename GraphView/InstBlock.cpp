@@ -8,6 +8,7 @@
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/InstBlockHeader.h>
 
+#include <QtCore/QDebug>
 #include <QtGui/QGraphicsLinearLayout>
 #include <QtGui/QPainter>
 
@@ -27,15 +28,15 @@ InstBlock::InstBlock(
   m_pinRadius = config.pinRadius;
 
   m_layout = new QGraphicsLinearLayout();
-  m_layout->setContentsMargins( 0, 0, 0, 4 );
-  m_layout->setSpacing( 4 );
+  m_layout->setContentsMargins( 0, 0, 0, 0 );
+  m_layout->setSpacing( 2 );
   m_layout->setOrientation( Qt::Vertical );
 
   m_instBlockHeader = new InstBlockHeader( this, name );
   m_layout->addItem( m_instBlockHeader );
   m_layout->setAlignment( m_instBlockHeader, Qt::AlignHCenter | Qt::AlignVCenter );
 
-  setContentsMargins( 7, 1, 7, 1 );
+  setContentsMargins( 0, 1, 0, 1 );
   setMinimumWidth( config.instBlockMinWidth );
   setMinimumHeight( config.instBlockMinHeight );
   setSizePolicy( QSizePolicy(
@@ -95,23 +96,33 @@ void InstBlock::paint(
   QWidget *widget
   )
 {
+  QPen pen;
   if ( m_node->selected() )
-    painter->setPen( m_node->selectedPen() );
+    pen = m_node->selectedPen();
   else
-    painter->setPen( m_node->defaultPen() );
+    pen = m_node->defaultPen();
+  painter->setPen( pen );
   
   painter->setBrush( m_node->titleColor() );
 
   QRectF rect = contentsRect();
-  rect.adjust( m_pinRadius, 0, -m_pinRadius, 0 );
+  rect.adjust(
+    m_pinRadius,
+    pen.width() * 0.5f,
+    -m_pinRadius,
+    -pen.width() * 0.5f
+    );
 
   painter->drawRect( rect );
 
-  qreal headerHeight = m_instBlockHeader->boundingRect().height();
-  painter->drawLine(
-    rect.topLeft() + QPointF( 0, headerHeight ),
-    rect.topRight() + QPointF( 0, headerHeight )
-    );
+  if ( !m_instBlockPorts.empty() )
+  {
+    qreal headerHeight = m_instBlockHeader->boundingRect().height();
+    painter->drawLine(
+      rect.topLeft() + QPointF( 0, headerHeight - 1 ),
+      rect.topRight() + QPointF( 0, headerHeight - 1 )
+      );
+  }
 
   QGraphicsWidget::paint(painter, option, widget);
 }

@@ -45,6 +45,8 @@ InstBlockPort::InstBlockPort(
   layout->setOrientation(Qt::Horizontal);
   setLayout(layout);
 
+  setContentsMargins( 0, 0, 0, 3 );
+
   m_inCircle = NULL;
   m_outCircle = NULL;
 
