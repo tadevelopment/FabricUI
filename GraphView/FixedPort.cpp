@@ -6,12 +6,15 @@
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/Util/LoadPixmap.h>
 
 #include <QtGui/QGraphicsLinearLayout>
+#include <QtGui/QGraphicsProxyWidget>
+#include <QtGui/QLabel>
 
 using namespace FabricUI::GraphView;
 
-Port::Port(
+FixedPort::FixedPort(
   SidePanel * parent,
   FTL::StrRef name,
   PortType portType,
@@ -35,7 +38,7 @@ Port::Port(
   init();
 }
 
-void Port::init()
+void FixedPort::init()
 {
   setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding));
 
@@ -47,6 +50,12 @@ void Port::init()
   layout->setOrientation(Qt::Horizontal);
   setLayout(layout);
 
+  QLabel *lockLabel = new QLabel;
+  lockLabel->setPixmap(
+    FabricUI::LoadPixmap( "fixed-port-lock.png" )
+    );
+  QGraphicsProxyWidget *lockProxy = new QGraphicsProxyWidget;
+  lockProxy->setWidget( lockLabel );
   m_label = new PortLabel(
     this,
     QSTRING_FROM_STL_UTF8(m_labelCaption),
@@ -62,11 +71,15 @@ void Port::init()
     layout->setAlignment(m_circle, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem(m_label);
     layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
+    layout->addItem( lockProxy );
+    layout->setAlignment(lockProxy, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addStretch(1);
   }
   else if(m_portType == PortType_Output)
   {
     layout->addStretch(1);
+    layout->addItem( lockProxy );
+    layout->setAlignment(lockProxy, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem(m_label);
     layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem(m_circle);
@@ -74,17 +87,17 @@ void Port::init()
   }
 }
 
-Graph *Port::graph()
+Graph *FixedPort::graph()
 {
   return sidePanel()->graph();
 }
 
-Graph const *Port::graph() const
+Graph const *FixedPort::graph() const
 {
   return sidePanel()->graph();
 }
 
-void Port::setName( FTL::CStrRef name )
+void FixedPort::setName( FTL::CStrRef name )
 {
   bool labelUsesName = m_name == m_labelCaption;
   m_name = name;
@@ -96,46 +109,46 @@ void Port::setName( FTL::CStrRef name )
   emit contentChanged();
 }
 
-char const * Port::label() const
+char const * FixedPort::label() const
 {
   return m_labelCaption.c_str();
 }
 
-void Port::setLabel(char const * n)
+void FixedPort::setLabel(char const * n)
 {
   m_labelCaption = n;
   m_label->setText(QSTRING_FROM_STL_UTF8(m_labelCaption));
   update();
 }
 
-QColor Port::color() const
+QColor FixedPort::color() const
 {
   return m_color;
 }
 
-PortType Port::portType() const
+PortType FixedPort::portType() const
 {
   return m_portType;
 }
 
-void Port::setDataType(FTL::CStrRef dataType)
+void FixedPort::setDataType(FTL::CStrRef dataType)
 {
   m_dataType = dataType;
   setToolTip(m_dataType.c_str());
 }
 
-void Port::setColor(QColor color)
+void FixedPort::setColor(QColor color)
 {
   m_color = color;
   m_circle->setColor(m_color);
 }
 
-bool Port::highlighted() const
+bool FixedPort::highlighted() const
 {
   return m_highlighted;
 }
 
-void Port::setHighlighted(bool state)
+void FixedPort::setHighlighted(bool state)
 {
   if(m_highlighted != state)
   {
@@ -145,7 +158,7 @@ void Port::setHighlighted(bool state)
   }
 }
 
-bool Port::canConnectTo(
+bool FixedPort::canConnectTo(
   ConnectionTarget * other,
   std::string &failureReason
   ) const
@@ -168,8 +181,7 @@ bool Port::canConnectTo(
     case TargetType_Port:
     {
       Port * otherPort = (Port *)other;
-      if ( this == otherPort
-        || portType() == PortType_Input
+      if ( portType() == PortType_Input
         || otherPort->portType() == PortType_Output )
         return false;
       if(path() == otherPort->path())
@@ -182,8 +194,9 @@ bool Port::canConnectTo(
     }
     case TargetType_FixedPort:
     {
-      FixedPort *otherFixedPort = (FixedPort *)other;
-      if ( portType() == PortType_Input
+      FixedPort * otherFixedPort = (FixedPort *)other;
+      if ( this == otherFixedPort
+        || portType() == PortType_Input
         || otherFixedPort->portType() == PortType_Output )
         return false;
       if(path() == otherFixedPort->path())
@@ -203,18 +216,18 @@ bool Port::canConnectTo(
   }
 }
 
-QPointF Port::connectionPos(PortType pType) const
+QPointF FixedPort::connectionPos(PortType pType) const
 {
   return m_circle->centerInSceneCoords();
 }
 
-void Port::mousePressEvent( QGraphicsSceneMouseEvent *event )
+void FixedPort::mousePressEvent( QGraphicsSceneMouseEvent *event )
 {
   if(event->button() == Qt::RightButton)
   {
     event->accept();
 
-    QMenu * menu = graph()->getPortContextMenu(this);
+    QMenu * menu = graph()->getFixedPortContextMenu(this);
     if(menu)
     {
       menu->exec(QCursor::pos());
@@ -225,28 +238,28 @@ void Port::mousePressEvent( QGraphicsSceneMouseEvent *event )
   ConnectionTarget::mousePressEvent(event);  
 }
 
-std::string Port::path() const
+std::string FixedPort::path() const
 {
   return m_name;
 }
 
-QString const Port::MimeType( "x-fabric-ui/graph-view-port" );
+QString const FixedPort::MimeType( "x-fabric-ui/graph-view-fixed-port" );
 
-bool Port::MimeData::hasFormat( QString const &mimeType) const
+bool FixedPort::MimeData::hasFormat( QString const &mimeType) const
 {
   if ( mimeType == MimeType )
     return true;
   else return Parent::hasFormat( mimeType );
 }
 
-QStringList Port::MimeData::formats() const
+QStringList FixedPort::MimeData::formats() const
 {
   QStringList result = Parent::formats();
   result.append( MimeType );
   return result;
 }
 
-QVariant Port::MimeData::retrieveData(
+QVariant FixedPort::MimeData::retrieveData(
   QString const &mimeType,
   QVariant::Type type
   ) const

@@ -77,51 +77,72 @@ PortType SidePanel::portType() const
   return m_portType;
 }
 
-Port * SidePanel::addPort(Port * port)
+void SidePanel::addFixedPort( FixedPort *fixedPort )
 {
-  // std::vector<Port*> ports = graph()->ports();
-  std::vector<Port*> ports = m_ports;
-  for(size_t i=0;i<ports.size();i++)
-  {
-    if(ports[i]->name() == port->name())
-      return NULL;
-  }
+  assert( SidePanel::fixedPort( fixedPort->name() ) == NULL );
 
-  port->setIndex(m_ports.size());
-  m_ports.push_back(port);
+  fixedPort->setIndex( m_fixedPorts.size() );
+  m_fixedPorts.push_back( fixedPort );
 
   resetLayout();
   updateItemGroupScroll();
-
-  return port;
 }
 
-bool SidePanel::removePort(Port * port)
+void SidePanel::addPort( Port *port )
+{
+  assert( SidePanel::port( port->name() ) == NULL );
+
+  port->setIndex( m_ports.size() );
+  m_ports.push_back( port );
+
+  resetLayout();
+  updateItemGroupScroll();
+}
+
+void SidePanel::removeFixedPort( FixedPort *fixedPort )
+{
+  size_t index = m_fixedPorts.size();
+  for ( size_t i=0; i<m_fixedPorts.size(); i++ )
+    if(m_fixedPorts[i] == fixedPort)
+    {
+      index = i;
+      break;
+    }
+  assert( index != m_fixedPorts.size() );
+
+  m_fixedPorts.erase( m_fixedPorts.begin() + index );
+
+  for ( size_t i=0; i<m_fixedPorts.size(); i++ )
+    m_fixedPorts[i]->setIndex( i );
+
+  scene()->removeItem( fixedPort );
+  delete fixedPort;
+
+  resetLayout();
+  updateItemGroupScroll();
+}
+
+void SidePanel::removePort( Port *port )
 {
   size_t index = m_ports.size();
-  for(size_t i=0;i<m_ports.size();i++)
-  {
+  for ( size_t i=0; i<m_ports.size(); i++ )
     if(m_ports[i] == port)
     {
       index = i;
       break;
     }
-  }
-  if(index == m_ports.size())
-    return false;
+  assert( index != m_ports.size() );
 
-  m_ports.erase(m_ports.begin() + index);
+  m_ports.erase( m_ports.begin() + index );
 
-  for(size_t i=0;i<m_ports.size();i++)
-    m_ports[i]->setIndex(i);
+  for ( size_t i=0; i<m_ports.size(); i++ )
+    m_ports[i]->setIndex( i );
 
-  scene()->removeItem(port);
-  delete(port);
+  scene()->removeItem( port );
+  delete port;
 
   resetLayout();
   updateItemGroupScroll();
-
-  return true;
 }
 
 void SidePanel::reorderPorts(QStringList names)
@@ -143,23 +164,19 @@ void SidePanel::reorderPorts(QStringList names)
   resetLayout();
 }
 
-unsigned int SidePanel::portCount() const
+FixedPort *SidePanel::fixedPort( FTL::StrRef name )
 {
-  return m_ports.size();
+  for ( size_t i=0; i<m_fixedPorts.size(); ++i )
+    if ( m_fixedPorts[i]->name() == name )
+      return m_fixedPorts[i];
+  return NULL;
 }
 
-Port * SidePanel::port(unsigned int index)
+Port *SidePanel::port( FTL::StrRef name )
 {
-  return m_ports[index];
-}
-
-Port * SidePanel::port(FTL::StrRef name)
-{
-  for(size_t i=0;i<m_ports.size();i++)
-  {
-    if(m_ports[i]->name() == name)
+  for ( size_t i=0; i<m_ports.size(); ++i )
+    if ( m_ports[i]->name() == name )
       return m_ports[i];
-  }
   return NULL;
 }
 
@@ -275,12 +292,20 @@ void SidePanel::resetLayout()
   portsLayout->setAlignment(m_proxyPort, Qt::AlignRight | Qt::AlignTop);
   portsLayout->setItemSpacing(0, 20);
 
+  for(size_t i=0;i<m_fixedPorts.size();i++)
+  {
+    portsLayout->addItem(m_fixedPorts[i]);
+    portsLayout->setAlignment(m_fixedPorts[i], Qt::AlignRight | Qt::AlignTop);
+    QObject::connect(m_fixedPorts[i], SIGNAL(contentChanged()), this, SLOT(onItemGroupResized()));
+  }
+
   for(size_t i=0;i<m_ports.size();i++)
   {
     portsLayout->addItem(m_ports[i]);
     portsLayout->setAlignment(m_ports[i], Qt::AlignRight | Qt::AlignTop);
     QObject::connect(m_ports[i], SIGNAL(contentChanged()), this, SLOT(onItemGroupResized()));
   }
+
   portsLayout->addStretch(2);
 
   m_itemGroup->setLayout(portsLayout);

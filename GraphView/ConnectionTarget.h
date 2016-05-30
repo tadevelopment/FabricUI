@@ -22,6 +22,7 @@ namespace FabricUI
     {
       TargetType_Pin,
       TargetType_Port,
+      TargetType_FixedPort,
       TargetType_ProxyPort,
       TargetType_MouseGrabber,
       TargetType_NodeHeader,

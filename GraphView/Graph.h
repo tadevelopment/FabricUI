@@ -109,18 +109,21 @@ namespace FabricUI
       typedef QMenu* (*PinContextMenuCallback)(Pin*, void*);
       typedef QMenu* (*ConnectionContextMenuCallback)(Connection*, void*);
       typedef QMenu* (*PortContextMenuCallback)(Port*, void*);
+      typedef QMenu* (*FixedPortContextMenuCallback)(FixedPort*, void*);
       typedef QMenu* (*SidePanelContextMenuCallback)(SidePanel*, void*);
       virtual void setGraphContextMenuCallback(GraphContextMenuCallback callback, void * userData = NULL);
       virtual void setNodeContextMenuCallback(NodeContextMenuCallback callback, void * userData = NULL);
       virtual void setPinContextMenuCallback(PinContextMenuCallback callback, void * userData = NULL);
       virtual void setConnectionContextMenuCallback(ConnectionContextMenuCallback callback, void * userData = NULL);
       virtual void setPortContextMenuCallback(PortContextMenuCallback callback, void * userData = NULL);
+      virtual void setFixedPortContextMenuCallback(FixedPortContextMenuCallback callback, void * userData = NULL);
       virtual void setSidePanelContextMenuCallback(SidePanelContextMenuCallback callback, void * userData = NULL);
       virtual QMenu* getGraphContextMenu();
       virtual QMenu* getNodeContextMenu(Node * node);
       virtual QMenu* getPinContextMenu(Pin * pin);
       virtual QMenu* getConnectionContextMenu(Connection * connection);
       virtual QMenu* getPortContextMenu(Port * Port);
+      virtual QMenu* getFixedPortContextMenu(FixedPort * Port);
       virtual QMenu* getSidePanelContextMenu(SidePanel * sidePanel);
 
       virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -147,8 +150,13 @@ namespace FabricUI
         );
       virtual BackDropNode * addBackDropNode( FTL::CStrRef name, bool quiet = false );
       virtual bool removeNode(Node * node, bool quiet = false);
-      virtual bool addPort(Port * port, bool quiet = false);
-      virtual bool removePort(Port * port, bool quiet = false);
+
+      void addFixedPort( FixedPort *fixedPort );
+      void removeFixedPort( FixedPort *fixedPort );
+
+      void addPort( Port *port );
+      void removePort( Port *port );
+
       virtual Connection * addConnection(ConnectionTarget * src, ConnectionTarget * dst, bool quiet = false);
       virtual bool removeConnection(ConnectionTarget * src, ConnectionTarget * dst, bool quiet = false);
       virtual bool removeConnection(Connection * connection, bool quiet = false);
@@ -227,12 +235,14 @@ namespace FabricUI
       PinContextMenuCallback m_pinContextMenuCallback;
       ConnectionContextMenuCallback m_connectionContextMenuCallback;
       PortContextMenuCallback m_portContextMenuCallback;
+      FixedPortContextMenuCallback m_fixedPortContextMenuCallback;
       SidePanelContextMenuCallback m_sidePanelContextMenuCallback;
       void * m_graphContextMenuCallbackUD;
       void * m_nodeContextMenuCallbackUD;
       void * m_pinContextMenuCallbackUD;
       void * m_connectionContextMenuCallbackUD;
       void * m_portContextMenuCallbackUD;
+      void * m_fixedPortContextMenuCallbackUD;
       void * m_sidePanelContextMenuCallbackUD;
       InfoOverlay * m_centralOverlay;
       QString m_centralOverlayText;

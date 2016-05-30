@@ -9,8 +9,9 @@
 #include <QtGui/QGraphicsLinearLayout>
 #include <vector>
 
-#include "PortType.h"
+#include "FixedPort.h"
 #include "Port.h"
+#include "PortType.h"
 #include "ProxyPort.h"
 #include "SidePanelItemGroup.h"
 
@@ -43,9 +44,17 @@ namespace FabricUI
       QColor color() const;
       PortType portType() const;
       
-      virtual unsigned int portCount() const;
-      virtual Port * port(unsigned int index);
-      virtual Port * port(FTL::StrRef name);
+      unsigned int fixedPortCount() const
+        { return m_fixedPorts.size(); }
+      FixedPort *fixedPort( unsigned index )
+        { return m_fixedPorts[index]; }
+      FixedPort *fixedPort( FTL::StrRef name );
+      
+      unsigned int portCount() const
+        { return m_ports.size(); }
+      Port *port( unsigned index )
+        { return m_ports[index]; }
+      Port *port( FTL::StrRef name );
 
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
@@ -60,10 +69,13 @@ namespace FabricUI
       virtual void dragLeaveEvent( QGraphicsSceneDragDropEvent *event );
       virtual void dropEvent( QGraphicsSceneDragDropEvent *event );
 
-      // accessed through controller
-      virtual Port * addPort(Port * port);
-      virtual bool removePort(Port * port);
-      virtual void reorderPorts(QStringList names);
+      void addFixedPort( FixedPort *fixedPort );
+      void removeFixedPort( FixedPort *fixedPort );
+
+      void addPort( Port *port );
+      void removePort( Port *port );
+
+      void reorderPorts( QStringList names );
 
       void scroll(float delta);
       void updateItemGroupScroll(float height = 0.0f);
@@ -88,6 +100,7 @@ namespace FabricUI
       float m_itemGroupScroll;
 
       ProxyPort* m_proxyPort;
+      std::vector<FixedPort*> m_fixedPorts;
       std::vector<Port*> m_ports;
 
       QString m_dragSrcPortName;

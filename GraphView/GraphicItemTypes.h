@@ -16,6 +16,7 @@ namespace FabricUI
       QGraphicsItemType_Node = QGraphicsItem::UserType + 5,
       QGraphicsItemType_Pin,
       QGraphicsItemType_Port,
+      QGraphicsItemType_FixedPort,
       QGraphicsItemType_ProxyPort,
       QGraphicsItemType_Connection,
       QGraphicsItemType_PinCircle,

@@ -468,6 +468,23 @@ QMenu* DFGWidget::portContextMenuCallback(FabricUI::GraphView::Port* port, void*
   return result;
 }
 
+QMenu *DFGWidget::fixedPortContextMenuCallback(
+  FabricUI::GraphView::FixedPort *fixedPort,
+  void *userData)
+{
+  DFGWidget * graphWidget = (DFGWidget*)userData;
+  if ( !graphWidget->isEditable() )
+    return NULL;
+
+  GraphView::Graph * graph = graphWidget->m_uiGraph;
+  if(graph->controller() == NULL)
+    return NULL;
+  if (!graphWidget->getDFGController()->validPresetSplit())
+    return NULL;
+
+  return NULL;
+}
+
 QMenu* DFGWidget::sidePanelContextMenuCallback(FabricUI::GraphView::SidePanel* panel, void* userData)
 {
   DFGWidget * graphWidget = (DFGWidget*)userData;
@@ -2066,6 +2083,7 @@ void DFGWidget::onExecChanged()
     m_uiGraph->setGraphContextMenuCallback( &graphContextMenuCallback, this );
     m_uiGraph->setNodeContextMenuCallback( &nodeContextMenuCallback, this );
     m_uiGraph->setPortContextMenuCallback( &portContextMenuCallback, this );
+    m_uiGraph->setFixedPortContextMenuCallback( &fixedPortContextMenuCallback, this );
     m_uiGraph->setSidePanelContextMenuCallback( &sidePanelContextMenuCallback, this );
 
     if(exec.getType() == FabricCore::DFGExecType_Graph)

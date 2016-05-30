@@ -57,12 +57,21 @@ namespace FabricUI
         FTL::CStrRef portName
         );
       void onExecPortInserted(
-        int index,
+        int portIndex,
         FTL::CStrRef portName,
         FTL::JSONObject const *jsonObject
         );
       void onExecPortRemoved(
-        int index,
+        int portIndex,
+        FTL::CStrRef portName
+        );
+      void onExecFixedPortInserted(
+        int portIndex,
+        FTL::CStrRef portName,
+        FTL::JSONObject const *jsonObject
+        );
+      void onExecFixedPortRemoved(
+        int portIndex,
         FTL::CStrRef portName
         );
       void onInstBlockInserted(

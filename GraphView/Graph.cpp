@@ -31,12 +31,14 @@ Graph::Graph(
   m_pinContextMenuCallback = NULL;
   m_connectionContextMenuCallback = NULL;
   m_portContextMenuCallback = NULL;
+  m_fixedPortContextMenuCallback = NULL;
   m_sidePanelContextMenuCallback = NULL;
   m_graphContextMenuCallbackUD = NULL;
   m_nodeContextMenuCallbackUD = NULL;
   m_pinContextMenuCallbackUD = NULL;
   m_connectionContextMenuCallbackUD = NULL;
   m_portContextMenuCallbackUD = NULL;
+  m_fixedPortContextMenuCallbackUD = NULL;
   m_sidePanelContextMenuCallbackUD = NULL;
   m_overlayItem = NULL;
   m_nodeZValue = 3.0;
@@ -334,14 +336,24 @@ void Graph::clearSelection() const
     m_nodes[i]->setSelected( false );
 }
 
-bool Graph::addPort(Port * port, bool quiet)
+void Graph::addFixedPort( FixedPort *fixedPort )
 {
-  return port->sidePanel()->addPort(port) != NULL;
+  fixedPort->sidePanel()->addFixedPort( fixedPort );
 }
 
-bool Graph::removePort(Port * port, bool quiet)
+void Graph::removeFixedPort( FixedPort *fixedPort )
 {
-  return port->sidePanel()->removePort(port);
+  fixedPort->sidePanel()->removeFixedPort( fixedPort );
+}
+
+void Graph::addPort( Port *port )
+{
+  port->sidePanel()->addPort( port );
+}
+
+void Graph::removePort( Port *port )
+{
+  port->sidePanel()->removePort( port );
 }
 
 std::vector<Port *> Graph::ports() const
@@ -766,6 +778,12 @@ void Graph::setPortContextMenuCallback(Graph::PortContextMenuCallback callback, 
   m_portContextMenuCallbackUD = userData;
 }
 
+void Graph::setFixedPortContextMenuCallback(Graph::FixedPortContextMenuCallback callback, void * userData)
+{
+  m_fixedPortContextMenuCallback = callback;
+  m_fixedPortContextMenuCallbackUD = userData;
+}
+
 void Graph::setSidePanelContextMenuCallback(Graph::SidePanelContextMenuCallback callback, void * userData)
 {
   m_sidePanelContextMenuCallback = callback;
@@ -805,6 +823,13 @@ QMenu* Graph::getPortContextMenu(Port * port)
   if(!m_portContextMenuCallback)
     return NULL;
   return (*m_portContextMenuCallback)(port, m_portContextMenuCallbackUD);
+}
+
+QMenu* Graph::getFixedPortContextMenu(FixedPort * fixedPort)
+{
+  if(!m_fixedPortContextMenuCallback)
+    return NULL;
+  return (*m_fixedPortContextMenuCallback)(fixedPort, m_fixedPortContextMenuCallbackUD);
 }
 
 QMenu* Graph::getSidePanelContextMenu(SidePanel * sidePanel)

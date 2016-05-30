@@ -90,9 +90,24 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->get( FTL_STR("portDesc") )->cast<FTL::JSONObject>()
         );
     }
+    else if(descStr == FTL_STR("execFixedPortInserted"))
+    {
+      onExecFixedPortInserted(
+        jsonObject->getSInt32( FTL_STR( "portIndex" ) ),
+        jsonObject->getString( FTL_STR( "portName" ) ),
+        jsonObject->get( FTL_STR("portDesc") )->cast<FTL::JSONObject>()
+        );
+    }
     else if(descStr == FTL_STR("execPortRemoved"))
     {
       onExecPortRemoved(
+        jsonObject->getSInt32( FTL_STR( "portIndex" ) ),
+        jsonObject->getString( FTL_STR( "portName" ) )
+        );
+    }
+    else if(descStr == FTL_STR("execFixedPortRemoved"))
+    {
+      onExecFixedPortRemoved(
         jsonObject->getSInt32( FTL_STR( "portIndex" ) ),
         jsonObject->getString( FTL_STR( "portName" ) )
         );
@@ -470,6 +485,21 @@ void DFGNotificationRouter::onGraphSet()
   {
     FTL::JSONObject const *rootObject = rootValue->cast<FTL::JSONObject>();
 
+    if ( FTL::JSONArray const *fixedPortsArray =
+      rootObject->maybeGet( FTL_STR("fixedPorts") )->castOrNull<FTL::JSONArray>() )
+    {
+      for ( size_t i = 0; i < fixedPortsArray->size(); ++i )
+      {
+        FTL::JSONObject const *fixedPortObject =
+          fixedPortsArray->get( i )->cast<FTL::JSONObject>();
+        onExecFixedPortInserted(
+          i,
+          fixedPortObject->getString( FTL_STR("name") ),
+          fixedPortObject
+          );
+      }
+    }
+    
     FTL::JSONArray const *portsArray =
       rootObject->get( FTL_STR("ports") )->cast<FTL::JSONArray>();
     for ( size_t i = 0; i < portsArray->size(); ++i )
@@ -1030,7 +1060,7 @@ void DFGNotificationRouter::onInstBlockRemoved(
 }
 
 void DFGNotificationRouter::onExecPortInserted(
-  int index,
+  int portIndex,
   FTL::CStrRef portName,
   FTL::JSONObject const *jsonObject
   )
@@ -1067,12 +1097,12 @@ void DFGNotificationRouter::onExecPortInserted(
         color,
         portName
         );
-      if ( index == 0 )
+      if ( portIndex == 0 )
         uiInPort->disableEdits();
-      uiPanel->addPort(uiInPort);
+      uiPanel->addPort( uiInPort );
     }
     if ( execPortType != FTL_STR("Out")
-      && ( !execPath.empty() || index > 0 ) )  // Show root exec port as Out even though it is IO
+      && ( !execPath.empty() || portIndex > 0 ) )  // Show root exec port as Out even though it is IO
     {
       GraphView::SidePanel * uiPanel = uiGraph->sidePanel(GraphView::PortType_Output);
       if(!uiPanel)
@@ -1086,15 +1116,15 @@ void DFGNotificationRouter::onExecPortInserted(
         color,
         portName
         );
-      if ( index == 0 )
+      if ( portIndex == 0 )
         uiOutPort->disableEdits();
-      uiPanel->addPort(uiOutPort);
+      uiPanel->addPort( uiOutPort );
     }
     if(uiOutPort || uiInPort)
     {
       if ( uiOutPort
         && uiInPort
-        && index > 0 ) // don't do this for exec port
+        && portIndex > 0 ) // don't do this for exec port
         uiGraph->addConnection(uiOutPort, uiInPort, false);
       checkAndFixPanelPortOrder();  // [FE-5716]
     }
@@ -1108,8 +1138,83 @@ void DFGNotificationRouter::onExecPortInserted(
   }
 }
 
+void DFGNotificationRouter::onExecFixedPortInserted(
+  int portIndex,
+  FTL::CStrRef portName,
+  FTL::JSONObject const *jsonObject
+  )
+{
+  FabricCore::DFGExec &exec = m_dfgController->getExec();
+  FTL::CStrRef execPath = m_dfgController->getExecPath();
+
+  FTL::CStrRef dataType = jsonObject->getStringOrEmpty( FTL_STR("type") );
+
+  if ( exec.getType() == FabricCore::DFGExecType_Graph )
+  {
+    GraphView::Graph *uiGraph = m_dfgController->graph();
+    assert( !!uiGraph );
+
+    QColor color = m_config.getColorForDataType(dataType, &exec, portName.c_str());
+
+    GraphView::FixedPort * uiOutFixedPort = NULL;
+    GraphView::FixedPort * uiInFixedPort = NULL;
+
+    FTL::CStrRef outsidePortType =
+      jsonObject->getStringOrEmpty( FTL_STR("outsidePortType") );
+    if ( outsidePortType != FTL_STR("In") )
+    {
+      GraphView::SidePanel * uiPanel = uiGraph->sidePanel(GraphView::PortType_Input);
+      if(!uiPanel)
+        return;
+
+      uiInFixedPort = new GraphView::FixedPort(
+        uiPanel,
+        portName,
+        GraphView::PortType_Input,
+        dataType,
+        color,
+        portName
+        );
+      if ( portIndex == 0 )
+        uiInFixedPort->disableEdits();
+      uiPanel->addFixedPort( uiInFixedPort );
+    }
+    if ( outsidePortType != FTL_STR("Out")
+      && ( !execPath.empty() || portIndex > 0 ) )  // Show root exec port as Out even though it is IO
+    {
+      GraphView::SidePanel * uiPanel = uiGraph->sidePanel(GraphView::PortType_Output);
+      if(!uiPanel)
+        return;
+
+      uiOutFixedPort = new GraphView::FixedPort(
+        uiPanel,
+        portName,
+        GraphView::PortType_Output,
+        dataType,
+        color,
+        portName
+        );
+      if ( portIndex == 0 )
+        uiOutFixedPort->disableEdits();
+      uiPanel->addFixedPort( uiOutFixedPort );
+    }
+    if(uiOutFixedPort || uiInFixedPort)
+    {
+      if ( uiOutFixedPort
+        && uiInFixedPort
+        && portIndex > 0 ) // don't do this for exec port
+        uiGraph->addConnection(uiOutFixedPort, uiInFixedPort, false);
+      checkAndFixPanelPortOrder();  // [FE-5716]
+    }
+  }
+  else if(exec.getType() == FabricCore::DFGExecType_Func)
+  {
+    // FIXME
+  }
+}
+
 void DFGNotificationRouter::onExecPortRemoved(
-  int index,
+  int portIndex,
   FTL::CStrRef portName
   )
 {
@@ -1148,6 +1253,46 @@ void DFGNotificationRouter::onExecPortRemoved(
     if(!uiKlEditor)
       return;
     uiKlEditor->onExecChanged();
+  }
+}
+
+void DFGNotificationRouter::onExecFixedPortRemoved(
+  int portIndex,
+  FTL::CStrRef portName
+  )
+{
+  FabricCore::DFGExec &exec = m_dfgController->getExec();
+  if(exec.getType() == FabricCore::DFGExecType_Graph)
+  {
+    GraphView::Graph * uiGraph = m_dfgController->graph();
+    if(!uiGraph)
+      return;
+
+    GraphView::SidePanel * uiOutPanel = uiGraph->sidePanel(GraphView::PortType_Output);
+    if(!uiOutPanel)
+      return;
+    GraphView::SidePanel * uiInPanel = uiGraph->sidePanel(GraphView::PortType_Input);
+    if(!uiInPanel)
+      return;
+    GraphView::FixedPort * uiOutFixedPort = uiOutPanel->fixedPort(portName);
+    GraphView::FixedPort * uiInFixedPort = uiInPanel->fixedPort(portName);
+
+    if(uiOutFixedPort && uiInFixedPort)
+    {
+      uiGraph->removeConnection(uiOutFixedPort, uiInFixedPort);
+    }
+    if(uiInFixedPort)
+    {
+      uiInPanel->removeFixedPort(uiInFixedPort);
+    }
+    if(uiOutFixedPort)
+    {
+      uiOutPanel->removeFixedPort(uiOutFixedPort);
+    }
+  }
+  else if(exec.getType() == FabricCore::DFGExecType_Func)
+  {
+    // FIXME
   }
 }
 
