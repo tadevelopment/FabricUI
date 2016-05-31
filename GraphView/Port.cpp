@@ -210,9 +210,8 @@ bool Port::canConnectTo(
         );
     }
     case TargetType_NodeHeader:
-    {
+    case TargetType_InstBlockHeader:
       return true;
-    }
     default:
       return false;
   }
