@@ -52,8 +52,10 @@ void SHBaseContextualMenu::load() {
 
 void SHBaseContextualMenu::loadRecursively() {
   try {
-    RTVal arg = RTVal::ConstructBoolean( m_client, true );
-    m_targetSGObject.callMethod( "", "forceHierarchyExpansion", 1, &arg );
+    RTVal args[2]; 
+    args[0] = RTVal::ConstructBoolean( m_client, true );//load
+    args[1] = RTVal::ConstructBoolean( m_client, true );//asynchronous
+    m_targetSGObject.callMethod( "", "forceHierarchyExpansion", 2, args );
     m_shStates->onStateChanged();
   }
   catch( Exception e ) {
