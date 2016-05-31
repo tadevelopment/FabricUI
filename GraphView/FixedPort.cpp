@@ -5,6 +5,7 @@
 #include <FabricUI/GraphView/GraphConfig.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Port.h>
+#include <FabricUI/GraphView/QGraphicsPixmapLayoutItem.h>
 #include <FabricUI/GraphView/SidePanel.h>
 #include <FabricUI/Util/LoadPixmap.h>
 
@@ -50,12 +51,10 @@ void FixedPort::init()
   layout->setOrientation(Qt::Horizontal);
   setLayout(layout);
 
-  QLabel *lockLabel = new QLabel;
-  lockLabel->setPixmap(
-    FabricUI::LoadPixmap( "fixed-port-lock.png" )
-    );
-  QGraphicsProxyWidget *lockProxy = new QGraphicsProxyWidget;
-  lockProxy->setWidget( lockLabel );
+  QGraphicsPixmapLayoutItem *lockItem =
+    new QGraphicsPixmapLayoutItem(
+      FabricUI::LoadPixmap( "fixed-port-lock.png" )
+      );
   m_label = new PortLabel(
     this,
     QSTRING_FROM_STL_UTF8(m_labelCaption),
@@ -71,15 +70,15 @@ void FixedPort::init()
     layout->setAlignment(m_circle, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem(m_label);
     layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
-    layout->addItem( lockProxy );
-    layout->setAlignment(lockProxy, Qt::AlignHCenter | Qt::AlignVCenter);
+    layout->addItem( lockItem );
+    layout->setAlignment(lockItem, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addStretch(1);
   }
   else if(m_portType == PortType_Output)
   {
     layout->addStretch(1);
-    layout->addItem( lockProxy );
-    layout->setAlignment(lockProxy, Qt::AlignHCenter | Qt::AlignVCenter);
+    layout->addItem( lockItem );
+    layout->setAlignment(lockItem, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem(m_label);
     layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem(m_circle);
