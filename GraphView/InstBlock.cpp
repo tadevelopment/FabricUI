@@ -103,26 +103,21 @@ void InstBlock::paint(
     pen = m_node->defaultPen();
   painter->setPen( pen );
   
-  painter->setBrush( m_node->titleColor() );
-
   QRectF rect = contentsRect();
-  rect.adjust(
-    m_pinRadius,
-    pen.width() * 0.5f,
-    -m_pinRadius,
-    -pen.width() * 0.5f
-    );
+  rect.adjust( m_pinRadius, 0, -m_pinRadius, 0 );
 
-  painter->drawRect( rect );
+  QRectF headerRect = rect;
+  qreal headerHeight = m_instBlockHeader->boundingRect().height();
+  headerRect.setBottom( headerHeight );
+  headerRect.adjust( 0, pen.width() * 0.5f, 0, pen.width() * 0.5f );
+  painter->setBrush( m_node->titleColor() );
+  painter->drawRect( headerRect );
 
-  if ( !m_instBlockPorts.empty() )
-  {
-    qreal headerHeight = m_instBlockHeader->boundingRect().height();
-    painter->drawLine(
-      rect.topLeft() + QPointF( 0, headerHeight - 1 ),
-      rect.topRight() + QPointF( 0, headerHeight - 1 )
-      );
-  }
+  // QRectF portsRect = rect;
+  // portsRect.setTop( headerRect.bottom() );
+  // painter->setPen( QPen() );
+  // painter->setBrush( m_node->color() );
+  // painter->drawRect( portsRect );
 
   QGraphicsWidget::paint(painter, option, widget);
 }
