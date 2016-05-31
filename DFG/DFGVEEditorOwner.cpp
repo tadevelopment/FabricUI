@@ -293,6 +293,8 @@ void DFGVEEditorOwner::onSidePanelInspectRequested()
     {
       // [pzion 20160519] For now, simply cannot inspect block instance
 
+      setModelRoot( dfgController, NULL );
+
       // std::string blockName = instName;
       // instName = SplitLast( path );
       // if ( !path.empty() )
