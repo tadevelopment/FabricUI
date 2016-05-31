@@ -2,14 +2,13 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
-#include <iostream>
 #include "SHGLRenderer.h"
 #include <FabricUI/Viewports/QtToKLEvent.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <iostream>
 #include <fstream>
-using namespace std;
 
+using namespace std;
 using namespace FabricCore;
 using namespace FabricUI;
 using namespace SceneHub;
@@ -303,51 +302,49 @@ bool SHGLRenderer::onEvent(
     event->setAccepted(result);
     redrawAllViewports = args[0].callMethod("Boolean", "redrawAllViewports", 0, 0).getBoolean();
 
-    if(controller && result)
+    QString toolPath(args[0].maybeGetMember("dfgToolPath").getStringCString());    
+    if(controller && result && (toolPath != ""))
     {
       DFGBinding binding = controller->getBinding();
       DFGExec exec = binding.getExec();
 
-      RTVal dfgHost = args[0].callMethod("DFGHost", "getHost", 0, 0);
-      if(!dfgHost.isNullObject())
+      QString subExecPath = toolPath.left(toolPath.lastIndexOf("."));
+      DFGExec subExec = exec.getSubExec(subExecPath.toUtf8().constData());
+      
+      RTVal toolVal = exec.getVarValue(toolPath.toUtf8().constData());
+      RTVal target = toolVal.callMethod("DFGToolTarget", "getTarget", 0, 0);
+      RTVal toolData = target.callMethod("DFGToolData", "getToolData", 0, 0);
+
+      bool bakeValue = toolData.callMethod("Boolean", "bakeValue", 0, 0).getBoolean();  
+      int portCount = toolData.callMethod("UInt32", "getPortCount", 0, 0).getUInt32();
+      
+      for(int i=0; i<portCount; ++i)
       {
-        QString toolPath(dfgHost.callMethod("String", "getToolPath", 0, 0).getStringCString());    
-        bool bakeValue = dfgHost.callMethod("Boolean", "isBakeValue", 0, 0).getBoolean();  
+        RTVal index = RTVal::ConstructUInt32(m_client, i);
+        QString portName(toolData.callMethod("String", "getPortAtIndex", 1, &index).getStringCString()); 
+          
+        RTVal args[2] = { index, RTVal::ConstructBoolean(m_client, false) };
+        RTVal rtVal = toolData.callMethod("RTVal", "getRTValAtPortIndex", 2, args);
 
-        QString subExecPath = toolPath.left(toolPath.lastIndexOf("."));
-        DFGExec subExec = exec.getSubExec(subExecPath.toUtf8().constData());
-        
-        RTVal tool = exec.getVarValue(toolPath.toUtf8().constData());
-        RTVal target = tool.callMethod("DFGToolTarget", "getTarget", 0, 0);
-        RTVal toolData = target.callMethod("DFGToolData", "getToolData", 0, 0);
-
-        int portCount = toolData.callMethod("UInt32", "getPortCount", 0, 0).getUInt32();
-        for(int i=0; i<portCount; ++i)
+        QString valType(rtVal.callMethod("String", "type", 0, 0).getStringCString());
+        if( subExec.haveExecPort(portName.toUtf8().constData()) && 
+            valType == QString(subExec.getExecPortResolvedType(portName.toUtf8().constData())) && 
+            subExec.getExecPortType(portName.toUtf8().constData()) == DFGPortType_In
+          )   
         {
-          RTVal index = RTVal::ConstructUInt32(m_client, i);
-          QString portName(toolData.callMethod("String", "getPortAtIndex", 1, &index).getStringCString()); 
-          RTVal rtVal = toolData.callMethod("RTVal", "getRTValAtPortIndex", 1, &index);
-          QString valType(rtVal.callMethod("String", "type", 0, 0).getStringCString());
+          QString portPath = subExecPath + "." + portName;
+          RTVal val = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &rtVal);
 
-          if(  subExec.haveExecPort(portName.toUtf8().constData()) && 
-               valType == QString(subExec.getExecPortResolvedType(portName.toUtf8().constData())) && 
-              (
-                subExec.getExecPortType(portName.toUtf8().constData()) == DFGPortType_In ||
-                subExec.getExecPortType(portName.toUtf8().constData()) == DFGPortType_IO)
-              )
+          if(!bakeValue)
+            exec.setPortDefaultValue(portPath.toUtf8().constData(), val, false);
+          else
           {
-            QString portPath = subExecPath + "." + portName;
-            RTVal val = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &rtVal);
+            args[1] = RTVal::ConstructBoolean(m_client, true);
+            RTVal prevRTVal = toolData.callMethod("RTVal", "getRTValAtPortIndex", 2, args);
+            RTVal prevVal = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &prevRTVal);
 
-            if(!bakeValue)
-              exec.setPortDefaultValue(portPath.toUtf8().constData(), val, false);
-            else
-              controller->getCmdHandler()->dfgDoSetPortDefaultValue(
-                binding,
-                ".",
-                exec,
-                portPath,
-                val);
+            exec.setPortDefaultValue(portPath.toUtf8().constData(), prevVal, false);
+            controller->getCmdHandler()->dfgDoSetPortDefaultValue(binding, ".", exec, portPath, val);
           }
         }
       }
