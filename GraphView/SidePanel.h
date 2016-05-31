@@ -56,6 +56,8 @@ namespace FabricUI
         { return m_ports[index]; }
       Port *port( FTL::StrRef name );
 
+      ConnectionTarget *getConnectionTarget( FTL::StrRef name );
+
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * event);

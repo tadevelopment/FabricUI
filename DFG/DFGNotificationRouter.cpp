@@ -1320,7 +1320,7 @@ void DFGNotificationRouter::onPortsConnected(
   {
     GraphView::SidePanel * uiPanel = uiGraph->sidePanel(GraphView::PortType_Output);
     if(uiPanel)
-      uiSrcTarget = uiPanel->port(srcSplit.first);
+      uiSrcTarget = uiPanel->getConnectionTarget(srcSplit.first);
   }
 
   std::pair<FTL::StrRef, FTL::CStrRef> dstSplit = dstPath.split('.');
@@ -1335,7 +1335,7 @@ void DFGNotificationRouter::onPortsConnected(
   {
     GraphView::SidePanel * uiPanel = uiGraph->sidePanel(GraphView::PortType_Input);
     if(uiPanel)
-      uiDstTarget = uiPanel->port(dstSplit.first);
+      uiDstTarget = uiPanel->getConnectionTarget(dstSplit.first);
   }
 
   if(!uiSrcTarget || !uiDstTarget)

@@ -486,3 +486,14 @@ void SidePanel::dropEvent( QGraphicsSceneDragDropEvent *event )
 
   QGraphicsWidget::dropEvent( event );
 }
+
+ConnectionTarget *SidePanel::getConnectionTarget( FTL::StrRef name )
+{
+  if ( Port *port = SidePanel::port( name ) )
+    return port;
+
+  if ( FixedPort *fixedPort = SidePanel::fixedPort( name ) )
+    return fixedPort;
+
+  return NULL;
+}
