@@ -30,6 +30,8 @@ public:
 
   FTL::CStrRef name() const
     { return m_name; }
+  QString name_QS() const
+    { return QString::fromUtf8( m_name.data(), m_name.size() ); }
 
   Node *node()
     { return m_node; }
@@ -37,6 +39,11 @@ public:
     { return m_node; }
 
   std::string path() const;
+
+  size_t instBlockPortCount() const
+    { return m_instBlockPorts.size(); }
+  InstBlockPort *instBlockPort( size_t index ) const
+    { return m_instBlockPorts[index]; }
 
   InstBlockPort *instBlockPort( FTL::StrRef name );
 

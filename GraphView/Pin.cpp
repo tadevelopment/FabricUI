@@ -334,9 +334,8 @@ bool Pin::canConnectTo(
       return true;
     }
     case TargetType_NodeHeader:
-    {
+    case TargetType_InstBlockHeader:
       return true;
-    }
     default:
       return false;
   }

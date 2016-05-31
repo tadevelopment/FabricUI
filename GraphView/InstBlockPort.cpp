@@ -361,9 +361,9 @@ bool InstBlockPort::canConnectTo(
       return true;
     }
     case TargetType_NodeHeader:
-    {
       return true;
-    }
+    case TargetType_InstBlockHeader:
+      return static_cast<InstBlockHeader *>( other )->instBlock() != m_instBlock;
     default:
       return false;
   }

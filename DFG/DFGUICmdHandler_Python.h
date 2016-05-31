@@ -168,6 +168,21 @@ public:
     QString metaData
     ) { return QString(); }
 
+  virtual QString dfgDoAddInstBlockPort(
+    FabricCore::DFGBinding const &binding,
+    QString execPath,
+    FabricCore::DFGExec const &exec,
+    QString instName,
+    QString blockName,
+    QString desiredPortName,
+    FabricCore::DFGPortType portType,
+    QString typeSpec,
+    QString pathToConnect,
+    FabricCore::DFGPortType connectType,
+    QString extDep,
+    QString metaData
+    ) { return QString(); }
+
   virtual QString dfgDoCreatePreset(
     FabricCore::DFGBinding const &binding,
     QString execPath,

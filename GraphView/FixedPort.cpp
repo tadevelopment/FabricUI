@@ -207,6 +207,7 @@ bool FixedPort::canConnectTo(
         );
     }
     case TargetType_NodeHeader:
+    case TargetType_InstBlockHeader:
     {
       return true;
     }

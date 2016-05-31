@@ -319,6 +319,40 @@ QString DFGUICmdHandler_QUndo::dfgDoAddInstPort(
   return cmd->getActualPortName();
 }
 
+QString DFGUICmdHandler_QUndo::dfgDoAddInstBlockPort(
+  FabricCore::DFGBinding const &binding,
+  QString execPath,
+  FabricCore::DFGExec const &exec,
+  QString instName,
+  QString blockName,
+  QString desiredPortName,
+  FabricCore::DFGPortType portType,
+  QString typeSpec,
+  QString pathToConnect,
+  FabricCore::DFGPortType connectType,
+  QString extDep,
+  QString metaData
+  )
+{
+  DFGUICmd_AddInstBlockPort *cmd =
+    new DFGUICmd_AddInstBlockPort(
+      binding,
+      execPath,
+      exec,
+      instName,
+      blockName,
+      desiredPortName,
+      portType,
+      typeSpec,
+      pathToConnect,
+      connectType,
+      extDep,
+      metaData
+      );
+  m_qUndoStack->push( new WrappedCommand( cmd ) );
+  return cmd->getActualPortName();
+}
+
 QString DFGUICmdHandler_QUndo::dfgDoEditPort(
   FabricCore::DFGBinding const &binding,
   QString execPath,

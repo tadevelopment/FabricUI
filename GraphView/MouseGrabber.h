@@ -15,10 +15,11 @@ namespace FabricUI
   namespace GraphView
   {
     // forward declarations
-    class Node;
-    class Graph;
-    class ConnectionTarget;
     class Connection;
+    class ConnectionTarget;
+    class Graph;
+    class InstBlock;
+    class Node;
 
     class ExposePortAction : public QAction
     {
@@ -40,6 +41,30 @@ namespace FabricUI
     private:
 
       Node *m_node;
+      ConnectionTarget *m_other;
+      PortType m_portType;
+    };
+
+    class ExposeInstBlockPortAction : public QAction
+    {
+      Q_OBJECT
+      
+    public:
+
+      ExposeInstBlockPortAction(
+        QObject *parent,
+        InstBlock *instBlock,
+        ConnectionTarget *other,
+        PortType portType
+        );
+
+    protected slots:
+
+      void onTriggered();
+
+    private:
+
+      InstBlock *m_instBlock;
       ConnectionTarget *m_other;
       PortType m_portType;
     };
@@ -91,8 +116,30 @@ namespace FabricUI
 
       void showToolTip();
       void invokeConnect(ConnectionTarget * source, ConnectionTarget * target);
-      static QMenu * createNodeHeaderMenu(Node * node, ConnectionTarget * other, PortType nodeRole);
-      void invokeNodeHeaderMenu(Node * node, ConnectionTarget * other, PortType nodeRole, QPoint pos);
+
+      static QMenu *createNodeHeaderMenu(
+        Node * node,
+        ConnectionTarget * other,
+        PortType nodeRole
+        );
+      static QMenu *createInstBlockHeaderMenu(
+        InstBlock *instBlock,
+        ConnectionTarget *other,
+        PortType nodeRole
+        );
+
+      void invokeNodeHeaderMenu(
+        Node * node,
+        ConnectionTarget * other,
+        PortType nodeRole,
+        QPoint pos
+        );
+      void invokeInstBlockHeaderMenu(
+        InstBlock * instBlock,
+        ConnectionTarget * other,
+        PortType instBlockRole,
+        QPoint pos
+        );
 
       QPointF m_connectionPos;
       ConnectionTarget * m_target;
@@ -100,10 +147,6 @@ namespace FabricUI
       float m_radius;
       Connection * m_connection;
       ConnectionTarget * m_targetUnderMouse;
-
-      Node * m_contextNode;
-      ConnectionTarget * m_contextOther;
-      PortType m_contextNodeRole;
     };
 
   };

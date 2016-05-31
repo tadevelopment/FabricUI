@@ -387,7 +387,7 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
                 ]
             )
 
-    def dfgDoAddPort(
+    def dfgDoAddInstPort(
         self,
         binding,
         execPath,
@@ -411,6 +411,41 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
             [
                 UICmdHandler.encodeString(execPath),
                 UICmdHandler.encodeString(instName),
+                UICmdHandler.encodeString(desiredPortName),
+                UICmdHandler.encodeString(portTypeStr),
+                UICmdHandler.encodeString(typeSpec),
+                UICmdHandler.encodeString(pathToConnect),
+                UICmdHandler.encodeString(extDep),
+                UICmdHandler.encodeString(metaData),
+                ]
+            )
+
+    def dfgDoAddInstBlockPort(
+        self,
+        binding,
+        execPath,
+        exec_,
+        instName,
+        blockName,
+        desiredPortName,
+        portType,
+        typeSpec,
+        pathToConnect,
+        extDep,
+        metaData,
+        ):
+        if portType == self.client.DFG.PortTypes.IO:
+            portTypeStr = "io"
+        elif portType == self.client.DFG.PortTypes.Out:
+            portTypeStr = "out"
+        else:
+            portTypeStr = "in"
+        return self.evalCmdWithArgs(
+            "addInstBlockPort",
+            [
+                UICmdHandler.encodeString(execPath),
+                UICmdHandler.encodeString(instName),
+                UICmdHandler.encodeString(blockName),
                 UICmdHandler.encodeString(desiredPortName),
                 UICmdHandler.encodeString(portTypeStr),
                 UICmdHandler.encodeString(typeSpec),

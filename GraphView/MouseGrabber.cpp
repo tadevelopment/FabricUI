@@ -4,6 +4,9 @@
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/InstBlockHeader.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/MouseGrabber.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/Util/LoadPixmap.h>
@@ -24,8 +27,6 @@ MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * 
   m_target = target;
   m_otherPortType = portType;
   m_targetUnderMouse = NULL;
-  m_contextNode = NULL;
-  m_contextOther = NULL;
 
   const GraphConfig & config = parent->config();
   m_radius = config.mouseGrabberRadius;
@@ -52,32 +53,66 @@ MouseGrabber::~MouseGrabber()
 
 MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
 {
-  if(target->targetType() == TargetType_NodeHeader)
+  switch ( target->targetType() )
   {
-    NodeHeader * header = static_cast<NodeHeader *>( target );
-    Node * node = header->node();
+    case TargetType_NodeHeader:
+    {
+      NodeHeader * header = static_cast<NodeHeader *>( target );
+      Node * node = header->node();
 
-    QMenu * menu = createNodeHeaderMenu(node, NULL, portType);
-    if(menu == NULL)
-      return NULL;
+      QMenu * menu = createNodeHeaderMenu(node, NULL, portType);
+      if(menu == NULL)
+        return NULL;
 
-    QPoint globalPos = QCursor::pos();
-    QAction * action = menu->exec(globalPos);
+      QPoint globalPos = QCursor::pos();
+      QAction * action = menu->exec(globalPos);
 
-    if(action == NULL)
-      return NULL;
+      if(action == NULL)
+        return NULL;
 
-    QString name = action->data().toString();
-    if(name == "")
-      return NULL;
+      QString name = action->data().toString();
+      if(name == "")
+        return NULL;
 
-    Pin * pin = node->pin(name.toUtf8().constData());
-    if(!pin)
-      return NULL;
+      Pin * pin = node->pin(name.toUtf8().constData());
+      if(!pin)
+        return NULL;
 
-    return construct(parent, mousePos, pin, portType);
+      return construct(parent, mousePos, pin, portType);
+    }
+    break;
+
+    case TargetType_InstBlockHeader:
+    {
+      InstBlockHeader * header = static_cast<InstBlockHeader *>( target );
+      InstBlock * instBlock = header->instBlock();
+
+      QMenu * menu = createInstBlockHeaderMenu(instBlock, NULL, portType);
+      if(menu == NULL)
+        return NULL;
+
+      QPoint globalPos = QCursor::pos();
+      QAction * action = menu->exec(globalPos);
+
+      if(action == NULL)
+        return NULL;
+
+      QString name = action->data().toString();
+      if(name == "")
+        return NULL;
+
+      InstBlockPort * instBlockPort =
+        instBlock->instBlockPort(name.toUtf8().constData());
+      if(!instBlockPort)
+        return NULL;
+
+      return construct(parent, mousePos, instBlockPort, portType);
+    }
+    break;
+
+    default:
+      return new MouseGrabber(parent, mousePos, target, portType);
   }
-  return new MouseGrabber(parent, mousePos, target, portType);
 }
 
 float MouseGrabber::radius() const
@@ -308,9 +343,71 @@ void MouseGrabber::invokeConnect(ConnectionTarget * source, ConnectionTarget * t
     QPoint globalPos = QCursor::pos();
     invokeNodeHeaderMenu(node, source, PortType_Output, globalPos);
   }
+  else if(source->targetType() == TargetType_InstBlockHeader)
+  {
+    InstBlockHeader * header = static_cast<InstBlockHeader *>( source );
+    InstBlock * instBlock = header->instBlock();
+
+    QPoint globalPos = QCursor::pos();
+    invokeInstBlockHeaderMenu(instBlock, target, PortType_Input, globalPos);
+  }
+  else if(target->targetType() == TargetType_InstBlockHeader)
+  {
+    InstBlockHeader * header = static_cast<InstBlockHeader *>( target );
+    InstBlock * instBlock = header->instBlock();
+
+    QPoint globalPos = QCursor::pos();
+    invokeInstBlockHeaderMenu(instBlock, source, PortType_Output, globalPos);
+  }
   else
   {
     graph()->controller()->gvcDoAddConnection(source, target);
+  }
+}
+
+static void GetDesiredPortNameAndTypeSpecForConnectionTarget(
+  ConnectionTarget *target,
+  FTL::StrRef &desiredPortNameStr,
+  FTL::StrRef &typeSpecStr
+  )
+{
+  switch ( target->targetType() )
+  {
+    case TargetType_Pin:
+    {
+      Pin *targetPin = static_cast<Pin *>( target );
+      desiredPortNameStr = targetPin->name();
+      typeSpecStr = targetPin->dataType();
+    }
+    break;
+
+    case TargetType_Port:
+    {
+      Port *targetPort = static_cast<Port *>( target );
+      desiredPortNameStr = targetPort->name();
+      typeSpecStr = targetPort->dataType();
+    }
+    break;
+
+    case TargetType_FixedPort:
+    {
+      FixedPort *targetFixedPort = static_cast<FixedPort *>( target );
+      desiredPortNameStr = targetFixedPort->name();
+      typeSpecStr = targetFixedPort->dataType();
+    }
+    break;
+
+    case TargetType_InstBlockPort:
+    {
+      InstBlockPort *targetInstBlockPort = static_cast<InstBlockPort *>( target );
+      desiredPortNameStr = targetInstBlockPort->name();
+      typeSpecStr = targetInstBlockPort->dataType();
+    }
+    break;
+
+    default:
+      assert( false );
+      break;
   }
 }
 
@@ -337,33 +434,18 @@ void ExposePortAction::onTriggered()
 {
   FTL::StrRef desiredPortNameStr;
   FTL::StrRef typeSpecStr;
-  switch ( m_other->targetType() )
-  {
-    case TargetType_Pin:
-    {
-      Pin *otherPin = static_cast<Pin *>( m_other );
-      desiredPortNameStr = otherPin->name();
-      typeSpecStr = otherPin->dataType();
-    }
-    break;
-
-    case TargetType_Port:
-    {
-      Port *otherPort = static_cast<Port *>( m_other );
-      desiredPortNameStr = otherPort->name();
-      typeSpecStr = otherPort->dataType();
-    }
-    break;
-
-    default: break;
-  }
+  GetDesiredPortNameAndTypeSpecForConnectionTarget(
+    m_other,
+    desiredPortNameStr,
+    typeSpecStr
+    );
   if ( desiredPortNameStr.empty() )
     return;
-
   QString desiredPortName =
     QString::fromUtf8( desiredPortNameStr.data(), desiredPortNameStr.size() );
   QString typeSpec =
     QString::fromUtf8( typeSpecStr.data(), typeSpecStr.size() );
+
   QString extDep;
 
   FabricUI::DFG::DFGController *controller =
@@ -487,12 +569,147 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
   return menu;
 }
 
+ExposeInstBlockPortAction::ExposeInstBlockPortAction(
+  QObject *parent,
+  InstBlock *instBlock,
+  ConnectionTarget *other,
+  PortType portType
+  )
+  : QAction( parent )
+  , m_instBlock( instBlock )
+  , m_other( other )
+  , m_portType( portType )
+{
+  setText( "Expose new port" );
+  setIcon( FabricUI::LoadPixmap( "expose-new-port.png" ) );
+  connect(
+    this, SIGNAL(triggered()),
+    this, SLOT(onTriggered())
+    );
+}
+
+void ExposeInstBlockPortAction::onTriggered()
+{
+  FTL::StrRef desiredPortNameStr;
+  FTL::StrRef typeSpecStr;
+  GetDesiredPortNameAndTypeSpecForConnectionTarget(
+    m_other,
+    desiredPortNameStr,
+    typeSpecStr
+    );
+  if ( desiredPortNameStr.empty() )
+    return;
+  QString desiredPortName =
+    QString::fromUtf8( desiredPortNameStr.data(), desiredPortNameStr.size() );
+  QString typeSpec =
+    QString::fromUtf8( typeSpecStr.data(), typeSpecStr.size() );
+  
+  QString extDep;
+
+  FabricUI::DFG::DFGController *controller =
+    static_cast<FabricUI::DFG::DFGController *>(
+      m_instBlock->node()->graph()->controller()
+      );
+
+  FabricUI::DFG::DFGUICmdHandler *cmdHandler = controller->getCmdHandler();
+  cmdHandler->dfgDoAddInstBlockPort(
+    controller->getBinding(),
+    controller->getExecPath_QS(),
+    controller->getExec(),
+    m_instBlock->node()->name_QS(),
+    m_instBlock->name_QS(),
+    desiredPortName,
+    PortTypeToDFGPortType( m_portType ),
+    typeSpec,
+    m_other->path_QS(),
+    PortTypeToDFGPortType( m_portType ),
+    extDep,
+    QString() // metadata
+    );
+}
+
+QMenu *MouseGrabber::createInstBlockHeaderMenu(
+  InstBlock *instBlock,
+  ConnectionTarget *other,
+  PortType nodeRole
+  )
+{
+  QMenu *menu = new QMenu(NULL);
+
+  // go through all the node's pins and add
+  // those to the menu that can be connected.
+  for(unsigned int i=0;i<instBlock->instBlockPortCount();i++)
+  {
+    InstBlockPort *instBlockPort = instBlock->instBlockPort(i);
+
+    if(nodeRole == PortType_Output && instBlockPort->portType() == PortType_Output)
+      continue; // skip this instBlockPort (an output port cannot be connected with another output port).
+
+    if (other)
+    {
+      if (nodeRole == PortType_Output)
+      {
+        std::string failureReason;
+        if (!other->canConnectTo(instBlockPort, failureReason))
+          continue; // skip this instBlockPort (it cannot be connected)
+      }
+      else if (nodeRole == PortType_Input)
+      {
+        std::string failureReason;
+        if (!instBlockPort->canConnectTo(other, failureReason))
+          continue; // skip this instBlockPort (it cannot be connected)
+      }
+    }
+
+    // construct the label for the menu.
+    QString name = instBlockPort->name().c_str();
+    QString label;
+    if (nodeRole == PortType_Input)
+    {
+      if (instBlockPort->portType() == PortType_Input)
+        label = name + " =";
+      else
+        label = name + " >";
+    }
+    else
+    {
+      label = "> " + name;
+    }
+
+    // create an action using our label and add it to the menu.
+    QAction * action = new QAction(label, NULL);
+    action->setData(name);
+    menu->addAction(action);
+  }
+
+  if ( !!other )
+  {
+    menu->addSeparator();
+
+    QAction *exposeNewPortAction =
+      new ExposeInstBlockPortAction(
+        menu,
+        instBlock,
+        other,
+        nodeRole
+        );
+    exposeNewPortAction->setEnabled( true );
+    menu->addAction( exposeNewPortAction );
+  }
+
+  if ( menu->isEmpty() )
+  {
+    QAction *action = new QAction( "No ports can be connected", menu );
+    action->setEnabled( false );
+    menu->addAction( action );
+  }
+
+  // done.
+  return menu;
+}
+
 void MouseGrabber::invokeNodeHeaderMenu(Node * node, ConnectionTarget * other, PortType nodeRole, QPoint pos)
 {
-  m_contextNode = node;
-  m_contextNodeRole = nodeRole;
-  m_contextOther = other;
-
   QMenu * menu = createNodeHeaderMenu(node, other, nodeRole);
   if(menu == NULL)
     return;
@@ -505,17 +722,51 @@ void MouseGrabber::invokeNodeHeaderMenu(Node * node, ConnectionTarget * other, P
   if(name == "")
     return;
 
-  Pin * pin = m_contextNode->pin(name.toUtf8().constData());
+  Pin * pin = node->pin(name.toUtf8().constData());
   if(!pin)
     return;
 
-  if(m_contextOther == NULL)
+  if(other == NULL)
   {
     // this is invoked from MouseGrabber::construct
-    m_contextOther = pin;
+    other = pin;
   }
-  else if(m_contextNodeRole == PortType_Output)
-    invokeConnect(m_contextOther, pin);
+  else if(nodeRole == PortType_Output)
+    invokeConnect(other, pin);
   else
-    invokeConnect(pin, m_contextOther);
+    invokeConnect(pin, other);
+}
+
+void MouseGrabber::invokeInstBlockHeaderMenu(
+  InstBlock * instBlock,
+  ConnectionTarget * other,
+  PortType instBlockRole,
+  QPoint pos
+  )
+{
+  QMenu * menu = createInstBlockHeaderMenu(instBlock, other, instBlockRole);
+  if(menu == NULL)
+    return;
+
+  QAction * action = menu->exec(pos);
+  if(action == NULL)
+    return;
+
+  QString name = action->data().toString();
+  if(name == "")
+    return;
+
+  InstBlockPort * instBlockPort = instBlock->instBlockPort(name.toUtf8().constData());
+  if(!instBlockPort)
+    return;
+
+  if(other == NULL)
+  {
+    // this is invoked from MouseGrabber::construct
+    other = instBlockPort;
+  }
+  else if(instBlockRole == PortType_Output)
+    invokeConnect(other, instBlockPort);
+  else
+    invokeConnect(instBlockPort, other);
 }
