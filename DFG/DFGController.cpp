@@ -450,6 +450,10 @@ bool DFGController::gvcDoRemoveConnections(
       srcPath = ((GraphView::Pin*)src)->path();
     else if(src->targetType() == GraphView::TargetType_Port)
       srcPath = ((GraphView::Port*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_FixedPort)
+      srcPath = ((GraphView::FixedPort*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_InstBlockPort)
+      srcPath = ((GraphView::InstBlockPort*)src)->path();
     srcPaths.push_back( QString::fromUtf8( srcPath.data(), srcPath.size() ) );
   }
 
@@ -461,6 +465,10 @@ bool DFGController::gvcDoRemoveConnections(
       dstPath = ((GraphView::Pin*)dst)->path();
     else if(dst->targetType() == GraphView::TargetType_Port)
       dstPath = ((GraphView::Port*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_FixedPort)
+      dstPath = ((GraphView::FixedPort*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_InstBlockPort)
+      dstPath = ((GraphView::InstBlockPort*)dst)->path();
     dstPaths.push_back( QString::fromUtf8( dstPath.data(), dstPath.size() ) );
   }
 
