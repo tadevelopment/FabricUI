@@ -52,8 +52,7 @@ class SceneHubWindow(CanvasWindow):
 
         loadCanvas = canvasFile is not ""
         self._initApp(loadCanvas)
-        if loadCanvas: self.loadGraph(canvasFile)
-
+ 
     def _initKL(self, unguarded, noopt):
         """ Implementation of Canvas.CanvasWindow.
         """

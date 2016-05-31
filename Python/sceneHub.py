@@ -96,6 +96,9 @@ if __name__ == "__main__":
     if args.exec_:
         mainWin.scriptEditor.exec_(args.exec_)
 
+    if args.graph:
+        mainWin.loadGraph(args.graph)
+
     if args.script:
         with open(args.script, "r") as f:
             mainWin.scriptEditor.exec_(f.read())
