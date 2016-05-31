@@ -187,5 +187,13 @@ void InstBlock::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
   QGraphicsWidget::mouseReleaseEvent(event);
 }
 
+InstBlockPort *InstBlock::instBlockPort( FTL::StrRef name )
+{
+  for ( size_t index = 0; index < m_instBlockPorts.size(); ++index )
+    if ( name == m_instBlockPorts[index]->name() )
+      return m_instBlockPorts[index];
+  return NULL;
+}
+
 } // namespace GraphView
 } // namespace FabricUI

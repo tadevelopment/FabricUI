@@ -895,3 +895,11 @@ void Node::onInstBlockDoubleClicked(
   else
     emit instBlockInspectRequested( instBlock );
 }
+
+InstBlock *Node::instBlock( FTL::StrRef name )
+{
+  for ( size_t index = 0; index < m_instBlocks.size(); ++index )
+    if ( name == m_instBlocks[index]->name() )
+      return m_instBlocks[index];
+  return NULL;
+}

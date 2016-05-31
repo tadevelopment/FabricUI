@@ -38,6 +38,8 @@ public:
 
   std::string path() const;
 
+  InstBlockPort *instBlockPort( FTL::StrRef name );
+
   InstBlockHeader *header()
     { return m_instBlockHeader; }
 

@@ -187,6 +187,8 @@ namespace FabricUI
 
       virtual void setAlwaysShowDaisyChainPorts(bool state);
 
+      InstBlock *instBlock( FTL::StrRef name );
+
       QGraphicsWidget * mainWidget();
       QGraphicsWidget * pinsWidget();
 

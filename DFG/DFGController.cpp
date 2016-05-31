@@ -14,8 +14,10 @@
 #include <FTL/Math.h>
 #include <FTL/MapCharSingle.h>
 
+#include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphRelaxer.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGErrorsWidget.h>
@@ -409,12 +411,20 @@ bool DFGController::gvcDoAddConnection(
     srcPath = ((GraphView::Pin*)src)->path();
   else if(src->targetType() == GraphView::TargetType_Port)
     srcPath = ((GraphView::Port*)src)->path();
+  else if(src->targetType() == GraphView::TargetType_FixedPort)
+    srcPath = ((GraphView::FixedPort*)src)->path();
+  else if(src->targetType() == GraphView::TargetType_InstBlockPort)
+    srcPath = ((GraphView::InstBlockPort*)src)->path();
 
   std::string dstPath;
   if(dst->targetType() == GraphView::TargetType_Pin)
     dstPath = ((GraphView::Pin*)dst)->path();
   else if(dst->targetType() == GraphView::TargetType_Port)
     dstPath = ((GraphView::Port*)dst)->path();
+  else if(dst->targetType() == GraphView::TargetType_FixedPort)
+    dstPath = ((GraphView::FixedPort*)dst)->path();
+  else if(dst->targetType() == GraphView::TargetType_InstBlockPort)
+    dstPath = ((GraphView::InstBlockPort*)dst)->path();
 
   cmdConnect(
     QString::fromUtf8( srcPath.data(), srcPath.size() ),

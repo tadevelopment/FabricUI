@@ -1321,7 +1321,16 @@ void DFGNotificationRouter::onPortsConnected(
     GraphView::Node * uiSrcNode = uiGraph->node(srcSplit.first);
     if(!uiSrcNode)
       return;
-    uiSrcTarget = uiSrcNode->pin(srcSplit.second);
+    srcSplit = srcSplit.second.split('.');
+    if ( !srcSplit.second.empty() )
+    {
+      GraphView::InstBlock *uiInstBlock =
+        uiSrcNode->instBlock( srcSplit.first );
+      if ( !uiInstBlock )
+        return;
+      uiSrcTarget = uiInstBlock->instBlockPort( srcSplit.second );
+    }
+    else uiSrcTarget = uiSrcNode->pin( srcSplit.first );
   }
   else
   {
@@ -1336,7 +1345,16 @@ void DFGNotificationRouter::onPortsConnected(
     GraphView::Node * uiDstNode = uiGraph->node(dstSplit.first);
     if(!uiDstNode)
       return;
-    uiDstTarget = uiDstNode->pin(dstSplit.second);
+    dstSplit = dstSplit.second.split('.');
+    if ( !dstSplit.second.empty() )
+    {
+      GraphView::InstBlock *uiInstBlock =
+        uiDstNode->instBlock( dstSplit.first );
+      if ( !uiInstBlock )
+        return;
+      uiDstTarget = uiInstBlock->instBlockPort( dstSplit.second );
+    }
+    else uiDstTarget = uiDstNode->pin( dstSplit.first );
   }
   else
   {
