@@ -221,6 +221,15 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") )
         );
     }
+    else if(descStr == FTL_STR("instBlockPortResolvedTypeChanged"))
+    {
+      onInstBlockPortResolvedTypeChanged(
+        jsonObject->getString( FTL_STR("instName") ),
+        jsonObject->getString( FTL_STR("blockName") ),
+        jsonObject->getString( FTL_STR("portName") ),
+        jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") )
+        );
+    }
     else if(descStr == FTL_STR("execPortTypeSpecChanged"))
     {
       onExecPortTypeSpecChanged(
@@ -1822,6 +1831,38 @@ void DFGNotificationRouter::onExecBlockPortResolvedTypeChanged(
     uiPin->setDataType( newResolvedType );
     uiPin->setColor( m_config.getColorForDataType( newResolvedType ) );
     uiGraph->updateColorForConnections( uiPin );
+  }
+}
+
+void DFGNotificationRouter::onInstBlockPortResolvedTypeChanged(
+  FTL::CStrRef instName,
+  FTL::CStrRef blockName,
+  FTL::CStrRef portName,
+  FTL::CStrRef newResolvedType
+  )
+{
+  GraphView::Graph * uiGraph = m_dfgController->graph();
+  if(!uiGraph)
+    return;
+
+  GraphView::Node *uiNode = uiGraph->node( instName );
+  if ( !uiNode )
+    return;
+
+  GraphView::InstBlock *uiInstBlock = uiNode->instBlock( blockName );
+  if ( !uiInstBlock )
+    return;
+
+  GraphView::InstBlockPort *uiInstBlockPort =
+    uiInstBlock->instBlockPort( portName );
+  if ( !uiInstBlockPort )
+    return;
+
+  if ( newResolvedType != uiInstBlockPort->dataType() )
+  {
+    uiInstBlockPort->setDataType( newResolvedType );
+    uiInstBlockPort->setColor( m_config.getColorForDataType( newResolvedType ) );
+    uiGraph->updateColorForConnections( uiInstBlockPort );
   }
 }
 
