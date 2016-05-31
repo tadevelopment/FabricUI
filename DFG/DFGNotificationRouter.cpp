@@ -1312,70 +1312,53 @@ void DFGNotificationRouter::onExecFixedPortRemoved(
   }
 }
 
+static GraphView::ConnectionTarget *ResolveConnectionTarget(
+  GraphView::Graph *uiGraph,
+  FTL::CStrRef path,
+  GraphView::PortType sidePanelPortType
+  )
+{
+  std::pair<FTL::StrRef, FTL::CStrRef> split = path.split('.');
+  if ( !split.second.empty() )
+  {
+    if ( GraphView::Node *uiNode = uiGraph->node( split.first ) )
+    {
+      split = split.second.split('.');
+      if ( !split.second.empty() )
+      {
+        if ( GraphView::InstBlock *uiInstBlock =
+          uiNode->instBlock( split.first ) )
+          return uiInstBlock->instBlockPort( split.second );
+      }
+      else return uiNode->pin( split.first );
+    }
+  }
+  else
+  {
+    if ( GraphView::SidePanel *uiPanel =
+      uiGraph->sidePanel( sidePanelPortType ) )
+      return uiPanel->getConnectionTarget( split.first );
+  }
+
+  return NULL;
+}
+
 void DFGNotificationRouter::onPortsConnected(
   FTL::CStrRef srcPath,
   FTL::CStrRef dstPath
   )
 {
-  GraphView::Graph * uiGraph = m_dfgController->graph();
-  if(!uiGraph)
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
     return;
 
-  GraphView::ConnectionTarget * uiSrcTarget = NULL;
-  GraphView::ConnectionTarget * uiDstTarget = NULL;
+  GraphView::ConnectionTarget *uiSrcTarget =
+    ResolveConnectionTarget( uiGraph, srcPath, GraphView::PortType_Output );
+  GraphView::ConnectionTarget * uiDstTarget =
+    ResolveConnectionTarget( uiGraph, dstPath, GraphView::PortType_Input );
 
-  std::pair<FTL::StrRef, FTL::CStrRef> srcSplit = srcPath.split('.');
-  if(!srcSplit.second.empty())
-  {
-    GraphView::Node * uiSrcNode = uiGraph->node(srcSplit.first);
-    if(!uiSrcNode)
-      return;
-    srcSplit = srcSplit.second.split('.');
-    if ( !srcSplit.second.empty() )
-    {
-      GraphView::InstBlock *uiInstBlock =
-        uiSrcNode->instBlock( srcSplit.first );
-      if ( !uiInstBlock )
-        return;
-      uiSrcTarget = uiInstBlock->instBlockPort( srcSplit.second );
-    }
-    else uiSrcTarget = uiSrcNode->pin( srcSplit.first );
-  }
-  else
-  {
-    GraphView::SidePanel * uiPanel = uiGraph->sidePanel(GraphView::PortType_Output);
-    if(uiPanel)
-      uiSrcTarget = uiPanel->getConnectionTarget(srcSplit.first);
-  }
-
-  std::pair<FTL::StrRef, FTL::CStrRef> dstSplit = dstPath.split('.');
-  if(!dstSplit.second.empty())
-  {
-    GraphView::Node * uiDstNode = uiGraph->node(dstSplit.first);
-    if(!uiDstNode)
-      return;
-    dstSplit = dstSplit.second.split('.');
-    if ( !dstSplit.second.empty() )
-    {
-      GraphView::InstBlock *uiInstBlock =
-        uiDstNode->instBlock( dstSplit.first );
-      if ( !uiInstBlock )
-        return;
-      uiDstTarget = uiInstBlock->instBlockPort( dstSplit.second );
-    }
-    else uiDstTarget = uiDstNode->pin( dstSplit.first );
-  }
-  else
-  {
-    GraphView::SidePanel * uiPanel = uiGraph->sidePanel(GraphView::PortType_Input);
-    if(uiPanel)
-      uiDstTarget = uiPanel->getConnectionTarget(dstSplit.first);
-  }
-
-  if(!uiSrcTarget || !uiDstTarget)
-    return;
-
-  uiGraph->addConnection(uiSrcTarget, uiDstTarget, false);
+  if ( uiSrcTarget && uiDstTarget )
+    uiGraph->addConnection( uiSrcTarget, uiDstTarget, false );
 }
 
 void DFGNotificationRouter::onPortsDisconnected(
@@ -1383,47 +1366,17 @@ void DFGNotificationRouter::onPortsDisconnected(
   FTL::CStrRef dstPath
   )
 {
-  GraphView::Graph * uiGraph = m_dfgController->graph();
-  if(!uiGraph)
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
     return;
 
-  GraphView::ConnectionTarget * uiSrcTarget = NULL;
-  GraphView::ConnectionTarget * uiDstTarget = NULL;
+  GraphView::ConnectionTarget *uiSrcTarget =
+    ResolveConnectionTarget( uiGraph, srcPath, GraphView::PortType_Output );
+  GraphView::ConnectionTarget * uiDstTarget =
+    ResolveConnectionTarget( uiGraph, dstPath, GraphView::PortType_Input );
 
-  std::pair<FTL::StrRef, FTL::CStrRef> srcSplit = srcPath.split('.');
-  if(!srcSplit.second.empty())
-  {
-    GraphView::Node * uiSrcNode = uiGraph->node(srcSplit.first);
-    if(!uiSrcNode)
-      return;
-    uiSrcTarget = uiSrcNode->pin(srcSplit.second);
-  }
-  else
-  {
-    GraphView::SidePanel * uiPanel = uiGraph->sidePanel(GraphView::PortType_Output);
-    if(uiPanel)
-      uiSrcTarget = uiPanel->port(srcSplit.first);
-  }
-
-  std::pair<FTL::StrRef, FTL::CStrRef> dstSplit = dstPath.split('.');
-  if(!dstSplit.second.empty())
-  {
-    GraphView::Node * uiDstNode = uiGraph->node(dstSplit.first);
-    if(!uiDstNode)
-      return;
-    uiDstTarget = uiDstNode->pin(dstSplit.second);
-  }
-  else
-  {
-    GraphView::SidePanel * uiPanel = uiGraph->sidePanel(GraphView::PortType_Input);
-    if(uiPanel)
-      uiDstTarget = uiPanel->port(dstSplit.first);
-  }
-
-  if(!uiSrcTarget || !uiDstTarget)
-    return;
-
-  uiGraph->removeConnection(uiSrcTarget, uiDstTarget, false);
+  if ( uiSrcTarget && uiDstTarget )
+    uiGraph->removeConnection( uiSrcTarget, uiDstTarget, false );
 }
 
 void DFGNotificationRouter::onNodeMetadataChanged(
