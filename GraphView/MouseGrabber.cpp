@@ -1,7 +1,11 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
+#include <FabricServices/Persistence/RTValToJSONEncoder.hpp>
 #include <FabricUI/DFG/DFGController.h>
+#include <FabricUI/DFG/DFGMetaDataHelpers.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
+#include <FabricUI/DFG/DFGWidget.h>
+#include <FabricUI/DFG/Dialogs/DFGEditPortDialog.h>
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/InstBlock.h>
@@ -413,14 +417,14 @@ static void GetDesiredPortNameAndTypeSpecForConnectionTarget(
 
 ExposePortAction::ExposePortAction(
   QObject *parent,
-  Node *node,
+  FabricUI::DFG::DFGController *dfgController,
   ConnectionTarget *other,
-  PortType portType
+  PortType connectionPortType
   )
   : QAction( parent )
-  , m_node( node )
+  , m_dfgController( dfgController )
   , m_other( other )
-  , m_portType( portType )
+  , m_connectionPortType( connectionPortType )
 {
   setText( "Expose new port" );
   setIcon( FabricUI::LoadPixmap( "expose-new-port.png" ) );
@@ -432,58 +436,158 @@ ExposePortAction::ExposePortAction(
 
 void ExposePortAction::onTriggered()
 {
-  FTL::StrRef desiredPortNameStr;
-  FTL::StrRef typeSpecStr;
+  FTL::StrRef defaultDesiredPortNameStr;
+  FTL::StrRef defaultTypeSpecStr;
   GetDesiredPortNameAndTypeSpecForConnectionTarget(
     m_other,
-    desiredPortNameStr,
-    typeSpecStr
+    defaultDesiredPortNameStr,
+    defaultTypeSpecStr
     );
-  if ( desiredPortNameStr.empty() )
+
+  FabricUI::DFG::DFGEditPortDialog dialog(
+    m_dfgController->getDFGWidget(),
+    m_dfgController->getClient(),
+    true,
+    true, // canEditPortType
+    m_dfgController->getDFGWidget()->getConfig(),
+    true
+    );
+
+  dialog.setTitle(
+    QString::fromUtf8(
+      defaultDesiredPortNameStr.data(),
+      defaultDesiredPortNameStr.size()
+      )
+    );
+  dialog.setDataType(
+    QString::fromUtf8(
+      defaultTypeSpecStr.data(),
+      defaultTypeSpecStr.size()
+      )
+    );
+  if ( m_connectionPortType == FabricUI::GraphView::PortType_Output )
+    dialog.setPortType("In");
+  else
+    dialog.setPortType("Out");
+
+  if ( dialog.exec() != QDialog::Accepted )
     return;
-  QString desiredPortName =
-    QString::fromUtf8( desiredPortNameStr.data(), desiredPortNameStr.size() );
-  QString typeSpec =
-    QString::fromUtf8( typeSpecStr.data(), typeSpecStr.size() );
 
-  QString extDep;
+  std::string metaData;
+  {
+    FTL::JSONEnc<> metaDataEnc( metaData );
+    FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
+    if(dialog.hidden())
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, "uiHidden", "true" );
+    if(dialog.opaque())
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, "uiOpaque", "true" );
 
-  FabricUI::DFG::DFGController *controller =
-    static_cast<FabricUI::DFG::DFGController *>(
-      m_node->graph()->controller()
-      );
-  FabricUI::DFG::DFGUICmdHandler *cmdHandler = controller->getCmdHandler();
+    if(dialog.persistValue())
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, "true" );
+
+    if(dialog.hasSoftRange())
+    {
+      QString range = "(" + QString::number(dialog.softRangeMin()) + ", " + QString::number(dialog.softRangeMax()) + ")";
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, "uiRange", range.toUtf8().constData() );
+    } else
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, "uiRange", "" );
+
+    if(dialog.hasHardRange())
+    {
+      QString range = "(" + QString::number(dialog.hardRangeMin()) + ", " + QString::number(dialog.hardRangeMax()) + ")";
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, "uiHardRange", range.toUtf8().constData() );
+    } else
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, "uiHardRange", "" );
+
+    if(dialog.hasCombo())
+    {
+      QStringList combo = dialog.comboValues();
+      QString flat = "(";
+      for(int i=0;i<combo.length();i++)
+      {
+        if(i > 0)
+          flat += ", ";
+        flat += "\"" + combo[i] + "\"";
+      }
+      flat += ")";
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", flat.toUtf8().constData() );
+    }
+  }
+
+  QString desiredPortName = dialog.title();
+  QString typeSpec = dialog.dataType();
+  QString extDep = dialog.extension();
+  FabricCore::DFGPortType portType = FabricCore::DFGPortType_Out;
+  if ( dialog.portType() == "In" )
+    portType = FabricCore::DFGPortType_In;
+  else if ( dialog.portType() == "IO" )
+    portType = FabricCore::DFGPortType_IO;
+
+  if(metaData == "{}")
+    metaData = "";
+
+  invokeAddPort(
+    desiredPortName,
+    portType,
+    typeSpec,
+    extDep,
+    QString::fromUtf8( metaData.data(), metaData.size() )
+    );
+}
+
+ExposeInstPortAction::ExposeInstPortAction(
+  QObject *parent,
+  FabricUI::DFG::DFGController *dfgController,
+  Node *node,
+  ConnectionTarget *other,
+  PortType portType
+  )
+  : ExposePortAction( parent, dfgController, other, portType )
+  , m_node( node )
+{
+}
+
+void ExposeInstPortAction::invokeAddPort(
+  QString desiredPortName,
+  FabricCore::DFGPortType portType,
+  QString typeSpec,
+  QString extDep,
+  QString metaData
+  )
+{
+  FabricUI::DFG::DFGUICmdHandler *cmdHandler =
+    m_dfgController->getCmdHandler();
   switch ( m_node->getNodeType() )
   {
     case Node::NodeType_Inst:
       cmdHandler->dfgDoAddInstPort(
-        controller->getBinding(),
-        controller->getExecPath_QS(),
-        controller->getExec(),
+        m_dfgController->getBinding(),
+        m_dfgController->getExecPath_QS(),
+        m_dfgController->getExec(),
         m_node->name_QS(),
         desiredPortName,
-        PortTypeToDFGPortType( m_portType ),
+        portType,
         typeSpec,
         m_other->path_QS(),
-        PortTypeToDFGPortType( m_portType ),
+        PortTypeToDFGPortType( m_connectionPortType ),
         extDep,
-        QString() // metadata
+        metaData
         );
       break;
       
     case Node::NodeType_Block:
       cmdHandler->dfgDoAddBlockPort(
-        controller->getBinding(),
-        controller->getExecPath_QS(),
-        controller->getExec(),
+        m_dfgController->getBinding(),
+        m_dfgController->getExecPath_QS(),
+        m_dfgController->getExec(),
         m_node->name_QS(),
         desiredPortName,
-        PortTypeToDFGPortType( m_portType ),
+        portType,
         typeSpec,
         m_other->path_QS(),
-        PortTypeToDFGPortType( m_portType ),
+        PortTypeToDFGPortType( m_connectionPortType ),
         extDep,
-        QString() // metadata
+        metaData
         );
       break;
 
@@ -548,8 +652,11 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
     menu->addSeparator();
 
     QAction *exposeNewPortAction =
-      new ExposePortAction(
+      new ExposeInstPortAction(
         menu,
+        static_cast<FabricUI::DFG::DFGController *>(
+          node->graph()->controller()
+          ),
         node,
         other,
         nodeRole
@@ -571,60 +678,39 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
 
 ExposeInstBlockPortAction::ExposeInstBlockPortAction(
   QObject *parent,
+  FabricUI::DFG::DFGController *dfgController,
   InstBlock *instBlock,
   ConnectionTarget *other,
-  PortType portType
+  PortType connectionPortType
   )
-  : QAction( parent )
+  : ExposePortAction( parent, dfgController, other, connectionPortType )
   , m_instBlock( instBlock )
-  , m_other( other )
-  , m_portType( portType )
 {
-  setText( "Expose new port" );
-  setIcon( FabricUI::LoadPixmap( "expose-new-port.png" ) );
-  connect(
-    this, SIGNAL(triggered()),
-    this, SLOT(onTriggered())
-    );
 }
 
-void ExposeInstBlockPortAction::onTriggered()
+void ExposeInstBlockPortAction::invokeAddPort(
+  QString desiredPortName,
+  FabricCore::DFGPortType portType,
+  QString typeSpec,
+  QString extDep,
+  QString metaData
+  )
 {
-  FTL::StrRef desiredPortNameStr;
-  FTL::StrRef typeSpecStr;
-  GetDesiredPortNameAndTypeSpecForConnectionTarget(
-    m_other,
-    desiredPortNameStr,
-    typeSpecStr
-    );
-  if ( desiredPortNameStr.empty() )
-    return;
-  QString desiredPortName =
-    QString::fromUtf8( desiredPortNameStr.data(), desiredPortNameStr.size() );
-  QString typeSpec =
-    QString::fromUtf8( typeSpecStr.data(), typeSpecStr.size() );
-  
-  QString extDep;
-
-  FabricUI::DFG::DFGController *controller =
-    static_cast<FabricUI::DFG::DFGController *>(
-      m_instBlock->node()->graph()->controller()
-      );
-
-  FabricUI::DFG::DFGUICmdHandler *cmdHandler = controller->getCmdHandler();
+  FabricUI::DFG::DFGUICmdHandler *cmdHandler =
+    m_dfgController->getCmdHandler();
   cmdHandler->dfgDoAddInstBlockPort(
-    controller->getBinding(),
-    controller->getExecPath_QS(),
-    controller->getExec(),
+    m_dfgController->getBinding(),
+    m_dfgController->getExecPath_QS(),
+    m_dfgController->getExec(),
     m_instBlock->node()->name_QS(),
     m_instBlock->name_QS(),
     desiredPortName,
-    PortTypeToDFGPortType( m_portType ),
+    portType,
     typeSpec,
     m_other->path_QS(),
-    PortTypeToDFGPortType( m_portType ),
+    PortTypeToDFGPortType( m_connectionPortType ),
     extDep,
-    QString() // metadata
+    metaData
     );
 }
 
@@ -689,6 +775,9 @@ QMenu *MouseGrabber::createInstBlockHeaderMenu(
     QAction *exposeNewPortAction =
       new ExposeInstBlockPortAction(
         menu,
+        static_cast<FabricUI::DFG::DFGController *>(
+          instBlock->node()->graph()->controller()
+          ),
         instBlock,
         other,
         nodeRole

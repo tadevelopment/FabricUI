@@ -11,6 +11,10 @@
 
 namespace FabricUI
 {
+  namespace DFG {
+  class DFGController;
+  } // namespace DFG
+
 
   namespace GraphView
   {
@@ -24,49 +28,87 @@ namespace FabricUI
     class ExposePortAction : public QAction
     {
       Q_OBJECT
-      
+           
     public:
 
       ExposePortAction(
         QObject *parent,
-        Node *node,
+        FabricUI::DFG::DFGController *dfgController,
         ConnectionTarget *other,
-        PortType portType
+        PortType connectionPortType
         );
-
+ 
     protected slots:
 
       void onTriggered();
+
+    protected:
+
+      virtual void invokeAddPort(
+        QString desiredPortName,
+        FabricCore::DFGPortType portType,
+        QString typeSpec,
+        QString extDep,
+        QString metaData
+        ) = 0;
+
+      FabricUI::DFG::DFGController *m_dfgController;
+      ConnectionTarget *m_other;
+      PortType m_connectionPortType;
+    };
+
+    class ExposeInstPortAction : public ExposePortAction
+    {
+    public:
+
+      ExposeInstPortAction(
+        QObject *parent,
+        FabricUI::DFG::DFGController *dfgController,
+        Node *node,
+        ConnectionTarget *other,
+        PortType connectionPortType
+        );
+
+    protected:
+
+      virtual void invokeAddPort(
+        QString desiredPortName,
+        FabricCore::DFGPortType portType,
+        QString typeSpec,
+        QString extDep,
+        QString metaData
+        );
 
     private:
 
       Node *m_node;
-      ConnectionTarget *m_other;
-      PortType m_portType;
     };
 
-    class ExposeInstBlockPortAction : public QAction
+    class ExposeInstBlockPortAction : public ExposePortAction
     {
-      Q_OBJECT
-      
     public:
 
       ExposeInstBlockPortAction(
         QObject *parent,
+        FabricUI::DFG::DFGController *dfgController,
         InstBlock *instBlock,
         ConnectionTarget *other,
-        PortType portType
+        PortType connectionPortType
         );
 
-    protected slots:
+    protected:
 
-      void onTriggered();
+      virtual void invokeAddPort(
+        QString desiredPortName,
+        FabricCore::DFGPortType portType,
+        QString typeSpec,
+        QString extDep,
+        QString metaData
+        );
 
     private:
 
       InstBlock *m_instBlock;
-      ConnectionTarget *m_other;
-      PortType m_portType;
     };
 
     class MouseGrabber : public ConnectionTarget
