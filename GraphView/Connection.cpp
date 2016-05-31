@@ -5,7 +5,9 @@
 #include <QtGui/QPainter>
 
 #include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Port.h>
 
@@ -100,7 +102,6 @@ Connection::Connection(
     if(target->targetType() == TargetType_Pin)
     {
       Pin * pin = (Pin*)target;
-      Node * node = pin->node();
       connect(
         pin, SIGNAL(drawStateChanged()),
         this, SLOT(dependencyMoved())
@@ -115,7 +116,26 @@ Connection::Connection(
           pin, SIGNAL(inCircleScenePositionChanged()),
           this, SLOT(dependencyMoved())
           );
+      Node * node = pin->node();
       QObject::connect(node, SIGNAL(selectionChanged(FabricUI::GraphView::Node *, bool)), this, SLOT(dependencySelected()));
+    }
+    if(target->targetType() == TargetType_InstBlockPort)
+    {
+      InstBlockPort * instBlockPort = (InstBlockPort*)target;
+      connect(
+        instBlockPort, SIGNAL(drawStateChanged()),
+        this, SLOT(dependencyMoved())
+        );
+      if ( i == 0 )
+        QObject::connect(
+          instBlockPort, SIGNAL(outCircleScenePositionChanged()),
+          this, SLOT(dependencyMoved())
+          );
+      else
+        QObject::connect(
+          instBlockPort, SIGNAL(inCircleScenePositionChanged()),
+          this, SLOT(dependencyMoved())
+          );
     }
     else if(target->targetType() == TargetType_MouseGrabber)
     {
@@ -127,6 +147,12 @@ Connection::Connection(
       Port * port = (Port*)target;
       QObject::connect(port, SIGNAL(positionChanged()), this, SLOT(dependencyMoved()));
       QObject::connect(port->sidePanel(), SIGNAL(scrolled()), this, SLOT(dependencyMoved()));
+    }
+    else if(target->targetType() == TargetType_FixedPort)
+    {
+      FixedPort * fixedPort = (FixedPort*)target;
+      QObject::connect(fixedPort, SIGNAL(positionChanged()), this, SLOT(dependencyMoved()));
+      QObject::connect(fixedPort->sidePanel(), SIGNAL(scrolled()), this, SLOT(dependencyMoved()));
     }
   }
 }

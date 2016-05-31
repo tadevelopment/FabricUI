@@ -96,7 +96,6 @@ public:
 signals:
 
   void colorChanged( InstBlockPort *, QColor );
-
   void inCircleScenePositionChanged();
   void outCircleScenePositionChanged();
   void drawStateChanged();
