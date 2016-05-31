@@ -33,7 +33,7 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
   FTL::CStrRef execPath,
   FTL::CStrRef desiredPortName,
   FTL::CStrRef typeSpec,
-  FTL::CStrRef portToConnect,
+  FTL::CStrRef portToConnectPath,
   FTL::CStrRef extDep,
   FTL::CStrRef metaData,
   unsigned &coreUndoCount
@@ -118,29 +118,24 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
     ++coreUndoCount;
   }
 
-  if ( !portToConnect.empty() )
+  if ( !portToConnectPath.empty() )
   {
     FabricCore::DFGPortType portToConnectNodePortType =
-      exec.getNodePortType( portToConnect.c_str() );
-
+      exec.getPortType( portToConnectPath.c_str() );
     if ( portToConnectNodePortType == FabricCore::DFGPortType_In )
     {
-      std::pair<FTL::StrRef, FTL::CStrRef> split = portToConnect.rsplit('.');
-      std::string nodeToConnect = split.first;
-
-      if ( !nodeToConnect.empty()
-        && exec.getNodeType( nodeToConnect.c_str() )
-          == FabricCore::DFGNodeType_Inst )
+      FTL::CStrRef::Split split = portToConnectPath.rsplit('.');
+      std::string portToConnectSubExecPath = split.first;
+      FTL::CStrRef portToConnectName = split.second;
+      if ( !portToConnectSubExecPath.empty() )
       {
-        FTL::CStrRef nodePortToConnect = split.second;
-
         FTL::CStrRef resolvedType =
-          exec.getNodePortResolvedType( portToConnect.c_str() );
+          exec.getPortResolvedType( portToConnectPath.c_str() );
         if ( !resolvedType.empty() )
         {
           FabricCore::RTVal defaultValue =
-            exec.getInstPortResolvedDefaultValue(
-              portToConnect.c_str(),
+            exec.getPortResolvedDefaultValue(
+              portToConnectPath.c_str(),
               resolvedType.c_str()
               );
           if ( defaultValue.isValid() )
@@ -153,8 +148,8 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
           }
         }
 
-        FabricCore::DFGExec subExec =
-          exec.getSubExec( nodeToConnect.c_str() );
+        FabricCore::DFGExec portToConnectSubExec =
+          exec.getSubExec( portToConnectSubExecPath.c_str() );
 
         char const *metadatasToCopy[5] =
         {
@@ -170,8 +165,8 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
           exec.setExecPortMetadata(
             portName.c_str(),
             metadatasToCopy[i],
-            subExec.getExecPortMetadata(
-              nodePortToConnect.c_str(),
+            portToConnectSubExec.getPortMetadata(
+              portToConnectName.c_str(),
               metadatasToCopy[i]
               ),
             true
@@ -184,12 +179,12 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
     if ( m_portType != FabricCore::DFGPortType_Out
       && portToConnectNodePortType != FabricCore::DFGPortType_Out )
     {
-      exec.connectTo( portName.c_str(), portToConnect.c_str() );
+      exec.connectTo( portName.c_str(), portToConnectPath.c_str() );
       ++coreUndoCount;
     }
     if ( m_portType != FabricCore::DFGPortType_In )
     {
-      exec.connectTo( portToConnect.c_str(), portName.c_str() );
+      exec.connectTo( portToConnectPath.c_str(), portName.c_str() );
       ++coreUndoCount;
     }
   }

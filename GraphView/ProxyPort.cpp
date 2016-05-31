@@ -1,10 +1,11 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
+#include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/GraphConfig.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
+#include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/ProxyPort.h>
 #include <FabricUI/GraphView/SidePanel.h>
-#include <FabricUI/GraphView/Graph.h>
-#include <FabricUI/GraphView/Pin.h>
-#include <FabricUI/GraphView/GraphConfig.h>
 
 #include <QtGui/QGraphicsLinearLayout>
 
@@ -119,10 +120,17 @@ bool ProxyPort::canConnectTo(
         return false;
       return true;
     }
-    case TargetType_NodeHeader:
+    case TargetType_InstBlockPort:
     {
+      InstBlockPort * otherInstBlockPort = (InstBlockPort *)other;
+      if ( portType() == PortType_Input
+        || otherInstBlockPort->portType() == PortType_Output )
+        return false;
       return true;
     }
+    case TargetType_NodeHeader:
+    case TargetType_InstBlockHeader:
+      return true;
     default:
       return false;
   }

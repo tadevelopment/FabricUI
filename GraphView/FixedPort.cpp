@@ -68,19 +68,19 @@ void FixedPort::init()
   {
     layout->addItem(m_circle);
     layout->setAlignment(m_circle, Qt::AlignHCenter | Qt::AlignVCenter);
-    layout->addItem(m_label);
-    layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem( lockItem );
     layout->setAlignment(lockItem, Qt::AlignHCenter | Qt::AlignVCenter);
+    layout->addItem(m_label);
+    layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addStretch(1);
   }
   else if(m_portType == PortType_Output)
   {
     layout->addStretch(1);
-    layout->addItem( lockItem );
-    layout->setAlignment(lockItem, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem(m_label);
     layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
+    layout->addItem( lockItem );
+    layout->setAlignment(lockItem, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem(m_circle);
     layout->setAlignment(m_circle, Qt::AlignHCenter | Qt::AlignVCenter);
   }

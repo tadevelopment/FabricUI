@@ -331,6 +331,30 @@ void MouseGrabber::invokeConnect(ConnectionTarget * source, ConnectionTarget * t
       pinToConnectWith
       );
   }
+  else if(source->targetType() == TargetType_ProxyPort && target->targetType() == TargetType_InstBlockPort)
+  {
+    InstBlockPort *instBlockPortToConnectWith = static_cast<InstBlockPort *>( target );
+    FTL::CStrRef instBlockPortName = instBlockPortToConnectWith->name();
+    FTL::CStrRef dataType = instBlockPortToConnectWith->dataType();
+    graph()->controller()->gvcDoAddPort(
+      QString::fromUtf8( instBlockPortName.data(), instBlockPortName.size() ),
+      PortType_Output,
+      QString::fromUtf8( dataType.data(), dataType.size() ),
+      instBlockPortToConnectWith
+      );
+  }
+  else if(target->targetType() == TargetType_ProxyPort && source->targetType() == TargetType_InstBlockPort)
+  {
+    InstBlockPort *instBlockPortToConnectWith = static_cast<InstBlockPort *>( source );
+    FTL::CStrRef instBlockPortName = instBlockPortToConnectWith->name();
+    FTL::CStrRef dataType = instBlockPortToConnectWith->dataType();
+    graph()->controller()->gvcDoAddPort(
+      QString::fromUtf8( instBlockPortName.data(), instBlockPortName.size() ),
+      PortType_Input,
+      QString::fromUtf8( dataType.data(), dataType.size() ),
+      instBlockPortToConnectWith
+      );
+  }
   else if(source->targetType() == TargetType_NodeHeader)
   {
     NodeHeader * header = static_cast<NodeHeader *>( source );
