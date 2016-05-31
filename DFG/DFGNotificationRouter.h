@@ -228,6 +228,10 @@ namespace FabricUI
         FTL::CStrRef nodeName,
         FTL::CStrRef portName
         );
+      void onBlockPortDefaultValuesChanged(
+        FTL::CStrRef blockName,
+        FTL::CStrRef portName
+        );
       void onRemovedFromOwner();
       void onExecPortsReordered(
         unsigned int indexCount,

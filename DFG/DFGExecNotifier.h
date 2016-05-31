@@ -149,6 +149,11 @@ signals:
     FTL::CStrRef newResolvedTypeName
     );
 
+  void blockPortDefaultValuesChanged(
+    FTL::CStrRef blockName,
+    FTL::CStrRef portName
+    );
+
   // The executable's nodes
 
   void nodeInserted(
@@ -293,6 +298,7 @@ private:
 
   void handler_execBlockInserted( FTL::JSONObject const *jsonObject );
   void handler_execBlockMetadataChanged( FTL::JSONObject const *jsonObject );
+  void handler_execBlockPortDefaultValuesChanged( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortInserted( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortRemoved( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );

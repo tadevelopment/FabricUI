@@ -306,6 +306,13 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->getString( FTL_STR("portName") )
         );
     }
+    else if( descStr == FTL_STR("execBlockPortDefaultValuesChanged") )
+    {
+      onBlockPortDefaultValuesChanged(
+        jsonObject->getString( FTL_STR("blockName") ),
+        jsonObject->getString( FTL_STR("portName") )
+        );
+    }
     else if ( descStr == FTL_STR("removedFromOwner") )
     {
       onRemovedFromOwner();
@@ -1936,6 +1943,14 @@ void DFGNotificationRouter::onExecExtDepsChanged(
 
 void DFGNotificationRouter::onNodePortDefaultValuesChanged(
   FTL::CStrRef nodeName,
+  FTL::CStrRef portName
+  )
+{
+  m_dfgController->emitDefaultValuesChanged();
+}
+
+void DFGNotificationRouter::onBlockPortDefaultValuesChanged(
+  FTL::CStrRef blockName,
   FTL::CStrRef portName
   )
 {
