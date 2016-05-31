@@ -37,7 +37,7 @@ void DFGUICmd_RemoveNodes::invoke(
 {
   for ( size_t i = 0; i < nodeNames.size(); ++i )
   {
-    getExec().removeNode( nodeNames[i].c_str() );
+    getExec().removeElement( nodeNames[i].c_str() );
     ++coreUndoCount;
   }
 }
