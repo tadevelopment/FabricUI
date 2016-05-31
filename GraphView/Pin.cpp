@@ -1,10 +1,11 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <FabricUI/GraphView/Pin.h>
-#include <FabricUI/GraphView/PinCircle.h>
-#include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
+#include <FabricUI/GraphView/Node.h>
+#include <FabricUI/GraphView/Pin.h>
+#include <FabricUI/GraphView/PinCircle.h>
 #include <FabricUI/GraphView/ProxyPort.h>
 
 #include <QtGui/QGraphicsLinearLayout>
@@ -323,6 +324,16 @@ bool Pin::canConnectTo(
         return false;
       return m_node->graph()->controller()->canConnectTo(
         path().c_str(), otherPort->path().c_str(), failureReason
+        );
+    }
+    case TargetType_InstBlockPort:
+    {
+      InstBlockPort * otherInstBlockPort = (InstBlockPort *)other;
+      if ( this == other
+        || otherInstBlockPort->portType() == PortType_Output )
+        return false;
+      return m_node->graph()->controller()->canConnectTo(
+        path().c_str(), otherInstBlockPort->path().c_str(), failureReason
         );
     }
     case TargetType_ProxyPort:

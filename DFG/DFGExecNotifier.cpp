@@ -215,7 +215,7 @@ void DFGExecNotifier::handler_nodeInserted( FTL::JSONObject const *jsonObject )
 void DFGExecNotifier::handler_nodeRenamed( FTL::JSONObject const *jsonObject )
 {
   FTL::CStrRef oldNodeName = jsonObject->getString( FTL_STR("oldNodeName") );
-  FTL::CStrRef newNodeName = jsonObject->getString( FTL_STR("newNodeName") );
+  FTL::CStrRef newNodeName = jsonObject->getString( FTL_STR("nodeName") );
 
   emit nodeRenamed( oldNodeName, newNodeName );
 }
