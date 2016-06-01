@@ -1456,6 +1456,10 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     onPaste();
   }
+  else if(hotkey == DFGHotkeys::GO_UP)
+  {
+    onGoUpPressed();
+  }
   else if(hotkey == DFGHotkeys::EDIT_PRESET)
   {
     maybeEditNode();
