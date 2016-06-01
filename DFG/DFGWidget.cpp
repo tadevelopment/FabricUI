@@ -1456,7 +1456,11 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     onPaste();
   }
-  else if(hotkey == DFGHotkeys::EDIT_PROPERTIES)
+  else if(hotkey == DFGHotkeys::EDIT_PRESET)
+  {
+    maybeEditNode();
+  }
+  else if(hotkey == DFGHotkeys::EDIT_PRESET_PROPERTIES)
   {
     onEditPropertiesForCurrentSelection();
   }
@@ -1601,6 +1605,14 @@ void DFGWidget::onTogglePortsCentered()
   m_uiGraph->sidePanel(GraphView::PortType_Output)->updateItemGroupScroll();  
   // [Julien] FE-5264 Sets the onTogglePortsCentered property to the settings
   if(getSettings()) getSettings()->setValue( "DFGWidget/portsCentered", m_uiGraph->config().portsCentered );
+}
+
+bool DFGWidget::maybeEditNode()
+{
+  const std::vector<GraphView::Node*> &nodes = m_uiController->graph()->selectedNodes();
+  if (nodes.size() == 1)
+    return maybeEditNode(nodes.front());
+  return false;
 }
 
 bool DFGWidget::maybeEditNode(

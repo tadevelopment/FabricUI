@@ -1221,8 +1221,10 @@ class CanvasWindow(DFG.DFGMainWindow):
                                DFG.DFGHotkeys.OPEN_SCENE)
             graph.defineHotkey(QtCore.Qt.Key_S, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.SAVE_SCENE)
+            graph.defineHotkey(QtCore.Qt.Key_I, QtCore.Qt.NoModifier,
+                               DFG.DFGHotkeys.EDIT_PRESET)
             graph.defineHotkey(QtCore.Qt.Key_F2, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.EDIT_PROPERTIES)
+                               DFG.DFGHotkeys.EDIT_PRESET_PROPERTIES)
             graph.defineHotkey(QtCore.Qt.Key_R, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.RELAX_NODES)
             graph.defineHotkey(QtCore.Qt.Key_Q, QtCore.Qt.NoModifier,
