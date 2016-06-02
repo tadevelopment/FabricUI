@@ -302,53 +302,8 @@ bool SHGLRenderer::onEvent(
     event->setAccepted(result);
     redrawAllViewports = args[0].callMethod("Boolean", "redrawAllViewports", 0, 0).getBoolean();
 
-    QString toolPath(args[0].maybeGetMember("dfgToolPath").getStringCString());    
-    if(controller && result && (toolPath != ""))
-    {
-      DFGBinding binding = controller->getBinding();
-      DFGExec exec = binding.getExec();
-
-      QString subExecPath = toolPath.left(toolPath.lastIndexOf("."));
-      DFGExec subExec = exec.getSubExec(subExecPath.toUtf8().constData());
-      
-      RTVal toolVal = exec.getVarValue(toolPath.toUtf8().constData());
-      RTVal target = toolVal.callMethod("DFGToolTarget", "getTarget", 0, 0);
-      RTVal toolData = target.callMethod("DFGToolData", "getToolData", 0, 0);
-
-      bool bakeValue = toolData.callMethod("Boolean", "bakeValue", 0, 0).getBoolean();  
-      int portCount = toolData.callMethod("UInt32", "getPortCount", 0, 0).getUInt32();
-      
-      for(int i=0; i<portCount; ++i)
-      {
-        RTVal index = RTVal::ConstructUInt32(m_client, i);
-        QString portName(toolData.callMethod("String", "getPortAtIndex", 1, &index).getStringCString()); 
-          
-        RTVal args[2] = { index, RTVal::ConstructBoolean(m_client, false) };
-        RTVal rtVal = toolData.callMethod("RTVal", "getRTValAtPortIndex", 2, args);
-
-        QString valType(rtVal.callMethod("String", "type", 0, 0).getStringCString());
-        if( subExec.haveExecPort(portName.toUtf8().constData()) && 
-            valType == QString(subExec.getExecPortResolvedType(portName.toUtf8().constData())) && 
-            subExec.getExecPortType(portName.toUtf8().constData()) == DFGPortType_In
-          )   
-        {
-          QString portPath = subExecPath + "." + portName;
-          RTVal val = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &rtVal);
-
-          if(!bakeValue)
-            exec.setPortDefaultValue(portPath.toUtf8().constData(), val, false);
-          else
-          {
-            args[1] = RTVal::ConstructBoolean(m_client, true);
-            RTVal prevRTVal = toolData.callMethod("RTVal", "getRTValAtPortIndex", 2, args);
-            RTVal prevVal = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &prevRTVal);
-
-            exec.setPortDefaultValue(portPath.toUtf8().constData(), prevVal, false);
-            controller->getCmdHandler()->dfgDoSetPortDefaultValue(binding, ".", exec, portPath, val);
-          }
-        }
-      }
-    }
+    if(controller && result)
+      driveNodeInputPorts(controller, args[0]);
  
     return result;
   }
@@ -376,23 +331,27 @@ QList<QStringList> SHGLRenderer::getRegisteredTools() {
   QList<QStringList> list;
   try 
   {
-    RTVal args[2] = {
+    RTVal args[3] = {
       RTVal::ConstructVariableArray(m_client, "String"),
-      RTVal::ConstructVariableArray(m_client, "Key")
+      RTVal::ConstructVariableArray(m_client, "Key"),
+      RTVal::ConstructVariableArray(m_client, "Boolean")
     };
-    m_shGLRendererVal.callMethod("", "getRegisteredTools", 2, &args[0]);
+    m_shGLRendererVal.callMethod("", "getRegisteredTools", 3, args);
 
-    QStringList toolNames;
-    QStringList toolKeys;
+    QStringList toolNames, toolKeys, isEnables;
     for(unsigned int i=0; i<args[0].getArraySize(); ++i)
     {
       RTVal name = args[0].getArrayElement(i);
       RTVal key = args[1].getArrayElement(i);
+      RTVal isEnable = args[2].getArrayElement(i);
+
       toolNames.append(name.getStringCString());
       toolKeys.append(QKeySequence(key.getUInt32()).toString());
+      isEnables.append(QString::number(isEnable.getBoolean()));
     }
     list.append(toolNames);
     list.append(toolKeys);
+    list.append(isEnables);
   }
   catch(Exception e)
   {
@@ -436,4 +395,99 @@ QString SHGLRenderer::getSelectionCategory() {
     printf("SHGLRenderer::getSelectionCategory: exception: %s\n", e.getDesc_cstr());
   }
   return QString();
+}
+
+void SHGLRenderer::driveNodeInputPorts(
+  DFG::DFGController *controller,
+  RTVal event) 
+{
+  try 
+  {
+    QString toolPath(event.maybeGetMember("dfgToolPath").getStringCString());    
+
+    if(toolPath != "") 
+    {
+      DFGBinding binding = controller->getBinding();
+      DFGExec exec = binding.getExec();
+
+      if(exec.hasVar(toolPath.toUtf8().constData()))
+      {
+        QString subExecPath = toolPath.left(toolPath.lastIndexOf("."));
+        DFGExec subExec = exec.getSubExec(subExecPath.toUtf8().constData());
+        
+        RTVal toolVal = exec.getVarValue(toolPath.toUtf8().constData());
+        RTVal target = toolVal.callMethod("DFGToolTarget", "getTarget", 0, 0);
+        RTVal toolData = target.callMethod("DFGToolData", "getToolData", 0, 0);
+
+        bool bakeValue = toolData.callMethod("Boolean", "bakeValue", 0, 0).getBoolean();  
+        int portCount = toolData.callMethod("UInt32", "getPortCount", 0, 0).getUInt32();
+        
+        for(int i=0; i<portCount; ++i)
+        {
+          RTVal index = RTVal::ConstructUInt32(m_client, i);
+          QString portName(toolData.callMethod("String", "getPortAtIndex", 1, &index).getStringCString()); 
+            
+          if(subExec.haveExecPort(portName.toUtf8().constData()))
+          {
+            if(subExec.getExecPortType(portName.toUtf8().constData()) == DFGPortType_In)
+            {
+              RTVal args[2] = { index, RTVal::ConstructBoolean(m_client, false) };
+              RTVal rtVal = toolData.callMethod("RTVal", "getRTValAtPortIndex", 2, args);
+              QString valType(rtVal.callMethod("String", "type", 0, 0).getStringCString());
+
+              unsigned int portIndexInExec = subExec.getExecPortIndex(portName.toUtf8().constData());
+              if(subExec.isExecPortResolvedType(portIndexInExec, valType.toUtf8().constData()))   
+              {
+                QString portPath = subExecPath + "." + portName;
+                RTVal val = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &rtVal);
+
+                if(!bakeValue)
+                  exec.setPortDefaultValue(portPath.toUtf8().constData(), val, false);
+                else
+                {
+                  args[1] = RTVal::ConstructBoolean(m_client, true);
+                  RTVal prevRTVal = toolData.callMethod("RTVal", "getRTValAtPortIndex", 2, args);
+                  RTVal prevVal = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &prevRTVal);
+
+                  exec.setPortDefaultValue(portPath.toUtf8().constData(), prevVal, false);
+                  controller->getCmdHandler()->dfgDoSetPortDefaultValue(binding, ".", exec, portPath, val);
+                }
+              }
+
+              else
+              {
+                QString portType(subExec.getExecPortResolvedType(portName.toUtf8().constData()));
+                printf("SHGLRenderer::driveNodeInputPorts: Warning : "
+                  "The port: %s 's type %s doesn't match with the target manipulated value type %s\n", 
+                  portName.toUtf8().constData(), 
+                  portType.toUtf8().constData(),
+                  valType.toUtf8().constData());
+              }
+            }
+
+            else
+            {
+              printf("SHGLRenderer::driveNodeInputPorts: Warning: "
+                "The driven port is not an InputPort\n");
+            }
+          }
+
+          else
+          {
+            printf("SHGLRenderer::driveNodeInputPorts: Warning : "
+              "The port: %s doesn't exist\n", portName.toUtf8().constData());        
+          }
+        }
+      }
+      else
+      {
+        printf("SHGLRenderer::driveNodeInputPorts: Warning : "
+          "The tool: %s is not a variable\n", toolPath.toUtf8().constData());    
+      }
+    }
+  }
+  catch(Exception e)
+  {
+    printf("SHGLRenderer::driveNodeInputPorts: exception: %s\n", e.getDesc_cstr());
+  }
 }

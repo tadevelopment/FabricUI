@@ -6,12 +6,10 @@ from FabricEngine.FabricUI import Menus
 
 class SHInteractionMenu(Menus.BaseMenu):
 
-    """SHAssetsMenu
+    """SHInteractionMenu
 
-    SHAssetsMenu specializes BaseMenu for importing/exporting assets in a SceneHub.SHGLScene.
-    It supports : importing Alembic/Fbx archives within scene.
-                  exporting the scene to an Alembic archive.
-
+    SHInteractionMenu specializes BaseMenu for switching tools in the scene.
+  
     Arguments:
         shGLRenderer (SceneHub.SHGLRenderer): A reference to a SHGLRenderer.
         parent (QWidget): The menu widget parent, can be None.
@@ -35,7 +33,10 @@ class SHInteractionMenu(Menus.BaseMenu):
         for i in range(0, len(tools[0])):
             toolAction = self.addAction(tools[0][i] + "\t" + tools[1][i])
             toolAction.triggered.connect(self.onActiveTool)
-        
+            toolAction.setCheckable(True)
+            if tools[2][i] == "1":
+                toolAction.setChecked(True)
+
     def onActiveTool(self):
         """Activates the selected tool.
         """

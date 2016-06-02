@@ -123,6 +123,7 @@ class SHGLRenderer {
     /// \param event The event.
     /// \param redrawAllViewports It true, refresh the render.
     /// \param dragging If true when dragging an asset or texture in the scene.
+    /// \param controller A reference to the DFGController.
     bool onEvent(
       unsigned int viewportID, 
       QEvent *event, 
@@ -156,6 +157,13 @@ class SHGLRenderer {
     FabricCore::Client m_client;    
     /// \internal
     FabricCore::RTVal m_shGLRendererVal;
+
+    /// Drives a node input-ports with an user-event.
+    /// \param controller A reference to the DFGController.
+    /// \param event The user event.
+    void driveNodeInputPorts(
+      DFG::DFGController *controller, 
+      FabricCore::RTVal event);
 };
 
 } // namespace SceneHub
