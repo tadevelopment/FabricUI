@@ -431,7 +431,7 @@ void SGObjectPropertyModelItem::setValue(
       FabricUI::ValueEditor::RTVariant::toRTVal(valueAtInteractionBegin, valueAtInteractionBeginVal);
 
       /* special case for Mat44 */
-      if(getRTValType() == FTL_STR("Mat44"))
+      if(valueAtInteractionBeginVal.isValid() && getRTValType() == FTL_STR("Mat44"))
         valueAtInteractionBeginVal = valueAtInteractionBeginVal.callMethod("Mat44", "toMat44", 0, 0);
 
       FabricCore::RTVal sgVal = m_rtVal.maybeGetMember("SG");
