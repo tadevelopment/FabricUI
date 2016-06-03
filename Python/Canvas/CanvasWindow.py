@@ -45,7 +45,7 @@ class CanvasWindowEventFilter(QtCore.QObject):
 
         return QtCore.QObject.eventFilter(obj, event)
 
-class CanvasWindow(DFG.DFGMainWindow):
+class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
 
     Attributes:
@@ -1256,7 +1256,7 @@ class CanvasWindow(DFG.DFGMainWindow):
                     event.acceptProposedAction()
                     return
 
-        DFG.DFGMainWindow.dragEnterEvent(self, event)
+        QtGui.QMainWindow.dragEnterEvent(self, event)
 
     def dropEvent(self, event):
         # The mimeData was already checked in the dragEnterEvent(), so we simply get the filepath and load the graph.

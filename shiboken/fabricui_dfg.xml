@@ -6,7 +6,6 @@
       <object-type name="DFGController" />-
       <object-type name="DFGHotkeys" />
       <object-type name="DFGLogWidget" />
-      <object-type name="DFGMainWindow" />
       <object-type name="DFGTabSearchWidget" />
       <object-type name="DFGVEEditorOwner" />
       <object-type name="DFGUICmdHandler">
