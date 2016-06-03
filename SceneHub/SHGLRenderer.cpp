@@ -458,7 +458,7 @@ void SHGLRenderer::driveNodeInputPorts(
               {
                 QString portType(subExec.getExecPortResolvedType(portName.toUtf8().constData()));
                 printf("SHGLRenderer::driveNodeInputPorts: Warning : "
-                  "The port: %s 's type %s doesn't match with the target manipulated value type %s\n", 
+                  "The port: %s 's type %s doesn't match with the target manipulated type %s\n", 
                   portName.toUtf8().constData(), 
                   portType.toUtf8().constData(),
                   valType.toUtf8().constData());
