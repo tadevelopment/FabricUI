@@ -19,6 +19,7 @@ class SHInteractionMenu(Menus.BaseMenu):
     togglePlayback = QtCore.Signal()
 
     def __init__(self, shGLRenderer, parent = None):
+        self.delimiter =  "\t";
         self.shGLRenderer = shGLRenderer
         super(SHInteractionMenu, self).__init__(self.shGLRenderer.getClient(), "Tools", parent)
         self.aboutToShow.connect(self.constructMenu)
@@ -31,27 +32,22 @@ class SHInteractionMenu(Menus.BaseMenu):
         self.clear();
         tools = self.shGLRenderer.getRegisteredTools()
         for i in range(0, len(tools[0])):
-            toolAction = self.addAction(tools[0][i] + "\t" + tools[1][i])
+            toolAction = self.addAction(tools[0][i] + self.delimiter + tools[1][i] + self.delimiter + tools[2][i])
             toolAction.triggered.connect(self.onActiveTool)
             toolAction.setCheckable(True)
-            if tools[2][i] == "1":
+            if tools[3][i] == "1":
                 toolAction.setChecked(True)
 
     def onActiveTool(self):
         """Activates the selected tool.
         """
 
-        # From the sender action text : ToolName \tab ToolKey
+        # From the sender action text : name \tab type \tab Key
         # gets the toolKey only
-        action = self.sender()
-        actionName = str(action.text())
-
-        pos = actionName.find("\t")     
-        toolName = actionName[0:pos] 
-        toolKey = actionName[pos:len(actionName)] 
-        toolKey = toolKey.strip()
-
-        #From the toolKey, create a fake key event and process it
+        actionName = str(self.sender().text())
+        toolKey = actionName.split(self.delimiter)[2].strip()
+ 
+        #From the toolKey, create a key event
         seq = QtGui.QKeySequence(toolKey)
         qtKey = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, seq[0], QtCore.Qt.NoModifier)
          
