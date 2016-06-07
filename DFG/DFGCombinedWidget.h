@@ -37,7 +37,7 @@ namespace FabricUI
     public:
       DFGCombinedWidget(QWidget * parent);
 
-      ~DFGCombinedWidget();
+      virtual ~DFGCombinedWidget();
 
       virtual void init(      
         FabricCore::Client &client,

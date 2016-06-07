@@ -8,6 +8,7 @@
       <object-type name="SHDFGBinding" copyable="false"/>
       <object-type name="SHBaseSceneMenu" copyable="false"/>
       <object-type name="SHBaseContextualMenu" copyable="false"/>
+      <object-type name="SHToolsMenu" copyable="false"/>
       <object-type name="SHCmd" copyable="false"/>
       <object-type name="SGAddObjectCmd" copyable="false"/>
       <object-type name="SGAddPropertyCmd" copyable="false"/>

@@ -9,8 +9,6 @@ from FabricEngine.SceneHub.SHViewportsManager import SHViewportsManager
 from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
 from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
 from FabricEngine.SceneHub.SHTreeViewMenu import SHTreeViewMenu
-from FabricEngine.SceneHub.SHInteractionMenu import SHInteractionMenu
-#from FabricEngine.SceneHub.SHVEEditorOwner import SHVEEditorOwner
 from FabricEngine.SceneHub.SHHelpWidget import SHHelpWidget
 
 class SceneHubWindow(CanvasWindow):
@@ -62,12 +60,7 @@ class SceneHubWindow(CanvasWindow):
         # Create the main scene and states
         self.shStates = SceneHub.SHStates(self.client)
         self.shMainGLScene = SceneHub.SHGLScene(self.client, self.klFile)
-
-        # The scene might create a specialized renderer type; get it from the scene
-        shRenderer = self.shMainGLScene.getSHGLRenderer()
-
-        # Create the renderer manager
-        self.viewportsManager = SHViewportsManager(self, self.shStates, shRenderer, self.initSamples)
+        self.shStates.inspectedChanged.connect(self.onInspectChanged)
 
     def _initDFG(self):
         """ Implementation of Canvas.CanvasWindow.
@@ -79,7 +72,6 @@ class SceneHubWindow(CanvasWindow):
             self.dfgWidget.getUIController(),
             self.shStates)
         self.shDFGBinding.sceneChanged.connect(self.shStates.onStateChanged)
-        self.shStates.inspectedChanged.connect(self.onInspectChanged)
 
     def _initLog(self):
         """ Implementation of Canvas.CanvasWindow.
@@ -125,6 +117,11 @@ class SceneHubWindow(CanvasWindow):
     def _initGL(self):
         """ Override of Canvas.CanvasWindow.
         """
+        # The scene might create a specialized renderer type; get it from the scene
+        shRenderer = self.shMainGLScene.getSHGLRenderer()
+     
+        # Create the renderer manager
+        self.viewportsManager = SHViewportsManager(self, self.shStates, shRenderer, self.initSamples)
 
         # Create the first viewports
         self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(
@@ -184,7 +181,7 @@ class SceneHubWindow(CanvasWindow):
         self.interactionMenu = self.menuBar().addMenu("&Interaction")
         togglePlaybackAction = self.interactionMenu.addAction("Toggle Playback")
         togglePlaybackAction.triggered.connect(self._onTogglePlayback)
-        self.interactionMenu.addMenu(SHInteractionMenu(self.viewportsManager.shGLRenderer))
+        self.interactionMenu.addMenu(SceneHub.SHToolsMenu(self.viewportsManager.shGLRenderer))
 
         helpMenu = self.menuBar().addMenu("&Help")
         usageAction = helpMenu.addAction("Show Usage")
@@ -280,7 +277,6 @@ class SceneHubWindow(CanvasWindow):
 
         self.timeLineDock.hide()
         self.timeLine.pause()
-
         self.viewportsManager.onAlwaysRefresh()
        
     def _onCanvasSidePanelInspectRequested(self):

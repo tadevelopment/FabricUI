@@ -4,6 +4,10 @@
 #include "SHDFGCombinedWidget.h"
 #include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeViewsManager.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeViewsManager.h>
+#include <FabricUI/SceneHub/Menus/SHToolsMenu.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 using namespace FabricUI;
 using namespace DFG;
@@ -11,17 +15,54 @@ using namespace DFG;
 
 SHDFGCombinedWidget::SHDFGCombinedWidget(QWidget * parent) 
   : DFGCombinedWidget(parent) {
+  freopen("myoutpout.txt","a",stdout);
+  freopen("myerror.txt","a",stderr);
+}
+ 
+SHDFGCombinedWidget::~SHDFGCombinedWidget() {
 }
 
+void SHDFGCombinedWidget::init(      
+    FabricCore::Client &client,
+    FabricServices::ASTWrapper::KLASTManager *manager,
+    FabricCore::DFGHost &host,
+    FabricCore::DFGBinding &binding,
+    FTL::StrRef execPath,
+    FabricCore::DFGExec &exec,
+    DFGUICmdHandler *cmdHandler,
+    SceneHub::SHGLRenderer *shGLRenderer,
+    bool overTakeBindingNotifications,
+    DFGConfig config) 
+{
+  DFGCombinedWidget::init(
+    client,
+    manager,
+    host,
+    binding,
+    execPath,
+    exec,
+    cmdHandler,
+    overTakeBindingNotifications,
+    config);
+ 
+  QObject::connect(shGLRenderer, SIGNAL(sceneChanged()), m_shStates, SLOT(onStateChanged()));
+  QObject::connect(shGLRenderer, SIGNAL(manipsAcceptedEvent(bool)), m_shStates, SLOT(onStateChanged()));
+  QObject::connect(shGLRenderer, SIGNAL(driveNodeInputPorts(FabricCore::RTVal)), m_shDFGBinding, SLOT(onDriveNodeInputPorts(FabricCore::RTVal)));
+
+  SceneHub::SHToolsMenu *toolMenu = new SceneHub::SHToolsMenu(shGLRenderer);
+  m_menuBar->addMenu(toolMenu);
+}
+ 
 void SHDFGCombinedWidget::initDFG() {
   DFGCombinedWidget::initDFG(); 
-
   m_shStates = new SceneHub::SHStates(m_client);
 
   m_shDFGBinding = new SceneHub::SHDFGBinding(
-    m_mainDFGBinding,
+    m_dfgWidget->getDFGController()->getBinding(),
     m_dfgWidget->getDFGController(),
     m_shStates);
+
+  m_shDFGBinding->setMainBinding(m_dfgWidget->getDFGController()->getBinding());
 
   QObject::connect(m_shDFGBinding, SIGNAL(sceneChanged()), m_shStates, SLOT(onStateChanged()));
   QObject::connect(m_shStates, SIGNAL(inspectedChanged()), this, SLOT(onInspectChanged()));
@@ -38,9 +79,12 @@ void SHDFGCombinedWidget::initTreeView() {
   //scene changed -> tree view changed
   QObject::connect(m_shStates, SIGNAL(sceneHierarchyChanged()), m_shTreeViewsManager, SLOT(onSceneHierarchyChanged()));
   QObject::connect(m_shStates, SIGNAL(selectionChanged()), m_shTreeViewsManager, SLOT(onSelectionChanged()));
+  QObject::connect(m_shStates, SIGNAL(selectionChanged()), this, SLOT(onSceneChanged()));
+  QObject::connect(m_shStates, SIGNAL(selectionChanged()), m_shTreeViewsManager, SLOT(onSceneChanged()));
   // tree view changed -> scene changed
   QObject::connect(m_shTreeViewsManager, SIGNAL(sceneHierarchyChanged()), m_shStates, SLOT(onStateChanged()));
   QObject::connect(m_shTreeViewsManager, SIGNAL(sceneChanged()), m_shStates, SLOT(onStateChanged()));
+  QObject::connect(m_shTreeViewsManager, SIGNAL(sceneChanged()), this, SLOT(onSceneChanged()));
 }
 
 void SHDFGCombinedWidget::initValueEditor() {
@@ -60,6 +104,7 @@ void SHDFGCombinedWidget::initValueEditor() {
   QObject::connect(m_shStates, SIGNAL(inspectedChanged()), valueEditor, SLOT(onInspectChanged()));
   QObject::connect(m_shStates, SIGNAL(activeSceneChanged()), valueEditor, SLOT(onSceneChanged()));
   QObject::connect(m_shStates, SIGNAL(sceneChanged()), valueEditor, SLOT(onSceneChanged()));
+  QObject::connect(m_shStates, SIGNAL(sceneChanged()), this, SLOT(onSceneChanged()));
 }
 
 void SHDFGCombinedWidget::initDocks() { 
@@ -69,8 +114,8 @@ void SHDFGCombinedWidget::initDocks() {
 
 void SHDFGCombinedWidget::onInspectChanged() {
   // shDFGBinding might change the active binding
-  m_shDFGBinding->onInspectChanged();
-  FabricCore::DFGBinding binding = m_dfgWidget->getDFGController()->getBinding();
+  //m_shDFGBinding->onInspectChanged();
+  //FabricCore::DFGBinding binding = m_dfgWidget->getDFGController()->getBinding();
 }
 
 void SHDFGCombinedWidget::onCanvasSidePanelInspectRequested() {
@@ -89,5 +134,9 @@ void SHDFGCombinedWidget::onModelValueChanged(FabricUI::ValueEditor::BaseModelIt
 }
 
 void SHDFGCombinedWidget::onActiveSceneChanged(FabricUI::SceneHub::SHGLScene *scene) {
+  refreshScene();
+}
 
+void SHDFGCombinedWidget::onSceneChanged() {
+  refreshScene();
 }

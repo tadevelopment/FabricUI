@@ -57,6 +57,10 @@ class SHViewportsManager():
         self.nextViewportIndex = 1
         self.shGLRenderer = SceneHub.SHGLRenderer(self.shWindow.client, shRenderer)
 
+        self.shGLRenderer.driveNodeInputPorts.connect(self.shWindow.shDFGBinding.onDriveNodeInputPorts)
+        self.shGLRenderer.sceneChanged.connect( self.shStates.sceneChanged )
+        self.shGLRenderer.manipsAcceptedEvent.connect( self.shStates.onStateChanged )
+
         self.shStates.sceneChanged.connect(self.onRefreshAllViewports)
         self.shStates.selectionChanged.connect(self.onRefreshAllViewports)
 
@@ -146,11 +150,8 @@ class SHViewportsManager():
 
         self.viewports.append(newViewport)
 
-        newViewport.sceneChanged.connect( self.shStates.onStateChanged )
-        newViewport.manipsAcceptedEvent.connect( self.shStates.onStateChanged )
-
         # Manips can need to be redrawn even if the scene didn't change
-        newViewport.manipsAcceptedEvent.connect( self.onRefreshAllViewports )
+        #newViewport.manipsAcceptedEvent.connect( self.onRefreshAllViewports )
         newViewport.synchronizeCommands.connect(self.shWindow.shCmdHandler.onSynchronizeCommands)
         newViewport.redrawOnAlwaysRefresh.connect( self.onRefreshAllViewports, QtCore.Qt.QueuedConnection )
 

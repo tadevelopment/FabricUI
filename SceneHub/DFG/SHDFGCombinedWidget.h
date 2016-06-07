@@ -5,6 +5,7 @@
  
 #include <FabricUI/SceneHub/SHStates.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
+#include <FabricUI/SceneHub/SHGLRenderer.h>
 #include <FabricUI/DFG/DFGCombinedWidget.h>
 #include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeViewsManager.h>
@@ -21,7 +22,19 @@ class SHDFGCombinedWidget : public DFGCombinedWidget {
   public:
     SHDFGCombinedWidget(QWidget * parent);
 
-    virtual ~SHDFGCombinedWidget() {};
+    virtual ~SHDFGCombinedWidget();
+
+    void init(      
+        FabricCore::Client &client,
+        FabricServices::ASTWrapper::KLASTManager * manager,
+        FabricCore::DFGHost &host,
+        FabricCore::DFGBinding &binding,
+        FTL::StrRef execPath,
+        FabricCore::DFGExec &exec,
+        DFGUICmdHandler *cmdHandler,
+        SceneHub::SHGLRenderer *shGLRenderer,
+        bool overTakeBindingNotifications = true,
+        DFGConfig config = DFGConfig());
 
 
   protected slots:
@@ -33,10 +46,12 @@ class SHDFGCombinedWidget : public DFGCombinedWidget {
 
     void onActiveSceneChanged(FabricUI::SceneHub::SHGLScene *scene);
   
+    void onSceneChanged();
+
 
   protected:
     virtual void refreshScene() = 0;  
-
+ 
     /// Implementation of DFG::DFGCombinedWidget.
     virtual void initDFG();
 

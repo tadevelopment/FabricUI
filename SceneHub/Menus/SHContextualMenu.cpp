@@ -18,7 +18,8 @@ SHContextualMenu::SHContextualMenu(
   : SHBaseContextualMenu(shGLScene, shStates, targetSGObject, shTreeView, parent) {
 }
 
-SHContextualMenu::~SHContextualMenu() {}
+SHContextualMenu::~SHContextualMenu() {
+}
 
 void SHContextualMenu::constructMenu() {
   SHBaseContextualMenu::constructMenu();

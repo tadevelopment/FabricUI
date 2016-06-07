@@ -45,7 +45,7 @@ class CanvasWindowEventFilter(QtCore.QObject):
 
         return QtCore.QObject.eventFilter(obj, event)
 
-class CanvasWindow(DFG.DFGMainWindow):
+class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
 
     Attributes:
@@ -1221,8 +1221,12 @@ class CanvasWindow(DFG.DFGMainWindow):
                                DFG.DFGHotkeys.OPEN_SCENE)
             graph.defineHotkey(QtCore.Qt.Key_S, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.SAVE_SCENE)
+            graph.defineHotkey(QtCore.Qt.Key_U, QtCore.Qt.NoModifier,
+                               DFG.DFGHotkeys.GO_UP)
+            graph.defineHotkey(QtCore.Qt.Key_I, QtCore.Qt.NoModifier,
+                               DFG.DFGHotkeys.EDIT_PRESET)
             graph.defineHotkey(QtCore.Qt.Key_F2, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.EDIT_PROPERTIES)
+                               DFG.DFGHotkeys.EDIT_PRESET_PROPERTIES)
             graph.defineHotkey(QtCore.Qt.Key_R, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.RELAX_NODES)
             graph.defineHotkey(QtCore.Qt.Key_Q, QtCore.Qt.NoModifier,
@@ -1252,7 +1256,7 @@ class CanvasWindow(DFG.DFGMainWindow):
                     event.acceptProposedAction()
                     return
 
-        DFG.DFGMainWindow.dragEnterEvent(self, event)
+        QtGui.QMainWindow.dragEnterEvent(self, event)
 
     def dropEvent(self, event):
         # The mimeData was already checked in the dragEnterEvent(), so we simply get the filepath and load the graph.

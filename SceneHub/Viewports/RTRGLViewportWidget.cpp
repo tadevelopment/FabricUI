@@ -98,8 +98,8 @@ void RTRGLViewportWidget::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 bool RTRGLViewportWidget::onEvent(QEvent *event) {
-  bool redrawAllViewports;
-  if(m_shGLRenderer->onEvent(m_viewportIndex, event, redrawAllViewports, false))
+  bool redrawAllViewports = false;
+  if(m_shGLRenderer->onEvent(m_viewportIndex, event, false))
   {
     emit manipsAcceptedEvent(redrawAllViewports);
     return true;
@@ -120,8 +120,8 @@ void RTRGLViewportWidget::dragMoveEvent(QDragMoveEvent* event) {
   {
     // Convert to a mouseMove event
     QMouseEvent mouseEvent( QEvent::MouseMove, event->pos(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier );
-    bool redrawAllViewports;
-    if( m_shGLRenderer->onEvent( m_viewportIndex, &mouseEvent, redrawAllViewports, true ) )
+    bool redrawAllViewports = false;
+    if( m_shGLRenderer->onEvent( m_viewportIndex, &mouseEvent, true ) )
       emit manipsAcceptedEvent( redrawAllViewports );
   }
 }

@@ -5,6 +5,7 @@
 #ifndef __UI_SCENEHUB_GLRENDERER_H__
 #define __UI_SCENEHUB_GLRENDERER_H__
 
+#include "SHStates.h"
 #include <FabricCore.h>
 #include <QtCore/QList>
 #include <QtCore/QString>
@@ -12,12 +13,11 @@
 #include <QtGui/QDrag>
 #include <QtGui/QVector3D>
 #include <QtGui/QMouseEvent>
-#include <FabricUI/DFG/DFGController.h>
-
+ 
 namespace FabricUI {
 namespace SceneHub {
 
-class SHGLRenderer {
+class SHGLRenderer : public QObject {
 
   /**
     SHGLRenderer is a helper class wrapping :kl-ref:`SHGLRenderer`.
@@ -27,7 +27,12 @@ class SHGLRenderer {
     to provide app-independent example code and behavior.
   */
   
+  Q_OBJECT
+  
   public:
+    /// Constructor.
+    SHGLRenderer();
+
     /// Constructor.
     /// \param client A reference to the FabricCore::Client.
     SHGLRenderer(FabricCore::Client client);
@@ -37,11 +42,18 @@ class SHGLRenderer {
     /// \param shRenderer A reference to the SHGLRenderer.
     SHGLRenderer(FabricCore::Client client, FabricCore::RTVal shRenderer);
 
-    /// Updates the Renderer, if set externally
+    /// Updates the renderer, if set externally.
     void update();
+
+    /// Sets the client.
+    /// \param client A reference to the FabricCore::Client.
+    void setClient(FabricCore::Client client);
 
     /// Gets the client.
     FabricCore::Client getClient();
+
+    /// \internal
+    void setSHGLRenderer(FabricCore::RTVal shRenderer);
 
     /// \internal
     FabricCore::RTVal getSHGLRenderer();
@@ -121,15 +133,8 @@ class SHGLRenderer {
     /// Propagates the events.
     /// \param viewportID The viewport ID.
     /// \param event The event.
-    /// \param redrawAllViewports It true, refresh the render.
     /// \param dragging If true when dragging an asset or texture in the scene.
-    /// \param controller A reference to the DFGController.
-    bool onEvent(
-      unsigned int viewportID, 
-      QEvent *event, 
-      bool &redrawAllViewports, 
-      bool dragging,
-      DFG::DFGController *controller = 0);
+    bool onEvent(unsigned int viewportID, QEvent *event, bool dragging);
  
     /// Returns a reference to the ToolDispatcher.
     FabricCore::RTVal getToolDispatcher();
@@ -152,18 +157,20 @@ class SHGLRenderer {
     QString getSelectionCategory();
 
 
+  signals:
+    void sceneChanged();
+
+    void driveNodeInputPorts(FabricCore::RTVal event);
+
+    void manipsAcceptedEvent(bool redrawAllViewports);
+
+
   private:
     /// \internal
     FabricCore::Client m_client;    
     /// \internal
     FabricCore::RTVal m_shGLRendererVal;
-
-    /// Drives a node input-ports with an user-event.
-    /// \param controller A reference to the DFGController.
-    /// \param event The user event.
-    void driveNodeInputPorts(
-      DFG::DFGController *controller, 
-      FabricCore::RTVal event);
+  
 };
 
 } // namespace SceneHub

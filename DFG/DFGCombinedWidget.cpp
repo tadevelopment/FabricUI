@@ -42,7 +42,7 @@ void DFGCombinedWidget::initMenu() {
     this, SLOT(onAdditionalMenuActionsRequested(QString, QMenu *, bool))
     );
 
-  m_dfgWidget->populateMenuBar(m_menuBar, false);
+  m_dfgWidget->populateMenuBar(m_menuBar, false, true);
 }
 
 void DFGCombinedWidget::initTreeView() {
@@ -241,7 +241,9 @@ void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
     //                                                            DFGHotkeys::NEW_SCENE);
     //                                                            DFGHotkeys::OPEN_SCENE);
     //                                                            DFGHotkeys::SAVE_SCENE);
-    graph->defineHotkey(Qt::Key_F2,         Qt::NoModifier,       DFGHotkeys::EDIT_PROPERTIES);
+    graph->defineHotkey(Qt::Key_U,          Qt::NoModifier,       DFGHotkeys::GO_UP);
+    graph->defineHotkey(Qt::Key_I,          Qt::NoModifier,       DFGHotkeys::EDIT_PRESET);
+    graph->defineHotkey(Qt::Key_F2,         Qt::NoModifier,       DFGHotkeys::EDIT_PRESET_PROPERTIES);
     graph->defineHotkey(Qt::Key_R,          Qt::ControlModifier,  DFGHotkeys::RELAX_NODES);
     //                                                            DFGHotkeys::TOGGLE_MANIPULATION);
     graph->defineHotkey(Qt::Key_0,          Qt::ControlModifier,  DFGHotkeys::RESET_ZOOM);

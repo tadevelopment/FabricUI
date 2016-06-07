@@ -10,6 +10,5 @@
 #include "PresetTreeWidget.h"
 #include "PresetTreeItem.h"
 #include "DFGWidget.h"
-#include "DFGMainWindow.h"
 
 #endif // __UI_DFG_DFGUI__

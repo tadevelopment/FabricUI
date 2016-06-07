@@ -4,14 +4,13 @@
 
 #include "SHGLRenderer.h"
 #include <FabricUI/Viewports/QtToKLEvent.h>
-#include <FabricUI/DFG/DFGUICmdHandler.h>
-#include <iostream>
-#include <fstream>
 
-using namespace std;
 using namespace FabricCore;
 using namespace FabricUI;
 using namespace SceneHub;
+
+SHGLRenderer::SHGLRenderer() {
+}
 
 SHGLRenderer::SHGLRenderer(Client client) 
   : m_client(client) {
@@ -35,8 +34,16 @@ Client SHGLRenderer::getClient() {
   return m_client; 
 }
 
+void SHGLRenderer::setClient(Client client) { 
+  m_client = client; 
+}
+
 RTVal SHGLRenderer::getSHGLRenderer() { 
   return m_shGLRendererVal; 
+}
+
+void SHGLRenderer::setSHGLRenderer(RTVal shGLRendererVal) { 
+  m_shGLRendererVal = shGLRendererVal; 
 }
 
 void SHGLRenderer::update() {
@@ -281,13 +288,7 @@ void SHGLRenderer::render(unsigned int viewportID, unsigned int width, unsigned 
   }
 }
 
-bool SHGLRenderer::onEvent(
-  unsigned int viewportID, 
-  QEvent *event, 
-  bool &redrawAllViewports, 
-  bool dragging,
-  DFG::DFGController *controller)
-{
+bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool dragging) {
   try 
   {
     RTVal viewportVal = getOrAddViewport(viewportID);
@@ -300,10 +301,14 @@ bool SHGLRenderer::onEvent(
     m_shGLRendererVal.callMethod("", "onEvent", 2, args);
     bool result = args[0].callMethod("Boolean", "isAccepted", 0, 0).getBoolean();
     event->setAccepted(result);
-    redrawAllViewports = args[0].callMethod("Boolean", "redrawAllViewports", 0, 0).getBoolean();
+    bool redrawAllViewports = args[0].callMethod("Boolean", "redrawAllViewports", 0, 0).getBoolean();
 
-    if(controller && result)
-      driveNodeInputPorts(controller, args[0]);
+    if(result)
+    {
+      emit driveNodeInputPorts(args[0]);
+      emit sceneChanged();
+    }
+    emit manipsAcceptedEvent(redrawAllViewports);
  
     return result;
   }
@@ -402,110 +407,4 @@ QString SHGLRenderer::getSelectionCategory() {
     printf("SHGLRenderer::getSelectionCategory: exception: %s\n", e.getDesc_cstr());
   }
   return QString();
-}
-
-void SHGLRenderer::driveNodeInputPorts(
-  DFG::DFGController *controller,
-  RTVal event) 
-{
-  try 
-  {
-    QString toolPath(event.maybeGetMember("dfgToolPath").getStringCString());    
-
-    if(toolPath != "") 
-    {
-      DFGBinding binding = controller->getBinding();
-      DFGExec exec = binding.getExec();
-
-      if(exec.hasVar(toolPath.toUtf8().constData()))
-      {
-        QStringList list = toolPath.split(".");
-        QString contenerPath = list[list.size() - 2];
-
-        QString subExecParentPath;
-        for(int i=0; i<list.size()-2; ++i) 
-          subExecParentPath += list[i] + ".";
-        subExecParentPath.left(subExecParentPath.lastIndexOf("."));
-        if(subExecParentPath == "") 
-          subExecParentPath = ".";
-
-        QString subExecPath = toolPath.left(toolPath.lastIndexOf("."));
-        DFGExec subExec = exec.getSubExec(subExecPath.toUtf8().constData());
-        DFGExec subExecParent = exec.getSubExec(subExecParentPath.toUtf8().constData());
- 
-        RTVal toolVal = exec.getVarValue(toolPath.toUtf8().constData());
-        RTVal target = toolVal.callMethod("DFGToolTarget", "getTarget", 0, 0);
-        RTVal toolData = target.callMethod("DFGToolData", "getToolData", 0, 0);
-
-        bool bakeValue = toolData.callMethod("Boolean", "bakeValue", 0, 0).getBoolean();  
-        int portCount = toolData.callMethod("UInt32", "getPortCount", 0, 0).getUInt32();
-        
-        for(int i=0; i<portCount; ++i)
-        {
-          RTVal index = RTVal::ConstructUInt32(m_client, i);
-          QString portName(toolData.callMethod("String", "getPortAtIndex", 1, &index).getStringCString()); 
-          QString portPath = contenerPath + "." + portName;
-
-          if(subExec.haveExecPort(portName.toUtf8().constData()))
-          {
-            if(subExec.getExecPortType(portName.toUtf8().constData()) == DFGPortType_In)
-            {
-              RTVal args[2] = { index, RTVal::ConstructBoolean(m_client, false) };
-              RTVal rtVal = toolData.callMethod("RTVal", "getRTValAtPortIndex", 2, args);
-              QString valType(rtVal.callMethod("String", "type", 0, 0).getStringCString());
-
-              unsigned int portIndexInExec = subExec.getExecPortIndex(portName.toUtf8().constData());
-              if(subExec.isExecPortResolvedType(portIndexInExec, valType.toUtf8().constData()))   
-              {
-                RTVal val = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &rtVal);
-
-                if(!bakeValue)
-                  subExecParent.setPortDefaultValue(portPath.toUtf8().constData(), val, false);
-                else
-                {
-                  args[1] = RTVal::ConstructBoolean(m_client, true);
-                  RTVal prevRTVal = toolData.callMethod("RTVal", "getRTValAtPortIndex", 2, args);
-                  RTVal prevVal = RTVal::Construct(m_client, valType.toUtf8().constData(), 1, &prevRTVal);
-
-                  subExecParent.setPortDefaultValue(portPath.toUtf8().constData(), prevVal, false);
-                  controller->getCmdHandler()->dfgDoSetPortDefaultValue(binding, subExecParentPath, subExecParent, portPath, val);
-                }
-              }
-
-              else
-              {
-                QString portType(subExec.getExecPortResolvedType(portName.toUtf8().constData()));
-                printf("SHGLRenderer::driveNodeInputPorts: Warning : "
-                  "The port: %s 's type %s doesn't match with the target manipulated type %s\n", 
-                  portName.toUtf8().constData(), 
-                  portType.toUtf8().constData(),
-                  valType.toUtf8().constData());
-              }
-            }
-
-            else
-            {
-              printf("SHGLRenderer::driveNodeInputPorts: Warning: "
-                "The driven port is not an InputPort\n");
-            }
-          }
-
-          else
-          {
-            printf("SHGLRenderer::driveNodeInputPorts: Warning : "
-              "The port: %s doesn't exist\n", portName.toUtf8().constData());        
-          }
-        }
-      }
-      else
-      {
-        printf("SHGLRenderer::driveNodeInputPorts: Warning : "
-          "The tool: %s is not a variable\n", toolPath.toUtf8().constData());    
-      }
-    }
-  }
-  catch(Exception e)
-  {
-    printf("SHGLRenderer::driveNodeInputPorts: exception: %s\n", e.getDesc_cstr());
-  }
 }

@@ -3,8 +3,7 @@ from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core
 from FabricEngine.FabricUI import *  
 from FabricEngine.SceneHub.SHContextualMenu import SHContextualMenu
-from FabricEngine.SceneHub.SHInteractionMenu import SHInteractionMenu
-
+ 
 class SHViewport(Viewports.ViewportWidget):
 
     """SHViewport
@@ -165,10 +164,8 @@ class SHViewport(Viewports.ViewportWidget):
         Display the contextual menu if the event has not been accepted before. 
 
         """
-
-        shGLScene = self.shStates.getActiveScene()
-        if shGLScene.hasSG():
-            if not self.__onEvent(event) and event.button() == QtCore.Qt.RightButton:
+        if not self.__onEvent(event) and event.button() == QtCore.Qt.RightButton:
+            if  self.shStates.getActiveScene().hasSG():
                 # SHContextualMenu being based on the C++ class SHBaseContexctualMenu
                 # We need to explicitly construct a RTVal for the parameter sgObject
                 sgObject = self.shGLRenderer.getSGObjectFrom2DScreenPos(
@@ -184,7 +181,7 @@ class SHViewport(Viewports.ViewportWidget):
                     None,
                     self)
 
-                menu.addMenu(SHInteractionMenu(self.shGLRenderer))
+                menu.addMenu(SceneHub.SHToolsMenu(self.shGLRenderer))
                 menu.exec_(self.mapToGlobal(event.pos()))
                 self.sceneChanged.emit()
         
@@ -204,17 +201,8 @@ class SHViewport(Viewports.ViewportWidget):
         """ Redirects all the event to the KL EventDispatcher.
         """
 
-        redrawAllViewports = False
-        if self.shGLRenderer.onEvent(
-                self.viewportIndex, 
-                event, 
-                redrawAllViewports, 
-                False,
-                self.shWindow.dfgWidget.getUIController()):
-            self.manipsAcceptedEvent.emit(redrawAllViewports)
-            return True
-        return False
-  
+        return self.shGLRenderer.onEvent(self.viewportIndex, event, False)
+ 
     def dragEnterEvent(self, event):
         """ Drag event, to add assets or textures.
         """
@@ -230,9 +218,7 @@ class SHViewport(Viewports.ViewportWidget):
         if(event.mimeData().hasUrls() and (event.possibleActions() & QtCore.Qt.CopyAction)):
             # Convert to a mouseMove event
             mouseEvent = QtGui.QMouseEvent(QtCore.QEvent.MouseMove, event.pos(), QtCore.Qt.LeftButton, QtCore.Qt.LeftButton, QtCore.Qt.NoModifier)
-            redrawAllViewports = False
-            if self.shGLRenderer.onEvent(self.viewportIndex, mouseEvent, redrawAllViewports, True):
-                self.manipsAcceptedEvent.emit(redrawAllViewports)
+            self.shGLRenderer.onEvent(self.viewportIndex, mouseEvent, True)
 
     def dropEvent(self, event):
         """ Drop event, to add assets or textures.

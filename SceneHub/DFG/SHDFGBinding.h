@@ -46,6 +46,10 @@ class SHDFGBinding : public QObject {
   public slots:
     void onInspectChanged();
 
+    /// Drives a node input-ports with an user-event.
+    /// \param event The user event.
+    void onDriveNodeInputPorts(FabricCore::RTVal event);
+    
 
   protected slots:
     void onArgInserted(unsigned index, FTL::CStrRef name, FTL::CStrRef typeName);
