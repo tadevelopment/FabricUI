@@ -196,10 +196,9 @@ void DFGTabSearchWidget::showForSearch( QPoint globalPos )
   m_currentIndex = -1;
   setFocus(Qt::TabFocusReason);
 
-  QPoint localPos = m_parent->mapFromGlobal( globalPos );
-  setGeometry( int( localPos.x() - width() * 0.5 ),
-               int( localPos.y() - m_queryMetrics.lineSpacing() * 0.5 ), 0,
-               0 );
+  m_originalLocalPos = m_parent->mapFromGlobal( globalPos );
+  m_originalLocalPos -= QPoint( width() / 2, m_queryMetrics.lineSpacing() / 2);
+  setGeometry( m_originalLocalPos.x(), m_originalLocalPos.y(), 0, 0 );
   updateGeometry();
 
   emit enabled(true);
@@ -262,22 +261,37 @@ void DFGTabSearchWidget::updateGeometry()
   int width = widthFromResults();
   int height = heightFromResults();
 
-  QPoint localPos = rect.topLeft();
+  QPoint localPos = m_originalLocalPos;
 
+  // ensure the widget is properly positioned.
   QWidget * parentWidget = qobject_cast<QWidget*>(parent());
   if(parentWidget)
   {
-    QPoint tl = localPos;
-    QPoint br = localPos + QPoint(width, height);
+    // correct the x position.
+    if (width >= parentWidget->width())
+    {
+      localPos.setX(0);
+    }
+    else
+    {
+      if (localPos.x() < 0)
+        localPos.setX(0);
+      else if (localPos.x() + width >= parentWidget->width())
+        localPos.setX(parentWidget->width() - width);
+    }
 
-    if(tl.x() < 0)
-      localPos += QPoint(-tl.x(), 0);
-    else if(br.x() > parentWidget->width())
-      localPos -= QPoint(br.x() - parentWidget->width(), 0);
-    if(tl.y() < 0)
-      localPos += QPoint(0, -tl.y());
-    else if(br.y() > parentWidget->height())
-      localPos -= QPoint(0, br.y() - parentWidget->height());
+    // correct the y position.
+    if (height >= parentWidget->height())
+    {
+      localPos.setY(0);
+    }
+    else
+    {
+      if (localPos.y() < 0)
+        localPos.setY(0);
+      else if (localPos.y() + height >= parentWidget->height())
+        localPos.setY(parentWidget->height() - height);
+    }
   }
 
   rect.setTopLeft( localPos );

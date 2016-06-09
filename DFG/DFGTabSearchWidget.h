@@ -56,6 +56,8 @@ namespace FabricUI
 
       void addNodeFromPath(QString path);
 
+      QPoint m_originalLocalPos;
+
       DFGWidget * m_parent;
       DFGConfig m_config;
       QFontMetrics m_queryMetrics;
