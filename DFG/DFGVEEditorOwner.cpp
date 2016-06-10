@@ -271,13 +271,22 @@ void DFGVEEditorOwner::onSidePanelInspectRequested()
         )
       );
   }
+  else if ( dfgController->getExec().isInstBlockExec() )
+  {
+    // [pzion 20160519] For now, simply cannot inspect block instance
+
+    setModelRoot( dfgController, NULL );
+
+    // std::string blockName = instName;
+    // instName = SplitLast( path );
+    // if ( !path.empty() )
+    //   exec = rootExec.getSubExec( path.c_str() );
+    // else
+    //   exec = rootExec;
+    // exec = exec.getInstBlockExec( instName.c_str(), blockName.c_str() );
+  }
   else
   {
-    // We always show the instantiated values (ie, what
-    // we would see if we were outside this node and clicked on it)
-    FabricUI::DFG::DFGUICmdHandler *dfgUICmdHandler =
-      dfgController->getCmdHandler();
-
     FabricCore::DFGBinding &binding = dfgController->getBinding();
     FabricCore::DFGExec rootExec = binding.getExec();
 
@@ -289,34 +298,22 @@ void DFGVEEditorOwner::onSidePanelInspectRequested()
     else
       exec = rootExec;
 
-    if ( exec.isExecBlock( instName.c_str() ) )
-    {
-      // [pzion 20160519] For now, simply cannot inspect block instance
+    // We always show the instantiated values (ie, what
+    // we would see if we were outside this node and clicked on it)
+    FabricUI::DFG::DFGUICmdHandler *dfgUICmdHandler =
+      dfgController->getCmdHandler();
 
-      setModelRoot( dfgController, NULL );
-
-      // std::string blockName = instName;
-      // instName = SplitLast( path );
-      // if ( !path.empty() )
-      //   exec = rootExec.getSubExec( path.c_str() );
-      // else
-      //   exec = rootExec;
-      // exec = exec.getInstBlockExec( instName.c_str(), blockName.c_str() );
-    }
-    else
-    {
-      setModelRoot(
+    setModelRoot(
+      exec,
+      instName,
+      new FabricUI::ModelItems::InstModelItem(
+        dfgUICmdHandler,
+        binding,
+        path,
         exec,
-        instName,
-        new FabricUI::ModelItems::InstModelItem(
-          dfgUICmdHandler,
-          binding,
-          path,
-          exec,
-          instName
-          )
-        );
-    }
+        instName
+        )
+      );
   }
 }
 

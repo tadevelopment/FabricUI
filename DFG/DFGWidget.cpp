@@ -1687,16 +1687,13 @@ bool DFGWidget::maybeEditInstBlock(
     FTL::CStrRef instName = node->name();
     FTL::CStrRef blockName = instBlock->name();
 
-    std::string subExecPath = m_uiController->getExecPath();
-    if ( !subExecPath.empty() )
-      subExecPath += '.';
-    subExecPath += instName;
-    subExecPath += '.';
-    subExecPath += blockName;
-
     FabricCore::DFGExec &exec = m_uiController->getExec();
     FabricCore::DFGExec subExec =
       exec.getInstBlockExec( instName.c_str(), blockName.c_str() );
+    FabricCore::String subExecPathFabricString = subExec.getExecPath();
+    std::string subExecPath(
+      subExecPathFabricString.getCStr(), subExecPathFabricString.getSize()
+      );
     return maybeEditExec( subExecPath, subExec );
   }
   catch(FabricCore::Exception e)
