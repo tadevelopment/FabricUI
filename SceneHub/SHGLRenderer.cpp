@@ -301,13 +301,21 @@ bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool dragging
       event->setAccepted(true);
       return true;
     }
-  
-    RTVal viewportVal = getOrAddViewport(viewportID);
+
+    RTVal klEvent = QtToKLEvent(
+      event, 
+      m_client, 
+      getOrAddViewport(viewportID), 
+      true);
+
+    if(!klEvent.isValid())
+      return false;
+
     RTVal args[2] = {
-      QtToKLEvent(event, m_client, viewportVal, true),
+      klEvent,
       RTVal::ConstructBoolean(m_client, dragging)
-    };
-    
+    };   
+     
     m_shGLRendererVal.callMethod("", "onEvent", 2, args);
     bool result = args[0].callMethod("Boolean", "isAccepted", 0, 0).getBoolean();
     
