@@ -142,19 +142,6 @@ bool ManipulationTool::onEvent(QEvent *event) {
           emit m_view->portManipulationRequested(portName.c_str());
       }
 
-      if(customCommand == "setStructParam")
-      {
-        FabricCore::RTVal customCommandParams = host.maybeGetMember("customCommandParams");
-        FabricCore::RTVal portNameVal = FabricCore::RTVal::ConstructString(m_view->getClient(), "portName");
-        std::string portName = customCommandParams.callMethod("String", "getString", 1, &portNameVal).getStringCString();
-        if(portName.length() > 0)
-        {
-          FabricCore::RTVal structVal = FabricCore::RTVal::ConstructString(m_view->getClient(), "struct");
-          m_lastManipValue = customCommandParams.callMethod("StructParam", "getStruct", 1, &structVal);
-          emit m_view->portManipulationRequested(portName.c_str());
-        }
-      }
-
       klevent.invalidate();
       return result;
     }

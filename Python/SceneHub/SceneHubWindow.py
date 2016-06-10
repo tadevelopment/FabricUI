@@ -10,6 +10,7 @@ from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
 from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
 from FabricEngine.SceneHub.SHTreeViewMenu import SHTreeViewMenu
 from FabricEngine.SceneHub.SHHelpWidget import SHHelpWidget
+from FabricEngine.SceneHub.SHContextualMenu import SHContextualMenu
 
 class SceneHubWindow(CanvasWindow):
 
@@ -40,6 +41,7 @@ class SceneHubWindow(CanvasWindow):
         samples, 
         usageFilePath = None):
 
+        self.loadCanvas = canvasFile is not ""
         self.klFile = klFile
         self.viewport = None
         self.shDFGBinding = None
@@ -48,8 +50,7 @@ class SceneHubWindow(CanvasWindow):
         self.usageFilePath = usageFilePath
         super(SceneHubWindow, self).__init__(settings, unguarded, noopt)
 
-        loadCanvas = canvasFile is not ""
-        self._initApp(loadCanvas)
+        self._initApp()
  
     def _initKL(self, unguarded, noopt):
         """ Implementation of Canvas.CanvasWindow.
@@ -59,7 +60,12 @@ class SceneHubWindow(CanvasWindow):
         self.client.loadExtension('SceneHub')
         # Create the main scene and states
         self.shStates = SceneHub.SHStates(self.client)
-        self.shMainGLScene = SceneHub.SHGLScene(self.client, self.klFile)
+        sceneName = "SceneHub"
+        if self.klFile is not None and self.klFile is not "":
+            sceneName = self.klFile
+
+        print "sceneName " + str(sceneName)
+        self.shMainGLScene = SceneHub.SHGLScene(self.client, sceneName)
         self.shStates.inspectedChanged.connect(self.onInspectChanged)
 
     def _initDFG(self):
@@ -89,7 +95,7 @@ class SceneHubWindow(CanvasWindow):
         super(SceneHubWindow, self)._initTreeView()
 
         self.shTreesManager = SHTreeViewsManager(self.client, self.dfgWidget, self.shStates, self.shMainGLScene)
-        self.shTreesManager.activeSceneChanged.connect( self.onActiveSceneChanged )
+        self.shTreesManager.activeSceneChanged.connect( self.onActive )
 
         # scene changed -> tree view changed
         self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
@@ -98,7 +104,8 @@ class SceneHubWindow(CanvasWindow):
         # tree view changed -> scene changed
         self.shTreesManager.sceneHierarchyChanged.connect(self.shStates.onStateChanged)
         self.shTreesManager.sceneChanged.connect(self.shStates.onStateChanged)
-
+        self.shTreesManager.getTreeView().showContextualMenu.connect(self.onShowContextualMenu)
+ 
     def _initValueEditor(self):
         """ Override of Canvas.CanvasWindow.
         """
@@ -122,6 +129,13 @@ class SceneHubWindow(CanvasWindow):
      
         # Create the renderer manager
         self.viewportsManager = SHViewportsManager(self, self.shStates, shRenderer, self.initSamples)
+
+        self.viewportsManager.shGLRenderer.manipsAcceptedEvent.connect(self.shDFGBinding.onDriveNodeInputPorts)
+        #self.viewportsManager.shGLRenderer.manipsAcceptedEvent.connect(self.shStates.onSceneChanged)
+        self.viewportsManager.shGLRenderer.manipsAcceptedEvent.connect(self.shStates.onStateChanged)
+        self.viewportsManager.shGLRenderer.manipsAcceptedEvent.connect(self.shCmdHandler.onSynchronizeCommands)
+        self.viewportsManager.shGLRenderer.itemDoubleClicked.connect(self.shStates.onInspectSelectedSGObject)
+        self.viewportsManager.shGLRenderer.showContextualMenu.connect(self.onShowContextualMenu)
 
         # Create the first viewports
         self.viewport, intermediateOwnerWidget = self.viewportsManager.createViewport(
@@ -187,7 +201,7 @@ class SceneHubWindow(CanvasWindow):
         usageAction = helpMenu.addAction("Show Usage")
         usageAction.triggered.connect(self._onShowUsage)
 
-    def _initApp(self, isCanvas):
+    def _initApp(self):
         """ Final initilization of the app, just before running.
         """
 
@@ -197,7 +211,7 @@ class SceneHubWindow(CanvasWindow):
             self.shTreeDock.show()
         else: self.shTreeDock.hide()
        
-        if not isCanvas:
+        if not self.loadCanvas:
             self.treeDock.hide()
             self.logDockWidget.hide()
             self.valueEditorDockWidget.hide()
@@ -294,12 +308,12 @@ class SceneHubWindow(CanvasWindow):
 
         self.viewportsManager.onRefreshAllViewports()
 
-    def onActiveSceneChanged(self, scene):
+    def onActive(self, scene):
         """ Updates when the active scene changed from the treeViewManager.
         """
 
-        self.assetMenu.onActiveSceneChanged(scene)
-        self.lightsMenu.onActiveSceneChanged(scene)
+        self.assetMenu.onActive(scene)
+        self.lightsMenu.onActive(scene)
 
     def onInspectChanged(self):
         """ Updates the valueEditor object/property to edit.
@@ -334,6 +348,33 @@ class SceneHubWindow(CanvasWindow):
         if self.dfgWidget is not None:
             self.dfgWidget.getUIController().logError(message)
          
+    def onShowContextualMenu(
+        self, 
+        pos, 
+        sgObject, 
+        parent, 
+        fromViewport):
+
+        treeView = None
+        shGLRenderer = None
+        if not fromViewport:
+            treeView = self.shTreesManager.getTreeView()
+        else :
+            shGLRenderer = self.viewportsManager.shGLRenderer
+
+        if sgObject is None:
+            sgObject = self.client.RT.types.Object()
+
+        menu = SHContextualMenu(
+            self.shStates, 
+            sgObject,
+            treeView,
+            shGLRenderer,
+            parent)
+
+        menu.exec_(pos)
+
+
     def updateFPS(self):
         """ Override of Canvas.CanvasWindow.
         """

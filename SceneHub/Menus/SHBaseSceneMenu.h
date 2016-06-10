@@ -6,11 +6,12 @@
 #define __FABRICUI_SCENEHUB_BASESCENEMENU_H__
 
 #include <FabricUI/Menus/BaseMenu.h>
-#include <FabricUI/SceneHub/SHGLScene.h>
 
 namespace FabricUI {
 namespace SceneHub {
 
+class SHGLScene;
+ 
 class SHBaseSceneMenu : public Menus::BaseMenu {
   
   /**

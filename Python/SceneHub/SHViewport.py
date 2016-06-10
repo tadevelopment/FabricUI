@@ -2,7 +2,6 @@ import math
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core
 from FabricEngine.FabricUI import *  
-from FabricEngine.SceneHub.SHContextualMenu import SHContextualMenu
  
 class SHViewport(Viewports.ViewportWidget):
 
@@ -20,9 +19,7 @@ class SHViewport(Viewports.ViewportWidget):
 
     sceneChanged = QtCore.Signal()
     deleteViewport = QtCore.Signal(int)
-    synchronizeCommands = QtCore.Signal()
     redrawOnAlwaysRefresh = QtCore.Signal()
-    manipsAcceptedEvent = QtCore.Signal(bool)
 
     def __init__(self, renderer, shStates, index, orthographic, context, mainwindow, sharedWidget):
         # Need to hold the context
@@ -153,50 +150,30 @@ class SHViewport(Viewports.ViewportWidget):
         """ Override QtGui.QWidget mouseReleaseEvent.
         The synchronizeCommands signal is emitted to synchronize
         the KL and Qt command stacks, cf SceneHub.SHCmdHandler. 
-
+SHContextualMenu
         """
         
         self.__onEvent(event)
-        self.synchronizeCommands.emit()
         
     def mousePressEvent(self, event):
         """ Override QtGui.QWidget mousePressEvent.
         Display the contextual menu if the event has not been accepted before. 
 
-        """
+        """        
         if not self.__onEvent(event) and event.button() == QtCore.Qt.RightButton:
-            if  self.shStates.getActiveScene().hasSG():
-                # SHContextualMenu being based on the C++ class SHBaseContexctualMenu
-                # We need to explicitly construct a RTVal for the parameter sgObject
-                sgObject = self.shGLRenderer.getSGObjectFrom2DScreenPos(
-                    self.viewportIndex, 
-                    event.pos())
-                if sgObject is None:
-                    sgObject = self.client.RT.types.Object()
+            self.shGLRenderer.emitShowContextualMenu(
+                self.viewportIndex,
+                event.pos(),
+                self);
 
-                menu = SHContextualMenu(
-                    self.shStates.getActiveScene(), 
-                    self.shStates, 
-                    sgObject,
-                    None,
-                    self)
-
-                menu.addMenu(SceneHub.SHToolsMenu(self.shGLRenderer))
-                menu.exec_(self.mapToGlobal(event.pos()))
-                self.sceneChanged.emit()
         
     def mouseDoubleClickEvent(self, event):
         """ Override QtGui.QWidget mouseDoubleClickEvent.
-        Displays the contextual menu if the event has not been accepted before. 
 
         """
 
-        sgObjectlist = self.shStates.getSelectedObjects()
-        #We only can diplay one object in the value editor
-        # Take the first
-        if len(sgObjectlist) > 0:
-            self.shStates.onInspectedSGObject(sgObjectlist[0])  
-
+        self.__onEvent(event)
+ 
     def __onEvent(self, event):
         """ Redirects all the event to the KL EventDispatcher.
         """

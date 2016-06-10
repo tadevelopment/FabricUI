@@ -2,8 +2,8 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
-#include "SHTreeViewsManager.h"
 #include "SHTreeView.h"
+#include "SHTreeViewsManager.h"
 
 using namespace FabricCore;
 using namespace FabricUI;

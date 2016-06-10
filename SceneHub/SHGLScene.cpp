@@ -44,12 +44,11 @@ inline QString loadScene(Client &client, QString const &klFile) {
   return prefix;
 }
 
-SHGLScene::SHGLScene(Client client, QString klFile) : m_client(client) {
+SHGLScene::SHGLScene(Client client, QString sceneName) : m_client(client) {
   try 
   {
-    QString sceneName = "SceneHub";
-    if(klFile.length() > 0) sceneName = loadScene(m_client, klFile);
-
+    if(sceneName != "SceneHub") 
+      sceneName = loadScene(m_client, sceneName);
     m_shGLSceneVal = RTVal::Create(client, sceneName.toUtf8().constData(), 0, 0);
     m_shGLSceneVal.callMethod("", "initializeSceneAndRTR", 0, 0);
   }

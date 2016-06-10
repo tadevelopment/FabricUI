@@ -81,13 +81,16 @@ namespace FabricUI
       void portEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData);
 
     protected:
-      virtual void initMenu();
-      /// Initializes the DFG widget.
-      virtual void initValueEditor();
       /// Initializes the DFG widget.
       virtual void initDFG();
       /// Initializes the treeView widget.
       virtual void initTreeView();
+      /// Initializes the value-editor.
+      virtual void initValueEditor();
+      /// Initializes the OpenGL.
+      virtual void initGL();
+      /// Initializes the menus.
+      virtual void initMenu();
       /// Initializes the windows docks.
       virtual void initDocks();
 

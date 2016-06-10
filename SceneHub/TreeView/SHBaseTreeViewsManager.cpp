@@ -2,7 +2,6 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
-#include <iostream>
 #include <QtCore/QString>
 #include <QtGui/QVBoxLayout>
 #include "SHBaseTreeViewsManager.h"
@@ -160,7 +159,11 @@ void SHBaseTreeViewsManager::onTreeItemDoubleClicked(FabricUI::SceneHub::SHTreeI
 }
 
 void SHBaseTreeViewsManager::onSelectionChanged() {
-  if(!m_bUpdatingSelection)
+
+  // If the tree isn't set already, do it.
+  if(!m_treeModel) onUpdateSceneList();
+
+  if(m_treeModel && !m_bUpdatingSelection) 
   {
     m_bUpdatingSelection = true;
     m_shTreeView->setSelectedObjects(m_shStates->getSelectedObjects());

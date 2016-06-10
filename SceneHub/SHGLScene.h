@@ -33,7 +33,7 @@ class SHGLScene {
   public:
     SHGLScene(FabricCore::Client client) : m_client(client) {}
 
-    SHGLScene(FabricCore::Client client, QString klFile);
+    SHGLScene(FabricCore::Client client, QString sceneName);
     
     /// Gets the client.
     FabricCore::Client getClient();

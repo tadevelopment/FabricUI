@@ -6,7 +6,7 @@
 #define __FABRICUI_SCENEHUB_CONTEXTUALMENU_H__
 
 #include "SHBaseContextualMenu.h"
-#include <FabricUI/SceneHub/TreeView/SHTreeView.h>
+#include <FabricUI/SceneHub/SHGLRenderer.h>
 
 namespace FabricUI {
 namespace SceneHub {
@@ -23,16 +23,15 @@ class SHContextualMenu : public SHBaseContextualMenu {
  
   public:
     /// Constructors.
-    /// \param shGLScene A pointor to a SHGLScene.
     /// \param shStates A pointor to the SHStates.
     /// \param targetSGObject The SGObject to edit, pass as a RTVal.
-    /// \param shBaseTreeView A pointor to the SHTreeView.
+    /// \param shBaseTreeView A pointor to the SHBaseTreeView.
     /// \param parent The menu parent, can be null.
     SHContextualMenu(
-      SHGLScene* shGLScene,
       SHStates* shStates, 
       FabricCore::RTVal targetSGObject, 
-      SHTreeView *shTreeView = 0,
+      SHBaseTreeView *shBaseTreeView = 0,
+      SHGLRenderer *shGLRenderer = 0,
       QWidget *parent = 0);
   
     /// Destructor.
@@ -40,6 +39,10 @@ class SHContextualMenu : public SHBaseContextualMenu {
 
     /// Implementation of BaseMenu
     virtual void constructMenu();
+
+
+  protected:
+    SHGLRenderer *m_shGLRenderer;
 };
 
 } // SceneHub

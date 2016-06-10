@@ -96,6 +96,8 @@ class SHStates : public QObject {
     /// This should be called when the state of selection or scene might have changed
     void onStateChanged();
 
+    void onInspectSelectedSGObject();
+
     void onInspectedSGObject(FabricCore::RTVal sgObject);
 
     void onInspectedSGObjectProperty(FabricCore::RTVal sgObjectProperty);

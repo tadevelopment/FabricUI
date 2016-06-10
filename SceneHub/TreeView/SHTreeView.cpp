@@ -8,7 +8,6 @@
 #include <QtGui/QDrag>
 #include <QtGui/QTreeWidgetItem>
 #include <QtCore/QAbstractItemModel>
-#include <FabricUI/SceneHub/Menus/SHContextualMenu.h>
 
 using namespace FabricCore;
 using namespace FabricUI;
@@ -54,9 +53,12 @@ void SHTreeView::onCustomContextMenu(const QPoint &point) {
   SHTreeItem *item = GetTreeItemAtIndex(indexAt(point));
   RTVal sgObject = RTVal();
   if(item) sgObject = item->getSGObject();
-  SHContextualMenu *menu = new SHContextualMenu(m_shGLScene, m_shStates, sgObject, this, this);
-  menu->constructMenu();
-  menu->exec(mapToGlobal(point));
+
+  emit showContextualMenu(
+    mapToGlobal(point),
+    sgObject,
+    this,
+    false);
 }
  
 void SHTreeView::mouseDoubleClickEvent(QMouseEvent *event) {

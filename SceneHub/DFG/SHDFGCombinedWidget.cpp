@@ -2,21 +2,22 @@
 
 
 #include "SHDFGCombinedWidget.h"
-#include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeViewsManager.h>
-#include <FabricUI/SceneHub/TreeView/SHTreeViewsManager.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeView.h>
 #include <FabricUI/SceneHub/Menus/SHToolsMenu.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <FabricUI/SceneHub/Menus/SHContextualMenu.h>
+#include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
+// Julien Keep for debugging
+//#include <stdlib.h>
+//#include <stdio.h>
 
 using namespace FabricUI;
 using namespace DFG;
 
-
 SHDFGCombinedWidget::SHDFGCombinedWidget(QWidget * parent) 
   : DFGCombinedWidget(parent) {
-  freopen("myoutpout.txt","a",stdout);
-  freopen("myerror.txt","a",stderr);
+  // Julien Keep for debugging
+  //freopen("myoutpout.txt","a",stdout);
+  //freopen("myerror.txt","a",stderr);
 }
  
 SHDFGCombinedWidget::~SHDFGCombinedWidget() {
@@ -34,6 +35,7 @@ void SHDFGCombinedWidget::init(
     bool overTakeBindingNotifications,
     DFGConfig config) 
 {
+  m_shGLRenderer = shGLRenderer;
   DFGCombinedWidget::init(
     client,
     manager,
@@ -44,13 +46,6 @@ void SHDFGCombinedWidget::init(
     cmdHandler,
     overTakeBindingNotifications,
     config);
- 
-  QObject::connect(shGLRenderer, SIGNAL(sceneChanged()), m_shStates, SLOT(onStateChanged()));
-  QObject::connect(shGLRenderer, SIGNAL(manipsAcceptedEvent(bool)), m_shStates, SLOT(onStateChanged()));
-  QObject::connect(shGLRenderer, SIGNAL(driveNodeInputPorts(FabricCore::RTVal)), m_shDFGBinding, SLOT(onDriveNodeInputPorts(FabricCore::RTVal)));
-
-  SceneHub::SHToolsMenu *toolMenu = new SceneHub::SHToolsMenu(shGLRenderer);
-  m_menuBar->addMenu(toolMenu);
 }
  
 void SHDFGCombinedWidget::initDFG() {
@@ -85,6 +80,13 @@ void SHDFGCombinedWidget::initTreeView() {
   QObject::connect(m_shTreeViewsManager, SIGNAL(sceneHierarchyChanged()), m_shStates, SLOT(onStateChanged()));
   QObject::connect(m_shTreeViewsManager, SIGNAL(sceneChanged()), m_shStates, SLOT(onStateChanged()));
   QObject::connect(m_shTreeViewsManager, SIGNAL(sceneChanged()), this, SLOT(onSceneChanged()));
+
+  SceneHub::SHTreeView *treeView = dynamic_cast<SceneHub::SHTreeView *>(m_shTreeViewsManager->getTreeView());
+  QObject::connect(
+    treeView, 
+    SIGNAL(showContextualMenu(QPoint, FabricCore::RTVal, QWidget *, bool)), 
+    this, 
+    SLOT(onShowContextualMenu(QPoint, FabricCore::RTVal, QWidget *, bool)));
 }
 
 void SHDFGCombinedWidget::initValueEditor() {
@@ -107,13 +109,31 @@ void SHDFGCombinedWidget::initValueEditor() {
   QObject::connect(m_shStates, SIGNAL(sceneChanged()), this, SLOT(onSceneChanged()));
 }
 
+void SHDFGCombinedWidget::initGL() {
+  QObject::connect(m_shGLRenderer, SIGNAL(manipsAcceptedEvent(FabricCore::RTVal, bool)), m_shStates, SLOT(onStateChanged()));
+  QObject::connect(m_shGLRenderer, SIGNAL(manipsAcceptedEvent(FabricCore::RTVal, bool)), m_shDFGBinding, SLOT(onDriveNodeInputPorts(FabricCore::RTVal)));
+  QObject::connect(m_shGLRenderer, SIGNAL(itemDoubleClicked()), m_shStates, SLOT(onInspectSelectedSGObject()));
+  QObject::connect(
+    m_shGLRenderer, 
+    SIGNAL(showContextualMenu(QPoint, FabricCore::RTVal, QWidget *, bool)), 
+    this, 
+    SLOT(onShowContextualMenu(QPoint, FabricCore::RTVal, QWidget *, bool)));
+}
+
 void SHDFGCombinedWidget::initDocks() { 
   DFGCombinedWidget::initDocks(); 
   m_hSplitter->addWidget(m_shTreeViewsManager);
 }
 
+void SHDFGCombinedWidget::initMenu() { 
+  DFGCombinedWidget::initMenu();
+
+  SceneHub::SHToolsMenu *toolMenu = new SceneHub::SHToolsMenu(m_shGLRenderer);
+  m_menuBar->addMenu(toolMenu);
+}
+
 void SHDFGCombinedWidget::onInspectChanged() {
-  // shDFGBinding might change the active binding
+  //shDFGBinding might change the active binding
   //m_shDFGBinding->onInspectChanged();
   //FabricCore::DFGBinding binding = m_dfgWidget->getDFGController()->getBinding();
 }
@@ -122,7 +142,6 @@ void SHDFGCombinedWidget::onCanvasSidePanelInspectRequested() {
   if(m_shDFGBinding)
   {
     FabricUI::SceneHub::SHVEEditorOwner* valueEditor = dynamic_cast< FabricUI::SceneHub::SHVEEditorOwner*>(m_valueEditor);
-
     FabricCore::RTVal parameterObject = m_shDFGBinding->getCanvasOperatorParameterObject();
     if(parameterObject.isValid())
       valueEditor->updateSGObject(parameterObject);
@@ -139,4 +158,25 @@ void SHDFGCombinedWidget::onActiveSceneChanged(FabricUI::SceneHub::SHGLScene *sc
 
 void SHDFGCombinedWidget::onSceneChanged() {
   refreshScene();
+}
+
+void SHDFGCombinedWidget::onShowContextualMenu(
+  QPoint pos, 
+  FabricCore::RTVal sgObject, 
+  QWidget *parent, 
+  bool fromViewport)
+{
+  SceneHub::SHBaseTreeView *shTreeView = 0;
+  SceneHub::SHGLRenderer *shGLRenderer = 0;
+  if(!fromViewport) shTreeView = m_shTreeViewsManager->getTreeView();
+  else shGLRenderer = m_shGLRenderer;
+
+  SceneHub::SHContextualMenu *menu = new SceneHub::SHContextualMenu(m_shStates, 
+    sgObject,
+    shTreeView,
+    shGLRenderer,
+    parent);
+
+  menu->constructMenu();
+  menu->exec(pos);
 }

@@ -130,13 +130,12 @@ dirs = [
   'DFG/Dialogs',
  
   'SceneHub',
-  'SceneHub/DFG',
-  'SceneHub/Editors',
   'SceneHub/TreeView',
+  'SceneHub/Menus',
+  'SceneHub/DFG',
   'SceneHub/Viewports',
   'SceneHub/Commands',
   'SceneHub/ValueEditor',
-  'SceneHub/Menus',
 
   'Licensing',
   'ModelItems',
@@ -334,7 +333,6 @@ if uiLibPrefix == 'ui':
         pysideEnv.Dir('SceneHub').srcnode(),
         pysideEnv.Dir('SceneHub/DFG').srcnode(),
         pysideEnv.Dir('SceneHub/Menus').srcnode(),
-        pysideEnv.Dir('SceneHub/Editors').srcnode(),
         pysideEnv.Dir('SceneHub/Commands').srcnode(),
         pysideEnv.Dir('SceneHub/TreeView').srcnode(),
         pysideEnv.Dir('SceneHub/Viewports').srcnode(),

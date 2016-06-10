@@ -15,7 +15,7 @@
 using namespace FabricUI::DFG;
 
 DFGCombinedWidget::DFGCombinedWidget(QWidget *parent)
-:QSplitter(parent)
+  :QSplitter(parent)
 {
   m_manager = NULL;
   m_treeWidget = NULL;
@@ -27,7 +27,7 @@ DFGCombinedWidget::DFGCombinedWidget(QWidget *parent)
 
   setStyle(new FabricUI::Style::FabricStyle());
   setOrientation(Qt::Vertical);
-};
+}
 
 void DFGCombinedWidget::initMenu() {
 
@@ -96,6 +96,9 @@ void DFGCombinedWidget::initDFG() {
   }
 }
 
+void DFGCombinedWidget::initGL() {
+}
+
 void DFGCombinedWidget::initDocks() {
   m_hSplitter->addWidget(m_treeWidget);
   m_hSplitter->addWidget(m_dfgWidget);
@@ -145,6 +148,7 @@ void DFGCombinedWidget::init(
     initDFG();
     initTreeView();
     initValueEditor();
+    initGL();
     initMenu();
     initDocks();
     onGraphSet(m_dfgWidget->getUIGraph());

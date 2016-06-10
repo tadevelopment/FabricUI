@@ -3,22 +3,18 @@
  */
 
 #include "SHBaseContextualMenu.h"
-#include <QtGui/QFileDialog>
-#include <FabricUI/Util/StringUtils.h>
 
 using namespace FabricCore;
 using namespace FabricUI;
 using namespace SceneHub;
 using namespace Menus;
 
- 
 SHBaseContextualMenu::SHBaseContextualMenu(
-	SHGLScene* shGLScene,
   SHStates* shStates, 
   FabricCore::RTVal targetSGObject, 
   SHBaseTreeView *shBaseTreeView,
   QWidget *parent)
-  : SHBaseSceneMenu(shGLScene, "", parent)
+  : Menus::BaseMenu(shStates->getClient(), "", parent)
   , m_shStates(shStates)
   , m_targetSGObject(targetSGObject)
   , m_shBaseTreeView(shBaseTreeView) {
@@ -31,12 +27,15 @@ void SHBaseContextualMenu::constructMenu() {
   
   // If there is a selected object, either from the shTreeView or the 3View
   // acces/edits its properties.
-  QString type(m_targetSGObject.callMethod("String ", "type", 0, 0).getStringCString());
-
-  if(m_targetSGObject.isValid() && type == "SGObject")
+  if(m_targetSGObject.isValid())
   {
-    constructExpandMenu();
-    constructVisibilityMenu();
+    QString type(m_targetSGObject.callMethod("String ", "type", 0, 0).getStringCString());
+
+    if(m_targetSGObject.isValid() && type == "SGObject")
+    {
+      constructExpandMenu();
+      constructVisibilityMenu();
+    }
   }
 }
 

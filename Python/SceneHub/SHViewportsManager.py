@@ -57,12 +57,11 @@ class SHViewportsManager():
         self.nextViewportIndex = 1
         self.shGLRenderer = SceneHub.SHGLRenderer(self.shWindow.client, shRenderer)
 
-        self.shGLRenderer.driveNodeInputPorts.connect(self.shWindow.shDFGBinding.onDriveNodeInputPorts)
-        self.shGLRenderer.sceneChanged.connect( self.shStates.sceneChanged )
-        self.shGLRenderer.manipsAcceptedEvent.connect( self.shStates.onStateChanged )
-
         self.shStates.sceneChanged.connect(self.onRefreshAllViewports)
         self.shStates.selectionChanged.connect(self.onRefreshAllViewports)
+
+        # Manips can need to be redrawn even if the scene didn't change
+        self.shGLRenderer.manipsAcceptedEvent.connect( self.onRefreshAllViewports )
 
     def initMenu(self, menuBar):
         """ Initializes the application menu reltive to the viewports.
@@ -151,8 +150,6 @@ class SHViewportsManager():
         self.viewports.append(newViewport)
 
         # Manips can need to be redrawn even if the scene didn't change
-        #newViewport.manipsAcceptedEvent.connect( self.onRefreshAllViewports )
-        newViewport.synchronizeCommands.connect(self.shWindow.shCmdHandler.onSynchronizeCommands)
         newViewport.redrawOnAlwaysRefresh.connect( self.onRefreshAllViewports, QtCore.Qt.QueuedConnection )
 
         return newViewport, intermediateOwnerWidget;

@@ -2,12 +2,12 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
-#ifndef __FABRICUI_SCENEHUB_CONTEXTUALMENU_H__
-#define __FABRICUI_SCENEHUB_CONTEXTUALMENU_H__
+#ifndef __FABRICUI_SCENEHUB_TOOLMENU_H__
+#define __FABRICUI_SCENEHUB_TOOLMENU_H__
 
 #include <FabricUI/Menus/BaseMenu.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>
- 
+
 namespace FabricUI {
 namespace SceneHub {
 
@@ -48,4 +48,4 @@ class SHToolsMenu : public Menus::BaseMenu {
 } // SceneHub
 } // FabricUI 
 
-#endif // __FABRICUI_SCENEHUB_CONTEXTUALMENU_H__
+#endif // __FABRICUI_SCENEHUB_TOOLMENU_H__

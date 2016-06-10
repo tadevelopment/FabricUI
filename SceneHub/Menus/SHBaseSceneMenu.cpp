@@ -3,12 +3,12 @@
  */
 
 #include "SHBaseSceneMenu.h"
- 
+#include <FabricUI/SceneHub/SHGLScene.h>
+
 using namespace FabricUI;
 using namespace SceneHub;
 using namespace Menus;
 
- 
 SHBaseSceneMenu::SHBaseSceneMenu(
   SHGLScene* shGLScene, 
   QString title, 

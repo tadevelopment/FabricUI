@@ -23,8 +23,16 @@ class SHContextualMenu(SceneHub.SHBaseContextualMenu):
 
     """
    
-    def __init__(self, shGLScene, shStates, targetSGObject, shTreeView = None, parent = None):
-        super(SHContextualMenu, self).__init__(shGLScene, shStates, targetSGObject, shTreeView, parent)
+    def __init__(
+        self, 
+        shStates, 
+        targetSGObject, 
+        shTreeView = None,
+        shGLRenderer = None, 
+        parent = None):
+
+        super(SHContextualMenu, self).__init__(shStates, targetSGObject, shTreeView, parent)
+        self.shGLRenderer = shGLRenderer
         self.constructMenu()
 
     def constructMenu(self):
@@ -40,10 +48,12 @@ class SHContextualMenu(SceneHub.SHBaseContextualMenu):
             exportAlembicAction.triggered.connect(self.exportToAlembic)
 
         elif str(self.m_targetSGObject.type("String").getSimpleType()) == "None":
-            self.addMenu(SHAssetsMenu(self.m_shGLScene))
-            self.addMenu(SHLightsMenu(self.m_shGLScene))
-
+            self.addMenu(SHAssetsMenu(self.m_shStates.getActiveScene()))
+            self.addMenu(SHLightsMenu(self.m_shStates.getActiveScene()))
     
+        if self.shGLRenderer is not None:
+            self.addMenu(SceneHub.SHToolsMenu(self.shGLRenderer))
+        
     def exportToAlembic(self):      
         """Exports the current scene to alembic.
         """
@@ -60,4 +70,4 @@ class SHContextualMenu(SceneHub.SHBaseContextualMenu):
         pathList = []
         pathList.append(fileName)
         pathList = Util.StringUtils.ProcessPathQStringForOsX(pathList)
-        self.m_shGLScene.exportToAlembic(pathList[0])
+        self.m_targetSGObject.exportToAlembic(pathList[0])

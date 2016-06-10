@@ -446,35 +446,6 @@ class CanvasWindow(QtGui.QMainWindow):
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_7)
         windowMenu.addAction(toggleAction)
 
-    def onPortManipulationRequested_2(self, portName):
-        """Generic method to trigger value changes that are requested form manipulators
-        in the viewport.
-
-        Arguments:
-            portName (str): Name of the port that is being driven.
-
-        """
-        success = False
-        try:
-            controller = self.dfgWidget.getDFGController()
-            exec_ = controller.getBinding().getExec()
-
-            if exec_.haveExecPort(str(portName)):
-                structParam = self.viewport.getManipTool().getLastManipVal()
-                if structParam.getTypeName().getSimpleType() == "StructParam":
-                    paramType = str(structParam.getValueType("String").getSimpleType())
-                    structVal = getattr(self.client.RT.types, paramType)
-                    #dataVal = structVal.getSimpleType()
-                    #temp = structParam.getAsRTVal("RTVal")
-                    #structParam.getValue("", dataVal)
-                    #controller.cmdSetArgValue(str(portName), structVal)
-                success = True
-
-        except Exception as e:
-            self.dfgWidget.getDFGController().logError(str(e))
-
-        return success
-
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested form manipulators
         in the viewport.
@@ -483,9 +454,6 @@ class CanvasWindow(QtGui.QMainWindow):
             portName (str): Name of the port that is being driven.
 
         """
-
-        if self.onPortManipulationRequested_2(portName):
-            return
 
         try:
             controller = self.dfgWidget.getDFGController()

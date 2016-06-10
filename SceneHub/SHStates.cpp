@@ -143,6 +143,19 @@ void SHStates::onStateChanged() {
   }
 }
 
+void SHStates::onInspectSelectedSGObject() {
+  try 
+  {
+    FabricCore::RTVal sgObjectlist = getSelectedObjects();
+    if(sgObjectlist.getArraySize() > 0)
+      onInspectedSGObject(sgObjectlist.getArrayElement(0)); 
+  }
+  catch(Exception e)
+  {
+    printf("SHStates::onInspectedCurrentSGObject: exception: %s\n", e.getDesc_cstr());
+  }
+}
+
 void SHStates::onInspectedSGObject(FabricCore::RTVal sgObject) {
   try 
   {

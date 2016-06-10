@@ -3,8 +3,7 @@
  */
 
 #include "SHBaseTreeView.h"
-#include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
-
+ 
 using namespace FabricUI;
 using namespace FabricUI::SceneHub;
 

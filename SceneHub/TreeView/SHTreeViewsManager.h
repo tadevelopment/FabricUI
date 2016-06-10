@@ -6,11 +6,11 @@
 #define __UI_SCENEHUB_TREE_VIEW_MANAGER_H__
 
 #include "SHBaseTreeViewsManager.h"
+#include <FabricUI/SceneHub/SHStates.h>
+#include <FabricUI/SceneHub/SHGLScene.h>
  
 namespace FabricUI {
 namespace SceneHub {
-
- 
 
 class SHTreeViewsManager : public SHBaseTreeViewsManager { 
 

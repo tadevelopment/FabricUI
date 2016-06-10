@@ -25,6 +25,11 @@ class SHTreeView(SceneHub.SHBaseTreeView):
     itemSelected = QtCore.Signal(SceneHub.SHTreeItem)
     itemDeselected = QtCore.Signal(SceneHub.SHTreeItem)
     itemDoubleClicked = QtCore.Signal(SceneHub.SHTreeItem)
+    showContextualMenu = QtCore.Signal(
+                QtCore.QPoint,
+                object,
+                QtGui.QWidget,
+                bool);
 
     def __init__(self, client, shStates, shGLScene):
         super(SHTreeView, self).__init__(client)
@@ -51,10 +56,12 @@ class SHTreeView(SceneHub.SHBaseTreeView):
             sgObject = item.getSGObject()   
 
         if (item is not None and sgObject is not None) or item is None:
-            menu = SHContextualMenu(self.shGLScene, self.shStates, sgObject, self, self)
-            menu.exec_(self.mapToGlobal(point))
-    
-  
+            self.showContextualMenu.emit(
+                self.mapToGlobal(point),
+                sgObject,
+                self,
+                False);
+        
     def selectionChanged(self, selected, deselected):
         """ Selects/Unselects treeView items.
             Implementation of : `SceneHub::SHBaseTreeView`

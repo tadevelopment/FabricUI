@@ -5,14 +5,14 @@
 #ifndef __FABRICUI_SCENEHUB_BASECONTEXTUALMENU_H__
 #define __FABRICUI_SCENEHUB_BASECONTEXTUALMENU_H__
 
-#include "SHBaseSceneMenu.h"
+#include <FabricUI/Menus/BaseMenu.h>
 #include <FabricUI/SceneHub/SHStates.h>
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
 
 namespace FabricUI {
 namespace SceneHub {
-
-class SHBaseContextualMenu : public SHBaseSceneMenu {
+ 
+class SHBaseContextualMenu : public Menus::BaseMenu {
   
   /**
     SHBaseContextualMenu specializes SHBaseSceneMenu and defines a base contextual menu.
@@ -32,7 +32,6 @@ class SHBaseContextualMenu : public SHBaseSceneMenu {
     /// \param shBaseTreeView A pointor to the SHTreeView.
     /// \param parent The menu parent, can be null.
     SHBaseContextualMenu(
-      SHGLScene* shGLScene,
       SHStates* shStates, 
       FabricCore::RTVal targetSGObject, 
       SHBaseTreeView *shBaseTreeView = 0,

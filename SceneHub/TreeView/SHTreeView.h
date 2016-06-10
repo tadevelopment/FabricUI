@@ -8,10 +8,9 @@
 #include <QtGui/QMenu>
 #include <QtGui/QTreeView>
 #include <QtGui/QMouseEvent>
+#include "SHBaseTreeView.h"
 #include <FabricUI/SceneHub/SHStates.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
-#include "SHBaseTreeView.h"
-
 
 namespace FabricUI {
 namespace SceneHub {
@@ -67,6 +66,13 @@ class SHTreeView : public SHBaseTreeView {
     /// Emitted when an item is double-clicked.
     /// Used to edit this item pproperties in the valueEditor.
     void itemDoubleClicked(FabricUI::SceneHub::SHTreeItem *item);
+ 
+    /// Emitted to show the contextual menu.
+    void showContextualMenu(
+      QPoint point, 
+      FabricCore::RTVal sgObject,
+      QWidget *parent,
+      bool fromViewport);
 
 
   protected:

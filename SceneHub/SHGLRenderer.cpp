@@ -4,10 +4,11 @@
 
 #include "SHGLRenderer.h"
 #include <FabricUI/Viewports/QtToKLEvent.h>
-
+ 
 using namespace FabricCore;
 using namespace FabricUI;
 using namespace SceneHub;
+
 
 SHGLRenderer::SHGLRenderer() {
 }
@@ -28,6 +29,9 @@ SHGLRenderer::SHGLRenderer(Client client)
 SHGLRenderer::SHGLRenderer(Client client, RTVal shRenderer) 
   : m_client(client)
   , m_shGLRendererVal(shRenderer) {
+}
+
+SHGLRenderer::~SHGLRenderer() {
 }
 
 Client SHGLRenderer::getClient() { 
@@ -290,9 +294,15 @@ void SHGLRenderer::render(unsigned int viewportID, unsigned int width, unsigned 
 
 bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool dragging) {
   try 
-  {
+  {    
+    if(event->type() == QEvent::MouseButtonDblClick)
+    {
+      emit itemDoubleClicked();
+      event->setAccepted(true);
+      return true;
+    }
+  
     RTVal viewportVal = getOrAddViewport(viewportID);
-
     RTVal args[2] = {
       QtToKLEvent(event, m_client, viewportVal, true),
       RTVal::ConstructBoolean(m_client, dragging)
@@ -300,16 +310,14 @@ bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool dragging
     
     m_shGLRendererVal.callMethod("", "onEvent", 2, args);
     bool result = args[0].callMethod("Boolean", "isAccepted", 0, 0).getBoolean();
-    event->setAccepted(result);
-    bool redrawAllViewports = args[0].callMethod("Boolean", "redrawAllViewports", 0, 0).getBoolean();
-
+    
     if(result)
     {
-      emit driveNodeInputPorts(args[0]);
-      emit sceneChanged();
+      event->setAccepted(result);
+      bool redrawAllViewports = args[0].callMethod("Boolean", "redrawAllViewports", 0, 0).getBoolean();
+      emit manipsAcceptedEvent(args[0], redrawAllViewports);
     }
-    emit manipsAcceptedEvent(redrawAllViewports);
- 
+    
     return result;
   }
   catch(Exception e)
@@ -317,6 +325,16 @@ bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool dragging
     printf("SHGLRenderer::onEvent: exception: %s\n", e.getDesc_cstr());
   }
   return false;
+}
+
+void SHGLRenderer::emitShowContextualMenu(unsigned int viewportID, QPoint pos, QWidget *parent) {
+  RTVal sgObject = getSGObjectFrom2DScreenPos(viewportID, pos);
+       
+  emit showContextualMenu(
+      parent->mapToGlobal(pos),
+      sgObject,
+      parent,
+      true);
 }
 
 RTVal SHGLRenderer::getToolDispatcher() {
@@ -332,38 +350,11 @@ RTVal SHGLRenderer::getToolDispatcher() {
   return toolDispatcherVal;
 }
 
-QList<QStringList> SHGLRenderer::getRegisteredTools() {
-  QList<QStringList> list;
+RTVal SHGLRenderer::getRegisteredTools() {
+  RTVal list;
   try 
   {
-    RTVal args[4] = {
-      RTVal::ConstructVariableArray(m_client, "String"),
-      RTVal::ConstructVariableArray(m_client, "ToolType"),
-      RTVal::ConstructVariableArray(m_client, "Key"),
-      RTVal::ConstructVariableArray(m_client, "Boolean")
-    };
-    m_shGLRendererVal.callMethod("", "getRegisteredTools", 4, args);
-
-    QStringList toolNames, toolTypes, toolKeys, isEnables;
-    for(unsigned int i=0; i<args[0].getArraySize(); ++i)
-    {
-      QString name(args[0].getArrayElement(i).getStringCString());
-      unsigned int type(args[1].getArrayElement(i).getUInt32());
-      QString typeStr = type == 0 ? "Shared" : 
-                        type == 1 ? "Mutually Exclusive" : 
-                        type == 2 ? "Fully Exclusive" : "Independent";
-      QString key(QKeySequence(args[2].getArrayElement(i).getUInt32()).toString());
-      QString isEnable = QString::number(args[3].getArrayElement(i).getBoolean());
-      
-      toolNames.append(name);
-      toolTypes.append(typeStr);
-      toolKeys.append(key);
-      isEnables.append(isEnable);
-    }
-    list.append(toolNames);
-    list.append(toolTypes);
-    list.append(toolKeys);
-    list.append(isEnables);
+    list = m_shGLRendererVal.callMethod("HandlerDescription[]", "getRegisteredTools", 0, 0);
   }
   catch(Exception e)
   {

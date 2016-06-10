@@ -13,9 +13,11 @@
 #include <QtGui/QDrag>
 #include <QtGui/QVector3D>
 #include <QtGui/QMouseEvent>
+#include <QtGui/QWidget>
  
 namespace FabricUI {
 namespace SceneHub {
+
 
 class SHGLRenderer : public QObject {
 
@@ -41,6 +43,9 @@ class SHGLRenderer : public QObject {
     /// \param client A reference to the FabricCore::Client.
     /// \param shRenderer A reference to the SHGLRenderer.
     SHGLRenderer(FabricCore::Client client, FabricCore::RTVal shRenderer);
+
+    /// Constructor.
+    virtual ~SHGLRenderer();
 
     /// Updates the renderer, if set externally.
     void update();
@@ -129,20 +134,18 @@ class SHGLRenderer : public QObject {
     /// \param samples Anti-aliasing number of samples.
     /// \param drawPhase Drawing phases (pre-post draw).
     void render(unsigned int viewportID, unsigned int width, unsigned int height, unsigned int samples, unsigned int drawPhase);
-    
+        
     /// Propagates the events.
     /// \param viewportID The viewport ID.
     /// \param event The event.
     /// \param dragging If true when dragging an asset or texture in the scene.
     bool onEvent(unsigned int viewportID, QEvent *event, bool dragging);
- 
+
     /// Returns a reference to the ToolDispatcher.
     FabricCore::RTVal getToolDispatcher();
 
     /// Gets the names and the keys of the registered tools.
-    /// \param toolNames Name of the registered tools.
-    /// \param enableKeys Key of the registered tools.
-    QList<QStringList> getRegisteredTools();
+    FabricCore::RTVal getRegisteredTools();
     
     /// Returns the selection set if any.
     FabricCore::RTVal getSelectionSet();
@@ -156,16 +159,23 @@ class SHGLRenderer : public QObject {
     /// For showing the right contextual menu.
     QString getSelectionCategory();
 
+    void emitShowContextualMenu(unsigned int viewportID, QPoint pos, QWidget *parent);
+
 
   signals:
-    void sceneChanged();
+    void manipsAcceptedEvent(FabricCore::RTVal event, bool redrawAllViewports);
 
-    void driveNodeInputPorts(FabricCore::RTVal event);
+    void itemDoubleClicked();
+    
+    /// Emitted to show the contextual menu.
+    void showContextualMenu(
+      QPoint point, 
+      FabricCore::RTVal sgObject,
+      QWidget *parent,
+      bool fromViewport);
 
-    void manipsAcceptedEvent(bool redrawAllViewports);
 
-
-  private:
+  protected:
     /// \internal
     FabricCore::Client m_client;    
     /// \internal

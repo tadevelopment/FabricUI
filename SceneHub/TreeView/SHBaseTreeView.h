@@ -8,7 +8,6 @@
 #include <FabricCore.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/SharedPtr.h>
-#include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/TreeView/SHTreeModel.h>
 
 namespace FabricUI {

@@ -3,12 +3,12 @@
 #ifndef _SHDFGCOMBINEDWIDGET_H_
 #define _SHDFGCOMBINEDWIDGET_H_
  
+#include <FabricUI/DFG/DFGCombinedWidget.h>
 #include <FabricUI/SceneHub/SHStates.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>
-#include <FabricUI/DFG/DFGCombinedWidget.h>
 #include <FabricUI/SceneHub/DFG/SHDFGBinding.h>
-#include <FabricUI/SceneHub/TreeView/SHBaseTreeViewsManager.h>
+#include <FabricUI/SceneHub/TreeView/SHTreeViewsManager.h>
 
 using namespace FabricServices;
  
@@ -48,26 +48,34 @@ class SHDFGCombinedWidget : public DFGCombinedWidget {
   
     void onSceneChanged();
 
+    void onShowContextualMenu(
+      QPoint pos, 
+      FabricCore::RTVal sgObject, 
+      QWidget *parent, 
+      bool fromViewport);
+
 
   protected:
     virtual void refreshScene() = 0;  
  
     /// Implementation of DFG::DFGCombinedWidget.
     virtual void initDFG();
-
     /// Implementation of DFG::DFGCombinedWidget.
     virtual void initTreeView();
-
     /// Implementation of DFG::DFGCombinedWidget.
     virtual void initValueEditor();
-    
+    /// Implementation of DFG::DFGCombinedWidget.
+    virtual void initGL();
+    /// Implementation of DFG::DFGCombinedWidget.
+    virtual void initMenu();
     /// Implementation of DFG::DFGCombinedWidget.
     virtual void initDocks();
-  
+
 
     SceneHub::SHStates *m_shStates;
     SceneHub::SHDFGBinding *m_shDFGBinding;
-    SceneHub::SHBaseTreeViewsManager *m_shTreeViewsManager;
+    SceneHub::SHGLRenderer *m_shGLRenderer;
+    SceneHub::SHTreeViewsManager *m_shTreeViewsManager;
 };
 
 } // namespace DFG
