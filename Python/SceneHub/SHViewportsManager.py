@@ -223,6 +223,12 @@ class SHViewportsManager():
         self.shWindow.shTreesManager.getScene().prepareSceneForRender()
         for viewport in self.viewports: viewport.update()
 
+    def viewportUpdateRequested(self):
+        for viewport in self.viewports:
+            if viewport.updateRequested:
+                return True
+        return False
+
     def onRefreshViewport(self, refreshAll):
         """ Refreshs either the current viewport or all the viewports.
 

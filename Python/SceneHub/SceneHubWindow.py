@@ -101,7 +101,9 @@ class SceneHubWindow(CanvasWindow):
         self.shTreesManager.activeSceneChanged.connect( self.onActiveSceneChanged )
 
         # scene changed -> tree view changed
-        self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
+        self.blockedTreeViewHierarchyChanged = False
+        self.shStates.sceneHierarchyChanged.connect(self.onSceneHierarchyChanged)
+        #self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
         self.shStates.selectionChanged.connect(self.shTreesManager.onSelectionChanged)
 
         # tree view changed -> scene changed
@@ -244,7 +246,7 @@ class SceneHubWindow(CanvasWindow):
         # Create a timer to refresh in case there are asynchronous tasks (eg: background loading)
         self.checkAsyncSceneStateTimer = QtCore.QTimer( self )
         self.checkAsyncSceneStateTimer.setInterval( 333 ) # 3 times per second
-        self.checkAsyncSceneStateTimer.timeout.connect(self.shStates.onStateChanged)
+        self.checkAsyncSceneStateTimer.timeout.connect(self.checkAsyncState)
         self.checkAsyncSceneStateTimer.start()
         
     def sizeHint(self):
@@ -379,3 +381,22 @@ class SceneHubWindow(CanvasWindow):
             helpWidget = SHHelpWidget(self.usageFilePath, dialog)
             helpWidget.closeSignal.connect(dialog.close)
             dialog.show()
+
+
+    def onSceneHierarchyChanged(self):
+        if self.viewportsManager.viewportUpdateRequested():
+            self.blockedTreeViewHierarchyChanged = True
+        elif not self.blockedTreeViewHierarchyChanged:
+            self.shTreesManager.onSceneHierarchyChanged()
+
+    def checkAsyncState(self):
+        """ Requests a scene state change check in case it asynchronously changed,
+            but only if there is not a prending refresh already.
+        """
+
+        if not self.viewportsManager.viewportUpdateRequested():
+            self.shStates.onStateChanged()
+            if self.blockedTreeViewHierarchyChanged:
+                self.blockedTreeViewHierarchyChanged = False
+                self.shTreesManager.onSceneHierarchyChanged()
+

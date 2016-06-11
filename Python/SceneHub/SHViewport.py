@@ -37,6 +37,7 @@ class SHViewport(Viewports.ViewportWidget):
         self.shGLRenderer = renderer
         self.shWindow = mainwindow   
         self.client = mainwindow.client
+        self.updateRequested = False
         super(SHViewport, self).__init__(renderer.getClient(), QtGui.QColor(), self.qglContext, self.shWindow, sharedWidget, self.shWindow.settings)
 
         # Force to track mouse movment when not clicking
@@ -61,12 +62,17 @@ class SHViewport(Viewports.ViewportWidget):
         self.orthographic = orthographic
         self.shGLRenderer.setOrthographicViewport(self.viewportIndex, self.orthographic)
       
+
+    def update(self):
+        self.updateRequested = True
+        super(SHViewport, self).update()
+
     def paintGL(self):
         """ Override QtGui.QGLWidget paintGL, call the RTR2 render.
         """
-
         self.computeFPS()
         self.shGLRenderer.render(self.viewportIndex, self.width, self.height, self.samples)
+        self.updateRequested = False
         if(self.alwaysRefresh): 
             self.redrawOnAlwaysRefresh.emit()
       
