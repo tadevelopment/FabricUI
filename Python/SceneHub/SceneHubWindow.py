@@ -8,7 +8,6 @@ from FabricEngine.SceneHub.SHTreeViewsManager import SHTreeViewsManager
 from FabricEngine.SceneHub.SHViewportsManager import SHViewportsManager
 from FabricEngine.SceneHub.SHAssetsMenu import SHAssetsMenu
 from FabricEngine.SceneHub.SHLightsMenu import SHLightsMenu
-from FabricEngine.SceneHub.SHTreeViewMenu import SHTreeViewMenu
 from FabricEngine.SceneHub.SHHelpWidget import SHHelpWidget
 from FabricEngine.SceneHub.SHContextualMenu import SHContextualMenu
 
@@ -171,7 +170,8 @@ class SceneHubWindow(CanvasWindow):
 
         super(SceneHubWindow, self)._initMenus()
 
-        self.treeViewMenu = SHTreeViewMenu(self.shTreesManager)
+        self.treeViewMenu = SceneHub.SHTreeViewMenu(self.shTreesManager)
+        self.treeViewMenu.constructMenu()
         menus = self.menuBar().findChildren(QtGui.QMenu)
         for menu in menus:      
             if menu.title() == "&Window":

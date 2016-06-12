@@ -75,6 +75,9 @@ class SHBaseTreeViewsManager : public QWidget {
 
     virtual ~SHBaseTreeViewsManager();
     
+    /// Gets the client.
+    FabricCore::Client getClient();
+    
     /// Gets a pointer to the treeView.
     SHBaseTreeView* getTreeView();
     

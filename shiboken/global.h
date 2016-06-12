@@ -132,6 +132,7 @@
 #include <FabricUI/SceneHub/Menus/SHBaseSceneMenu.h>
 #include <FabricUI/SceneHub/Menus/SHBaseContextualMenu.h>
 #include <FabricUI/SceneHub/Menus/SHToolsMenu.h>
+#include <FabricUI/SceneHub/Menus/SHTreeViewMenu.h>
 #include <FabricUI/SceneHub/Commands/SHCmd.h>
 #include <FabricUI/SceneHub/Commands/SGAddObjectCmd.h>
 #include <FabricUI/SceneHub/Commands/SGAddPropertyCmd.h>

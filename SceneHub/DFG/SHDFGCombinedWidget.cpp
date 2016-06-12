@@ -4,6 +4,7 @@
 #include "SHDFGCombinedWidget.h"
 #include <FabricUI/SceneHub/TreeView/SHTreeView.h>
 #include <FabricUI/SceneHub/Menus/SHToolsMenu.h>
+#include <FabricUI/SceneHub/Menus/SHTreeViewMenu.h>
 #include <FabricUI/SceneHub/Menus/SHContextualMenu.h>
 #include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
 // Julien Keep for debugging
@@ -127,6 +128,10 @@ void SHDFGCombinedWidget::initDocks() {
 
 void SHDFGCombinedWidget::initMenu() { 
   DFGCombinedWidget::initMenu();
+
+  SceneHub::SHTreeViewMenu *treeViewlMenu = new SceneHub::SHTreeViewMenu(m_shTreeViewsManager);
+  treeViewlMenu->constructMenu();
+  m_menuBar->addMenu(treeViewlMenu);
 
   SceneHub::SHToolsMenu *toolMenu = new SceneHub::SHToolsMenu(m_shGLRenderer);
   m_menuBar->addMenu(toolMenu);

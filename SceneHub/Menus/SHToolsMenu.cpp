@@ -58,6 +58,11 @@ void SHToolsMenu::constructMenu() {
 
   if(toolsList.getArraySize() == 0) return;
   
+  if(!m_client.isValid())
+    m_client = m_shGLRenderer->getClient();
+
+  if(!m_client.isValid()) return;
+
   try 
   {
     for(unsigned int i=0; i<toolsList.getArraySize(); ++i)

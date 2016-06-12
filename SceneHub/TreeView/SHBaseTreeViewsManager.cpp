@@ -36,6 +36,10 @@ SHBaseTreeViewsManager::SHBaseTreeViewsManager(
 SHBaseTreeViewsManager::~SHBaseTreeViewsManager() {
 }
 
+Client SHBaseTreeViewsManager::getClient() { 
+  return m_client; 
+}
+
 SHBaseTreeView* SHBaseTreeViewsManager::getTreeView() { 
   return m_shTreeView; 
 }

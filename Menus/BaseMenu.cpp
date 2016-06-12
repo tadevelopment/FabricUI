@@ -14,7 +14,6 @@ BaseMenu::BaseMenu(
   QWidget *parent)
   : QMenu(parent)
   , m_client(client) {
-
   if(!title.isEmpty())
     setTitle(title);
 }
