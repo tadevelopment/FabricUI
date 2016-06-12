@@ -49,8 +49,8 @@ class SceneHubWindow(CanvasWindow):
         self.initSamples = samples
         self.usageFilePath = usageFilePath
         super(SceneHubWindow, self).__init__(settings, unguarded, noopt)
-
-        self._initApp()
+        self.onFileNameChanged(canvasFile)
+        self._initApp() 
  
     def _initKL(self, unguarded, noopt):
         """ Implementation of Canvas.CanvasWindow.
@@ -64,7 +64,6 @@ class SceneHubWindow(CanvasWindow):
         if self.klFile is not None and self.klFile is not "":
             sceneName = self.klFile
 
-        print "sceneName " + str(sceneName)
         self.shMainGLScene = SceneHub.SHGLScene(self.client, sceneName)
         self.shStates.inspectedChanged.connect(self.onInspectChanged)
 
@@ -348,6 +347,14 @@ class SceneHubWindow(CanvasWindow):
         if self.dfgWidget is not None:
             self.dfgWidget.getUIController().logError(message)
          
+    def onFileNameChanged(self, fileName):
+        sceneName = "SceneHub"
+        if self.klFile is not None and self.klFile is not "":
+            sceneName = self.klFile
+        if fileName is not None and fileName is not "":
+            sceneName = fileName
+        super(SceneHubWindow, self).onFileNameChanged(sceneName)
+
     def onShowContextualMenu(
         self, 
         pos, 
@@ -373,7 +380,6 @@ class SceneHubWindow(CanvasWindow):
             parent)
 
         menu.exec_(pos)
-
 
     def updateFPS(self):
         """ Override of Canvas.CanvasWindow.

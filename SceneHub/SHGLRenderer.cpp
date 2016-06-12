@@ -337,7 +337,6 @@ bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool dragging
 
 void SHGLRenderer::emitShowContextualMenu(unsigned int viewportID, QPoint pos, QWidget *parent) {
   RTVal sgObject = getSGObjectFrom2DScreenPos(viewportID, pos);
-       
   emit showContextualMenu(
       parent->mapToGlobal(pos),
       sgObject,
