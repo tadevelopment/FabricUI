@@ -39,7 +39,7 @@ static QString ExpandEnvironmentVariables( QString string )
     if ( envvarValue )
     {
 #if defined(FTL_PLATFORM_WINDOWS)
-      result += QString::fromLatin1( envvarValue );
+      result += QString::fromLatin1( envvarValue ).replace( '\\', '/' );
 #else
       result += QString::fromUtf8( envvarValue );
 #endif
@@ -49,7 +49,6 @@ static QString ExpandEnvironmentVariables( QString string )
   }
 
   result += string.midRef( offset );
-
   return result;
 }
 
