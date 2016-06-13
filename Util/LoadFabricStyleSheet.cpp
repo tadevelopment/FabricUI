@@ -49,6 +49,7 @@ static QString ExpandEnvironmentVariables( QString string )
   }
 
   result += string.midRef( offset );
+
   return result;
 }
 
