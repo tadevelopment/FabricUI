@@ -3,6 +3,7 @@
  */
 
 #include "SHGLScene.h"
+#include <stdlib.h>
 #include <FabricUI/Viewports/QtToKLEvent.h>
 
 using namespace FabricCore;
@@ -17,11 +18,11 @@ inline QString loadScene(Client &client, QString const &klFile) {
     return "";
   }
 
-  fseek( klFilePtr, 0, SEEK_END );
-  int fileSize = ftell( klFilePtr );
-  rewind( klFilePtr );
+  fseek(klFilePtr, 0, SEEK_END);
+  int fileSize = ftell( klFilePtr);
+  rewind(klFilePtr);
 
-  char * klCodeBuffer = (char*) malloc(fileSize + 1);
+  char *klCodeBuffer = (char*)malloc(fileSize + 1);
   klCodeBuffer[fileSize] = '\0';
 
   fread(klCodeBuffer, fileSize, 1, klFilePtr);
@@ -49,13 +50,15 @@ SHGLScene::SHGLScene(Client client, QString klFile) : m_client(client) {
   {
     QString sceneName = "SceneHub";
     if(klFile.length() > 0) sceneName = loadScene(m_client, klFile);
-
     m_shGLSceneVal = RTVal::Create(client, sceneName.toUtf8().constData(), 0, 0);
     m_shGLSceneVal.callMethod("", "initializeSceneAndRTR", 0, 0);
   }
   catch(Exception e)
   {
-    printf("SHGLScene::SHGLScene: exception: %s\n", e.getDesc_cstr());
+    printf("SHGLScene::SHGLScene: exception : \n\n\n"
+      "Please check that the kl file %s implements a SHGLScene class of the same name. \n"
+      "MySHGLScene has to be implemented in MySHGLScene.kl file. \n\n\n", 
+      klFile.toUtf8().constData());
   }
 }
 
