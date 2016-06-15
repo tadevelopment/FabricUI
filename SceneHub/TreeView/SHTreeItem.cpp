@@ -300,3 +300,19 @@ SHTreeItem *SHTreeItem::getOrCreateChildItem(int row) {
   assert(row < int(m_childItems.size()));
   return m_childItems[row].m_child.get();
 }
+
+void SHTreeItem::setExpanded( bool state ) {
+  try {
+    if( m_treeViewObjectDataRTVal.isValid() && !m_treeViewObjectDataRTVal.isNullObject() ) {
+      RTVal stateRTVal = RTVal::ConstructBoolean( m_client, state );
+      m_treeViewObjectDataRTVal.callMethod( "", "setExpanded", 1, &stateRTVal );
+    }
+  }
+  catch( Exception e ) {
+    printf( "SHTreeItem::setExpanded: Error: %s\n", e.getDesc_cstr() );
+  }
+  if( state ) {
+    m_needsUpdate = true;
+    updateChildItemsIfNeeded();
+  }
+}

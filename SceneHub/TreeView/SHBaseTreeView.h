@@ -40,13 +40,15 @@ class SHTreeView_ViewIndexTarget : public QObject {
     /// \param propagationType Local-Propagated-Override
     void setVisibility(bool visible, unsigned char propagationType);
 
-
   public slots:
     /// Loads recursively the SGObject.
     void loadRecursively();
     
     /// Expands recursively the SGObject.
     void expandRecursively();
+
+    /// Expands recursively the SGObject.
+    void collapse();
 
     /// Shows the SGObject.
     void showLocal();
@@ -65,7 +67,6 @@ class SHTreeView_ViewIndexTarget : public QObject {
     
     /// Hides the SGObject override.
     void hideOverride();
-
 
   protected:
     /// Expands recursvely the treeItem at index.
@@ -109,6 +110,9 @@ class SHBaseTreeView : public QTreeView {
     /// Gets a SHTreeItem at treeView index.
     static SHTreeItem *GetTreeItemAtIndex(QModelIndex index);
 
+  private slots:
+    void onExpanded( const QModelIndex & index );
+    void onCollapsed( const QModelIndex & index );
 
   protected:
     /// Reference to the FabricCore::Client.

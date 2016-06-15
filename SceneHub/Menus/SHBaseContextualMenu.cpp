@@ -147,11 +147,27 @@ void SHBaseContextualMenu::constructExpandMenu() {
     if( args[1].getBoolean() ) {// canUnload
       QAction *unloadAction = new QAction( "Unload", this );
       addAction( unloadAction );
+      if( m_shBaseTreeView ) {
+        // If unload, collapse, else loading could be re-triggered by the TreeView
+        // IMPORTANT: collpase first, then unload
+        foreach( QModelIndex index, m_shBaseTreeView->getSelectedIndexes() ) {
+          SHTreeView_ViewIndexTarget *viewIndexTarget = new SHTreeView_ViewIndexTarget( m_shBaseTreeView, index, this );
+          QObject::connect( unloadAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( collapse() ) );
+        }
+      }
       QObject::connect( unloadAction, SIGNAL( triggered() ), this, SLOT( unload() ) );
     }
 
     QAction *unloadRecAction = new QAction( "Unload recursively", this );
     addAction( unloadRecAction );
+    if( m_shBaseTreeView ) {
+      // If unload, collapse, else loading could be re-triggered by the TreeView
+      // IMPORTANT: collpase first, then unload
+      foreach( QModelIndex index, m_shBaseTreeView->getSelectedIndexes() ) {
+        SHTreeView_ViewIndexTarget *viewIndexTarget = new SHTreeView_ViewIndexTarget( m_shBaseTreeView, index, this );
+        QObject::connect( unloadRecAction, SIGNAL( triggered() ), viewIndexTarget, SLOT( collapse() ) );
+      }
+    }
     QObject::connect( unloadRecAction, SIGNAL( triggered() ), this, SLOT( unloadRecursively() ) );
   }
   catch( Exception e ) {
