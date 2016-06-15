@@ -93,7 +93,7 @@ class SceneHubWindow(CanvasWindow):
         super(SceneHubWindow, self)._initTreeView()
 
         self.shTreesManager = SHTreeViewsManager(self.client, self.dfgWidget, self.shStates, self.shMainGLScene)
-        self.shTreesManager.activeSceneChanged.connect( self.onActive )
+        self.shTreesManager.activeSceneChanged.connect( self.onActiveSceneChanged )
 
         # scene changed -> tree view changed
         self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
@@ -307,12 +307,12 @@ class SceneHubWindow(CanvasWindow):
 
         self.viewportsManager.onRefreshAllViewports()
 
-    def onActive(self, scene):
+    def onActiveSceneChanged(self, scene):
         """ Updates when the active scene changed from the treeViewManager.
         """
 
-        self.assetMenu.onActive(scene)
-        self.lightsMenu.onActive(scene)
+        self.assetMenu.onActiveSceneChanged(scene)
+        self.lightsMenu.onActiveSceneChanged(scene)
 
     def onInspectChanged(self):
         """ Updates the valueEditor object/property to edit.

@@ -70,4 +70,9 @@ class SHContextualMenu(SceneHub.SHBaseContextualMenu):
         pathList = []
         pathList.append(fileName)
         pathList = Util.StringUtils.ProcessPathQStringForOsX(pathList)
-        self.m_targetSGObject.exportToAlembic(pathList[0])
+ 
+        if str(self.m_targetSGObject.type("String").getSimpleType()) == "SGObject":
+            self.m_shStates.getActiveScene().exportToAlembic(self.m_targetSGObject, pathList[0])
+
+        elif str(self.m_targetSGObject.type("String").getSimpleType()) == "None":
+            self.m_shStates.getActiveScene().exportToAlembic(pathList[0])
