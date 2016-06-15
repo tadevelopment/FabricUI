@@ -381,6 +381,13 @@ std::vector<Node*> Node::upStreamNodes(bool sortForPins, std::vector<Node*> root
 {
   int maxCol = 0;
 
+  std::vector<GraphView::Node*> allNodes = graph()->nodes();
+  for(unsigned int i=0;i<allNodes.size();i++)
+  {
+    allNodes[i]->setRow(-1);
+    allNodes[i]->setCol(-1);
+  }
+
   std::map<Node*, Node*> visitedNodes;
   std::vector<Node*> nodes;
 
@@ -399,10 +406,7 @@ std::vector<Node*> Node::upStreamNodes(bool sortForPins, std::vector<Node*> root
   }
 
   for(size_t i=0;i<nodes.size();i++)
-  {
-    if(nodes[i]->col() == -1)
-      nodes[i]->setCol(0);
-  }
+    nodes[i]->setCol(0);
 
   std::vector<Connection*> connections = graph()->connections();
   for(size_t i=0;i<nodes.size();i++)

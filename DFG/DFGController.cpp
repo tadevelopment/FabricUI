@@ -621,13 +621,6 @@ bool DFGController::relaxNodes(QStringList paths)
     }
   }
 
-  std::vector<GraphView::Node*> allNodes = graph()->nodes();
-  for(unsigned int i=0;i<allNodes.size();i++)
-  {
-    allNodes[i]->setRow(-1);
-    allNodes[i]->setCol(-1);
-  }
-
   std::vector<GraphView::Node*> rootNodes;
   for(int i=0;i<paths.length();i++)
   {
