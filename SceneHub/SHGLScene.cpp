@@ -58,7 +58,7 @@ SHGLScene::SHGLScene(Client client, QString sceneName) : m_client(client) {
     printf("SHGLScene::SHGLScene: exception : \n\n\n"
       "Please check that the kl file %s implements a SHGLScene class of the same name. \n"
       "MySHGLScene has to be implemented in MySHGLScene.kl file. \n\n\n", 
-      klFile.toUtf8().constData());
+      sceneName.toUtf8().constData());
   }
 }
 
