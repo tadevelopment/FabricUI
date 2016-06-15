@@ -52,6 +52,9 @@ class SHTreeItem : public FTL::Shareable {
     /// Sets the item name (displayed in the view).
     void setName(QString name);
 
+    /// Updates the expanded state of this item
+    void setExpanded( bool state );
+
     /// Checks if the item is a SGObject.
     bool isObject() const;
     

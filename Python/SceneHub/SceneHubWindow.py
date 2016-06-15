@@ -96,7 +96,9 @@ class SceneHubWindow(CanvasWindow):
         self.shTreesManager.activeSceneChanged.connect( self.onActiveSceneChanged )
 
         # scene changed -> tree view changed
-        self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
+        self.blockedTreeViewHierarchyChanged = False
+        self.shStates.sceneHierarchyChanged.connect(self.onSceneHierarchyChanged)
+        #self.shStates.sceneHierarchyChanged.connect(self.shTreesManager.onSceneHierarchyChanged)
         self.shStates.selectionChanged.connect(self.shTreesManager.onSelectionChanged)
 
         # tree view changed -> scene changed
@@ -196,6 +198,11 @@ class SceneHubWindow(CanvasWindow):
         togglePlaybackAction.triggered.connect(self._onTogglePlayback)
         self.interactionMenu.addMenu(SceneHub.SHToolsMenu(self.viewportsManager.shGLRenderer))
 
+        selectionMenu = self.interactionMenu.addMenu("Selection")
+        self.toggleSharedObjectSelection = selectionMenu.addAction("Allow shared scene object selection")
+        self.toggleSharedObjectSelection.setCheckable(True)
+        self.toggleSharedObjectSelection.triggered.connect(self._onToggleSharedObjectSelection)
+
         helpMenu = self.menuBar().addMenu("&Help")
         usageAction = helpMenu.addAction("Show Usage")
         usageAction.triggered.connect(self._onShowUsage)
@@ -245,6 +252,12 @@ class SceneHubWindow(CanvasWindow):
 
         self.adjustSize()
 
+        # Create a timer to refresh in case there are asynchronous tasks (eg: background loading)
+        self.checkAsyncSceneStateTimer = QtCore.QTimer( self )
+        self.checkAsyncSceneStateTimer.setInterval( 333 ) # 3 times per second
+        self.checkAsyncSceneStateTimer.timeout.connect(self.checkAsyncState)
+        self.checkAsyncSceneStateTimer.start()
+        
     def sizeHint(self):
         """ Returns the default windows size on startup.
         """
@@ -283,6 +296,9 @@ class SceneHubWindow(CanvasWindow):
         if self.timeLineDock.isVisible() == False: 
             self.timeLineDock.hide()
         self.timeLine.play()
+
+    def _onToggleSharedObjectSelection(self):
+        self.viewportsManager.getSHRenderer().enableSharedObjectSelection( self.toggleSharedObjectSelection.isChecked() )
 
     def _onRefreshAlways(self): 
         """ Notifies all viewports that they should always refresh
@@ -407,3 +423,22 @@ class SceneHubWindow(CanvasWindow):
             helpWidget = SHHelpWidget(self.usageFilePath, dialog)
             helpWidget.closeSignal.connect(dialog.close)
             dialog.show()
+
+
+    def onSceneHierarchyChanged(self):
+        if self.viewportsManager.viewportUpdateRequested():
+            self.blockedTreeViewHierarchyChanged = True
+        elif not self.blockedTreeViewHierarchyChanged:
+            self.shTreesManager.onSceneHierarchyChanged()
+
+    def checkAsyncState(self):
+        """ Requests a scene state change check in case it asynchronously changed,
+            but only if there is not a prending refresh already.
+        """
+
+        if not self.viewportsManager.viewportUpdateRequested():
+            self.shStates.onStateChanged()
+            if self.blockedTreeViewHierarchyChanged:
+                self.blockedTreeViewHierarchyChanged = False
+                self.shTreesManager.onSceneHierarchyChanged()
+

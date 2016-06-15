@@ -46,7 +46,10 @@ class SHBaseContextualMenu : public Menus::BaseMenu {
 
   protected slots:
     /// Load the object hierarchy.
+    void load();
     void loadRecursively();
+    void unload();
+    void unloadRecursively();
 
     /// Resets the object visibility.
     void resetVisibilityRecursively();
