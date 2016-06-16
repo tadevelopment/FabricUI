@@ -17,6 +17,7 @@
  
     <namespace-type name="GraphView" generate="yes">
       <object-type name="Node" />
+      <object-type name="InstBlock" />
       <object-type name="Graph" />
       <object-type name="Controller">
         <modify-function signature="Controller()" remove="all" />

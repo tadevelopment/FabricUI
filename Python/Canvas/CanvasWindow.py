@@ -681,6 +681,13 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self.dfgWidget.maybeEditNode(node)
 
+    def onInstBlockEditRequested(self, instBlock):
+        """Method that is called when a request to edit the specified block instance has
+        been emitted.
+        """
+
+        self.dfgWidget.maybeEditInstBlock(instBlock)
+
     def onFrameChanged(self, frame):
         """Method called when the user has changed frames.
 
@@ -1209,6 +1216,7 @@ class CanvasWindow(QtGui.QMainWindow):
                                DFG.DFGHotkeys.COLLAPSE_LEVEL_3)
 
             graph.nodeEditRequested.connect(self.onNodeEditRequested)
+            graph.instBlockEditRequested.connect(self.onInstBlockEditRequested)
 
             self.currentGraph = graph
 

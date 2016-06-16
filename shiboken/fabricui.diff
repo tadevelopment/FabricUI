@@ -80,3 +80,24 @@ diff -purN FabricUI.orig/fabricui_graphview_node_wrapper.cpp FabricUI/fabricui_g
  int NodeWrapper::qt_metacall(QMetaObject::Call call, int id, void** args)
  {
      int result = FabricUI::GraphView::Node::qt_metacall(call, id, args);
+diff -ru FabricUI.orig/fabricui_graphview_instblock_wrapper.cpp FabricUI/fabricui_graphview_instblock_wrapper.cpp
+--- FabricUI.orig/fabricui_graphview_instblock_wrapper.cpp	2016-06-16 09:32:38.646168688 -0400
++++ FabricUI/fabricui_graphview_instblock_wrapper.cpp	2016-06-16 09:32:57.754740709 -0400
+@@ -780,17 +780,6 @@
+     return cppResult;
+ }
+ 
+-const QMetaObject* InstBlockWrapper::metaObject() const
+-{
+-    #if QT_VERSION >= 0x040700
+-    if (QObject::d_ptr->metaObject) return QObject::d_ptr->metaObject;
+-    #endif
+-    SbkObject* pySelf = Shiboken::BindingManager::instance().retrieveWrapper(this);
+-    if (pySelf == NULL)
+-        return FabricUI::GraphView::InstBlock::metaObject();
+-    return PySide::SignalManager::retriveMetaObject(reinterpret_cast<PyObject*>(pySelf));
+-}
+-
+ int InstBlockWrapper::qt_metacall(QMetaObject::Call call, int id, void** args)
+ {
+     int result = FabricUI::GraphView::InstBlock::qt_metacall(call, id, args);
