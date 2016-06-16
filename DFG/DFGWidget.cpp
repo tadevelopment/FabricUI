@@ -512,32 +512,11 @@ QMenu* DFGWidget::sidePanelContextMenuCallback(FabricUI::GraphView::SidePanel* p
 
 void DFGWidget::onGoUpPressed()
 {
-  FTL::StrRef execPath = m_uiController->getExecPath();
-  if ( execPath.empty() )
-    return;
-
-  FTL::StrRef::Split split = execPath.rsplit('.');
-  std::string parentExecPath = split.first;
-  std::string parentExecMember = split.second;
-
-  FabricCore::DFGBinding &binding = m_uiController->getBinding();
-  FabricCore::DFGExec rootExec = binding.getExec();
-  FabricCore::DFGExec parentExec =
-    rootExec.getSubExec( parentExecPath.c_str() );
-
-  if ( parentExec.isExecBlock( parentExecMember.c_str() ) )
-  {
-    FTL::StrRef parentExecPathStr( parentExecPath );
-    split = parentExecPathStr.rsplit( '.' );
-    parentExecMember = split.second;
-    parentExecPath = split.first;
-    parentExec = rootExec.getSubExec( parentExecPath.c_str() );
-  }
-
-  if ( maybeEditExec( parentExecPath, parentExec ) )
+  std::string nodeName;
+  if ( maybePopExec( nodeName ) )
   {
     getUIGraph()->clearSelection();
-    if ( GraphView::Node *uiNode = getUIGraph()->node( parentExecMember ) )
+    if ( GraphView::Node *uiNode = getUIGraph()->node( nodeName ) )
       uiNode->setSelected( true );
   }
 }
@@ -1662,13 +1641,8 @@ bool DFGWidget::maybeEditNode(
       != FabricCore::DFGNodeType_Inst )
       return false;
 
-    std::string subExecPath = m_uiController->getExecPath();
-    if ( !subExecPath.empty() )
-      subExecPath += '.';
-    subExecPath += nodeName;
-
     FabricCore::DFGExec subExec = exec.getSubExec( nodeName.c_str() );
-    return maybeEditExec( subExecPath, subExec );
+    return maybePushExec( node->name(), subExec );
   }
   catch(FabricCore::Exception e)
   {
@@ -1690,11 +1664,7 @@ bool DFGWidget::maybeEditInstBlock(
     FabricCore::DFGExec &exec = m_uiController->getExec();
     FabricCore::DFGExec subExec =
       exec.getInstBlockExec( instName.c_str(), blockName.c_str() );
-    FabricCore::String subExecPathFabricString = subExec.getExecPath();
-    std::string subExecPath(
-      subExecPathFabricString.getCStr(), subExecPathFabricString.getSize()
-      );
-    return maybeEditExec( subExecPath, subExec );
+    return maybePushExec( node->name(), subExec );
   }
   catch(FabricCore::Exception e)
   {
@@ -1703,36 +1673,78 @@ bool DFGWidget::maybeEditInstBlock(
   return false;
 }
 
-bool DFGWidget::maybeEditExec(
-  FTL::StrRef execPath,
+bool DFGWidget::checkForUnsaved()
+{
+  if(m_klEditor->isVisible() && m_klEditor->hasUnsavedChanges())
+  {
+    QMessageBox msg(QMessageBox::Warning, "Fabric Warning", 
+      "You haven't saved the code.\nYou are going to lose the changes.\nSure?");
+
+    msg.addButton("Save Now", QMessageBox::AcceptRole);
+    msg.addButton("Ok", QMessageBox::NoRole);
+    msg.addButton("Cancel", QMessageBox::RejectRole);
+
+    msg.exec();
+
+    QString clicked = msg.clickedButton()->text();
+    if(clicked == "Cancel")
+      return false;
+    else if(clicked == "Save Now")
+    {
+      m_klEditor->save();
+      if(m_klEditor->hasUnsavedChanges())
+        return false;
+    }
+  }
+
+  return true;
+}
+
+bool DFGWidget::maybePushExec(
+  FTL::StrRef nodeName,
   FabricCore::DFGExec &exec
   )
 {
   try
   {
-    if(m_klEditor->isVisible() && m_klEditor->hasUnsavedChanges())
-    {
-      QMessageBox msg(QMessageBox::Warning, "Fabric Warning", 
-        "You haven't saved the code.\nYou are going to lose the changes.\nSure?");
+    if ( !checkForUnsaved() )
+      return false;
 
-      msg.addButton("Save Now", QMessageBox::AcceptRole);
-      msg.addButton("Ok", QMessageBox::NoRole);
-      msg.addButton("Cancel", QMessageBox::RejectRole);
+    m_priorExecStack.push_back(
+      PriorExecStackEntry(
+        m_uiController->getExec(),
+        std::string( nodeName )
+        )
+      );
+    FabricCore::String execPath = exec.getExecPath();
+    m_uiController->setExec(
+      FTL::StrRef( execPath.getCStr(), execPath.getSize() ),
+      exec
+      );
+  }
+  catch ( FabricCore::Exception e )
+  {
+    printf( "Exception: %s\n", e.getDesc_cstr() );
+    return false;
+  }
+  return true;  
+}
 
-      msg.exec();
+bool DFGWidget::maybePopExec( std::string &nodeName )
+{
+  try
+  {
+    if ( m_priorExecStack.empty() || !checkForUnsaved() )
+      return false;
 
-      QString clicked = msg.clickedButton()->text();
-      if(clicked == "Cancel")
-        return false;
-      else if(clicked == "Save Now")
-      {
-        m_klEditor->save();
-        if(m_klEditor->hasUnsavedChanges())
-          return false;
-      }
-    }
-
-    m_uiController->setExec( execPath, exec );
+    FabricCore::DFGExec exec = m_priorExecStack.back().first;
+    nodeName = m_priorExecStack.back().second;
+    m_priorExecStack.pop_back();
+    FabricCore::String execPath = exec.getExecPath();
+    m_uiController->setExec(
+      FTL::StrRef( execPath.getCStr(), execPath.getSize() ),
+      exec
+      );
   }
   catch ( FabricCore::Exception e )
   {

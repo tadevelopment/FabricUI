@@ -138,10 +138,10 @@ namespace FabricUI
       static QMenu* fixedPortContextMenuCallback(FabricUI::GraphView::FixedPort* fixedPort, void* userData);
       static QMenu* sidePanelContextMenuCallback(FabricUI::GraphView::SidePanel* panel, void* userData);
 
-      bool maybeEditExec(
-        FTL::StrRef execPath,
-        FabricCore::DFGExec &exec
-        );
+      bool maybePushExec( FTL::StrRef nodeName, FabricCore::DFGExec &exec );
+      bool maybePopExec( std::string &nodeName );
+
+      bool checkForUnsaved();
 
       QPoint m_contextPos;
       FabricUI::GraphView::Node * m_contextNode;
@@ -159,6 +159,9 @@ namespace FabricUI
       DFGTabSearchWidget * m_tabSearchWidget;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGConfig m_dfgConfig;
+
+      typedef std::pair<FabricCore::DFGExec, std::string> PriorExecStackEntry;
+      std::vector<PriorExecStackEntry> m_priorExecStack;
 
       bool m_isEditable;
 
