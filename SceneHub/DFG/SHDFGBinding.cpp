@@ -167,7 +167,7 @@ void SHDFGBinding::onDriveNodeInputPorts(RTVal event) {
         QString subExecParentPath;
         for(int i=0; i<list.size()-2; ++i) 
           subExecParentPath += list[i] + ".";
-        subExecParentPath.left(subExecParentPath.lastIndexOf("."));
+        // subExecParentPath.left(subExecParentPath.lastIndexOf("."));
         if(subExecParentPath == "") 
           subExecParentPath = ".";
 
