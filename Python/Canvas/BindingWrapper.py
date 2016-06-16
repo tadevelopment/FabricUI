@@ -80,11 +80,11 @@ class BindingWrapper:
             result.append(QtCore.QPointF(posXs[i], posYs[i]))
         return result
 
-    def portTypeStrToPortType(self, portTypeStr):
-        portTypeStrLower = portTypeStr.lower()
-        if portTypeStrLower == "io":
+    def decodePortType(self, portType):
+        portTypeLower = portType.lower()
+        if portTypeLower == "io":
             return self.client.DFG.PortTypes.IO
-        elif portTypeStrLower == "out":
+        elif portTypeLower == "out":
             return self.client.DFG.PortTypes.Out
         else:
             return self.client.DFG.PortTypes.In
@@ -377,7 +377,7 @@ class BindingWrapper:
         self,
         execPath,
         desiredPortName,
-        portTypeStr,
+        portType,
         typeSpec,
         pathToConnect,
         extDep,
@@ -390,7 +390,7 @@ class BindingWrapper:
             execPath,
             exec_,
             desiredPortName,
-            self.portTypeStrToPortType(portTypeStr),
+            self.decodePortType(portType),
             typeSpec,
             pathToConnect,
             extDep,
@@ -404,31 +404,57 @@ class BindingWrapper:
         execPath,
         instName,
         desiredPortName,
-        portTypeStr,
+        portType,
         typeSpec,
         pathToConnect,
-        connectTypeStr,
+        connectType,
         extDep,
         metaData,
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
-        portTypeStrLower = portTypeStr.lower()
-        if portTypeStrLower == "io":
-            portType = self.client.DFG.PortTypes.IO
-        elif portTypeStrLower == "out":
-            portType = self.client.DFG.PortTypes.Out
-        else:
-            portType = self.client.DFG.PortTypes.In
         cmd = DFG.DFGUICmd_AddInstPort(
             self.binding,
             execPath,
             exec_,
             instName,
             desiredPortName,
-            portType,
+            self.decodePortType(portType),
             typeSpec,
             pathToConnect,
+            self.decodePortType(connectType),
+            extDep,
+            metaData,
+            )
+        InvokeCmd(cmd, self.qUndoStack)
+        return cmd.getActualPortName()
+
+    def addInstBlockPort(
+        self,
+        execPath,
+        instName,
+        blockName,
+        desiredPortName,
+        portType,
+        typeSpec,
+        pathToConnect,
+        connectType,
+        extDep,
+        metaData,
+        ):
+        rootExec = self.binding.getExec()
+        exec_ = rootExec.getSubExec(execPath)
+        cmd = DFG.DFGUICmd_AddInstBlockPort(
+            self.binding,
+            execPath,
+            exec_,
+            instName,
+            blockName,
+            desiredPortName,
+            self.decodePortType(portType),
+            typeSpec,
+            pathToConnect,
+            self.decodePortType(connectType),
             extDep,
             metaData,
             )

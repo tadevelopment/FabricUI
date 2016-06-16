@@ -92,6 +92,14 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         result += "\""
         return result
 
+    def encodePortType(self, portType):
+        if portType == self.client.DFG.PortTypes.IO:
+            return "\"io\""
+        elif portType == self.client.DFG.PortTypes.Out:
+            return "\"out\""
+        else:
+            return "\"in\""
+
     def evalCmdWithArgs(self, cmd, encodedArgs):
         code = "binding."
         code += cmd
@@ -368,18 +376,12 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         extDep,
         metaData,
         ):
-        if portType == self.client.DFG.PortTypes.IO:
-            portTypeStr = "io"
-        elif portType == self.client.DFG.PortTypes.Out:
-            portTypeStr = "out"
-        else:
-            portTypeStr = "in"
         return self.evalCmdWithArgs(
             "addPort",
             [
                 UICmdHandler.encodeString(execPath),
                 UICmdHandler.encodeString(desiredPortName),
-                UICmdHandler.encodeString(portTypeStr),
+                self.encodePortType(portType),
                 UICmdHandler.encodeString(typeSpec),
                 UICmdHandler.encodeString(portToConnect),
                 UICmdHandler.encodeString(extDep),
@@ -397,24 +399,20 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         portType,
         typeSpec,
         pathToConnect,
+        connectType,
         extDep,
         metaData,
         ):
-        if portType == self.client.DFG.PortTypes.IO:
-            portTypeStr = "io"
-        elif portType == self.client.DFG.PortTypes.Out:
-            portTypeStr = "out"
-        else:
-            portTypeStr = "in"
         return self.evalCmdWithArgs(
             "addInstPort",
             [
                 UICmdHandler.encodeString(execPath),
                 UICmdHandler.encodeString(instName),
                 UICmdHandler.encodeString(desiredPortName),
-                UICmdHandler.encodeString(portTypeStr),
+                self.encodePortType(portType),
                 UICmdHandler.encodeString(typeSpec),
                 UICmdHandler.encodeString(pathToConnect),
+                self.encodePortType(connectType),
                 UICmdHandler.encodeString(extDep),
                 UICmdHandler.encodeString(metaData),
                 ]
@@ -431,15 +429,10 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         portType,
         typeSpec,
         pathToConnect,
+        connectType,
         extDep,
         metaData,
         ):
-        if portType == self.client.DFG.PortTypes.IO:
-            portTypeStr = "io"
-        elif portType == self.client.DFG.PortTypes.Out:
-            portTypeStr = "out"
-        else:
-            portTypeStr = "in"
         return self.evalCmdWithArgs(
             "addInstBlockPort",
             [
@@ -447,9 +440,10 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
                 UICmdHandler.encodeString(instName),
                 UICmdHandler.encodeString(blockName),
                 UICmdHandler.encodeString(desiredPortName),
-                UICmdHandler.encodeString(portTypeStr),
+                self.encodePortType(portType),
                 UICmdHandler.encodeString(typeSpec),
                 UICmdHandler.encodeString(pathToConnect),
+                self.encodePortType(connectType),
                 UICmdHandler.encodeString(extDep),
                 UICmdHandler.encodeString(metaData),
                 ]

@@ -80,15 +80,13 @@
 #include <FabricUI/DFG/DFGLogWidget.h>
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
-#include <FabricUI/DFG/DFGUICmdHandler_QUndo.h>
-#include <FabricUI/DFG/DFGUICmdHandler_Python.h>
-#include <FabricUI/DFG/DFGVEEditorOwner.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddBackDrop.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddBlock.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddFunc.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddGet.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddGraph.h>
+#include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddInstBlockPort.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddInstPort.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddNode.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddPort.h>
@@ -96,6 +94,9 @@
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_AddVar.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_Binding.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_Connect.h>
+#include <FabricUI/DFG/DFGUICmdHandler_Python.h>
+#include <FabricUI/DFG/DFGUICmdHandler_QUndo.h>
+#include <FabricUI/DFG/DFGVEEditorOwner.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_CreatePreset.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_Disconnect.h>
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_DismissLoadDiags.h>
