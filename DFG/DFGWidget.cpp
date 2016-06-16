@@ -1629,7 +1629,8 @@ bool DFGWidget::maybeEditNode(
   FabricUI::GraphView::Node * node
   )
 {
-  if ( node->isBackDropNode() )
+  if ( node->isBackDropNode()
+    || node->isBlockNode() )
     return false;
 
   try

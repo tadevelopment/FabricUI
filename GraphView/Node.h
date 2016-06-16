@@ -75,6 +75,8 @@ namespace FabricUI
         { return m_nodeType == NodeType_Inst; }
       bool isBackDropNode() const
         { return m_nodeType == NodeType_BackDrop; }
+      bool isBlockNode() const
+        { return m_nodeType == NodeType_Block; }
 
       Graph *graph()
         { return m_graph; }
