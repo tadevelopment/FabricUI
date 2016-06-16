@@ -605,6 +605,7 @@ class ScriptEditor(QtGui.QWidget):
             sys.stderr.writelines(
                 traceback.format_exception(exc_type, exc_value, exc_traceback)
                 )
+            result = None
         sys.stderr = old_stderr
         sys.stdout = old_stdout
         self.__echoStackIndexChanges = oldEchoStackIndexChanges
