@@ -266,6 +266,10 @@ namespace FabricUI
       void onInstExecEditWouldSplitFromPresetMayHaveChanged(
         FTL::CStrRef instName
         );
+      void onInstBlockExecEditWouldSplitFromPresetMayHaveChanged(
+        FTL::CStrRef instName,
+        FTL::CStrRef blockName
+        );
 
     private:
 

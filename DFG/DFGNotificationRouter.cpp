@@ -392,6 +392,12 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
       FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
       onInstExecEditWouldSplitFromPresetMayHaveChanged( instName );
     }
+    else if (descStr == FTL_STR("instBlockExecEditWouldSplitFromPresetMayHaveChanged") )
+    {
+      FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
+      FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+      onInstBlockExecEditWouldSplitFromPresetMayHaveChanged( instName, blockName );
+    }
     else if( descStr == FTL_STR("instBlockInserted") )
     {
       onInstBlockInserted(
@@ -2130,6 +2136,13 @@ void DFGNotificationRouter::onInstExecEditWouldSplitFromPresetMayHaveChanged(
     uiNode->setTitle( subExec.getTitle() );
     uiNode->removeTitleSuffix();
   }
+}
+
+void DFGNotificationRouter::onInstBlockExecEditWouldSplitFromPresetMayHaveChanged(
+  FTL::CStrRef instName,
+  FTL::CStrRef blockName
+  )
+{
 }
 
 void DFGNotificationRouter::checkAndFixPanelPortOrder()

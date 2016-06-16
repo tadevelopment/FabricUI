@@ -38,6 +38,7 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
     handlerMap[FTL_STR("execWillDetachPreset")] = &DFGExecNotifier::handler_execWillDetachPreset;
     handlerMap[FTL_STR("extDepsChanged")] = &DFGExecNotifier::handler_extDepsChanged;
     handlerMap[FTL_STR("funcCodeChanged")] = &DFGExecNotifier::handler_funcCodeChanged;
+    handlerMap[FTL_STR("instBlockExecEditWouldSplitFromPresetMayHaveChanged")] = &DFGExecNotifier::handler_instBlockExecEditWouldSplitFromPresetMayHaveChanged;
     handlerMap[FTL_STR("instBlockInserted")] = &DFGExecNotifier::handler_instBlockInserted;
     handlerMap[FTL_STR("instBlockPortInserted")] = &DFGExecNotifier::handler_instBlockPortInserted;
     handlerMap[FTL_STR("instBlockPortRemoved")] = &DFGExecNotifier::handler_instBlockPortRemoved;
@@ -382,6 +383,14 @@ void DFGExecNotifier::handler_instExecEditWouldSplitFromPresetMayHaveChanged( FT
   FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
 
   emit instExecEditWouldSplitFromPresetMayHaveChanged( instName );
+}
+
+void DFGExecNotifier::handler_instBlockExecEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+
+  emit instBlockExecEditWouldSplitFromPresetMayHaveChanged( instName, blockName );
 }
 
 void DFGExecNotifier::handler_execMetadataChanged( FTL::JSONObject const *jsonObject )

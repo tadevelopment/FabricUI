@@ -223,6 +223,11 @@ signals:
     FTL::CStrRef blockName
     );
 
+  void instBlockExecEditWouldSplitFromPresetMayHaveChanged(
+    FTL::CStrRef instName,
+    FTL::CStrRef blockName
+    );
+
   // The executable's nodes' ports
 
   void nodePortInserted(
@@ -319,6 +324,7 @@ private:
   void handler_execWillDetachPreset( FTL::JSONObject const *jsonObject );
   void handler_extDepsChanged( FTL::JSONObject const *jsonObject );
   void handler_funcCodeChanged( FTL::JSONObject const *jsonObject );
+  void handler_instBlockExecEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject );
   void handler_instBlockInserted( FTL::JSONObject const *jsonObject );
   void handler_instBlockPortInserted( FTL::JSONObject const *jsonObject );
   void handler_instBlockPortRemoved( FTL::JSONObject const *jsonObject );
