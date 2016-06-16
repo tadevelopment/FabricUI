@@ -80,8 +80,7 @@ class BindingWrapper:
             result.append(QtCore.QPointF(posXs[i], posYs[i]))
         return result
 
-    @staticmethod
-    def portTypeStrToPortType(portTypeStr):
+    def portTypeStrToPortType(self, portTypeStr):
         portTypeStrLower = portTypeStr.lower()
         if portTypeStrLower == "io":
             return self.client.DFG.PortTypes.IO
@@ -380,7 +379,7 @@ class BindingWrapper:
         desiredPortName,
         portTypeStr,
         typeSpec,
-        portToConnect,
+        pathToConnect,
         extDep,
         metaData,
         ):
@@ -393,8 +392,7 @@ class BindingWrapper:
             desiredPortName,
             self.portTypeStrToPortType(portTypeStr),
             typeSpec,
-            portToConnect,
-            self.portTypeStrToPortType(connectTypeStr),
+            pathToConnect,
             extDep,
             metaData,
             )
