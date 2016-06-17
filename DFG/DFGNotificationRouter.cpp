@@ -1119,7 +1119,7 @@ void DFGNotificationRouter::onExecPortInserted(
         color,
         portName
         );
-      if ( portIndex == 0 )
+      if ( jsonObject->getBooleanOr( FTL_STR("isDepsPort"), false ) )
         uiInPort->disableEdits();
       uiPanel->addPort( uiInPort );
     }
@@ -1138,7 +1138,7 @@ void DFGNotificationRouter::onExecPortInserted(
         color,
         portName
         );
-      if ( portIndex == 0 )
+      if ( jsonObject->getBooleanOr( FTL_STR("isDepsPort"), false ) )
         uiOutPort->disableEdits();
       uiPanel->addPort( uiOutPort );
     }
@@ -1197,7 +1197,7 @@ void DFGNotificationRouter::onExecFixedPortInserted(
         color,
         portName
         );
-      if ( portIndex == 0 )
+      if ( jsonObject->getBooleanOr( FTL_STR("isDepsPort"), false ) )
         uiInFixedPort->disableEdits();
       uiPanel->addFixedPort( uiInFixedPort );
     }
@@ -1216,7 +1216,7 @@ void DFGNotificationRouter::onExecFixedPortInserted(
         color,
         portName
         );
-      if ( portIndex == 0 )
+      if ( jsonObject->getBooleanOr( FTL_STR("isDepsPort"), false ) )
         uiOutFixedPort->disableEdits();
       uiPanel->addFixedPort( uiOutFixedPort );
     }
