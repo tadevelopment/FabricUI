@@ -35,7 +35,76 @@ namespace FabricUI {
   }
 
   namespace DFG 
-  { 
+  {
+    class DFGVEEditorOwner;
+
+    class DFGVEEditorOwner_NotifProxy : public QObject
+    {
+    public:
+      
+      DFGVEEditorOwner_NotifProxy(
+        DFGVEEditorOwner *dst,
+        QObject *parent
+        )
+        : QObject( parent )
+        , m_dst( dst )
+        {}
+
+      virtual ~DFGVEEditorOwner_NotifProxy() {}
+
+    protected:
+
+      DFGVEEditorOwner *m_dst;
+    };
+
+    class DFGVEEditorOwner_BindingNotifProxy :
+      public DFGVEEditorOwner_NotifProxy
+    {
+      Q_OBJECT
+
+    public:
+
+      DFGVEEditorOwner_BindingNotifProxy(
+        DFGVEEditorOwner *dst,
+        QObject *parent
+        )
+        : DFGVEEditorOwner_NotifProxy( dst, parent )
+        {}
+
+    public slots:
+
+      void onBindingArgValueChanged(
+        unsigned index,
+        FTL::CStrRef name
+        );
+
+      void onBindingArgInserted(
+        unsigned index,
+        FTL::CStrRef name,
+        FTL::CStrRef type
+        );
+
+      void onBindingArgRenamed(
+        unsigned argIndex,
+        FTL::CStrRef oldArgName,
+        FTL::CStrRef newArgName
+        );
+
+      void onBindingArgRemoved(
+        unsigned index,
+        FTL::CStrRef name
+        );
+
+      void onBindingArgTypeChanged(
+        unsigned index,
+        FTL::CStrRef name,
+        FTL::CStrRef newType
+        );
+
+      void onBindingArgsReordered(
+        FTL::ArrayRef<unsigned> newOrder
+        );
+    };
 
     class DFGVEEditorOwner : public ValueEditor::VEEditorOwner
     {
@@ -47,18 +116,6 @@ namespace FabricUI {
       ~DFGVEEditorOwner();
 
       virtual void initConnections();
-
-    public slots :
-      virtual void onOutputsChanged(); // Call after each evaluation
-
-    protected slots:
-
-      void onControllerBindingChanged(
-        FabricCore::DFGBinding const &binding
-        );
-
-      virtual void onSidePanelInspectRequested();
-      void onNodeInspectRequested(FabricUI::GraphView::Node *node);
 
       void onBindingArgValueChanged( unsigned index, FTL::CStrRef name );
 
@@ -88,6 +145,18 @@ namespace FabricUI {
       void onBindingArgsReordered(
         FTL::ArrayRef<unsigned> newOrder
         );
+
+    public slots :
+      virtual void onOutputsChanged(); // Call after each evaluation
+
+    protected slots:
+
+      void onControllerBindingChanged(
+        FabricCore::DFGBinding const &binding
+        );
+
+      virtual void onSidePanelInspectRequested();
+      void onNodeInspectRequested(FabricUI::GraphView::Node *node);
 
       void onExecNodePortInserted(
         FTL::CStrRef nodeName,
@@ -179,6 +248,7 @@ namespace FabricUI {
       FabricUI::GraphView::Graph * m_setGraph;
       QSharedPointer<DFG::DFGNotifier> m_notifier;
       QSharedPointer<DFG::DFGNotifier> m_subNotifier;
+      DFGVEEditorOwner_NotifProxy *m_notifProxy;
     };
 }
 }
