@@ -304,7 +304,7 @@ void DFGController::cmdSetNodeComment(
   QString comment
   )
 {
-  if(!validPresetSplit())
+  if ( !validPresetSplit() )
     return;
 
   m_cmdHandler->dfgDoSetNodeComment(
@@ -321,8 +321,10 @@ void DFGController::setNodeCommentExpanded(
   bool expanded
   )
 {
-  m_exec.setNodeMetadata(
-    nodeName.toUtf8().constData(),
+  QByteArray nodeNameBA = nodeName.toUtf8();
+  char const *nodeNameCStr = nodeNameBA.constData();
+  m_exec.setItemMetadata(
+    nodeNameCStr,
     "uiCommentExpanded",
     expanded? "true": "",
     false,

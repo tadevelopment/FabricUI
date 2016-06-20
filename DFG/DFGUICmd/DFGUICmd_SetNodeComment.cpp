@@ -27,7 +27,7 @@ void DFGUICmd_SetNodeComment::invoke(
   unsigned &coreUndoCount
   )
 {
-  getExec().setNodeMetadata(
+  getExec().setItemMetadata(
     nodeName.c_str(),
     "uiComment",
     comment.c_str(),

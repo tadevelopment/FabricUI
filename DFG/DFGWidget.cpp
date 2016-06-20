@@ -269,26 +269,31 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   return result;
 }
 
-QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, void* userData)
+QMenu *DFGWidget::nodeContextMenuCallback(
+  FabricUI::GraphView::Node *uiNode,
+  void *dfgWidgetVoidPtr
+  )
 {
   try
   {
-    DFGWidget * graphWidget = (DFGWidget*)userData;
+    DFGWidget *dfgWidget = static_cast<DFGWidget *>( dfgWidgetVoidPtr );
 
-    FabricCore::DFGExec &exec = graphWidget->m_uiController->getExec();
+    FabricCore::DFGExec &exec = dfgWidget->m_uiController->getExec();
 
-    GraphView::Graph * graph = graphWidget->m_uiGraph;
+    GraphView::Graph * graph = dfgWidget->m_uiGraph;
     if (graph->controller() == NULL)
       return NULL;
-    graphWidget->m_contextNode = uiNode;
+    dfgWidget->m_contextNode = uiNode;
 
     unsigned int varNodeCount = 0;
     unsigned int getNodeCount = 0;
     unsigned int setNodeCount = 0;
     unsigned int instNodeCount = 0;
     unsigned int userNodeCount = 0;
+    unsigned int blockNodeCount = 0;
 
-    const std::vector<GraphView::Node*> & nodes = graphWidget->getUIController()->graph()->selectedNodes();
+    const std::vector<GraphView::Node*> & nodes =
+      dfgWidget->getUIController()->graph()->selectedNodes();
     for(unsigned int i=0;i<nodes.size();i++)
     {
       if (nodes[i]->isBackDropNode())
@@ -298,18 +303,23 @@ QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, voi
       }
 
       char const * nodeName = nodes[i]->name().c_str();
-      FabricCore::DFGNodeType dfgNodeType = exec.getNodeType( nodeName );
-      
-      if ( dfgNodeType == FabricCore::DFGNodeType_Var)
-        varNodeCount++;
-      else if ( dfgNodeType == FabricCore::DFGNodeType_Get)
-        getNodeCount++;
-      else if ( dfgNodeType == FabricCore::DFGNodeType_Set)
-        setNodeCount++;
-      else if ( dfgNodeType == FabricCore::DFGNodeType_Inst)
-        instNodeCount++;
+      if ( exec.isExecBlock( nodeName ) )
+        ++blockNodeCount;
       else
-        userNodeCount++;
+      {
+        FabricCore::DFGNodeType dfgNodeType = exec.getNodeType( nodeName );
+        
+        if ( dfgNodeType == FabricCore::DFGNodeType_Var)
+          varNodeCount++;
+        else if ( dfgNodeType == FabricCore::DFGNodeType_Get)
+          getNodeCount++;
+        else if ( dfgNodeType == FabricCore::DFGNodeType_Set)
+          setNodeCount++;
+        else if ( dfgNodeType == FabricCore::DFGNodeType_Inst)
+          instNodeCount++;
+        else
+          userNodeCount++;
+      }
     }
 
     bool onlyInstNodes = instNodeCount == nodes.size();
@@ -344,13 +354,16 @@ QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, voi
       needSeparator = true;
     }
      
-    if (nodes.size() == 1 && !someVarNodes && !someGetNodes && !someSetNodes)
+    if ( nodes.size() == 1
+      && !someVarNodes
+      && !someGetNodes
+      && !someSetNodes )
     {
       result->addAction(DFG_EDIT_PRESET_PROPERTIES);
       needSeparator = true;
     }
 
-    if (graphWidget->isEditable())
+    if ( dfgWidget->isEditable() )
     {
       result->addAction(DFG_DELETE_PRESET);
       needSeparator = true;
@@ -362,17 +375,17 @@ QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, voi
     if (!someVarNodes)
     {
       result->addAction(DFG_COPY_PRESET);
-      if (graphWidget->isEditable())
+      if (dfgWidget->isEditable())
         result->addAction(DFG_CUT_PRESET);
     }
     else
     {
       result->addAction(DFG_SELECT_ALL_PRESET);
-      if (graphWidget->isEditable())
+      if (dfgWidget->isEditable())
        result->addAction(DFG_PASTE_PRESET);
     }
 
-    if (nodes.size() && graphWidget->isEditable())
+    if (nodes.size() && dfgWidget->isEditable())
     {
       result->addSeparator();
       result->addAction(DFG_DISCONNECT_ALL_PORTS);
@@ -383,12 +396,12 @@ QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, voi
       if (instNodeCount == 1)
       {
         result->addSeparator();
-        if (graphWidget->isEditable())
+        if (dfgWidget->isEditable())
           result->addAction(DFG_CREATE_PRESET);
         result->addAction(DFG_EXPORT_GRAPH);
       }
 
-      if (graphWidget->isEditable())
+      if (dfgWidget->isEditable())
       {
         result->addSeparator();
         result->addAction(DFG_IMPLODE_NODE);
@@ -410,14 +423,14 @@ QMenu* DFGWidget::nodeContextMenuCallback(FabricUI::GraphView::Node* uiNode, voi
       }
     }
 
-    if (nodes.size() == 1 && graphWidget->isEditable())
+    if (nodes.size() == 1 && dfgWidget->isEditable())
     {
       result->addSeparator();
       result->addAction(DFG_SET_COMMENT);
       result->addAction(DFG_REMOVE_COMMENT);
     }
 
-    graphWidget->connect(result, SIGNAL(triggered(QAction*)), graphWidget, SLOT(onNodeAction(QAction*)));
+    dfgWidget->connect(result, SIGNAL(triggered(QAction*)), dfgWidget, SLOT(onNodeAction(QAction*)));
     return result;
   }
   catch(FabricCore::Exception e)
