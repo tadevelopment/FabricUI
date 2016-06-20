@@ -39,7 +39,7 @@ namespace FabricUI
 
       virtual ~DFGCombinedWidget();
 
-      virtual void init(      
+      void init(      
         FabricCore::Client &client,
         FabricServices::ASTWrapper::KLASTManager * manager,
         FabricCore::DFGHost &host,
