@@ -124,7 +124,7 @@ protected:
     appendDesc_Path( refName, desc );
   }
 
-  QStringList adjustNewNodes(
+  QStringList adjustNewItems(
     FabricCore::String const &newNodeNamesJSON,
     QPointF targetPos,
     unsigned &coreUndoCount

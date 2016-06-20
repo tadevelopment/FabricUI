@@ -613,7 +613,7 @@ QStringList DFGUICmdHandler_QUndo::dfgDoPaste(
       cursorPos
       );
   m_qUndoStack->push( new WrappedCommand( cmd ) );
-  return cmd->getPastedNodeNames();
+  return cmd->getPastedItemNames();
 }
 
 void DFGUICmdHandler_QUndo::dfgDoSetArgValue(

@@ -36,7 +36,7 @@ QStringList DFGUICmd_ExplodeNode::invoke(
     exec.explodeNode( nodeName.c_str() );
   ++coreUndoCount;
 
-  return adjustNewNodes(
+  return adjustNewItems(
     newNodeNamesJSON,
     oldTopLeftPos,
     coreUndoCount

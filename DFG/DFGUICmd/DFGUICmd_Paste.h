@@ -32,10 +32,10 @@ public:
   static FTL::CStrRef CmdName()
     { return DFG_CMD_NAME("Paste"); }
 
-  QStringList getPastedNodeNames()
+  QStringList getPastedItemNames()
   {
     assert( wasInvoked() );
-    return m_pastedNodeNames;
+    return m_pastedItemNames;
   }
 
 protected:
@@ -54,7 +54,7 @@ private:
   QString m_json;
   QPointF m_cursorPos;
 
-  QStringList m_pastedNodeNames;
+  QStringList m_pastedItemNames;
 };
 
 FABRIC_UI_DFG_NAMESPACE_END

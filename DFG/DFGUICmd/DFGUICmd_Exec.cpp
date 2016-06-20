@@ -8,34 +8,34 @@
 
 FABRIC_UI_DFG_NAMESPACE_BEGIN
 
-QStringList DFGUICmd_Exec::adjustNewNodes(
-  FabricCore::String const &newNodeNamesJSON,
+QStringList DFGUICmd_Exec::adjustNewItems(
+  FabricCore::String const &newItemNamesJSON,
   QPointF targetPos,
   unsigned &coreUndoCount
   )
 {
-  FTL::OwnedPtr<FTL::JSONArray const> newNodeNamesJA(
+  FTL::OwnedPtr<FTL::JSONArray const> newItemNamesJA(
     FTL::JSONValue::Decode(
-      newNodeNamesJSON.getCString()
+      newItemNamesJSON.getCString()
       )->cast<FTL::JSONArray>()
     );
 
-  size_t count = newNodeNamesJA->size();
-  std::vector<FTL::CStrRef> newNodeNames;
-  newNodeNames.reserve( count );
+  size_t count = newItemNamesJA->size();
+  std::vector<FTL::CStrRef> newItemNames;
+  newItemNames.reserve( count );
   for ( size_t i = 0; i < count; ++i )
   {
-    FTL::JSONValue const *newNodeNameJV = newNodeNamesJA->get( i );
-    newNodeNames.push_back( newNodeNameJV->getStringValue() );
+    FTL::JSONValue const *newNodeNameJV = newItemNamesJA->get( i );
+    newItemNames.push_back( newNodeNameJV->getStringValue() );
   }
 
   if ( count > 0 )
   {
     std::vector<QPointF> newTopLeftPoss;
-    newTopLeftPoss.reserve( newNodeNames.size() );
+    newTopLeftPoss.reserve( newItemNames.size() );
     for ( size_t i = 0; i < count; ++i )
       newTopLeftPoss.push_back(
-        getNodeUIGraphPos( newNodeNames[i] )
+        getNodeUIGraphPos( newItemNames[i] )
         );
 
     QPointF avgTopLeftPos;
@@ -49,35 +49,35 @@ QStringList DFGUICmd_Exec::adjustNewNodes(
       newTopLeftPoss[i] += delta;
 
     moveNodes(
-      newNodeNames,
+      newItemNames,
       newTopLeftPoss,
       coreUndoCount
       );
   }
 
-  QStringList newNodeNames_Qt;
-  newNodeNames_Qt.reserve( newNodeNames.size() );
-  for ( size_t i = 0; i < newNodeNames.size(); ++i )
+  QStringList newItemNames_Qt;
+  newItemNames_Qt.reserve( newItemNames.size() );
+  for ( size_t i = 0; i < newItemNames.size(); ++i )
   {
-    FTL::CStrRef newNodeName = newNodeNames[i];
-    newNodeNames_Qt.append(
+    FTL::CStrRef newNodeName = newItemNames[i];
+    newItemNames_Qt.append(
       QString::fromUtf8( newNodeName.data(), newNodeName.size() )
       );
   }
-  return newNodeNames_Qt;
+  return newItemNames_Qt;
 }
 
 void DFGUICmd_Exec::moveNodes(
-  FTL::ArrayRef<FTL::CStrRef> nodeNames,
+  FTL::ArrayRef<FTL::CStrRef> itemNames,
   FTL::ArrayRef<QPointF> newTopLeftPoss,
   unsigned &coreUndoCount
   )
 {
   FabricCore::DFGExec &exec = getExec();
 
-  for ( size_t i = 0; i < nodeNames.size(); ++i )
+  for ( size_t i = 0; i < itemNames.size(); ++i )
   {
-    FTL::CStrRef nodeName = nodeNames[i];
+    FTL::CStrRef itemName = itemNames[i];
     QPointF newTopLeftPos = newTopLeftPoss[i];
 
     std::string json;
@@ -94,7 +94,7 @@ void DFGUICmd_Exec::moveNodes(
       }
     }
     exec.setItemMetadata(
-      nodeName.c_str(),
+      itemName.c_str(),
       "uiGraphPos",
       json.c_str(),
       true, // canUndo
@@ -105,14 +105,14 @@ void DFGUICmd_Exec::moveNodes(
 }
 
 QPointF DFGUICmd_Exec::getNodeUIGraphPos( 
-  FTL::CStrRef nodeName
+  FTL::CStrRef itemName
   )
 {
   FabricCore::DFGExec &exec = getExec();
 
   QPointF result;
   FTL::CStrRef uiGraphPosJSON =
-    exec.getNodeMetadata( nodeName.c_str(), "uiGraphPos" );
+    exec.getItemMetadata( itemName.c_str(), "uiGraphPos" );
   if ( !uiGraphPosJSON.empty() )
   {
     FTL::OwnedPtr<FTL::JSONValue const> uiGraphPosJV(
