@@ -42,6 +42,7 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
     handlerMap[FTL_STR("instBlockInserted")] = &DFGExecNotifier::handler_instBlockInserted;
     handlerMap[FTL_STR("instBlockPortInserted")] = &DFGExecNotifier::handler_instBlockPortInserted;
     handlerMap[FTL_STR("instBlockPortRemoved")] = &DFGExecNotifier::handler_instBlockPortRemoved;
+    handlerMap[FTL_STR("instBlockPortRenamed")] = &DFGExecNotifier::handler_instBlockPortRenamed;
     handlerMap[FTL_STR("instBlockPortResolvedTypeChanged")] = &DFGExecNotifier::handler_instBlockPortResolvedTypeChanged;
     handlerMap[FTL_STR("instBlockPortsReordered")] = &DFGExecNotifier::handler_instBlockPortsReordered;
     handlerMap[FTL_STR("instBlockRemoved")] = &DFGExecNotifier::handler_instBlockRemoved;
@@ -153,6 +154,27 @@ void DFGExecNotifier::handler_instBlockPortInserted( FTL::JSONObject const *json
       )->getString( FTL_STR("name") );
 
   emit instBlockPortInserted( instName, blockName, portName );
+}
+
+void DFGExecNotifier::handler_instBlockPortRenamed( FTL::JSONObject const *jsonObject )
+{
+  unsigned instIndex = jsonObject->getSInt32( FTL_STR("instIndex") );
+  FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
+  unsigned blockIndex = jsonObject->getSInt32( FTL_STR("blockIndex") );
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+  unsigned portIndex = jsonObject->getSInt32( FTL_STR("portIndex") );
+  FTL::CStrRef oldPortName = jsonObject->getString( FTL_STR("oldPortName") );
+  FTL::CStrRef newPortName = jsonObject->getString( FTL_STR("portName") );
+
+  emit instBlockPortRenamed(
+    instIndex,
+    instName,
+    blockIndex,
+    blockName,
+    portIndex,
+    oldPortName,
+    newPortName
+    );
 }
 
 void DFGExecNotifier::handler_instBlockPortRemoved( FTL::JSONObject const *jsonObject )

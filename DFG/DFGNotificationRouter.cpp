@@ -382,6 +382,14 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
             );
       }
     }
+    else if (descStr == FTL_STR("instBlockPortRenamed") )
+    {
+      FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
+      int blockIndex = jsonObject->getSInt32( FTL_STR("blockIndex") );
+      int portIndex = jsonObject->getSInt32( FTL_STR("portIndex") );
+      FTL::CStrRef newPortName = jsonObject->getString( FTL_STR("portName") );
+      onInstBlockPortRenamed( instName, blockIndex, portIndex, newPortName );
+    }
     else if (descStr == FTL_STR("execDidAttachPreset") )
     {
       FTL::CStrRef presetFilePath = jsonObject->getString( FTL_STR("presetFilePath") );
@@ -2097,6 +2105,33 @@ void DFGNotificationRouter::onNodePortsReordered(
   }
 
   uiNode->reorderPins(names);
+}
+
+void DFGNotificationRouter::onInstBlockPortRenamed(
+  FTL::CStrRef instName,
+  unsigned blockIndex, 
+  unsigned portIndex,
+  FTL::CStrRef newPortName
+  )
+{
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+
+  GraphView::Node *uiNode = uiGraph->node( instName );
+  if ( !uiNode )
+    return;
+
+  GraphView::InstBlock *uiInstBlock = uiNode->instBlockAtIndex( blockIndex );
+  if ( !uiInstBlock )
+    return;
+
+  GraphView::InstBlockPort *uiInstBlockPort =
+    uiInstBlock->instBlockPort( portIndex );
+  if ( !uiInstBlockPort )
+    return;
+
+  uiInstBlockPort->setName( newPortName );
 }
 
 void DFGNotificationRouter::onInstBlockPortsReordered(
