@@ -248,6 +248,12 @@ namespace FabricUI
         unsigned int indexCount,
         unsigned int * indices
         );
+      void onInstBlockPortsReordered(
+        FTL::CStrRef instName,
+        unsigned int blockIndex,
+        unsigned int indexCount,
+        unsigned int * indices
+        );
       void onExecDidAttachPreset(
         FTL::CStrRef presetFilePath
         );

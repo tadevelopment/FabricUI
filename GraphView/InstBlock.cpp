@@ -80,6 +80,23 @@ void InstBlock::insertInstBlockPortAtIndex(
   m_layout->insertItem( 1 + index, instBlockPort );
 }
 
+void InstBlock::reorderInstBlockPorts(
+  FTL::ArrayRef<unsigned> newOrder
+  )
+{
+  assert( newOrder.size() == m_instBlockPorts.size() );
+  InstBlockPortVec newInstBlockPorts;
+  newInstBlockPorts.resize( newOrder.size() );
+  for ( unsigned i = 0; i < m_instBlockPorts.size(); ++i )
+    newInstBlockPorts[i] = m_instBlockPorts[newOrder[i]];
+  newInstBlockPorts.swap( m_instBlockPorts );
+
+  while ( m_layout->count() > 1 )
+    m_layout->removeAt( m_layout->count() - 1 );
+  for ( unsigned i = 0; i < m_instBlockPorts.size(); ++i )
+    m_layout->insertItem( 1 + i, m_instBlockPorts[i] );
+}
+
 void InstBlock::removeInstBlockPortAtIndex(
   unsigned index
   )

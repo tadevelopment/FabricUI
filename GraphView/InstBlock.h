@@ -5,6 +5,7 @@
 #ifndef __UI_GraphView_InstBlock__
 #define __UI_GraphView_InstBlock__
 
+#include <FTL/ArrayRef.h>
 #include <FTL/StrRef.h>
 #include <QtGui/QGraphicsWidget>
 
@@ -20,6 +21,8 @@ class Node;
 class InstBlock : public QGraphicsWidget
 {
   Q_OBJECT
+
+  typedef std::vector<InstBlockPort *> InstBlockPortVec;
 
 public:
 
@@ -54,6 +57,9 @@ public:
     unsigned index,
     InstBlockPort *instBlockPort
     );
+  void reorderInstBlockPorts(
+    FTL::ArrayRef<unsigned> newOrder
+    );
   void removeInstBlockPortAtIndex(
     unsigned index
     );
@@ -84,7 +90,7 @@ private:
   Node *m_node;
   std::string m_name;
   InstBlockHeader *m_instBlockHeader;
-  std::vector<InstBlockPort *> m_instBlockPorts;
+  InstBlockPortVec m_instBlockPorts;
   QGraphicsLinearLayout *m_layout;
   qreal m_pinRadius;
 };

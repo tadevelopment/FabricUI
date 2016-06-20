@@ -361,6 +361,27 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
           onNodePortsReordered( nodeName, indices.size(), &indices[ 0 ] );
       }
     }
+    else if (descStr == FTL_STR("instBlockPortsReordered") )
+    {
+      FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
+      int blockIndex = jsonObject->getSInt32( FTL_STR("blockIndex") );
+      const FTL::JSONArray * newOrder = jsonObject->maybeGetArray( FTL_STR("newOrder") );
+      if ( newOrder )
+      {
+        std::vector<unsigned int> indices;
+        for( size_t i = 0; i < newOrder->size(); i++ )
+        {
+          const FTL::JSONValue * indexVal = newOrder->get( i );
+          unsigned int index = indexVal->getSInt32Value();
+          indices.push_back( index );
+        }
+
+        if( indices.size() > 0 )
+          onInstBlockPortsReordered(
+            instName, blockIndex, indices.size(), &indices[0]
+            );
+      }
+    }
     else if (descStr == FTL_STR("execDidAttachPreset") )
     {
       FTL::CStrRef presetFilePath = jsonObject->getString( FTL_STR("presetFilePath") );
@@ -2076,6 +2097,30 @@ void DFGNotificationRouter::onNodePortsReordered(
   }
 
   uiNode->reorderPins(names);
+}
+
+void DFGNotificationRouter::onInstBlockPortsReordered(
+  FTL::CStrRef instName,
+  unsigned blockIndex, 
+  unsigned int indexCount,
+  unsigned int * indices
+  )
+{
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+
+  GraphView::Node *uiNode = uiGraph->node( instName );
+  if ( !uiNode )
+    return;
+
+  GraphView::InstBlock *uiInstBlock = uiNode->instBlockAtIndex( blockIndex );
+  if ( !uiInstBlock )
+    return;
+
+  uiInstBlock->reorderInstBlockPorts(
+    FTL::ArrayRef<unsigned>( indices, indexCount )
+    );
 }
 
 void DFGNotificationRouter::onExecDidAttachPreset(
