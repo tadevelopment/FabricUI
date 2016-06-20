@@ -26,6 +26,7 @@ DFGVEEditorOwner::DFGVEEditorOwner( DFGWidget * dfgWidget )
   : m_timelinePortIndex( -1 )
   , m_dfgWidget(dfgWidget)
   , m_setGraph( NULL )
+  , m_notifProxy( NULL )
 {
 }
 
@@ -78,6 +79,13 @@ void DFGVEEditorOwner::setModelRoot(
   FabricUI::ModelItems::BindingModelItem *bindingModelItem
   )
 {
+  if ( m_notifProxy )
+  {
+    m_notifProxy->setParent( NULL );
+    delete m_notifProxy;
+    m_notifProxy = NULL;
+  }
+
   m_subNotifier.clear();
   m_notifier.clear();
 
@@ -88,40 +96,44 @@ void DFGVEEditorOwner::setModelRoot(
   {
     m_notifier = dfgController->getBindingNotifier();
 
+    DFGVEEditorOwner_BindingNotifProxy *notifProxy =
+      new DFGVEEditorOwner_BindingNotifProxy( this, this );
+    m_notifProxy = notifProxy;
+
     connect(
       m_notifier.data(),
       SIGNAL( argInserted( unsigned, FTL::CStrRef, FTL::CStrRef ) ),
-      this,
+      notifProxy,
       SLOT( onBindingArgInserted( unsigned, FTL::CStrRef, FTL::CStrRef ) )
       );
     connect(
       m_notifier.data(),
       SIGNAL( argRenamed( unsigned, FTL::CStrRef, FTL::CStrRef ) ),
-      this,
+      notifProxy,
       SLOT( onBindingArgRenamed( unsigned, FTL::CStrRef, FTL::CStrRef ) )
       );
     connect(
       m_notifier.data(),
       SIGNAL( argRemoved( unsigned, FTL::CStrRef ) ),
-      this,
+      notifProxy,
       SLOT( onBindingArgRemoved( unsigned, FTL::CStrRef ) )
       );
     connect(
       m_notifier.data(),
       SIGNAL( argTypeChanged( unsigned, FTL::CStrRef, FTL::CStrRef ) ),
-      this,
+      notifProxy,
       SLOT( onBindingArgTypeChanged( unsigned, FTL::CStrRef, FTL::CStrRef ) )
       );
     connect(
       m_notifier.data(),
       SIGNAL( argValueChanged( unsigned, FTL::CStrRef ) ),
-      this,
+      notifProxy,
       SLOT( onBindingArgValueChanged( unsigned, FTL::CStrRef ) )
       );
     connect(
       m_notifier.data(),
       SIGNAL( argsReordered( FTL::ArrayRef<unsigned> ) ),
-      this,
+      notifProxy,
       SLOT( onBindingArgsReordered( FTL::ArrayRef<unsigned> ) )
       );
 
@@ -147,6 +159,13 @@ void DFGVEEditorOwner::setModelRoot(
   FabricUI::ModelItems::NodeModelItem *nodeModelItem
   )
 {
+  if ( m_notifProxy )
+  {
+    m_notifProxy->setParent( NULL );
+    delete m_notifProxy;
+    m_notifProxy = NULL;
+  }
+
   m_notifier.clear();
   m_subNotifier.clear();
 
@@ -875,4 +894,54 @@ void DFGVEEditorOwner::onGraphSet( FabricUI::GraphView::Graph * graph )
 
     m_setGraph = graph;
   }
+}
+
+void DFGVEEditorOwner_BindingNotifProxy::onBindingArgValueChanged(
+  unsigned index,
+  FTL::CStrRef name
+  )
+{
+  m_dst->onBindingArgValueChanged( index, name );
+}
+
+void DFGVEEditorOwner_BindingNotifProxy::onBindingArgInserted(
+  unsigned index,
+  FTL::CStrRef name,
+  FTL::CStrRef type
+  )
+{
+  m_dst->onBindingArgInserted( index, name, type );
+}
+
+void DFGVEEditorOwner_BindingNotifProxy::onBindingArgRenamed(
+  unsigned argIndex,
+  FTL::CStrRef oldArgName,
+  FTL::CStrRef newArgName
+  )
+{
+  m_dst->onBindingArgRenamed( argIndex, oldArgName, newArgName );
+}
+
+void DFGVEEditorOwner_BindingNotifProxy::onBindingArgRemoved(
+  unsigned index,
+  FTL::CStrRef name
+  )
+{
+  m_dst->onBindingArgRemoved( index, name );
+}
+
+void DFGVEEditorOwner_BindingNotifProxy::onBindingArgTypeChanged(
+  unsigned index,
+  FTL::CStrRef name,
+  FTL::CStrRef newType
+  )
+{
+  m_dst->onBindingArgTypeChanged( index, name, newType );
+}
+
+void DFGVEEditorOwner_BindingNotifProxy::onBindingArgsReordered(
+  FTL::ArrayRef<unsigned> newOrder
+  )
+{
+  m_dst->onBindingArgsReordered( newOrder );
 }
