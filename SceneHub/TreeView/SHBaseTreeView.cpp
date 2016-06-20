@@ -70,6 +70,10 @@ void SHTreeView_ViewIndexTarget::expandRecursively() {
   expandRecursively(m_index); 
 }
 
+void SHTreeView_ViewIndexTarget::collapse() {
+  m_view->collapse( m_index );
+}
+
 void SHTreeView_ViewIndexTarget::showLocal() { 
   setVisibility(true, 0); 
 }
@@ -100,6 +104,8 @@ SHBaseTreeView::SHBaseTreeView(FabricCore::Client &client, QWidget *parent)
 {
   m_client = client;
   this->setAcceptDrops(true);
+  connect( this, SIGNAL( expanded( const QModelIndex & ) ), this, SLOT( onExpanded( const QModelIndex & ) ) );
+  connect( this, SIGNAL( collapsed( const QModelIndex & ) ), this, SLOT( onCollapsed( const QModelIndex & ) ) );
 }
 
 FabricCore::Client SHBaseTreeView::getClient() { 
@@ -139,4 +145,25 @@ QModelIndexList SHBaseTreeView::getSelectedIndexes() {
 
 SHTreeItem *SHBaseTreeView::GetTreeItemAtIndex(QModelIndex index) {
   return static_cast<SHTreeItem *>(index.internalPointer());
+}
+
+void SHBaseTreeView::onExpanded( const QModelIndex & index ) {
+  if( !index.isValid() )
+    return;
+
+  SHTreeItem * item = (SHTreeItem *)index.internalPointer();
+  if( !item )
+    return;
+
+  item->setExpanded( true );
+}
+
+void SHBaseTreeView::onCollapsed( const QModelIndex & index ) {
+  if( !index.isValid() )
+    return;
+
+  SHTreeItem * item = (SHTreeItem *)index.internalPointer();
+  if( !item )
+    return;
+  item->setExpanded( false );
 }
