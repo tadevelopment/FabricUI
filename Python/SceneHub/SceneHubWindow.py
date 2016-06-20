@@ -292,9 +292,7 @@ class SceneHubWindow(CanvasWindow):
     def _onTogglePlayback(self): 
         """ Toggles the playback.
         """
-
-        if self.timeLineDock.isVisible() == False: 
-            self.timeLineDock.hide()
+        
         self.timeLine.play()
 
     def _onToggleSharedObjectSelection(self):
