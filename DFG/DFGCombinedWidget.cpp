@@ -257,7 +257,8 @@ void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
 
     QObject::connect(graph, SIGNAL(nodeEditRequested(FabricUI::GraphView::Node*)),
       this, SLOT(onNodeEditRequested(FabricUI::GraphView::Node*)));
-
+    QObject::connect(graph, SIGNAL(nodeInspectRequested(FabricUI::GraphView::Node*)),
+      this, SLOT(onNodeInspectRequested(FabricUI::GraphView::Node*)));
     m_setGraph = graph;
   }
 }
