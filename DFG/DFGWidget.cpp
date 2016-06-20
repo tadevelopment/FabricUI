@@ -233,7 +233,9 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   if ( controller->getExec().allowsBlocks() )
   {
     result->addSeparator();
-    result->addAction(DFG_NEW_BLOCK);
+    result->addAction(
+      new NewBlockAction( graphWidget, QCursor::pos(), result )
+      );
   }
 
   result->addSeparator();
@@ -534,6 +536,37 @@ void DFGWidget::onGoUpPressed()
   }
 }
 
+void DFGWidget::createNewBlock( QPoint const &pos )
+{
+  QString text = "block";
+
+  Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
+  bool isCTRL  = keyMod.testFlag( Qt::ControlModifier );
+  if (!isCTRL)
+  {
+    DFGGetStringDialog dialog(NULL, text, m_dfgConfig, true); 
+    if(dialog.exec() != QDialog::Accepted)
+      return;
+
+    text = dialog.text();
+    if(text.length() == 0)
+    { m_uiController->log("Warning: block not created (empty name).");
+      return; }
+  }
+
+  QString blockName =
+    m_uiController->cmdAddBlock(
+      text,
+      m_uiGraphViewWidget->mapToScene(
+        m_uiGraphViewWidget->mapFromGlobal( pos )
+        )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( blockName ) )
+    uiNode->setSelected( true );
+}
+
 void DFGWidget::onGraphAction(QAction * action)
 {
   QPointF mouseOffset(-40, -15);
@@ -544,32 +577,7 @@ void DFGWidget::onGraphAction(QAction * action)
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
 
-  if(action->text() == DFG_NEW_BLOCK)
-  {
-    QString text = "block";
-    if (!isCTRL)
-    {
-      DFGGetStringDialog dialog(NULL, text, m_dfgConfig, true); 
-      if(dialog.exec() != QDialog::Accepted)
-        return;
-
-      text = dialog.text();
-      if(text.length() == 0)
-      { m_uiController->log("Warning: block not created (empty name).");
-        return; }
-    }
-
-    QString blockName =
-      m_uiController->cmdAddBlock(
-        text,
-        QPointF(pos.x(), pos.y())
-        );
-
-    m_uiGraph->clearSelection();
-    // if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
-    //   uiNode->setSelected( true );
-  }
-  else if(action->text() == DFG_NEW_GRAPH)
+  if ( action->text() == DFG_NEW_GRAPH )
   {
     QString text = "graph";
     if (!isCTRL)

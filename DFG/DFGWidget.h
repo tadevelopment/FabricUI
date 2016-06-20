@@ -20,10 +20,9 @@
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONEnc.h>
 
-namespace FabricUI
-{
-  namespace DFG
-  {
+namespace FabricUI {
+namespace DFG {
+  
     class DFGErrorsWidget;
     class DFGExecHeaderWidget;
     class DFGUICmdHandler;
@@ -75,6 +74,8 @@ namespace FabricUI
       bool maybeEditInstBlock( FabricUI::GraphView::InstBlock *instBlock );
 
       void reloadStyles();
+
+      void createNewBlock( QPoint const &pos );
 
     signals:
 
@@ -168,8 +169,41 @@ namespace FabricUI
       static QSettings * g_settings;
     };
 
-  };
+    class NewBlockAction : public QAction
+    {
+      Q_OBJECT
 
-};
+    public:
+
+      NewBlockAction(
+        DFGWidget *dfgWidget,
+        QPoint const &pos,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_pos( pos )
+      {
+        setText( "New block" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->createNewBlock( m_pos );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      QPoint m_pos;
+    };
+
+} // namespace DFG
+} // namespace FabricUI
 
 #endif // __UI_DFG_DFGWidget__
