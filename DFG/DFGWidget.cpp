@@ -1141,6 +1141,8 @@ void DFGWidget::onExecPortAction(QAction * action)
       FTL::StrRef uiPersistValue = exec.getExecPortMetadata(portName, DFG_METADATA_UIPERSISTVALUE);
       dialog.setPersistValue( uiPersistValue == "true" );
 
+      bool expandMetadataSection = false; // [FE-6068]
+
       FTL::StrRef uiRange = exec.getExecPortMetadata(portName, "uiRange");
       double softMinimum = 0.0;
       double softMaximum = 0.0;
@@ -1149,6 +1151,7 @@ void DFGWidget::onExecPortAction(QAction * action)
         dialog.setHasSoftRange(true);
         dialog.setSoftRangeMin(softMinimum);
         dialog.setSoftRangeMax(softMaximum);
+        expandMetadataSection = true;
       }
 
       FTL::StrRef uiHardRange = exec.getExecPortMetadata(portName, "uiHardRange");
@@ -1159,6 +1162,7 @@ void DFGWidget::onExecPortAction(QAction * action)
         dialog.setHasHardRange(true);
         dialog.setHardRangeMin(hardMinimum);
         dialog.setHardRangeMax(hardMaximum);
+        expandMetadataSection = true;
       }
 
       FTL::StrRef uiCombo = exec.getExecPortMetadata(portName, "uiCombo");
@@ -1171,11 +1175,13 @@ void DFGWidget::onExecPortAction(QAction * action)
           uiComboStr = uiComboStr.substr(1);
         if(uiComboStr[uiComboStr.size()-1] == ')')
           uiComboStr = uiComboStr.substr(0, uiComboStr.size()-1);
-
         QStringList parts = QString(uiComboStr.c_str()).split(',');
         dialog.setHasCombo(true);
         dialog.setComboValues(parts);
+        expandMetadataSection = true;
       }
+
+      dialog.setSectionCollapsed("metadata", !expandMetadataSection);
 
       emit portEditDialogCreated(&dialog);
 
