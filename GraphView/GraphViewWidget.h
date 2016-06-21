@@ -68,6 +68,11 @@ namespace FabricUI
       virtual void keyPressEvent(QKeyEvent * event);
       virtual void keyReleaseEvent(QKeyEvent * event);
       QPoint lastEventPos() const;
+
+      QPointF mapToGraph( QPoint const &globalPos )
+        { return m_graph->mapFromScene(
+          mapToScene( mapFromGlobal( globalPos ) )
+          ); }
       
     public slots:
 

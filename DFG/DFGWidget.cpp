@@ -228,15 +228,15 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   result->addAction(DFG_NEW_VARIABLE);
   result->addAction(DFG_READ_VARIABLE);
   result->addAction(DFG_WRITE_VARIABLE);
-  result->addAction(DFG_CACHE_NODE);
+  result->addAction(
+    new NewCacheNodeAction( graphWidget, QCursor::pos(), result )
+    );
 
-  if ( controller->getExec().allowsBlocks() )
-  {
-    result->addSeparator();
-    result->addAction(
-      new NewBlockAction( graphWidget, QCursor::pos(), result )
-      );
-  }
+  result->addSeparator();
+  QAction *newBlockAction =
+    new NewBlockAction( graphWidget, QCursor::pos(), result );
+  newBlockAction->setEnabled( controller->getExec().allowsBlocks() );
+  result->addAction( newBlockAction );
 
   result->addSeparator();
   QAction * pasteAction = new QAction(DFG_PASTE_PRESET, graphWidget);
@@ -536,7 +536,7 @@ void DFGWidget::onGoUpPressed()
   }
 }
 
-void DFGWidget::createNewBlock( QPoint const &pos )
+void DFGWidget::createNewBlock( QPoint const &globalPos )
 {
   QString text = "block";
 
@@ -557,14 +557,20 @@ void DFGWidget::createNewBlock( QPoint const &pos )
   QString blockName =
     m_uiController->cmdAddBlock(
       text,
-      m_uiGraphViewWidget->mapToScene(
-        m_uiGraphViewWidget->mapFromGlobal( pos )
-        )
+      m_uiGraphViewWidget->mapToGraph( globalPos )
       );
 
   m_uiGraph->clearSelection();
   if ( GraphView::Node *uiNode = m_uiGraph->node( blockName ) )
     uiNode->setSelected( true );
+}
+
+void DFGWidget::createNewCacheNode( QPoint const &globalPos )
+{
+  m_uiController->cmdAddInstFromPreset(
+    "Fabric.Core.Data.Cache",
+    m_uiGraphViewWidget->mapToGraph( globalPos )
+    );
 }
 
 void DFGWidget::onGraphAction(QAction * action)
@@ -753,12 +759,6 @@ dfgEntry {\n\
         QPointF(pos.x(), pos.y())
         );
     }
-  }
-  else if(action->text() == DFG_CACHE_NODE)
-  {
-    DFGController * controller = getUIController();
-    controller->cmdAddInstFromPreset("Fabric.Core.Data.Cache", QPointF(pos.x(), pos.y()));
-    pos += QPointF(30, 30);
   }
   else if(action->text() == DFG_RESET_ZOOM)
   {

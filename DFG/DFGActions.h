@@ -30,7 +30,6 @@ namespace FabricUI
     #define DFG_NEW_VARIABLE            "New variable"
     #define DFG_READ_VARIABLE           "Read variable (Get)"
     #define DFG_WRITE_VARIABLE          "Write variable (Set)"
-    #define DFG_CACHE_NODE              "Cache node"
     #define DFG_RESET_ZOOM              "Reset zoom"
     #define DFG_RELOAD_EXTENSION        "Reload extension(s)"
     #define DFG_SET_COMMENT             "Set comment"

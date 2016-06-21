@@ -76,6 +76,7 @@ namespace DFG {
       void reloadStyles();
 
       void createNewBlock( QPoint const &pos );
+      void createNewCacheNode( QPoint const &pos );
 
     signals:
 
@@ -195,6 +196,40 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->createNewBlock( m_pos );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      QPoint m_pos;
+    };
+
+    class NewCacheNodeAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      NewCacheNodeAction(
+        DFGWidget *dfgWidget,
+        QPoint const &pos,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_pos( pos )
+      {
+        setText( "New cache node" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->createNewCacheNode( m_pos );
       }
 
     private:
