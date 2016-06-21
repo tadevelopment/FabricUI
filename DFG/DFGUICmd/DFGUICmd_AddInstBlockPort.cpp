@@ -96,7 +96,7 @@ FTL::CStrRef DFGUICmd_AddInstBlockPort::invoke(
   FTL::CStrRef portName =
     instBlockExec.addExecPortWithMetadata(
       desiredPortName.c_str(),
-      m_portType,
+      FabricCore::DFGPortType_In,
       metadataCount,
       metadataKeys,
       metadataValues,
@@ -166,16 +166,8 @@ FTL::CStrRef DFGUICmd_AddInstBlockPort::invoke(
       }
     }
 
-    if ( m_connectType == FabricCore::DFGPortType_Out )
-    {
-      exec.connectTo( instBlockPortPath.c_str(), pathToConnect.c_str() );
-      ++coreUndoCount;
-    }
-    if ( m_connectType == FabricCore::DFGPortType_In )
-    {
-      exec.connectTo( pathToConnect.c_str(), instBlockPortPath.c_str() );
-      ++coreUndoCount;
-    }
+    exec.connectTo( pathToConnect.c_str(), instBlockPortPath.c_str() );
+    ++coreUndoCount;
   }
 
   return portName;

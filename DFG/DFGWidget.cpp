@@ -508,7 +508,10 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   return NULL;
 }
 
-QMenu* DFGWidget::sidePanelContextMenuCallback(FabricUI::GraphView::SidePanel* panel, void* userData)
+QMenu* DFGWidget::sidePanelContextMenuCallback(
+  FabricUI::GraphView::SidePanel* panel,
+  void* userData
+  )
 {
   DFGWidget * graphWidget = (DFGWidget*)userData;
   if ( !graphWidget->isEditable() )
@@ -518,12 +521,20 @@ QMenu* DFGWidget::sidePanelContextMenuCallback(FabricUI::GraphView::SidePanel* p
   if(graph->controller() == NULL)
     return NULL;
   graphWidget->m_contextSidePanel = panel;
-  graphWidget->m_contextPortType = panel->portType();
   QMenu* result = new QMenu(NULL);
 
-  if (graphWidget->getDFGController()->validPresetSplit())
+  if ( graphWidget->getDFGController()->validPresetSplit() )
   {
-    result->addAction(DFG_CREATE_PORT);
+    FabricUI::GraphView::PortType portType = panel->portType();
+    QAction *createPortAction =
+      new CreatePortAction( graphWidget, portType, result );
+    if ( portType != FabricUI::GraphView::PortType_Output )
+    {
+      FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
+      if ( exec.isInstBlockExec() )
+        createPortAction->setEnabled( false );
+    }
+    result->addAction( createPortAction );
     result->addSeparator();
   }
   result->addAction(DFG_SCROLL_UP);
@@ -1356,95 +1367,111 @@ void DFGWidget::onExecPortAction(QAction * action)
   m_contextPort = NULL;
 }
 
-void DFGWidget::onSidePanelAction(QAction * action)
+void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
 {
-  if(action->text() == DFG_CREATE_PORT)
+  FabricCore::Client &client = m_uiController->getClient();
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+  bool showPortType = !exec.isInstBlockExec();
+
+  bool canEditPortType = m_uiController->isViewingRootGraph();
+  DFGEditPortDialog dialog(
+    this,
+    client,
+    showPortType,
+    canEditPortType,
+    m_dfgConfig,
+    true
+    );
+
+  if ( showPortType )
   {
-    FabricCore::Client &client = m_uiController->getClient();
-
-    bool canEditPortType = m_uiController->isViewingRootGraph();
-    DFGEditPortDialog dialog( this, client, true, canEditPortType, m_dfgConfig, true);
-
-    if(m_contextPortType == FabricUI::GraphView::PortType_Output)
+    if ( portType == FabricUI::GraphView::PortType_Output )
       dialog.setPortType("In");
     else
       dialog.setPortType("Out");
+  }
 
-    emit portEditDialogCreated(&dialog);
+  emit portEditDialogCreated(&dialog);
 
-    if(dialog.exec() != QDialog::Accepted)
-      return;
+  if(dialog.exec() != QDialog::Accepted)
+    return;
 
-    std::string metaData;
+  std::string metaData;
+  {
+    FTL::JSONEnc<> metaDataEnc( metaData );
+    FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
+    if(dialog.hidden())
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiHidden", "true" );
+    if(dialog.opaque())
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiOpaque", "true" );
+
+    if(dialog.persistValue())
+      DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, "true" );
+
+    if(dialog.hasSoftRange())
     {
-      FTL::JSONEnc<> metaDataEnc( metaData );
-      FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
-      if(dialog.hidden())
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiHidden", "true" );
-      if(dialog.opaque())
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiOpaque", "true" );
+      QString range = "(" + QString::number(dialog.softRangeMin()) + ", " + QString::number(dialog.softRangeMax()) + ")";
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiRange", range.toUtf8().constData() );
+    } else
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiRange", "" );
 
-      if(dialog.persistValue())
-        DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, "true" );
+    if(dialog.hasHardRange())
+    {
+      QString range = "(" + QString::number(dialog.hardRangeMin()) + ", " + QString::number(dialog.hardRangeMax()) + ")";
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiHardRange", range.toUtf8().constData() );
+    } else
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiHardRange", "" );
 
-      if(dialog.hasSoftRange())
+    if(dialog.hasCombo())
+    {
+      QStringList combo = dialog.comboValues();
+      QString flat = "(";
+      for(int i=0;i<combo.length();i++)
       {
-        QString range = "(" + QString::number(dialog.softRangeMin()) + ", " + QString::number(dialog.softRangeMax()) + ")";
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiRange", range.toUtf8().constData() );
-      } else
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiRange", "" );
-
-      if(dialog.hasHardRange())
-      {
-        QString range = "(" + QString::number(dialog.hardRangeMin()) + ", " + QString::number(dialog.hardRangeMax()) + ")";
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiHardRange", range.toUtf8().constData() );
-      } else
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiHardRange", "" );
-
-      if(dialog.hasCombo())
-      {
-        QStringList combo = dialog.comboValues();
-        QString flat = "(";
-        for(int i=0;i<combo.length();i++)
-        {
-          if(i > 0)
-            flat += ", ";
-          flat += "\"" + combo[i] + "\"";
-        }
-        flat += ")";
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", flat.toUtf8().constData() );
+        if(i > 0)
+          flat += ", ";
+        flat += "\"" + combo[i] + "\"";
       }
-
-      emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
+      flat += ")";
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", flat.toUtf8().constData() );
     }
 
-    QString title = dialog.title();
+    emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
+  }
 
-    QString dataType = dialog.dataType();
-    QString extDep = dialog.extension();
+  QString title = dialog.title();
 
-    if(title.length() > 0)
+  QString dataType = dialog.dataType();
+  QString extDep = dialog.extension();
+
+  if ( !title.isEmpty() )
+  {
+    FabricCore::DFGPortType portType = FabricCore::DFGPortType_In;
+    if ( showPortType )
     {
-      FabricCore::DFGPortType portType = FabricCore::DFGPortType_Out;
-      if ( dialog.portType() == "In" )
-        portType = FabricCore::DFGPortType_In;
+      if ( dialog.portType() == "Out" )
+        portType = FabricCore::DFGPortType_Out;
       else if ( dialog.portType() == "IO" )
         portType = FabricCore::DFGPortType_IO;
-
-      if(metaData == "{}")
-        metaData = "";
-
-      m_uiController->cmdAddPort(
-        title,
-        portType,
-        dataType,
-        QString(), // portToConnect
-        extDep,
-        QString::fromUtf8( metaData.c_str() )
-        );
     }
+
+    if ( metaData == "{}" )
+      metaData = "";
+
+    m_uiController->cmdAddPort(
+      title,
+      portType,
+      dataType,
+      QString(), // portToConnect
+      extDep,
+      QString::fromUtf8( metaData.c_str() )
+      );
   }
-  else if(action->text() == DFG_SCROLL_UP)
+}  
+
+void DFGWidget::onSidePanelAction(QAction * action)
+{
+  if(action->text() == DFG_SCROLL_UP)
   {
     m_contextSidePanel->scroll(m_contextSidePanel->size().height());
   }

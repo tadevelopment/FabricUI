@@ -44,6 +44,9 @@ namespace FabricUI
 
     protected:
 
+      virtual bool allowNonInPortType() const
+        { return true; }
+
       virtual void invokeAddPort(
         QString desiredPortName,
         FabricCore::DFGPortType portType,
@@ -92,11 +95,13 @@ namespace FabricUI
         QObject *parent,
         FabricUI::DFG::DFGController *dfgController,
         InstBlock *instBlock,
-        ConnectionTarget *other,
-        PortType connectionPortType
+        ConnectionTarget *other
         );
 
     protected:
+
+      virtual bool allowNonInPortType() const
+        { return false; }
 
       virtual void invokeAddPort(
         QString desiredPortName,

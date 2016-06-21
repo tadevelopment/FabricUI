@@ -426,10 +426,8 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         instName,
         blockName,
         desiredPortName,
-        portType,
         typeSpec,
         pathToConnect,
-        connectType,
         extDep,
         metaData,
         ):
@@ -440,10 +438,8 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
                 UICmdHandler.encodeString(instName),
                 UICmdHandler.encodeString(blockName),
                 UICmdHandler.encodeString(desiredPortName),
-                self.encodePortType(portType),
                 UICmdHandler.encodeString(typeSpec),
                 UICmdHandler.encodeString(pathToConnect),
-                self.encodePortType(connectType),
                 UICmdHandler.encodeString(extDep),
                 UICmdHandler.encodeString(metaData),
                 ]

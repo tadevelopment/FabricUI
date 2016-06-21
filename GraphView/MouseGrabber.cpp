@@ -471,7 +471,7 @@ void ExposePortAction::onTriggered()
   FabricUI::DFG::DFGEditPortDialog dialog(
     m_dfgController->getDFGWidget(),
     m_dfgController->getClient(),
-    true,
+    allowNonInPortType(), // showPortType
     true, // canEditPortType
     m_dfgController->getDFGWidget()->getConfig(),
     true
@@ -541,10 +541,11 @@ void ExposePortAction::onTriggered()
   QString desiredPortName = dialog.title();
   QString typeSpec = dialog.dataType();
   QString extDep = dialog.extension();
+  QString dialogPortType = dialog.portType();
   FabricCore::DFGPortType portType = FabricCore::DFGPortType_Out;
-  if ( dialog.portType() == "In" )
+  if ( dialogPortType.isEmpty() || dialogPortType == "In" )
     portType = FabricCore::DFGPortType_In;
-  else if ( dialog.portType() == "IO" )
+  else if ( dialogPortType == "IO" )
     portType = FabricCore::DFGPortType_IO;
 
   if(metaData == "{}")
@@ -704,10 +705,9 @@ ExposeInstBlockPortAction::ExposeInstBlockPortAction(
   QObject *parent,
   FabricUI::DFG::DFGController *dfgController,
   InstBlock *instBlock,
-  ConnectionTarget *other,
-  PortType connectionPortType
+  ConnectionTarget *other
   )
-  : ExposePortAction( parent, dfgController, other, connectionPortType )
+  : ExposePortAction( parent, dfgController, other, PortType_Output )
   , m_instBlock( instBlock )
 {
 }
@@ -720,6 +720,7 @@ void ExposeInstBlockPortAction::invokeAddPort(
   QString metaData
   )
 {
+  assert( portType == FabricCore::DFGPortType_In );
   FabricUI::DFG::DFGUICmdHandler *cmdHandler =
     m_dfgController->getCmdHandler();
   cmdHandler->dfgDoAddInstBlockPort(
@@ -729,10 +730,8 @@ void ExposeInstBlockPortAction::invokeAddPort(
     m_instBlock->node()->name_QS(),
     m_instBlock->name_QS(),
     desiredPortName,
-    portType,
     typeSpec,
     m_other->path_QS(),
-    PortTypeToDFGPortType( m_connectionPortType ),
     extDep,
     metaData
     );
@@ -803,10 +802,9 @@ QMenu *MouseGrabber::createInstBlockHeaderMenu(
           instBlock->node()->graph()->controller()
           ),
         instBlock,
-        other,
-        nodeRole
+        other
         );
-    exposeNewPortAction->setEnabled( true );
+    exposeNewPortAction->setEnabled( nodeRole == PortType_Output );
     menu->addAction( exposeNewPortAction );
   }
 

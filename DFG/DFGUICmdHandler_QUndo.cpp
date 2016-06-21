@@ -326,10 +326,8 @@ QString DFGUICmdHandler_QUndo::dfgDoAddInstBlockPort(
   QString instName,
   QString blockName,
   QString desiredPortName,
-  FabricCore::DFGPortType portType,
   QString typeSpec,
   QString pathToConnect,
-  FabricCore::DFGPortType connectType,
   QString extDep,
   QString metaData
   )
@@ -342,10 +340,8 @@ QString DFGUICmdHandler_QUndo::dfgDoAddInstBlockPort(
       instName,
       blockName,
       desiredPortName,
-      portType,
       typeSpec,
       pathToConnect,
-      connectType,
       extDep,
       metaData
       );

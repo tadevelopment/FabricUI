@@ -75,6 +75,7 @@ namespace DFG {
 
       void reloadStyles();
 
+      void createPort( FabricUI::GraphView::PortType portType );
       void createNewGraphNode( QPoint const &pos );
       void createNewFunctionNode( QPoint const &pos );
       void createNewBackdropNode( QPoint const &pos );
@@ -151,7 +152,6 @@ namespace DFG {
       QPoint m_contextPos;
       FabricUI::GraphView::Node * m_contextNode;
       FabricUI::GraphView::Port * m_contextPort;
-      FabricUI::GraphView::PortType m_contextPortType;
       FabricUI::GraphView::SidePanel * m_contextSidePanel;
 
       DFGGraphViewWidget * m_uiGraphViewWidget;
@@ -171,6 +171,40 @@ namespace DFG {
       bool m_isEditable;
 
       static QSettings * g_settings;
+    };
+
+    class CreatePortAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CreatePortAction(
+        DFGWidget *dfgWidget,
+        FabricUI::GraphView::PortType portType,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_portType( portType )
+      {
+        setText( "Create port" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->createPort( m_portType );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      FabricUI::GraphView::PortType m_portType;
     };
 
     class NewBlockNodeAction : public QAction

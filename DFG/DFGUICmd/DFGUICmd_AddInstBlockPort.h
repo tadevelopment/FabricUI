@@ -19,10 +19,8 @@ public:
     QString instName,
     QString blockName,
     QString desiredPortName,
-    FabricCore::DFGPortType portType,
     QString typeSpec,
     QString pathToConnectWith,
-    FabricCore::DFGPortType connectType,
     QString extDep,
     QString metaData
     )
@@ -34,10 +32,8 @@ public:
     , m_instName( instName.trimmed() )
     , m_blockName( blockName.trimmed() )
     , m_desiredPortName( desiredPortName.trimmed() )
-    , m_portType( portType )
     , m_typeSpec( typeSpec.trimmed() )
     , m_pathToConnectWith( pathToConnectWith.trimmed() )
-    , m_connectType( connectType )
     , m_extDep( extDep.trimmed() )
     , m_metaData( metaData.trimmed() )
     {}
@@ -74,10 +70,8 @@ private:
   QString m_instName;
   QString m_blockName;
   QString m_desiredPortName;
-  FabricCore::DFGPortType m_portType;
   QString m_typeSpec;
   QString m_pathToConnectWith;
-  FabricCore::DFGPortType m_connectType;
   QString m_extDep;
   QString m_metaData;
   

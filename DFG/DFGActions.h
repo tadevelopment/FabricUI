@@ -31,7 +31,6 @@ namespace FabricUI
     #define DFG_RELOAD_EXTENSION        "Reload extension(s)"
     #define DFG_SET_COMMENT             "Set comment"
     #define DFG_REMOVE_COMMENT          "Remove comment"
-    #define DFG_CREATE_PORT             "Create port"
     #define DFG_SCROLL_UP               "Scroll up"
     #define DFG_SCROLL_DOWN             "Scroll down"
     #define DFG_MOVE_INPUTS_TO_END      "Move inputs to end"

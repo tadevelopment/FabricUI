@@ -175,10 +175,8 @@ public:
     QString instName,
     QString blockName,
     QString desiredPortName,
-    FabricCore::DFGPortType portType,
     QString typeSpec,
     QString pathToConnect,
-    FabricCore::DFGPortType connectType,
     QString extDep,
     QString metaData
     ) { return QString(); }

@@ -435,10 +435,8 @@ class BindingWrapper:
         instName,
         blockName,
         desiredPortName,
-        portType,
         typeSpec,
         pathToConnect,
-        connectType,
         extDep,
         metaData,
         ):
@@ -451,10 +449,8 @@ class BindingWrapper:
             instName,
             blockName,
             desiredPortName,
-            self.decodePortType(portType),
             typeSpec,
             pathToConnect,
-            self.decodePortType(connectType),
             extDep,
             metaData,
             )
