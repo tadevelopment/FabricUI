@@ -156,6 +156,23 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->getString( FTL_STR("nodeName") )
         );
     }
+    else if(descStr == FTL_STR("execBlockRenamed"))
+    {
+      onNodeRenamed(
+        jsonObject->getString( FTL_STR("oldBlockName") ),
+        jsonObject->getString( FTL_STR("blockName") )
+        );
+    }
+    else if(descStr == FTL_STR("instBlockRenamed"))
+    {
+      onInstBlockRenamed(
+        jsonObject->getSInt32( FTL_STR("instIndex") ),
+        jsonObject->getString( FTL_STR("instName") ),
+        jsonObject->getSInt32( FTL_STR("blockIndex") ),
+        jsonObject->getString( FTL_STR("oldBlockName") ),
+        jsonObject->getString( FTL_STR("blockName") )
+        );
+    }
     else if(descStr == FTL_STR("execPortRenamed"))
     {
       onExecPortRenamed(
@@ -795,8 +812,8 @@ void DFGNotificationRouter::onExecBlockInserted(
     return;
   uiNode->setCanAddPorts( true );
 
-  uiNode->setColor( m_config.blockNodeDefaultColor );
-  uiNode->setTitleColor( m_config.blockLabelDefaultColor );
+  uiNode->setColor( m_config.graphConfig.blockNodeDefaultColor );
+  uiNode->setTitleColor( m_config.graphConfig.blockLabelDefaultColor );
 
   uiNode->setTitle( blockName );
   uiNode->setTitleSuffixAsterisk();
@@ -908,8 +925,6 @@ void DFGNotificationRouter::onNodeRemoved(
 
   // todo - the notif should provide the node type
   // m_dfgController->updatePresetDB(true);
-
-  m_dfgController->emitNodeRemoved( nodeName );
 }
 
 void DFGNotificationRouter::onExecBlockRemoved(
@@ -924,8 +939,6 @@ void DFGNotificationRouter::onExecBlockRemoved(
   if ( !uiNode )
     return;
   uiGraph->removeNode( uiNode );
-
-  m_dfgController->emitNodeRemoved( name );
 }
 
 void DFGNotificationRouter::onNodePortInserted(
@@ -1621,14 +1634,33 @@ void DFGNotificationRouter::onNodeRenamed(
   GraphView::Node *uiNode = uiGraph->renameNode( oldNodeName, newNodeName );
 
   FabricCore::DFGExec &exec = m_dfgController->getExec();
-  if ( exec.getNodeType( newNodeName.c_str() ) == FabricCore::DFGNodeType_Inst
-    && !exec.instExecIsPreset( newNodeName.c_str() ) )
+  if ( exec.isExecBlock( newNodeName.c_str() )
+    || ( exec.getNodeType( newNodeName.c_str() ) == FabricCore::DFGNodeType_Inst
+      && !exec.instExecIsPreset( newNodeName.c_str() ) ) )
   {
     assert( !!uiNode );
     uiNode->setTitle( newNodeName );
   }
+}
 
-  m_dfgController->emitNodeRenamed( oldNodeName, newNodeName );
+
+void DFGNotificationRouter::onInstBlockRenamed(
+  unsigned instIndex,
+  FTL::CStrRef instName,
+  unsigned blockIndex,
+  FTL::CStrRef oldBlockName,
+  FTL::CStrRef newBlockName
+  )
+{
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+
+  GraphView::Node *uiNode = uiGraph->node( instName );
+  if ( !uiNode )
+    return;
+
+  uiNode->renameInstBlockAtIndex( blockIndex, newBlockName );
 }
 
 

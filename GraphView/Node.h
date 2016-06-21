@@ -178,6 +178,7 @@ namespace FabricUI
 
       void insertInstBlockAtIndex( unsigned index, InstBlock *instBlock );
       InstBlock *instBlockAtIndex( unsigned index ) const;
+      void renameInstBlockAtIndex( unsigned index, FTL::StrRef newName );
       void removeInstBlockAtIndex( unsigned index );
 
       virtual std::vector<Node*> upStreamNodes(bool sortForPins = false, std::vector<Node*> rootNodes = std::vector<Node*>());

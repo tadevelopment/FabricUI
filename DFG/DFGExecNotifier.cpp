@@ -22,6 +22,7 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
     handlerMap[FTL_STR("execBlockPortRemoved")] = &DFGExecNotifier::handler_execBlockPortRemoved;
     handlerMap[FTL_STR("execBlockPortResolvedTypeChanged")] = &DFGExecNotifier::handler_execBlockPortResolvedTypeChanged;
     handlerMap[FTL_STR("execBlockRemoved")] = &DFGExecNotifier::handler_execBlockRemoved;
+    handlerMap[FTL_STR("execBlockRenamed")] = &DFGExecNotifier::handler_execBlockRenamed;
     handlerMap[FTL_STR("execDidAttachPreset")] = &DFGExecNotifier::handler_execDidAttachPreset;
     handlerMap[FTL_STR("execEditWouldSplitFromPresetMayHaveChanged")] = &DFGExecNotifier::handler_execEditWouldSplitFromPresetMayHaveChanged;
     handlerMap[FTL_STR("execMetadataChanged")] = &DFGExecNotifier::handler_execMetadataChanged;
@@ -46,6 +47,7 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
     handlerMap[FTL_STR("instBlockPortResolvedTypeChanged")] = &DFGExecNotifier::handler_instBlockPortResolvedTypeChanged;
     handlerMap[FTL_STR("instBlockPortsReordered")] = &DFGExecNotifier::handler_instBlockPortsReordered;
     handlerMap[FTL_STR("instBlockRemoved")] = &DFGExecNotifier::handler_instBlockRemoved;
+    handlerMap[FTL_STR("instBlockRenamed")] = &DFGExecNotifier::handler_instBlockRenamed;
     handlerMap[FTL_STR("instExecDidAttachPreset")] = &DFGExecNotifier::handler_instExecDidAttachPreset;
     handlerMap[FTL_STR("instExecEditWouldSplitFromPresetMayHaveChanged")] = &DFGExecNotifier::handler_instExecEditWouldSplitFromPresetMayHaveChanged;
     handlerMap[FTL_STR("instExecTitleChanged")] = &DFGExecNotifier::handler_instExecTitleChanged;
@@ -242,6 +244,23 @@ void DFGExecNotifier::handler_nodeRenamed( FTL::JSONObject const *jsonObject )
   FTL::CStrRef newNodeName = jsonObject->getString( FTL_STR("nodeName") );
 
   emit nodeRenamed( oldNodeName, newNodeName );
+}
+
+void DFGExecNotifier::handler_execBlockRenamed( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef oldBlockName = jsonObject->getString( FTL_STR("oldBlockName") );
+  FTL::CStrRef newBlockName = jsonObject->getString( FTL_STR("blockName") );
+
+  emit execBlockRenamed( oldBlockName, newBlockName );
+}
+
+void DFGExecNotifier::handler_instBlockRenamed( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
+  FTL::CStrRef oldBlockName = jsonObject->getString( FTL_STR("oldBlockName") );
+  FTL::CStrRef newBlockName = jsonObject->getString( FTL_STR("blockName") );
+
+  emit instBlockRenamed( instName, oldBlockName, newBlockName );
 }
 
 void DFGExecNotifier::handler_nodeRemoved( FTL::JSONObject const *jsonObject )

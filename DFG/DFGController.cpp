@@ -2031,20 +2031,6 @@ void DFGController::setBlockCompilations( bool blockCompilations )
   }
 }
 
-void DFGController::emitNodeRenamed(
-  FTL::CStrRef oldNodeName,
-  FTL::CStrRef newNodeName
-  )
-{
-  emit nodeRenamed( m_execPath, oldNodeName, newNodeName );
-}
-
-void DFGController::emitNodeRemoved( FTL::CStrRef nodeName )
-{
-  emit nodeRemoved( m_execPath, nodeName );
-}
-
-
 void DFGController::focusNode( FTL::StrRef nodeName )
 {
   if ( m_exec.getType() == FabricCore::DFGExecType_Graph )

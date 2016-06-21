@@ -244,6 +244,17 @@ signals:
     FTL::ArrayRef<unsigned> newOrder
     );
 
+  void execBlockRenamed(
+    FTL::CStrRef oldExecBlockName,
+    FTL::CStrRef newExecBlockName
+    );
+
+  void instBlockRenamed(
+    FTL::CStrRef instName,
+    FTL::CStrRef oldBlockName,
+    FTL::CStrRef newBlockName
+    );
+
   // The executable's nodes' ports
 
   void nodePortInserted(
@@ -363,6 +374,8 @@ private:
   void handler_nodePortTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_nodeRemoved( FTL::JSONObject const *jsonObject );
   void handler_nodeRenamed( FTL::JSONObject const *jsonObject );
+  void handler_execBlockRenamed( FTL::JSONObject const *jsonObject );
+  void handler_instBlockRenamed( FTL::JSONObject const *jsonObject );
   void handler_portsConnected( FTL::JSONObject const *jsonObject );
   void handler_portsDisconnected( FTL::JSONObject const *jsonObject );
   void handler_refVarPathChanged( FTL::JSONObject const *jsonObject );

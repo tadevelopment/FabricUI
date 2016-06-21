@@ -320,6 +320,11 @@ InstBlock *Node::instBlockAtIndex( unsigned index ) const
     return 0;
 }
 
+void Node::renameInstBlockAtIndex( unsigned index, FTL::StrRef newName )
+{
+  m_instBlocks[index]->setName( newName );
+}
+
 void Node::removeInstBlockAtIndex( unsigned index )
 {
   assert( index < m_instBlocks.size() );

@@ -130,4 +130,7 @@ GraphConfig::GraphConfig()
 
   instBlockMinWidth = 80.0f;
   instBlockMinHeight = 24.0f;
+
+  blockNodeDefaultColor = QColor(193, 189, 138);
+  blockLabelDefaultColor = QColor(158, 153, 98);
 }

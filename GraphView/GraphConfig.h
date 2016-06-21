@@ -118,6 +118,9 @@ namespace FabricUI
       QColor infoOverlayColor;
       QFont infoOverlayFont;
 
+      QColor blockNodeDefaultColor;
+      QColor blockLabelDefaultColor;
+
       GraphConfig();
     };
 

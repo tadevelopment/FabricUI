@@ -207,5 +207,13 @@ InstBlockPort *InstBlock::instBlockPort( FTL::StrRef name )
   return NULL;
 }
 
+void InstBlock::setName( FTL::StrRef newName )
+{
+  m_name = newName;
+  m_instBlockHeader->setName(
+    QString::fromUtf8( newName.data(), newName.size() )
+    );
+}
+
 } // namespace GraphView
 } // namespace FabricUI

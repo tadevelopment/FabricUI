@@ -43,7 +43,7 @@ void DFGUICmd_EditNode::invoke(
   FabricCore::DFGExec &exec = getExec();
 
   FTL::CStrRef actualNewNodeName =
-    exec.renameNode(
+    exec.renameItem(
       oldNodeName.c_str(),
       desiredNewNodeName.c_str()
       );
@@ -65,7 +65,7 @@ void DFGUICmd_EditNode::invoke(
       {
         FTL::CStrRef key = it->first;
         FTL::CStrRef value = it->second->getStringValue();
-        exec.setNodeMetadata(
+        exec.setItemMetadata(
           actualNewNodeName.c_str(),
           key.c_str(),
           !value.empty()? value.c_str(): NULL,

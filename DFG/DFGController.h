@@ -400,12 +400,6 @@ namespace FabricUI
 
       void setBlockCompilations( bool blockCompilations );
 
-      void emitNodeRenamed(
-        FTL::CStrRef oldNodeName,
-        FTL::CStrRef newNodeName
-        );
-      void emitNodeRemoved( FTL::CStrRef nodeName );
-
       void updateNodeErrors();
 
     signals:
@@ -428,16 +422,6 @@ namespace FabricUI
       void execSplitChanged();
 
       void nodeEditRequested(FabricUI::GraphView::Node *);
-
-      void nodeRenamed(
-        FTL::CStrRef execPath,
-        FTL::CStrRef oldNodeName,
-        FTL::CStrRef newNodeName 
-        );
-      void nodeRemoved(
-        FTL::CStrRef execPath,
-        FTL::CStrRef nodeName
-        );
 
     public slots:
 

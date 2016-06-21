@@ -111,6 +111,13 @@ namespace FabricUI
         int portIndex,
         FTL::CStrRef portName
         );
+      void onInstBlockRenamed(
+        unsigned instIndex,
+        FTL::CStrRef instName,
+        unsigned blockIndex,
+        FTL::CStrRef oldBlockName,
+        FTL::CStrRef newBlockName
+        );
       void onExecBlockRemoved(
         unsigned blockIndex,
         FTL::CStrRef blockName

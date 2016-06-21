@@ -35,6 +35,7 @@ public:
     { return m_name; }
   QString name_QS() const
     { return QString::fromUtf8( m_name.data(), m_name.size() ); }
+  void setName( FTL::StrRef newName );
 
   Node *node()
     { return m_node; }
