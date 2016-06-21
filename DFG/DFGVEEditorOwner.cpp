@@ -356,61 +356,63 @@ void DFGVEEditorOwner::onNodeInspectRequested(
   // TODO: Check for re-inspecting the same node, and don't rebuild
   FabricUI::ModelItems::NodeModelItem *nodeModelItem = 0;
 
-  FabricCore::DFGNodeType type = exec.getNodeType( nodeName.c_str() );
-  switch (type)
+  if ( !exec.isExecBlock( nodeName.c_str() ) )
   {
-    case FabricCore::DFGNodeType_Inst:
-      nodeModelItem =
-        new FabricUI::ModelItems::InstModelItem(
-          dfgUICmdHandler,
-          binding,
-          execPath,
-          exec,
-          nodeName
-          );
-      break;
-    
-    case FabricCore::DFGNodeType_Var:
-      nodeModelItem =
-        new FabricUI::ModelItems::VarModelItem(
-          dfgUICmdHandler,
-          binding,
-          execPath,
-          exec,
-          nodeName
-          );
-      break;
-    
-    case FabricCore::DFGNodeType_Get:
-      nodeModelItem =
-        new FabricUI::ModelItems::GetModelItem(
-          dfgUICmdHandler,
-          binding,
-          execPath,
-          exec,
-          nodeName
-          );
-      break;
-    
-    case FabricCore::DFGNodeType_Set:
-      nodeModelItem =
-        new FabricUI::ModelItems::SetModelItem(
-          dfgUICmdHandler,
-          binding,
-          execPath,
-          exec,
-          nodeName
-          );
-      break;
-    
-    case FabricCore::DFGNodeType_User:
-      break;
-    
-    default:
-      assert( 0 && "Implement Me" );
-      break;
+    FabricCore::DFGNodeType type = exec.getNodeType( nodeName.c_str() );
+    switch (type)
+    {
+      case FabricCore::DFGNodeType_Inst:
+        nodeModelItem =
+          new FabricUI::ModelItems::InstModelItem(
+            dfgUICmdHandler,
+            binding,
+            execPath,
+            exec,
+            nodeName
+            );
+        break;
+      
+      case FabricCore::DFGNodeType_Var:
+        nodeModelItem =
+          new FabricUI::ModelItems::VarModelItem(
+            dfgUICmdHandler,
+            binding,
+            execPath,
+            exec,
+            nodeName
+            );
+        break;
+      
+      case FabricCore::DFGNodeType_Get:
+        nodeModelItem =
+          new FabricUI::ModelItems::GetModelItem(
+            dfgUICmdHandler,
+            binding,
+            execPath,
+            exec,
+            nodeName
+            );
+        break;
+      
+      case FabricCore::DFGNodeType_Set:
+        nodeModelItem =
+          new FabricUI::ModelItems::SetModelItem(
+            dfgUICmdHandler,
+            binding,
+            execPath,
+            exec,
+            nodeName
+            );
+        break;
+      
+      case FabricCore::DFGNodeType_User:
+        break;
+      
+      default:
+        assert( 0 && "Implement Me" );
+        break;
+    }
   }
-
   setModelRoot( exec, nodeName, nodeModelItem );
 }
 
