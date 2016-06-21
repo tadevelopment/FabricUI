@@ -52,7 +52,7 @@ TimeLineWidget::TimeLineWidget()
   m_startSpinBox->setValue(0.000000000000000);
   layout()->addWidget(m_startSpinBox);
 
-  m_frameSlider = new QSlider(this);
+  m_frameSlider = new FrameSlider(this);
   m_frameSlider->setOrientation(Qt::Horizontal);
   m_frameSlider->setInvertedControls(false);
   m_frameSlider->setTickPosition(QSlider::TicksBelow);
