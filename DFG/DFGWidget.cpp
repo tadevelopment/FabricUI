@@ -213,9 +213,15 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     return NULL;
 
   QMenu* result = new QMenu(NULL);
-  result->addAction(DFG_NEW_GRAPH);
-  result->addAction(DFG_NEW_FUNCTION);
-  result->addAction(DFG_NEW_BACKDROP);
+  result->addAction(
+    new NewGraphNodeAction( graphWidget, QCursor::pos(), result )
+    );
+  result->addAction(
+    new NewFunctionNodeAction( graphWidget, QCursor::pos(), result )
+    );
+  result->addAction(
+    new NewBackdropNodeAction( graphWidget, QCursor::pos(), result )
+    );
 
   const std::vector<GraphView::Node*> & nodes = graph->selectedNodes();
   if(nodes.size() > 0)
@@ -234,7 +240,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
   QAction *newBlockAction =
-    new NewBlockAction( graphWidget, QCursor::pos(), result );
+    new NewBlockNodeAction( graphWidget, QCursor::pos(), result );
   newBlockAction->setEnabled( controller->getExec().allowsBlocks() );
   result->addAction( newBlockAction );
 
@@ -536,7 +542,7 @@ void DFGWidget::onGoUpPressed()
   }
 }
 
-void DFGWidget::createNewBlock( QPoint const &globalPos )
+void DFGWidget::createNewBlockNode( QPoint const &globalPos )
 {
   QString text = "block";
 
@@ -573,6 +579,95 @@ void DFGWidget::createNewCacheNode( QPoint const &globalPos )
     );
 }
 
+void DFGWidget::createNewGraphNode( QPoint const &globalPos )
+{
+  QString text = "graph";
+  Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
+  bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
+  if (!isCTRL)
+  {
+    DFGGetStringDialog dialog(NULL, text, m_dfgConfig, true); 
+    if(dialog.exec() != QDialog::Accepted)
+      return;
+
+    text = dialog.text();
+    if(text.length() == 0)
+    { m_uiController->log("Warning: graph not created (empty name).");
+      return; }
+  }
+
+  QString nodeName =
+    m_uiController->cmdAddInstWithEmptyGraph(
+      text.toUtf8().constData(),
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
+}
+
+void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
+{
+  QString text = "func";
+
+  Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
+  bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
+  if (!isCTRL)
+  {
+    DFGGetStringDialog dialog(NULL, text, m_dfgConfig, true);
+    if(dialog.exec() != QDialog::Accepted)
+      return;
+
+    text = dialog.text();
+    if(text.length() == 0)
+    { m_uiController->log("Warning: function node not created (empty name).");
+      return; }
+  }
+
+  m_uiController->beginInteraction();
+
+  static const FTL::CStrRef initialCode = FTL_STR("\
+dfgEntry {\n\
+// result = a + b;\n\
+}\n");
+  QString nodeName =
+    m_uiController->cmdAddInstWithEmptyFunc(
+      text.toUtf8().constData(),
+      QString::fromUtf8( initialCode.c_str() ),
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+  {
+    maybeEditNode( uiNode );
+  }
+  m_uiController->endInteraction();
+}
+
+void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
+{
+  QString text = "backdrop";
+
+  Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
+  bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
+  if (!isCTRL)
+  {
+    DFGGetStringDialog dialog(NULL, text, m_dfgConfig, false);
+    if(dialog.exec() != QDialog::Accepted)
+      return;
+
+    text = dialog.text();
+    if(text.length() == 0)
+    { m_uiController->log("Warning: no backdrop created (empty name).");
+      return; }
+  }
+
+  m_uiController->cmdAddBackDrop(
+    text.toUtf8().constData(),
+    m_uiGraphViewWidget->mapToGraph( globalPos )
+    );
+}
+
 void DFGWidget::onGraphAction(QAction * action)
 {
   QPointF mouseOffset(-40, -15);
@@ -583,84 +678,7 @@ void DFGWidget::onGraphAction(QAction * action)
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
 
-  if ( action->text() == DFG_NEW_GRAPH )
-  {
-    QString text = "graph";
-    if (!isCTRL)
-    {
-      DFGGetStringDialog dialog(NULL, text, m_dfgConfig, true); 
-      if(dialog.exec() != QDialog::Accepted)
-        return;
-
-      text = dialog.text();
-      if(text.length() == 0)
-      { m_uiController->log("Warning: graph not created (empty name).");
-        return; }
-    }
-
-    QString nodeName = m_uiController->cmdAddInstWithEmptyGraph(
-                            text.toUtf8().constData(),
-                            QPointF(pos.x(), pos.y())
-                            );
-
-    m_uiGraph->clearSelection();
-    if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
-      uiNode->setSelected( true );
-  }
-  else if(action->text() == DFG_NEW_FUNCTION)
-  {
-    QString text = "func";
-    if (!isCTRL)
-    {
-      DFGGetStringDialog dialog(NULL, text, m_dfgConfig, true);
-      if(dialog.exec() != QDialog::Accepted)
-        return;
-
-      text = dialog.text();
-      if(text.length() == 0)
-      { m_uiController->log("Warning: function node not created (empty name).");
-        return; }
-    }
-
-    m_uiController->beginInteraction();
-
-    static const FTL::CStrRef initialCode = FTL_STR("\
-dfgEntry {\n\
-  // result = a + b;\n\
-}\n");
-    QString nodeName =
-      m_uiController->cmdAddInstWithEmptyFunc(
-        text.toUtf8().constData(),
-        QString::fromUtf8( initialCode.c_str() ),
-        QPointF(pos.x(), pos.y())
-        );
-    if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
-    {
-      maybeEditNode( uiNode );
-    }
-    m_uiController->endInteraction();
-  }
-  else if(action->text() == DFG_NEW_BACKDROP)
-  {
-    QString text = "backdrop";
-    if (!isCTRL)
-    {
-      DFGGetStringDialog dialog(NULL, text, m_dfgConfig, false);
-      if(dialog.exec() != QDialog::Accepted)
-        return;
-
-      text = dialog.text();
-      if(text.length() == 0)
-      { m_uiController->log("Warning: no backdrop created (empty name).");
-        return; }
-    }
-
-    m_uiController->cmdAddBackDrop(
-      text.toUtf8().constData(),
-      QPointF( pos.x(), pos.y() )
-      );
-  }
-  else if(action->text() == DFG_IMPLODE_NODE)
+  if(action->text() == DFG_IMPLODE_NODE)
   {
     QString text = "graph";
     if (!isCTRL)

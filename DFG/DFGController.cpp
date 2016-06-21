@@ -848,15 +848,11 @@ void DFGController::cmdPaste()
   try
   {
     QClipboard *clipboard = QApplication::clipboard();
-    if (!clipboard->text().isEmpty())
+    QString textToPaste = clipboard->text();
+    if ( !textToPaste.isEmpty() )
     {
-      // calculate the position where the nodes will get pasted.
-      QGraphicsView *graphicsView = graph()->scene()->views()[0];
-      QPointF pos = graphicsView->mapToScene(graphicsView->mapFromGlobal(QCursor::pos()));
-      float   zoom = graph()->mainPanel()->canvasZoom();
-      QPointF pan  = graph()->mainPanel()->canvasPan();
-      pos -= pan;
-      if (zoom != 0)  pos /= zoom;
+      QPointF pos =
+        m_dfgWidget->getGraphViewWidget()->mapToGraph( QCursor::pos() );
 
       // paste.
       QList<QString> pastedNodes =
@@ -864,7 +860,7 @@ void DFGController::cmdPaste()
           getBinding(),
           getExecPath_QS(),
           getExec(),
-          clipboard->text().toUtf8().constData(),
+          textToPaste,
           pos
           );
 

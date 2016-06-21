@@ -208,3 +208,15 @@ void GraphViewScene::dropEvent( QGraphicsSceneDragDropEvent *event )
     }
   }
 }
+
+QPointF GraphViewWidget::mapToGraph( QPoint const &globalPos ) const
+{
+  MainPanel *mainPanel = m_graph->mainPanel();
+  QPointF pos =
+    mainPanel->mapFromScene( mapToScene( mapFromGlobal( globalPos ) ) );
+  QPointF pan  = mainPanel->canvasPan();
+  pos -= pan;
+  if ( float zoom = mainPanel->canvasZoom() )
+    pos /= zoom;
+  return pos;
+}

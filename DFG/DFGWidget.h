@@ -75,7 +75,10 @@ namespace DFG {
 
       void reloadStyles();
 
-      void createNewBlock( QPoint const &pos );
+      void createNewGraphNode( QPoint const &pos );
+      void createNewFunctionNode( QPoint const &pos );
+      void createNewBackdropNode( QPoint const &pos );
+      void createNewBlockNode( QPoint const &pos );
       void createNewCacheNode( QPoint const &pos );
 
     signals:
@@ -170,13 +173,13 @@ namespace DFG {
       static QSettings * g_settings;
     };
 
-    class NewBlockAction : public QAction
+    class NewBlockNodeAction : public QAction
     {
       Q_OBJECT
 
     public:
 
-      NewBlockAction(
+      NewBlockNodeAction(
         DFGWidget *dfgWidget,
         QPoint const &pos,
         QObject *parent )
@@ -195,7 +198,7 @@ namespace DFG {
 
       void onTriggered()
       {
-        m_dfgWidget->createNewBlock( m_pos );
+        m_dfgWidget->createNewBlockNode( m_pos );
       }
 
     private:
@@ -230,6 +233,108 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->createNewCacheNode( m_pos );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      QPoint m_pos;
+    };
+
+    class NewGraphNodeAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      NewGraphNodeAction(
+        DFGWidget *dfgWidget,
+        QPoint const &pos,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_pos( pos )
+      {
+        setText( "New empty graph" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->createNewGraphNode( m_pos );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      QPoint m_pos;
+    };
+
+    class NewFunctionNodeAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      NewFunctionNodeAction(
+        DFGWidget *dfgWidget,
+        QPoint const &pos,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_pos( pos )
+      {
+        setText( "New empty function" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->createNewFunctionNode( m_pos );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      QPoint m_pos;
+    };
+
+    class NewBackdropNodeAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      NewBackdropNodeAction(
+        DFGWidget *dfgWidget,
+        QPoint const &pos,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_pos( pos )
+      {
+        setText( "New backdrop" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->createNewBackdropNode( m_pos );
       }
 
     private:
