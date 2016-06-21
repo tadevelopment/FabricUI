@@ -233,8 +233,8 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString oldName,
-    QString desiredNewName
+    QString portPath,
+    QString desiredNewPortName
     );
 
   virtual QStringList dfgDoPaste(

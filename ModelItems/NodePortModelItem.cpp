@@ -54,7 +54,7 @@ FabricUI::ValueEditor::ItemMetadata* NodePortModelItem::getMetadata()
 
 void NodePortModelItem::setMetadataImp( const char* key, const char* value, bool canUndo ) /**/
 {
-  m_exec.setNodePortMetadata( m_portPath.c_str(), key, value, canUndo );
+  m_exec.setPortMetadata( m_portPath.c_str(), key, value, canUndo );
 }
 
 QVariant NodePortModelItem::getValue()
@@ -62,15 +62,15 @@ QVariant NodePortModelItem::getValue()
   try
   {
     // TODO: Find a way to show values of connected ports
-    if (m_exec.hasSrcPorts( m_portPath.c_str() ))
+    if ( m_exec.hasSrcPorts( m_portPath.c_str() ) )
       return QVariant();
 
     // If we have a resolved type, allow getting the default val
-    const char* ctype = m_exec.getNodePortResolvedType( m_portPath.c_str() );
+    const char* ctype = m_exec.getPortResolvedType( m_portPath.c_str() );
     if (ctype != NULL)
     {
       FabricCore::RTVal rtVal = 
-        m_exec.getInstPortResolvedDefaultValue( m_portPath.c_str(), ctype );
+        m_exec.getPortResolvedDefaultValue( m_portPath.c_str(), ctype );
       assert( rtVal.isValid() );
       return QVariant::fromValue<FabricCore::RTVal>( rtVal.copy() );
     }
@@ -94,7 +94,7 @@ void NodePortModelItem::setValue(
       return;
 
     const char* resolvedTypeName =
-      m_exec.getNodePortResolvedType( m_portPath.c_str() );
+      m_exec.getPortResolvedType( m_portPath.c_str() );
     assert( resolvedTypeName );
     if ( !resolvedTypeName )
       return;

@@ -552,8 +552,8 @@ QString DFGUICmdHandler_QUndo::dfgDoRenamePort(
   FabricCore::DFGBinding const &binding,
   QString execPath,
   FabricCore::DFGExec const &exec,
-  QString oldName,
-  QString desiredNewName
+  QString portPath,
+  QString desiredNewPortName
   )
 {
   DFGUICmd_RenamePort *cmd =
@@ -561,8 +561,8 @@ QString DFGUICmdHandler_QUndo::dfgDoRenamePort(
       binding,
       execPath,
       exec,
-      oldName,
-      desiredNewName
+      portPath,
+      desiredNewPortName
       );
   m_qUndoStack->push( new WrappedCommand( cmd ) );
   return cmd->getActualNewPortName();

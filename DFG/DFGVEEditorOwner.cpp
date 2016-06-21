@@ -356,7 +356,18 @@ void DFGVEEditorOwner::onNodeInspectRequested(
   // TODO: Check for re-inspecting the same node, and don't rebuild
   FabricUI::ModelItems::NodeModelItem *nodeModelItem = 0;
 
-  if ( !exec.isExecBlock( nodeName.c_str() ) )
+  if ( exec.isExecBlock( nodeName.c_str() ) )
+  {
+    nodeModelItem =
+      new FabricUI::ModelItems::InstModelItem(
+        dfgUICmdHandler,
+        binding,
+        execPath,
+        exec,
+        nodeName
+        );
+  }
+  else
   {
     FabricCore::DFGNodeType type = exec.getNodeType( nodeName.c_str() );
     switch (type)

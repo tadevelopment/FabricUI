@@ -277,7 +277,7 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString oldPortName,
+    QString portPath,
     QString desiredNewPortName
     ) { return QString(); }
 

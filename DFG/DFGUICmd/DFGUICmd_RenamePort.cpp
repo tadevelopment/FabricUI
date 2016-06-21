@@ -9,7 +9,7 @@ FABRIC_UI_DFG_NAMESPACE_BEGIN
 void DFGUICmd_RenamePort::appendDesc( QString &desc )
 {
   desc += "Rename ";
-  appendDesc_PortPath( m_oldPortName, desc );
+  appendDesc_PortPath( m_portPath, desc );
   desc += " to ";
   appendDesc_PortPath( m_actualNewPortName, desc );
 }
@@ -18,7 +18,7 @@ void DFGUICmd_RenamePort::invoke( unsigned &coreUndoCount )
 {
   FTL::CStrRef actualNewPortName =
     invoke(
-      m_oldPortName.toUtf8().constData(),
+      m_portPath.toUtf8().constData(),
       m_desiredNewPortName.toUtf8().constData(),
       coreUndoCount
       );

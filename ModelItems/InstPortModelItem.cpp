@@ -53,11 +53,11 @@ QVariant InstPortModelItem::getValue()
       return QVariant();
 
     // If we have a resolved type, allow getting the default val
-    const char* ctype = m_exec.getNodePortResolvedType( m_portPath.c_str() );
+    const char* ctype = m_exec.getPortResolvedType( m_portPath.c_str() );
     if (ctype != NULL)
     {
       FabricCore::RTVal rtVal = 
-        m_exec.getInstPortResolvedDefaultValue( m_portPath.c_str(), ctype );
+        m_exec.getPortResolvedDefaultValue( m_portPath.c_str(), ctype );
       assert( rtVal.isValid() );
       return QVariant::fromValue<FabricCore::RTVal>( rtVal.copy() );
     }
@@ -76,26 +76,20 @@ FTL::CStrRef InstPortModelItem::getName()
 
 bool InstPortModelItem::canRename()
 {
-  FabricCore::DFGExec nodeExec = m_exec.getSubExec( m_nodeName.c_str() );
-  return nodeExec.getExecPortIndex( m_portName.c_str() ) > 0
-    && !nodeExec.editWouldSplitFromPreset();
+  return !m_exec.isExecBlock( m_nodeName.c_str() )
+    && !m_exec.isDepsPort( m_portPath.c_str() )
+    && !m_exec.getSubExec( m_nodeName.c_str() ).editWouldSplitFromPreset();
 }
 
 void InstPortModelItem::rename( FTL::CStrRef newName )
 {
-  std::string subExecPath = m_execPath;
-  if ( !subExecPath.empty() )
-    subExecPath += '.';
-  subExecPath += m_nodeName;
-
-  FabricCore::DFGExec subExec = m_exec.getSubExec( m_nodeName.c_str() );
+  assert( canRename() );
   
-  assert( !subExec.editWouldSplitFromPreset() );
   m_dfgUICmdHandler->dfgDoRenamePort(
     m_binding,
-    QString::fromUtf8( subExecPath.data(), subExecPath.size() ),
-    subExec,
-    QString::fromUtf8( m_portName.data(), m_portName.size() ),
+    QString::fromUtf8( m_execPath.data(), m_execPath.size() ),
+    m_exec,
+    QString::fromUtf8( m_portPath.data(), m_portPath.size() ),
     QString::fromUtf8( newName.data(), newName.size() )
     );
 }
@@ -113,7 +107,7 @@ void InstPortModelItem::onRenamed(
 bool InstPortModelItem::hasDefault()
 {
   // If we have a resolved type, allow getting the default val
-  const char* ctype = m_exec.getNodePortResolvedType( m_portPath.c_str() );
+  const char* ctype = m_exec.getPortResolvedType( m_portPath.c_str() );
   return (ctype != NULL);
 }
 
@@ -121,14 +115,12 @@ void InstPortModelItem::resetToDefault()
 {
 //#pragma message("Fix instance values for non-arg ports")
   //// If we have a resolved type, allow getting the default val
-  const char* ctype = m_exec.getNodePortResolvedType( m_portPath.c_str() );
+  const char* ctype = m_exec.getPortResolvedType( m_portPath.c_str() );
   if (ctype != NULL)
   {
-    FabricCore::DFGExec nodeExec = m_exec.getSubExec( m_nodeName.c_str() );
-
     FabricCore::RTVal val =
-      nodeExec.getPortDefaultValue( m_portName.c_str(), ctype );
-    if (val.isValid())
+      m_exec.getPortDefaultValue( m_portPath.c_str(), ctype );
+    if ( val.isValid() )
       onViewValueChanged( QVariant::fromValue( val ) );
   }
 }

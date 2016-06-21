@@ -573,7 +573,7 @@ class BindingWrapper:
     def renamePort(
         self,
         execPath,
-        oldPortName,
+        portPath,
         desiredNewPortName,
         ):
         rootExec = self.binding.getExec()
@@ -582,7 +582,7 @@ class BindingWrapper:
             self.binding,
             execPath,
             exec_,
-            oldPortName,
+            portPath,
             desiredNewPortName,
             )
         InvokeCmd(cmd, self.qUndoStack)

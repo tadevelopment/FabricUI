@@ -17,11 +17,11 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString oldPortName,
+    QString portPath,
     QString desiredNewPortName
     )
     : DFGUICmd_Exec( binding, execPath, exec )
-    , m_oldPortName( oldPortName.trimmed() )
+    , m_portPath( portPath.trimmed() )
     , m_desiredNewPortName( desiredNewPortName.trimmed() )
     {}
 
@@ -41,14 +41,14 @@ protected:
   virtual void invoke( unsigned &coreUndoCount );
 
   FTL::CStrRef invoke(
-    FTL::CStrRef oldPortName,
+    FTL::CStrRef portPath,
     FTL::CStrRef desiredNewPortName,
     unsigned &coreUndoCount
     );
 
 private:
 
-  QString m_oldPortName;
+  QString m_portPath;
   QString m_desiredNewPortName;
 
   QString m_actualNewPortName;
