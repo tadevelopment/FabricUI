@@ -241,7 +241,12 @@ namespace FabricUI
         FTL::CStrRef nodeName,
         FTL::CStrRef portName
         );
-      void onBlockPortDefaultValuesChanged(
+      void onExecBlockPortDefaultValuesChanged(
+        FTL::CStrRef blockName,
+        FTL::CStrRef portName
+        );
+      void onInstBlockPortDefaultValuesChanged(
+        FTL::CStrRef instName,
         FTL::CStrRef blockName,
         FTL::CStrRef portName
         );

@@ -334,7 +334,15 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
     }
     else if( descStr == FTL_STR("execBlockPortDefaultValuesChanged") )
     {
-      onBlockPortDefaultValuesChanged(
+      onExecBlockPortDefaultValuesChanged(
+        jsonObject->getString( FTL_STR("blockName") ),
+        jsonObject->getString( FTL_STR("portName") )
+        );
+    }
+    else if( descStr == FTL_STR("instBlockPortDefaultValuesChanged") )
+    {
+      onInstBlockPortDefaultValuesChanged(
+        jsonObject->getString( FTL_STR("instName") ),
         jsonObject->getString( FTL_STR("blockName") ),
         jsonObject->getString( FTL_STR("portName") )
         );
@@ -2028,7 +2036,16 @@ void DFGNotificationRouter::onNodePortDefaultValuesChanged(
   m_dfgController->emitDefaultValuesChanged();
 }
 
-void DFGNotificationRouter::onBlockPortDefaultValuesChanged(
+void DFGNotificationRouter::onExecBlockPortDefaultValuesChanged(
+  FTL::CStrRef blockName,
+  FTL::CStrRef portName
+  )
+{
+  m_dfgController->emitDefaultValuesChanged();
+}
+
+void DFGNotificationRouter::onInstBlockPortDefaultValuesChanged(
+  FTL::CStrRef instName,
   FTL::CStrRef blockName,
   FTL::CStrRef portName
   )

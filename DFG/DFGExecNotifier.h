@@ -154,6 +154,12 @@ signals:
     FTL::CStrRef portName
     );
 
+  void instBlockPortDefaultValuesChanged(
+    FTL::CStrRef instName,
+    FTL::CStrRef blockName,
+    FTL::CStrRef portName
+    );
+
   // The executable's nodes
 
   void nodeInserted(
@@ -335,6 +341,7 @@ private:
   void handler_execBlockPortRemoved( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_execBlockRemoved( FTL::JSONObject const *jsonObject );
+  void handler_execBlockRenamed( FTL::JSONObject const *jsonObject );
   void handler_execDidAttachPreset( FTL::JSONObject const *jsonObject );
   void handler_execEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject );
   void handler_execMetadataChanged( FTL::JSONObject const *jsonObject );
@@ -353,12 +360,14 @@ private:
   void handler_funcCodeChanged( FTL::JSONObject const *jsonObject );
   void handler_instBlockExecEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject );
   void handler_instBlockInserted( FTL::JSONObject const *jsonObject );
+  void handler_instBlockPortDefaultValuesChanged( FTL::JSONObject const *jsonObject );
   void handler_instBlockPortInserted( FTL::JSONObject const *jsonObject );
-  void handler_instBlockPortRenamed( FTL::JSONObject const *jsonObject );
   void handler_instBlockPortRemoved( FTL::JSONObject const *jsonObject );
+  void handler_instBlockPortRenamed( FTL::JSONObject const *jsonObject );
   void handler_instBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_instBlockPortsReordered( FTL::JSONObject const *jsonObject );
   void handler_instBlockRemoved( FTL::JSONObject const *jsonObject );
+  void handler_instBlockRenamed( FTL::JSONObject const *jsonObject );
   void handler_instExecDidAttachPreset( FTL::JSONObject const *jsonObject );
   void handler_instExecEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject );
   void handler_instExecTitleChanged( FTL::JSONObject const *jsonObject );
@@ -374,8 +383,6 @@ private:
   void handler_nodePortTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_nodeRemoved( FTL::JSONObject const *jsonObject );
   void handler_nodeRenamed( FTL::JSONObject const *jsonObject );
-  void handler_execBlockRenamed( FTL::JSONObject const *jsonObject );
-  void handler_instBlockRenamed( FTL::JSONObject const *jsonObject );
   void handler_portsConnected( FTL::JSONObject const *jsonObject );
   void handler_portsDisconnected( FTL::JSONObject const *jsonObject );
   void handler_refVarPathChanged( FTL::JSONObject const *jsonObject );
