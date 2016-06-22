@@ -7,6 +7,7 @@
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGExecNotifier.h>
 #include <FabricUI/DFG/DFGWidget.h>
+#include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/ModelItems/BindingModelItem.h>
 #include <FabricUI/ModelItems/GetModelItem.h>
@@ -37,6 +38,7 @@ DFGVEEditorOwner::~DFGVEEditorOwner()
 void DFGVEEditorOwner::initConnections()
 {
   VEEditorOwner::initConnections();
+
   connect(
     getDFGController(),
     SIGNAL(bindingChanged(FabricCore::DFGBinding const &)),
@@ -56,6 +58,10 @@ void DFGVEEditorOwner::initConnections()
   connect(
     getDfgWidget(), SIGNAL( nodeInspectRequested( FabricUI::GraphView::Node* ) ),
     this, SLOT( onNodeInspectRequested( FabricUI::GraphView::Node* ) )
+    );
+  connect(
+    getDfgWidget(), SIGNAL( instBlockInspectRequested( FabricUI::GraphView::InstBlock* ) ),
+    this, SLOT( onInstBlockInspectRequested( FabricUI::GraphView::InstBlock* ) )
     );
 
   connect( getDfgWidget(), SIGNAL( onGraphSet( FabricUI::GraphView::Graph* ) ),
@@ -155,7 +161,7 @@ void DFGVEEditorOwner::setModelRoot(
 
 void DFGVEEditorOwner::setModelRoot(
   FabricCore::DFGExec exec,
-  FTL::CStrRef nodeName,
+  FTL::CStrRef itemPath,
   FabricUI::ModelItems::NodeModelItem *nodeModelItem
   )
 {
@@ -243,10 +249,11 @@ void DFGVEEditorOwner::setModelRoot(
       SLOT(onExecNodePortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
       );
 
-    if ( !exec.isExecBlock( nodeName.c_str() )
-      && exec.getNodeType( nodeName.c_str() ) == FabricCore::DFGNodeType_Inst )
+    if ( !exec.isExecBlock( itemPath.c_str() )
+      && ( exec.isInstBlock( itemPath.c_str() )
+        || exec.getNodeType( itemPath.c_str() ) == FabricCore::DFGNodeType_Inst ) )
     {
-      FabricCore::DFGExec subExec = exec.getSubExec( nodeName.c_str() );
+      FabricCore::DFGExec subExec = exec.getSubExec( itemPath.c_str() );
 
       m_subNotifier = DFG::DFGExecNotifier::Create( subExec );
 
@@ -426,6 +433,31 @@ void DFGVEEditorOwner::onNodeInspectRequested(
     }
   }
   setModelRoot( exec, nodeName, nodeModelItem );
+}
+
+void DFGVEEditorOwner::onInstBlockInspectRequested(
+  FabricUI::GraphView::InstBlock *instBlock
+  )
+{
+  FabricUI::DFG::DFGController *dfgController = getDFGController();
+
+  FabricUI::DFG::DFGUICmdHandler *dfgUICmdHandler =
+    dfgController->getCmdHandler();
+  FabricCore::DFGBinding &binding = dfgController->getBinding();
+  FTL::CStrRef execPath = dfgController->getExecPath();
+  FabricCore::DFGExec &exec = dfgController->getExec();
+  std::string instBlockPath = instBlock->path();
+
+  // TODO: Check for re-inspecting the same node, and don't rebuild
+  FabricUI::ModelItems::NodeModelItem *nodeModelItem =
+    new FabricUI::ModelItems::InstModelItem(
+      dfgUICmdHandler,
+      binding,
+      execPath,
+      exec,
+      instBlockPath
+      );
+  setModelRoot( exec, instBlockPath, nodeModelItem );
 }
 
 void DFGVEEditorOwner::onBindingArgValueChanged(
@@ -901,6 +933,10 @@ void DFGVEEditorOwner::onGraphSet( FabricUI::GraphView::Graph * graph )
     connect(
       graph, SIGNAL( nodeInspectRequested( FabricUI::GraphView::Node* ) ),
       this, SLOT( onNodeInspectRequested( FabricUI::GraphView::Node* ) )
+      );
+    connect(
+      graph, SIGNAL( instBlockInspectRequested( FabricUI::GraphView::InstBlock* ) ),
+      this, SLOT( onInstBlockInspectRequested( FabricUI::GraphView::InstBlock* ) )
       );
 
     

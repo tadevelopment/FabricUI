@@ -23,6 +23,7 @@ namespace FabricUI {
   namespace GraphView {
     class Node;
     class Graph;
+    class InstBlock;
   }
   namespace ModelItems {
     class BindingModelItem;
@@ -156,7 +157,14 @@ namespace FabricUI {
         );
 
       virtual void onSidePanelInspectRequested();
-      void onNodeInspectRequested(FabricUI::GraphView::Node *node);
+
+      void onNodeInspectRequested(
+        FabricUI::GraphView::Node *node
+        );
+
+      void onInstBlockInspectRequested(
+        FabricUI::GraphView::InstBlock *instBlock
+        );
 
       void onExecNodePortInserted(
         FTL::CStrRef nodeName,

@@ -90,6 +90,10 @@ void DFGCombinedWidget::initDFG() {
       m_dfgWidget, SIGNAL(nodeInspectRequested(FabricUI::GraphView::Node*)),
       this, SLOT(onNodeInspectRequested(FabricUI::GraphView::Node*))
       );
+    QObject::connect(
+      m_dfgWidget, SIGNAL(instBlockInspectRequested(FabricUI::GraphView::InstBlock*)),
+      this, SLOT(onInstBlockInspectRequested(FabricUI::GraphView::InstBlock*))
+      );
 
     QObject::connect(m_dfgWidget, SIGNAL(onGraphSet(FabricUI::GraphView::Graph*)), 
       this, SLOT(onGraphSet(FabricUI::GraphView::Graph*)));
@@ -264,6 +268,8 @@ void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
 
     QObject::connect(graph, SIGNAL(nodeInspectRequested(FabricUI::GraphView::Node*)),
       this, SLOT(onNodeInspectRequested(FabricUI::GraphView::Node*)));
+    QObject::connect(graph, SIGNAL(instBlockInspectRequested(FabricUI::GraphView::InstBlock*)),
+      this, SLOT(onInstBlockInspectRequested(FabricUI::GraphView::InstBlock*)));
     
     m_setGraph = graph;
   }
@@ -283,9 +289,22 @@ void DFGCombinedWidget::onNodeInspectRequested(FabricUI::GraphView::Node * node)
   }
 }
 
-void DFGCombinedWidget::onNodeEditRequested(FabricUI::GraphView::Node * node)
+void DFGCombinedWidget::onInstBlockInspectRequested(FabricUI::GraphView::InstBlock *instBlock)
 {
-  m_dfgWidget->maybeEditNode(node);
+  QList<int> s = m_hSplitter->sizes();
+  if(s[2] == 0)
+  {
+    s[2] = (int)(float(s[1]) * 0.25f);
+    s[1] -= s[2];
+    m_hSplitter->setSizes(s);
+  }
+}
+
+void DFGCombinedWidget::onNodeEditRequested(
+  FabricUI::GraphView::Node *node
+  )
+{
+  m_dfgWidget->maybeEditNode( node );
 }
 
 void DFGCombinedWidget::onInstBlockEditRequested(
