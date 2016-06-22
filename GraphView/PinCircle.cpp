@@ -202,6 +202,15 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
         menu->deleteLater();
       }
     }
+    else if(target()->targetType() == TargetType_FixedPort)
+    {
+      QMenu * menu = target()->graph()->getFixedPortContextMenu((FixedPort*)this->target());
+      if(menu)
+      {
+        menu->exec(QCursor::pos());
+        menu->deleteLater();
+      }
+    }
   }
   else
     QGraphicsWidget::mousePressEvent(event);

@@ -88,7 +88,7 @@ namespace FabricUI
         std::string &failureReason
         ) const;
       
-      virtual TargetType targetType() const { return TargetType_Port; }
+      virtual TargetType targetType() const { return TargetType_FixedPort; }
       virtual QPointF connectionPos(PortType pType) const;
 
       bool allowEdits() const

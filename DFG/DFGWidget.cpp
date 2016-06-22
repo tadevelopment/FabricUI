@@ -449,7 +449,10 @@ QMenu *DFGWidget::nodeContextMenuCallback(
   return NULL;
 }
 
-QMenu* DFGWidget::portContextMenuCallback(FabricUI::GraphView::Port* port, void* userData)
+QMenu* DFGWidget::portContextMenuCallback(
+  FabricUI::GraphView::Port* port,
+  void* userData
+  )
 {
   DFGWidget * graphWidget = (DFGWidget*)userData;
   if ( !graphWidget->isEditable() )
@@ -493,7 +496,8 @@ QMenu* DFGWidget::portContextMenuCallback(FabricUI::GraphView::Port* port, void*
 
 QMenu *DFGWidget::fixedPortContextMenuCallback(
   FabricUI::GraphView::FixedPort *fixedPort,
-  void *userData)
+  void *userData
+  )
 {
   DFGWidget * graphWidget = (DFGWidget*)userData;
   if ( !graphWidget->isEditable() )
@@ -505,7 +509,11 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   if (!graphWidget->getDFGController()->validPresetSplit())
     return NULL;
 
-  return NULL;
+  QMenu *menu = new QMenu( NULL );
+  QAction *dummyAction = new QAction( "Port is locked", menu );
+  dummyAction->setEnabled( false );
+  menu->addAction( dummyAction );
+  return menu;
 }
 
 QMenu* DFGWidget::sidePanelContextMenuCallback(

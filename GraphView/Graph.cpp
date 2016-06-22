@@ -804,35 +804,35 @@ QMenu* Graph::getNodeContextMenu(Node * node)
   return (*m_nodeContextMenuCallback)(node, m_nodeContextMenuCallbackUD);
 }
 
-QMenu* Graph::getPinContextMenu(Pin * pin)
+QMenu *Graph::getPinContextMenu(Pin * pin)
 {
   if(!m_pinContextMenuCallback)
     return NULL;
   return (*m_pinContextMenuCallback)(pin, m_pinContextMenuCallbackUD);
 }
 
-QMenu* Graph::getConnectionContextMenu(Connection * connection)
+QMenu *Graph::getConnectionContextMenu(Connection * connection)
 {
   if(!m_connectionContextMenuCallback)
     return NULL;
   return (*m_connectionContextMenuCallback)(connection, m_connectionContextMenuCallbackUD);
 }
 
-QMenu* Graph::getPortContextMenu(Port * port)
+QMenu *Graph::getPortContextMenu(Port * port)
 {
   if(!m_portContextMenuCallback)
     return NULL;
   return (*m_portContextMenuCallback)(port, m_portContextMenuCallbackUD);
 }
 
-QMenu* Graph::getFixedPortContextMenu(FixedPort * fixedPort)
+QMenu *Graph::getFixedPortContextMenu( FixedPort *fixedPort )
 {
-  if(!m_fixedPortContextMenuCallback)
+  if ( !m_fixedPortContextMenuCallback )
     return NULL;
   return (*m_fixedPortContextMenuCallback)(fixedPort, m_fixedPortContextMenuCallbackUD);
 }
 
-QMenu* Graph::getSidePanelContextMenu(SidePanel * sidePanel)
+QMenu *Graph::getSidePanelContextMenu(SidePanel * sidePanel)
 {
   if(!m_sidePanelContextMenuCallback)
     return NULL;

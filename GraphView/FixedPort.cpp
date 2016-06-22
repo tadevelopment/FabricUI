@@ -223,19 +223,20 @@ QPointF FixedPort::connectionPos(PortType pType) const
 
 void FixedPort::mousePressEvent( QGraphicsSceneMouseEvent *event )
 {
-  if(event->button() == Qt::RightButton)
+  if ( event->button() == Qt::RightButton )
   {
     event->accept();
 
-    QMenu * menu = graph()->getFixedPortContextMenu(this);
-    if(menu)
+    if ( QMenu *menu = graph()->getFixedPortContextMenu( this ) )
     {
-      menu->exec(QCursor::pos());
+      menu->exec( QCursor::pos() );
       menu->deleteLater();
     }
+
     return;
   }
-  ConnectionTarget::mousePressEvent(event);  
+  
+  ConnectionTarget::mousePressEvent( event );  
 }
 
 std::string FixedPort::path() const
