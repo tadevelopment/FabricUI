@@ -399,6 +399,9 @@ static void GetDesiredPortNameAndTypeSpecForConnectionTarget(
   FTL::StrRef &typeSpecStr
   )
 {
+  if ( !target )
+    return;
+
   switch ( target->targetType() )
   {
     case TargetType_Pin:
@@ -593,7 +596,7 @@ void ExposeInstPortAction::invokeAddPort(
         desiredPortName,
         portType,
         typeSpec,
-        m_other->path_QS(),
+        m_other? m_other->path_QS(): QString(),
         PortTypeToDFGPortType( m_connectionPortType ),
         extDep,
         metaData
@@ -609,7 +612,7 @@ void ExposeInstPortAction::invokeAddPort(
         desiredPortName,
         portType,
         typeSpec,
-        m_other->path_QS(),
+        m_other? m_other->path_QS(): QString(),
         PortTypeToDFGPortType( m_connectionPortType ),
         extDep,
         metaData
@@ -672,32 +675,23 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
     menu->addAction(action);
   }
 
-  if ( !!other )
-  {
-    menu->addSeparator();
+  menu->addSeparator();
 
-    QAction *exposeNewPortAction =
-      new ExposeInstPortAction(
-        menu,
-        static_cast<FabricUI::DFG::DFGController *>(
-          node->graph()->controller()
-          ),
-        node,
-        other,
-        nodeRole
-        );
-    exposeNewPortAction->setEnabled(
-      node->canAddPorts() && other->isRealPort()
+  QAction *exposeNewPortAction =
+    new ExposeInstPortAction(
+      menu,
+      static_cast<FabricUI::DFG::DFGController *>(
+        node->graph()->controller()
+        ),
+      node,
+      other,
+      nodeRole
       );
-    menu->addAction( exposeNewPortAction );
-  }
-
-  if ( menu->isEmpty() )
-  {
-    QAction *action = new QAction( "No ports can be connected", menu );
-    action->setEnabled( false );
-    menu->addAction( action );
-  }
+  exposeNewPortAction->setEnabled(
+      node->canAddPorts()
+    && ( !other || other->isRealPort() )
+    );
+  menu->addAction( exposeNewPortAction );
 
   // done.
   return menu;
@@ -733,7 +727,7 @@ void ExposeInstBlockPortAction::invokeAddPort(
     m_instBlock->name_QS(),
     desiredPortName,
     typeSpec,
-    m_other->path_QS(),
+    m_other? m_other->path_QS(): QString(),
     extDep,
     metaData
     );
@@ -793,31 +787,22 @@ QMenu *MouseGrabber::createInstBlockHeaderMenu(
     menu->addAction(action);
   }
 
-  if ( !!other )
-  {
-    menu->addSeparator();
+  menu->addSeparator();
 
-    QAction *exposeNewPortAction =
-      new ExposeInstBlockPortAction(
-        menu,
-        static_cast<FabricUI::DFG::DFGController *>(
-          instBlock->node()->graph()->controller()
-          ),
-        instBlock,
-        other
-        );
-    exposeNewPortAction->setEnabled(
-      nodeRole == PortType_Output && other->isRealPort()
+  QAction *exposeNewPortAction =
+    new ExposeInstBlockPortAction(
+      menu,
+      static_cast<FabricUI::DFG::DFGController *>(
+        instBlock->node()->graph()->controller()
+        ),
+      instBlock,
+      other
       );
-    menu->addAction( exposeNewPortAction );
-  }
-
-  if ( menu->isEmpty() )
-  {
-    QAction *action = new QAction( "No ports can be connected", menu );
-    action->setEnabled( false );
-    menu->addAction( action );
-  }
+  exposeNewPortAction->setEnabled(
+      nodeRole == PortType_Output
+    && ( !other || other->isRealPort() )
+    );
+  menu->addAction( exposeNewPortAction );
 
   // done.
   return menu;
