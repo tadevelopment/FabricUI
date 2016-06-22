@@ -18,6 +18,11 @@ public:
 
   IntSlider( QWidget *parent = 0 );
 
+  // Override the slider positioning to make the slider
+  // go directly to the clicked positioning (instead of
+  // going there by incremenets)
+  virtual void mousePressEvent( QMouseEvent * ) /*override*/;
+
   virtual void wheelEvent( QWheelEvent *event ) /*override*/;
 };
 

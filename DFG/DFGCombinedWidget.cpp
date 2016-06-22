@@ -218,7 +218,7 @@ void DFGCombinedWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifi
     }
     else
     {
-      s[0] = (int)(float(s[1]) * 0.2f);
+      s[0] = (int)(float(s[1]) * 0.25f);
       s[2] = s[0];
       s[1] -= s[0] + s[2];
     }
@@ -262,6 +262,9 @@ void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
       this, SLOT(onInstBlockEditRequested(FabricUI::GraphView::InstBlock*))
       );
 
+    QObject::connect(graph, SIGNAL(nodeInspectRequested(FabricUI::GraphView::Node*)),
+      this, SLOT(onNodeInspectRequested(FabricUI::GraphView::Node*)));
+    
     m_setGraph = graph;
   }
 }
@@ -274,7 +277,7 @@ void DFGCombinedWidget::onNodeInspectRequested(FabricUI::GraphView::Node * node)
   QList<int> s = m_hSplitter->sizes();
   if(s[2] == 0)
   {
-    s[2] = (int)(float(s[1]) * 0.2f);
+    s[2] = (int)(float(s[1]) * 0.25f);
     s[1] -= s[2];
     m_hSplitter->setSizes(s);
   }

@@ -88,6 +88,9 @@ class SHViewportsManager():
 
         self.shGLRenderer.update()
 
+    def getSHRenderer(self):
+        return self.shGLRenderer
+
     def createViewport(self, index, ortho, replace, sharedWidget):
         """ Creates a viewport when adding or replacing one.
         The method is also in charge of creating the 
@@ -217,6 +220,12 @@ class SHViewportsManager():
 
         self.shWindow.shTreesManager.getScene().prepareSceneForRender()
         for viewport in self.viewports: viewport.update()
+
+    def viewportUpdateRequested(self):
+        for viewport in self.viewports:
+            if viewport.updateRequested:
+                return True
+        return False
 
     def onRefreshViewport(self, refreshAll):
         """ Refreshs either the current viewport or all the viewports.

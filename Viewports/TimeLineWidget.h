@@ -22,6 +22,63 @@ namespace FabricUI
 {
   namespace TimeLine
   {
+    class FrameSlider : public QSlider
+    {
+      Q_OBJECT
+
+    public:
+      FrameSlider( QWidget * parent )
+        : QSlider( parent )
+      {
+      }
+
+      // [FE-6862]
+      // Override the slider positioning to make the slider
+      // go directly to the clicked positioning (instead of
+      // going there by incremenets)
+      virtual void mousePressEvent( QMouseEvent *event ) /*override*/
+      {
+        // taken from FabricUI::ValueEditor::DoubleSlider::mousePressEvent().
+        QStyleOptionSlider opt;
+        initStyleOption( &opt );
+        QRect sr = style()->subControlRect( QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this );
+
+        if (event->button() == Qt::LeftButton &&
+              sr.contains( event->pos() ) == false)
+        {
+          int max = maximum();
+
+          int newVal = 0;
+          if ( orientation() == Qt::Vertical )
+          {
+            int h = height();
+            if ( h > 1 )
+            {
+              --h;
+              newVal += (max * (h - event->y()) + h/2) / h;
+            }
+          }
+          else
+          {
+            int w = width();
+            if ( w > 1 )
+            {
+              --w;
+              newVal += (max * event->x() + w/2) / w;
+            }
+          }
+
+          if ( invertedAppearance() )
+            setValue( max - newVal );
+          else
+            setValue( newVal );
+
+          event->accept();
+        }
+        QSlider::mousePressEvent( event );
+      }
+    };
+
     /// \brief an Basic Time slider Widget using QT
     class TimeLineWidget : public QWidget
     {
@@ -168,7 +225,7 @@ namespace FabricUI
 
         /// elements
         QDoubleSpinBox * m_startSpinBox;
-        QSlider * m_frameSlider;
+        FrameSlider * m_frameSlider;
         QDoubleSpinBox * m_endSpinBox;
         QDoubleSpinBox * m_currentFrameSpinBox;
         QPushButton * m_goToStartFrameButton;
