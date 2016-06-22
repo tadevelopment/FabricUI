@@ -5,13 +5,13 @@
 #ifndef FABRICUI_MODELITEMS_REFMODELITEM_H
 #define FABRICUI_MODELITEMS_REFMODELITEM_H
 
-#include <FabricUI/ModelItems/NodeModelItem.h>
+#include <FabricUI/ModelItems/ItemModelItem.h>
 #include <FabricUI/ModelItems/RefItemMetadata.h>
 
 namespace FabricUI {
 namespace ModelItems {
 
-class RefModelItem : public NodeModelItem
+class RefModelItem : public ItemModelItem
 {
 public:
 

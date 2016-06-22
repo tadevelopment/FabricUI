@@ -5,14 +5,14 @@
 #ifndef FABRICUI_MODELITEMS_SETPORTITEMMETADATA_H
 #define FABRICUI_MODELITEMS_SETPORTITEMMETADATA_H
 
-#include "NodePortItemMetadata.h"
+#include "ItemPortItemMetadata.h"
 
 #include <FabricUI/ModelItems/SetPortModelItem.h>
 
 namespace FabricUI {
 namespace ModelItems {
 
-class SetPortItemMetadata : public NodePortItemMetadata
+class SetPortItemMetadata : public ItemPortItemMetadata
 {
 protected:
 
@@ -21,7 +21,7 @@ protected:
 public:
 
   SetPortItemMetadata( SetPortModelItem *setPortModelItem )
-    : NodePortItemMetadata( setPortModelItem )
+    : ItemPortItemMetadata( setPortModelItem )
     , m_setPortModelItem( setPortModelItem )
     {}
 
@@ -37,7 +37,7 @@ public:
         return isNotInspectable? FTL_STR("1").c_str(): FTL_STR("").c_str();
       }
 
-      return NodePortItemMetadata::getString( key );
+      return ItemPortItemMetadata::getString( key );
     }
     catch (FabricCore::Exception* e)
     {

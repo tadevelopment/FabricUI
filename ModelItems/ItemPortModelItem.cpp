@@ -4,8 +4,8 @@
 
 #include <assert.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
-#include <FabricUI/ModelItems/NodePortItemMetadata.h>
-#include <FabricUI/ModelItems/NodePortModelItem.h>
+#include <FabricUI/ModelItems/ItemPortItemMetadata.h>
+#include <FabricUI/ModelItems/ItemPortModelItem.h>
 #include <FabricUI/ModelItems/RootModelItem.h>
 #include <QtCore/QStringList>
 
@@ -13,51 +13,51 @@ namespace FabricUI {
 namespace ModelItems {
 
 //////////////////////////////////////////////////////////////////////////
-NodePortModelItem::NodePortModelItem(
+ItemPortModelItem::ItemPortModelItem(
   DFG::DFGUICmdHandler *dfgUICmdHandler,
   FabricCore::DFGBinding binding,
   FTL::StrRef execPath,
   FabricCore::DFGExec exec,
-  FTL::StrRef nodeName,
+  FTL::StrRef itemPath,
   FTL::StrRef portName
   )
   : m_dfgUICmdHandler( dfgUICmdHandler )
   , m_binding( binding )
   , m_execPath( execPath )
   , m_exec( exec )
-  , m_nodeName( nodeName )
+  , m_itemPath( itemPath )
   , m_portName( portName )
   , m_metadata( 0 )
 {
   updatePortPath();
 }
 
-NodePortModelItem::~NodePortModelItem()
+ItemPortModelItem::~ItemPortModelItem()
 {
   delete m_metadata;
 }
 
-void NodePortModelItem::updatePortPath()
+void ItemPortModelItem::updatePortPath()
 {
-  m_portPath = m_nodeName;
+  m_portPath = m_itemPath;
   m_portPath += '.';
   m_portPath += m_portName;
 }
 
-FabricUI::ValueEditor::ItemMetadata* NodePortModelItem::getMetadata()
+FabricUI::ValueEditor::ItemMetadata* ItemPortModelItem::getMetadata()
 {
   if ( !m_metadata )
-    m_metadata = new NodePortItemMetadata( this );
+    m_metadata = new ItemPortItemMetadata( this );
 
   return m_metadata;
 }
 
-void NodePortModelItem::setMetadataImp( const char* key, const char* value, bool canUndo ) /**/
+void ItemPortModelItem::setMetadataImp( const char* key, const char* value, bool canUndo ) /**/
 {
   m_exec.setPortMetadata( m_portPath.c_str(), key, value, canUndo );
 }
 
-QVariant NodePortModelItem::getValue()
+QVariant ItemPortModelItem::getValue()
 {
   try
   {
@@ -82,7 +82,7 @@ QVariant NodePortModelItem::getValue()
   return QVariant();
 }
 
-void NodePortModelItem::setValue(
+void ItemPortModelItem::setValue(
   QVariant value,
   bool commit,
   QVariant valueAtInteractionBegin
@@ -158,14 +158,14 @@ void NodePortModelItem::setValue(
   }
 }
 
-void NodePortModelItem::onNodeRenamed(
-  FTL::CStrRef oldNodeName,
-  FTL::CStrRef newNodeName
+void ItemPortModelItem::onItemRenamed(
+  FTL::CStrRef oldItemPath,
+  FTL::CStrRef newItemPath
   )
 {
-  assert( m_nodeName == oldNodeName );
+  assert( m_itemPath == oldItemPath );
 
-  m_nodeName = newNodeName;
+  m_itemPath = newItemPath;
 
   updatePortPath();
 }

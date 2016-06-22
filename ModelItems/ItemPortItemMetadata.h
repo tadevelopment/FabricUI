@@ -2,12 +2,12 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 //
 
-#ifndef FABRICUI_MODELITEMS_NODEPORTITEMMETADATA_H
-#define FABRICUI_MODELITEMS_NODEPORTITEMMETADATA_H
+#ifndef FABRICUI_MODELITEMS_ITEMPORTITEMMETADATA_H
+#define FABRICUI_MODELITEMS_ITEMPORTITEMMETADATA_H
 
 #include "DFGModelItemMetadata.h"
 
-#include <FabricUI/ModelItems/NodePortModelItem.h>
+#include <FabricUI/ModelItems/ItemPortModelItem.h>
 
 namespace FabricUI
 {
@@ -16,15 +16,15 @@ namespace FabricUI
 
     //////////////////////////////////////////////////////////////////////////
     // MetaData specialization allows access to Port metadata
-    class NodePortItemMetadata : public DFGModelItemMetadata
+    class ItemPortItemMetadata : public DFGModelItemMetadata
     {
     protected:
 
-      NodePortModelItem *m_nodePortModelItem;
+      ItemPortModelItem *m_nodePortModelItem;
 
     public:
 
-      NodePortItemMetadata( NodePortModelItem *nodePortModelItem )
+      ItemPortItemMetadata( ItemPortModelItem *nodePortModelItem )
         : m_nodePortModelItem( nodePortModelItem ) {}
 
       virtual const char* getString( const char* key ) const /*override*/
@@ -48,7 +48,7 @@ namespace FabricUI
             FabricCore::DFGExec exec = m_nodePortModelItem->getExec();
             FTL::CStrRef portPath = m_nodePortModelItem->getPortPath();
             return DFGPortTypeToVEPortType(
-              exec.getNodePortType( portPath.c_str() )
+              exec.getPortType( portPath.c_str() )
               ).c_str();
           }
 
@@ -57,12 +57,12 @@ namespace FabricUI
             FabricCore::DFGExec exec = m_nodePortModelItem->getExec();
             FTL::CStrRef portPath = m_nodePortModelItem->getPortPath();
             bool isNotInspectable =
-              exec.getNodePortType( portPath.c_str() ) != FabricCore::DFGPortType_In
+              exec.getPortType( portPath.c_str() ) != FabricCore::DFGPortType_In
                 || exec.hasSrcPorts( portPath.c_str() );
             return isNotInspectable? FTL_STR("1").c_str(): FTL_STR("").c_str();
           }
 
-          return exec.getNodePortMetadata( portPath.c_str(), key );
+          return exec.getPortMetadata( portPath.c_str(), key );
         }
         catch (FabricCore::Exception* e)
         {
@@ -74,4 +74,4 @@ namespace FabricUI
   }
 }
 
-#endif // FABRICUI_MODELITEMS_NODEPORTITEMMETADATA_H
+#endif // FABRICUI_MODELITEMS_ITEMPORTITEMMETADATA_H

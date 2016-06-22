@@ -43,7 +43,7 @@ namespace FabricUI
       RootModelItem( );
       ~RootModelItem();
 
-      virtual bool isNode() const { return false; }
+      virtual bool isItem() const { return false; }
       virtual bool isBinding() const { return false; }
 
       virtual FabricUI::ValueEditor::BaseModelItem* createChild( FTL::CStrRef name ) { return 0; } /* To override */

@@ -19,7 +19,7 @@ InstModelItem::InstModelItem(
   FabricCore::DFGExec exec,
   FTL::StrRef nodeName
   )
- : NodeModelItem(
+ : ItemModelItem(
     dfgUICmdHandler,
     binding,
     execPath,
@@ -40,7 +40,7 @@ FabricUI::ValueEditor::BaseModelItem *InstModelItem::createChild( FTL::CStrRef p
     m_binding,
     m_execPath,
     m_exec,
-    m_nodeName,
+    m_itemPath,
     portName
     ));
 }

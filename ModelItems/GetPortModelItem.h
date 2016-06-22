@@ -17,7 +17,7 @@ class DFGUICmdHandler;
 
 namespace ModelItems {
 
-class NodePortItemMetadata;
+class ItemPortItemMetadata;
 
 //////////////////////////////////////////////////////////////////////////
 // Basic ModelItem for accessing ports

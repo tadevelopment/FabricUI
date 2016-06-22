@@ -38,7 +38,7 @@ FabricUI::ValueEditor::BaseModelItem *SetModelItem::createChild( FTL::CStrRef po
       m_binding,
       m_execPath,
       m_exec,
-      m_nodeName
+      m_itemPath
       ));
   else
     return pushChild(new SetPortModelItem(
@@ -46,7 +46,7 @@ FabricUI::ValueEditor::BaseModelItem *SetModelItem::createChild( FTL::CStrRef po
       m_binding,
       m_execPath,
       m_exec,
-      m_nodeName,
+      m_itemPath,
       portName
       ));
 }

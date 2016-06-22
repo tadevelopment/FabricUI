@@ -10,7 +10,7 @@
       </object-type>
       <object-type name="RootModelItem" />
       <object-type name="InstModelItem" />
-      <object-type name="NodeModelItem" />
+      <object-type name="ItemModelItem" />
       <object-type name="RefModelItem" />
       <object-type name="RefPortModelItem" />
       <object-type name="VarModelItem" />
@@ -21,8 +21,8 @@
       <object-type name="GetportModelItem" />
       <object-type name="InstPortItemMetadata" />
       <object-type name="InstPortModelItem" />
-      <object-type name="NodePortItemMetadata" />
-      <object-type name="NodePortModelItem" />
+      <object-type name="ItemPortItemMetadata" />
+      <object-type name="ItemPortModelItem" />
       <object-type name="SetModelItem" />
       <object-type name="SetPortItemMetadata" />
       <object-type name="SetPortModelItem" />

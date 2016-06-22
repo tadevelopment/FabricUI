@@ -5,7 +5,7 @@
 #ifndef FABRICUI_MODELITEMS_VARMODELITEM_H
 #define FABRICUI_MODELITEMS_VARMODELITEM_H
 
-#include <FabricUI/ModelItems/NodeModelItem.h>
+#include <FabricUI/ModelItems/ItemModelItem.h>
 #include <FabricUI/ModelItems/VarItemMetadata.h>
 
 namespace FabricUI
@@ -15,7 +15,7 @@ namespace FabricUI
   {
     //////////////////////////////////////////////////////////////////////////
     // Access graph variables
-    class VarModelItem : public NodeModelItem
+    class VarModelItem : public ItemModelItem
     {
     public:
 

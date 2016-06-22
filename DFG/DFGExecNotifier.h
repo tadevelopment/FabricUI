@@ -208,6 +208,7 @@ signals:
   void instBlockPortInserted(
     FTL::CStrRef instName,
     FTL::CStrRef blockName,
+    unsigned portIndex,
     FTL::CStrRef portName
     );
 
@@ -219,9 +220,7 @@ signals:
     );
 
   void instBlockPortRenamed(
-    unsigned instIndex,
     FTL::CStrRef instName,
-    unsigned blockIndex,
     FTL::CStrRef blockName,
     unsigned portIndex,
     FTL::CStrRef oldPortName,
@@ -231,6 +230,7 @@ signals:
   void instBlockPortRemoved(
     FTL::CStrRef instName,
     FTL::CStrRef blockName,
+    unsigned portIndex,
     FTL::CStrRef portName
     );
 

@@ -16,7 +16,7 @@ RefModelItem::RefModelItem(
   FabricCore::DFGExec exec,
   FTL::StrRef nodeName
   )
-  : NodeModelItem(
+  : ItemModelItem(
     dfgUICmdHandler,
     binding,
     execPath,
@@ -33,7 +33,7 @@ RefModelItem::~RefModelItem()
 
 int RefModelItem::getNumChildren()
 {
-  return 1 + NodeModelItem::getNumChildren();
+  return 1 + ItemModelItem::getNumChildren();
 }
 
 FTL::CStrRef RefModelItem::getChildName( int i )
@@ -41,7 +41,7 @@ FTL::CStrRef RefModelItem::getChildName( int i )
   if ( i == 0 )
     return FTL_STR("varPath");
   else
-    return NodeModelItem::getChildName( i - 1 );
+    return ItemModelItem::getChildName( i - 1 );
 }
 
 QVariant RefModelItem::getValue()
@@ -49,7 +49,7 @@ QVariant RefModelItem::getValue()
   QVariant result;
   try
   {
-    FTL::CStrRef varPath = m_exec.getRefVarPath( getNodeName().c_str() );
+    FTL::CStrRef varPath = m_exec.getRefVarPath( getItemPath().c_str() );
     result = QVariant::fromValue( m_exec.getVarValue( varPath.c_str() ) );
   }
   catch ( ... ) {}
@@ -64,7 +64,7 @@ void RefModelItem::setValue(
 {
   try
   {
-    FTL::CStrRef varPath = m_exec.getRefVarPath( getNodeName().c_str() );
+    FTL::CStrRef varPath = m_exec.getRefVarPath( getItemPath().c_str() );
     FabricCore::RTVal val = m_exec.getVarValue( varPath.c_str() );
     if ( FabricUI::ValueEditor::RTVariant::toRTVal( var, val ) )
       m_exec.setVarValue( varPath.c_str(), val );

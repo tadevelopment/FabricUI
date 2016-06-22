@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 //
 
-#ifndef FABRICUI_MODELITEMS_NODEPORTMODELITEM_H
-#define FABRICUI_MODELITEMS_NODEPORTMODELITEM_H
+#ifndef FABRICUI_MODELITEMS_ITEMPORTMODELITEM_H
+#define FABRICUI_MODELITEMS_ITEMPORTMODELITEM_H
 
 #include <FabricUI/ValueEditor/BaseModelItem.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
@@ -19,11 +19,11 @@ class DFGUICmdHandler;
   namespace ModelItems
   {
 
-    class NodePortItemMetadata;
+    class ItemPortItemMetadata;
 
     //////////////////////////////////////////////////////////////////////////
     // Basic ModelItem for accessing ports
-    class NodePortModelItem : public FabricUI::ValueEditor::BaseModelItem
+    class ItemPortModelItem : public FabricUI::ValueEditor::BaseModelItem
     {
     protected:
 
@@ -31,37 +31,37 @@ class DFGUICmdHandler;
       FabricCore::DFGBinding m_binding;
       std::string m_execPath;
       FabricCore::DFGExec m_exec;
-      std::string m_nodeName;
+      std::string m_itemPath;
       std::string m_portName;
     
       std::string m_portPath;
 
-      NodePortItemMetadata *m_metadata;
+      ItemPortItemMetadata *m_metadata;
 
     public:
 
-      NodePortModelItem(
+      ItemPortModelItem(
         DFG::DFGUICmdHandler *dfgUICmdHandler,
         FabricCore::DFGBinding binding,
         FTL::StrRef execPath,
         FabricCore::DFGExec exec,
-        FTL::StrRef nodeName,
+        FTL::StrRef itemPath,
         FTL::StrRef portName
         );
-      ~NodePortModelItem();
+      ~ItemPortModelItem();
 
       FabricCore::DFGExec getExec()
         { return m_exec; }
-      FTL::CStrRef getNodeName()
-        { return m_nodeName; }
+      FTL::CStrRef getItemPath()
+        { return m_itemPath; }
       FTL::CStrRef getPortName()
         { return m_portName; }
       FTL::CStrRef getPortPath()
         { return m_portPath; }
 
-      void onNodeRenamed(
-        FTL::CStrRef oldNodeName,
-        FTL::CStrRef newNodeName
+      void onItemRenamed(
+        FTL::CStrRef oldItemPath,
+        FTL::CStrRef newItemPath
         );
 
       /////////////////////////////////////////////////////////////////////////
@@ -95,4 +95,4 @@ class DFGUICmdHandler;
   }
 }
 
-#endif // FABRICUI_MODELITEMS_NODEPORTMODELITEM_H
+#endif // FABRICUI_MODELITEMS_ITEMPORTMODELITEM_H

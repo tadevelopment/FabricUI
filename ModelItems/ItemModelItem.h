@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 //
 
-#ifndef FABRICUI_MODELITEMS_NODEMODELITEM_H
-#define FABRICUI_MODELITEMS_NODEMODELITEM_H
+#ifndef FABRICUI_MODELITEMS_ITEMMODELITEM_H
+#define FABRICUI_MODELITEMS_ITEMMODELITEM_H
 
 #include <FabricCore.h>
 #include <FabricUI/ModelItems/RootModelItem.h>
@@ -21,7 +21,7 @@ class DFGUICmdHandler;
 
   namespace ModelItems
   {
-    class NodeModelItem : public RootModelItem
+    class ItemModelItem : public RootModelItem
     {
     protected:
 
@@ -29,25 +29,24 @@ class DFGUICmdHandler;
       FabricCore::DFGBinding m_binding;
       std::string m_execPath;
       FabricCore::DFGExec m_exec;
-      std::string m_nodeName;
+      std::string m_itemPath;
   
     public:
       
-      NodeModelItem(
+      ItemModelItem(
         DFG::DFGUICmdHandler *dfgUICmdHandler,
         FabricCore::DFGBinding binding,
         FTL::StrRef execPath,
         FabricCore::DFGExec exec,
-        FTL::StrRef nodeName
+        FTL::StrRef itemPath
         );
-      ~NodeModelItem();
+      ~ItemModelItem();
 
-      virtual bool isNode() const /*override*/ { return true; }
-
+      virtual bool isItem() const /*override*/ { return true; }
       virtual bool isRef() const /*override*/ { return false; }
 
-      FTL::CStrRef getNodeName()
-        { return m_nodeName; }
+      FTL::CStrRef getItemPath()
+        { return m_itemPath; }
 
       virtual int getNumChildren() /*override*/;
       virtual FTL::CStrRef getChildName( int i ) /*override*/;
@@ -63,8 +62,8 @@ class DFGUICmdHandler;
       virtual void rename( FTL::CStrRef newName ) /*override*/;
 
       virtual void onRenamed(
-        FTL::CStrRef oldNodeName,
-        FTL::CStrRef newNodeName
+        FTL::CStrRef oldItemPath,
+        FTL::CStrRef newItemPath
         ) /*override*/;
 
       // Metadata
@@ -77,4 +76,4 @@ class DFGUICmdHandler;
   }
 }
 
-#endif // FABRICUI_MODELITEMS_NODEMODELITEM_H
+#endif // FABRICUI_MODELITEMS_ITEMMODELITEM_H

@@ -54,7 +54,7 @@
 #include <FabricUI/ModelItems/DFGModelItemMetadata.h>
 #include <FabricUI/ModelItems/RootModelItem.h>
 #include <FabricUI/ModelItems/InstModelItem.h>
-#include <FabricUI/ModelItems/NodeModelItem.h>
+#include <FabricUI/ModelItems/ItemModelItem.h>
 #include <FabricUI/ModelItems/VarModelItem.h>
 #include <FabricUI/ModelItems/VarItemMetadata.h>
 #include <FabricUI/ModelItems/RefModelItem.h>
@@ -65,8 +65,8 @@
 #include <FabricUI/ModelItems/GetportModelItem.h>
 #include <FabricUI/ModelItems/InstPortItemMetadata.h>
 #include <FabricUI/ModelItems/InstPortModelItem.h>
-#include <FabricUI/ModelItems/NodePortItemMetadata.h>
-#include <FabricUI/ModelItems/NodePortModelItem.h>
+#include <FabricUI/ModelItems/ItemPortItemMetadata.h>
+#include <FabricUI/ModelItems/ItemPortModelItem.h>
 #include <FabricUI/ModelItems/SetModelItem.h>
 #include <FabricUI/ModelItems/SetPortItemMetadata.h>
 #include <FabricUI/ModelItems/SetPortModelItem.h>

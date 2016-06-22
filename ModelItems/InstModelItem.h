@@ -6,7 +6,7 @@
 #define FABRICUI_MODELITEMS_INSTMODELITEM_H
 
 #include <FabricCore.h>
-#include <FabricUI/ModelItems/NodeModelItem.h>
+#include <FabricUI/ModelItems/ItemModelItem.h>
 #include <FTL/StrRef.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ class DFGUICmdHandler;
 
   namespace ModelItems
   {
-    class InstModelItem : public NodeModelItem
+    class InstModelItem : public ItemModelItem
     {
     public:
       

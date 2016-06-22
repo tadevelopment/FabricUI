@@ -21,7 +21,7 @@ InstPortModelItem::InstPortModelItem(
   FTL::StrRef nodeName,
   FTL::StrRef portName
   )
-  : NodePortModelItem(
+  : ItemPortModelItem(
     dfgUICmdHandler,
     binding,
     execPath,
@@ -76,9 +76,9 @@ FTL::CStrRef InstPortModelItem::getName()
 
 bool InstPortModelItem::canRename()
 {
-  return !m_exec.isExecBlock( m_nodeName.c_str() )
+  return !m_exec.isExecBlock( m_itemPath.c_str() )
     && !m_exec.isDepsPort( m_portPath.c_str() )
-    && !m_exec.getSubExec( m_nodeName.c_str() ).editWouldSplitFromPreset();
+    && !m_exec.getSubExec( m_itemPath.c_str() ).editWouldSplitFromPreset();
 }
 
 void InstPortModelItem::rename( FTL::CStrRef newName )

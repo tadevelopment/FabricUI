@@ -21,7 +21,7 @@ VarPortModelItem::VarPortModelItem(
   FTL::StrRef nodeName,
   FTL::StrRef portName
   )
-  : NodePortModelItem(
+  : ItemPortModelItem(
     dfgUICmdHandler,
     binding,
     execPath,

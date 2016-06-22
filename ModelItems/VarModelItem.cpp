@@ -18,7 +18,7 @@ VarModelItem::VarModelItem(
   FabricCore::DFGExec exec,
   FTL::StrRef nodeName
   )
-  : NodeModelItem(
+  : ItemModelItem(
     dfgUICmdHandler,
     binding,
     execPath,
@@ -40,7 +40,7 @@ FabricUI::ValueEditor::BaseModelItem *VarModelItem::createChild( FTL::CStrRef po
     m_binding,
     m_execPath,
     m_exec,
-    m_nodeName,
+    m_itemPath,
     portName
     ));
 }
@@ -49,7 +49,7 @@ QVariant VarModelItem::getValue()
 {
   try
   {
-    return QVariant::fromValue( m_exec.getVarValue( m_nodeName.c_str() ) );
+    return QVariant::fromValue( m_exec.getVarValue( m_itemPath.c_str() ) );
   }
   catch ( FabricCore::Exception e )
   {
@@ -63,10 +63,10 @@ void VarModelItem::setValue(
   QVariant valueAtInteractionBegin
   )
 {
-  FabricCore::RTVal val = m_exec.getVarValue( m_nodeName.c_str() );
+  FabricCore::RTVal val = m_exec.getVarValue( m_itemPath.c_str() );
   if (FabricUI::ValueEditor::RTVariant::toRTVal( var, val ))
   {
-    m_exec.setVarValue( m_nodeName.c_str(), val );
+    m_exec.setVarValue( m_itemPath.c_str(), val );
   }
 }
 

@@ -162,7 +162,7 @@ void DFGVEEditorOwner::setModelRoot(
 void DFGVEEditorOwner::setModelRoot(
   FabricCore::DFGExec exec,
   FTL::CStrRef itemPath,
-  FabricUI::ModelItems::NodeModelItem *nodeModelItem
+  FabricUI::ModelItems::ItemModelItem *nodeModelItem
   )
 {
   if ( m_notifProxy )
@@ -178,46 +178,114 @@ void DFGVEEditorOwner::setModelRoot(
   delete m_modelRoot;
   m_modelRoot = nodeModelItem;
 
+  bool isInstBlock = itemPath.find('.') != itemPath.end();
+
   if ( nodeModelItem )
   {
     m_notifier = DFG::DFGExecNotifier::Create( exec );
 
+    if ( isInstBlock )
+    {
+      connect(
+        m_notifier.data(),
+        SIGNAL(instBlockRenamed(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onInstBlockRenamed(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(instBlockRemoved(FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onInstBlockRemoved(FTL::CStrRef, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(instBlockPortInserted(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef)),
+        this,
+        SLOT(onInstBlockPortInserted(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(instBlockPortRenamed(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onInstBlockPortRenamed(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(instBlockPortRemoved(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef)),
+        this,
+        SLOT(onInstBlockPortRemoved(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(instBlockPortsReordered(FTL::CStrRef, FTL::CStrRef, FTL::ArrayRef<unsigned>)),
+        this,
+        SLOT(onInstBlockPortsReordered(FTL::CStrRef, FTL::CStrRef, FTL::ArrayRef<unsigned>))
+        );
     connect(
-      m_notifier.data(),
-      SIGNAL(nodeRenamed(FTL::CStrRef, FTL::CStrRef)),
-      this,
-      SLOT(onExecNodeRenamed(FTL::CStrRef, FTL::CStrRef))
-      );
-    connect(
-      m_notifier.data(),
-      SIGNAL(nodeRemoved(FTL::CStrRef)),
-      this,
-      SLOT(onExecNodeRemoved(FTL::CStrRef))
-      );
-    connect(
-      m_notifier.data(),
-      SIGNAL(nodePortInserted(FTL::CStrRef, unsigned, FTL::CStrRef)),
-      this,
-      SLOT(onExecNodePortInserted(FTL::CStrRef, unsigned, FTL::CStrRef))
-      );
-    connect(
-      m_notifier.data(),
-      SIGNAL(nodePortRenamed(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef)),
-      this,
-      SLOT(onExecNodePortRenamed(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef))
-      );
-    connect(
-      m_notifier.data(),
-      SIGNAL(nodePortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef)),
-      this,
-      SLOT(onExecNodePortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef))
-      );
-    connect(
-      m_notifier.data(),
-      SIGNAL(nodePortsReordered(FTL::CStrRef, FTL::ArrayRef<unsigned>)),
-      this,
-      SLOT(onExecNodePortsReordered(FTL::CStrRef, FTL::ArrayRef<unsigned>))
-      );
+        m_notifier.data(),
+        SIGNAL(instBlockPortDefaultValuesChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onInstBlockPortDefaultValuesChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(instBlockPortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onInstBlockPortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
+        );
+    }
+    else
+    {
+      connect(
+        m_notifier.data(),
+        SIGNAL(nodeRenamed(FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onExecNodeRenamed(FTL::CStrRef, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(nodeRemoved(FTL::CStrRef)),
+        this,
+        SLOT(onExecNodeRemoved(FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(nodePortInserted(FTL::CStrRef, unsigned, FTL::CStrRef)),
+        this,
+        SLOT(onExecNodePortInserted(FTL::CStrRef, unsigned, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(nodePortRenamed(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onExecNodePortRenamed(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(nodePortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef)),
+        this,
+        SLOT(onExecNodePortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(nodePortsReordered(FTL::CStrRef, FTL::ArrayRef<unsigned>)),
+        this,
+        SLOT(onExecNodePortsReordered(FTL::CStrRef, FTL::ArrayRef<unsigned>))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(nodePortDefaultValuesChanged(FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onExecNodePortDefaultValuesChanged(FTL::CStrRef, FTL::CStrRef))
+        );
+      connect(
+        m_notifier.data(),
+        SIGNAL(nodePortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onExecNodePortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
+        );
+    }
     connect(
       m_notifier.data(),
       SIGNAL( portsConnected( FTL::CStrRef, FTL::CStrRef ) ),
@@ -235,18 +303,6 @@ void DFGVEEditorOwner::setModelRoot(
       SIGNAL( refVarPathChanged( FTL::CStrRef, FTL::CStrRef ) ),
       this,
       SLOT( onExecRefVarPathChanged( FTL::CStrRef, FTL::CStrRef ) )
-      );
-    connect(
-      m_notifier.data(),
-      SIGNAL(nodePortDefaultValuesChanged(FTL::CStrRef, FTL::CStrRef)),
-      this,
-      SLOT(onExecNodePortDefaultValuesChanged(FTL::CStrRef, FTL::CStrRef))
-      );
-    connect(
-      m_notifier.data(),
-      SIGNAL(nodePortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
-      this,
-      SLOT(onExecNodePortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
       );
 
     if ( !exec.isExecBlock( itemPath.c_str() )
@@ -362,7 +418,7 @@ void DFGVEEditorOwner::onNodeInspectRequested(
   FTL::CStrRef nodeName = node->name();
 
   // TODO: Check for re-inspecting the same node, and don't rebuild
-  FabricUI::ModelItems::NodeModelItem *nodeModelItem = 0;
+  FabricUI::ModelItems::ItemModelItem *nodeModelItem = 0;
 
   if ( exec.isExecBlock( nodeName.c_str() ) )
   {
@@ -449,7 +505,7 @@ void DFGVEEditorOwner::onInstBlockInspectRequested(
   std::string instBlockPath = instBlock->path();
 
   // TODO: Check for re-inspecting the same node, and don't rebuild
-  FabricUI::ModelItems::NodeModelItem *nodeModelItem =
+  FabricUI::ModelItems::ItemModelItem *nodeModelItem =
     new FabricUI::ModelItems::InstModelItem(
       dfgUICmdHandler,
       binding,
@@ -517,10 +573,44 @@ void DFGVEEditorOwner::onExecNodePortDefaultValuesChanged(
   )
 {
   assert( m_modelRoot );
-  assert( m_modelRoot->isNode() );
-  NodeModelItem *nodeModelItem =
-    static_cast<NodeModelItem *>( m_modelRoot );
-  if ( nodeModelItem->getNodeName() != nodeName )
+  assert( m_modelRoot->isItem() );
+  ItemModelItem *nodeModelItem =
+    static_cast<ItemModelItem *>( m_modelRoot );
+
+  if ( nodeModelItem->getItemPath() != nodeName )
+    return;
+
+  try
+  {
+    if( ValueEditor::BaseModelItem *changingChild =
+      m_modelRoot->getChild( portName, false ) )
+    {
+      QVariant val = changingChild->getValue();
+      changingChild->emitModelValueChanged( val );
+    }
+  }
+  catch (FabricCore::Exception e)
+  {
+    emit log( e.getDesc_cstr() );
+  }
+}
+
+void DFGVEEditorOwner::onInstBlockPortDefaultValuesChanged(
+  FTL::CStrRef instName,
+  FTL::CStrRef blockName,
+  FTL::CStrRef portName
+  )
+{
+  assert( m_modelRoot );
+  assert( m_modelRoot->isItem() );
+  ItemModelItem *nodeModelItem =
+    static_cast<ItemModelItem *>( m_modelRoot );
+
+  std::string instBlockPath = instName;
+  instBlockPath += '.';
+  instBlockPath += blockName;
+
+  if ( nodeModelItem->getItemPath() != instBlockPath )
     return;
 
   try
@@ -545,10 +635,42 @@ void DFGVEEditorOwner::onExecNodePortResolvedTypeChanged(
   )
 {
   assert( m_modelRoot );
-  assert( m_modelRoot->isNode() );
-  NodeModelItem *nodeModelItem =
-    static_cast<NodeModelItem *>( m_modelRoot );
-  if ( nodeModelItem->getNodeName() != nodeName )
+  assert( m_modelRoot->isItem() );
+  ItemModelItem *nodeModelItem =
+    static_cast<ItemModelItem *>( m_modelRoot );
+  if ( nodeModelItem->getItemPath() != nodeName )
+    return;
+
+  try
+  {
+    if( ValueEditor::BaseModelItem *changingChild =
+      m_modelRoot->getChild( portName, false ) )
+    {
+      emit modelItemTypeChange( changingChild, newResolveTypeName.c_str() );
+    }
+  }
+  catch (FabricCore::Exception e)
+  {
+    emit log( e.getDesc_cstr() );
+  }
+}
+
+void DFGVEEditorOwner::onInstBlockPortResolvedTypeChanged(
+  FTL::CStrRef instName,
+  FTL::CStrRef blockName,
+  FTL::CStrRef portName,
+  FTL::CStrRef newResolveTypeName
+  )
+{
+  assert( m_modelRoot );
+  assert( m_modelRoot->isItem() );
+  ItemModelItem *nodeModelItem =
+    static_cast<ItemModelItem *>( m_modelRoot );
+
+  std::string instBlockPath = instName;
+  instBlockPath += '.';
+  instBlockPath += blockName;
+  if ( nodeModelItem->getItemPath() != instBlockPath )
     return;
 
   try
@@ -670,7 +792,21 @@ void DFGVEEditorOwner::onExecNodePortInserted(
   )
 {
   assert( m_modelRoot );
-  if ( m_modelRoot->isNode() )
+  if ( m_modelRoot->isItem() )
+  {
+    emit modelItemInserted( m_modelRoot, int( portIndex ), portName.c_str() );
+  }
+}
+
+void DFGVEEditorOwner::onInstBlockPortInserted(
+  FTL::CStrRef instName,
+  FTL::CStrRef blockName,
+  unsigned portIndex,
+  FTL::CStrRef portName
+  )
+{
+  assert( m_modelRoot );
+  if ( m_modelRoot->isItem() )
   {
     emit modelItemInserted( m_modelRoot, int( portIndex ), portName.c_str() );
   }
@@ -694,6 +830,25 @@ void DFGVEEditorOwner::onExecNodePortRenamed(
     emit modelItemRenamed( changingChild );
 }
 
+void DFGVEEditorOwner::onInstBlockPortRenamed(
+  FTL::CStrRef instName,
+  FTL::CStrRef blockName,
+  unsigned portIndex,
+  FTL::CStrRef oldPortName,
+  FTL::CStrRef newPortName
+  )
+{
+  assert( m_modelRoot );
+
+  if( ValueEditor::BaseModelItem *changingChild =
+    m_modelRoot->onPortRenamed(
+      portIndex,
+      oldPortName,
+      newPortName
+      ) )
+    emit modelItemRenamed( changingChild );
+}
+
 void DFGVEEditorOwner::onExecNodePortRemoved(
   FTL::CStrRef nodeName,
   unsigned portIndex,
@@ -701,7 +856,7 @@ void DFGVEEditorOwner::onExecNodePortRemoved(
   )
 {
   assert( m_modelRoot );
-  if ( m_modelRoot->isNode() )
+  if ( m_modelRoot->isItem() )
   {
     BindingModelItem *bindingModelItem =
       static_cast<BindingModelItem *>( m_modelRoot );
@@ -714,13 +869,51 @@ void DFGVEEditorOwner::onExecNodePortRemoved(
   }
 }
 
+void DFGVEEditorOwner::onInstBlockPortRemoved(
+  FTL::CStrRef instName,
+  FTL::CStrRef blockName,
+  unsigned portIndex,
+  FTL::CStrRef portName
+  )
+{
+  assert( m_modelRoot );
+  if ( m_modelRoot->isItem() )
+  {
+    ItemModelItem *nodeModelItem =
+      static_cast<ItemModelItem *>( m_modelRoot );
+    if ( ValueEditor::BaseModelItem* removedChild =
+      nodeModelItem->getChild( portName, false ) )
+      emit modelItemRemoved( removedChild );
+  }
+}
+
+void DFGVEEditorOwner::onInstBlockPortsReordered(
+  FTL::CStrRef instName,
+  FTL::CStrRef blockName,
+  FTL::ArrayRef<unsigned> newOrder
+  )
+{
+  assert( m_modelRoot );
+  if ( m_modelRoot->isItem() )
+  {
+    QList<int> newIntOrder;
+#if QT_VERSION >= 0x040800
+    newIntOrder.reserve( newOrder.size() );
+#endif
+    for (size_t i = 0; i < newOrder.size(); i++)
+      newIntOrder.push_back( int( newOrder[i] ) );
+
+    emit modelItemChildrenReordered( m_modelRoot, newIntOrder );
+  }
+}
+
 void DFGVEEditorOwner::onExecNodePortsReordered(
   FTL::CStrRef nodeName,
   FTL::ArrayRef<unsigned> newOrder
   )
 {
   assert( m_modelRoot );
-  if ( m_modelRoot->isNode() )
+  if ( m_modelRoot->isItem() )
   {
     QList<int> newIntOrder;
     #if QT_VERSION >= 0x040800
@@ -759,10 +952,10 @@ void DFGVEEditorOwner::onExecNodeRemoved(
   )
 {
   assert( m_modelRoot );
-  assert( m_modelRoot->isNode() );
-  NodeModelItem *nodeModelItem =
-    static_cast<NodeModelItem *>( m_modelRoot );
-  if ( nodeModelItem->getNodeName() == nodeName )
+  assert( m_modelRoot->isItem() );
+  ItemModelItem *nodeModelItem =
+    static_cast<ItemModelItem *>( m_modelRoot );
+  if ( nodeModelItem->getItemPath() == nodeName )
   {
     emit modelItemRemoved( m_modelRoot );
     onSidePanelInspectRequested();
@@ -776,11 +969,58 @@ void DFGVEEditorOwner::onExecNodeRenamed(
 {
   assert( m_modelRoot );
 
-  NodeModelItem *nodeModelItem =
-    static_cast<NodeModelItem *>( m_modelRoot );
+  ItemModelItem *nodeModelItem =
+    static_cast<ItemModelItem *>( m_modelRoot );
   if ( nodeModelItem->getName() == oldNodeName )
   {
     nodeModelItem->onRenamed( oldNodeName, newNodeName );
+    emit modelItemRenamed( nodeModelItem );
+  }
+}
+
+void DFGVEEditorOwner::onInstBlockRemoved(
+  FTL::CStrRef instName,
+  FTL::CStrRef blockName
+  )
+{
+  assert( m_modelRoot );
+  assert( m_modelRoot->isItem() );
+
+  std::string instBlockPath = instName;
+  instBlockPath += '.';
+  instBlockPath += blockName;
+
+  ItemModelItem *nodeModelItem =
+    static_cast<ItemModelItem *>( m_modelRoot );
+  if ( nodeModelItem->getItemPath() == instBlockPath )
+  {
+    emit modelItemRemoved( m_modelRoot );
+    onSidePanelInspectRequested();
+  }
+}
+
+void DFGVEEditorOwner::onInstBlockRenamed(
+  FTL::CStrRef instName,
+  FTL::CStrRef oldBlockName,
+  FTL::CStrRef newBlockName
+  )
+{
+  assert( m_modelRoot );
+  assert( m_modelRoot->isItem() );
+
+  std::string oldInstBlockPath = instName;
+  oldInstBlockPath += '.';
+  oldInstBlockPath += oldBlockName;
+
+  ItemModelItem *nodeModelItem =
+    static_cast<ItemModelItem *>( m_modelRoot );
+  if ( nodeModelItem->getName() == oldInstBlockPath )
+  {
+    std::string newInstBlockPath = instName;
+    newInstBlockPath += '.';
+    newInstBlockPath += newBlockName;
+
+    nodeModelItem->onRenamed( oldInstBlockPath, newInstBlockPath );
     emit modelItemRenamed( nodeModelItem );
   }
 }
@@ -792,14 +1032,14 @@ void DFGVEEditorOwner::onExecPortsConnectedOrDisconnected(
 {
   assert( m_modelRoot );
 
-  if ( m_modelRoot->isNode() )
+  if ( m_modelRoot->isItem() )
   {
-    NodeModelItem *nodeModelItem =
-      static_cast<NodeModelItem *>( m_modelRoot );
+    ItemModelItem *nodeModelItem =
+      static_cast<ItemModelItem *>( m_modelRoot );
 
     std::string nodeName = srcPort.c_str();
     std::string portName = SplitLast( nodeName );
-    if ( nodeName == nodeModelItem->getNodeName() )
+    if ( nodeName == nodeModelItem->getItemPath() )
     {
       if( ValueEditor::BaseModelItem* destChild =
         m_modelRoot->getChild( portName, false ) )
@@ -808,7 +1048,7 @@ void DFGVEEditorOwner::onExecPortsConnectedOrDisconnected(
 
     nodeName = dstPort.c_str();
     portName = SplitLast( nodeName );
-    if ( nodeName == nodeModelItem->getNodeName() )
+    if ( nodeName == nodeModelItem->getItemPath() )
     {
       if( ValueEditor::BaseModelItem* destChild =
         m_modelRoot->getChild( portName, false ) )
@@ -824,15 +1064,15 @@ void DFGVEEditorOwner::onExecRefVarPathChanged(
 {
   assert( m_modelRoot );
 
-  if ( m_modelRoot->isNode() )
+  if ( m_modelRoot->isItem() )
   {
-    NodeModelItem *nodeModelItem =
-      static_cast<NodeModelItem *>( m_modelRoot );
+    ItemModelItem *nodeModelItem =
+      static_cast<ItemModelItem *>( m_modelRoot );
     if ( nodeModelItem->isRef() )
     {
       RefModelItem *refModelItem =
         static_cast<RefModelItem *>( nodeModelItem );
-      if ( refModelItem->getNodeName() == refName )
+      if ( refModelItem->getItemPath() == refName )
       {
         if( ValueEditor::BaseModelItem *changingChild =
           refModelItem->getChild( FTL_STR("varPath"), false ) )

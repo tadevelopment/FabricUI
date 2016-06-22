@@ -5,19 +5,19 @@
 #ifndef FABRICUI_MODELITEMS_GETPORTITEMMETADATA_H
 #define FABRICUI_MODELITEMS_GETPORTITEMMETADATA_H
 
-#include "NodePortItemMetadata.h"
+#include "ItemPortItemMetadata.h"
 
 #include <FabricUI/ModelItems/GetPortModelItem.h>
 
 namespace FabricUI {
 namespace ModelItems {
 
-class GetPortItemMetadata : public NodePortItemMetadata
+class GetPortItemMetadata : public ItemPortItemMetadata
 {
 public:
 
   GetPortItemMetadata( GetPortModelItem *getPortModelItem )
-    : NodePortItemMetadata( getPortModelItem ) {}
+    : ItemPortItemMetadata( getPortModelItem ) {}
 
   virtual const char* getString( const char* key ) const /*override*/
   {
@@ -26,7 +26,7 @@ public:
       return FTL_STR("1").c_str();
     }
 
-    return NodePortItemMetadata::getString( key );
+    return ItemPortItemMetadata::getString( key );
   }
 };
 

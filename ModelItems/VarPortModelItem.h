@@ -5,7 +5,7 @@
 #ifndef FABRICUI_MODELITEMS_VARPORTMODELITEM_H
 #define FABRICUI_MODELITEMS_VARPORTMODELITEM_H
 
-#include <FabricUI/ModelItems/NodePortModelItem.h>
+#include <FabricUI/ModelItems/ItemPortModelItem.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 #include <FTL/StrRef.h>
 
@@ -19,11 +19,11 @@ class DFGUICmdHandler;
   namespace ModelItems
   {
 
-    class NodePortItemMetadata;
+    class ItemPortItemMetadata;
 
     //////////////////////////////////////////////////////////////////////////
     // Basic ModelItem for accessing ports
-    class VarPortModelItem : public NodePortModelItem
+    class VarPortModelItem : public ItemPortModelItem
     {
     public:
 

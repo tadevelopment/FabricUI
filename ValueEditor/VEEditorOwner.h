@@ -29,7 +29,7 @@ namespace FabricUI {
   }
   namespace ModelItems {
     class BindingModelItem;
-    class NodeModelItem;
+    class ItemModelItem;
     class RootModelItem;
   }
 

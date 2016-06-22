@@ -27,7 +27,7 @@ namespace FabricUI {
   }
   namespace ModelItems {
     class BindingModelItem;
-    class NodeModelItem;
+    class ItemModelItem;
     class RootModelItem;
   }
 
@@ -230,6 +230,62 @@ namespace FabricUI {
         FTL::CStrRef newVarPath
         );
 
+      // InstBlocks
+
+      void onInstBlockRenamed(
+        FTL::CStrRef instName,
+        FTL::CStrRef oldBlockName,
+        FTL::CStrRef newBlockName
+        );
+
+      void onInstBlockRemoved(
+        FTL::CStrRef instName,
+        FTL::CStrRef blockName
+        );
+
+      // InstBlockPorts
+
+      void onInstBlockPortInserted(
+        FTL::CStrRef instName,
+        FTL::CStrRef blockName,
+        unsigned portIndex,
+        FTL::CStrRef portName
+        );
+
+      void onInstBlockPortRenamed(
+        FTL::CStrRef instName,
+        FTL::CStrRef blockName,
+        unsigned portIndex,
+        FTL::CStrRef oldPortName,
+        FTL::CStrRef newPortName
+        );
+
+      void onInstBlockPortRemoved(
+        FTL::CStrRef instName,
+        FTL::CStrRef blockName,
+        unsigned portIndex,
+        FTL::CStrRef portName
+        );
+
+      void onInstBlockPortDefaultValuesChanged(
+        FTL::CStrRef instName,
+        FTL::CStrRef blockName,
+        FTL::CStrRef portName
+        );
+
+      void onInstBlockPortResolvedTypeChanged(
+        FTL::CStrRef instName,
+        FTL::CStrRef blockName,
+        FTL::CStrRef portName,
+        FTL::CStrRef newResolveTypeName
+        );
+
+      void onInstBlockPortsReordered(
+        FTL::CStrRef instName,
+        FTL::CStrRef blockName,
+        FTL::ArrayRef<unsigned> newOrder
+        );
+
       virtual void onStructureChanged();
       virtual void onFrameChanged(int frame);
 
@@ -247,7 +303,7 @@ namespace FabricUI {
       void setModelRoot(
         FabricCore::DFGExec exec,
         FTL::CStrRef nodeName,
-        FabricUI::ModelItems::NodeModelItem *nodeModelItem
+        FabricUI::ModelItems::ItemModelItem *nodeModelItem
         );
 
       int m_timelinePortIndex;
