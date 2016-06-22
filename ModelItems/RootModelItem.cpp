@@ -103,6 +103,22 @@ void RootModelItem::resetToDefault()
   assert( false );
 }
 
+
+void RootModelItem::childRemoved( unsigned index, FTL::CStrRef name )
+{
+  for ( ChildVec::iterator itr = m_children.begin();
+    itr != m_children.end(); itr++ )
+  {
+    FabricUI::ValueEditor::BaseModelItem *childModelItem = *itr;
+    if ( childModelItem->getName() == name )
+    {
+      delete childModelItem;
+      m_children.erase( itr );
+      break;
+    }
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 std::string SplitLast( std::string& path )

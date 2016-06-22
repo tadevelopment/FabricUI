@@ -62,6 +62,8 @@ namespace FabricUI
 
       virtual int getChildIndex( FTL::CStrRef name ) /*override*/;
       
+      void childRemoved( unsigned index, FTL::CStrRef name );
+
       virtual bool hasDefault() /*override*/;
 
       virtual void resetToDefault() /*override*/;

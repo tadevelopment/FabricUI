@@ -742,11 +742,11 @@ void DFGVEEditorOwner::onBindingArgRemoved( unsigned index, FTL::CStrRef name )
   {
     BindingModelItem *bindingModelItem =
       static_cast<BindingModelItem *>( m_modelRoot );
-    ValueEditor::BaseModelItem* removedChild = m_modelRoot->getChild( name, false );
-    if ( removedChild != NULL )
+    if ( ValueEditor::BaseModelItem* removedChild =
+      m_modelRoot->getChild( name, false ) )
     {
       emit modelItemRemoved( removedChild );
-      bindingModelItem->argRemoved( index, name );
+      bindingModelItem->childRemoved( index, name );
     }
   }
 }
@@ -858,13 +858,13 @@ void DFGVEEditorOwner::onExecNodePortRemoved(
   assert( m_modelRoot );
   if ( m_modelRoot->isItem() )
   {
-    BindingModelItem *bindingModelItem =
-      static_cast<BindingModelItem *>( m_modelRoot );
+    ItemModelItem *itemModelItem =
+      static_cast<ItemModelItem *>( m_modelRoot );
     ValueEditor::BaseModelItem* removedChild = m_modelRoot->getChild( portName, false );
     if ( removedChild != NULL )
     {
       emit modelItemRemoved( removedChild );
-      bindingModelItem->argRemoved( portIndex, portName );
+      itemModelItem->childRemoved( portIndex, portName );
     }
   }
 }
@@ -879,11 +879,14 @@ void DFGVEEditorOwner::onInstBlockPortRemoved(
   assert( m_modelRoot );
   if ( m_modelRoot->isItem() )
   {
-    ItemModelItem *nodeModelItem =
+    ItemModelItem *itemModelItem =
       static_cast<ItemModelItem *>( m_modelRoot );
     if ( ValueEditor::BaseModelItem* removedChild =
-      nodeModelItem->getChild( portName, false ) )
+      itemModelItem->getChild( portName, false ) )
+    {
       emit modelItemRemoved( removedChild );
+      itemModelItem->childRemoved( portIndex, portName );
+    }
   }
 }
 
@@ -953,9 +956,9 @@ void DFGVEEditorOwner::onExecNodeRemoved(
 {
   assert( m_modelRoot );
   assert( m_modelRoot->isItem() );
-  ItemModelItem *nodeModelItem =
+  ItemModelItem *itemModelItem =
     static_cast<ItemModelItem *>( m_modelRoot );
-  if ( nodeModelItem->getItemPath() == nodeName )
+  if ( itemModelItem->getItemPath() == nodeName )
   {
     emit modelItemRemoved( m_modelRoot );
     onSidePanelInspectRequested();
@@ -969,12 +972,12 @@ void DFGVEEditorOwner::onExecNodeRenamed(
 {
   assert( m_modelRoot );
 
-  ItemModelItem *nodeModelItem =
+  ItemModelItem *itemModelItem =
     static_cast<ItemModelItem *>( m_modelRoot );
-  if ( nodeModelItem->getName() == oldNodeName )
+  if ( itemModelItem->getName() == oldNodeName )
   {
-    nodeModelItem->onRenamed( oldNodeName, newNodeName );
-    emit modelItemRenamed( nodeModelItem );
+    itemModelItem->onRenamed( oldNodeName, newNodeName );
+    emit modelItemRenamed( itemModelItem );
   }
 }
 
@@ -990,9 +993,9 @@ void DFGVEEditorOwner::onInstBlockRemoved(
   instBlockPath += '.';
   instBlockPath += blockName;
 
-  ItemModelItem *nodeModelItem =
+  ItemModelItem *itemModelItem =
     static_cast<ItemModelItem *>( m_modelRoot );
-  if ( nodeModelItem->getItemPath() == instBlockPath )
+  if ( itemModelItem->getItemPath() == instBlockPath )
   {
     emit modelItemRemoved( m_modelRoot );
     onSidePanelInspectRequested();
@@ -1012,16 +1015,16 @@ void DFGVEEditorOwner::onInstBlockRenamed(
   oldInstBlockPath += '.';
   oldInstBlockPath += oldBlockName;
 
-  ItemModelItem *nodeModelItem =
+  ItemModelItem *itemModelItem =
     static_cast<ItemModelItem *>( m_modelRoot );
-  if ( nodeModelItem->getName() == oldInstBlockPath )
+  if ( itemModelItem->getName() == oldInstBlockPath )
   {
     std::string newInstBlockPath = instName;
     newInstBlockPath += '.';
     newInstBlockPath += newBlockName;
 
-    nodeModelItem->onRenamed( oldInstBlockPath, newInstBlockPath );
-    emit modelItemRenamed( nodeModelItem );
+    itemModelItem->onRenamed( oldInstBlockPath, newInstBlockPath );
+    emit modelItemRenamed( itemModelItem );
   }
 }
 
@@ -1034,12 +1037,12 @@ void DFGVEEditorOwner::onExecPortsConnectedOrDisconnected(
 
   if ( m_modelRoot->isItem() )
   {
-    ItemModelItem *nodeModelItem =
+    ItemModelItem *itemModelItem =
       static_cast<ItemModelItem *>( m_modelRoot );
 
     std::string nodeName = srcPort.c_str();
     std::string portName = SplitLast( nodeName );
-    if ( nodeName == nodeModelItem->getItemPath() )
+    if ( nodeName == itemModelItem->getItemPath() )
     {
       if( ValueEditor::BaseModelItem* destChild =
         m_modelRoot->getChild( portName, false ) )
@@ -1048,7 +1051,7 @@ void DFGVEEditorOwner::onExecPortsConnectedOrDisconnected(
 
     nodeName = dstPort.c_str();
     portName = SplitLast( nodeName );
-    if ( nodeName == nodeModelItem->getItemPath() )
+    if ( nodeName == itemModelItem->getItemPath() )
     {
       if( ValueEditor::BaseModelItem* destChild =
         m_modelRoot->getChild( portName, false ) )
@@ -1066,12 +1069,12 @@ void DFGVEEditorOwner::onExecRefVarPathChanged(
 
   if ( m_modelRoot->isItem() )
   {
-    ItemModelItem *nodeModelItem =
+    ItemModelItem *itemModelItem =
       static_cast<ItemModelItem *>( m_modelRoot );
-    if ( nodeModelItem->isRef() )
+    if ( itemModelItem->isRef() )
     {
       RefModelItem *refModelItem =
-        static_cast<RefModelItem *>( nodeModelItem );
+        static_cast<RefModelItem *>( itemModelItem );
       if ( refModelItem->getItemPath() == refName )
       {
         if( ValueEditor::BaseModelItem *changingChild =

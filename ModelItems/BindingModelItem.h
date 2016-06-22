@@ -73,11 +73,6 @@ class DFGUICmdHandler;
       virtual void setMetadataImp( const char* key, 
                                 const char* value, 
                                 bool canUndo )/*override*/;
-      /////////////////////////////////////////////////////////////////////////
-      // Other
-      /////////////////////////////////////////////////////////////////////////
-
-      void argRemoved( unsigned index, FTL::CStrRef name );
 
     protected:
 

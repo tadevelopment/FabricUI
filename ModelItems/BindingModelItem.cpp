@@ -101,20 +101,5 @@ void BindingModelItem::setValue(
   }
 }
 
-void BindingModelItem::argRemoved( unsigned index, FTL::CStrRef name )
-{
-  for ( ChildVec::iterator itr = m_children.begin();
-    itr != m_children.end(); itr++ )
-  {
-    FabricUI::ValueEditor::BaseModelItem *childModelItem = *itr;
-    if ( childModelItem->getName() == name )
-    {
-      delete childModelItem;
-      m_children.erase( itr );
-      break;
-    }
-  }
-}
-
 } // namespace ModelItems
 } // namespace FabricUI
