@@ -326,6 +326,16 @@ bool Pin::canConnectTo(
         path().c_str(), otherPort->path().c_str(), failureReason
         );
     }
+    case TargetType_FixedPort:
+    {
+      FixedPort * otherFixedPort = (FixedPort *)other;
+      if ( this == other
+        || otherFixedPort->portType() == PortType_Output )
+        return false;
+      return m_node->graph()->controller()->canConnectTo(
+        path().c_str(), otherFixedPort->path().c_str(), failureReason
+        );
+    }
     case TargetType_InstBlockPort:
     {
       InstBlockPort * otherInstBlockPort = (InstBlockPort *)other;
