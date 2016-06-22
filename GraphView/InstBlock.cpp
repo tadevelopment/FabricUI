@@ -44,23 +44,6 @@ InstBlock::InstBlock(
     QSizePolicy::MinimumExpanding
     ) );
   setLayout( m_layout );
-
-
-  // if ( !isBackDropNode() )
-  // {
-  //   QObject::connect(m_header, SIGNAL(headerButtonTriggered(FabricUI::GraphView::NodeHeaderButton*)), 
-  //     m_graph->controller(), SLOT(onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderButton*)));
-  // }
-
-  // m_pinsWidget = new QGraphicsWidget(rectangle);
-  // layout->addItem(m_pinsWidget);
-  // layout->setAlignment(m_pinsWidget, Qt::AlignHCenter | Qt::AlignVCenter);
-
-  // m_pinsLayout = new QGraphicsLinearLayout();
-  // m_pinsLayout->setOrientation(Qt::Vertical);
-  // m_pinsLayout->setContentsMargins(0, m_graph->config().nodeSpaceAbovePorts, 0, m_graph->config().nodeSpaceBelowPorts);
-  // m_pinsLayout->setSpacing(m_graph->config().nodePinSpacing);
-  // m_pinsWidget->setLayout(m_pinsLayout);
 }
 
 std::string InstBlock::path() const
@@ -78,6 +61,8 @@ void InstBlock::insertInstBlockPortAtIndex(
 {
   m_instBlockPorts.insert( m_instBlockPorts.begin() + index, instBlockPort );
   m_layout->insertItem( 1 + index, instBlockPort );
+
+  updateLayout();
 }
 
 void InstBlock::reorderInstBlockPorts(
@@ -91,10 +76,7 @@ void InstBlock::reorderInstBlockPorts(
     newInstBlockPorts[i] = m_instBlockPorts[newOrder[i]];
   newInstBlockPorts.swap( m_instBlockPorts );
 
-  while ( m_layout->count() > 1 )
-    m_layout->removeAt( m_layout->count() - 1 );
-  for ( unsigned i = 0; i < m_instBlockPorts.size(); ++i )
-    m_layout->insertItem( 1 + i, m_instBlockPorts[i] );
+  updateLayout();
 }
 
 void InstBlock::removeInstBlockPortAtIndex(
@@ -105,6 +87,7 @@ void InstBlock::removeInstBlockPortAtIndex(
   InstBlockPort *instBlockPort = m_instBlockPorts[index];
   m_instBlockPorts.erase( m_instBlockPorts.begin() + index );
   instBlockPort->deleteLater();
+  updateLayout();
 }
 
 void InstBlock::paint(
@@ -213,6 +196,39 @@ void InstBlock::setName( FTL::StrRef newName )
   m_instBlockHeader->setName(
     QString::fromUtf8( newName.data(), newName.size() )
     );
+}
+
+void InstBlock::updateLayout()
+{
+  prepareGeometryChange();
+
+  for ( int i = m_layout->count(); --i; )
+    m_layout->removeAt( i );
+
+  Node::CollapseState nodeCollapseState = m_node->collapsedState();
+
+  for ( int i = 0; i < m_instBlockPorts.size(); ++i )
+  {
+    InstBlockPort *instBlockPort = m_instBlockPorts[i];
+
+    bool showPin =
+      nodeCollapseState == Node::CollapseState_Expanded
+      || ( nodeCollapseState == Node::CollapseState_OnlyConnections
+        && instBlockPort->isConnected() );
+
+    instBlockPort->setDrawState( showPin );
+    if ( showPin )
+    {
+      m_layout->addItem( instBlockPort );
+      m_layout->setAlignment(
+        instBlockPort, Qt::AlignLeft | Qt::AlignTop
+        );
+    }
+
+    instBlockPort->setDaisyChainCircleVisible(
+      instBlockPort->isConnectedAsSource()
+      );
+  }
 }
 
 } // namespace GraphView

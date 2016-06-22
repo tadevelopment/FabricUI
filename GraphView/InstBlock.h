@@ -65,6 +65,10 @@ public:
     unsigned index
     );
 
+  void updateLayout();
+  void onConnectionsChanged()
+    { updateLayout(); }
+
 signals:
 
   void doubleClicked(

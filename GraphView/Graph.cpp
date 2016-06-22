@@ -2,9 +2,11 @@
 #include <QtGui/QGraphicsView>
 
 #include <FabricUI/GraphView/BackDropNode.h>
-#include <FabricUI/GraphView/Graph.h>
-#include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/Exception.h>
+#include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
+#include <FabricUI/GraphView/NodeBubble.h>
 
 using namespace FabricUI::GraphView;
 
@@ -477,10 +479,25 @@ Connection * Graph::addConnection(ConnectionTarget * src, ConnectionTarget * dst
     Node * node = pin->node();
     node->onConnectionsChanged();
   }
+  else if ( connection->src()->targetType() == TargetType_InstBlockPort )
+  {
+    InstBlockPort *instBlockPort = (InstBlockPort *)connection->src();
+    instBlockPort->setDaisyChainCircleVisible(true);
+    InstBlock *instBlock = instBlockPort->instBlock();
+    instBlock->onConnectionsChanged();
+  }
+
   if(connection->dst()->targetType() == TargetType_Pin)
   {
     Node * node = ((Pin*)connection->dst())->node();
     node->onConnectionsChanged();
+  }
+  else if ( connection->dst()->targetType() == TargetType_InstBlockPort )
+  {
+    InstBlockPort *instBlockPort = (InstBlockPort *)connection->dst();
+    instBlockPort->setDaisyChainCircleVisible(true);
+    InstBlock *instBlock = instBlockPort->instBlock();
+    instBlock->onConnectionsChanged();
   }
 
   connection->setZValue(m_connectionZValue);
@@ -568,10 +585,21 @@ bool Graph::removeConnection(Connection * connection, bool quiet)
     Node * node = ((Pin*)src)->node();
     node->onConnectionsChanged();
   }
+  else if(src->targetType() == TargetType_InstBlockPort )
+  {
+    InstBlock *instBlock = ((InstBlockPort *)src)->instBlock();
+    instBlock->onConnectionsChanged();
+  }
+
   if(dst->targetType() == TargetType_Pin)
   {
     Node * node = ((Pin*)dst)->node();
     node->onConnectionsChanged();
+  }
+  else if(dst->targetType() == TargetType_InstBlockPort )
+  {
+    InstBlock *instBlock = ((InstBlockPort *)dst)->instBlock();
+    instBlock->onConnectionsChanged();
   }
 
   controller()->endInteraction();

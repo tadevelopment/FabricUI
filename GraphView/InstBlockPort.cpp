@@ -374,14 +374,14 @@ QPointF InstBlockPort::connectionPos(PortType pType) const
   PinCircle const *pinCircle;
   if ( !drawState() )
   {
-    if( pType == PortType_Input )
-      pinCircle = node()->header()->inCircle();
+    if ( pType == PortType_Input )
+      pinCircle = m_instBlock->header()->inCircle();
     else
-      pinCircle = node()->header()->outCircle();
+      pinCircle = m_instBlock->header()->outCircle();
   }
   else
   {
-    if( pType == PortType_Input )
+    if ( pType == PortType_Input )
       pinCircle = inCircle();
     else
       pinCircle = outCircle();

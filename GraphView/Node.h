@@ -122,7 +122,8 @@ namespace FabricUI
       bool selected() const
         { return m_selected; }
 
-      virtual CollapseState collapsedState() const;
+      CollapseState collapsedState() const
+        { return m_collapsedState; }
       virtual void setCollapsedState(CollapseState state);
       virtual void toggleCollapsedState();
 

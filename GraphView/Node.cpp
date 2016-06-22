@@ -211,11 +211,6 @@ QString Node::comment() const
   return m_bubble->text();
 }
 
-Node::CollapseState Node::collapsedState() const
-{
-  return m_collapsedState;
-}
-
 void Node::setCollapsedState(Node::CollapseState state)
 {
   if(m_collapsedState == state)
@@ -820,6 +815,7 @@ void Node::updatePinLayout()
   for ( size_t i = 0; i < m_instBlocks.size(); ++i )
   {
     InstBlock *instBlock = m_instBlocks[i];
+    instBlock->updateLayout();
     m_pinsLayout->addItem( instBlock );
     m_pinsLayout->setAlignment( instBlock, Qt::AlignLeft | Qt::AlignTop );
   }
