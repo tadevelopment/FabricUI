@@ -154,7 +154,6 @@ namespace FabricUI
       PinCircle * m_circle;
       unsigned int m_index;
       bool m_allowEdits;
-      QPointF m_dragStartPosition;
     };
 
   };

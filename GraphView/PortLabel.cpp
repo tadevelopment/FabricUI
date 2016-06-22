@@ -33,13 +33,18 @@ void PortLabel::mousePressEvent( QGraphicsSceneMouseEvent *event )
 {
   if ( !!(event->buttons() & Qt::LeftButton) )
   {
-    Port *port = static_cast<Port *>( parentItem() );
-    if ( port->allowEdits()
-      && port->graph()->isEditable() )
+    ConnectionTarget *connectionTarget =
+      static_cast<ConnectionTarget *>( parentItem() );
+    if ( connectionTarget->targetType() == TargetType_Port )
     {
-      m_dragStartPosition = event->pos();
-      event->accept();
-      return;
+      Port *port = static_cast<Port *>( connectionTarget );
+      if ( port->allowEdits()
+        && port->graph()->isEditable() )
+      {
+        m_dragStartPosition = event->pos();
+        event->accept();
+        return;
+      }
     }
   }
   
