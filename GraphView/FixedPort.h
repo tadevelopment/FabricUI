@@ -89,6 +89,7 @@ namespace FabricUI
         ) const;
       
       virtual TargetType targetType() const { return TargetType_FixedPort; }
+      virtual bool isRealPort() const { return true; }
       virtual QPointF connectionPos(PortType pType) const;
 
       bool allowEdits() const

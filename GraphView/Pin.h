@@ -71,6 +71,7 @@ namespace FabricUI
         ) const;
 
       virtual TargetType targetType() const { return TargetType_Pin; }
+      virtual bool isRealPort() const { return true; }
       virtual QPointF connectionPos(PortType pType) const;
 
       void setDrawState(bool flag);

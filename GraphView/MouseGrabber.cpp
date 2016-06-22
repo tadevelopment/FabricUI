@@ -686,7 +686,9 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
         other,
         nodeRole
         );
-    exposeNewPortAction->setEnabled( node->canAddPorts() );
+    exposeNewPortAction->setEnabled(
+      node->canAddPorts() && other->isRealPort()
+      );
     menu->addAction( exposeNewPortAction );
   }
 
@@ -804,7 +806,9 @@ QMenu *MouseGrabber::createInstBlockHeaderMenu(
         instBlock,
         other
         );
-    exposeNewPortAction->setEnabled( nodeRole == PortType_Output );
+    exposeNewPortAction->setEnabled(
+      nodeRole == PortType_Output && other->isRealPort()
+      );
     menu->addAction( exposeNewPortAction );
   }
 

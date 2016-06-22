@@ -51,6 +51,7 @@ namespace FabricUI
         ) const = 0;
 
       virtual TargetType targetType() const = 0;
+      virtual bool isRealPort() const { return false; }
       virtual QPointF connectionPos(PortType pType) const = 0;
     
       virtual Graph * graph() = 0;
