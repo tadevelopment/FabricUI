@@ -1388,14 +1388,13 @@ void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
   FabricCore::DFGExec &exec = m_uiController->getExec();
   bool showPortType = !exec.isInstBlockExec();
 
-  bool canEditPortType = m_uiController->isViewingRootGraph();
   DFGEditPortDialog dialog(
     this,
     client,
     showPortType,
-    canEditPortType,
+    true, // canEditPortType
     m_dfgConfig,
-    true
+    true // setAlphaNum
     );
 
   if ( showPortType )
