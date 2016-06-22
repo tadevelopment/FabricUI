@@ -75,12 +75,12 @@ void NodeModelItem::onRenamed(
 
 int NodeModelItem::getNumChildren()
 {
-  return m_exec.getNodePortCount( m_nodeName.c_str() );
+  return m_exec.getItemPortCount( m_nodeName.c_str() );
 }
 
 FTL::CStrRef NodeModelItem::getChildName( int i )
 {
-  return m_exec.getNodePortName( m_nodeName.c_str(), i );
+  return m_exec.getItemPortName( m_nodeName.c_str(), i );
 }
 
 FabricUI::ValueEditor::ItemMetadata* NodeModelItem::getMetadata()

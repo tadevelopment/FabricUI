@@ -243,7 +243,8 @@ void DFGVEEditorOwner::setModelRoot(
       SLOT(onExecNodePortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
       );
 
-    if ( exec.getNodeType( nodeName.c_str() ) == FabricCore::DFGNodeType_Inst )
+    if ( !exec.isExecBlock( nodeName.c_str() )
+      && exec.getNodeType( nodeName.c_str() ) == FabricCore::DFGNodeType_Inst )
     {
       FabricCore::DFGExec subExec = exec.getSubExec( nodeName.c_str() );
 

@@ -31,9 +31,12 @@ namespace FabricUI
           // If we don't have a result, we check the same port on the executable
           FabricCore::DFGExec exec = m_nodePortModelItem->getExec();
           FTL::CStrRef nodeName = m_nodePortModelItem->getNodeName();
-          FTL::CStrRef portName = m_nodePortModelItem->getPortName();
-          FabricCore::DFGExec subExec = exec.getSubExec( nodeName.c_str() );
-          res = subExec.getExecPortMetadata( portName.c_str(), key );
+          if ( !exec.isExecBlock( nodeName.c_str() ) )
+          {
+            FTL::CStrRef portName = m_nodePortModelItem->getPortName();
+            FabricCore::DFGExec subExec = exec.getSubExec( nodeName.c_str() );
+            res = subExec.getExecPortMetadata( portName.c_str(), key );
+          }
         }
         return res;
       }
