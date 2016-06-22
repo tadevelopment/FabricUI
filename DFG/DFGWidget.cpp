@@ -557,8 +557,9 @@ void DFGWidget::onGoUpPressed()
   if ( maybePopExec( nodeName ) )
   {
     getUIGraph()->clearSelection();
-    if ( GraphView::Node *uiNode = getUIGraph()->node( nodeName ) )
-      uiNode->setSelected( true );
+    if ( !nodeName.empty() )
+      if ( GraphView::Node *uiNode = getUIGraph()->node( nodeName ) )
+        uiNode->setSelected( true );
   }
 }
 
@@ -2260,7 +2261,7 @@ void DFGWidget::onExecSelected(
   FabricCore::DFGBinding binding = m_uiController->getBinding();
   FabricCore::DFGExec rootExec = binding.getExec();
   FabricCore::DFGExec exec = rootExec.getSubExec( execPath.c_str() );
-  m_uiController->setExec( execPath, exec );
+  maybePushExec( FTL::StrRef(), exec );
 }
 
 void DFGWidget::onNodeSelected(
@@ -2273,9 +2274,11 @@ void DFGWidget::onNodeSelected(
   FabricCore::DFGBinding binding = m_uiController->getBinding();
   FabricCore::DFGExec rootExec = binding.getExec();
   FabricCore::DFGExec exec = rootExec.getSubExec( execPath.c_str() );
-  m_uiController->setExec( execPath, exec );
-  QApplication::processEvents(); // Let graph view resize etc.
-  m_uiController->focusNode( nodeName );
+  if ( maybePushExec( FTL::StrRef(), exec ) )
+  {
+    QApplication::processEvents(); // Let graph view resize etc.
+    m_uiController->focusNode( nodeName );
+  }
 }
 
 void DFGWidget::onExecSplitChanged()
