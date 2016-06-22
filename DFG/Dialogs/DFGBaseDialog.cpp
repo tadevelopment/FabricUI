@@ -122,7 +122,7 @@ void DFGBaseDialog::addInput(QWidget * widget, QString label, QString section)
   unsigned int index = m_inputs.size();
 
   if(section.length() == 0)
-    section = "parameters";
+    section = "Parameters";
 
   if(m_sections.size() == 0)
   {
@@ -171,7 +171,7 @@ void DFGBaseDialog::removeSection(QWidget * widget) {
 void DFGBaseDialog::setSectionCollapsed(QString section, bool state)
 {
   if(section.length() == 0)
-    section = "parameters";
+    section = "Parameters";
 
   for(size_t i=0;i<m_sections.size();i++)
   {
@@ -185,7 +185,7 @@ void DFGBaseDialog::setSectionCollapsed(QString section, bool state)
 void DFGBaseDialog::setSectionCollapsable(QString section, bool state)
 {
   if(section.length() == 0)
-    section = "parameters";
+    section = "Parameters";
 
   for(size_t i=0;i<m_sections.size();i++)
   {

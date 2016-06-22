@@ -17,7 +17,7 @@ namespace FabricUI
 
     public:
       /// Constructor
-      DFGGetStringDialog(QWidget * parent, QString text, const DFGConfig & dfgConfig = DFGConfig(), bool setAlphaNum = false);
+      DFGGetStringDialog(QWidget * parent, QString title, QString text, const DFGConfig & dfgConfig = DFGConfig(), bool setAlphaNum = false);
       /// Destuctor
       virtual ~DFGGetStringDialog();
 

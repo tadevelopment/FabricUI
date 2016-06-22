@@ -523,7 +523,7 @@ void DFGWidget::onGraphAction(QAction * action)
     QString text = "graph";
     if (!isCTRL)
     {
-      DFGGetStringDialog dialog(NULL, text, m_dfgConfig, true); 
+      DFGGetStringDialog dialog(NULL, "New Empty Graph", text, m_dfgConfig, true);
       if(dialog.exec() != QDialog::Accepted)
         return;
 
@@ -547,7 +547,7 @@ void DFGWidget::onGraphAction(QAction * action)
     QString text = "func";
     if (!isCTRL)
     {
-      DFGGetStringDialog dialog(NULL, text, m_dfgConfig, true);
+      DFGGetStringDialog dialog(NULL, "New Empty Function", text, m_dfgConfig, true);
       if(dialog.exec() != QDialog::Accepted)
         return;
 
@@ -580,7 +580,7 @@ dfgEntry {\n\
     QString text = "backdrop";
     if (!isCTRL)
     {
-      DFGGetStringDialog dialog(NULL, text, m_dfgConfig, false);
+      DFGGetStringDialog dialog(NULL, "New Backdrop", text, m_dfgConfig, false);
       if(dialog.exec() != QDialog::Accepted)
         return;
 
@@ -600,7 +600,7 @@ dfgEntry {\n\
     QString text = "graph";
     if (!isCTRL)
     {
-      DFGGetStringDialog dialog(NULL, text, m_dfgConfig, true);
+      DFGGetStringDialog dialog(NULL, "Implode Nodes", text, m_dfgConfig, true);
       if(dialog.exec() != QDialog::Accepted)
         return;
 
@@ -995,7 +995,7 @@ void DFGWidget::onNodeAction(QAction * action)
   }
   else if(action->text() == DFG_IMPLODE_NODE)
   {
-    DFGGetStringDialog dialog(NULL, "graph", m_dfgConfig, true);
+    DFGGetStringDialog dialog(NULL, "Implode Nodes", "graph", m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
