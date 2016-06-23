@@ -1110,7 +1110,7 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.clearLogAction.triggered.connect(self.logWidget.clear)
 
                 self.blockCompilationsAction = QtGui.QAction(
-                    '&Block compilations', None)
+                    'Disable graph compilations', None)
                 self.blockCompilationsAction.setCheckable(True)
                 self.blockCompilationsAction.setChecked(False)
                 self.blockCompilationsAction.triggered.connect(
