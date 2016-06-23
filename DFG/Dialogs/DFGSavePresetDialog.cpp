@@ -129,7 +129,7 @@ void DFGSavePresetDialog::onContextMenuAction(QAction * action)
         return;
       }
 
-      DFGGetStringDialog dialog(this, "name", m_dfgConfig);
+      DFGGetStringDialog dialog(this, "Folder Name", "name", m_dfgConfig);
       if(dialog.exec() != QDialog::Accepted)
         return;
 

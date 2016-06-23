@@ -62,7 +62,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
     isCanvas = True
     defaultFrameIn = 1
-    defaultFrameOut = 50
+    defaultFrameOut = 250
     autosaveIntervalSecs = 30
     maxRecentFiles = 10
 
@@ -1117,7 +1117,7 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.clearLogAction.triggered.connect(self.logWidget.clear)
 
                 self.blockCompilationsAction = QtGui.QAction(
-                    '&Block compilations', None)
+                    'Disable graph compilations', None)
                 self.blockCompilationsAction.setCheckable(True)
                 self.blockCompilationsAction.setChecked(False)
                 self.blockCompilationsAction.triggered.connect(

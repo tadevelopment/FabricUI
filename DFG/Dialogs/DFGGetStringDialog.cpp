@@ -7,17 +7,23 @@ using namespace FabricUI;
 using namespace FabricUI::DFG;
 
 /// Constructor
-DFGGetStringDialog::DFGGetStringDialog(QWidget * parent, QString text, const DFGConfig & dfgConfig, bool setAlphaNum)
-: DFGBaseDialog(parent, false, dfgConfig)
+DFGGetStringDialog::DFGGetStringDialog(QWidget * parent, QString title, QString text, const DFGConfig & dfgConfig, bool setAlphaNum)
+: DFGBaseDialog(parent, true, dfgConfig)
 {
+  this->setWindowTitle(title);
   m_lineEdit = new QLineEdit(text);
   m_lineEdit->selectAll();
-  addInput(m_lineEdit);
+  m_lineEdit->setMinimumWidth(200);
+  addInput(m_lineEdit, "Node Name");
 
-  // [Julien] Allows only alpha-numeric text only 
+  // [Julien] Allows only alpha-numeric text only
   // We do this because the nodes's name must be alpha-numerical only
-  // and not contains "-, +, ?,"
+  // and should not contain "-, +, ?,"
   if(setAlphaNum) alphaNumicStringOnly();
+
+  // Adjust the size of the dialog and flag it so it can't be maximized/resized
+  this->adjustSize();
+  this->window()->layout()->setSizeConstraint( QLayout::SetFixedSize );
 }
 
 /// Destructor
