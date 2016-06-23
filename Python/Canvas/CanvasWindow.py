@@ -62,7 +62,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
     isCanvas = True
     defaultFrameIn = 1
-    defaultFrameOut = 50
+    defaultFrameOut = 250
     autosaveIntervalSecs = 30
     maxRecentFiles = 10
 
