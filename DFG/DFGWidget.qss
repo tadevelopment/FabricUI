@@ -7,3 +7,95 @@
   margin: 0px;
   padding: 0px;
 }
+
+#DFGExecHeaderWidget
+{
+  margin: 0px;
+  padding: 0px;
+  spacing: 0px;
+}
+
+#DFGExecHeaderWidget #DFGRegWidget
+{
+  margin: 0px;
+  padding: 0px 4px;
+  spacing: 0px;
+}
+
+#DFGExecHeaderWidget #DFGPresetSplitWidget
+{
+  margin: 0px;
+  padding: 2px 4px;
+  spacing: 0px;
+}
+
+#DFGExecHeaderWidget QLabel,
+#DFGExecHeaderWidget QPushButton,
+#DFGExecHeaderWidget QLineEdit
+{
+  font: bold 12pt "Lucida";
+  color: #C7D2DA;
+}
+
+#DFGExecHeaderWidget QPushButton,
+#DFGExecHeaderWidget QLineEdit
+{
+  height: 20px;
+  border: none;
+  border-style: outset;
+  border-radius: 3px;
+}
+
+#DFGExecHeaderWidget QPushButton
+{
+  background-color: #3c4450;
+}
+
+#DFGExecHeaderWidget QPushButton:hover {
+  color: #eee;
+  background-color: #525a66;
+}
+
+#DFGExecHeaderWidget #DFGBackButton
+{
+  margin: 0px 4px 0px 4px;
+  padding: 0px 4px 0px 0px;
+}
+
+#DFGExecHeaderWidget #DFGRequiredExtensionsLineEdit
+{
+  margin: 4px 4px 0px 0px;
+}
+
+#DFGExecHeaderWidget QLineEdit
+{
+  background-color: #333;
+}
+
+#DFGExecHeaderWidget QLabel,
+#DFGExecHeaderWidget QLineEdit
+{
+  margin: 4px 0px 0px 0px;
+}
+
+#DFGExecHeaderWidget QLineEdit
+{
+  color: #cbcbcb;
+  background-color: #333;
+}
+
+#DFGExecHeaderWidget #DFGPresetSplitWidget
+{
+  background-color: #ccb455;
+}
+
+#DFGExecHeaderWidget #DFGPresetSplitWidget #DFGPresetSplitLabel
+{
+  color: #000000;
+}
+
+#DFGExecHeaderWidget #DFGPresetSplitWidget #DFGPresetSplitButton
+{
+  margin: 0px 4px 0px 4px;
+  padding: 0px 4px 0px 4px;
+}

@@ -1,111 +1,117 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
+#include <FabricUI/DFG/DFGController.h>
+#include <FabricUI/DFG/DFGExecHeaderWidget.h>
+#include <FabricUI/Util/LoadPixmap.h>
+#include <QtGui/QFrame>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QPainter>
 #include <QtGui/QPaintEvent>
-#include <FabricUI/DFG/DFGController.h>
-#include <FabricUI/DFG/DFGExecHeaderWidget.h>
+#include <QtGui/QProxyStyle>
 
 using namespace FabricUI;
 using namespace FabricUI::DFG;
+
+class NoFocusOutlineStyle : public QProxyStyle
+{
+public:
+
+  void drawPrimitive(
+    PrimitiveElement element,
+    const QStyleOption *option,
+    QPainter *painter,
+    const QWidget *widget
+    ) const
+  {
+    /* do not draw focus rectangles - this permits modern styling */
+    if ( element == QStyle::PE_FrameFocusRect )
+        return;
+
+    QProxyStyle::drawPrimitive(element, option, painter, widget);
+  }
+};
 
 DFGExecHeaderWidget::DFGExecHeaderWidget(
   QWidget * parent,
   DFGController *dfgController,
   const GraphView::GraphConfig &config
   )
-  : QWidget( parent )
+  : QFrame( parent )
   , m_dfgController( dfgController )
 {
+  setObjectName( "DFGExecHeaderWidget" );
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum));
   setContentsMargins(0, 0, 0, 0);
 
   QHBoxLayout * layout = new QHBoxLayout();
-  layout->setContentsMargins(config.headerMargins, config.headerMargins, config.headerMargins, config.headerMargins);
+  layout->setContentsMargins(0, 0, 0, 0);
 
   m_backgroundColor = config.headerBackgroundColor;
   m_pen = config.headerPen;
 
-  m_goUpButton = new QPushButton("Go up", this);
-  QObject::connect(m_goUpButton, SIGNAL(clicked()), this, SIGNAL(goUpPressed()));
-  m_goUpButton->setAutoFillBackground(false);
+  QIcon backIcon = LoadPixmap( "DFGBack.png" );
+  m_backButton = new QPushButton( backIcon, "Back", this );
+  m_backButton->setObjectName( "DFGBackButton" );
+  m_backButton->setStyle( new NoFocusOutlineStyle );
+  m_backButton->setFocusPolicy( Qt::NoFocus );
+  QObject::connect(
+    m_backButton, SIGNAL(clicked()),
+    this, SIGNAL(goUpPressed())
+    );
+  m_backButton->setAutoFillBackground(false);
 
   m_execPathLabel = new QLabel;
+  m_execPathLabel->setObjectName( "DFGExecPathLabel" );
 
   m_presetNameLabel = new QLabel;
+  m_execPathLabel->setObjectName( "DFGPresetNameLabel" );
 
   m_reqExtLabel = new QLabel;
+  m_reqExtLabel->setObjectName( "DFGRequiredExtensionsLabel" );
   m_reqExtLineEdit = new QLineEdit;
+  m_reqExtLineEdit->setObjectName( "DFGRequiredExtensionsLineEdit" );
   QObject::connect(
     m_reqExtLineEdit, SIGNAL(editingFinished()),
     this, SLOT(reqExtEditingFinished())
     );
 
-  QVBoxLayout *lhsLayout = new QVBoxLayout;
-  lhsLayout->addWidget( m_execPathLabel );
-  lhsLayout->addWidget( m_presetNameLabel );
-
-  QHBoxLayout *cenLayout = new QHBoxLayout;
-  cenLayout->addWidget( m_reqExtLabel );
-  cenLayout->addWidget( m_reqExtLineEdit );
-
-  layout->addLayout( lhsLayout );
-  layout->setAlignment( lhsLayout, Qt::AlignLeft | Qt::AlignTop );
+  layout->addWidget( m_backButton );
+  layout->addWidget( m_execPathLabel );
+  layout->addWidget( m_presetNameLabel );
   layout->addStretch( 1 );
-  layout->addLayout( cenLayout );
-  layout->setAlignment( cenLayout, Qt::AlignHCenter | Qt::AlignTop );
-  layout->addStretch( 1 );
-  layout->addWidget(m_goUpButton);
-  layout->setAlignment( m_goUpButton, Qt::AlignRight | Qt::AlignTop );
+  layout->addWidget( m_reqExtLabel );
+  layout->addWidget( m_reqExtLineEdit );
 
-  QWidget *regWidget = new QWidget;
+  QFrame *regWidget = new QFrame;
+  regWidget->setObjectName( "DFGRegWidget" );
   regWidget->setLayout( layout );
 
-  QHBoxLayout *presetSplitLayout = new QHBoxLayout;
-  presetSplitLayout->setContentsMargins(config.headerMargins, config.headerMargins, config.headerMargins, config.headerMargins);
   QPushButton *presetSplitButton = new QPushButton( "Split from Preset" );
+  presetSplitButton->setObjectName( "DFGPresetSplitButton" );
   connect(
     presetSplitButton, SIGNAL(clicked()),
     this, SLOT(onSplitFromPresetClicked())
     );
+
+  QLabel *presetSplitLabel = new QLabel( "This node or one of its parents is an instance of a preset\nand cannot be changed unless split from the preset" );
+  presetSplitLabel->setObjectName( "DFGPresetSplitLabel" );
+
+  QHBoxLayout *presetSplitLayout = new QHBoxLayout;
+  presetSplitLayout->setContentsMargins( 0, 0, 0, 0 );
+  presetSplitLayout->addWidget( presetSplitLabel );
+  presetSplitLayout->addStretch( 1 );
   presetSplitLayout->addWidget( presetSplitButton );
 
-  QLabel *label = new QLabel( "This node or one of its parents is an instance of a preset\nand cannot be changed unless split from the preset" );
-  presetSplitLayout->addWidget( label );
-  presetSplitLayout->addStretch(1);
-  m_presetSplitWidget = new QWidget;
+  m_presetSplitWidget = new QFrame;
+  m_presetSplitWidget->setObjectName( "DFGPresetSplitWidget" );
   m_presetSplitWidget->setLayout( presetSplitLayout );
-  QPalette presetSplitPalette( palette() );
-  presetSplitPalette.setColor( QPalette::Background, QColor("#ccb455") );
-  presetSplitPalette.setColor( QPalette::Foreground, QColor("#000000") );
-  m_presetSplitWidget->setPalette( presetSplitPalette );
-  m_presetSplitWidget->setAutoFillBackground( true );
-  label->setPalette( presetSplitPalette );  // [FE-6232]
 
   QVBoxLayout *vLayout = new QVBoxLayout;
   vLayout->setContentsMargins(0, 0, 0, 0);
   vLayout->addWidget( m_presetSplitWidget );
   vLayout->addWidget( regWidget );
   setLayout(vLayout);
-
-  QPalette captionLabelPalette = palette();
-  captionLabelPalette.setColor( QPalette::Text, QColor("#C7D2DA") );
-  captionLabelPalette.setColor( QPalette::WindowText, QColor("#C7D2DA") );
-  m_execPathLabel->setPalette( captionLabelPalette );
-  m_presetNameLabel->setPalette( captionLabelPalette );
-  m_reqExtLabel->setPalette( captionLabelPalette );
-  m_reqExtLineEdit->setPalette( captionLabelPalette );
-
-  QFont labelFont = m_execPathLabel->font();
-  labelFont.setBold( true );
-  m_execPathLabel->setFont( labelFont );
-  m_presetNameLabel->setFont( labelFont );
-
-  QPalette p = m_goUpButton->palette();
-  p.setColor( QPalette::ButtonText, config.headerFontColor );
-  p.setColor( QPalette::Button, config.nodeDefaultColor);
-  m_goUpButton->setPalette( p );
 
   QObject::connect(
     m_dfgController, SIGNAL(execChanged()),
@@ -134,7 +140,7 @@ void DFGExecHeaderWidget::refresh()
 
     m_presetSplitWidget->setVisible( wouldSplitFromPreset );
 
-    m_goUpButton->setVisible( !isRoot );
+    m_backButton->setVisible( !isRoot );
 
     m_execPathLabel->setVisible( !isRoot );
     if ( !isRoot )

@@ -8,6 +8,7 @@
 #include <QtGui/QApplication>
 #include <QtGui/QLineEdit>
 #include <QtGui/QPushButton>
+#include <QtGui/QFrame>
 
 #include <FTL/StrRef.h>
 
@@ -21,7 +22,7 @@ namespace FabricUI
   {
     class DFGController;
 
-    class DFGExecHeaderWidget : public QWidget
+    class DFGExecHeaderWidget : public QFrame
     {
       Q_OBJECT
 
@@ -74,7 +75,7 @@ namespace FabricUI
       QLabel *m_presetNameLabel;
       QLabel *m_reqExtLabel;
       QLineEdit *m_reqExtLineEdit;
-      QPushButton * m_goUpButton;
+      QPushButton * m_backButton;
       QColor m_backgroundColor;
       QPen m_pen;
       QWidget *m_presetSplitWidget;
