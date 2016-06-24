@@ -207,7 +207,7 @@ void InstBlock::updateLayout()
 
   Node::CollapseState nodeCollapseState = m_node->collapsedState();
 
-  for ( int i = 0; i < m_instBlockPorts.size(); ++i )
+  for ( size_t i = 0; i < m_instBlockPorts.size(); ++i )
   {
     InstBlockPort *instBlockPort = m_instBlockPorts[i];
 

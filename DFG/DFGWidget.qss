@@ -15,17 +15,16 @@
   spacing: 0px;
 }
 
-#DFGExecHeaderWidget #DFGRegWidget
+#DFGExecHeaderWidget #DFGRegWidget > QWidget
 {
-  margin: 0px;
-  padding: 0px 4px;
-  spacing: 0px;
+  vertical-align: middle;
 }
 
+#DFGExecHeaderWidget #DFGRegWidget,
 #DFGExecHeaderWidget #DFGPresetSplitWidget
 {
   margin: 0px;
-  padding: 2px 4px;
+  padding: 3px 4px;
   spacing: 0px;
 }
 
@@ -33,7 +32,7 @@
 #DFGExecHeaderWidget QPushButton,
 #DFGExecHeaderWidget QLineEdit
 {
-  font: bold 12pt "Lucida";
+  font: bold 12px "Lucida";
   color: #C7D2DA;
 }
 
@@ -58,25 +57,17 @@
 
 #DFGExecHeaderWidget #DFGBackButton
 {
-  margin: 0px 4px 0px 4px;
   padding: 0px 4px 0px 0px;
 }
 
 #DFGExecHeaderWidget #DFGRequiredExtensionsLineEdit
 {
-  margin: 4px 4px 0px 0px;
   padding: 0px 2px;
 }
 
 #DFGExecHeaderWidget QLineEdit
 {
   background-color: #333;
-}
-
-#DFGExecHeaderWidget QLabel,
-#DFGExecHeaderWidget QLineEdit
-{
-  margin: 4px 0px 0px 0px;
 }
 
 #DFGExecHeaderWidget QLineEdit
