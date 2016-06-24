@@ -28,6 +28,13 @@
   spacing: 0px;
 }
 
+#DFGExecHeaderWidget #DFGRegWidget #DFGPathAndPresetFrame
+{
+  margin: 0px;
+  padding: 0px;
+  spacing: 2px;
+}
+
 #DFGExecHeaderWidget QLabel,
 #DFGExecHeaderWidget QPushButton,
 #DFGExecHeaderWidget QLineEdit

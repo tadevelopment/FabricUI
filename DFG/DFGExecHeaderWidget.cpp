@@ -65,7 +65,16 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
   m_execPathLabel->setObjectName( "DFGExecPathLabel" );
 
   m_presetNameLabel = new QLabel;
-  m_execPathLabel->setObjectName( "DFGPresetNameLabel" );
+  m_presetNameLabel->setObjectName( "DFGPresetNameLabel" );
+
+  QVBoxLayout *pathAndPresetLayout = new QVBoxLayout;
+  pathAndPresetLayout->setContentsMargins( 0, 0, 0, 0 );
+  pathAndPresetLayout->addWidget( m_execPathLabel );
+  pathAndPresetLayout->addWidget( m_presetNameLabel );
+
+  QFrame *pathAndPresetFrame = new QFrame;
+  pathAndPresetFrame->setObjectName( "DFGPathAndPresetFrame" );
+  pathAndPresetFrame->setLayout( pathAndPresetLayout );
 
   m_reqExtLabel = new QLabel;
   m_reqExtLabel->setObjectName( "DFGRequiredExtensionsLabel" );
@@ -77,8 +86,7 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
     );
 
   layout->addWidget( m_backButton );
-  layout->addWidget( m_execPathLabel );
-  layout->addWidget( m_presetNameLabel );
+  layout->addWidget( pathAndPresetFrame );
   layout->addStretch( 1 );
   layout->addWidget( m_reqExtLabel );
   layout->addWidget( m_reqExtLineEdit );
