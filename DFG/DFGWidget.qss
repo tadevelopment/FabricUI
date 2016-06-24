@@ -65,6 +65,7 @@
 #DFGExecHeaderWidget #DFGRequiredExtensionsLineEdit
 {
   margin: 4px 4px 0px 0px;
+  padding: 0px 2px;
 }
 
 #DFGExecHeaderWidget QLineEdit
