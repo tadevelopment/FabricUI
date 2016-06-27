@@ -10,11 +10,11 @@ using namespace FabricUI::DFG;
 
 DFGConfig::DFGConfig()
 : defaultFont("Lucida", 10),
-  fixedFont("Courier", 12),
+  fixedFont("Courier", 10),
   logFont("Courier", 10)
-  , searchQueryFont( QFont("Courier", 12, QFont::Bold) )
-  , searchResultsFont( QFont("Courier", 12) )
-  , searchHelpFont( QFont("Courier", 12, QFont::Bold) )
+  , searchQueryFont( QFont("Courier", 11, QFont::Bold) )
+  , searchResultsFont( QFont("Courier", 11) )
+  , searchHelpFont( QFont("Courier", 11, QFont::Bold) )
 {
   defaultWindowColor = QColor(25, 37, 42);
   defaultBackgroundColor = QColor(156, 174, 187);
