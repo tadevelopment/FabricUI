@@ -230,6 +230,13 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") )
         );
     }
+    else if(descStr == FTL_STR("execFixedPortResolvedTypeChanged"))
+    {
+      onExecFixedPortResolvedTypeChanged(
+        jsonObject->getString( FTL_STR("portName") ),
+        jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") )
+        );
+    }
     else if(descStr == FTL_STR("execBlockPortResolvedTypeChanged"))
     {
       onExecBlockPortResolvedTypeChanged(
@@ -1833,6 +1840,34 @@ void DFGNotificationRouter::onExecPortResolvedTypeChanged(
       uiPorts[i]->setColor(m_config.getColorForDataType(newResolvedType, &exec, portName.c_str()));
     }
     uiGraph->updateColorForConnections(uiPorts[0]);
+  }
+}
+
+void DFGNotificationRouter::onExecFixedPortResolvedTypeChanged(
+  FTL::CStrRef portName,
+  FTL::CStrRef newResolvedType
+  )
+{
+  GraphView::Graph * uiGraph = m_dfgController->graph();
+  if(!uiGraph)
+    return;
+
+  // we query for a vector because in case of an io port
+  // we might actually have two
+  std::vector<GraphView::FixedPort *> uiFixedPorts =
+    uiGraph->fixedPorts( portName );
+  if(uiFixedPorts.size() == 0)
+    return;
+
+  if(newResolvedType != uiFixedPorts[0]->dataType())
+  {
+    FabricCore::DFGExec &exec = m_dfgController->getExec();
+    for(size_t i=0;i<uiFixedPorts.size();i++)
+    {
+      uiFixedPorts[i]->setDataType(newResolvedType);
+      uiFixedPorts[i]->setColor(m_config.getColorForDataType(newResolvedType, &exec, portName.c_str()));
+    }
+    uiGraph->updateColorForConnections(uiFixedPorts[0]);
   }
 }
 

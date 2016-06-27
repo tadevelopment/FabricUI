@@ -32,6 +32,7 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
     handlerMap[FTL_STR("execPortRemoved")] = &DFGExecNotifier::handler_execPortRemoved;
     handlerMap[FTL_STR("execPortRenamed")] = &DFGExecNotifier::handler_execPortRenamed;
     handlerMap[FTL_STR("execPortResolvedTypeChanged")] = &DFGExecNotifier::handler_execPortResolvedTypeChanged;
+    handlerMap[FTL_STR("execFixedPortResolvedTypeChanged")] = &DFGExecNotifier::handler_execFixedPortResolvedTypeChanged;
     handlerMap[FTL_STR("execPortsReordered")] = &DFGExecNotifier::handler_execPortsReordered;
     handlerMap[FTL_STR("execPortTypeChanged")] = &DFGExecNotifier::handler_execPortTypeChanged;
     handlerMap[FTL_STR("execPortTypeSpecChanged")] = &DFGExecNotifier::handler_execPortTypeSpecChanged;
@@ -437,6 +438,14 @@ void DFGExecNotifier::handler_execPortResolvedTypeChanged( FTL::JSONObject const
   FTL::CStrRef newResolvedTypeName = jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") );
 
   emit portResolvedTypeChanged( portName, newResolvedTypeName );
+}
+
+void DFGExecNotifier::handler_execFixedPortResolvedTypeChanged( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
+  FTL::CStrRef newResolvedTypeName = jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") );
+
+  emit fixedPortResolvedTypeChanged( portName, newResolvedTypeName );
 }
 
 void DFGExecNotifier::handler_execEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject )

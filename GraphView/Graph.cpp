@@ -358,6 +358,19 @@ void Graph::removePort( Port *port )
   port->sidePanel()->removePort( port );
 }
 
+std::vector<FixedPort *> Graph::fixedPorts() const
+{
+  std::vector<FixedPort *> result;
+  if ( hasSidePanels() )
+  {
+    for(unsigned int i=0;i<m_leftPanel->fixedPortCount();i++)
+      result.push_back(m_leftPanel->fixedPort(i));
+    for(unsigned int i=0;i<m_rightPanel->fixedPortCount();i++)
+      result.push_back(m_rightPanel->fixedPort(i));
+  }
+  return result;
+}
+
 std::vector<Port *> Graph::ports() const
 {
   std::vector<Port *> result;
@@ -405,6 +418,26 @@ std::vector<Port *> Graph::ports(FTL::StrRef name) const
   {
     if(name == m_rightPanel->port(i)->name())
       result.push_back(m_rightPanel->port(i));
+  }
+
+  return result;
+}
+
+std::vector<FixedPort *> Graph::fixedPorts(FTL::StrRef name) const
+{ 
+  std::vector<FixedPort *> result;
+  if(!hasSidePanels())
+    return result;
+
+  for(unsigned int i=0;i<m_leftPanel->fixedPortCount();i++)
+  {
+    if(name == m_leftPanel->fixedPort(i)->name())
+      result.push_back(m_leftPanel->fixedPort(i));
+  }
+  for(unsigned int i=0;i<m_rightPanel->fixedPortCount();i++)
+  {
+    if(name == m_rightPanel->fixedPort(i)->name())
+      result.push_back(m_rightPanel->fixedPort(i));
   }
 
   return result;

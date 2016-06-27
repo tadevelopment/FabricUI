@@ -89,9 +89,9 @@ namespace FabricUI
       void clearSelection() const;
 
       // ports
-      virtual std::vector<Port *> ports() const;
-      virtual Port * port(FTL::StrRef name) const;
-      virtual std::vector<Port *> ports(FTL::StrRef name) const;
+      std::vector<Port *> ports() const;
+      Port *port(FTL::StrRef name) const;
+      std::vector<Port *> ports(FTL::StrRef name) const;
 
       // connections
       virtual std::vector<Connection *> connections() const;
@@ -152,6 +152,8 @@ namespace FabricUI
       virtual bool removeNode(Node * node, bool quiet = false);
 
       void addFixedPort( FixedPort *fixedPort );
+      std::vector<FixedPort *> fixedPorts() const;
+      std::vector<FixedPort *> fixedPorts( FTL::StrRef name ) const;
       void removeFixedPort( FixedPort *fixedPort );
 
       void addPort( Port *port );

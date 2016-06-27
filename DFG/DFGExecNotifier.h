@@ -104,6 +104,11 @@ signals:
     FTL::CStrRef newResolvedTypeName
     );
 
+  void fixedPortResolvedTypeChanged(
+    FTL::CStrRef portName,
+    FTL::CStrRef newResolvedTypeName
+    );
+
   void portDefaultValuesChanged(
     FTL::CStrRef portName
     );
@@ -344,6 +349,7 @@ private:
   void handler_execBlockRenamed( FTL::JSONObject const *jsonObject );
   void handler_execDidAttachPreset( FTL::JSONObject const *jsonObject );
   void handler_execEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject );
+  void handler_execFixedPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_execMetadataChanged( FTL::JSONObject const *jsonObject );
   void handler_execPortDefaultValuesChanged( FTL::JSONObject const *jsonObject );
   void handler_execPortInserted( FTL::JSONObject const *jsonObject );

@@ -181,6 +181,10 @@ namespace FabricUI
         FTL::CStrRef portName,
         FTL::CStrRef newResolvedType
         );
+      void onExecFixedPortResolvedTypeChanged(
+        FTL::CStrRef portName,
+        FTL::CStrRef newResolvedType
+        );
       void onExecBlockPortResolvedTypeChanged(
         FTL::CStrRef blockName,
         FTL::CStrRef portName,
