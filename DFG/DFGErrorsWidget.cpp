@@ -177,15 +177,24 @@ void DFGErrorsWidget::onErrorsMayHaveChanged()
 
       FTL::CStrRef execPath = error->getStringOrEmpty( FTL_STR("execPath") );
       FTL::CStrRef nodeName = error->getStringOrEmpty( FTL_STR("nodeName") );
+      FTL::CStrRef blockName = error->getStringOrEmpty( FTL_STR("blockName") );
       int32_t line = error->getSInt32Or( FTL_STR("line"), -1 );
       int32_t column = error->getSInt32Or( FTL_STR("column"), -1 );
       QString location;
       if ( !execPath.empty() )
         location += QString::fromUtf8( execPath.data(), execPath.size() );
-      if ( !execPath.empty() && !nodeName.empty() )
-        location += '.';
       if ( !nodeName.empty() )
+      {
+        if ( !location.isEmpty() )
+          location += '.';
         location += QString::fromUtf8( nodeName.data(), nodeName.size() );
+      }
+      if ( !blockName.empty() )
+      {
+        if ( !location.isEmpty() )
+          location += '.';
+        location += QString::fromUtf8( blockName.data(), blockName.size() );
+      }
       if ( location.isEmpty() )
         location += "<root>";
       if ( line != -1 )
@@ -223,6 +232,7 @@ void DFGErrorsWidget::visitRow( int row, int col )
 
   FTL::CStrRef localExecPath = error->getString( FTL_STR("execPath") );
   FTL::CStrRef nodeName = error->getStringOrEmpty( FTL_STR("nodeName") );
+  FTL::CStrRef blockName = error->getStringOrEmpty( FTL_STR("blockName") );
   int32_t line = error->getSInt32Or( FTL_STR("line"), -1 );
   int32_t column = error->getSInt32Or( FTL_STR("column"), -1 );
 
@@ -238,7 +248,17 @@ void DFGErrorsWidget::visitRow( int row, int col )
   if ( !localExecPath.empty() )
     fullExecPath += localExecPath;
 
-  if ( !nodeName.empty() )
+  if ( !blockName.empty() )
+  {
+    if ( !fullExecPath.empty() )
+      fullExecPath += '.';
+    fullExecPath += nodeName;
+    fullExecPath += '.';
+    fullExecPath += blockName;
+
+    emit execSelected( fullExecPath, line, column );
+  }
+  else if ( !nodeName.empty() )
   {
     // [pzion 20160216] We copy nodeName here because it's possible that
     // something will erase our errors in response to receiving this signal
