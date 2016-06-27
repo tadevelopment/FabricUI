@@ -145,7 +145,7 @@ class SHGLRenderer : public QObject {
     FabricCore::RTVal getRootDispatcher();
 
     /// Gets the names and the keys of the registered tools.
-    FabricCore::RTVal getRegisteredTools();
+    FabricCore::RTVal getDescription();
     
     /// Returns the selection set if any.
     FabricCore::RTVal getSelectionSet();

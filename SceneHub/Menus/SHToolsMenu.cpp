@@ -190,7 +190,7 @@ void SHToolsMenu::constructMenu() {
     if(!m_client.isValid()) 
       return;
 
-    RTVal description = m_shGLRenderer->getRegisteredTools();
+    RTVal description = m_shGLRenderer->getDescription();
     if(description.isValid())
       ConstructDispatcherDescriptionMenu(
         description, 

@@ -358,16 +358,16 @@ RTVal SHGLRenderer::getRootDispatcher() {
   return rootDispatcher;
 }
 
-RTVal SHGLRenderer::getRegisteredTools() {
+RTVal SHGLRenderer::getDescription() {
   RTVal list;
   try 
   {
     RTVal rootDispatcher = getRootDispatcher();
-    list = rootDispatcher.callMethod("DispatcherDescription", "getRegisteredTools", 0, 0);
+    list = rootDispatcher.callMethod("DispatcherDescription", "getDescription", 0, 0);
   }
   catch(Exception e)
   {
-    printf("SHGLRenderer::getRegisteredTools: exception: %s\n", e.getDesc_cstr());
+    printf("SHGLRenderer::getDescription: exception: %s\n", e.getDesc_cstr());
   }
   return list;
 }
