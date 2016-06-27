@@ -81,8 +81,6 @@ GraphConfig::GraphConfig()
   connectionColor = QColor(130, 130, 130);
   connectionDefaultPen = QPen(connectionColor, 1.5);
   connectionExposePen = QPen(connectionColor, 1.5);
-  connectionExposePen.setStyle(Qt::DashLine);
-  connectionExposePen.setDashOffset(6.0);
   connectionExposeRadius = 50.0;
   connectionHoverPen = QPen(QColor(170, 170, 170), 2.0, Qt::SolidLine);
   connectionFixedTangentLength = 10.0f;
