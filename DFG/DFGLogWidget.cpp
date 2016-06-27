@@ -151,7 +151,7 @@ void DFGLogWidget::callback(
       QPlainTextEdit &t = *sLogWidgets[i]->m_text;
 
       QTextCharFormat format = t.currentCharFormat();
-      for (size_t j=0;j<messages.size();j++)
+      for (int j=0;j<messages.size();j++)
       {
         bool messageIsKeyword = false;
         QColor textColor(defaultTextColor);
