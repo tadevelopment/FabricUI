@@ -9,6 +9,7 @@ if sys.version_info < (2, 7):
     raise Exception('canvas.py currently requires Python 2.7')
 
 from PySide import QtCore, QtGui
+from FabricEngine.Core import CAPI
 from FabricEngine.FabricUI import Application
 from FabricEngine.Canvas.CanvasWindow import CanvasWindow
 from FabricEngine.Canvas.FabricParser import FabricParser
@@ -26,7 +27,7 @@ if __name__ == "__main__":
     app = Application.FabricApplication()
     app.setOrganizationName('Fabric Software Inc')
     app.setApplicationName('Fabric Canvas Standalone')
-    app.setApplicationVersion('2.2.0')
+    app.setApplicationVersion(CAPI.GetVersionStr())
 
     fabricDir = os.environ.get('FABRIC_DIR', None)
     if fabricDir:
