@@ -3,6 +3,7 @@
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/QGraphicsPixmapLayoutItem.h>
@@ -203,6 +204,20 @@ bool FixedPort::canConnectTo(
       return m_sidePanel->graph()->controller()->canConnectTo(
         path().c_str(),
         otherFixedPort->path().c_str(),
+        failureReason
+        );
+    }
+    case TargetType_InstBlockPort:
+    {
+      InstBlockPort * otherInstBlockPort = (InstBlockPort *)other;
+      if ( portType() == PortType_Input
+        || otherInstBlockPort->portType() == PortType_Output )
+        return false;
+      if(path() == otherInstBlockPort->path())
+        return false;
+      return m_sidePanel->graph()->controller()->canConnectTo(
+        path().c_str(),
+        otherInstBlockPort->path().c_str(),
         failureReason
         );
     }
