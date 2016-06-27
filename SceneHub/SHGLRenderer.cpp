@@ -316,7 +316,8 @@ bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool dragging
       RTVal::ConstructBoolean(m_client, dragging)
     };   
      
-    m_shGLRendererVal.callMethod("", "onEvent", 2, args);
+    RTVal rootDispatcher = getRootDispatcher();
+    rootDispatcher.callMethod("", "onEvent", 2, args);
     bool result = args[0].callMethod("Boolean", "isAccepted", 0, 0).getBoolean();
     
     if(result)
@@ -344,24 +345,25 @@ void SHGLRenderer::emitShowContextualMenu(unsigned int viewportID, QPoint pos, Q
       true);
 }
 
-RTVal SHGLRenderer::getToolDispatcher() {
-  RTVal toolDispatcherVal;
+RTVal SHGLRenderer::getRootDispatcher() {
+  RTVal rootDispatcher;
   try 
   {
-    toolDispatcherVal = m_shGLRendererVal.callMethod("RTRToolDispatcher", "getToolDispatcher", 0, 0);
+    rootDispatcher = m_shGLRendererVal.callMethod("RootDispatcher", "getRootDispatcher", 0, 0);
   }
   catch(Exception e)
   {
-    printf("SHGLRenderer::getToolDispatcher: exception: %s\n", e.getDesc_cstr());
+    printf("SHGLRenderer::getRootDispatcher: exception: %s\n", e.getDesc_cstr());
   }
-  return toolDispatcherVal;
+  return rootDispatcher;
 }
 
 RTVal SHGLRenderer::getRegisteredTools() {
   RTVal list;
   try 
   {
-    list = m_shGLRendererVal.callMethod("HandlerDescription[]", "getRegisteredTools", 0, 0);
+    RTVal rootDispatcher = getRootDispatcher();
+    list = rootDispatcher.callMethod("DispatcherDescription", "getRegisteredTools", 0, 0);
   }
   catch(Exception e)
   {
