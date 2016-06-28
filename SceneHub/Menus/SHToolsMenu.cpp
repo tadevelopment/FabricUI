@@ -80,7 +80,7 @@ inline void ConstructToolDescriptionMenu(
     //QString typeStr = GetHandlerExclusivity(description);
 
     RTVal toolModes = description.maybeGetMember("modes");
-    if(!toolModes.isValid())
+    if(!toolModes.isValid() || (toolModes.isValid() && toolModes.getArraySize() == 0))
       CreateToolAction(
         QString(name /*+ delimiter + typeStr*/ + delimiter + key), 
         isEnabled,
