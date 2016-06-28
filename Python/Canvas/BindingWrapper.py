@@ -713,3 +713,52 @@ class BindingWrapper:
             exec_,
             )
         InvokeCmd(cmd, self.qUndoStack)
+
+    def addBlock(
+        self,
+        execPath,
+        desiredName,
+        posX,
+        posY,
+        ):
+        rootExec = self.binding.getExec()
+        exec_ = rootExec.getSubExec(execPath)
+        cmd = DFG.DFGUICmd_AddBlock(
+            self.binding,
+            execPath,
+            exec_,
+            desiredName,
+            QtCore.QPointF(posX, posY)
+            )
+        InvokeCmd(cmd, self.qUndoStack)
+        return cmd.getActualName()
+
+    def addBlockPort(
+        self,
+        execPath,
+        blockName,
+        desiredPortName,
+        portType,
+        typeSpec,
+        pathToConnect,
+        connectType,
+        extDep,
+        metaData,
+        ):
+        rootExec = self.binding.getExec()
+        exec_ = rootExec.getSubExec(execPath)
+        cmd = DFG.DFGUICmd_AddBlockPort(
+            self.binding,
+            execPath,
+            exec_,
+            blockName,
+            desiredPortName,
+            self.decodePortType(portType),
+            typeSpec,
+            pathToConnect,
+            self.decodePortType(connectType),
+            extDep,
+            metaData,
+            )
+        InvokeCmd(cmd, self.qUndoStack)
+        return cmd.getActualPortName()

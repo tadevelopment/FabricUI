@@ -17,6 +17,7 @@
       <object-type name="DFGUICmd" />
       <object-type name="DFGUICmd_AddBackDrop" />
       <object-type name="DFGUICmd_AddBlock" />
+      <object-type name="DFGUICmd_AddBlockPort" />
       <object-type name="DFGUICmd_AddFunc" />
       <object-type name="DFGUICmd_AddGet" />
       <object-type name="DFGUICmd_AddGraph" />
