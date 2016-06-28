@@ -5,6 +5,8 @@
 #include <QtGui/QMenu>
 #include <QtGui/QVBoxLayout>
 
+#include <FabricUI/Util/LoadFabricStyleSheet.h>
+
 using namespace FabricServices;
 using namespace FabricUI;
 using namespace FabricUI::DFG;
@@ -32,6 +34,10 @@ DFGLogWidget::DFGLogWidget( const DFGConfig & config )
     this, SLOT(showContextMenu(const QPoint&))
     );
   layout->addWidget(m_text);
+
+  QString styleSheet = LoadFabricStyleSheet( "DFGLogWidget.qss" );
+  if ( !styleSheet.isEmpty() )
+    setStyleSheet( styleSheet );
 
   sLogWidgets.push_back(this);
 
@@ -75,20 +81,117 @@ void DFGLogWidget::callback(
 {
   if(sLogWidgets.size() > 0)
   {
-    QString message(stringData);
-    bool isError = message.toLower().indexOf("error") > -1;
+    // set the default text color and the keyword-color pairs.
+    QColor defaultTextColor(233, 233, 233);
+
+    std::vector<std::pair<QString, QColor> > keywords;
+
+    keywords.push_back(std::make_pair("errors", QColor(255, 20, 10)));
+    keywords.push_back(std::make_pair("error", QColor(255, 20, 10)));
+
+    keywords.push_back(std::make_pair("warnings", QColor(230, 230, 10)));
+    keywords.push_back(std::make_pair("warning", QColor(230, 230, 10)));
+
+    keywords.push_back(std::make_pair("[fabric:mt]", QColor(137, 208, 231)));
+    keywords.push_back(std::make_pair("[st]", QColor(137, 208, 231)));
+
+    keywords.push_back(std::make_pair("fabric engine", QColor(42, 183, 229)));
+    keywords.push_back(std::make_pair("fabric canvas", QColor(42, 183, 229)));
+    keywords.push_back(std::make_pair("KL stack trace:", QColor(42, 183, 229)));
+
+    keywords.push_back(std::make_pair("frogs", QColor(0, 255, 0)));
+    keywords.push_back(std::make_pair("frog", QColor(0, 255, 0)));
+
+    keywords.push_back(std::make_pair("teapots", QColor(255, 0, 255)));
+    keywords.push_back(std::make_pair("teapot", QColor(255, 0, 255)));
+
+    // create a QString from the data and set the global
+    // flags indicating if the string contains the error
+    // and/or warning words.
+    QString s(stringData);
+    bool messageContainsErrors   = (s.indexOf("error",   0, Qt::CaseInsensitive) >= 0);
+    bool messageContainsWarnings = (s.indexOf("warning", 0, Qt::CaseInsensitive) >= 0);
+
+    // split the string using the keywords.
+    QStringList messages;
+    while (true)
+    {
+      int sIndex = -1;
+      int kIndex = -1;
+      for (size_t i=0;i<keywords.size();i++)
+      {
+        int index = s.indexOf(keywords[i].first, 0, Qt::CaseInsensitive);
+        if (index < 0)
+          continue;
+        if (sIndex < 0 || index < sIndex)
+        {
+          sIndex = index;
+          kIndex = i;
+        }
+      }
+      if (sIndex < 0)
+      {
+        if (s.size())
+          messages.push_back(s);
+        break;
+      }
+      else
+      {
+        if (sIndex)
+          messages.push_back(s.mid(0, sIndex));
+        messages.push_back(s.mid(sIndex, keywords[kIndex].first.size()));
+        s = s.mid(sIndex + keywords[kIndex].first.size());
+      }
+    }
+
+    // insert the colorized strings into
+    // the log widgets' plain text edits.
     for(size_t i=0;i<sLogWidgets.size();i++)
     {
-      if(isError)
-        sLogWidgets[i]->m_text->appendHtml("<font color=\"red\">"+message+"</font>");
-      else
-        sLogWidgets[i]->m_text->appendPlainText(QString(stringData));
+      QPlainTextEdit &t = *sLogWidgets[i]->m_text;
+
+      QTextCharFormat format = t.currentCharFormat();
+      for (int j=0;j<messages.size();j++)
+      {
+        bool messageIsKeyword = false;
+        QColor textColor(defaultTextColor);
+        for (size_t k=0;k<keywords.size();k++)
+        {
+          if (keywords[k].first.compare(messages[j], Qt::CaseInsensitive))
+            continue;
+          textColor = keywords[k].second;
+          messageIsKeyword = true;
+          break;
+        }
+        if (messageContainsErrors)
+        {
+          if (!messageIsKeyword)
+          {
+            textColor.setRed  ((textColor.red()   + 3 * 255) / 4);
+            textColor.setGreen((textColor.green() + 3 *  20) / 4);
+            textColor.setBlue ((textColor.blue()  + 3 *  10) / 4);
+          }
+        }
+        else if (messageContainsWarnings)
+        {
+          textColor.setRed  ((textColor.red()   + 230) / 2);
+          textColor.setGreen((textColor.green() + 230) / 2);
+          textColor.setBlue ((textColor.blue()  +  10) / 2);
+        }
+        if (j == 0)
+          t.appendPlainText("");
+        format.setForeground(textColor);
+        t.setCurrentCharFormat(format);
+        t.moveCursor(QTextCursor::End);
+        t.setCurrentCharFormat(format);
+        t.insertPlainText(messages[j]);
+      }
 
       // [FE-6563] scroll to the last line.
-      QTextCursor cursor = sLogWidgets[i]->m_text->textCursor();
+      QTextCursor cursor = t.textCursor();
       cursor.movePosition(QTextCursor::End);
-      sLogWidgets[i]->m_text->setTextCursor(cursor);
-      sLogWidgets[i]->m_text->ensureCursorVisible();
+      t.setTextCursor(cursor);
+      t.ensureCursorVisible();
     }
   }
   else
