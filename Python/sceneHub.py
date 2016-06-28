@@ -8,6 +8,7 @@ if sys.version_info < (2, 7):
     raise Exception('canvas.py currently requires Python 2.7')
 
 from PySide import QtCore, QtGui
+from FabricEngine.Core import CAPI
 from FabricEngine.FabricUI import Application
 from FabricEngine.SceneHub.SceneHubWindow import SceneHubWindow
 from FabricEngine.Canvas.FabricParser import FabricParser
@@ -21,7 +22,7 @@ if __name__ == "__main__":
     app = Application.FabricApplication()
     app.setOrganizationName('Fabric Software Inc')
     app.setApplicationName('Fabric SceneHub Standalone')
-    app.setApplicationVersion('2.2.0')
+    app.setApplicationVersion(CAPI.GetVersionStr())
     usageFilePath = os.path.expandvars('${FABRIC_DIR}/Python/2.7/FabricEngine/SceneHub/SceneHubUsage.txt')
 
     fabricDir = os.environ.get('FABRIC_DIR', None)
