@@ -36,7 +36,7 @@ InstBlock::InstBlock(
   m_layout->addItem( m_instBlockHeader );
   m_layout->setAlignment( m_instBlockHeader, Qt::AlignHCenter | Qt::AlignVCenter );
 
-  setContentsMargins( 0, 1, 0, 1 );
+  setContentsMargins( 0, 0, 0, 1 );
   setMinimumWidth( config.instBlockMinWidth );
   setMinimumHeight( config.instBlockMinHeight );
   setSizePolicy( QSizePolicy(
