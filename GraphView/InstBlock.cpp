@@ -29,7 +29,7 @@ InstBlock::InstBlock(
 
   m_layout = new QGraphicsLinearLayout();
   m_layout->setContentsMargins( 0, 0, 0, 0 );
-  m_layout->setSpacing( 4 );
+  m_layout->setSpacing( 5 );
   m_layout->setOrientation( Qt::Vertical );
 
   m_instBlockHeader = new InstBlockHeader( this, name );
