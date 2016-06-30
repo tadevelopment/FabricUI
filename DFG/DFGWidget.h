@@ -82,6 +82,10 @@ namespace DFG {
       void createNewBlockNode( QPoint const &pos );
       void createNewCacheNode( QPoint const &pos );
 
+      void replaceBinding( FabricCore::DFGBinding &binding );
+      bool priorExecStackIsEmpty() const
+        { return m_priorExecStack.empty(); }
+
     signals:
 
       void additionalMenuActionsRequested(QString, QMenu*, bool);

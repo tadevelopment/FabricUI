@@ -96,8 +96,10 @@ void DFGController::setBindingExec(
   FabricCore::DFGExec &exec
   )
 {
+  assert( m_dfgWidget->priorExecStackIsEmpty() );
+
   if ( m_binding.isValid() )
-    m_bindingNotifier.clear();
+  m_bindingNotifier.clear();
 
   m_binding = binding;
 

@@ -2297,3 +2297,12 @@ void DFGWidget::onExecSplitChanged()
       m_uiGraph->setEditable( m_isEditable );
   }
 }
+
+void DFGWidget::replaceBinding(
+  FabricCore::DFGBinding &binding
+  )
+{
+  m_priorExecStack.clear();
+  FabricCore::DFGExec exec = binding.getExec();
+  m_uiController->setBindingExec( binding, FTL::StrRef(), exec );
+}

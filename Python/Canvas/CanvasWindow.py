@@ -543,12 +543,12 @@ class CanvasWindow(QtGui.QMainWindow):
             jsonVal = open(filePath, 'rb').read()
             binding = self.host.createBindingFromJSON(jsonVal)
             self.lastSavedBindingVersion = binding.getVersion()
-            dfgExec = binding.getExec()
-            dfgController.setBindingExec(binding, "", dfgExec)
+            self.dfgWidget.replaceBinding(binding)
             self.scriptEditor.updateBinding(binding)
 
             self.evalContext.currentFilePath = filePath
 
+            dfgExec = binding.getExec()
             tl_start = dfgExec.getMetadata("timeline_start")
             tl_end = dfgExec.getMetadata("timeline_end")
             tl_loopMode = dfgExec.getMetadata("timeline_loopMode")
@@ -811,10 +811,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
             binding = self.host.createBindingToNewGraph()
             self.lastSavedBindingVersion = binding.getVersion()
-            dfgExec = binding.getExec()
             self.timeLinePortPath = None
 
-            dfgController.setBindingExec(binding, '', dfgExec)
+            self.dfgWidget.replaceBinding(binding)
             self.scriptEditor.updateBinding(binding)
 
             self.timeLine.setTimeRange(CanvasWindow.defaultFrameIn,
