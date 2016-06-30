@@ -4,6 +4,7 @@
 
 #include "SHDFGBinding.h"
 #include <FabricUI/DFG/DFGUICmdHandler.h>
+#include <FabricUI/DFG/DFGWidget.h>
 
 using namespace FabricCore;
 using namespace FabricUI;
