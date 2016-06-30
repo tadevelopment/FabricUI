@@ -64,3 +64,28 @@ bool VETreeWidgetItem::operator<( const QTreeWidgetItem &other ) const
   return false;
 }
 
+void VETreeWidgetItem::maybeExpand()
+{
+  if ( m_viewItem )
+  {
+    if ( BaseModelItem *modelItem = m_viewItem->getModelItem() )
+    {
+      if ( ItemMetadata *metadata = modelItem->getMetadata() )
+      {
+        char const *expanded =
+          metadata->getString( ItemMetadata::VEExpandedKey.c_str() );
+        if ( expanded && *expanded )
+        {
+          setExpanded( true );
+
+          int n = childCount();
+          for ( int i = 0; i < n; ++i )
+          {
+            VETreeWidgetItem *c = static_cast<VETreeWidgetItem *>( child( i ) );
+            c->maybeExpand();
+          }
+        }
+      }
+    }
+  }
+}

@@ -196,7 +196,6 @@ namespace FabricUI
       void hotkeyReleased(Qt::Key, Qt::KeyboardModifier, QString);
       void bubbleEditRequested(FabricUI::GraphView::Node * node);
       void instBlockEditRequested( FabricUI::GraphView::InstBlock *instBlock );
-      void instBlockInspectRequested( FabricUI::GraphView::InstBlock *instBlock );
 
     private:
 

@@ -19,6 +19,8 @@ public:
   VETreeWidgetItem( BaseViewItem *viewItem );
   ~VETreeWidgetItem();
 
+  void maybeExpand();
+
   BaseViewItem *getViewItem() const;
 
   // Override the sort to enable changing

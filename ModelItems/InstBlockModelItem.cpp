@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/ModelItems/InstBlockModelItem.h>
-#include <FabricUI/ModelItems/ItemPortModelItem.h>
+#include <FabricUI/ModelItems/InstBlockPortModelItem.h>
 
 namespace FabricUI {
 namespace ModelItems {
@@ -62,44 +62,50 @@ void InstBlockModelItem::onRenamed(
   assert( m_instBlockName == oldInstBlockName );
   m_instBlockName = newInstBlockName;
 
+  std::string oldInstBlockPath = m_instBlockPath;
+
   m_instBlockPath = m_instName;
   m_instBlockPath += '.';
   m_instBlockPath += newInstBlockName;
 
-  // for ( ChildVec::iterator it = m_children.begin();
-  //   it != m_children.end(); ++it )
-  // {
-  //   ItemPortModelItem *nodePortModelItem =
-  //     static_cast<ItemPortModelItem *>( *it );
-  //   nodePortModelItem->onItemRenamed( oldItemPath, newItemPath );
-  // }
+  for ( ChildVec::iterator it = m_children.begin();
+    it != m_children.end(); ++it )
+  {
+    ItemPortModelItem *nodePortModelItem =
+      static_cast<ItemPortModelItem *>( *it );
+    nodePortModelItem->onItemRenamed( oldInstBlockPath, m_instBlockPath );
+  }
 }
 
 int InstBlockModelItem::getNumChildren()
 {
-  return 0;
+  return m_exec.getInstBlockPortCount(
+    m_instName.c_str(), m_instBlockName.c_str()
+    );
 }
 
 FTL::CStrRef InstBlockModelItem::getChildName( int i )
 {
-  assert( false );
-  return FTL::CStrRef();
+  return m_exec.getInstBlockPortName(
+    m_instName.c_str(), m_instBlockName.c_str(), i
+    );
 }
 
-FabricUI::ValueEditor::BaseModelItem *InstBlockModelItem::createChild( FTL::CStrRef portOrBlockName )
+FabricUI::ValueEditor::BaseModelItem *InstBlockModelItem::createChild( FTL::CStrRef instBlockPortName )
 {
-  assert( false );
-  return NULL;
+  return pushChild( new InstBlockPortModelItem(
+    m_dfgUICmdHandler,
+    m_binding,
+    m_execPath,
+    m_exec,
+    m_instBlockPath,
+    instBlockPortName
+    ) );
 }
 
 QVariant InstBlockModelItem::getValue()
 {
   return QVariant();
-}
-
-FabricUI::ValueEditor::ItemMetadata* InstBlockModelItem::getMetadata()
-{
-  return NULL;
 }
 
 void InstBlockModelItem::setMetadataImp( const char* key, const char* value, bool canUndo ) /**/

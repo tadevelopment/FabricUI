@@ -3,6 +3,7 @@
 //
 
 #include <FabricUI/ModelItems/RootModelItem.h>
+#include <FabricUI/ModelItems/RootItemMetadata.h>
 #include <assert.h>
 
 namespace FabricUI {
@@ -10,6 +11,7 @@ namespace ModelItems {
 
 //////////////////////////////////////////////////////////////////////////
 RootModelItem::RootModelItem()
+  : m_metadata( 0 )
 {
 }
 
@@ -21,6 +23,8 @@ RootModelItem::~RootModelItem()
     ValueEditor::BaseModelItem *child = *it;
     delete child;
   }
+
+  delete m_metadata;
 }
 
 ValueEditor::BaseModelItem * RootModelItem::pushChild( BaseModelItem * item )
@@ -117,6 +121,13 @@ void RootModelItem::childRemoved( unsigned index, FTL::CStrRef name )
       break;
     }
   }
+}
+
+FabricUI::ValueEditor::ItemMetadata* RootModelItem::getMetadata()
+{
+  if ( !m_metadata )
+    m_metadata = new RootItemMetadata( this );
+  return m_metadata;
 }
 
 //////////////////////////////////////////////////////////////////////////

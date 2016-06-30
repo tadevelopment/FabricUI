@@ -20,6 +20,8 @@ namespace FabricUI
   namespace ModelItems
   {
 
+    class RootItemMetadata;
+
     // Split last word after '.' and return it, remove from path
     // Given "Node.Node.Port", it will return "Port", 
     // and path will be "Node.Node".
@@ -37,14 +39,13 @@ namespace FabricUI
 
       ChildVec m_children;
       BaseModelItem * pushChild(BaseModelItem * item);
+
+      RootItemMetadata *m_metadata;
       
     public:
 
       RootModelItem( );
       ~RootModelItem();
-
-      virtual bool isItem() const { return false; }
-      virtual bool isBinding() const { return false; }
 
       virtual FabricUI::ValueEditor::BaseModelItem* createChild( FTL::CStrRef name ) { return 0; } /* To override */
 
@@ -73,6 +74,8 @@ namespace FabricUI
         FTL::CStrRef oldName,
         FTL::CStrRef newName
         );
+      
+      virtual FabricUI::ValueEditor::ItemMetadata* getMetadata();
     };
   }
 }

@@ -150,38 +150,6 @@ void InstBlock::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event )
   QGraphicsWidget::mouseDoubleClickEvent( event );
 }
 
-void InstBlock::mouseMoveEvent( QGraphicsSceneMouseEvent *event )
-{
-  if ( node()->onMouseMove(
-    event->button(),
-    event->modifiers(),
-    event->scenePos(),
-    event->lastScenePos()
-    ) )
-  {
-    event->accept();
-    return;
-  }
-
-  QGraphicsWidget::mouseMoveEvent(event);
-}
-
-void InstBlock::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
-{
-  if ( node()->onMouseRelease(
-    event->button(),
-    event->modifiers(),
-    event->scenePos(),
-    event->lastScenePos()
-    ) )
-  {
-    event->accept();
-    return;
-  }
-
-  QGraphicsWidget::mouseReleaseEvent(event);
-}
-
 InstBlockPort *InstBlock::instBlockPort( FTL::StrRef name )
 {
   for ( size_t index = 0; index < m_instBlockPorts.size(); ++index )

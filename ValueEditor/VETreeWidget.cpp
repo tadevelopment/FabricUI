@@ -585,7 +585,7 @@ void VETreeWidget::onSetModelItem( BaseModelItem* pItem )
   {
     if ( VETreeWidgetItem *newItem =
       createTreeWidgetItem( pViewLayer, 0 /*parent*/ ) )
-      newItem->setExpanded( true );
+      newItem->maybeExpand();
   }
 }
 

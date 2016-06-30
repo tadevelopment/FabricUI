@@ -154,10 +154,6 @@ Node * Graph::addNode(Node * node, bool quiet)
     node, SIGNAL(instBlockEditRequested(FabricUI::GraphView::InstBlock *)),
     this, SIGNAL(instBlockEditRequested(FabricUI::GraphView::InstBlock *))
     );
-  connect(
-    node, SIGNAL(instBlockInspectRequested(FabricUI::GraphView::InstBlock *)),
-    this, SIGNAL(instBlockInspectRequested(FabricUI::GraphView::InstBlock *))
-    );
 
   if(!quiet)
     emit nodeAdded(node);

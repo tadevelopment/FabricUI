@@ -83,11 +83,6 @@ FTL::CStrRef ItemModelItem::getChildName( int i )
   return m_exec.getItemPortName( m_itemPath.c_str(), i );
 }
 
-FabricUI::ValueEditor::ItemMetadata* ItemModelItem::getMetadata()
-{
-  return NULL;
-}
-
 void ItemModelItem::setMetadataImp( const char* key, const char* value, bool canUndo ) /**/
 {
   // TODO: Do We need this?

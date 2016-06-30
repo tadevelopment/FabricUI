@@ -26,6 +26,7 @@ public:
 
   static FTL::CStrRef const VEPortTypeKey;
   static FTL::CStrRef const VENotInspectableKey;
+  static FTL::CStrRef const VEExpandedKey;
 
   virtual ~ItemMetadata() {}
 

@@ -82,11 +82,6 @@ QVariant BindingModelItem::getValue()
   return QVariant();
 }
 
-FabricUI::ValueEditor::ItemMetadata* BindingModelItem::getMetadata()
-{
-  return NULL;
-}
-
 void BindingModelItem::setValue(
   QVariant var,
   bool commit,

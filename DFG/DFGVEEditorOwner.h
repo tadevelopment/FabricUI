@@ -162,10 +162,6 @@ namespace FabricUI {
         FabricUI::GraphView::Node *node
         );
 
-      void onInstBlockInspectRequested(
-        FabricUI::GraphView::InstBlock *instBlock
-        );
-
       void onExecNodePortInserted(
         FTL::CStrRef nodeName,
         unsigned portIndex,

@@ -68,7 +68,6 @@ class DFGUICmdHandler;
 
       // Metadata
 
-      virtual FabricUI::ValueEditor::ItemMetadata* getMetadata();
       virtual void setMetadataImp( const char* key, 
                                 const char* value, 
                                 bool canUndo )/*override*/;

@@ -45,8 +45,7 @@ class DFGUICmdHandler;
         );
       ~InstBlockModelItem();
 
-      virtual bool isItem() const /*override*/ { return true; }
-      virtual bool isRef() const /*override*/ { return false; }
+      virtual bool isInstBlock() const /*override*/ { return true; }
 
       FTL::CStrRef getInstName()
         { return m_instName; }
@@ -79,7 +78,6 @@ class DFGUICmdHandler;
 
       // Metadata
 
-      virtual FabricUI::ValueEditor::ItemMetadata* getMetadata();
       virtual void setMetadataImp( const char* key, 
                                 const char* value, 
                                 bool canUndo )/*override*/;

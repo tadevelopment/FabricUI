@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 //
 
-#ifndef FABRICUI_MODELITEMS_INSTMODELITEM_H
-#define FABRICUI_MODELITEMS_INSTMODELITEM_H
+#ifndef FABRICUI_MODELITEMS_EXECBLOCKMODELITEM_H
+#define FABRICUI_MODELITEMS_EXECBLOCKMODELITEM_H
 
 #include <FabricCore.h>
 #include <FabricUI/ModelItems/ItemModelItem.h>
@@ -21,23 +21,19 @@ class DFGUICmdHandler;
 
   namespace ModelItems
   {
-    class InstModelItem : public ItemModelItem
+    class ExecBlockModelItem : public ItemModelItem
     {
     public:
       
-      InstModelItem(
+      ExecBlockModelItem(
         DFG::DFGUICmdHandler *dfgUICmdHandler,
         FabricCore::DFGBinding binding,
         FTL::StrRef execPath,
         FabricCore::DFGExec exec,
-        FTL::StrRef nodeName
+        FTL::StrRef execBlockName
         );
-      ~InstModelItem();
+      ~ExecBlockModelItem();
 
-      virtual bool isInst() const { return true; }
-
-      virtual int getNumChildren() /*override*/;
-      virtual FTL::CStrRef getChildName( int i ) /*override*/;
       virtual FabricUI::ValueEditor::BaseModelItem* createChild( FTL::CStrRef name );
 
       virtual QVariant getValue();
@@ -53,4 +49,4 @@ class DFGUICmdHandler;
   }
 }
 
-#endif // FABRICUI_MODELITEMS_INSTMODELITEM_H
+#endif // FABRICUI_MODELITEMS_EXECBLOCKMODELITEM_H

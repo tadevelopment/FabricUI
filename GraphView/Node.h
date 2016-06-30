@@ -223,7 +223,6 @@ namespace FabricUI
       void bubbleEditRequested(FabricUI::GraphView::Node * nod);
       void geometryChanged();
       void instBlockEditRequested( FabricUI::GraphView::InstBlock *instBlock );
-      void instBlockInspectRequested( FabricUI::GraphView::InstBlock *instBlock );
 
     protected:
 

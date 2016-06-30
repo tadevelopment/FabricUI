@@ -78,6 +78,11 @@ public:
 	BaseModelItem();
 	virtual ~BaseModelItem();
 
+  virtual bool isItem() const { return false; }
+  virtual bool isInst() const { return false; }
+  virtual bool isInstBlock() const { return false; }
+  virtual bool isBinding() const { return false; }
+
 	// The model is a tree
 	virtual int getNumChildren();
 

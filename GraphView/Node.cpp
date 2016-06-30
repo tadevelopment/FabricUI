@@ -894,7 +894,7 @@ void Node::onInstBlockDoubleClicked(
   if ( modifiers.testFlag( Qt::ShiftModifier ) )
     emit instBlockEditRequested( instBlock );
   else
-    emit instBlockInspectRequested( instBlock );
+    ;
 }
 
 InstBlock *Node::instBlock( FTL::StrRef name )

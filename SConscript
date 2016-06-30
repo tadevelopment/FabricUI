@@ -513,6 +513,6 @@ if uiLibPrefix == 'ui':
       
   pysideEnv.Alias('pysideGen', pysideGens)
   pysideEnv.Alias('pyside', installedPySideLibs)
-  pysideEnv.Alias('canvas', installedPySideLibs)
+  pysideEnv.Alias('canvas.py', installedPySideLibs)
 
 Return('uiFiles')
