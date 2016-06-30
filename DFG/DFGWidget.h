@@ -7,6 +7,7 @@
 #include <QtGui/QWidget>
 #include <QtGui/QMenuBar>
 #include <Commands/CommandStack.h>
+#include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/DFG/DFGConfig.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGExecHeaderWidget.h>
@@ -69,8 +70,8 @@ namespace DFG {
       void refreshExtDeps( FTL::CStrRef extDeps );
 
       void populateMenuBar(QMenuBar * menuBar, bool addFileMenu = true, bool addDCCMenu = false);
-      bool maybeEditNode();
-      bool maybeEditNode(FabricUI::GraphView::Node * node);
+
+      bool maybeEditNode( FabricUI::GraphView::Node *node );
       bool maybeEditInstBlock( FabricUI::GraphView::InstBlock *instBlock );
 
       void reloadStyles();
@@ -105,9 +106,6 @@ namespace DFG {
       void onGraphAction(QAction * action);
       void onNodeAction(QAction * action);
       void onNodeEditRequested(FabricUI::GraphView::Node *);
-      void onInstBlockEditRequested(
-        FabricUI::GraphView::InstBlock *instBlock
-        );
       void onExecPortAction(QAction * action);
       void onSidePanelAction(QAction * action);
       void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey);
@@ -379,6 +377,81 @@ namespace DFG {
 
       DFGWidget *m_dfgWidget;
       QPoint m_pos;
+    };
+
+    class EditNodeAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      EditNodeAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent
+        )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Edit node '" + m_node->name_QS() + "'" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->maybeEditNode( m_node );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
+    };
+
+    class EditInstBlockAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      EditInstBlockAction(
+        DFGWidget *dfgWidget,
+        GraphView::InstBlock *instBlock,
+        QObject *parent
+        )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_instBlock( instBlock )
+      {
+        setText(
+            "Edit block '"
+          + m_instBlock->node()->name_QS()
+          + "."
+          + m_instBlock->name_QS()
+          + "'" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->maybeEditInstBlock( m_instBlock );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::InstBlock *m_instBlock;
     };
 
 } // namespace DFG

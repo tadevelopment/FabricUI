@@ -13,7 +13,6 @@ namespace FabricUI
     #define DFG_CREATE_PRESET           "Create preset"
     #define DFG_OPEN_PRESET_DOC         "Documentation"
     #define DFG_INSPECT_PRESET          "Inspect - DoubleClick"
-    #define DFG_EDIT_PRESET             "Edit - I or Shift+DoubleClick"
     #define DFG_EDIT_PRESET_PROPERTIES  "Properties - F2"
     #define DFG_DELETE_PRESET           "Delete - Del"
     #define DFG_SELECT_ALL_PRESET       "Select all - Ctrl+A"

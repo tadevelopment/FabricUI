@@ -8,6 +8,7 @@
 #include <FTL/ArrayRef.h>
 #include <FTL/StrRef.h>
 #include <QtGui/QGraphicsWidget>
+#include <FabricUI/GraphView/GraphicItemTypes.h>
 
 class QGraphicsLinearLayout;
 
@@ -30,6 +31,8 @@ public:
     Node *node,
     FTL::StrRef name
     );
+
+  virtual int type() const { return QGraphicsItemType_InstBlock; }
 
   FTL::CStrRef name() const
     { return m_name; }
@@ -78,9 +81,6 @@ signals:
     );
 
 protected:
-
-  virtual void mousePressEvent( QGraphicsSceneMouseEvent *event );
-  virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event );
 
   virtual void paint(
     QPainter *painter,

@@ -297,13 +297,6 @@ void Node::insertInstBlockAtIndex( unsigned index, InstBlock *instBlock )
 
   m_instBlocks.insert( m_instBlocks.begin() + index, instBlock );
 
-  QObject::connect(
-    instBlock, 
-    SIGNAL(doubleClicked(FabricUI::GraphView::InstBlock*, Qt::MouseButton, Qt::KeyboardModifiers)), 
-    this, 
-    SLOT(onInstBlockDoubleClicked(FabricUI::GraphView::InstBlock*, Qt::MouseButton, Qt::KeyboardModifiers))
-    );
-
   updatePinLayout();
 }
 
@@ -885,18 +878,6 @@ void Node::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QW
   QGraphicsWidget::paint(painter, option, widget);
 }
 
-void Node::onInstBlockDoubleClicked(
-  FabricUI::GraphView::InstBlock *instBlock,
-  Qt::MouseButton button,
-  Qt::KeyboardModifiers modifiers
-  )
-{
-  if ( modifiers.testFlag( Qt::ShiftModifier ) )
-    emit instBlockEditRequested( instBlock );
-  else
-    ;
-}
-
 InstBlock *Node::instBlock( FTL::StrRef name )
 {
   for ( size_t index = 0; index < m_instBlocks.size(); ++index )
@@ -904,3 +885,18 @@ InstBlock *Node::instBlock( FTL::StrRef name )
       return m_instBlocks[index];
   return NULL;
 }
+
+void Node::collectEditingTargets( EditingTargets &editingTargets )
+{
+  editingTargets.reserve( 1 + m_instBlocks.size() );
+
+  if ( m_canAddPorts )
+    editingTargets.push_back( EditingTarget( this, 0 ) );
+
+  for ( size_t i = 0; i < m_instBlocks.size(); ++i )
+    editingTargets.push_back( EditingTarget( m_instBlocks[i], 0 ) );
+
+  if ( !m_canAddPorts )
+    editingTargets.push_back( EditingTarget( this, 1 ) );
+}
+

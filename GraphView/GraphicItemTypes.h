@@ -22,7 +22,8 @@ namespace FabricUI
       QGraphicsItemType_PinCircle,
       QGraphicsItemType_NodeRectangle,
       QGraphicsItemType_ProxyPin,
-      QGraphicsItemType_NodeHeaderButton
+      QGraphicsItemType_NodeHeaderButton,
+      QGraphicsItemType_InstBlock
     };
 
   };

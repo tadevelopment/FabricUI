@@ -70,9 +70,6 @@ namespace FabricUI
       virtual void onGraphSet(FabricUI::GraphView::Graph * graph);
       virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node);
       virtual void onNodeEditRequested(FabricUI::GraphView::Node * node);
-      virtual void onInstBlockEditRequested(
-        FabricUI::GraphView::InstBlock *instBlock
-        );
       virtual void onAdditionalMenuActionsRequested(QString name, QMenu * menu, bool prefix);
 
     protected slots:

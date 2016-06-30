@@ -359,26 +359,77 @@ QMenu *DFGWidget::nodeContextMenuCallback(
       }
 
       result->addAction(DFG_INSPECT_PRESET);
-      result->addAction(DFG_EDIT_PRESET);
+
+      result->addSeparator();
+
+      GraphView::Node::EditingTargets editingTargets;
+      uiNode->collectEditingTargets( editingTargets );
+      int lastPriority = -1;
+      bool inTopPriority = true;
+      for ( size_t i = 0; i < editingTargets.size(); ++i )
+      {
+        int priority = editingTargets[i].second;
+        bool first = lastPriority == -1;
+        if ( !first && priority > lastPriority )
+        {
+          inTopPriority = false;
+          result->addSeparator();
+        }
+
+        QAction *editAction;
+        if ( editingTargets[i].first->type() == GraphView::QGraphicsItemType_Node )
+          editAction = new EditNodeAction(
+            dfgWidget,
+            static_cast<GraphView::Node *>( editingTargets[i].first ),
+            result
+            );
+        else if ( editingTargets[i].first->type() == GraphView::QGraphicsItemType_InstBlock )
+          editAction = new EditInstBlockAction(
+            dfgWidget,
+            static_cast<GraphView::InstBlock *>( editingTargets[i].first ),
+            result
+            );
+        else assert( false );
+        if ( inTopPriority )
+          editAction->setText( editAction->text() + " - I or Shift+DoubleClick" );
+        result->addAction( editAction );
+
+        lastPriority = priority;
+      }
+
       needSeparator = true;
     }
-     
+
+    bool needAnotherSeparator = false;
+
     if ( nodes.size() == 1
       && !someVarNodes
       && !someGetNodes
       && !someSetNodes )
     {
+      if (needSeparator)
+      {
+        result->addSeparator();
+        needSeparator = false;
+      }
+
       result->addAction(DFG_EDIT_PRESET_PROPERTIES);
-      needSeparator = true;
+      needAnotherSeparator = true;
     }
 
     if ( dfgWidget->isEditable() )
     {
+      if (needSeparator)
+      {
+        result->addSeparator();
+        needSeparator = false;
+      }
+
       result->addAction(DFG_DELETE_PRESET);
-      needSeparator = true;
+      needAnotherSeparator = true;
     }
 
-    if (needSeparator)
+    if ( needSeparator || needAnotherSeparator )
       result->addSeparator();
 
     if (!someVarNodes)
@@ -838,10 +889,6 @@ void DFGWidget::onNodeAction(QAction * action)
   {
     emit nodeInspectRequested(m_contextNode);
   }
-  else if(action->text() == DFG_EDIT_PRESET)
-  {
-    maybeEditNode( m_contextNode );
-  }
   else if(action->text() == DFG_DELETE_PRESET)
   {
     m_uiController->gvcDoRemoveNodes(m_contextNode);
@@ -1158,18 +1205,6 @@ void DFGWidget::onNodeAction(QAction * action)
   }
 
   m_contextNode = NULL;
-}
-
-void DFGWidget::onNodeEditRequested(FabricUI::GraphView::Node * node)
-{
-  maybeEditNode( node );
-}
-
-void DFGWidget::onInstBlockEditRequested(
-  FabricUI::GraphView::InstBlock *instBlock
-  )
-{
-  maybeEditInstBlock( instBlock );
 }
 
 void DFGWidget::onExecPortAction(QAction * action)
@@ -1550,9 +1585,12 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     onGoUpPressed();
   }
-  else if(hotkey == DFGHotkeys::EDIT_PRESET)
+  else if ( hotkey == DFGHotkeys::EDIT_PRESET )
   {
-    maybeEditNode();
+    std::vector<GraphView::Node*> const &nodes =
+      m_uiController->graph()->selectedNodes();
+    if ( nodes.size() == 1 )
+      onNodeEditRequested( nodes.front() );
   }
   else if(hotkey == DFGHotkeys::EDIT_PRESET_PROPERTIES)
   {
@@ -1699,14 +1737,6 @@ void DFGWidget::onTogglePortsCentered()
   m_uiGraph->sidePanel(GraphView::PortType_Output)->updateItemGroupScroll();  
   // [Julien] FE-5264 Sets the onTogglePortsCentered property to the settings
   if(getSettings()) getSettings()->setValue( "DFGWidget/portsCentered", m_uiGraph->config().portsCentered );
-}
-
-bool DFGWidget::maybeEditNode()
-{
-  const std::vector<GraphView::Node*> &nodes = m_uiController->graph()->selectedNodes();
-  if (nodes.size() == 1)
-    return maybeEditNode(nodes.front());
-  return false;
 }
 
 bool DFGWidget::maybeEditNode(
@@ -2305,4 +2335,70 @@ void DFGWidget::replaceBinding(
   m_priorExecStack.clear();
   FabricCore::DFGExec exec = binding.getExec();
   m_uiController->setBindingExec( binding, FTL::StrRef(), exec );
+}
+
+void DFGWidget::onNodeEditRequested(FabricUI::GraphView::Node *node)
+{
+  if ( node->isBackDropNode()
+    || node->isBlockNode() )
+    return;
+
+  try
+  {
+    FTL::CStrRef nodeName = node->name();
+
+    FabricCore::DFGExec &exec = m_uiController->getExec();
+    if ( exec.getNodeType( nodeName.c_str() )
+      != FabricCore::DFGNodeType_Inst )
+      return;
+
+    GraphView::Node::EditingTargets editingTargets;
+    node->collectEditingTargets( editingTargets );
+
+    if ( editingTargets.size() == 1
+      || editingTargets[1].second > editingTargets[0].second )
+    {
+      if ( editingTargets[0].first->type() == GraphView::QGraphicsItemType_Node )
+        maybeEditNode(
+          static_cast<GraphView::Node *>( editingTargets[0].first )
+          );
+      else if ( editingTargets[0].first->type() == GraphView::QGraphicsItemType_InstBlock )
+        maybeEditInstBlock(
+          static_cast<GraphView::InstBlock *>( editingTargets[0].first )
+          );
+      else assert( false );
+    }
+    else
+    {
+      QMenu menu;
+      int lastPriority = -1;
+      for ( size_t i = 0; i < editingTargets.size(); ++i )
+      {
+        int priority = editingTargets[i].second;
+        if ( lastPriority != -1 && priority != lastPriority )
+          menu.addSeparator();
+
+        if ( editingTargets[i].first->type() == GraphView::QGraphicsItemType_Node )
+          menu.addAction( new EditNodeAction(
+            this,
+            static_cast<GraphView::Node *>( editingTargets[i].first ),
+            &menu
+            ) );
+        else if ( editingTargets[i].first->type() == GraphView::QGraphicsItemType_InstBlock )
+          menu.addAction( new EditInstBlockAction(
+            this,
+            static_cast<GraphView::InstBlock *>( editingTargets[i].first ),
+            &menu
+            ) );
+        else assert( false );
+
+        lastPriority = priority;
+      }
+      menu.exec( QCursor::pos() );
+    }
+  }
+  catch(FabricCore::Exception e)
+  {
+    printf("Exception: %s\n", e.getDesc_cstr());
+  }
 }

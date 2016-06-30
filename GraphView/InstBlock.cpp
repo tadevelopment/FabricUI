@@ -122,34 +122,6 @@ void InstBlock::paint(
   QGraphicsWidget::paint(painter, option, widget);
 }
 
-void InstBlock::mousePressEvent( QGraphicsSceneMouseEvent *event )
-{
-  if ( node()->onMousePress(
-    event->button(),
-    event->modifiers(),
-    event->scenePos(),
-    event->lastScenePos()
-    ) )
-  {
-    event->accept();
-    return;
-  }
-
-  QGraphicsWidget::mousePressEvent( event );
-}
-
-void InstBlock::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event )
-{
-  if ( event->button() == Qt::LeftButton )
-  {
-    emit doubleClicked( this, event->button(), event->modifiers() );
-    event->accept();
-    return;
-  }
-
-  QGraphicsWidget::mouseDoubleClickEvent( event );
-}
-
 InstBlockPort *InstBlock::instBlockPort( FTL::StrRef name )
 {
   for ( size_t index = 0; index < m_instBlockPorts.size(); ++index )

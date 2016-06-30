@@ -41,6 +41,9 @@ namespace FabricUI
 
     public:
 
+      typedef std::pair<QGraphicsWidget *, int> EditingTarget;
+      typedef std::vector<EditingTarget> EditingTargets;
+
       enum NodeType
       {
         NodeType_Plain,
@@ -201,19 +204,13 @@ namespace FabricUI
       void setCanAddPorts( bool canAddPorts )
         { m_canAddPorts = canAddPorts; }
 
+      void collectEditingTargets( EditingTargets &editingTargets );
+
     public slots:
 
       void onConnectionsChanged();
       void onBubbleEditRequested(FabricUI::GraphView::NodeBubble * bubble);
     
-    protected slots:
-
-      void onInstBlockDoubleClicked(
-        FabricUI::GraphView::InstBlock *instBlock,
-        Qt::MouseButton button,
-        Qt::KeyboardModifiers modifiers
-        );
-
     signals:
 
       void selectionChanged(FabricUI::GraphView::Node *, bool);
@@ -222,7 +219,6 @@ namespace FabricUI
       void doubleClicked(FabricUI::GraphView::Node *, Qt::MouseButton, Qt::KeyboardModifiers);
       void bubbleEditRequested(FabricUI::GraphView::Node * nod);
       void geometryChanged();
-      void instBlockEditRequested( FabricUI::GraphView::InstBlock *instBlock );
 
     protected:
 

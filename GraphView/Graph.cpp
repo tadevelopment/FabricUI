@@ -150,10 +150,6 @@ Node * Graph::addNode(Node * node, bool quiet)
     SLOT(onNodeDoubleClicked(FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers))
     );
   QObject::connect(node, SIGNAL(bubbleEditRequested(FabricUI::GraphView::Node*)), this, SLOT(onBubbleEditRequested(FabricUI::GraphView::Node*)));
-  connect(
-    node, SIGNAL(instBlockEditRequested(FabricUI::GraphView::InstBlock *)),
-    this, SIGNAL(instBlockEditRequested(FabricUI::GraphView::InstBlock *))
-    );
 
   if(!quiet)
     emit nodeAdded(node);
