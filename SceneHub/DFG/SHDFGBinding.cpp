@@ -30,18 +30,12 @@ void SHDFGBinding::setCanvasOperator(RTVal &canvasOperator) {
     {
       RTVal dfgBindingVal = m_dfgCanvasOperator.callMethod("DFGBinding", "getDFGBinding", 0, 0);
       DFGBinding binding = dfgBindingVal.getDFGBinding();
-      DFGExec exec = binding.getExec();
-      // [pzion 20160630] FIXME: this may cause issues when using a prior 
-      // exec stack
-      m_controller->setBindingExec(binding, "", exec);
+      m_controller->getDFGWidget()->replaceBinding(binding);
     } 
     else 
     {
       // return to the standard binding
-      DFGExec exec = m_binding.getExec();
-      // [pzion 20160630] FIXME: this may cause issues when using a prior 
-      // exec stack
-      m_controller->setBindingExec(m_binding, "", exec);
+      m_controller->getDFGWidget()->replaceBinding(m_binding);
     }
   }
   catch(Exception e) 
