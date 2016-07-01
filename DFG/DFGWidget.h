@@ -394,7 +394,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_node( node )
       {
-        setText( "Edit node '" + m_node->name_QS() + "'" );
+        setText( "Edit node" );
         connect(
           this, SIGNAL(triggered()),
           this, SLOT(onTriggered())
@@ -431,8 +431,6 @@ namespace DFG {
       {
         setText(
             "Edit block '"
-          + m_instBlock->node()->name_QS()
-          + "."
           + m_instBlock->name_QS()
           + "'" );
         connect(
