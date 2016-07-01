@@ -376,7 +376,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
           result->addSeparator();
         }
 
-        QAction *editAction;
+        QAction *editAction = NULL;
         if ( editingTargets[i].first->type() == GraphView::QGraphicsItemType_Node )
           editAction = new EditNodeAction(
             dfgWidget,
