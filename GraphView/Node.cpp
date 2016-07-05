@@ -771,16 +771,18 @@ void Node::updateHighlighting( QPointF cp )
   if ( br.contains( cp ) )
   {
     bool someInstBlockHighlighted = false;
-    for ( size_t i = 0; i < m_instBlocks.size(); ++i )
+    for ( int i = int( m_instBlocks.size() ); i--; )
     {
       InstBlock *instBlock = m_instBlocks[i];
       bool oldIsHighlighted = instBlock->m_isHighlighted;
-      QPointF instBlockCursorPos =
-        instBlock->mapFromItem( this, cp );
-      QRectF instBlockBoundingRect = instBlock->boundingRect();
-      // qDebug() << "i:" << i << " cp:" << instBlockCursorPos << " br:" << instBlockBoundingRect;
+      QRectF instBlockBoundingRect(
+        mapFromItem( instBlock, instBlock->boundingRect().topLeft() ),
+        br.bottomRight()
+        );
+      // qDebug() << "i:" << i << " cp:" << cp << " br:" << instBlockBoundingRect;
       instBlock->m_isHighlighted =
-        instBlockBoundingRect.contains( instBlockCursorPos );
+          !someInstBlockHighlighted
+        && instBlockBoundingRect.contains( cp );
       if ( instBlock->m_isHighlighted != oldIsHighlighted )
         instBlock->update();
       if ( instBlock->m_isHighlighted )
