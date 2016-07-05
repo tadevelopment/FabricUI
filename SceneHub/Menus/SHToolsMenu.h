@@ -33,10 +33,12 @@ class SHToolsMenu : public Menus::BaseMenu {
     virtual void constructMenu();
 
 
-  protected slots:
+  public slots:
     void onConstructMenu();
 
     void onActiveTool();
+
+    void onActiveDispatcher();
 
 
   protected:
