@@ -679,7 +679,7 @@ class CanvasWindow(QtGui.QMainWindow):
         been emitted.
         """
 
-        self.dfgWidget.maybeEditNode(node)
+        self.dfgWidget.onNodeEditRequested(node)
 
     def onFrameChanged(self, frame):
         """Method called when the user has changed frames.
