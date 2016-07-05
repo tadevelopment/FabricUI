@@ -44,7 +44,7 @@ void ConnectionTarget::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
   if(circle)
   {
     setHighlighted(true);
-    return circle->hoverEnterEvent(event);
+    circle->onHoverEnter();
   }
 
   QGraphicsWidget::hoverEnterEvent(event);
@@ -56,9 +56,8 @@ void ConnectionTarget::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
   if(circle)
   {
     setHighlighted(false);
-    circle->hoverLeaveEvent(event);
+    circle->onHoverLeave();
     m_lastPinCircle = NULL;
-    return;
   }
   QGraphicsWidget::hoverLeaveEvent(event);
 }

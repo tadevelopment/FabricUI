@@ -47,10 +47,16 @@ namespace FabricUI
       virtual void setClipping(bool state);
       virtual void setDaisyChainCircleVisible(bool state);
 
+      void onHoverEnter();
+      void onHoverLeave();
+
+      virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
+
+    protected:
+
       virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
       virtual void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
       virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
-      virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
 
     private:
 

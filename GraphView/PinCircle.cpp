@@ -139,13 +139,16 @@ bool PinCircle::isOutputPortType() const
   return portType() == PortType_Output;
 }
 
-void PinCircle::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
+void PinCircle::onHoverEnter()
 {
   m_ellipse->setVisible(true);
 
   if(target()->targetType() != TargetType_NodeHeader)
     target()->setHighlighted(true);
+}
 
+void PinCircle::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
+{
   QGraphicsItem *gi = parentItem();
   while ( gi )
   {
@@ -170,13 +173,20 @@ void PinCircle::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
   }
   if ( gi )
     static_cast<Node *>( gi )->updateHighlightingFromChild( this, event->pos() );
+
+  QGraphicsWidget::hoverMoveEvent(event);
 }
 
-void PinCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
+void PinCircle::onHoverLeave()
 {
   m_ellipse->setVisible(m_shouldBeVisible);
   if(target()->targetType() != TargetType_NodeHeader)
     target()->setHighlighted(false);
+}
+
+void PinCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
+{
+  onHoverLeave();
 
   QGraphicsItem *gi = parentItem();
   while ( gi )

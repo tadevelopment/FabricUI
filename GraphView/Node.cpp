@@ -764,7 +764,7 @@ void Node::updateHighlighting( QPointF cp )
 {
   QRectF br = QGraphicsWidget::boundingRect();
 
-  qDebug() << "Node::updateHighlighting cp:" << cp << " br:" << br;
+  // qDebug() << "Node::updateHighlighting cp:" << cp << " br:" << br;
 
   bool oldIsHighlighted = m_isHighlighted;
 
