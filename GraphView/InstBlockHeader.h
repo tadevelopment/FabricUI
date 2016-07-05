@@ -67,6 +67,10 @@ public:
   virtual bool highlighted() const /*override*/;
   virtual void setHighlighted( bool state = true ) /*override*/;
 
+  virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
+  virtual void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
+  virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
+
 private:
 
   InstBlock *m_instBlock;

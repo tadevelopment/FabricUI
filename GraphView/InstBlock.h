@@ -23,6 +23,8 @@ class InstBlock : public QGraphicsWidget
 {
   Q_OBJECT
 
+  friend class Node;
+
   typedef std::vector<InstBlockPort *> InstBlockPortVec;
 
 public:
@@ -72,13 +74,8 @@ public:
   void onConnectionsChanged()
     { updateLayout(); }
 
-signals:
-
-  void doubleClicked(
-    FabricUI::GraphView::InstBlock *,
-    Qt::MouseButton,
-    Qt::KeyboardModifiers
-    );
+  bool isHighlighted() const
+    { return m_isHighlighted; }
 
 protected:
 
@@ -87,6 +84,9 @@ protected:
     QStyleOptionGraphicsItem const *option,
     QWidget *widget
     ) /*override*/;
+  virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
+  virtual void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
+  virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
 
 private:
 
@@ -96,6 +96,7 @@ private:
   InstBlockPortVec m_instBlockPorts;
   QGraphicsLinearLayout *m_layout;
   qreal m_pinRadius;
+  bool m_isHighlighted;
 };
 
 } // namespace GraphView

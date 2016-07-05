@@ -137,3 +137,18 @@ void InstBlockHeader::setCirclesVisible( bool visible )
   m_inCircle->setVisible( visible );
   m_outCircle->setVisible( visible );
 }
+
+void InstBlockHeader::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
+{
+  instBlock()->node()->updateHighlightingFromChild( this, event->pos() );
+}
+
+void InstBlockHeader::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
+{
+  instBlock()->node()->updateHighlightingFromChild( this, event->pos() );
+}
+
+void InstBlockHeader::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
+{
+  instBlock()->node()->updateHighlightingFromChild( this, event->pos() );
+}

@@ -21,6 +21,7 @@ InstBlock::InstBlock(
   )
   : m_node( node )
   , m_name( name )
+  , m_isHighlighted( false )
 {
   Graph const *graph = node->graph();
   GraphConfig const &config = graph->config();
@@ -44,6 +45,8 @@ InstBlock::InstBlock(
     QSizePolicy::MinimumExpanding
     ) );
   setLayout( m_layout );
+
+  setAcceptHoverEvents(true);
 }
 
 std::string InstBlock::path() const
@@ -97,28 +100,37 @@ void InstBlock::paint(
   QWidget *widget
   )
 {
-  QPen pen;
-  if ( m_node->selected() )
-    pen = m_node->selectedPen();
-  else
-    pen = m_node->defaultPen();
-  painter->setPen( pen );
-  
   QRectF rect = contentsRect();
   rect.adjust( m_pinRadius, 0, -m_pinRadius, 0 );
+
+  QPen headerPen;
+  if ( m_node->selected() )
+    headerPen = m_node->selectedPen();
+  else
+    headerPen = m_node->defaultPen();
 
   QRectF headerRect = rect;
   qreal headerHeight = m_instBlockHeader->boundingRect().height();
   headerRect.setBottom( headerHeight );
-  headerRect.adjust( 0, pen.width() * 0.5f, 0, pen.width() * 0.5f );
-  painter->setBrush( m_node->titleColor() );
-  painter->drawRect( headerRect );
+  headerRect.adjust( 0, headerPen.width() * 0.5f, 0, headerPen.width() * 0.5f );
 
-  // QRectF portsRect = rect;
-  // portsRect.setTop( headerRect.bottom() );
-  // painter->setPen( QPen() );
-  // painter->setBrush( m_node->color() );
-  // painter->drawRect( portsRect );
+  QRectF portsRect = rect;
+  portsRect.setTop( headerRect.bottom() );
+
+  painter->setPen( QPen() );
+  QBrush portsBrush;
+  if ( m_isHighlighted )
+    portsBrush = QBrush( m_node->color().lighter(110) );
+  else
+    portsBrush = QBrush( m_node->color() );
+  painter->fillRect( portsRect, portsBrush );
+
+  painter->setPen( headerPen );
+  if ( m_isHighlighted )
+    painter->setBrush( m_node->titleColor().lighter(120) );
+  else
+    painter->setBrush( m_node->titleColor() );
+  painter->drawRect( headerRect );
 
   QGraphicsWidget::paint(painter, option, widget);
 }
@@ -170,6 +182,21 @@ void InstBlock::updateLayout()
       instBlockPort->isConnectedAsSource()
       );
   }
+}
+
+void InstBlock::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
+{
+  node()->updateHighlightingFromChild( this, event->pos() );
+}
+
+void InstBlock::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
+{
+  node()->updateHighlightingFromChild( this, event->pos() );
+}
+
+void InstBlock::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
+{
+  node()->updateHighlightingFromChild( this, event->pos() );
 }
 
 } // namespace GraphView

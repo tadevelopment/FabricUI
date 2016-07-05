@@ -10,12 +10,13 @@
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/NodeRectangle.h>
 
+#include <QtCore/QDebug>
+#include <QtGui/QApplication>
+#include <QtGui/QGraphicsDropShadowEffect>
 #include <QtGui/QGraphicsLinearLayout>
 #include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QPainter>
 #include <QtGui/QLinearGradient>
-#include <QtGui/QGraphicsDropShadowEffect>
-#include <QtCore/QDebug>
+#include <QtGui/QPainter>
 
 #include <algorithm>
 
@@ -38,6 +39,7 @@ Node::Node(
   , m_header( NULL )
   , m_mainWidget( NULL )
   , m_canAddPorts( false )
+  , m_isHighlighted( false )
 {
   m_defaultPen = m_graph->config().nodeDefaultPen;
   m_selectedPen = m_graph->config().nodeSelectedPen;
@@ -752,12 +754,82 @@ bool Node::onMouseDoubleClicked(Qt::MouseButton button, Qt::KeyboardModifiers mo
   return false;
 }
 
+void Node::updateHighlightingFromChild( QGraphicsItem *child, QPointF cursorPos )
+{
+  updateHighlighting( mapFromItem( child, cursorPos ) );
+}
+
+void Node::updateHighlighting( QPointF cursorPos )
+{
+  bool oldIsHighlighted = m_isHighlighted;
+
+  if ( boundingRect().contains( cursorPos ) )
+  {
+    bool someInstBlockHighlighted = false;
+    for ( size_t i = 0; i < m_instBlocks.size(); ++i )
+    {
+      InstBlock *instBlock = m_instBlocks[i];
+      bool oldIsHighlighted = instBlock->m_isHighlighted;
+      QPointF instBlockCursorPos =
+        instBlock->mapFromItem( this, cursorPos );
+      QRectF instBlockBoundingRect = instBlock->boundingRect();
+      // qDebug() << "i:" << i << " cp:" << instBlockCursorPos << " br:" << instBlockBoundingRect;
+      instBlock->m_isHighlighted =
+        instBlockBoundingRect.contains( instBlockCursorPos );
+      if ( instBlock->m_isHighlighted != oldIsHighlighted )
+        instBlock->update();
+      if ( instBlock->m_isHighlighted )
+        someInstBlockHighlighted = true;
+    }
+
+    if ( !someInstBlockHighlighted
+      && !m_canAddPorts
+      && !m_instBlocks.empty() )
+    {
+      InstBlock *instBlock = m_instBlocks[0];
+      bool oldIsHighlighted = instBlock->m_isHighlighted;
+      instBlock->m_isHighlighted = true;
+      if ( instBlock->m_isHighlighted != oldIsHighlighted )
+        instBlock->update();
+
+      someInstBlockHighlighted = true;
+    }
+
+    m_isHighlighted =
+        m_nodeType == NodeType_Inst
+      // && ( QApplication::keyboardModifiers() & Qt::ShiftModifier )
+      && !someInstBlockHighlighted;
+  }
+  else
+  {
+    m_isHighlighted = false;
+    for ( size_t i = 0; i < m_instBlocks.size(); ++i )
+    {
+      InstBlock *instBlock = m_instBlocks[i];
+      bool oldIsHighlighted = instBlock->m_isHighlighted;
+      instBlock->m_isHighlighted = false;
+      if ( instBlock->m_isHighlighted != oldIsHighlighted )
+        instBlock->update();
+    }
+  }
+
+  if ( m_isHighlighted != oldIsHighlighted )
+    m_mainWidget->update();
+}
+
 void Node::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
+  updateHighlighting( event->pos() );
+}
+
+void Node::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
+{
+  updateHighlighting( event->pos() );
 }
 
 void Node::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
+  updateHighlighting( event->pos() );
 }
 
 QGraphicsWidget * Node::mainWidget()

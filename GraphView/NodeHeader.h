@@ -69,6 +69,10 @@ namespace FabricUI
       virtual bool nodeButtonsHighlighted() const { return m_nodeButtonsHighlighted; }
       virtual void setNodeButtonsHighlighted(bool value);
 
+      virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
+      virtual void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
+      virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
+
     signals:
 
       void headerButtonTriggered(FabricUI::GraphView::NodeHeaderButton * button);

@@ -166,6 +166,7 @@ namespace FabricUI
       virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
       virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
+      virtual void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
       virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
 
       virtual QRectF boundingRect() const;
@@ -208,6 +209,11 @@ namespace FabricUI
 
       void collectEditingTargets( EditingTargets &editingTargets );
 
+      bool isHighlighted() const
+        { return m_isHighlighted; }
+
+      void updateHighlightingFromChild( QGraphicsItem *child, QPointF cursorPos );
+
     public slots:
 
       void onConnectionsChanged();
@@ -226,6 +232,7 @@ namespace FabricUI
 
       void updateEffect();
       void updatePinLayout();
+      void updateHighlighting( QPointF cursorPos );
 
       // used by NodeHeader / NodeHeaderButton
       bool onMousePress(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
@@ -269,6 +276,7 @@ namespace FabricUI
       std::vector<InstBlock *> m_instBlocks;
 
       bool m_canAddPorts;
+      bool m_isHighlighted;
     };
 
 

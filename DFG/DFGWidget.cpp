@@ -2352,49 +2352,23 @@ void DFGWidget::onNodeEditRequested(FabricUI::GraphView::Node *node)
       != FabricCore::DFGNodeType_Inst )
       return;
 
-    GraphView::Node::EditingTargets editingTargets;
-    node->collectEditingTargets( editingTargets );
-
-    if ( editingTargets.size() == 1
-      || editingTargets[1].second > editingTargets[0].second )
+    if ( node->isHighlighted() )
     {
-      if ( editingTargets[0].first->type() == GraphView::QGraphicsItemType_Node )
-        maybeEditNode(
-          static_cast<GraphView::Node *>( editingTargets[0].first )
-          );
-      else if ( editingTargets[0].first->type() == GraphView::QGraphicsItemType_InstBlock )
-        maybeEditInstBlock(
-          static_cast<GraphView::InstBlock *>( editingTargets[0].first )
-          );
-      else assert( false );
+      maybeEditNode( node );
+      return;
     }
-    else
+
+    unsigned instBlockCount = node->instBlockCount();
+    for ( unsigned instBlockIndex = 0;
+      instBlockIndex < instBlockCount; ++instBlockIndex )
     {
-      QMenu menu;
-      int lastPriority = -1;
-      for ( size_t i = 0; i < editingTargets.size(); ++i )
+      FabricUI::GraphView::InstBlock *instBlock =
+        node->instBlockAtIndex( instBlockIndex );
+      if ( instBlock->isHighlighted() )
       {
-        int priority = editingTargets[i].second;
-        if ( lastPriority != -1 && priority != lastPriority )
-          menu.addSeparator();
-
-        if ( editingTargets[i].first->type() == GraphView::QGraphicsItemType_Node )
-          menu.addAction( new EditNodeAction(
-            this,
-            static_cast<GraphView::Node *>( editingTargets[i].first ),
-            &menu
-            ) );
-        else if ( editingTargets[i].first->type() == GraphView::QGraphicsItemType_InstBlock )
-          menu.addAction( new EditInstBlockAction(
-            this,
-            static_cast<GraphView::InstBlock *>( editingTargets[i].first ),
-            &menu
-            ) );
-        else assert( false );
-
-        lastPriority = priority;
+        maybeEditInstBlock( instBlock );
+        return;
       }
-      menu.exec( QCursor::pos() );
     }
   }
   catch(FabricCore::Exception e)

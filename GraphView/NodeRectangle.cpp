@@ -44,8 +44,16 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
 
   QLinearGradient gradient(0.5, 0.0, 0.5, 1.0);
   gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-  gradient.setColorAt(0.0, m_node->m_colorA);
-  gradient.setColorAt(1.0, m_node->m_colorB);
+  if ( m_node->isHighlighted() )
+  {
+    gradient.setColorAt(0.0, m_node->m_colorA.lighter(110));
+    gradient.setColorAt(1.0, m_node->m_colorB.lighter(110));
+  }
+  else
+  {
+    gradient.setColorAt(0.0, m_node->m_colorA);
+    gradient.setColorAt(1.0, m_node->m_colorB);
+  }
 
   painter->setBrush(gradient);
 
@@ -64,7 +72,10 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
   QRectF labelRect(rect.left(), rect.top(), rect.width(), m_node->m_header->size().height());
   painter->setClipPath(rounded_rect);
   painter->setClipRect(labelRect, Qt::IntersectClip);
-  painter->setBrush(m_node->m_titleColor);
+  if ( m_node->isHighlighted() )
+    painter->setBrush(m_node->m_titleColor.lighter(120));
+  else
+    painter->setBrush(m_node->m_titleColor);
   painter->fillPath(rounded_rect,painter->brush());     
 
   // remove the clipping

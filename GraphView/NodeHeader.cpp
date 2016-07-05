@@ -189,3 +189,18 @@ void NodeHeader::setNodeButtonsHighlighted(bool value)
   for(size_t i=0;i<m_buttons.size();i++)
     m_buttons[i]->setHighlighted(m_nodeButtonsHighlighted);
 }
+
+void NodeHeader::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
+{
+  node()->updateHighlightingFromChild( this, event->pos() );
+}
+
+void NodeHeader::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
+{
+  node()->updateHighlightingFromChild( this, event->pos() );
+}
+
+void NodeHeader::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
+{
+  node()->updateHighlightingFromChild( this, event->pos() );
+}
