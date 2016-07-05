@@ -83,8 +83,9 @@ void InstBlock::removeInstBlockPortAtIndex(
   unsigned index
   )
 {
-  m_layout->removeAt( 1 + index );
   InstBlockPort *instBlockPort = m_instBlockPorts[index];
+  node()->graph()->removeConnectionsForConnectionTarget( instBlockPort ); 
+  m_layout->removeAt( 1 + index );
   m_instBlockPorts.erase( m_instBlockPorts.begin() + index );
   instBlockPort->deleteLater();
   updateLayout();

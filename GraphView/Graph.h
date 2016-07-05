@@ -169,6 +169,8 @@ namespace FabricUI
       void setupBackgroundOverlay(QPointF pos, QString filePath);
       void setCentralOverlayText(QString text);
 
+      void removeConnectionsForConnectionTarget( ConnectionTarget *target );
+
     public slots:
 
       virtual bool pressHotkey(Qt::Key key, Qt::KeyboardModifier modifiers);

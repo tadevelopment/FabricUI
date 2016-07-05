@@ -181,6 +181,8 @@ namespace FabricUI
       virtual void reorderPins(QStringList names);
 
       void insertInstBlockAtIndex( unsigned index, InstBlock *instBlock );
+      unsigned instBlockCount() const
+        { return m_instBlocks.size(); }
       InstBlock *instBlockAtIndex( unsigned index ) const;
       void renameInstBlockAtIndex( unsigned index, FTL::StrRef newName );
       void removeInstBlockAtIndex( unsigned index );

@@ -233,33 +233,16 @@ bool Graph::removeNode(Node * node, bool quiet)
   if(it == m_nodeMap.end())
     return false;
 
-  controller()->beginInteraction();
+  for ( int i = int( node->instBlockCount() ); i--; )
+    node->removeInstBlockAtIndex( i );
 
-  for(int i=m_connections.size()-1;i>=0;i--)
+  for ( int i = int( node->pinCount() ); i--; )
   {
-    Connection * con = m_connections[i];
-    bool found = false;
-    for(int j=0;j<2;j++)
-    {
-      ConnectionTarget * target = j == 0 ? con->src() : con->dst();
-      if(target->targetType() == TargetType_Pin)
-      {
-        Pin * pin = (Pin *)target;
-        if(pin->node() == node)
-        {
-          found = true;
-          break;
-        }
-      }
-    }
-
-    if(found)
-    {
-      std::vector<Connection*> conns;
-      conns.push_back(con);
-      controller()->gvcDoRemoveConnections(conns);
-    }
+    Pin *pin = node->pin( i );
+    node->removePin( pin );
   }
+
+  controller()->beginInteraction();
 
   size_t index = it->second;
   m_nodes.erase(m_nodes.begin() + index);
@@ -914,4 +897,17 @@ Node *Graph::renameNode( FTL::StrRef oldName, FTL::StrRef newName )
     return node;
   }
   else return 0;
+}
+
+void Graph::removeConnectionsForConnectionTarget( ConnectionTarget *target )
+{
+  for ( int i = m_connections.size(); i--; )
+  {
+    Connection * con = m_connections[i];
+    if ( con->src() == target || con->dst() == target )
+    {
+      m_connections.erase( m_connections.begin() + i );
+      break;
+    }
+  }
 }

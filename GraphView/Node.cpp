@@ -317,6 +317,10 @@ void Node::removeInstBlockAtIndex( unsigned index )
 {
   assert( index < m_instBlocks.size() );
   InstBlock *instBlock = m_instBlocks[index];
+
+  for ( int i = int( instBlock->instBlockPortCount() ); i--; )
+    instBlock->removeInstBlockPortAtIndex( i );
+
   m_instBlocks.erase( m_instBlocks.begin() + index );
   updatePinLayout();
   scene()->removeItem( instBlock );
@@ -362,6 +366,8 @@ bool Node::removePin( Pin * pin )
   }
   if(index == m_pins.size())
     return false;
+
+  graph()->removeConnectionsForConnectionTarget( pin );
 
   m_pins.erase(m_pins.begin() + index);
   updatePinLayout();
