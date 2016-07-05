@@ -21,6 +21,7 @@
       <object-type name="ItemMetadata" copyable="false">
         <rejection field-name="VEPortTypeKey"/>
         <rejection field-name="VENotInspectableKey"/>
+        <rejection field-name="VEExpandedKey"/>
       </object-type>
       <object-type name="ViewItemMetadata" />
       <object-type name="NotInspectableViewItem" />
