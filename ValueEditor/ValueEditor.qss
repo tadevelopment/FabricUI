@@ -66,6 +66,15 @@ QWidget#ColorItem > QComboBox {
     margin-right: 0px;
 }
 
+QWidget#ColorItem > QComboBox::drop-down {
+    subcontrol-origin: margin;
+}
+
+QWidget#ColorItem QAbstractItemView {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
 QWidget > QComboBox {
     margin-left: 10px;
     margin-right: 10px;
