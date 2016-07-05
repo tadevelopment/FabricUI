@@ -25,7 +25,15 @@ namespace FabricUI
 
       virtual const char* getString( const char* key ) const /*override*/
       {
-        return ItemPortItemMetadata::getString( key );
+        char const *res = ItemPortItemMetadata::getString( key );
+        if ( !res || !res[0] )
+        {
+          // If we don't have a result, we check the same port on the execBlock
+          FabricCore::DFGExec exec = m_nodePortModelItem->getExec();
+          FTL::CStrRef portPath = m_nodePortModelItem->getPortPath();
+          res = exec.getPortModelMetadata( portPath.c_str(), key );
+        }
+        return res;
       }
     };
   }
