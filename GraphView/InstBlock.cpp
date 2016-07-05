@@ -100,24 +100,23 @@ void InstBlock::paint(
   QWidget *widget
   )
 {
-  QRectF rect = contentsRect();
-  rect.adjust( m_pinRadius, 0, -m_pinRadius, 0 );
-
   QPen headerPen;
   if ( m_node->selected() )
     headerPen = m_node->selectedPen();
   else
     headerPen = m_node->defaultPen();
 
+  QRectF rect = boundingRect();
+  rect.adjust( m_pinRadius, 0, -m_pinRadius, 0 );
+
   QRectF headerRect = rect;
   qreal headerHeight = m_instBlockHeader->boundingRect().height();
   headerRect.setBottom( headerHeight );
-  headerRect.adjust( 0, headerPen.width() * 0.5f, 0, headerPen.width() * 0.5f );
 
   QRectF portsRect = rect;
   portsRect.setTop( headerRect.bottom() );
+  portsRect.adjust( headerPen.width() * 0.5f, 0, -headerPen.width() * 0.5f, 0 );
 
-  painter->setPen( QPen() );
   QBrush portsBrush;
   if ( m_isHighlighted )
     portsBrush = QBrush( m_node->color().lighter(110) );
