@@ -115,54 +115,41 @@ FTL::CStrRef DFGUICmd_AddInstBlockPort::invoke(
 
     if ( pathToConnectNodePortType == FabricCore::DFGPortType_In )
     {
-      std::pair<FTL::StrRef, FTL::CStrRef> split = pathToConnect.rsplit('.');
-      std::string nodeToConnect = split.first;
-
-      if ( !nodeToConnect.empty()
-        && exec.getNodeType( nodeToConnect.c_str() )
-          == FabricCore::DFGNodeType_Inst )
+      FTL::CStrRef resolvedType =
+        exec.getPortResolvedType( pathToConnect.c_str() );
+      if ( !resolvedType.empty() )
       {
-        FTL::CStrRef nodePortToConnect = split.second;
-
-        FTL::CStrRef resolvedType =
-          exec.getNodePortResolvedType( pathToConnect.c_str() );
-        if ( !resolvedType.empty() )
-        {
-          FabricCore::RTVal defaultValue =
-            exec.getInstPortResolvedDefaultValue(
-              pathToConnect.c_str(),
-              resolvedType.c_str()
-              );
-          if ( defaultValue.isValid() )
-          {
-            exec.setPortDefaultValue( instBlockPortPath.c_str(), defaultValue, true );
-            ++coreUndoCount;
-          }
-        }
-
-        FabricCore::DFGExec nodeToConnectExec =
-          exec.getSubExec( nodeToConnect.c_str() );
-
-        char const *metadatasToCopy[5] =
-        {
-          "uiRange",
-          "uiCombo",
-          DFG_METADATA_UIPERSISTVALUE
-        };
-
-        for ( unsigned i = 0; i < 5; ++i )
-        {
-          instBlockExec.setExecPortMetadata(
-            portName.c_str(),
-            metadatasToCopy[i],
-            nodeToConnectExec.getExecPortMetadata(
-              nodePortToConnect.c_str(),
-              metadatasToCopy[i]
-              ),
-            true
+        FabricCore::RTVal defaultValue =
+          exec.getPortResolvedDefaultValue(
+            pathToConnect.c_str(),
+            resolvedType.c_str()
             );
+        if ( defaultValue.isValid() )
+        {
+          exec.setPortDefaultValue( instBlockPortPath.c_str(), defaultValue, true );
           ++coreUndoCount;
         }
+      }
+
+      char const *metadatasToCopy[5] =
+      {
+        "uiRange",
+        "uiCombo",
+        DFG_METADATA_UIPERSISTVALUE
+      };
+
+      for ( unsigned i = 0; i < 5; ++i )
+      {
+        instBlockExec.setExecPortMetadata(
+          portName.c_str(),
+          metadatasToCopy[i],
+          exec.getPortModelMetadata(
+            pathToConnect.c_str(),
+            metadatasToCopy[i]
+            ),
+          true
+          );
+        ++coreUndoCount;
       }
     }
 
