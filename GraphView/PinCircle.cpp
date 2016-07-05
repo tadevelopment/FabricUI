@@ -142,9 +142,34 @@ bool PinCircle::isOutputPortType() const
 void PinCircle::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
   m_ellipse->setVisible(true);
+
   if(target()->targetType() != TargetType_NodeHeader)
     target()->setHighlighted(true);
+
+  QGraphicsItem *gi = parentItem();
+  while ( gi )
+  {
+    if ( gi->type() == QGraphicsItemType_Node )
+      break;
+    gi = gi->parentItem();
+  }
+  if ( gi )
+    static_cast<Node *>( gi )->updateHighlightingFromChild( this, event->pos() );
+
   QGraphicsWidget::hoverEnterEvent(event);
+}
+
+void PinCircle::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
+{
+  QGraphicsItem *gi = parentItem();
+  while ( gi )
+  {
+    if ( gi->type() == QGraphicsItemType_Node )
+      break;
+    gi = gi->parentItem();
+  }
+  if ( gi )
+    static_cast<Node *>( gi )->updateHighlightingFromChild( this, event->pos() );
 }
 
 void PinCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
@@ -152,6 +177,17 @@ void PinCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
   m_ellipse->setVisible(m_shouldBeVisible);
   if(target()->targetType() != TargetType_NodeHeader)
     target()->setHighlighted(false);
+
+  QGraphicsItem *gi = parentItem();
+  while ( gi )
+  {
+    if ( gi->type() == QGraphicsItemType_Node )
+      break;
+    gi = gi->parentItem();
+  }
+  if ( gi )
+    static_cast<Node *>( gi )->updateHighlightingFromChild( this, event->pos() );
+
   QGraphicsWidget::hoverLeaveEvent(event);
 }
 

@@ -45,6 +45,7 @@ Node::Node(
   m_selectedPen = m_graph->config().nodeSelectedPen;
   m_errorPen = m_graph->config().nodeErrorPen;
   m_cornerRadius = m_graph->config().nodeCornerRadius;
+  m_pinRadius = m_graph->config().pinRadius;
   m_collapsedState = CollapseState_Expanded;
   m_col = 0;
   m_alwaysShowDaisyChainPorts = false;
@@ -754,16 +755,20 @@ bool Node::onMouseDoubleClicked(Qt::MouseButton button, Qt::KeyboardModifiers mo
   return false;
 }
 
-void Node::updateHighlightingFromChild( QGraphicsItem *child, QPointF cursorPos )
+void Node::updateHighlightingFromChild( QGraphicsItem *child, QPointF cp )
 {
-  updateHighlighting( mapFromItem( child, cursorPos ) );
+  updateHighlighting( mapFromItem( child, cp ) );
 }
 
-void Node::updateHighlighting( QPointF cursorPos )
+void Node::updateHighlighting( QPointF cp )
 {
+  QRectF br = QGraphicsWidget::boundingRect();
+
+  qDebug() << "Node::updateHighlighting cp:" << cp << " br:" << br;
+
   bool oldIsHighlighted = m_isHighlighted;
 
-  if ( boundingRect().contains( cursorPos ) )
+  if ( br.contains( cp ) )
   {
     bool someInstBlockHighlighted = false;
     for ( size_t i = 0; i < m_instBlocks.size(); ++i )
@@ -771,7 +776,7 @@ void Node::updateHighlighting( QPointF cursorPos )
       InstBlock *instBlock = m_instBlocks[i];
       bool oldIsHighlighted = instBlock->m_isHighlighted;
       QPointF instBlockCursorPos =
-        instBlock->mapFromItem( this, cursorPos );
+        instBlock->mapFromItem( this, cp );
       QRectF instBlockBoundingRect = instBlock->boundingRect();
       // qDebug() << "i:" << i << " cp:" << instBlockCursorPos << " br:" << instBlockBoundingRect;
       instBlock->m_isHighlighted =
@@ -912,15 +917,7 @@ void Node::updateEffect()
 
 QRectF Node::boundingRect() const
 {
-  QRectF rect = QGraphicsWidget::boundingRect();
-  
-  if ( !m_errorText.isEmpty() )
-    rect.adjust( 0, -4, 0, 4 );
-  // [pzion 20160225] Disable shadow for now
-  // else
-  //   rect.adjust( 0, 0, 0, 4 );
-
-  return rect;
+  return QGraphicsWidget::boundingRect().adjusted( 0, -4, 0, 4 );
 }
 
 void Node::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)

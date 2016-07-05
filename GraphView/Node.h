@@ -255,6 +255,7 @@ namespace FabricUI
       QPen m_selectedPen;
       QPen m_errorPen;
       float m_cornerRadius;
+      qreal m_pinRadius;
       QString m_errorText;
       CollapseState m_collapsedState;
 
