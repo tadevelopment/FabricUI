@@ -68,6 +68,10 @@ Connection::Connection(
       {
         color = ((Port*)target)->color();
       }
+      else if(target->targetType() == TargetType_InstBlockPort)
+      {
+        color = ((InstBlockPort*)target)->color();
+      }
     }
   }
   setColor(color);
