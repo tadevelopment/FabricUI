@@ -86,6 +86,8 @@ public:
 
   virtual bool selected() const /*override*/;
 
+  void setFontColor( QColor color );
+
   // accessed by controller
   InstBlockPort(
     InstBlock *instBlock,

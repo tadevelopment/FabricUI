@@ -441,3 +441,8 @@ bool InstBlockPort::selected() const
 {
   return node()->selected();
 }
+
+void InstBlockPort::setFontColor( QColor color )
+{
+  m_label->setColor( color, m_label->highlightColor() );
+}

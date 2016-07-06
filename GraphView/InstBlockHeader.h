@@ -44,6 +44,8 @@ public:
 
   void setColor( QColor color );
 
+  void setFontColor( QColor color );
+
   void setCirclesVisible(bool visible);
 
   // ConnectionTarget

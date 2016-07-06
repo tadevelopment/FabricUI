@@ -77,6 +77,8 @@ public:
   bool isHighlighted() const
     { return m_isHighlighted; }
 
+  void setFontColor( QColor col );
+
 protected:
 
   virtual void paint(

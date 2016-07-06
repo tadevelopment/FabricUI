@@ -5,8 +5,9 @@
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
 #include <FabricUI/GraphView/InstBlock.h>
-#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/InstBlockHeader.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
+#include <FabricUI/GraphView/NodeLabel.h>
 
 #include <QtCore/QDebug>
 #include <QtGui/QGraphicsLinearLayout>
@@ -62,6 +63,8 @@ void InstBlock::insertInstBlockPortAtIndex(
   InstBlockPort *instBlockPort
   )
 {
+  instBlockPort->setFontColor( node()->fontColor() );
+
   m_instBlockPorts.insert( m_instBlockPorts.begin() + index, instBlockPort );
   m_layout->insertItem( 1 + index, instBlockPort );
 
@@ -196,6 +199,17 @@ void InstBlock::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
 void InstBlock::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
   node()->updateHighlightingFromChild( this, event->pos() );
+}
+
+void InstBlock::setFontColor( QColor color )
+{
+  m_instBlockHeader->setFontColor( color );
+
+  for ( size_t i = 0; i < m_instBlockPorts.size(); ++i )
+  {
+    InstBlockPort *instBlockPort = m_instBlockPorts[i];
+    instBlockPort->setFontColor( color );
+  }
 }
 
 } // namespace GraphView

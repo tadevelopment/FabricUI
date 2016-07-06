@@ -152,3 +152,8 @@ void InstBlockHeader::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
   instBlock()->node()->updateHighlightingFromChild( this, event->pos() );
 }
+
+void InstBlockHeader::setFontColor( QColor color )
+{
+  m_nodeLabel->setColor( color, m_nodeLabel->highlightColor() );
+}

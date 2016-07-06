@@ -205,6 +205,12 @@ void Node::setFontColor(QColor col)
   {
     m_pins[i]->labelWidget()->setColor(m_fontColor, m_pins[i]->labelWidget()->highlightColor());
   }
+
+  for ( size_t i = 0; i < m_instBlocks.size(); ++i )
+  {
+    InstBlock *instBlock = m_instBlocks[i];
+    instBlock->setFontColor( col );
+  }
 }
 
 QString Node::comment() const
