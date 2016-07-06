@@ -52,15 +52,23 @@ InstBlockHeader::InstBlockHeader(
   layout->setAlignment(m_inCircle, Qt::AlignLeft | Qt::AlignVCenter);
 
   layout->addStretch(1);
+
   layout->addItem(m_nodeLabel);
   layout->setAlignment(m_nodeLabel, Qt::AlignHCenter | Qt::AlignVCenter);
 
   layout->addStretch(1);
 
-  m_outCircle = new PinCircle( this, PortType_Output, node->color() );
+  m_outCircle = new PinCircle(
+    this,
+    PortType_Output,
+    node->color(),
+    true, // interactiveConnectionsAllowed
+    true // invisible
+    );
   m_outCircle->setClipping(false);
   layout->addItem(m_outCircle);
   layout->setAlignment(m_outCircle, Qt::AlignRight | Qt::AlignVCenter);
+  m_outCircle->setEnabled( false );
 }
 
 void InstBlockHeader::setName( QString name )
@@ -135,7 +143,6 @@ void InstBlockHeader::setColor( QColor color )
 void InstBlockHeader::setCirclesVisible( bool visible )
 {
   m_inCircle->setVisible( visible );
-  m_outCircle->setVisible( visible );
 }
 
 void InstBlockHeader::hoverEnterEvent(QGraphicsSceneHoverEvent * event)

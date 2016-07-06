@@ -24,7 +24,13 @@ namespace FabricUI
 
     public:
 
-      PinCircle(ConnectionTarget * parent, PortType portType, QColor color, bool interactiveConnectionsAllowed = true);
+      PinCircle(
+        ConnectionTarget *parent,
+        PortType portType,
+        QColor color,
+        bool interactiveConnectionsAllowed = true,
+        bool invisible = false
+        );
       virtual ~PinCircle() {}
 
       virtual int type() const { return QGraphicsItemType_PinCircle; }
@@ -70,6 +76,7 @@ namespace FabricUI
       QGraphicsEllipseItem * m_ellipse;
       bool m_interactiveConnectionsAllowed;
       bool m_shouldBeVisible;
+      bool m_invisible;
     };
 
   };

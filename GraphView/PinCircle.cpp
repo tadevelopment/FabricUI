@@ -12,8 +12,15 @@
 
 using namespace FabricUI::GraphView;
 
-PinCircle::PinCircle(ConnectionTarget * parent, PortType portType, QColor color, bool interactiveConnectionsAllowed)
-: QGraphicsWidget(parent)
+PinCircle::PinCircle(
+  ConnectionTarget *parent,
+  PortType portType,
+  QColor color,
+  bool interactiveConnectionsAllowed,
+  bool invisible
+  )
+  : QGraphicsWidget( parent )
+  , m_invisible( invisible )
 {
   m_target = parent;
   m_portType = portType;
@@ -44,6 +51,8 @@ PinCircle::PinCircle(ConnectionTarget * parent, PortType portType, QColor color,
     m_ellipse->setStartAngle(90 * 16);
     m_ellipse->setSpanAngle(180 * 16);
   }
+
+  m_ellipse->setVisible( !m_invisible );
 
   setColor(color);
 }
@@ -141,7 +150,7 @@ bool PinCircle::isOutputPortType() const
 
 void PinCircle::onHoverEnter()
 {
-  m_ellipse->setVisible(true);
+  m_ellipse->setVisible( !m_invisible );
 
   if(target()->targetType() != TargetType_NodeHeader)
     target()->setHighlighted(true);
@@ -179,7 +188,7 @@ void PinCircle::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
 
 void PinCircle::onHoverLeave()
 {
-  m_ellipse->setVisible(m_shouldBeVisible);
+  m_ellipse->setVisible( !m_invisible && m_shouldBeVisible );
   if(target()->targetType() != TargetType_NodeHeader)
     target()->setHighlighted(false);
 }
@@ -278,6 +287,6 @@ void PinCircle::setClipping(bool state)
 
 void PinCircle::setDaisyChainCircleVisible(bool state)
 {
-  m_ellipse->setVisible( state );
+  m_ellipse->setVisible( !m_invisible && state );
   m_shouldBeVisible = state;
 }
