@@ -2294,11 +2294,13 @@ void DFGNotificationRouter::onInstExecEditWouldSplitFromPresetMayHaveChanged(
   {
     uiNode->setTitle( instName );
     uiNode->setTitleSuffixAsterisk();
+    uiNode->setCanAddPorts( true );
   }
   else
   {
     uiNode->setTitle( subExec.getTitle() );
     uiNode->removeTitleSuffix();
+    uiNode->setCanAddPorts( false );
   }
 }
 
