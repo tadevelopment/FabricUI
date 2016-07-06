@@ -20,10 +20,10 @@ EditorConfig::EditorConfig()
 
   codeCompletionFontSize = codeFontSize;
   codeCompletionFont = codeFont;
-  codeCompletionBackgroundColor = QColor(207, 222, 242, 180);
-  codeCompletionActiveBackgroundColor = QColor(143, 173, 215, 180);
-  codeCompletionFontColor = QColor(0, 0, 0, 180);
-  codeCompletionFontColorSuffix = QColor(80, 80, 80, 180);
+  codeCompletionBackgroundColor = QColor(236, 244, 249);
+  codeCompletionActiveBackgroundColor = QColor(92, 172, 248);
+  codeCompletionFontColor = QColor(0, 0, 0);
+  codeCompletionFontColorSuffix = QColor(80, 80, 80);
   codeCompletionMargins = 1;
   codeCompletionSpacing = 0;
 
