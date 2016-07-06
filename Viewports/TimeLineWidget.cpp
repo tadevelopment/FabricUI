@@ -53,6 +53,7 @@ TimeLineWidget::TimeLineWidget()
   layout()->addWidget(m_startSpinBox);
 
   m_frameSlider = new FrameSlider(this);
+  m_frameSlider->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed));
   m_frameSlider->setOrientation(Qt::Horizontal);
   m_frameSlider->setInvertedControls(false);
   m_frameSlider->setTickPosition(QSlider::TicksBelow);
@@ -162,15 +163,6 @@ TimeLineWidget::TimeLineWidget()
   m_simModeComBox->addItem("Simulation");
   m_simModeComBox->setItemData(1, "Evaluate all frames, also in betweens.\nReset the stepping on first frame.", Qt::ToolTipRole);
   layout()->addWidget(m_simModeComBox);
-
-  // [Julien] Fix FE-4596.
-  // The TimeLineWidget height is sometimes too small when displayed
-  // It might happen with 4K or retina display, should be fixe when using Qt5
-  // To fix it, we set the widget minimum size to 80.
-  QDesktopWidget desktop;
-  QRect mainScreenSize = desktop.availableGeometry(desktop.primaryScreen());
-  if(mainScreenSize.height() > 1560)
-    setMinimumHeight(80);
 
   // QLine * line = new QLine();
   // line->setOrientation(Qt::Vertical);

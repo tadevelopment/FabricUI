@@ -75,17 +75,20 @@ void CodeCompletionEntry::paintEvent(QPaintEvent * event)
   QPainter painter(this);
   
   painter.fillRect(event->rect(), m_active ? m_config.codeCompletionActiveBackgroundColor : m_config.codeCompletionBackgroundColor);
-  painter.setFont(m_config.codeCompletionFont);
 
   int margins = m_config.codeCompletionMargins;
   int height = int(m_metrics->lineSpacing() + margins - m_config.codeCompletionFontSize * 0.5);
   int offset = margins;
   
+  QFont boldCodeCompletion = m_config.codeCompletionFont;
+  boldCodeCompletion.setBold(true);
+  painter.setFont(boldCodeCompletion);
   painter.setPen(m_config.codeCompletionFontColor);
   painter.drawText(offset, height, m_prefix);
 
   offset += m_metrics->width(m_prefix);
 
+  painter.setFont(m_config.codeCompletionFont);
   painter.setPen(m_config.codeCompletionFontColorSuffix);
   painter.drawText(offset, height, m_suffix + m_desc);
 
