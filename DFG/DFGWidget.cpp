@@ -1229,7 +1229,8 @@ void DFGWidget::onExecPortAction(QAction * action)
         client,
         false,
         true, //canEditPortType
-        m_dfgConfig
+        m_dfgConfig,
+        true
         );
 
       dialog.setTitle(portName);
