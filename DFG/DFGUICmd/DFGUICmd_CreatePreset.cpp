@@ -43,6 +43,9 @@ QString DFGUICmd_CreatePreset::invoke(
   subExec.maybeSplitFromPreset();
   ++coreUndoCount;
 
+  exec.promoteInstBlockExecsToDefault( nodeName.c_str() );
+  ++coreUndoCount;
+
   subExec.setTitle( presetName.c_str() );
   ++coreUndoCount;
 
