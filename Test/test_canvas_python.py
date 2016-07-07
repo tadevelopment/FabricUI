@@ -45,3 +45,9 @@ def test_fe6338(canvas_win):
     canvas_win.dfguiCommandHandler.dfgDoSetArgValue(binding, 'not_exist',
             canvas_win.client.RT.types.UInt32(5))
     canvas_win.onNewGraph(skip_save=True)
+
+def test_fe7013(canvas_win):
+    path = os.environ['FABRIC_SCENE_GRAPH_DIR']
+    path = path + '/Native/FabricUI/Test/'
+    canvas_win.loadGraph(path + 'fe7013_PrimeNumbers.canvas')
+    canvas_win.loadGraph(path + 'fe7013_KochCurve.canvas')
