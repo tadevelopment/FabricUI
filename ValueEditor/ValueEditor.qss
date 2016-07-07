@@ -61,16 +61,30 @@ QWidget#StringItem > QPushButton {
     background-color: #2A2A2A;
 }
 
-QWidget#ColorItem > ComboBox {
+QWidget#ColorItem > QComboBox {
     margin-left: 0px;
     margin-right: 0px;
 }
 
-QWidget > ComboBox {
-    margin-left: 11px;
-    margin-right: 11px;
+QWidget#ColorItem > QComboBox::drop-down {
+    subcontrol-origin: margin;
 }
 
-QWidget > ComboBox::drop-down {
-    subcontrol-origin: margin;  
+QWidget#ColorItem QAbstractItemView {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+QWidget > QComboBox {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+QWidget > QComboBox::drop-down {
+    subcontrol-origin: margin;
+}
+
+QComboBox QAbstractItemView {
+    margin-left: 10px;
+    margin-right: 10px;
 }
