@@ -1123,7 +1123,7 @@ void DFGWidget::onExecPortAction(QAction * action)
       FabricCore::DFGExec &exec = m_uiController->getExec();
 
       bool canEditPortType = m_uiController->isViewingRootGraph();
-      DFGEditPortDialog dialog( this, client, false, canEditPortType, m_dfgConfig );
+      DFGEditPortDialog dialog( this, client, false, canEditPortType, m_dfgConfig, true );
 
       dialog.setTitle(portName);
       bool canEditDataType = m_uiController->isViewingRootGraph();
