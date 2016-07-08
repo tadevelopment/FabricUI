@@ -169,8 +169,9 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString oldPortName,
+    QString oldPortPath,
     QString desiredNewPortName,
+    FabricCore::DFGPortType portType,
     QString typeSpec,
     QString extDep,
     QString uiMetadata
@@ -180,7 +181,7 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString portName
+    QString portPath
     ) = 0;
 
   virtual void dfgDoMoveNodes(

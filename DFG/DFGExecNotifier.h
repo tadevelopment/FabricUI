@@ -72,18 +72,19 @@ signals:
 
   // The executable's ports
 
-  void portInserted(
+  void execPortInserted(
     unsigned portIndex,
-    FTL::CStrRef portName
+    FTL::CStrRef portName,
+    FTL::JSONObject const *portDesc
     );
 
-  void portRenamed(
+  void execPortRenamed(
     unsigned portIndex,
     FTL::CStrRef oldPortName,
     FTL::CStrRef newPortName
     );
 
-  void portRemoved(
+  void execPortRemoved(
     unsigned portIndex,
     FTL::CStrRef portName
     );
@@ -94,7 +95,14 @@ signals:
     FTL::CStrRef value
     );
 
-  void portTypeSpecChanged(
+  void execPortTypeChanged(
+    unsigned portIndex,
+    FTL::CStrRef portName,
+    FabricCore::DFGPortType newPortType
+    );
+
+  void execPortTypeSpecChanged(
+    unsigned portIndex,
     FTL::CStrRef portName,
     FTL::CStrRef newTypeSpec
     );
@@ -113,13 +121,8 @@ signals:
     FTL::CStrRef portName
     );
 
-  void portsReordered(
+  void execPortsReordered(
     FTL::ArrayRef<unsigned> newOrder
-    );
-
-  void portTypeChanged(
-    FTL::CStrRef portName,
-    FTL::CStrRef newPortType
     );
 
   // The executable's blocks
@@ -128,13 +131,16 @@ signals:
     FTL::CStrRef blockName
     );
 
-  void blockPortInserted(
+  void execBlockPortInserted(
     FTL::CStrRef blockName,
-    FTL::CStrRef portName
+    unsigned portIndex,
+    FTL::CStrRef portName,
+    FTL::JSONObject const *portDesc
     );
 
-  void blockPortRemoved(
+  void execBlockPortRemoved(
     FTL::CStrRef blockName,
+    unsigned portIndex,
     FTL::CStrRef portName
     );
 

@@ -18,6 +18,7 @@ public:
     FabricCore::DFGExec const &exec,
     QString oldPortName,
     QString desiredNewPortName,
+    FabricCore::DFGPortType portType,
     QString typeSpec,
     QString extDep,
     QString uiMetadata
@@ -29,6 +30,7 @@ public:
       )
     , m_oldPortName( oldPortName.trimmed() )
     , m_desiredNewPortName( desiredNewPortName.trimmed() )
+    , m_portType( portType )
     , m_typeSpec( typeSpec.trimmed() )
     , m_extDep( extDep.trimmed() )
     , m_uiMetadata( uiMetadata.trimmed() )
@@ -53,6 +55,7 @@ protected:
     FTL::CStrRef execPath,
     FTL::CStrRef oldPortName,
     FTL::CStrRef desiredNewPortName,
+    FabricCore::DFGPortType portType,
     FTL::CStrRef typeSpec,
     FTL::CStrRef extDep,
     FTL::CStrRef uiMetadata,
@@ -63,6 +66,7 @@ private:
 
   QString m_oldPortName;
   QString m_desiredNewPortName;
+  FabricCore::DFGPortType m_portType;
   QString m_typeSpec;
   QString m_extDep;
   QString m_uiMetadata;

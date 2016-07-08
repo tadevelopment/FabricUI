@@ -37,14 +37,18 @@
 
 #DFGExecHeaderWidget QLabel,
 #DFGExecHeaderWidget QPushButton,
-#DFGExecHeaderWidget QLineEdit
+#DFGPEWidget_Ports QPushButton,
+#DFGExecHeaderWidget QLineEdit,
+#DFGPEWidget_Ports QLineEdit
 {
   font: bold 12px "Lucida";
   color: #C7D2DA;
 }
 
 #DFGExecHeaderWidget QPushButton,
-#DFGExecHeaderWidget QLineEdit
+#DFGPEWidget_Ports QPushButton,
+#DFGExecHeaderWidget QLineEdit,
+#DFGPEWidget_Ports QLineEdit
 {
   height: 20px;
   border: none;
@@ -57,9 +61,33 @@
   background-color: #3c4450;
 }
 
-#DFGExecHeaderWidget QPushButton:hover {
+#DFGExecHeaderWidget QPushButton:hover
+{
   color: #eee;
   background-color: #525a66;
+}
+
+#DFGPEWidget_Ports QPushButton,
+#DFGPEWidget_Ports QLineEdit
+{
+  background-color: #272822;
+}
+
+#DFGPEWidget_Ports QPushButton:hover
+{
+  color: #eee;
+  background-color: #555849;
+}
+
+#DFGExecHeaderWidget QPushButton
+{
+  margin: 0px;
+  padding: 0px 4px;
+}
+
+#DFGPEWidget_Ports_AddPortContainer QPushButton
+{
+  padding: 2px 4px;
 }
 
 #DFGExecHeaderWidget #DFGBackButton
@@ -98,4 +126,85 @@
 #DFGExecHeaderWidget #DFGPresetSplitWidget #DFGPresetSplitButton
 {
   padding: 0px 4px 0px 4px;
+}
+
+#DFGPEWidget_Ports
+{
+  spacing: 0px;
+}
+
+#DFGPEWidget_Ports QTableWidget
+{
+  background-color: #2E2E2E;
+  border: none;
+}
+
+#DFGPEWidget_Ports #DFGPEWidget_Ports_AddPortContainer,
+#DFGPEWidget_Ports #DFGPEWidget_Ports_AddPortContainer QLabel
+{
+  background-color: #434343;
+  border: none;
+}
+
+#DFGPEWidget_Ports #DFGPEWidget_Ports_AddPortContainer
+{
+  margin: 0px;
+  padding: 3px 6px;
+}
+
+#DFGPEWidget_Ports QTableWidget::item
+{
+  border-top: 1px solid #434343;
+  padding: 2px 0px;
+}
+
+#DFGPEWidget_Ports QTableWidget::item:selected
+{
+  color: #2E2E2E;
+  background-color: #888888;
+}
+
+#DFGPEWidget_Ports QTableWidget QHeaderView::section
+{
+  background-color: #434343;
+  color: white;
+  padding: 2px 4px;
+  border: none;
+}
+
+#DFGPEWidget_Ports_ControlCell
+{
+  padding: 2px 4px;
+  spacing: 2px;
+}
+
+#DFGPEWidget_Ports_ControlCell QPushButton
+{
+  margin: 0px;
+}
+
+#DFGPEWidget_Exec QTabWidget::pane
+{
+  border: none;
+}
+
+#DFGPEWidget_Exec QTabBar::tab
+{
+  background-color: #2E2E2E;
+  color: white;
+  border-left: 1px solid #434343;
+  border-right: 1px solid #434343;
+  padding: 3px 6px;
+}
+
+#DFGPEWidget_Exec QTabBar::tab:selected,
+#DFGPEWidget_Exec QTabBar::tab:hover
+{
+  background-color: #434343;
+}
+
+#DFGPEWidget_Ports_AddPortContainer QLineEdit
+{
+  color: #cbcbcb;
+  background-color: #333;
 }

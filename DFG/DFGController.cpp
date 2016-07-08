@@ -1799,6 +1799,7 @@ QString DFGController::cmdCreatePreset(
 QString DFGController::cmdEditPort(
   QString oldPortName,
   QString desiredNewPortName,
+  FabricCore::DFGPortType portType,
   QString typeSpec,
   QString extDep,
   QString uiMetadata
@@ -1813,6 +1814,7 @@ QString DFGController::cmdEditPort(
     getExec(),
     oldPortName,
     desiredNewPortName,
+    portType,
     typeSpec,
     extDep,
     uiMetadata

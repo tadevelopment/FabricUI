@@ -128,6 +128,7 @@ dirs = [
   'DFG',
   'DFG/DFGUICmd',
   'DFG/Dialogs',
+  'DFG/PortEditor',
  
   'SceneHub',
   'SceneHub/TreeView',

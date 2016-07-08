@@ -1208,13 +1208,6 @@ void DFGNotificationRouter::onExecPortInserted(
       checkAndFixPanelPortOrder();  // [FE-5716]
     }
   }
-  else if(exec.getType() == FabricCore::DFGExecType_Func)
-  {
-    DFGKLEditorWidget * uiKlEditor = m_dfgController->getDFGWidget()->getKLEditor();
-    if(!uiKlEditor)
-      return;
-    uiKlEditor->onExecChanged();
-  }
 }
 
 void DFGNotificationRouter::onExecFixedPortInserted(
@@ -1286,10 +1279,6 @@ void DFGNotificationRouter::onExecFixedPortInserted(
       checkAndFixPanelPortOrder();  // [FE-5716]
     }
   }
-  else if(exec.getType() == FabricCore::DFGExecType_Func)
-  {
-    // FIXME
-  }
 }
 
 void DFGNotificationRouter::onExecPortRemoved(
@@ -1326,13 +1315,6 @@ void DFGNotificationRouter::onExecPortRemoved(
       uiOutPanel->removePort(uiOutPort);
     }
   }
-  else if(exec.getType() == FabricCore::DFGExecType_Func)
-  {
-    DFGKLEditorWidget * uiKlEditor = m_dfgController->getDFGWidget()->getKLEditor();
-    if(!uiKlEditor)
-      return;
-    uiKlEditor->onExecChanged();
-  }
 }
 
 void DFGNotificationRouter::onExecFixedPortRemoved(
@@ -1368,10 +1350,6 @@ void DFGNotificationRouter::onExecFixedPortRemoved(
     {
       uiOutPanel->removeFixedPort(uiOutFixedPort);
     }
-  }
-  else if(exec.getType() == FabricCore::DFGExecType_Func)
-  {
-    // FIXME
   }
 }
 
@@ -1934,14 +1912,6 @@ void DFGNotificationRouter::onExecPortTypeSpecChanged(
   FTL::CStrRef newTypeSpec
   )
 {
-  FabricCore::DFGExec &exec = m_dfgController->getExec();
-  if(exec.getType() == FabricCore::DFGExecType_Func)
-  {
-    DFGKLEditorWidget * uiKlEditor = m_dfgController->getDFGWidget()->getKLEditor();
-    if(!uiKlEditor)
-      return;
-    uiKlEditor->onExecChanged();
-  }
 }
 
 void DFGNotificationRouter::onNodePortResolvedTypeChanged(
@@ -1996,14 +1966,6 @@ void DFGNotificationRouter::onExecPortTypeChanged(
   FTL::CStrRef execPortType
   )
 {
-  FabricCore::DFGExec &exec = m_dfgController->getExec();
-  if(exec.getType() == FabricCore::DFGExecType_Func)
-  {
-    DFGKLEditorWidget * uiKlEditor = m_dfgController->getDFGWidget()->getKLEditor();
-    if(!uiKlEditor)
-      return;
-    uiKlEditor->onExecChanged();
-  }
 }
 
 void DFGNotificationRouter::onNodePortTypeChanged(

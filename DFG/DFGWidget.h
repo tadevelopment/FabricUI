@@ -87,6 +87,8 @@ namespace DFG {
       bool priorExecStackIsEmpty() const
         { return m_priorExecStack.empty(); }
 
+      void editExecPort( FTL::CStrRef execPortName );
+
     signals:
 
       void additionalMenuActionsRequested(QString, QMenu*, bool);

@@ -76,6 +76,17 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
   pathAndPresetFrame->setObjectName( "DFGPathAndPresetFrame" );
   pathAndPresetFrame->setLayout( pathAndPresetLayout );
 
+  m_reloadButton = new QPushButton( "Reload" );
+  connect(
+    m_reloadButton, SIGNAL(clicked()),
+    this, SIGNAL(reloadPressed())
+    );
+  m_saveButton = new QPushButton( "Save" );
+  connect(
+    m_saveButton, SIGNAL(clicked()),
+    this, SIGNAL(savePressed())
+    );
+
   m_reqExtLabel = new QLabel;
   m_reqExtLabel->setObjectName( "DFGRequiredExtensionsLabel" );
   m_reqExtLineEdit = new QLineEdit;
@@ -87,6 +98,8 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
 
   layout->addWidget( m_backButton );
   layout->addWidget( pathAndPresetFrame );
+  layout->addWidget( m_reloadButton );
+  layout->addWidget( m_saveButton );
   layout->addStretch( 1 );
   layout->addWidget( m_reqExtLabel );
   layout->addWidget( m_reqExtLineEdit );
@@ -166,6 +179,12 @@ void DFGExecHeaderWidget::refresh()
       presetNameText += QString::fromAscii( title.data(), title.size() );
       m_presetNameLabel->setText( presetNameText );
     }
+
+    bool isFunc = exec.getType() == FabricCore::DFGExecType_Func;
+    m_reloadButton->setVisible( isFunc );
+    m_saveButton->setVisible( isFunc );
+    m_reloadButton->setEnabled( !isPreset );
+    m_saveButton->setEnabled( !isPreset );
 
     FabricCore::String extDepsDesc = exec.getExtDeps();
     FTL::CStrRef extDepsDescCStr =

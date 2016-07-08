@@ -26,6 +26,7 @@ void DFGUICmd_EditPort::invoke( unsigned &coreUndoCount )
       getExecPath().toUtf8().constData(),
       m_oldPortName.toUtf8().constData(),
       m_desiredNewPortName.toUtf8().constData(),
+      m_portType,
       m_typeSpec.toUtf8().constData(),
       m_extDep.toUtf8().constData(),
       m_uiMetadata.toUtf8().constData(),
@@ -39,6 +40,7 @@ FTL::CStrRef DFGUICmd_EditPort::invoke(
   FTL::CStrRef execPath,
   FTL::CStrRef oldPortName,
   FTL::CStrRef desiredNewPortName,
+  FabricCore::DFGPortType portType,
   FTL::CStrRef typeSpec,
   FTL::CStrRef extDep,
   FTL::CStrRef uiMetadata,
@@ -67,9 +69,17 @@ FTL::CStrRef DFGUICmd_EditPort::invoke(
   else
     newPortName = oldPortName;
 
+  FabricCore::DFGPortType oldPortType =
+    exec.getExecPortType( newPortName.c_str() );
+  if ( portType != oldPortType )
+  {
+    exec.setExecPortType( newPortName.c_str(), portType );
+    ++coreUndoCount;
+  }
+
   // Only set type & value if the type is different (else we loose the value even if the type didn't change!)
-  FTL::CStrRef prevType = exec.getExecPortTypeSpec( newPortName.c_str() );
-  if ( !typeSpec.empty() && prevType != typeSpec )
+  FTL::CStrRef oldTypeSpec = exec.getExecPortTypeSpec( newPortName.c_str() );
+  if ( !typeSpec.empty() && oldTypeSpec != typeSpec )
   {
     exec.setExecPortTypeSpec(
       newPortName.c_str(),

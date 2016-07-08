@@ -50,6 +50,8 @@ namespace FabricUI
     signals:
 
       void goUpPressed();
+      void reloadPressed();
+      void savePressed();
 
     public slots:
 
@@ -76,6 +78,8 @@ namespace FabricUI
       QLabel *m_reqExtLabel;
       QLineEdit *m_reqExtLineEdit;
       QPushButton * m_backButton;
+      QPushButton * m_saveButton;
+      QPushButton * m_reloadButton;
       QColor m_backgroundColor;
       QPen m_pen;
       QWidget *m_presetSplitWidget;

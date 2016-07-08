@@ -223,6 +223,7 @@ namespace FabricUI
       QString cmdEditPort(
         QString oldPortName,
         QString desiredNewPortName,
+        FabricCore::DFGPortType portType,
         QString typeSpec,
         QString extDep,
         QString uiMetadata

@@ -129,6 +129,16 @@ void DFGExecNotifier::handle( FTL::CStrRef jsonStr )
   }
 }
 
+static FabricCore::DFGPortType PortTypeStrToDFGPortType( FTL::StrRef portTypeStr )
+{
+  if ( portTypeStr == FTL_STR("Out") )
+    return FabricCore::DFGPortType_Out;
+  else if ( portTypeStr == FTL_STR("IO") )
+    return FabricCore::DFGPortType_IO;
+  else
+    return FabricCore::DFGPortType_In;
+}
+
 void DFGExecNotifier::handler_instBlockInserted( FTL::JSONObject const *jsonObject )
 {
   FTL::CStrRef instName = jsonObject->getString( FTL_STR("instName") );
@@ -188,20 +198,26 @@ void DFGExecNotifier::handler_instBlockPortRemoved( FTL::JSONObject const *jsonO
 void DFGExecNotifier::handler_execBlockPortInserted( FTL::JSONObject const *jsonObject )
 {
   FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
-  FTL::CStrRef portName =
-    jsonObject->getObject(
-      FTL_STR("portDesc")
-      )->getString( FTL_STR("name") );
+  unsigned portIndex = jsonObject->getSInt32( FTL_STR("portIndex") );
+  FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
+  FTL::JSONObject const *portDesc =
+    jsonObject->getObject( FTL_STR("portDesc") );
 
-  emit blockPortInserted( blockName, portName );
+  emit execBlockPortInserted(
+    blockName,
+    portIndex,
+    portName,
+    portDesc
+    );
 }
 
 void DFGExecNotifier::handler_execBlockPortRemoved( FTL::JSONObject const *jsonObject )
 {
   FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+  unsigned portIndex = jsonObject->getSInt32( FTL_STR("portIndex") );
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
 
-  emit blockPortRemoved( blockName, portName );
+  emit execBlockPortRemoved( blockName, portIndex, portName );
 }
 
 void DFGExecNotifier::handler_execBlockInserted( FTL::JSONObject const *jsonObject )
@@ -299,8 +315,10 @@ void DFGExecNotifier::handler_execPortInserted( FTL::JSONObject const *jsonObjec
 {
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
   unsigned portIndex = unsigned( jsonObject->getSInt32( FTL_STR("portIndex") ) );
+  FTL::JSONObject const *portDesc =
+    jsonObject->getObject( FTL_STR("portDesc") );
 
-  emit portInserted( portIndex, portName );
+  emit execPortInserted( portIndex, portName, portDesc );
 }
 
 void DFGExecNotifier::handler_execPortRenamed( FTL::JSONObject const *jsonObject )
@@ -309,23 +327,24 @@ void DFGExecNotifier::handler_execPortRenamed( FTL::JSONObject const *jsonObject
   FTL::CStrRef oldPortName = jsonObject->getString( FTL_STR("oldPortName") );
   FTL::CStrRef newPortName = jsonObject->getString( FTL_STR("portName") );
 
-  emit portRenamed( portIndex, oldPortName, newPortName );
+  emit execPortRenamed( portIndex, oldPortName, newPortName );
 }
 
 void DFGExecNotifier::handler_execPortRemoved( FTL::JSONObject const *jsonObject )
 {
-  FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
   unsigned portIndex = unsigned( jsonObject->getSInt32( FTL_STR("portIndex") ) );
+  FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
 
-  emit portRemoved( portIndex, portName );
+  emit execPortRemoved( portIndex, portName );
 }
 
 void DFGExecNotifier::handler_execPortTypeSpecChanged( FTL::JSONObject const *jsonObject )
 {
+  unsigned portIndex = unsigned( jsonObject->getSInt32( FTL_STR("portIndex") ) );
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
   FTL::CStrRef newTypeSpec = jsonObject->getString( FTL_STR("newTypeSpec") );
 
-  emit portTypeSpecChanged( portName, newTypeSpec );
+  emit execPortTypeSpecChanged( portIndex, portName, newTypeSpec );
 }
 
 void DFGExecNotifier::handler_execPortsReordered( FTL::JSONObject const *jsonObject )
@@ -338,7 +357,7 @@ void DFGExecNotifier::handler_execPortsReordered( FTL::JSONObject const *jsonObj
   for ( size_t i = 0; i < newOrderSize; ++i )
     newOrderData[i] = unsigned( newOrderJSONArray->getSInt32( i ) );
 
-  emit portsReordered(
+  emit execPortsReordered(
     FTL::ArrayRef<unsigned>( newOrderData, newOrderSize )
     );
 }
@@ -568,10 +587,12 @@ void DFGExecNotifier::handler_nodePortTypeChanged( FTL::JSONObject const *jsonOb
 
 void DFGExecNotifier::handler_execPortTypeChanged( FTL::JSONObject const *jsonObject )
 {
+  unsigned portIndex = jsonObject->getSInt32( FTL_STR("portIndex") );
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
-  FTL::CStrRef newExecPortType = jsonObject->getString( FTL_STR("newExecPortType") );
+  FabricCore::DFGPortType newPortType = 
+    PortTypeStrToDFGPortType( jsonObject->getString( FTL_STR("newExecPortType") ) );
 
-  emit portTypeChanged( portName, newExecPortType );
+  emit execPortTypeChanged( portIndex, portName, newPortType );
 }
 
 void DFGExecNotifier::handler_instExecDidAttachPreset( FTL::JSONObject const *jsonObject )
