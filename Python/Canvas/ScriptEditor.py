@@ -323,7 +323,7 @@ class ScriptEditor(QtGui.QWidget):
 
     titleDataChanged = QtCore.Signal(str, bool)
 
-    def __init__(self, client, binding, qUndoStack, dfgLogWidget, settings, canvasWindow):
+    def __init__(self, client, binding, qUndoStack, dfgLogWidget, settings, canvasWindow, config):
         QtGui.QWidget.__init__(self)
 
         self.setObjectName('ScriptEditorWidget')
@@ -382,24 +382,19 @@ class ScriptEditor(QtGui.QWidget):
             "loadScript": self.loadScript,
             }
 
-        fixedFont = QtGui.QFont("Courier", 12)
-        # fixedFont.setFamily("Monospace")
-        # fixedFont.setStyleHint(QtGui.QFont.TypeWriter)
-        # fixedFont.setPointSize(14)
-
         self.dfgLogWidget = dfgLogWidget
 
         self.settings = settings
 
         self.log = LogWidget()
-        self.log.setFont(fixedFont)
+        self.log.setFont(config.fixedFont)
 
         self.filename = ""
 
         self.stdout = LogStdOut(self.log)
         self.stderr = LogStdErr(self.log)
 
-        self.cmd = self.CmdEditor(fixedFont)
+        self.cmd = self.CmdEditor(config.fixedFont)
         self.cmd.returnPressed.connect(self.execute)
         self.cmd.linesSelected.connect(self.onLinesSelected)
 
