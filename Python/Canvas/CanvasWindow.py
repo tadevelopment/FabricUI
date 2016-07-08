@@ -258,7 +258,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
 
         graph = self.mainBinding.getExec()
-        self.scriptEditor = ScriptEditor(self.client, self.mainBinding, self.qUndoStack, self.logWidget, self.settings, self)
+        self.scriptEditor = ScriptEditor(self.client, self.mainBinding, self.qUndoStack, self.logWidget, self.settings, self, self.config)
         self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
 
         astManager = KLASTManager(self.client)
