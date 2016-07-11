@@ -61,34 +61,34 @@ bool DFGPEModel_ExecPorts::computeIsReadOnly()
   return m_exec.editWouldSplitFromPreset();
 }
 
-int DFGPEModel_ExecPorts::getPortCount()
+int DFGPEModel_ExecPorts::getElementCount()
 {
   return m_exec.getExecPortCount();
 }
 
-QString DFGPEModel_ExecPorts::getPortName( int index )
+QString DFGPEModel_ExecPorts::getElementName( int index )
 {
   FTL::CStrRef result = m_exec.getExecPortName( index );
   return QString::fromUtf8( result.data(), result.size() );
 }
 
-FabricCore::DFGPortType DFGPEModel_ExecPorts::getPortType( int index )
+FabricCore::DFGPortType DFGPEModel_ExecPorts::getElementPortType( int index )
 {
   return m_exec.getExecPortType( index );
 }
 
-QString DFGPEModel_ExecPorts::getPortTypeSpec( int index )
+QString DFGPEModel_ExecPorts::getElementTypeSpec( int index )
 {
   FTL::CStrRef result = m_exec.getExecPortTypeSpec( index );
   return QString::fromUtf8( result.data(), result.size() );
 }
 
-bool DFGPEModel_ExecPorts::isPortReadOnlyImpl( int index )
+bool DFGPEModel_ExecPorts::isElementReadOnlyImpl( int index )
 {
   return m_exec.isDepsExecPort( index );
 }
 
-void DFGPEModel_ExecPorts::insertPort(
+void DFGPEModel_ExecPorts::insertElement(
   int index,
   QString desiredPortName,
   FabricCore::DFGPortType portType,
@@ -108,7 +108,7 @@ void DFGPEModel_ExecPorts::insertPort(
     );
 }
 
-void DFGPEModel_ExecPorts::inspectPort(
+void DFGPEModel_ExecPorts::inspectElement(
   int index,
   DFGWidget *dfgWidget
   )
@@ -116,12 +116,12 @@ void DFGPEModel_ExecPorts::inspectPort(
   dfgWidget->editExecPort( m_exec.getExecPortName( index ) );
 }
 
-void DFGPEModel_ExecPorts::renamePort(
+void DFGPEModel_ExecPorts::renameElement(
   int index,
   QString newPortName
   )
 {
-  QString oldPortName = getPortName( index );
+  QString oldPortName = getElementName( index );
 
   m_cmdHandler->dfgDoEditPort(
     m_binding,
@@ -129,19 +129,19 @@ void DFGPEModel_ExecPorts::renamePort(
     m_exec,
     oldPortName,
     newPortName,
-    getPortType( index ),
-    getPortTypeSpec( index ),
+    getElementPortType( index ),
+    getElementTypeSpec( index ),
     QString(), // extDep
     QString() // uiMetadata
     );
 }
 
-void DFGPEModel_ExecPorts::setPortType(
+void DFGPEModel_ExecPorts::setElementPortType(
   int index,
   FabricCore::DFGPortType portType
   )
 {
-  QString portName = getPortName( index );
+  QString portName = getElementName( index );
 
   m_cmdHandler->dfgDoEditPort(
     m_binding,
@@ -150,18 +150,18 @@ void DFGPEModel_ExecPorts::setPortType(
     portName,
     portName,
     portType,
-    getPortTypeSpec( index ),
+    getElementTypeSpec( index ),
     QString(), // extDep
     QString() // uiMetadata
     );
 }
 
-void DFGPEModel_ExecPorts::setPortTypeSpec(
+void DFGPEModel_ExecPorts::setElementTypeSpec(
   int index,
   QString newPortTypeSpec
   )
 {
-  QString portName = getPortName( index );
+  QString portName = getElementName( index );
 
   m_cmdHandler->dfgDoEditPort(
     m_binding,
@@ -169,14 +169,14 @@ void DFGPEModel_ExecPorts::setPortTypeSpec(
     m_exec,
     portName,
     portName,
-    getPortType( index ),
+    getElementPortType( index ),
     newPortTypeSpec,
     QString(), // extDep
     QString() // uiMetadata
     );
 }
 
-void DFGPEModel_ExecPorts::removePort(
+void DFGPEModel_ExecPorts::removeElement(
   int index
   )
 {
@@ -184,11 +184,11 @@ void DFGPEModel_ExecPorts::removePort(
     m_binding,
     m_execPathQS,
     m_exec,
-    getPortName( index )
+    getElementName( index )
     );
 }
 
-void DFGPEModel_ExecPorts::reorderPorts(
+void DFGPEModel_ExecPorts::reorderElements(
   QList<int> newIndices
   )
 {
@@ -222,7 +222,7 @@ void DFGPEModel_ExecPorts::onExecPortInserted(
   )
 {
   FTL::StrRef typeSpec = portDesc->getStringOrEmpty( FTL_STR("typeSpec") );
-  emit portInserted(
+  emit elementInserted(
     portIndex,
     QString::fromUtf8( portName.data(), portName.size() ),
     PortTypeStrToDFGPortType( portDesc->getStringOrEmpty( FTL_STR("outsidePortType") ) ),
@@ -236,7 +236,7 @@ void DFGPEModel_ExecPorts::onExecPortRenamed(
   FTL::CStrRef newPortName
   )
 {
-  emit portRenamed(
+  emit elementRenamed(
     portIndex,
     QString::fromUtf8( newPortName.data(), newPortName.size() )
     );
@@ -248,7 +248,7 @@ void DFGPEModel_ExecPorts::onExecPortTypeChanged(
   FabricCore::DFGPortType newPortType
   )
 {
-  emit portTypeChanged( portIndex, newPortType );
+  emit elementPortTypeChanged( portIndex, newPortType );
 }
 
 void DFGPEModel_ExecPorts::onExecPortTypeSpecChanged(
@@ -257,7 +257,7 @@ void DFGPEModel_ExecPorts::onExecPortTypeSpecChanged(
   FTL::CStrRef newPortTypeSpec
   )
 {
-  emit portTypeSpecChanged(
+  emit elementTypeSpecChanged(
     portIndex,
     QString::fromUtf8( newPortTypeSpec.data(), newPortTypeSpec.size() )
     );
@@ -268,7 +268,7 @@ void DFGPEModel_ExecPorts::onExecPortRemoved(
   FTL::CStrRef portName
   )
 {
-  emit portRemoved( portIndex );
+  emit elementRemoved( portIndex );
 }
 
 void DFGPEModel_ExecPorts::onExecPortsReordered(
@@ -278,7 +278,7 @@ void DFGPEModel_ExecPorts::onExecPortsReordered(
   QList<int> newIndices;
   for ( size_t i = 0; i < newOrder.size(); ++i )
     newIndices.push_back( newOrder[i] );
-  emit portsReordered( newIndices );
+  emit elementsReordered( newIndices );
 }
 
 } // namespace DFG

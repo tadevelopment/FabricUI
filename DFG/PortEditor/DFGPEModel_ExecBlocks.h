@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 //
 
-#ifndef _DFGPEModel_ExecBlockPorts_h
-#define _DFGPEModel_ExecBlockPorts_h
+#ifndef _DFGPEModel_ExecBlocks_h
+#define _DFGPEModel_ExecBlocks_h
 
 #include <FTL/StrRef.h>
 #include <FabricUI/DFG/PortEditor/DFGPEModel.h>
@@ -14,24 +14,23 @@ namespace DFG {
 
 class DFGUICmdHandler;
 
-class DFGPEModel_ExecBlockPorts : public DFGPEModel
+class DFGPEModel_ExecBlocks : public DFGPEModel
 {
   Q_OBJECT
-  
+
 public:
 
-  DFGPEModel_ExecBlockPorts(
+  DFGPEModel_ExecBlocks(
     DFGUICmdHandler *cmdHandler,
     FabricCore::DFGBinding binding,
     FTL::StrRef execPath,
     FabricCore::DFGExec exec,
-    QSharedPointer<DFG::DFGExecNotifier> execNotifier,
-    FTL::StrRef execBlockName
+    QSharedPointer<DFG::DFGExecNotifier> execNotifier
     );
 
   virtual bool canInspectElements() /*override*/ { return false; }
   virtual bool hasPortType() /*override*/ { return false; }
-  virtual bool hasTypeSpec() /*override*/ { return true; }
+  virtual bool hasTypeSpec() /*override*/ { return false; }
 
   virtual int getElementCount() /*override*/;
   virtual QString getElementName( int index ) /*override*/;
@@ -77,22 +76,24 @@ protected slots:
 
   void onEditWouldSplitFromPresetMayHaveChanged();
 
+  void onExecBlockInserted(
+    unsigned blockIndex,
+    FTL::CStrRef blockName
+    );
+
   void onExecBlockRenamed(
-    FTL::CStrRef oldExecBlockName,
-    FTL::CStrRef newExecBlockName
+    unsigned blockIndex,
+    FTL::CStrRef oldBlockName,
+    FTL::CStrRef newBlockName
     );
 
-  void onExecBlockPortInserted(
-    FTL::CStrRef blockName,
-    unsigned portIndex,
-    FTL::CStrRef portName,
-    FTL::JSONObject const *portDesc
+  void onExecBlockRemoved(
+    unsigned blockIndex,
+    FTL::CStrRef blockName
     );
 
-  void onExecBlockPortRemoved(
-    FTL::CStrRef blockName,
-    unsigned portIndex,
-    FTL::CStrRef portName
+  void onExecBlocksReordered(
+    FTL::ArrayRef<unsigned> newOrder
     );
 
 private:
@@ -102,11 +103,9 @@ private:
   QString m_execPathQS;
   FabricCore::DFGExec m_exec;
   QSharedPointer<DFG::DFGExecNotifier> m_notifier;
-  std::string m_execBlockName;
-  QString m_execBlockNameQS;
 };
 
 } // namespace DFG
 } // namespace FabricUI
 
-#endif // _DFGPEModel_ExecBlockPorts_h
+#endif // _DFGPEModel_ExecBlocks_h

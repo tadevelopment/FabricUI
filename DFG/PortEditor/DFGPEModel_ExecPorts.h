@@ -28,46 +28,48 @@ public:
     QSharedPointer<DFG::DFGExecNotifier> execNotifier
     );
 
-  virtual bool isPortTypeFixed() /*override*/ { return false; }
+  virtual bool canInspectElements() /*override*/ { return true; }
+  virtual bool hasPortType() /*override*/ { return true; }
+  virtual bool hasTypeSpec() /*override*/ { return true; }
 
-  virtual int getPortCount() /*override*/;
-  virtual QString getPortName( int index ) /*override*/;
-  virtual FabricCore::DFGPortType getPortType( int index ) /*override*/;
-  virtual QString getPortTypeSpec( int index ) /*override*/;
+  virtual int getElementCount() /*override*/;
+  virtual QString getElementName( int index ) /*override*/;
+  virtual FabricCore::DFGPortType getElementPortType( int index ) /*override*/;
+  virtual QString getElementTypeSpec( int index ) /*override*/;
 
-  virtual void insertPort(
+  virtual void insertElement(
     int index,
     QString desiredName,
     FabricCore::DFGPortType type,
     QString typeSpec
     ) /*override*/;
-  virtual void inspectPort(
+  virtual void inspectElement(
     int index,
     DFGWidget *dfgWidget
     ) /*override*/;
-  virtual void renamePort(
+  virtual void renameElement(
     int index,
     QString newName
     ) /*override*/;
-  virtual void setPortType(
+  virtual void setElementPortType(
     int index,
     FabricCore::DFGPortType type
     ) /*override*/;
-  virtual void setPortTypeSpec(
+  virtual void setElementTypeSpec(
     int index,
     QString newTypeSpec
     ) /*override*/;
-  virtual void removePort(
+  virtual void removeElement(
     int index
     ) /*override*/;
 
-  virtual void reorderPorts(
+  virtual void reorderElements(
     QList<int> newIndices
     ) /*override*/;
 
 protected:
 
-  virtual bool isPortReadOnlyImpl( int index ) /*override*/;
+  virtual bool isElementReadOnlyImpl( int index ) /*override*/;
   virtual bool computeIsReadOnly() /*override*/;
 
 protected slots:

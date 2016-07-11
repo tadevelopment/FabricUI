@@ -21,7 +21,9 @@ class DFGPEModel : public QObject
 
 public:
 
-  virtual bool isPortTypeFixed() = 0;
+  virtual bool canInspectElements() = 0;
+  virtual bool hasPortType() = 0;
+  virtual bool hasTypeSpec() = 0;
   bool isReadOnly() { return m_isReadOnly; }
 
   QString getElementDesc() const
@@ -29,44 +31,44 @@ public:
   QString getElementDescCapitalized() const
     { return m_elementDescCapitalized; }
 
-  virtual int getPortCount() = 0;
-  virtual QString getPortName( int index ) = 0;
-  virtual FabricCore::DFGPortType getPortType( int index ) = 0;
-  virtual QString getPortTypeSpec( int index ) = 0;
-  bool isPortReadOnly( int index )
-    { return isReadOnly() || isPortReadOnlyImpl( index ); }
+  virtual int getElementCount() = 0;
+  virtual QString getElementName( int index ) = 0;
+  virtual FabricCore::DFGPortType getElementPortType( int index ) = 0;
+  virtual QString getElementTypeSpec( int index ) = 0;
+  bool isElementReadOnly( int index )
+    { return isReadOnly() || isElementReadOnlyImpl( index ); }
 
-  virtual void insertPort(
+  virtual void insertElement(
     int index,
     QString desiredName,
     FabricCore::DFGPortType type,
     QString typeSpec
     ) = 0;
-  virtual void inspectPort(
+  virtual void inspectElement(
     int index,
     DFGWidget *dfgWidget
     ) = 0;
-  virtual void renamePort(
+  virtual void renameElement(
     int index,
     QString newName
     ) = 0;
-  virtual void setPortType(
+  virtual void setElementPortType(
     int index,
     FabricCore::DFGPortType type
     ) = 0;
-  virtual void setPortTypeSpec(
+  virtual void setElementTypeSpec(
     int index,
     QString newTypeSpec
     ) = 0;
-  virtual void removePort(
+  virtual void removeElement(
     int index
     ) = 0;
 
-  virtual void reorderPorts(
+  virtual void reorderElements(
     QList<int> newIndices
     ) = 0;
 
-  void reorderPortsEventually( QList<int> newIndices );
+  void reorderElementsEventually( QList<int> newIndices );
 
 signals:
   
@@ -74,29 +76,29 @@ signals:
     bool newIsReadOnly
     );
   
-  void portInserted(
+  void elementInserted(
     int index,
     QString name,
     FabricCore::DFGPortType type,
     QString typeSpec
     );
-  void portRenamed(
+  void elementRenamed(
     int index,
     QString newName
     );
-  void portTypeChanged(
+  void elementPortTypeChanged(
     int index,
     FabricCore::DFGPortType type
     );
-  void portTypeSpecChanged(
+  void elementTypeSpecChanged(
     int index,
     QString newTypeSpec
     );
-  void portRemoved(
+  void elementRemoved(
     int index
     );
 
-  void portsReordered(
+  void elementsReordered(
     QList<int> newIndices
     );
 
@@ -112,7 +114,7 @@ protected:
     m_isReadOnly = computeIsReadOnly();
   }
 
-  virtual bool isPortReadOnlyImpl( int index ) = 0;
+  virtual bool isElementReadOnlyImpl( int index ) = 0;
   virtual bool computeIsReadOnly() = 0;
 
   void updateIsReadOnly()

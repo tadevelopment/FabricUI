@@ -45,7 +45,9 @@ public:
 
 protected slots:
 
-  void onAddBlockButtonClicked();
+  void onExecBlockAddedThroughUI(
+    int newExecBlockIndex
+    );
 
   void onExecBlockInserted(
     unsigned blockIndex,
@@ -67,8 +69,6 @@ private:
   QSharedPointer<DFG::DFGExecNotifier> m_execNotifier;
   QIcon m_plusIcon;
   QTabWidget *m_tabWidget;
-  QLineEdit *m_addBlockLineEdit;
-  QPushButton *m_addBlockButton;
   QVBoxLayout *m_layout;
 };
 

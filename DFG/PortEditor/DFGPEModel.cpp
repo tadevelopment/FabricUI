@@ -16,7 +16,7 @@ DFGPEModel::DFGPEModel(
 {
 }
 
-void DFGPEModel::reorderPortsEventually(
+void DFGPEModel::reorderElementsEventually(
   QList<int> newIndices
   )
 {
@@ -41,7 +41,7 @@ DFGPEModel_ReorderPortsEventallyTimer::DFGPEModel_ReorderPortsEventallyTimer(
 
 void DFGPEModel_ReorderPortsEventallyTimer::onTimeout()
 {
-  m_model->reorderPorts( m_newIndices );
+  m_model->reorderElements( m_newIndices );
 }
 
 } // namespace DFG

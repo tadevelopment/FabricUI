@@ -2,12 +2,13 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 //
 
-#include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
-#include <FabricUI/DFG/PortEditor/DFGPEModel_ExecPorts.h>
+#include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/PortEditor/DFGPEModel_ExecBlockPorts.h>
-#include <FabricUI/DFG/PortEditor/DFGPEWidget_Exec.h>
+#include <FabricUI/DFG/PortEditor/DFGPEModel_ExecBlocks.h>
+#include <FabricUI/DFG/PortEditor/DFGPEModel_ExecPorts.h>
 #include <FabricUI/DFG/PortEditor/DFGPEWidget_Elements.h>
+#include <FabricUI/DFG/PortEditor/DFGPEWidget_Exec.h>
 #include <FabricUI/Util/LoadPixmap.h>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
@@ -78,14 +79,31 @@ void DFGPEWidget_Exec::setExec(
       exec,
       m_execNotifier
       );
-
-  DFGPEWidget_Elements *funcPorts =
+  DFGPEWidget_Elements *execPortsWidget =
     new DFGPEWidget_Elements(
       m_dfgWidget,
       execPortsModel
       );
+  m_tabWidget->addTab( execPortsWidget, "Ports" );
 
-  m_tabWidget->addTab( funcPorts, "Function Ports" );
+  DFGPEModel *execBlocksModel =
+    new DFGPEModel_ExecBlocks(
+      m_dfgWidget->getDFGController()->getCmdHandler(),
+      binding,
+      execPath,
+      exec,
+      m_execNotifier
+      );
+  DFGPEWidget_Elements *execBlocksWidget =
+    new DFGPEWidget_Elements(
+      m_dfgWidget,
+      execBlocksModel
+      );
+  connect(
+    execBlocksWidget, SIGNAL(elementAddedThroughUI(int)),
+    this, SLOT(onExecBlockAddedThroughUI(int))
+    );
+  m_tabWidget->addTab( execBlocksWidget, "Blocks" );
 
   unsigned execBlockCount = exec.getExecBlockCount();
   for ( unsigned execBlockIndex = 0;
@@ -94,38 +112,13 @@ void DFGPEWidget_Exec::setExec(
     FTL::CStrRef execBlockName = exec.getExecBlockName( execBlockIndex );
     onExecBlockInserted( execBlockIndex, execBlockName );
   }
-
-  m_addBlockLineEdit = new QLineEdit;
-  m_addBlockButton = new QPushButton( m_plusIcon, "Add block" );
-  connect(
-    m_addBlockButton, SIGNAL(clicked()),
-    this, SLOT(onAddBlockButtonClicked())
-    );
-  QHBoxLayout *addBlockLayout = new QHBoxLayout;
-  addBlockLayout->setContentsMargins( 0, 0, 0, 0 );
-  addBlockLayout->addWidget( new QLabel("Block name:") );
-  addBlockLayout->addWidget( m_addBlockLineEdit );
-  addBlockLayout->addWidget( m_addBlockButton );
-  QFrame *addBlockContainer = new QFrame;
-  addBlockContainer->setObjectName( "DFGAddBlockContainer" );
-  addBlockContainer->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
-  addBlockContainer->setLayout( addBlockLayout );
-  m_tabWidget->addTab( addBlockContainer, "Add Block" );
 }
 
-void DFGPEWidget_Exec::onAddBlockButtonClicked()
+void DFGPEWidget_Exec::onExecBlockAddedThroughUI(
+  int newExecBlockIndex
+  )
 {
-  int execBlockIndex = m_exec.getExecBlockCount();
-  DFGUICmdHandler *cmdHandler =
-    m_dfgWidget->getDFGController()->getCmdHandler();
-  cmdHandler->dfgDoAddBlock(
-    m_binding,
-    m_execPathQS,
-    m_exec,
-    m_addBlockLineEdit->text(),
-    QPointF( 0, 0 )
-    );
-  m_tabWidget->setCurrentIndex( 1 + execBlockIndex );
+  m_tabWidget->setCurrentIndex( 2 + newExecBlockIndex );
 }
 
 void DFGPEWidget_Exec::onExecBlockInserted(
@@ -153,7 +146,7 @@ void DFGPEWidget_Exec::onExecBlockInserted(
       execBlockPortsModel
       );
 
-  m_tabWidget->insertTab( 1 + blockIndex, execBlockPorts, desc );
+  m_tabWidget->insertTab( 2 + blockIndex, execBlockPorts, desc );
 }
 
 void DFGPEWidget_Exec::onExecBlockRemoved(

@@ -40,6 +40,10 @@ public:
   QStringList portTypeLabels() const
     { return m_portTypeLabels; }
 
+signals:
+  
+  void elementAddedThroughUI( int newElementIndex );
+
 protected:
 
   class IgnoreCellChangedBracket
@@ -107,7 +111,7 @@ protected slots:
     int row
     );
 
-  void onAddPortClicked();
+  void onAddElementClicked();
 
 private:
 
@@ -124,7 +128,9 @@ private:
   QIcon m_dotsIcon;
   QIcon m_minusIcon;
 
-  bool m_isPortTypeFixed;
+  bool m_canInspectElements;
+  bool m_hasPortType;
+  bool m_hasTypeSpec;
   int m_controlCol;
   int m_portNameCol;
   int m_portTypeCol;
@@ -132,11 +138,11 @@ private:
 
   QLayout *m_layout;
   QTableWidget *m_tableWidget;
-  QLineEdit *m_addPortName;
-  QComboBox *m_addPortType;
-  DFGRegisteredTypeLineEdit *m_addPortTypeSpec;
-  QPushButton *m_addPortButton;
-  QFrame *m_addPortContainer;
+  QLineEdit *m_addElementName;
+  QComboBox *m_addElementType;
+  DFGRegisteredTypeLineEdit *m_addElementTypeSpec;
+  QPushButton *m_addElementButton;
+  QFrame *m_addElementContainer;
 };
 
 class DFGPEWidget_Elements_TableWidget_ProxyStyle
@@ -191,7 +197,7 @@ public:
   DFGPEWidget_Elements_ControlCell(
     int row,
     QIcon iconOne,
-    QIcon iconTwo,
+    QIcon iconTwo = QIcon(),
     QWidget *parent = NULL
     );
 

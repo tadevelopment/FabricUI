@@ -51,14 +51,14 @@ bool DFGPEModel_ExecBlockPorts::computeIsReadOnly()
   return m_exec.editWouldSplitFromPreset();
 }
 
-int DFGPEModel_ExecBlockPorts::getPortCount()
+int DFGPEModel_ExecBlockPorts::getElementCount()
 {
   return m_exec.getItemPortCount(
     m_execBlockName.c_str()
     );
 }
 
-QString DFGPEModel_ExecBlockPorts::getPortName( int index )
+QString DFGPEModel_ExecBlockPorts::getElementName( int index )
 {
   FTL::CStrRef result = m_exec.getItemPortName(
     m_execBlockName.c_str(),
@@ -67,12 +67,12 @@ QString DFGPEModel_ExecBlockPorts::getPortName( int index )
   return QString::fromUtf8( result.data(), result.size() );
 }
 
-FabricCore::DFGPortType DFGPEModel_ExecBlockPorts::getPortType( int index )
+FabricCore::DFGPortType DFGPEModel_ExecBlockPorts::getElementPortType( int index )
 {
   return FabricCore::DFGPortType_In;
 }
 
-QString DFGPEModel_ExecBlockPorts::getPortTypeSpec( int index )
+QString DFGPEModel_ExecBlockPorts::getElementTypeSpec( int index )
 {
   FTL::CStrRef result = m_exec.getItemPortTypeSpec(
     m_execBlockName.c_str(),
@@ -81,7 +81,7 @@ QString DFGPEModel_ExecBlockPorts::getPortTypeSpec( int index )
   return QString::fromUtf8( result.data(), result.size() );
 }
 
-void DFGPEModel_ExecBlockPorts::insertPort(
+void DFGPEModel_ExecBlockPorts::insertElement(
   int index,
   QString desiredName,
   FabricCore::DFGPortType type,
@@ -103,7 +103,7 @@ void DFGPEModel_ExecBlockPorts::insertPort(
     );
 }
 
-void DFGPEModel_ExecBlockPorts::inspectPort(
+void DFGPEModel_ExecBlockPorts::inspectElement(
   int index,
   DFGWidget *dfgWidget
   )
@@ -111,14 +111,14 @@ void DFGPEModel_ExecBlockPorts::inspectPort(
   assert( false );
 }
 
-void DFGPEModel_ExecBlockPorts::renamePort(
+void DFGPEModel_ExecBlockPorts::renameElement(
   int index,
   QString newName
   )
 {
   QString oldPortPath = m_execBlockNameQS;
   oldPortPath += '.';
-  oldPortPath += getPortName( index );
+  oldPortPath += getElementName( index );
 
   m_cmdHandler->dfgDoEditPort(
     m_binding,
@@ -126,14 +126,14 @@ void DFGPEModel_ExecBlockPorts::renamePort(
     m_exec,
     oldPortPath,
     newName,
-    getPortType( index ),
-    getPortTypeSpec( index ),
+    getElementPortType( index ),
+    getElementTypeSpec( index ),
     QString(), // extDep
     QString() // uiMetadata
     );
 }
 
-void DFGPEModel_ExecBlockPorts::setPortType(
+void DFGPEModel_ExecBlockPorts::setElementPortType(
   int index,
   FabricCore::DFGPortType type
   )
@@ -141,12 +141,12 @@ void DFGPEModel_ExecBlockPorts::setPortType(
   assert( false );
 }
 
-void DFGPEModel_ExecBlockPorts::setPortTypeSpec(
+void DFGPEModel_ExecBlockPorts::setElementTypeSpec(
   int index,
   QString newTypeSpec
   )
 {
-  QString portName = getPortName( index );
+  QString portName = getElementName( index );
 
   QString portPath = m_execBlockNameQS;
   portPath += '.';
@@ -158,20 +158,20 @@ void DFGPEModel_ExecBlockPorts::setPortTypeSpec(
     m_exec,
     portPath,
     portName,
-    getPortType( index ),
+    getElementPortType( index ),
     newTypeSpec,
     QString(), // extDep
     QString() // uiMetadata
     );
 }
 
-void DFGPEModel_ExecBlockPorts::removePort(
+void DFGPEModel_ExecBlockPorts::removeElement(
   int index
   )
 {
   QString portPath = m_execBlockNameQS;
   portPath += '.';
-  portPath += getPortName( index );
+  portPath += getElementName( index );
 
   m_cmdHandler->dfgDoRemovePort(
     m_binding,
@@ -181,7 +181,7 @@ void DFGPEModel_ExecBlockPorts::removePort(
     );
 }
 
-void DFGPEModel_ExecBlockPorts::reorderPorts(
+void DFGPEModel_ExecBlockPorts::reorderElements(
   QList<int> newIndices
   )
 {
@@ -213,7 +213,7 @@ void DFGPEModel_ExecBlockPorts::onExecBlockPortInserted(
 {
   assert( blockName == m_execBlockName );
   FTL::StrRef typeSpec = portDesc->getStringOrEmpty( FTL_STR("typeSpec") );
-  emit portInserted(
+  emit elementInserted(
     portIndex,
     QString::fromUtf8( portName.data(), portName.size() ),
     FabricCore::DFGPortType_In,
@@ -228,10 +228,10 @@ void DFGPEModel_ExecBlockPorts::onExecBlockPortRemoved(
   )
 {
   assert( blockName == m_execBlockName );
-  emit portRemoved( portIndex );
+  emit elementRemoved( portIndex );
 }
 
-bool DFGPEModel_ExecBlockPorts::isPortReadOnlyImpl( int index )
+bool DFGPEModel_ExecBlockPorts::isElementReadOnlyImpl( int index )
 {
   return m_exec.isDepsExecBlockPort( m_execBlockName.c_str(), index );
 }
