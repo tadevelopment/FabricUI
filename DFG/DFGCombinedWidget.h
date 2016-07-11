@@ -66,7 +66,6 @@ namespace FabricUI
       virtual void onSelectCanvasNodeInDCC() = 0;
       virtual void onImportGraphInDCC() = 0;
       virtual void onExportGraphInDCC() = 0;
-      virtual void onHotkeyPressed(Qt::Key, Qt::KeyboardModifier, QString);
       virtual void onGraphSet(FabricUI::GraphView::Graph * graph);
       virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node);
       virtual void onNodeEditRequested(FabricUI::GraphView::Node * node);

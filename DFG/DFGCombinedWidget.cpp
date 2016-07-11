@@ -205,27 +205,6 @@ void DFGCombinedWidget::keyPressEvent(QKeyEvent * event)
   */
 }
 
-void DFGCombinedWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier modifiers, QString hotkey)
-{
-  if(hotkey == DFGHotkeys::TOGGLE_SIDE_PANEL)
-  {
-    QList<int> s = m_hSplitter->sizes();
-    if(s[0] != 0 || s[2] != 0)
-    {
-      s[1] += s[0] + s[2];
-      s[0] = 0;
-      s[2] = 0;
-    }
-    else
-    {
-      s[0] = (int)(float(s[1]) * 0.25f);
-      s[2] = s[0];
-      s[1] -= s[0] + s[2];
-    }
-    m_hSplitter->setSizes(s);
-  }
-}
-
 void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
 {
   if(graph != m_setGraph)
@@ -236,7 +215,6 @@ void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
     graph->defineHotkey(Qt::Key_F,          Qt::NoModifier,       DFGHotkeys::FRAME_SELECTED);
     graph->defineHotkey(Qt::Key_A,          Qt::NoModifier,       DFGHotkeys::FRAME_ALL);
     graph->defineHotkey(Qt::Key_Tab,        Qt::NoModifier,       DFGHotkeys::TAB_SEARCH);
-    graph->defineHotkey(Qt::Key_Tab,        Qt::ControlModifier,  DFGHotkeys::TOGGLE_SIDE_PANEL);
     graph->defineHotkey(Qt::Key_A,          Qt::ControlModifier,  DFGHotkeys::SELECT_ALL);
     graph->defineHotkey(Qt::Key_D,          Qt::NoModifier,       DFGHotkeys::DISCONNECT_ALL_PORTS);
     graph->defineHotkey(Qt::Key_C,          Qt::ControlModifier,  DFGHotkeys::COPY);
