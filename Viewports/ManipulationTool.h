@@ -42,7 +42,7 @@ namespace FabricUI
     {
     public:
       ManipulationTool(GLViewportWidget * glView);
-      virtual ~ManipulationTool() {}
+      virtual ~ManipulationTool();
 
       virtual void toolOnSetup();
       virtual void toolOffCleanup();
