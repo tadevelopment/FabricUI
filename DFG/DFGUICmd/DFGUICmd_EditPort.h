@@ -16,7 +16,7 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString oldPortName,
+    QString oldPortPath,
     QString desiredNewPortName,
     FabricCore::DFGPortType portType,
     QString typeSpec,
@@ -28,7 +28,7 @@ public:
       execPath,
       exec
       )
-    , m_oldPortName( oldPortName.trimmed() )
+    , m_oldPortPath( oldPortPath.trimmed() )
     , m_desiredNewPortName( desiredNewPortName.trimmed() )
     , m_portType( portType )
     , m_typeSpec( typeSpec.trimmed() )
@@ -53,7 +53,7 @@ protected:
 
   FTL::CStrRef invoke(
     FTL::CStrRef execPath,
-    FTL::CStrRef oldPortName,
+    FTL::CStrRef oldPortPath,
     FTL::CStrRef desiredNewPortName,
     FabricCore::DFGPortType portType,
     FTL::CStrRef typeSpec,
@@ -64,7 +64,7 @@ protected:
 
 private:
 
-  QString m_oldPortName;
+  QString m_oldPortPath;
   QString m_desiredNewPortName;
   FabricCore::DFGPortType m_portType;
   QString m_typeSpec;

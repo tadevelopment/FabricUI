@@ -98,6 +98,13 @@ protected slots:
     FTL::CStrRef newPortName
     );
 
+  void onExecBlockPortTypeSpecChanged(
+    FTL::CStrRef blockName,
+    unsigned portIndex,
+    FTL::CStrRef portName,
+    FTL::CStrRef newTypeSpec
+    );
+
   void onExecBlockPortRemoved(
     FTL::CStrRef blockName,
     unsigned portIndex,

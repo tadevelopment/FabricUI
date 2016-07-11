@@ -43,6 +43,10 @@ DFGPEModel_ExecBlockPorts::DFGPEModel_ExecBlockPorts(
     this, SLOT(onExecBlockPortRenamed(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef))
     );
   connect(
+    m_notifier.data(), SIGNAL(execBlockPortTypeSpecChanged(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef)),
+    this, SLOT(onExecBlockPortTypeSpecChanged(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef))
+    );
+  connect(
     m_notifier.data(), SIGNAL(execBlockPortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef)),
     this, SLOT(onExecBlockPortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef))
     );
@@ -248,6 +252,22 @@ void DFGPEModel_ExecBlockPorts::onExecBlockPortRenamed(
     emit elementRenamed(
       portIndex,
       QString::fromUtf8( newPortName.data(), newPortName.size() )
+      );
+  }
+}
+
+void DFGPEModel_ExecBlockPorts::onExecBlockPortTypeSpecChanged(
+  FTL::CStrRef blockName,
+  unsigned portIndex,
+  FTL::CStrRef portName,
+  FTL::CStrRef newTypeSpec
+  )
+{
+  if ( blockName == m_execBlockName )
+  {
+    emit elementTypeSpecChanged(
+      portIndex,
+      QString::fromUtf8( newTypeSpec.data(), newTypeSpec.size() )
       );
   }
 }

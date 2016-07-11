@@ -261,6 +261,14 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->getStringOrEmpty( FTL_STR("newTypeSpec") )
         );
     }
+    else if(descStr == FTL_STR("execBlockPortTypeSpecChanged"))
+    {
+      onExecBlockPortTypeSpecChanged(
+        jsonObject->getString( FTL_STR("blockName") ),
+        jsonObject->getString( FTL_STR("portName") ),
+        jsonObject->getStringOrEmpty( FTL_STR("newTypeSpec") )
+        );
+    }
     else if(descStr == FTL_STR("nodePortResolvedTypeChanged"))
     {
       onNodePortResolvedTypeChanged(
@@ -1941,7 +1949,15 @@ void DFGNotificationRouter::onInstBlockPortResolvedTypeChanged(
 }
 
 void DFGNotificationRouter::onExecPortTypeSpecChanged(
-  FTL::CStrRef portPath,
+  FTL::CStrRef portName,
+  FTL::CStrRef newTypeSpec
+  )
+{
+}
+
+void DFGNotificationRouter::onExecBlockPortTypeSpecChanged(
+  FTL::CStrRef blockName,
+  FTL::CStrRef portName,
   FTL::CStrRef newTypeSpec
   )
 {
