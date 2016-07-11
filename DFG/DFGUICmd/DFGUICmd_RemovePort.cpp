@@ -21,13 +21,13 @@ void DFGUICmd_RemovePort::invoke( unsigned &coreUndoCount )
 }
 
 void DFGUICmd_RemovePort::invoke(
-  FTL::CStrRef portName,
+  FTL::CStrRef portPath,
   unsigned &coreUndoCount
   )
 {
   FabricCore::DFGExec &exec = getExec();
 
-  exec.removeExecPort( portName.c_str() );
+  exec.removePort( portPath.c_str() );
   ++coreUndoCount;
 }
 

@@ -153,6 +153,7 @@ void DFGExecHeaderWidget::refresh()
 {
   FTL::CStrRef execPath = getExecPath();
   FabricCore::DFGExec &exec = getExec();
+  FTL::StrRef execBlockName = m_dfgController->getExecBlockName();
   if ( exec )
   {
     bool isRoot = execPath.empty();
@@ -167,7 +168,13 @@ void DFGExecHeaderWidget::refresh()
     if ( !isRoot )
     {
       QString pathLabelText( "Path: " );
-      pathLabelText += QString::fromAscii( execPath.data(), execPath.size() );
+      pathLabelText += QString::fromUtf8( execPath.data(), execPath.size() );
+      if ( !execBlockName.empty() )
+      {
+        if ( !execPath.empty() )
+          pathLabelText += '.';
+        pathLabelText += QString::fromUtf8( execBlockName.data(), execBlockName.size() );
+      }
       m_execPathLabel->setText( pathLabelText );
     }
 
@@ -180,9 +187,10 @@ void DFGExecHeaderWidget::refresh()
       m_presetNameLabel->setText( presetNameText );
     }
 
-    bool isFunc = exec.getType() == FabricCore::DFGExecType_Func;
-    m_reloadButton->setVisible( isFunc );
-    m_saveButton->setVisible( isFunc );
+    bool showFuncButtons = execBlockName.empty()
+      && exec.getType() == FabricCore::DFGExecType_Func;
+    m_reloadButton->setVisible( showFuncButtons );
+    m_saveButton->setVisible( showFuncButtons );
     m_reloadButton->setEnabled( !isPreset );
     m_saveButton->setEnabled( !isPreset );
 
@@ -190,7 +198,9 @@ void DFGExecHeaderWidget::refresh()
     FTL::CStrRef extDepsDescCStr =
       extDepsDesc.getCStr()? extDepsDesc.getCStr() : "";
     QString reqExtLabelText( "Required Extensions:" );
-    m_reqExtLineEdit->setVisible( !wouldSplitFromPreset );
+    m_reqExtLineEdit->setVisible(
+      execBlockName.empty() && !wouldSplitFromPreset
+      );
     if ( wouldSplitFromPreset )
     {
       reqExtLabelText += ' ';
@@ -198,6 +208,7 @@ void DFGExecHeaderWidget::refresh()
         QString::fromAscii( extDepsDescCStr.data(), extDepsDescCStr.size() );
     }
     else m_reqExtLineEdit->setText( extDepsDescCStr.c_str() );
+    m_reqExtLabel->setVisible( execBlockName.empty() );
     m_reqExtLabel->setText( reqExtLabelText );
 
     update();

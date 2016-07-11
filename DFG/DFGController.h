@@ -67,6 +67,8 @@ namespace FabricUI
         { return QString::fromUtf8( m_execPath.data(), m_execPath.size() ); }
       FabricCore::DFGExec &getExec()
         { return m_exec; }
+      FTL::CStrRef getExecBlockName()
+        { return m_execBlockName; }
 
       DFGUICmdHandler *getCmdHandler() const
         { return m_cmdHandler; }
@@ -75,16 +77,19 @@ namespace FabricUI
         FabricCore::DFGHost &host,
         FabricCore::DFGBinding &binding,
         FTL::StrRef execPath,
-        FabricCore::DFGExec &exec
+        FabricCore::DFGExec &exec,
+        FTL::StrRef execBlockName = FTL::StrRef()
         );
       void setBindingExec(
         FabricCore::DFGBinding &binding,
         FTL::StrRef execPath,
-        FabricCore::DFGExec &exec
+        FabricCore::DFGExec &exec,
+        FTL::StrRef execBlockName = FTL::StrRef()
         );
       void setExec(
         FTL::StrRef execPath,
-        FabricCore::DFGExec &exec
+        FabricCore::DFGExec &exec,
+        FTL::StrRef execBlockName = FTL::StrRef()
         );
       void refreshExec();
 
@@ -456,6 +461,7 @@ namespace FabricUI
       QSharedPointer<DFGBindingNotifier> m_bindingNotifier;
       std::string m_execPath;
       FabricCore::DFGExec m_exec;
+      std::string m_execBlockName;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGUICmdHandler *m_cmdHandler;
       DFGNotificationRouter * m_router;

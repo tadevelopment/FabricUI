@@ -25,6 +25,7 @@ namespace FabricUI {
 namespace DFG {
   
     class DFGErrorsWidget;
+    class DFGExecBlockEditorWidget;
     class DFGExecHeaderWidget;
     class DFGUICmdHandler;
 
@@ -148,7 +149,11 @@ namespace DFG {
       static QMenu* fixedPortContextMenuCallback(FabricUI::GraphView::FixedPort* fixedPort, void* userData);
       static QMenu* sidePanelContextMenuCallback(FabricUI::GraphView::SidePanel* panel, void* userData);
 
-      bool maybePushExec( FTL::StrRef nodeName, FabricCore::DFGExec &exec );
+      bool maybePushExec(
+        FTL::StrRef nodeName,
+        FabricCore::DFGExec &exec,
+        FTL::StrRef execBlockName = FTL::StrRef()
+        );
       bool maybePopExec( std::string &nodeName );
 
       bool checkForUnsaved();
@@ -165,6 +170,7 @@ namespace DFG {
       FTL::OwnedPtr<DFGController> m_uiController;
       DFGNotificationRouter * m_router;
       DFGKLEditorWidget * m_klEditor;
+      DFGExecBlockEditorWidget *m_execBlockEditorWidget;
       DFGTabSearchWidget * m_tabSearchWidget;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGConfig m_dfgConfig;

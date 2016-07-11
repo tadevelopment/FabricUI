@@ -4,6 +4,7 @@
 #include <FabricCore.h>
 #include <FabricUI/DFG/DFGActions.h>
 #include <FabricUI/DFG/DFGErrorsWidget.h>
+#include <FabricUI/DFG/DFGExecBlockEditorWidget.h>
 #include <FabricUI/DFG/DFGGraphViewWidget.h>
 #include <FabricUI/DFG/DFGHotkeys.h>
 #include <FabricUI/DFG/DFGMetaDataHelpers.h>
@@ -106,12 +107,19 @@ DFGWidget::DFGWidget(
       m_dfgConfig
       );
 
+  m_execBlockEditorWidget =
+    new DFGExecBlockEditorWidget(
+      this,
+      m_uiHeader
+      );
+
   QVBoxLayout *layout = new QVBoxLayout();
   layout->setSpacing( 0 );
   layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(m_uiHeader);
   layout->addWidget(m_uiGraphViewWidget);
   layout->addWidget(m_klEditor);
+  layout->addWidget(m_execBlockEditorWidget);
 
   QWidget *widget = new QWidget;
   widget->setSizePolicy(
@@ -1748,8 +1756,7 @@ bool DFGWidget::maybeEditNode(
   FabricUI::GraphView::Node * node
   )
 {
-  if ( node->isBackDropNode()
-    || node->isBlockNode() )
+  if ( node->isBackDropNode() )
     return false;
 
   try
@@ -1757,12 +1764,21 @@ bool DFGWidget::maybeEditNode(
     FTL::CStrRef nodeName = node->name();
 
     FabricCore::DFGExec &exec = m_uiController->getExec();
-    if ( exec.getNodeType( nodeName.c_str() )
-      != FabricCore::DFGNodeType_Inst )
-      return false;
+    if ( exec.isExecBlock( nodeName.c_str() ) )
+      return maybePushExec( nodeName, exec, nodeName );
+    else
+    {
+      switch ( exec.getNodeType( nodeName.c_str() ) )
+      {
+        case FabricCore::DFGNodeType_Inst:
+        {
+          FabricCore::DFGExec subExec = exec.getSubExec( nodeName.c_str() );
+          return maybePushExec( nodeName, subExec );
+        }
 
-    FabricCore::DFGExec subExec = exec.getSubExec( nodeName.c_str() );
-    return maybePushExec( node->name(), subExec );
+        default: break;
+      }
+    }
   }
   catch(FabricCore::Exception e)
   {
@@ -1822,7 +1838,8 @@ bool DFGWidget::checkForUnsaved()
 
 bool DFGWidget::maybePushExec(
   FTL::StrRef nodeName,
-  FabricCore::DFGExec &exec
+  FabricCore::DFGExec &exec,
+  FTL::StrRef execBlockName
   )
 {
   try
@@ -1839,7 +1856,8 @@ bool DFGWidget::maybePushExec(
     FabricCore::String execPath = exec.getExecPath();
     m_uiController->setExec(
       FTL::StrRef( execPath.getCStr(), execPath.getSize() ),
-      exec
+      exec,
+      execBlockName
       );
   }
   catch ( FabricCore::Exception e )
@@ -2235,7 +2253,12 @@ void DFGWidget::onExecChanged()
     m_uiGraph->setFixedPortContextMenuCallback( &fixedPortContextMenuCallback, this );
     m_uiGraph->setSidePanelContextMenuCallback( &sidePanelContextMenuCallback, this );
 
-    if(exec.getType() == FabricCore::DFGExecType_Graph)
+    if ( !m_uiController->getExecBlockName().empty() )
+    {
+      m_uiGraphViewWidget->hide();
+      m_errorsWidget->focusNone();
+    }
+    else if(exec.getType() == FabricCore::DFGExecType_Graph)
     {
       m_uiGraphViewWidget->show();
       m_uiGraphViewWidget->setFocus();
@@ -2344,35 +2367,41 @@ void DFGWidget::replaceBinding(
 
 void DFGWidget::onNodeEditRequested(FabricUI::GraphView::Node *node)
 {
-  if ( node->isBackDropNode()
-    || node->isBlockNode() )
-    return;
-
   try
   {
     FTL::CStrRef nodeName = node->name();
 
     FabricCore::DFGExec &exec = m_uiController->getExec();
-    if ( exec.getNodeType( nodeName.c_str() )
-      != FabricCore::DFGNodeType_Inst )
-      return;
-
-    if ( node->isHighlighted() )
-    {
+    if ( exec.isExecBlock( nodeName.c_str() ) )
       maybeEditNode( node );
-      return;
-    }
-
-    unsigned instBlockCount = node->instBlockCount();
-    for ( unsigned instBlockIndex = 0;
-      instBlockIndex < instBlockCount; ++instBlockIndex )
+    else
     {
-      FabricUI::GraphView::InstBlock *instBlock =
-        node->instBlockAtIndex( instBlockIndex );
-      if ( instBlock->isHighlighted() )
+      switch ( exec.getNodeType( nodeName.c_str() ) )
       {
-        maybeEditInstBlock( instBlock );
-        return;
+        case FabricCore::DFGNodeType_Inst:
+        {
+          if ( node->isHighlighted() )
+          {
+            maybeEditNode( node );
+            return;
+          }
+
+          unsigned instBlockCount = node->instBlockCount();
+          for ( unsigned instBlockIndex = 0;
+            instBlockIndex < instBlockCount; ++instBlockIndex )
+          {
+            FabricUI::GraphView::InstBlock *instBlock =
+              node->instBlockAtIndex( instBlockIndex );
+            if ( instBlock->isHighlighted() )
+            {
+              maybeEditInstBlock( instBlock );
+              return;
+            }
+          }
+        }
+        break;
+
+        default: break;
       }
     }
   }

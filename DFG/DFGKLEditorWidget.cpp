@@ -114,7 +114,8 @@ void DFGKLEditorWidget::onExecChanged()
   // inspect the KL code without having to split the preset.
   m_klEditor->sourceCodeWidget()->setReadOnly(!isEditable);
 
-  if ( exec.getType() == FabricCore::DFGExecType_Func )
+  if ( exec.getType() == FabricCore::DFGExecType_Func
+    && m_controller->getExecBlockName().empty() )
   {
     show();      
     m_klEditor->sourceCodeWidget()->setFocus();

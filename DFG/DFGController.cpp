@@ -80,12 +80,13 @@ void DFGController::setHostBindingExec(
   FabricCore::DFGHost &host,
   FabricCore::DFGBinding &binding,
   FTL::StrRef execPath,
-  FabricCore::DFGExec &exec
+  FabricCore::DFGExec &exec,
+  FTL::StrRef execBlockName
   )
 {
   m_host = host;
 
-  setBindingExec( binding, execPath, exec );
+  setBindingExec( binding, execPath, exec, execBlockName );
 
   emit hostChanged();
 }
@@ -93,7 +94,8 @@ void DFGController::setHostBindingExec(
 void DFGController::setBindingExec(
   FabricCore::DFGBinding &binding,
   FTL::StrRef execPath,
-  FabricCore::DFGExec &exec
+  FabricCore::DFGExec &exec,
+  FTL::StrRef execBlockName
   )
 {
   assert( m_dfgWidget->priorExecStackIsEmpty() );
@@ -163,7 +165,7 @@ void DFGController::setBindingExec(
       );
   }
 
-  setExec( execPath, exec );
+  setExec( execPath, exec, execBlockName );
 
   updateErrors();
 
@@ -173,11 +175,13 @@ void DFGController::setBindingExec(
 
 void DFGController::setExec(
   FTL::StrRef execPath,
-  FabricCore::DFGExec &exec
+  FabricCore::DFGExec &exec,
+  FTL::StrRef execBlockName
   )
 {
   m_execPath = execPath;
   m_exec = exec;
+  m_execBlockName = execBlockName;
 
   m_presetDictsUpToDate = false;
 
