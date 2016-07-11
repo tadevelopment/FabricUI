@@ -604,46 +604,11 @@ DFGPEWidget_Elements_TableWidget::DFGPEWidget_Elements_TableWidget(
   setSelectionBehavior( QAbstractItemView::SelectRows );
 }
 
-bool DFGPEWidget_Elements_TableWidget::isDragValid( QDropEvent *event )
+bool DFGPEWidget_Elements_TableWidget::isDragValid(
+  QDropEvent *event,
+  QList<int> &newIndices
+  )
 {
-  int rowCount = this->rowCount();
-
-  int targetRow = indexAt( event->pos() ).row();
-  if ( targetRow == -1 )
-    targetRow = rowCount;
-
-  for ( int row = targetRow; row < rowCount; ++row )
-    if ( m_model->isElementReadOnly( row ) )
-      return false;
-
-  return true;
-}
-
-void DFGPEWidget_Elements_TableWidget::dragEnterEvent( QDragEnterEvent *event )
-{
-  if ( !isDragValid( event ) )
-    return;
-
-  QTableWidget::dragEnterEvent( event );
-}
-
-void DFGPEWidget_Elements_TableWidget::dragMoveEvent( QDragMoveEvent *event )
-{
-  if ( !isDragValid( event ) )
-    return;
-  
-  QTableWidget::dragMoveEvent( event );
-}
-
-void DFGPEWidget_Elements_TableWidget::dropEvent( QDropEvent *event )
-{
-  if ( event->source() != this
-    || event->dropAction() != Qt::MoveAction )
-  {
-    event->ignore();
-    return;
-  }
-
   int rowCount = this->rowCount();
 
   QList<int> selectedRows;
@@ -657,17 +622,11 @@ void DFGPEWidget_Elements_TableWidget::dropEvent( QDropEvent *event )
     }
   }
   qSort( selectedRows );
-  if ( selectedRows.isEmpty() )
-  {
-    event->ignore();
-    return;
-  }
 
   int targetRow = indexAt( event->pos() ).row();
   if ( targetRow == -1 )
     targetRow = rowCount;
 
-  QList<int> newIndices;
   for ( int row = 0; row <= rowCount; ++row )
   {
     if ( row == targetRow )
@@ -678,7 +637,46 @@ void DFGPEWidget_Elements_TableWidget::dropEvent( QDropEvent *event )
       newIndices.push_back( row );
   }
 
-  m_model->reorderElementsEventually( newIndices );
+  bool someChanged = false;
+  for ( int row = 0; row < rowCount; ++row )
+    if ( newIndices[row] != row )
+    {
+      someChanged = true;
+      if ( m_model->isElementReadOnly( row ) )
+        return false;
+    }
+
+  return someChanged;
+}
+
+void DFGPEWidget_Elements_TableWidget::dragEnterEvent( QDragEnterEvent *event )
+{
+  QTableWidget::dragEnterEvent( event );
+  QList<int> newIndices;
+  event->setDropAction( isDragValid( event, newIndices )? Qt::MoveAction: Qt::IgnoreAction );
+  event->accept();
+}
+
+void DFGPEWidget_Elements_TableWidget::dragMoveEvent( QDragMoveEvent *event )
+{
+  QTableWidget::dragMoveEvent( event );
+  QList<int> newIndices;
+  event->setDropAction( isDragValid( event, newIndices )? Qt::MoveAction: Qt::IgnoreAction );
+  event->accept();
+}
+
+void DFGPEWidget_Elements_TableWidget::dropEvent( QDropEvent *event )
+{
+  if ( event->source() != this
+    || event->dropAction() != Qt::MoveAction )
+  {
+    event->ignore();
+    return;
+  }
+
+  QList<int> newIndices;
+  if ( isDragValid( event, newIndices ) )
+    m_model->reorderElementsEventually( newIndices );
 
   event->accept();
 }

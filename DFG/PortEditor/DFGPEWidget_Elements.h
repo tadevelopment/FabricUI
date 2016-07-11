@@ -183,7 +183,7 @@ public:
 
 protected:
 
-  bool isDragValid( QDropEvent *event );
+  bool isDragValid( QDropEvent *event, QList<int> &newIndices );
 
   virtual void dragEnterEvent( QDragEnterEvent *event ) /*override*/;
   virtual void dragMoveEvent( QDragMoveEvent *event ) /*override*/;
