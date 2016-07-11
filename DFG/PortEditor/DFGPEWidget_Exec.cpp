@@ -154,7 +154,7 @@ void DFGPEWidget_Exec::onExecBlockRemoved(
   FTL::CStrRef blockName
   )
 {
-  m_tabWidget->removeTab( blockIndex );
+  m_tabWidget->removeTab( 2 + blockIndex );
 }
 
 } // namespace DFG
