@@ -89,7 +89,7 @@ signals:
     FTL::CStrRef portName
     );
 
-  void portMetadataChanged(
+  void execPortMetadataChanged(
     FTL::CStrRef portName,
     FTL::CStrRef key,
     FTL::CStrRef value
@@ -107,17 +107,17 @@ signals:
     FTL::CStrRef newTypeSpec
     );
 
-  void portResolvedTypeChanged(
+  void execPortResolvedTypeChanged(
     FTL::CStrRef portName,
     FTL::CStrRef newResolvedTypeName
     );
 
-  void fixedPortResolvedTypeChanged(
+  void execFixedPortResolvedTypeChanged(
     FTL::CStrRef portName,
     FTL::CStrRef newResolvedTypeName
     );
 
-  void portDefaultValuesChanged(
+  void execPortDefaultValuesChanged(
     FTL::CStrRef portName
     );
 
@@ -127,7 +127,8 @@ signals:
 
   // The executable's blocks
 
-  void blockInserted(
+  void execBlockInserted(
+    unsigned blockIndex,
     FTL::CStrRef blockName
     );
 
@@ -144,23 +145,24 @@ signals:
     FTL::CStrRef portName
     );
 
-  void blockRemoved(
+  void execBlockRemoved(
+    unsigned blockIndex,
     FTL::CStrRef blockName
     );
 
-  void blockMetadataChanged(
+  void execBlockMetadataChanged(
     FTL::CStrRef blockName,
     FTL::CStrRef key,
     FTL::CStrRef value
     );
 
-  void blockPortResolvedTypeChanged(
+  void execBlockPortResolvedTypeChanged(
     FTL::CStrRef blockName,
     FTL::CStrRef portName,
     FTL::CStrRef newResolvedTypeName
     );
 
-  void blockPortDefaultValuesChanged(
+  void execBlockPortDefaultValuesChanged(
     FTL::CStrRef blockName,
     FTL::CStrRef portName
     );

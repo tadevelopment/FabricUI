@@ -25,6 +25,7 @@ public:
     FabricCore::DFGBinding binding,
     FTL::StrRef execPath,
     FabricCore::DFGExec exec,
+    QSharedPointer<DFG::DFGExecNotifier> execNotifier,
     FTL::StrRef execBlockName
     );
 
@@ -98,9 +99,9 @@ private:
   FabricCore::DFGBinding m_binding;
   QString m_execPathQS;
   FabricCore::DFGExec m_exec;
+  QSharedPointer<DFG::DFGExecNotifier> m_notifier;
   std::string m_execBlockName;
   QString m_execBlockNameQS;
-  QSharedPointer<DFG::DFGExecNotifier> m_notifier;
 };
 
 } // namespace DFG

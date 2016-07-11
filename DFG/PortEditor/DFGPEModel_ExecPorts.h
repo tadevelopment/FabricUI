@@ -24,7 +24,8 @@ public:
     DFGUICmdHandler *cmdHandler,
     FabricCore::DFGBinding binding,
     FTL::StrRef execPath,
-    FabricCore::DFGExec exec
+    FabricCore::DFGExec exec,
+    QSharedPointer<DFG::DFGExecNotifier> execNotifier
     );
 
   virtual bool isPortTypeFixed() /*override*/ { return false; }

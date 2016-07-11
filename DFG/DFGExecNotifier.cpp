@@ -222,17 +222,18 @@ void DFGExecNotifier::handler_execBlockPortRemoved( FTL::JSONObject const *jsonO
 
 void DFGExecNotifier::handler_execBlockInserted( FTL::JSONObject const *jsonObject )
 {
-  FTL::CStrRef blockName =
-    jsonObject->getObject( FTL_STR("blockDesc") )->getString( FTL_STR("name") );
+  unsigned blockIndex = jsonObject->getSInt32( FTL_STR("blockIndex") );
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
 
-  emit blockInserted( blockName );
+  emit execBlockInserted( blockIndex, blockName );
 }
 
 void DFGExecNotifier::handler_execBlockRemoved( FTL::JSONObject const *jsonObject )
 {
+  unsigned blockIndex = jsonObject->getSInt32( FTL_STR("blockIndex") );
   FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
 
-  emit nodeRemoved( blockName );
+  emit execBlockRemoved( blockIndex, blockName );
 }
 
 void DFGExecNotifier::handler_execBlockMetadataChanged( FTL::JSONObject const *jsonObject )
@@ -241,7 +242,7 @@ void DFGExecNotifier::handler_execBlockMetadataChanged( FTL::JSONObject const *j
   FTL::CStrRef key = jsonObject->getString( FTL_STR("key") );
   FTL::CStrRef value = jsonObject->getString( FTL_STR("value") );
 
-  emit blockMetadataChanged( blockName, key, value );
+  emit execBlockMetadataChanged( blockName, key, value );
 }
 
 void DFGExecNotifier::handler_nodeInserted( FTL::JSONObject const *jsonObject )
@@ -420,7 +421,7 @@ void DFGExecNotifier::handler_execBlockPortDefaultValuesChanged( FTL::JSONObject
   FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
 
-  emit blockPortDefaultValuesChanged( blockName, portName );
+  emit execBlockPortDefaultValuesChanged( blockName, portName );
 }
 
 void DFGExecNotifier::handler_instBlockPortDefaultValuesChanged( FTL::JSONObject const *jsonObject )
@@ -438,7 +439,7 @@ void DFGExecNotifier::handler_execBlockPortResolvedTypeChanged( FTL::JSONObject 
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
   FTL::CStrRef newResolvedTypeName = jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") );
 
-  emit blockPortResolvedTypeChanged( blockName, portName, newResolvedTypeName );
+  emit execBlockPortResolvedTypeChanged( blockName, portName, newResolvedTypeName );
 }
 
 void DFGExecNotifier::handler_instBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject )
@@ -456,7 +457,7 @@ void DFGExecNotifier::handler_execPortResolvedTypeChanged( FTL::JSONObject const
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
   FTL::CStrRef newResolvedTypeName = jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") );
 
-  emit portResolvedTypeChanged( portName, newResolvedTypeName );
+  emit execPortResolvedTypeChanged( portName, newResolvedTypeName );
 }
 
 void DFGExecNotifier::handler_execFixedPortResolvedTypeChanged( FTL::JSONObject const *jsonObject )
@@ -464,7 +465,7 @@ void DFGExecNotifier::handler_execFixedPortResolvedTypeChanged( FTL::JSONObject 
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
   FTL::CStrRef newResolvedTypeName = jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") );
 
-  emit fixedPortResolvedTypeChanged( portName, newResolvedTypeName );
+  emit execFixedPortResolvedTypeChanged( portName, newResolvedTypeName );
 }
 
 void DFGExecNotifier::handler_execEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject )
@@ -506,7 +507,7 @@ void DFGExecNotifier::handler_execPortDefaultValuesChanged( FTL::JSONObject cons
 {
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
 
-  emit portDefaultValuesChanged( portName );
+  emit execPortDefaultValuesChanged( portName );
 }
 
 void DFGExecNotifier::handler_instExecTitleChanged( FTL::JSONObject const *jsonObject )
@@ -532,7 +533,7 @@ void DFGExecNotifier::handler_execPortMetadataChanged( FTL::JSONObject const *js
   FTL::CStrRef key = jsonObject->getString( FTL_STR("key") );
   FTL::CStrRef value = jsonObject->getString( FTL_STR("value") );
 
-  emit portMetadataChanged( portName, key, value );
+  emit execPortMetadataChanged( portName, key, value );
 }
 
 void DFGExecNotifier::handler_nodePortMetadataChanged( FTL::JSONObject const *jsonObject )

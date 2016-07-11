@@ -148,7 +148,7 @@ void DFGVEEditorOwner::setModelRoot(
 
     connect(
       m_subNotifier.data(),
-      SIGNAL(portMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
+      SIGNAL(execPortMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
       this,
       SLOT(onExecPortMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
       );
@@ -304,13 +304,13 @@ void DFGVEEditorOwner::setModelRoot(
 
       connect(
         m_subNotifier.data(),
-        SIGNAL(portMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
+        SIGNAL(execPortMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
         this,
         SLOT(onExecPortMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
         );
       connect(
         m_subNotifier.data(),
-        SIGNAL(portDefaultValuesChanged(FTL::CStrRef)),
+        SIGNAL(execPortDefaultValuesChanged(FTL::CStrRef)),
         this,
         SLOT(onExecPortDefaultValuesChanged(FTL::CStrRef))
         );

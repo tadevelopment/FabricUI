@@ -14,15 +14,16 @@ DFGPEModel_ExecBlockPorts::DFGPEModel_ExecBlockPorts(
   FabricCore::DFGBinding binding,
   FTL::StrRef execPath,
   FabricCore::DFGExec exec,
+  QSharedPointer<DFG::DFGExecNotifier> execNotifier,
   FTL::StrRef execBlockName
   )
   : m_cmdHandler( cmdHandler )
   , m_binding( binding )
   , m_execPathQS( QString::fromUtf8( execPath.data(), execPath.size() ) )
   , m_exec( exec )
+  , m_notifier( execNotifier )
   , m_execBlockName( execBlockName )
   , m_execBlockNameQS( QString::fromUtf8( execBlockName.data(), execBlockName.size() ) )
-  , m_notifier( DFGExecNotifier::Create( exec ) )
 {
   connect(
     m_notifier.data(), SIGNAL(editWouldSplitFromPresetMayHaveChanged()),

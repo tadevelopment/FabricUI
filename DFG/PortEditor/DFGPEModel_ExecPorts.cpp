@@ -14,13 +14,14 @@ DFGPEModel_ExecPorts::DFGPEModel_ExecPorts(
   DFGUICmdHandler *cmdHandler,
   FabricCore::DFGBinding binding,
   FTL::StrRef execPath,
-  FabricCore::DFGExec exec
+  FabricCore::DFGExec exec,
+  QSharedPointer<DFG::DFGExecNotifier> execNotifier
   )
   : m_cmdHandler( cmdHandler )
   , m_binding( binding )
   , m_execPathQS( QString::fromUtf8( execPath.data(), execPath.size() ) )
   , m_exec( exec )
-  , m_notifier( DFGExecNotifier::Create( exec ) )
+  , m_notifier( execNotifier )
 {
   connect(
     m_notifier.data(), SIGNAL(editWouldSplitFromPresetMayHaveChanged()),
