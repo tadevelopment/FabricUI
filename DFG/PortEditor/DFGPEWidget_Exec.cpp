@@ -62,19 +62,6 @@ void DFGPEWidget_Exec::setExec(
   m_exec = exec;
   m_execNotifier = DFGExecNotifier::Create( exec );
 
-  connect(
-    m_execNotifier.data(), SIGNAL(execBlockInserted(unsigned, FTL::CStrRef)),
-    this, SLOT(onExecBlockInserted(unsigned, FTL::CStrRef))
-    );
-  connect(
-    m_execNotifier.data(), SIGNAL(execBlockRenamed(unsigned, FTL::CStrRef, FTL::CStrRef)),
-    this, SLOT(onExecBlockRenamed(unsigned, FTL::CStrRef, FTL::CStrRef))
-    );
-  connect(
-    m_execNotifier.data(), SIGNAL(execBlockRemoved(unsigned, FTL::CStrRef)),
-    this, SLOT(onExecBlockRemoved(unsigned, FTL::CStrRef))
-    );
-
   DFGPEModel *execPortsModel =
     new DFGPEModel_ExecPorts(
       m_dfgWidget->getDFGController()->getCmdHandler(),
@@ -90,31 +77,47 @@ void DFGPEWidget_Exec::setExec(
       );
   m_tabWidget->addTab( execPortsWidget, "Ports" );
 
-  DFGPEModel *execBlocksModel =
-    new DFGPEModel_ExecBlocks(
-      m_dfgWidget->getDFGController()->getCmdHandler(),
-      binding,
-      execPath,
-      exec,
-      m_execNotifier
-      );
-  DFGPEWidget_Elements *execBlocksWidget =
-    new DFGPEWidget_Elements(
-      m_dfgWidget,
-      execBlocksModel
-      );
-  connect(
-    execBlocksWidget, SIGNAL(elementAddedThroughUI(int)),
-    this, SLOT(onExecBlockAddedThroughUI(int))
-    );
-  m_tabWidget->addTab( execBlocksWidget, "Blocks" );
-
-  unsigned execBlockCount = exec.getExecBlockCount();
-  for ( unsigned execBlockIndex = 0;
-    execBlockIndex < execBlockCount; ++execBlockIndex )
+  if ( exec.allowsBlocks() )
   {
-    FTL::CStrRef execBlockName = exec.getExecBlockName( execBlockIndex );
-    onExecBlockInserted( execBlockIndex, execBlockName );
+    connect(
+      m_execNotifier.data(), SIGNAL(execBlockInserted(unsigned, FTL::CStrRef)),
+      this, SLOT(onExecBlockInserted(unsigned, FTL::CStrRef))
+      );
+    connect(
+      m_execNotifier.data(), SIGNAL(execBlockRenamed(unsigned, FTL::CStrRef, FTL::CStrRef)),
+      this, SLOT(onExecBlockRenamed(unsigned, FTL::CStrRef, FTL::CStrRef))
+      );
+    connect(
+      m_execNotifier.data(), SIGNAL(execBlockRemoved(unsigned, FTL::CStrRef)),
+      this, SLOT(onExecBlockRemoved(unsigned, FTL::CStrRef))
+      );
+
+    DFGPEModel *execBlocksModel =
+      new DFGPEModel_ExecBlocks(
+        m_dfgWidget->getDFGController()->getCmdHandler(),
+        binding,
+        execPath,
+        exec,
+        m_execNotifier
+        );
+    DFGPEWidget_Elements *execBlocksWidget =
+      new DFGPEWidget_Elements(
+        m_dfgWidget,
+        execBlocksModel
+        );
+    connect(
+      execBlocksWidget, SIGNAL(elementAddedThroughUI(int)),
+      this, SLOT(onExecBlockAddedThroughUI(int))
+      );
+    m_tabWidget->addTab( execBlocksWidget, "Blocks" );
+
+    unsigned execBlockCount = exec.getExecBlockCount();
+    for ( unsigned execBlockIndex = 0;
+      execBlockIndex < execBlockCount; ++execBlockIndex )
+    {
+      FTL::CStrRef execBlockName = exec.getExecBlockName( execBlockIndex );
+      onExecBlockInserted( execBlockIndex, execBlockName );
+    }
   }
 }
 
