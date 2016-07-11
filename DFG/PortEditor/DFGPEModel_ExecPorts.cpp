@@ -17,7 +17,8 @@ DFGPEModel_ExecPorts::DFGPEModel_ExecPorts(
   FabricCore::DFGExec exec,
   QSharedPointer<DFG::DFGExecNotifier> execNotifier
   )
-  : m_cmdHandler( cmdHandler )
+  : DFGPEModel( "port", "Port" )
+  , m_cmdHandler( cmdHandler )
   , m_binding( binding )
   , m_execPathQS( QString::fromUtf8( execPath.data(), execPath.size() ) )
   , m_exec( exec )

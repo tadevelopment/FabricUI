@@ -7,6 +7,15 @@
 namespace FabricUI {
 namespace DFG {
 
+DFGPEModel::DFGPEModel(
+  QString elementDesc,
+  QString elementDescCapitalized
+  )
+  : m_elementDesc( elementDesc )
+  , m_elementDescCapitalized( elementDescCapitalized )
+{
+}
+
 void DFGPEModel::reorderPortsEventually(
   QList<int> newIndices
   )

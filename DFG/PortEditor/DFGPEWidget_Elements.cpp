@@ -5,7 +5,7 @@
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/Dialogs/DFGRegisteredTypeLineEdit.h>
 #include <FabricUI/DFG/PortEditor/DFGPEModel.h>
-#include <FabricUI/DFG/PortEditor/DFGPEWidget_Ports.h>
+#include <FabricUI/DFG/PortEditor/DFGPEWidget_Elements.h>
 #include <FabricUI/Util/LoadPixmap.h>
 #include <QtCore/QDebug>
 #include <QtGui/QApplication>
@@ -20,7 +20,7 @@
 namespace FabricUI {
 namespace DFG {
 
-DFGPEWidget_Ports::DFGPEWidget_Ports(
+DFGPEWidget_Elements::DFGPEWidget_Elements(
   DFGWidget *dfgWidget,
   DFGPEModel *model,
   QWidget *parent
@@ -37,7 +37,7 @@ DFGPEWidget_Ports::DFGPEWidget_Ports(
   , m_minusIcon( m_minusPixmap )
   , m_layout( new QVBoxLayout )
 {
-  setObjectName( "DFGPEWidget_Ports" );
+  setObjectName( "DFGPEWidget_Elements" );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
   m_layout->setContentsMargins( 0, 0, 0, 0 );
   m_layout->setSpacing( 0 );
@@ -46,7 +46,7 @@ DFGPEWidget_Ports::DFGPEWidget_Ports(
   setModel( model );
 }
 
-void DFGPEWidget_Ports::setModel( DFGPEModel *newModel )
+void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
 {
   if ( m_model )
   {
@@ -65,6 +65,8 @@ void DFGPEWidget_Ports::setModel( DFGPEModel *newModel )
 
   if ( m_model )
   {
+    QString elementDescCapitalized = m_model->getElementDescCapitalized();
+
     m_isPortTypeFixed = m_model->isPortTypeFixed();
     m_controlCol = 0;
     m_portNameCol = m_controlCol + 1;
@@ -83,7 +85,8 @@ void DFGPEWidget_Ports::setModel( DFGPEModel *newModel )
     FabricCore::Client client = m_dfgWidget->getDFGController()->getClient();
     m_addPortTypeSpec = new DFGRegisteredTypeLineEdit( NULL, client, "" );
     m_addPortTypeSpec->setEnabled( !m_model->isReadOnly() );
-    m_addPortButton = new QPushButton( m_plusIcon, "Add Port" );
+    m_addPortButton =
+      new QPushButton( m_plusIcon, "Add " + elementDescCapitalized );
     m_addPortButton->setEnabled( !m_model->isReadOnly() );
     connect(
       m_addPortButton, SIGNAL(clicked()),
@@ -106,30 +109,30 @@ void DFGPEWidget_Ports::setModel( DFGPEModel *newModel )
     addPortLayout->addWidget( m_addPortButton );
     addPortLayout->addStretch( 1 );
     m_addPortContainer = new QFrame;
-    m_addPortContainer->setObjectName( "DFGPEWidget_Ports_AddPortContainer" );
+    m_addPortContainer->setObjectName( "DFGPEWidget_Elements_AddPortContainer" );
     m_addPortContainer->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum );
     m_addPortContainer->setLayout( addPortLayout );
 
     QStringList headerLabels;
-    headerLabels << "" << "Port Name";
+    headerLabels << "" << (elementDescCapitalized + " Name");
     if ( !m_isPortTypeFixed )
-      headerLabels << "Port Type";
-    headerLabels << "Port TypeSpec";
+      headerLabels << (elementDescCapitalized + " Type");
+    headerLabels << (elementDescCapitalized + " TypeSpec");
 
     m_tableWidget =
-      new DFGPEWidget_Ports_TableWidget( m_model, 0, m_portTypeSpecCol + 1 );
+      new DFGPEWidget_Elements_TableWidget( m_model, 0, m_portTypeSpecCol + 1 );
     m_tableWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
     if ( !m_isPortTypeFixed )
       m_tableWidget->setItemDelegateForColumn(
         m_portTypeCol,
-        new DFGPEWidget_Ports_PortTypeDelegate(
+        new DFGPEWidget_Elements_PortTypeDelegate(
           m_portTypeLabels,
           m_tableWidget
           )
         );
     m_tableWidget->setItemDelegateForColumn(
       m_portTypeSpecCol,
-      new DFGPEWidget_Ports_PortTypeSpecDelegate(
+      new DFGPEWidget_Elements_PortTypeSpecDelegate(
         m_dfgWidget->getDFGController()->getClient(),
         m_tableWidget
         )
@@ -182,7 +185,7 @@ void DFGPEWidget_Ports::setModel( DFGPEModel *newModel )
   }
 }
 
-void DFGPEWidget_Ports::populatePorts()
+void DFGPEWidget_Elements::populatePorts()
 {
   int portCount = m_model->getPortCount();
   for ( int portIndex = 0; portIndex < portCount; ++portIndex )
@@ -194,7 +197,7 @@ void DFGPEWidget_Ports::populatePorts()
       );
 }
 
-void DFGPEWidget_Ports::unpopulatePorts()
+void DFGPEWidget_Elements::unpopulatePorts()
 {
   int portCount = m_model->getPortCount();
   for ( int portIndex = 0; portIndex < portCount; ++portIndex )
@@ -203,7 +206,7 @@ void DFGPEWidget_Ports::unpopulatePorts()
       );
 }
 
-void DFGPEWidget_Ports::onIsReadOnlyChanged(
+void DFGPEWidget_Elements::onIsReadOnlyChanged(
   bool newIsReadOnly
   )
 {
@@ -212,8 +215,8 @@ void DFGPEWidget_Ports::onIsReadOnlyChanged(
   int rowCount = m_tableWidget->rowCount();
   for ( int row = 0; row < rowCount; ++row )
   {
-    DFGPEWidget_Ports_ControlCell *controlCell =
-      static_cast<DFGPEWidget_Ports_ControlCell *>(
+    DFGPEWidget_Elements_ControlCell *controlCell =
+      static_cast<DFGPEWidget_Elements_ControlCell *>(
         m_tableWidget->cellWidget( row, m_controlCol )
         );
     controlCell->setEnabled( !m_model->isPortReadOnly( row ) );
@@ -226,7 +229,7 @@ void DFGPEWidget_Ports::onIsReadOnlyChanged(
   m_addPortButton->setEnabled( !newIsReadOnly );
 }
 
-void DFGPEWidget_Ports::onPortInserted(
+void DFGPEWidget_Elements::onPortInserted(
   int index,
   QString name,
   FabricCore::DFGPortType type,
@@ -249,7 +252,7 @@ void DFGPEWidget_Ports::onPortInserted(
     );
   m_tableWidget->setItem( index, m_controlCol, controlTWI );
   QWidget *controlCellWidget =
-    new DFGPEWidget_Ports_ControlCell( index, m_minusIcon, m_dotsIcon );
+    new DFGPEWidget_Elements_ControlCell( index, m_minusIcon, m_dotsIcon );
   controlCellWidget->setEnabled( !m_model->isPortReadOnly( index ) );
   connect(
     controlCellWidget, SIGNAL(oneClicked(int)),
@@ -301,15 +304,15 @@ void DFGPEWidget_Ports::onPortInserted(
   int rowCount = m_tableWidget->rowCount();
   for ( int row = index + 1; row < rowCount; ++row )
   {
-    DFGPEWidget_Ports_ControlCell *controlCell =
-      static_cast<DFGPEWidget_Ports_ControlCell *>(
+    DFGPEWidget_Elements_ControlCell *controlCell =
+      static_cast<DFGPEWidget_Elements_ControlCell *>(
         m_tableWidget->cellWidget( row, m_controlCol )
         );
     controlCell->setRow( row );
   }
 }
 
-void DFGPEWidget_Ports::onPortRenamed(
+void DFGPEWidget_Elements::onPortRenamed(
   int index,
   QString newPortName
   )
@@ -319,7 +322,7 @@ void DFGPEWidget_Ports::onPortRenamed(
   twi->setText( newPortName );
 }
 
-void DFGPEWidget_Ports::onPortTypeChanged(
+void DFGPEWidget_Elements::onPortTypeChanged(
   int index,
   FabricCore::DFGPortType type
   )
@@ -332,7 +335,7 @@ void DFGPEWidget_Ports::onPortTypeChanged(
   }
 }
 
-void DFGPEWidget_Ports::onPortTypeSpecChanged(
+void DFGPEWidget_Elements::onPortTypeSpecChanged(
   int index,
   QString typeSpec
   )
@@ -342,7 +345,7 @@ void DFGPEWidget_Ports::onPortTypeSpecChanged(
   twi->setText( typeSpec );
 }
 
-void DFGPEWidget_Ports::onPortRemoved(
+void DFGPEWidget_Elements::onPortRemoved(
   int index
   )
 {
@@ -353,15 +356,15 @@ void DFGPEWidget_Ports::onPortRemoved(
   int rowCount = m_tableWidget->rowCount();
   for ( int row = int(index); row < rowCount; ++row )
   {
-    DFGPEWidget_Ports_ControlCell *controlCell =
-      static_cast<DFGPEWidget_Ports_ControlCell *>(
+    DFGPEWidget_Elements_ControlCell *controlCell =
+      static_cast<DFGPEWidget_Elements_ControlCell *>(
         m_tableWidget->cellWidget( row, m_controlCol )
         );
     controlCell->setRow( row );
   }
 }
 
-void DFGPEWidget_Ports::onPortsReordered(
+void DFGPEWidget_Elements::onPortsReordered(
   QList<int> newIndices
   )
 {
@@ -370,7 +373,7 @@ void DFGPEWidget_Ports::onPortsReordered(
   populatePorts();
 }
 
-void DFGPEWidget_Ports::onCellChanged( int row, int col )
+void DFGPEWidget_Elements::onCellChanged( int row, int col )
 {
   if ( !m_ignoreCellChanged )
   {
@@ -400,17 +403,17 @@ void DFGPEWidget_Ports::onCellChanged( int row, int col )
   }
 }
 
-void DFGPEWidget_Ports::onInspectRowClicked( int row )
+void DFGPEWidget_Elements::onInspectRowClicked( int row )
 {
   m_model->inspectPort( row, m_dfgWidget );
 }
 
-void DFGPEWidget_Ports::onDeleteRowClicked( int row )
+void DFGPEWidget_Elements::onDeleteRowClicked( int row )
 {
   m_model->removePort( row );
 }
 
-void DFGPEWidget_Ports::onAddPortClicked()
+void DFGPEWidget_Elements::onAddPortClicked()
 {
   int index = m_model->getPortCount();
   m_model->insertPort(
@@ -425,7 +428,7 @@ void DFGPEWidget_Ports::onAddPortClicked()
   m_tableWidget->selectRow( index );
 }
 
-DFGPEWidget_Ports_ControlCell::DFGPEWidget_Ports_ControlCell(
+DFGPEWidget_Elements_ControlCell::DFGPEWidget_Elements_ControlCell(
   int row,
   QIcon iconOne,
   QIcon iconTwo,
@@ -435,7 +438,7 @@ DFGPEWidget_Ports_ControlCell::DFGPEWidget_Ports_ControlCell(
   , m_row( row )
 {
   setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
-  setObjectName( "DFGPEWidget_Ports_ControlCell" );
+  setObjectName( "DFGPEWidget_Elements_ControlCell" );
 
   QPushButton *pushButtonOne = new QPushButton( iconOne, "" );
   connect(
@@ -459,17 +462,17 @@ DFGPEWidget_Ports_ControlCell::DFGPEWidget_Ports_ControlCell(
   setLayout( layout );
 }
 
-void DFGPEWidget_Ports_ControlCell::onOneClicked()
+void DFGPEWidget_Elements_ControlCell::onOneClicked()
 {
   emit oneClicked( m_row );
 }
 
-void DFGPEWidget_Ports_ControlCell::onTwoClicked()
+void DFGPEWidget_Elements_ControlCell::onTwoClicked()
 {
   emit twoClicked( m_row );
 }
 
-DFGPEWidget_Ports_TableWidget::DFGPEWidget_Ports_TableWidget(
+DFGPEWidget_Elements_TableWidget::DFGPEWidget_Elements_TableWidget(
   DFGPEModel *model,
   int rows,
   int cols,
@@ -478,7 +481,7 @@ DFGPEWidget_Ports_TableWidget::DFGPEWidget_Ports_TableWidget(
   : QTableWidget( rows, cols, parent )
   , m_model( model )
 {
-  setStyle( new DFGPEWidget_Ports_TableWidget_ProxyStyle( style() ) );
+  setStyle( new DFGPEWidget_Elements_TableWidget_ProxyStyle( style() ) );
   horizontalHeader()->setStretchLastSection( true );
   verticalHeader()->hide();
   // setDragEnabled( True );
@@ -492,7 +495,7 @@ DFGPEWidget_Ports_TableWidget::DFGPEWidget_Ports_TableWidget(
   setDragDropMode( QAbstractItemView::InternalMove );
 }
 
-bool DFGPEWidget_Ports_TableWidget::isDragValid( QDropEvent *event )
+bool DFGPEWidget_Elements_TableWidget::isDragValid( QDropEvent *event )
 {
   int rowCount = this->rowCount();
 
@@ -507,7 +510,7 @@ bool DFGPEWidget_Ports_TableWidget::isDragValid( QDropEvent *event )
   return true;
 }
 
-void DFGPEWidget_Ports_TableWidget::dragEnterEvent( QDragEnterEvent *event )
+void DFGPEWidget_Elements_TableWidget::dragEnterEvent( QDragEnterEvent *event )
 {
   if ( !isDragValid( event ) )
     return;
@@ -515,7 +518,7 @@ void DFGPEWidget_Ports_TableWidget::dragEnterEvent( QDragEnterEvent *event )
   QTableWidget::dragEnterEvent( event );
 }
 
-void DFGPEWidget_Ports_TableWidget::dragMoveEvent( QDragMoveEvent *event )
+void DFGPEWidget_Elements_TableWidget::dragMoveEvent( QDragMoveEvent *event )
 {
   if ( !isDragValid( event ) )
     return;
@@ -523,7 +526,7 @@ void DFGPEWidget_Ports_TableWidget::dragMoveEvent( QDragMoveEvent *event )
   QTableWidget::dragMoveEvent( event );
 }
 
-void DFGPEWidget_Ports_TableWidget::dropEvent( QDropEvent *event )
+void DFGPEWidget_Elements_TableWidget::dropEvent( QDropEvent *event )
 {
   if ( event->source() != this
     || event->dropAction() != Qt::MoveAction )
@@ -571,12 +574,12 @@ void DFGPEWidget_Ports_TableWidget::dropEvent( QDropEvent *event )
   event->accept();
 }
 
-DFGPEWidget_Ports_TableWidget_ProxyStyle::DFGPEWidget_Ports_TableWidget_ProxyStyle(QStyle* style)
+DFGPEWidget_Elements_TableWidget_ProxyStyle::DFGPEWidget_Elements_TableWidget_ProxyStyle(QStyle* style)
   : QProxyStyle( style )
 {
 }
 
-void DFGPEWidget_Ports_TableWidget_ProxyStyle::drawPrimitive(
+void DFGPEWidget_Elements_TableWidget_ProxyStyle::drawPrimitive(
     PrimitiveElement element,
     QStyleOption const *option,
     QPainter *painter,
@@ -601,7 +604,7 @@ void DFGPEWidget_Ports_TableWidget_ProxyStyle::drawPrimitive(
     );
 }
 
-DFGPEWidget_Ports_PortTypeDelegate::DFGPEWidget_Ports_PortTypeDelegate(
+DFGPEWidget_Elements_PortTypeDelegate::DFGPEWidget_Elements_PortTypeDelegate(
   QStringList portTypeLabels,
   QObject *parent
   )
@@ -610,20 +613,20 @@ DFGPEWidget_Ports_PortTypeDelegate::DFGPEWidget_Ports_PortTypeDelegate(
 {
 }
 
-QWidget *DFGPEWidget_Ports_PortTypeDelegate::createEditor(
+QWidget *DFGPEWidget_Elements_PortTypeDelegate::createEditor(
   QWidget *parent,
   QStyleOptionViewItem const &option,
   QModelIndex const &index
   ) const
 {
-  DFGPEWidget_Ports_PortTypeDelegate_ComboxBox *comboBox =
-    new DFGPEWidget_Ports_PortTypeDelegate_ComboxBox( parent );
+  DFGPEWidget_Elements_PortTypeDelegate_ComboxBox *comboBox =
+    new DFGPEWidget_Elements_PortTypeDelegate_ComboxBox( parent );
   for ( int i = 0; i < m_portTypeLabels.size(); ++i )
     comboBox->addItem( m_portTypeLabels[i] );
   return comboBox;
 }
 
-void DFGPEWidget_Ports_PortTypeDelegate::setEditorData(
+void DFGPEWidget_Elements_PortTypeDelegate::setEditorData(
   QWidget *editor,
   QModelIndex const &index
   ) const
@@ -649,7 +652,7 @@ void DFGPEWidget_Ports_PortTypeDelegate::setEditorData(
     );
 }
 
-void DFGPEWidget_Ports_PortTypeDelegate::setModelData(
+void DFGPEWidget_Elements_PortTypeDelegate::setModelData(
   QWidget *editor,
   QAbstractItemModel *model,
   QModelIndex const &index
@@ -663,7 +666,7 @@ void DFGPEWidget_Ports_PortTypeDelegate::setModelData(
     );
 }
 
-void DFGPEWidget_Ports_PortTypeDelegate::updateEditorGeometry(
+void DFGPEWidget_Elements_PortTypeDelegate::updateEditorGeometry(
   QWidget *editor,
   QStyleOptionViewItem const &option,
   QModelIndex const &index
@@ -672,7 +675,7 @@ void DFGPEWidget_Ports_PortTypeDelegate::updateEditorGeometry(
   editor->setGeometry( option.rect );
 }
 
-DFGPEWidget_Ports_PortTypeDelegate_ComboxBox::DFGPEWidget_Ports_PortTypeDelegate_ComboxBox(
+DFGPEWidget_Elements_PortTypeDelegate_ComboxBox::DFGPEWidget_Elements_PortTypeDelegate_ComboxBox(
   QWidget *parent
   )
   : QComboBox( parent )
@@ -683,7 +686,7 @@ DFGPEWidget_Ports_PortTypeDelegate_ComboxBox::DFGPEWidget_Ports_PortTypeDelegate
     );
 }
 
-void DFGPEWidget_Ports_PortTypeDelegate_ComboxBox::onActivated(
+void DFGPEWidget_Elements_PortTypeDelegate_ComboxBox::onActivated(
   int index
   )
 {
@@ -706,7 +709,7 @@ void DFGPEWidget_Ports_PortTypeDelegate_ComboxBox::onActivated(
     );
 }
 
-DFGPEWidget_Ports_PortTypeSpecDelegate::DFGPEWidget_Ports_PortTypeSpecDelegate(
+DFGPEWidget_Elements_PortTypeSpecDelegate::DFGPEWidget_Elements_PortTypeSpecDelegate(
   FabricCore::Client client,
   QObject *parent
   )
@@ -715,7 +718,7 @@ DFGPEWidget_Ports_PortTypeSpecDelegate::DFGPEWidget_Ports_PortTypeSpecDelegate(
 {
 }
 
-QWidget *DFGPEWidget_Ports_PortTypeSpecDelegate::createEditor(
+QWidget *DFGPEWidget_Elements_PortTypeSpecDelegate::createEditor(
   QWidget *parent,
   QStyleOptionViewItem const &option,
   QModelIndex const &index
@@ -724,13 +727,13 @@ QWidget *DFGPEWidget_Ports_PortTypeSpecDelegate::createEditor(
   DFGRegisteredTypeLineEdit *lineEdit =
     new DFGRegisteredTypeLineEdit(
       parent,
-      const_cast<DFGPEWidget_Ports_PortTypeSpecDelegate *>( this )->m_client,
+      const_cast<DFGPEWidget_Elements_PortTypeSpecDelegate *>( this )->m_client,
       ""
       );
   return lineEdit;
 }
 
-void DFGPEWidget_Ports_PortTypeSpecDelegate::setEditorData(
+void DFGPEWidget_Elements_PortTypeSpecDelegate::setEditorData(
   QWidget *editor,
   QModelIndex const &index
   ) const
@@ -741,7 +744,7 @@ void DFGPEWidget_Ports_PortTypeSpecDelegate::setEditorData(
   lineEdit->setText( value );
 }
 
-void DFGPEWidget_Ports_PortTypeSpecDelegate::setModelData(
+void DFGPEWidget_Elements_PortTypeSpecDelegate::setModelData(
   QWidget *editor,
   QAbstractItemModel *model,
   QModelIndex const &index
@@ -753,7 +756,7 @@ void DFGPEWidget_Ports_PortTypeSpecDelegate::setModelData(
   model->setData( index, value, Qt::DisplayRole );
 }
 
-void DFGPEWidget_Ports_PortTypeSpecDelegate::updateEditorGeometry(
+void DFGPEWidget_Elements_PortTypeSpecDelegate::updateEditorGeometry(
   QWidget *editor,
   QStyleOptionViewItem const &option,
   QModelIndex const &index

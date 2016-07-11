@@ -37,18 +37,18 @@
 
 #DFGExecHeaderWidget QLabel,
 #DFGExecHeaderWidget QPushButton,
-#DFGPEWidget_Ports QPushButton,
+#DFGPEWidget_Elements QPushButton,
 #DFGExecHeaderWidget QLineEdit,
-#DFGPEWidget_Ports QLineEdit
+#DFGPEWidget_Elements QLineEdit
 {
   font: bold 12px "Lucida";
   color: #C7D2DA;
 }
 
 #DFGExecHeaderWidget QPushButton,
-#DFGPEWidget_Ports QPushButton,
+#DFGPEWidget_Elements QPushButton,
 #DFGExecHeaderWidget QLineEdit,
-#DFGPEWidget_Ports QLineEdit
+#DFGPEWidget_Elements QLineEdit
 {
   height: 20px;
   border: none;
@@ -67,13 +67,13 @@
   background-color: #525a66;
 }
 
-#DFGPEWidget_Ports QPushButton,
-#DFGPEWidget_Ports QLineEdit
+#DFGPEWidget_Elements QPushButton,
+#DFGPEWidget_Elements QLineEdit
 {
   background-color: #272822;
 }
 
-#DFGPEWidget_Ports QPushButton:hover
+#DFGPEWidget_Elements QPushButton:hover
 {
   color: #eee;
   background-color: #555849;
@@ -85,7 +85,7 @@
   padding: 0px 4px;
 }
 
-#DFGPEWidget_Ports_AddPortContainer QPushButton
+#DFGPEWidget_Elements_AddPortContainer QPushButton
 {
   padding: 2px 4px;
 }
@@ -128,43 +128,43 @@
   padding: 0px 4px 0px 4px;
 }
 
-#DFGPEWidget_Ports
+#DFGPEWidget_Elements
 {
   spacing: 0px;
 }
 
-#DFGPEWidget_Ports QTableWidget
+#DFGPEWidget_Elements QTableWidget
 {
   background-color: #2E2E2E;
   border: none;
 }
 
-#DFGPEWidget_Ports #DFGPEWidget_Ports_AddPortContainer,
-#DFGPEWidget_Ports #DFGPEWidget_Ports_AddPortContainer QLabel
+#DFGPEWidget_Elements #DFGPEWidget_Elements_AddPortContainer,
+#DFGPEWidget_Elements #DFGPEWidget_Elements_AddPortContainer QLabel
 {
   background-color: #434343;
   border: none;
 }
 
-#DFGPEWidget_Ports #DFGPEWidget_Ports_AddPortContainer
+#DFGPEWidget_Elements #DFGPEWidget_Elements_AddPortContainer
 {
   margin: 0px;
   padding: 3px 6px;
 }
 
-#DFGPEWidget_Ports QTableWidget::item
+#DFGPEWidget_Elements QTableWidget::item
 {
   border-top: 1px solid #434343;
   padding: 2px 0px;
 }
 
-#DFGPEWidget_Ports QTableWidget::item:selected
+#DFGPEWidget_Elements QTableWidget::item:selected
 {
   color: #2E2E2E;
   background-color: #888888;
 }
 
-#DFGPEWidget_Ports QTableWidget QHeaderView::section
+#DFGPEWidget_Elements QTableWidget QHeaderView::section
 {
   background-color: #434343;
   color: white;
@@ -172,13 +172,13 @@
   border: none;
 }
 
-#DFGPEWidget_Ports_ControlCell
+#DFGPEWidget_Elements_ControlCell
 {
   padding: 2px 4px;
   spacing: 2px;
 }
 
-#DFGPEWidget_Ports_ControlCell QPushButton
+#DFGPEWidget_Elements_ControlCell QPushButton
 {
   margin: 0px;
 }
@@ -203,7 +203,7 @@
   background-color: #434343;
 }
 
-#DFGPEWidget_Ports_AddPortContainer QLineEdit
+#DFGPEWidget_Elements_AddPortContainer QLineEdit
 {
   color: #cbcbcb;
   background-color: #333;

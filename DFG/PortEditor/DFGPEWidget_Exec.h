@@ -19,7 +19,6 @@ namespace FabricUI {
 namespace DFG {
 
 class DFGExecNotifier;
-class DFGPEWidget_PortsContainer;
 class DFGWidget;
 
 class DFGPEWidget_Exec : public QFrame

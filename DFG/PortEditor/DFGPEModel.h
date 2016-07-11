@@ -24,6 +24,11 @@ public:
   virtual bool isPortTypeFixed() = 0;
   bool isReadOnly() { return m_isReadOnly; }
 
+  QString getElementDesc() const
+    { return m_elementDesc; }
+  QString getElementDescCapitalized() const
+    { return m_elementDescCapitalized; }
+
   virtual int getPortCount() = 0;
   virtual QString getPortName( int index ) = 0;
   virtual FabricCore::DFGPortType getPortType( int index ) = 0;
@@ -97,6 +102,11 @@ signals:
 
 protected:
 
+  DFGPEModel(
+    QString elementDesc,
+    QString elementDescCapitalized
+    );
+
   void init()
   {
     m_isReadOnly = computeIsReadOnly();
@@ -117,6 +127,8 @@ protected:
 
 private:
 
+  QString m_elementDesc;
+  QString m_elementDescCapitalized;
   bool m_isReadOnly;
 };
 

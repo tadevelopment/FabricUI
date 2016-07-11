@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 //
 
-#ifndef _DFGPEWidget_Ports_h
-#define _DFGPEWidget_Ports_h
+#ifndef _DFGPEWidget_Elements_h
+#define _DFGPEWidget_Elements_h
 
 #include <FabricCore.h>
 #include <QtCore/QTimer>
@@ -23,13 +23,13 @@ class DFGPEModel;
 class DFGRegisteredTypeLineEdit;
 class DFGWidget;
 
-class DFGPEWidget_Ports : public QWidget
+class DFGPEWidget_Elements : public QWidget
 {
   Q_OBJECT
 
 public:
 
-  DFGPEWidget_Ports(
+  DFGPEWidget_Elements(
     DFGWidget *dfgWidget,
     DFGPEModel *model,
     QWidget *parent = NULL
@@ -46,7 +46,7 @@ protected:
   {
   public:
 
-    IgnoreCellChangedBracket( DFGPEWidget_Ports *widget )
+    IgnoreCellChangedBracket( DFGPEWidget_Elements *widget )
       : m_widget( widget )
       { m_widget->m_ignoreCellChanged = true; };
 
@@ -55,7 +55,7 @@ protected:
 
   private:
 
-    DFGPEWidget_Ports *m_widget;
+    DFGPEWidget_Elements *m_widget;
   };
 
   void populatePorts();
@@ -139,12 +139,12 @@ private:
   QFrame *m_addPortContainer;
 };
 
-class DFGPEWidget_Ports_TableWidget_ProxyStyle
+class DFGPEWidget_Elements_TableWidget_ProxyStyle
   : public QProxyStyle
 {
 public:
 
-  DFGPEWidget_Ports_TableWidget_ProxyStyle(
+  DFGPEWidget_Elements_TableWidget_ProxyStyle(
     QStyle* style = NULL
     );
 
@@ -156,13 +156,13 @@ public:
     ) const;
 };
 
-class DFGPEWidget_Ports_TableWidget : public QTableWidget
+class DFGPEWidget_Elements_TableWidget : public QTableWidget
 {
   Q_OBJECT
 
 public:
 
-  DFGPEWidget_Ports_TableWidget(
+  DFGPEWidget_Elements_TableWidget(
     DFGPEModel *model,
     int rows,
     int cols,
@@ -182,13 +182,13 @@ private:
   DFGPEModel *m_model;
 };
 
-class DFGPEWidget_Ports_ControlCell : public QFrame
+class DFGPEWidget_Elements_ControlCell : public QFrame
 {
   Q_OBJECT
 
 public:
 
-  DFGPEWidget_Ports_ControlCell(
+  DFGPEWidget_Elements_ControlCell(
     int row,
     QIcon iconOne,
     QIcon iconTwo,
@@ -213,13 +213,13 @@ private:
   int m_row;
 };
 
-class DFGPEWidget_Ports_PortTypeDelegate : public QStyledItemDelegate
+class DFGPEWidget_Elements_PortTypeDelegate : public QStyledItemDelegate
 {
   Q_OBJECT
 
 public:
 
-  DFGPEWidget_Ports_PortTypeDelegate(
+  DFGPEWidget_Elements_PortTypeDelegate(
     QStringList portTypeLabels,
     QObject *parent
     );
@@ -252,26 +252,26 @@ private:
   QStringList m_portTypeLabels;
 };
 
-class DFGPEWidget_Ports_PortTypeDelegate_ComboxBox : public QComboBox
+class DFGPEWidget_Elements_PortTypeDelegate_ComboxBox : public QComboBox
 {
   Q_OBJECT
 
 public:
 
-  DFGPEWidget_Ports_PortTypeDelegate_ComboxBox( QWidget *parent = NULL );
+  DFGPEWidget_Elements_PortTypeDelegate_ComboxBox( QWidget *parent = NULL );
 
 protected slots:
 
   void onActivated( int index );
 };
 
-class DFGPEWidget_Ports_PortTypeSpecDelegate : public QStyledItemDelegate
+class DFGPEWidget_Elements_PortTypeSpecDelegate : public QStyledItemDelegate
 {
   Q_OBJECT
 
 public:
 
-  DFGPEWidget_Ports_PortTypeSpecDelegate(
+  DFGPEWidget_Elements_PortTypeSpecDelegate(
     FabricCore::Client client,
     QObject *parent
     );
@@ -307,4 +307,4 @@ private:
 } // namespace DFG
 } // namespace FabricUI
 
-#endif // _DFGPEWidget_Ports_h
+#endif // _DFGPEWidget_Elements_h

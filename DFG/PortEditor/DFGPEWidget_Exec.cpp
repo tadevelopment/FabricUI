@@ -7,7 +7,7 @@
 #include <FabricUI/DFG/PortEditor/DFGPEModel_ExecPorts.h>
 #include <FabricUI/DFG/PortEditor/DFGPEModel_ExecBlockPorts.h>
 #include <FabricUI/DFG/PortEditor/DFGPEWidget_Exec.h>
-#include <FabricUI/DFG/PortEditor/DFGPEWidget_Ports.h>
+#include <FabricUI/DFG/PortEditor/DFGPEWidget_Elements.h>
 #include <FabricUI/Util/LoadPixmap.h>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
@@ -79,8 +79,8 @@ void DFGPEWidget_Exec::setExec(
       m_execNotifier
       );
 
-  DFGPEWidget_Ports *funcPorts =
-    new DFGPEWidget_Ports(
+  DFGPEWidget_Elements *funcPorts =
+    new DFGPEWidget_Elements(
       m_dfgWidget,
       execPortsModel
       );
@@ -147,8 +147,8 @@ void DFGPEWidget_Exec::onExecBlockInserted(
       blockName
       );
 
-  DFGPEWidget_Ports *execBlockPorts =
-    new DFGPEWidget_Ports(
+  DFGPEWidget_Elements *execBlockPorts =
+    new DFGPEWidget_Elements(
       m_dfgWidget,
       execBlockPortsModel
       );
