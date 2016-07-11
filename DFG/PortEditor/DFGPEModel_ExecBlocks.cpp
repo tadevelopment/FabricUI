@@ -105,7 +105,15 @@ void DFGPEModel_ExecBlocks::renameElement(
   QString newPortName
   )
 {
-  assert( false );
+  m_cmdHandler->dfgDoEditNode(
+    m_binding,
+    m_execPathQS,
+    m_exec,
+    getElementName( index ),
+    newPortName,
+    QString(), // nodeMetadata
+    QString()
+    );
 }
 
 void DFGPEModel_ExecBlocks::setElementPortType(
