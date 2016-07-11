@@ -53,6 +53,8 @@ void DFGPEWidget_Exec::setExec(
   )
 {
   m_tabWidget->clear();
+  if ( m_execNotifier )
+    disconnect( m_execNotifier.data(), NULL, this, NULL );
 
   if ( !exec.isValid() )
     return;
