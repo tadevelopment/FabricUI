@@ -29,8 +29,8 @@ DFGPEModel_ExecBlocks::DFGPEModel_ExecBlocks(
     this, SLOT(onEditWouldSplitFromPresetMayHaveChanged())
     );
   connect(
-    m_notifier.data(), SIGNAL(execBlockInserted(unsigned, FTL::CStrRef, FTL::JSONObject const *)),
-    this, SLOT(onExecBlockInserted(unsigned, FTL::CStrRef, FTL::JSONObject const *))
+    m_notifier.data(), SIGNAL(execBlockInserted(unsigned, FTL::CStrRef)),
+    this, SLOT(onExecBlockInserted(unsigned, FTL::CStrRef))
     );
   connect(
     m_notifier.data(), SIGNAL(execBlockRenamed(unsigned, FTL::CStrRef, FTL::CStrRef)),
@@ -40,10 +40,10 @@ DFGPEModel_ExecBlocks::DFGPEModel_ExecBlocks(
     m_notifier.data(), SIGNAL(execBlockRemoved(unsigned, FTL::CStrRef)),
     this, SLOT(onExecBlockRemoved(unsigned, FTL::CStrRef))
     );
-  connect(
-    m_notifier.data(), SIGNAL(execBlocksReordered(FTL::ArrayRef<unsigned>)),
-    this, SLOT(onExecBlocksReordered(FTL::ArrayRef<unsigned>))
-    );
+  // connect(
+  //   m_notifier.data(), SIGNAL(execBlocksReordered(FTL::ArrayRef<unsigned>)),
+  //   this, SLOT(onExecBlocksReordered(FTL::ArrayRef<unsigned>))
+  //   );
 
   init();
 }

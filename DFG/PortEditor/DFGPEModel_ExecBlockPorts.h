@@ -78,6 +78,7 @@ protected slots:
   void onEditWouldSplitFromPresetMayHaveChanged();
 
   void onExecBlockRenamed(
+    unsigned blockIndex,
     FTL::CStrRef oldExecBlockName,
     FTL::CStrRef newExecBlockName
     );

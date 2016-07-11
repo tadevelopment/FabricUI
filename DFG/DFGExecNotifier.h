@@ -264,8 +264,9 @@ signals:
     );
 
   void execBlockRenamed(
-    FTL::CStrRef oldExecBlockName,
-    FTL::CStrRef newExecBlockName
+    unsigned blockIndex,
+    FTL::CStrRef oldBlockName,
+    FTL::CStrRef newBlockName
     );
 
   void instBlockRenamed(

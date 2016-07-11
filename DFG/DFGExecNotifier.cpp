@@ -262,10 +262,11 @@ void DFGExecNotifier::handler_nodeRenamed( FTL::JSONObject const *jsonObject )
 
 void DFGExecNotifier::handler_execBlockRenamed( FTL::JSONObject const *jsonObject )
 {
+  unsigned blockIndex = jsonObject->getSInt32( FTL_STR("blockIndex") );
   FTL::CStrRef oldBlockName = jsonObject->getString( FTL_STR("oldBlockName") );
   FTL::CStrRef newBlockName = jsonObject->getString( FTL_STR("blockName") );
 
-  emit execBlockRenamed( oldBlockName, newBlockName );
+  emit execBlockRenamed( blockIndex, oldBlockName, newBlockName );
 }
 
 void DFGExecNotifier::handler_instBlockRenamed( FTL::JSONObject const *jsonObject )

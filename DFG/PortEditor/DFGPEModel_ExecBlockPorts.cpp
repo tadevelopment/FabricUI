@@ -31,8 +31,8 @@ DFGPEModel_ExecBlockPorts::DFGPEModel_ExecBlockPorts(
     this, SLOT(onEditWouldSplitFromPresetMayHaveChanged())
     );
   connect(
-    m_notifier.data(), SIGNAL(execBlockRenamed(FTL::CStrRef, FTL::CStrRef)),
-    this, SLOT(onExecBlockRenamed(FTL::CStrRef, FTL::CStrRef))
+    m_notifier.data(), SIGNAL(execBlockRenamed(unsigned, FTL::CStrRef, FTL::CStrRef)),
+    this, SLOT(onExecBlockRenamed(unsigned, FTL::CStrRef, FTL::CStrRef))
     );
   connect(
     m_notifier.data(), SIGNAL(execBlockPortInserted(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::JSONObject const *)),
@@ -194,6 +194,7 @@ void DFGPEModel_ExecBlockPorts::onEditWouldSplitFromPresetMayHaveChanged()
 }
 
 void DFGPEModel_ExecBlockPorts::onExecBlockRenamed(
+  unsigned blockIndex,
   FTL::CStrRef oldExecBlockName,
   FTL::CStrRef newExecBlockName
   )
