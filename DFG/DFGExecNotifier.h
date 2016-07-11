@@ -72,89 +72,97 @@ signals:
 
   // The executable's ports
 
-  void portInserted(
+  void execPortInserted(
     unsigned portIndex,
-    FTL::CStrRef portName
+    FTL::CStrRef portName,
+    FTL::JSONObject const *portDesc
     );
 
-  void portRenamed(
+  void execPortRenamed(
     unsigned portIndex,
     FTL::CStrRef oldPortName,
     FTL::CStrRef newPortName
     );
 
-  void portRemoved(
+  void execPortRemoved(
     unsigned portIndex,
     FTL::CStrRef portName
     );
 
-  void portMetadataChanged(
+  void execPortMetadataChanged(
     FTL::CStrRef portName,
     FTL::CStrRef key,
     FTL::CStrRef value
     );
 
-  void portTypeSpecChanged(
+  void execPortTypeChanged(
+    unsigned portIndex,
+    FTL::CStrRef portName,
+    FabricCore::DFGPortType newPortType
+    );
+
+  void execPortTypeSpecChanged(
+    unsigned portIndex,
     FTL::CStrRef portName,
     FTL::CStrRef newTypeSpec
     );
 
-  void portResolvedTypeChanged(
+  void execPortResolvedTypeChanged(
     FTL::CStrRef portName,
     FTL::CStrRef newResolvedTypeName
     );
 
-  void fixedPortResolvedTypeChanged(
+  void execFixedPortResolvedTypeChanged(
     FTL::CStrRef portName,
     FTL::CStrRef newResolvedTypeName
     );
 
-  void portDefaultValuesChanged(
+  void execPortDefaultValuesChanged(
     FTL::CStrRef portName
     );
 
-  void portsReordered(
+  void execPortsReordered(
     FTL::ArrayRef<unsigned> newOrder
-    );
-
-  void portTypeChanged(
-    FTL::CStrRef portName,
-    FTL::CStrRef newPortType
     );
 
   // The executable's blocks
 
-  void blockInserted(
+  void execBlockInserted(
+    unsigned blockIndex,
     FTL::CStrRef blockName
     );
 
-  void blockPortInserted(
+  void execBlockPortInserted(
     FTL::CStrRef blockName,
+    unsigned portIndex,
+    FTL::CStrRef portName,
+    FTL::JSONObject const *portDesc
+    );
+
+  void execBlockPortRemoved(
+    FTL::CStrRef blockName,
+    unsigned portIndex,
     FTL::CStrRef portName
     );
 
-  void blockPortRemoved(
-    FTL::CStrRef blockName,
-    FTL::CStrRef portName
-    );
-
-  void blockRemoved(
+  void execBlockRemoved(
+    unsigned blockIndex,
     FTL::CStrRef blockName
     );
 
-  void blockMetadataChanged(
+  void execBlockMetadataChanged(
     FTL::CStrRef blockName,
     FTL::CStrRef key,
     FTL::CStrRef value
     );
 
-  void blockPortResolvedTypeChanged(
+  void execBlockPortResolvedTypeChanged(
     FTL::CStrRef blockName,
     FTL::CStrRef portName,
     FTL::CStrRef newResolvedTypeName
     );
 
-  void blockPortDefaultValuesChanged(
+  void execBlockPortDefaultValuesChanged(
     FTL::CStrRef blockName,
     FTL::CStrRef portName
     );
@@ -256,8 +264,9 @@ signals:
     );
 
   void execBlockRenamed(
-    FTL::CStrRef oldExecBlockName,
-    FTL::CStrRef newExecBlockName
+    unsigned blockIndex,
+    FTL::CStrRef oldBlockName,
+    FTL::CStrRef newBlockName
     );
 
   void instBlockRenamed(

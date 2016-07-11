@@ -355,6 +355,7 @@ QString DFGUICmdHandler_QUndo::dfgDoEditPort(
   FabricCore::DFGExec const &exec,
   QString oldPortName,
   QString desiredNewPortName,
+  FabricCore::DFGPortType portType,
   QString typeSpec,
   QString extDep,
   QString uiMetadata
@@ -367,6 +368,7 @@ QString DFGUICmdHandler_QUndo::dfgDoEditPort(
       exec,
       oldPortName,
       desiredNewPortName,
+      portType,
       typeSpec,
       extDep,
       uiMetadata

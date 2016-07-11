@@ -37,14 +37,18 @@
 
 #DFGExecHeaderWidget QLabel,
 #DFGExecHeaderWidget QPushButton,
-#DFGExecHeaderWidget QLineEdit
+#DFGPEWidget_Elements QPushButton,
+#DFGExecHeaderWidget QLineEdit,
+#DFGPEWidget_Elements QLineEdit
 {
   font: bold 12px "Lucida";
   color: #C7D2DA;
 }
 
 #DFGExecHeaderWidget QPushButton,
-#DFGExecHeaderWidget QLineEdit
+#DFGPEWidget_Elements QPushButton,
+#DFGExecHeaderWidget QLineEdit,
+#DFGPEWidget_Elements QLineEdit
 {
   height: 20px;
   border: none;
@@ -57,9 +61,33 @@
   background-color: #3c4450;
 }
 
-#DFGExecHeaderWidget QPushButton:hover {
+#DFGExecHeaderWidget QPushButton:hover
+{
   color: #eee;
   background-color: #525a66;
+}
+
+#DFGPEWidget_Elements QPushButton,
+#DFGPEWidget_Elements QLineEdit
+{
+  background-color: #272822;
+}
+
+#DFGPEWidget_Elements QPushButton:hover
+{
+  color: #eee;
+  background-color: #555849;
+}
+
+#DFGExecHeaderWidget QPushButton
+{
+  margin: 0px;
+  padding: 0px 4px;
+}
+
+#DFGPEWidget_Elements_AddElementContainer QPushButton
+{
+  padding: 2px 4px;
 }
 
 #DFGExecHeaderWidget #DFGBackButton
@@ -98,4 +126,85 @@
 #DFGExecHeaderWidget #DFGPresetSplitWidget #DFGPresetSplitButton
 {
   padding: 0px 4px 0px 4px;
+}
+
+#DFGPEWidget_Elements
+{
+  spacing: 0px;
+}
+
+#DFGPEWidget_Elements QTableWidget
+{
+  background-color: #2E2E2E;
+  border: none;
+}
+
+#DFGPEWidget_Elements #DFGPEWidget_Elements_AddElementContainer,
+#DFGPEWidget_Elements #DFGPEWidget_Elements_AddElementContainer QLabel
+{
+  background-color: #434343;
+  border: none;
+}
+
+#DFGPEWidget_Elements #DFGPEWidget_Elements_AddElementContainer
+{
+  margin: 0px;
+  padding: 3px 6px;
+}
+
+#DFGPEWidget_Elements QTableWidget::item
+{
+  border-top: 1px solid #434343;
+  padding: 2px 0px;
+}
+
+#DFGPEWidget_Elements QTableWidget::item:selected
+{
+  color: #2E2E2E;
+  background-color: #888888;
+}
+
+#DFGPEWidget_Elements QTableWidget QHeaderView::section
+{
+  background-color: #434343;
+  color: white;
+  padding: 2px 4px;
+  border: none;
+}
+
+#DFGPEWidget_Elements_ControlCell
+{
+  padding: 2px 4px;
+  spacing: 2px;
+}
+
+#DFGPEWidget_Elements_ControlCell QPushButton
+{
+  margin: 0px;
+}
+
+#DFGPEWidget_Exec QTabWidget::pane
+{
+  border: none;
+}
+
+#DFGPEWidget_Exec QTabBar::tab
+{
+  background-color: #2E2E2E;
+  color: white;
+  border-left: 1px solid #434343;
+  border-right: 1px solid #434343;
+  padding: 3px 6px;
+}
+
+#DFGPEWidget_Exec QTabBar::tab:selected,
+#DFGPEWidget_Exec QTabBar::tab:hover
+{
+  background-color: #434343;
+}
+
+#DFGPEWidget_Elements_AddElementContainer QLineEdit
+{
+  color: #cbcbcb;
+  background-color: #333;
 }

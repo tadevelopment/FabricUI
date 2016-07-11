@@ -18,13 +18,22 @@ namespace FabricUI
   namespace DFG
   {
 
+    class DFGExecHeaderWidget;
+    class DFGPEWidget_Exec;
+
     class DFGKLEditorWidget : public QWidget
     {
       Q_OBJECT
 
     public:
 
-      DFGKLEditorWidget(QWidget * parent, DFGController * controller, FabricServices::ASTWrapper::KLASTManager * manager, const DFGConfig & config = DFGConfig());
+      DFGKLEditorWidget(
+        DFGWidget * dfgWidget,
+        DFGExecHeaderWidget *dfgExecHeaderWidget,
+        DFGController * controller,
+        FabricServices::ASTWrapper::KLASTManager * manager,
+        const DFGConfig & config = DFGConfig()
+        );
       virtual ~DFGKLEditorWidget();
 
       bool hasUnsavedChanges() const { return m_unsavedChanges; }
@@ -57,7 +66,7 @@ namespace FabricUI
     private:
 
       DFGController * m_controller;
-      DFGKLEditorPortTableWidget * m_ports;
+      DFGPEWidget_Exec *m_dfgPEExecWidget;
       KLEditor::KLEditorWidget * m_klEditor;
       DFGConfig m_config;
       bool m_unsavedChanges;
