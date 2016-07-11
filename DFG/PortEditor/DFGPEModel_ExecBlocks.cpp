@@ -66,12 +66,12 @@ QString DFGPEModel_ExecBlocks::getElementName( int index )
 
 FabricCore::DFGPortType DFGPEModel_ExecBlocks::getElementPortType( int index )
 {
-  assert( false );
+  return FabricCore::DFGPortType_In;
 }
 
 QString DFGPEModel_ExecBlocks::getElementTypeSpec( int index )
 {
-  assert( false );
+  return QString();
 }
 
 bool DFGPEModel_ExecBlocks::isElementReadOnlyImpl( int index )
