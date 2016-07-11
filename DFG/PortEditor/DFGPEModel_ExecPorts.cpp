@@ -225,7 +225,7 @@ void DFGPEModel_ExecPorts::onExecPortInserted(
   emit elementInserted(
     portIndex,
     QString::fromUtf8( portName.data(), portName.size() ),
-    PortTypeStrToDFGPortType( portDesc->getStringOrEmpty( FTL_STR("outsidePortType") ) ),
+    PortTypeStrToDFGPortType( portDesc->getStringOrEmpty( FTL_STR("execPortType") ) ),
     QString::fromUtf8( typeSpec.data(), typeSpec.size() )
     );
 }
