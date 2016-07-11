@@ -40,10 +40,7 @@ DFGPEModel_ExecBlocks::DFGPEModel_ExecBlocks(
     m_notifier.data(), SIGNAL(execBlockRemoved(unsigned, FTL::CStrRef)),
     this, SLOT(onExecBlockRemoved(unsigned, FTL::CStrRef))
     );
-  // connect(
-  //   m_notifier.data(), SIGNAL(execBlocksReordered(FTL::ArrayRef<unsigned>)),
-  //   this, SLOT(onExecBlocksReordered(FTL::ArrayRef<unsigned>))
-  //   );
+  // connect(gi
 
   init();
 }

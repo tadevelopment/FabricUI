@@ -70,13 +70,12 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
     m_canInspectElements = m_model->canInspectElements();
     m_hasPortType = m_model->hasPortType();
     m_hasTypeSpec = m_model->hasTypeSpec();
-    m_controlCol = 0;
-    m_portNameCol = m_controlCol + 1;
-    m_portTypeCol = m_hasPortType? m_portNameCol + 1: -1;
-    m_portTypeSpecCol =
-      m_hasTypeSpec?
-        (m_hasPortType? m_portTypeCol + 1: m_portNameCol + 1):
-        -1;
+    int curCol = 0;
+    m_controlCol = curCol++;
+    m_portNameCol = curCol++;
+    m_portTypeCol = m_hasPortType? curCol++: -1;
+    m_portTypeSpecCol = m_hasTypeSpec? curCol++: -1;
+    int colCount = curCol;
 
     m_addElementName = new QLineEdit;
     m_addElementName->setEnabled( !m_model->isReadOnly() );
@@ -132,7 +131,7 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
       headerLabels << (elementDescCapitalized + " TypeSpec");
 
     m_tableWidget =
-      new DFGPEWidget_Elements_TableWidget( m_model, 0, m_portTypeSpecCol + 1 );
+      new DFGPEWidget_Elements_TableWidget( m_model, 0, colCount );
     m_tableWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
     if ( m_hasPortType )
       m_tableWidget->setItemDelegateForColumn(

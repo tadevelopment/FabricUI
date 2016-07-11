@@ -199,10 +199,12 @@ void DFGPEModel_ExecBlockPorts::onExecBlockRenamed(
   FTL::CStrRef newExecBlockName
   )
 {
-  assert( oldExecBlockName == m_execBlockName );
-  m_execBlockName = newExecBlockName;
-  m_execBlockNameQS =
-    QString::fromUtf8( newExecBlockName.data(), newExecBlockName.size() );
+  if ( oldExecBlockName == m_execBlockName )
+  {
+    m_execBlockName = newExecBlockName;
+    m_execBlockNameQS =
+      QString::fromUtf8( newExecBlockName.data(), newExecBlockName.size() );
+  }
 }
 
 void DFGPEModel_ExecBlockPorts::onExecBlockPortInserted(
@@ -212,14 +214,16 @@ void DFGPEModel_ExecBlockPorts::onExecBlockPortInserted(
   FTL::JSONObject const *portDesc
   )
 {
-  assert( blockName == m_execBlockName );
-  FTL::StrRef typeSpec = portDesc->getStringOrEmpty( FTL_STR("typeSpec") );
-  emit elementInserted(
-    portIndex,
-    QString::fromUtf8( portName.data(), portName.size() ),
-    FabricCore::DFGPortType_In,
-    QString::fromUtf8( typeSpec.data(), typeSpec.size() )
-    );
+  if ( blockName == m_execBlockName )
+  {
+    FTL::StrRef typeSpec = portDesc->getStringOrEmpty( FTL_STR("typeSpec") );
+    emit elementInserted(
+      portIndex,
+      QString::fromUtf8( portName.data(), portName.size() ),
+      FabricCore::DFGPortType_In,
+      QString::fromUtf8( typeSpec.data(), typeSpec.size() )
+      );
+  }
 }
 
 void DFGPEModel_ExecBlockPorts::onExecBlockPortRemoved(
@@ -228,8 +232,8 @@ void DFGPEModel_ExecBlockPorts::onExecBlockPortRemoved(
   FTL::CStrRef portName
   )
 {
-  assert( blockName == m_execBlockName );
-  emit elementRemoved( portIndex );
+  if ( blockName == m_execBlockName )
+    emit elementRemoved( portIndex );
 }
 
 bool DFGPEModel_ExecBlockPorts::isElementReadOnlyImpl( int index )
