@@ -181,6 +181,14 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->get( FTL_STR("portDesc") )->cast<FTL::JSONObject>()
         );
     }
+    else if(descStr == FTL_STR("execFixedPortRenamed"))
+    {
+      onExecFixedPortRenamed(
+        jsonObject->getString( FTL_STR("oldPortName") ),
+        jsonObject->getString( FTL_STR("portName") ),
+        jsonObject->get( FTL_STR("portDesc") )->cast<FTL::JSONObject>()
+        );
+    }
     else if(descStr == FTL_STR("nodePortRenamed"))
     {
       onNodePortRenamed(
@@ -1697,7 +1705,6 @@ void DFGNotificationRouter::onInstBlockRenamed(
   uiNode->renameInstBlockAtIndex( blockIndex, newBlockName );
 }
 
-
 void DFGNotificationRouter::onExecPortRenamed(
   FTL::CStrRef oldPortName,
   FTL::CStrRef newPortName,
@@ -1735,6 +1742,46 @@ void DFGNotificationRouter::onExecPortRenamed(
     if(!uiPort)
       return;
     uiPort->setName(newPortName);
+  }
+}
+
+void DFGNotificationRouter::onExecFixedPortRenamed(
+  FTL::CStrRef oldPortName,
+  FTL::CStrRef newPortName,
+  FTL::JSONObject const *execPortJSONObject
+  )
+{
+  GraphView::Graph * uiGraph = m_dfgController->graph();
+  if(!uiGraph)
+    return;
+
+  FTL::CStrRef execPortTypeStr =
+    execPortJSONObject->getString( FTL_STR("outsidePortType") );
+
+  if ( execPortTypeStr != FTL_STR("In") )
+  {
+    GraphView::SidePanel * uiPanel =
+      uiGraph->sidePanel(GraphView::PortType_Input);
+    if(!uiPanel)
+      return;
+
+    GraphView::FixedPort * uiFixedPort = uiPanel->fixedPort(oldPortName);
+    if(!uiFixedPort)
+      return;
+    uiFixedPort->setName(newPortName);
+  }
+
+  if ( execPortTypeStr != FTL_STR("Out") )
+  {
+    GraphView::SidePanel * uiPanel =
+      uiGraph->sidePanel(GraphView::PortType_Output);
+    if(!uiPanel)
+      return;
+
+    GraphView::FixedPort * uiFixedPort = uiPanel->fixedPort(oldPortName);
+    if(!uiFixedPort)
+      return;
+    uiFixedPort->setName(newPortName);
   }
 }
 

@@ -160,6 +160,11 @@ namespace FabricUI
         FTL::CStrRef newPortName,
         FTL::JSONObject const *execPortJSONObject
         );
+      void onExecFixedPortRenamed(
+        FTL::CStrRef oldPortName,
+        FTL::CStrRef newPortName,
+        FTL::JSONObject const *execPortJSONObject
+        );
       void onNodePortRenamed(
         FTL::CStrRef nodeName,
         FTL::CStrRef oldPortName,

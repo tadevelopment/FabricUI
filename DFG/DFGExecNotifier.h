@@ -70,6 +70,8 @@ signals:
     FTL::CStrRef extDeps
     );
 
+  void removedFromOwner();
+
   // The executable's ports
 
   void execPortInserted(
@@ -112,9 +114,26 @@ signals:
     FTL::CStrRef newResolvedTypeName
     );
 
+  void execFixedPortInserted(
+    unsigned portIndex,
+    FTL::CStrRef portName,
+    FTL::JSONObject const *portDesc
+    );
+
+  void execFixedPortRenamed(
+    unsigned portIndex,
+    FTL::CStrRef oldPortName,
+    FTL::CStrRef newPortName
+    );
+
   void execFixedPortResolvedTypeChanged(
     FTL::CStrRef portName,
     FTL::CStrRef newResolvedTypeName
+    );
+
+  void execFixedPortRemoved(
+    unsigned portIndex,
+    FTL::CStrRef portName
     );
 
   void execPortDefaultValuesChanged(
@@ -374,6 +393,9 @@ private:
   void handler_execBlockRenamed( FTL::JSONObject const *jsonObject );
   void handler_execDidAttachPreset( FTL::JSONObject const *jsonObject );
   void handler_execEditWouldSplitFromPresetMayHaveChanged( FTL::JSONObject const *jsonObject );
+  void handler_execFixedPortInserted( FTL::JSONObject const *jsonObject );
+  void handler_execFixedPortRemoved( FTL::JSONObject const *jsonObject );
+  void handler_execFixedPortRenamed( FTL::JSONObject const *jsonObject );
   void handler_execFixedPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_execMetadataChanged( FTL::JSONObject const *jsonObject );
   void handler_execPortDefaultValuesChanged( FTL::JSONObject const *jsonObject );
@@ -417,6 +439,7 @@ private:
   void handler_portsConnected( FTL::JSONObject const *jsonObject );
   void handler_portsDisconnected( FTL::JSONObject const *jsonObject );
   void handler_refVarPathChanged( FTL::JSONObject const *jsonObject );
+  void handler_removedFromOwner( FTL::JSONObject const *jsonObject );
 
   FabricCore::DFGView m_view;
 
