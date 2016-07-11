@@ -557,11 +557,12 @@ DFGPEWidget_Elements_ControlCell::DFGPEWidget_Elements_ControlCell(
       this, SLOT(onTwoClicked())
       );
   }
+  else pushButtonTwo = NULL;
 
   QHBoxLayout *layout = new QHBoxLayout;
   layout->setContentsMargins( 0, 0, 0, 0 );
   layout->addWidget( pushButtonOne );
-  if ( !iconTwo.isNull() )
+  if ( pushButtonTwo )
     layout->addWidget( pushButtonTwo );
 
   setLayout( layout );
