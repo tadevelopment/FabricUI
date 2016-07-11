@@ -133,6 +133,11 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
     m_tableWidget =
       new DFGPEWidget_Elements_TableWidget( m_model, 0, colCount );
     m_tableWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+    m_tableWidget->setContextMenuPolicy( Qt::CustomContextMenu );
+    QObject::connect(
+      m_tableWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
+      this, SLOT(onCustomContextMenuRequested(const QPoint &))
+      );
     if ( m_hasPortType )
       m_tableWidget->setItemDelegateForColumn(
         m_portTypeCol,
@@ -217,6 +222,72 @@ void DFGPEWidget_Elements::unpopulatePorts()
     onPortRemoved(
       portCount - portIndex - 1
       );
+}
+
+void DFGPEWidget_Elements::onInspectSelected()
+{
+  QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
+  QList<int> selectedIndices;
+  for ( int i = 0; i < selectedItems.size(); ++i )
+    if ( selectedItems[i]->column() == 0 )
+      selectedIndices << selectedItems[0]->row();
+  assert( selectedIndices.size() == 1 );
+  m_model->inspectElement( selectedIndices[0], m_dfgWidget );
+}
+
+void DFGPEWidget_Elements::onRemoveSelected()
+{
+  QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
+  QList<int> selectedIndices;
+  for ( int i = 0; i < selectedItems.size(); ++i )
+    if ( selectedItems[i]->column() == 0 )
+    {
+      int index = selectedItems[0]->row();
+      if ( !m_model->isElementReadOnly( index ) )
+        selectedIndices << index;
+    }
+  m_model->removeElements( selectedIndices );
+}
+
+void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
+{
+  QMenu menu;
+
+  QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
+  QList<int> selectedIndices;
+  for ( int i = 0; i < selectedItems.size(); ++i )
+    if ( selectedItems[i]->column() == 0 )
+      selectedIndices << selectedItems[0]->row();
+
+  if ( m_canInspectElements )
+  {
+    QAction *inspectAction =
+      new QAction( m_dotsIcon, "Inspect Selected", &menu );
+    connect(
+      inspectAction, SIGNAL(triggered()),
+      this, SLOT(onInspectSelected())
+      );
+    menu.addAction( inspectAction );
+    inspectAction->setEnabled( selectedIndices.size() == 1 );
+  }
+
+  QAction *removeAction =
+    new QAction( m_minusIcon, "Remove Selected", &menu );
+  connect(
+    removeAction, SIGNAL(triggered()),
+    this, SLOT(onRemoveSelected())
+    );
+  menu.addAction( removeAction );
+  bool canRemoveAtLeastOne = false;
+  for ( int i = 0; i < selectedIndices.size(); ++i )
+    if ( !m_model->isElementReadOnly( selectedIndices[i] ) )
+    {
+      canRemoveAtLeastOne = true;
+      break;
+    }
+  removeAction->setEnabled( canRemoveAtLeastOne );
+
+  menu.exec( m_tableWidget->mapToGlobal( pos ) );
 }
 
 void DFGPEWidget_Elements::onIsReadOnlyChanged(
@@ -435,7 +506,9 @@ void DFGPEWidget_Elements::onInspectRowClicked( int row )
 
 void DFGPEWidget_Elements::onDeleteRowClicked( int row )
 {
-  m_model->removeElement( row );
+  QList<int> indices;
+  indices << row;
+  m_model->removeElements( indices );
 }
 
 void DFGPEWidget_Elements::onAddElementClicked()

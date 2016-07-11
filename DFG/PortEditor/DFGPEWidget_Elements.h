@@ -113,6 +113,12 @@ protected slots:
 
   void onAddElementClicked();
 
+  void onInspectSelected();
+
+  void onRemoveSelected();
+
+  void onCustomContextMenuRequested( QPoint const &pos );
+
 private:
 
   DFGWidget *m_dfgWidget;

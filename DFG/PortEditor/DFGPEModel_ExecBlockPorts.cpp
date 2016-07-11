@@ -165,20 +165,26 @@ void DFGPEModel_ExecBlockPorts::setElementTypeSpec(
     );
 }
 
-void DFGPEModel_ExecBlockPorts::removeElement(
-  int index
+void DFGPEModel_ExecBlockPorts::removeElements(
+  QList<int> indices
   )
 {
-  QString portPath = m_execBlockNameQS;
-  portPath += '.';
-  portPath += getElementName( index );
+  qSort( indices );
+  for ( int i = indices.size(); i--; )
+  {
+    int index = indices[i];
 
-  m_cmdHandler->dfgDoRemovePort(
-    m_binding,
-    m_execPathQS,
-    m_exec,
-    portPath
-    );
+    QString portPath = m_execBlockNameQS;
+    portPath += '.';
+    portPath += getElementName( index );
+
+    m_cmdHandler->dfgDoRemovePort(
+      m_binding,
+      m_execPathQS,
+      m_exec,
+      portPath
+      );
+  }
 }
 
 void DFGPEModel_ExecBlockPorts::reorderElements(

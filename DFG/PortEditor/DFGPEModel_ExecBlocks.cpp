@@ -132,12 +132,13 @@ void DFGPEModel_ExecBlocks::setElementTypeSpec(
   assert( false );
 }
 
-void DFGPEModel_ExecBlocks::removeElement(
-  int index
+void DFGPEModel_ExecBlocks::removeElements(
+  QList<int> indices
   )
 {
   QStringList execBlockNames;
-  execBlockNames << getElementName( index );
+  for ( int i = 0; i < indices.size(); ++i )
+    execBlockNames << getElementName( indices[i] );
   m_cmdHandler->dfgDoRemoveNodes(
     m_binding,
     m_execPathQS,

@@ -61,8 +61,8 @@ public:
     int index,
     QString newTypeSpec
     ) = 0;
-  virtual void removeElement(
-    int index
+  virtual void removeElements(
+    QList<int> indices
     ) = 0;
 
   virtual void reorderElements(

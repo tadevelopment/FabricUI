@@ -176,16 +176,21 @@ void DFGPEModel_ExecPorts::setElementTypeSpec(
     );
 }
 
-void DFGPEModel_ExecPorts::removeElement(
-  int index
+void DFGPEModel_ExecPorts::removeElements(
+  QList<int> indices
   )
 {
-  m_cmdHandler->dfgDoRemovePort(
-    m_binding,
-    m_execPathQS,
-    m_exec,
-    getElementName( index )
-    );
+  qSort( indices );
+  for ( int i = indices.size(); i--; )
+  {
+    int index = indices[i];
+    m_cmdHandler->dfgDoRemovePort(
+      m_binding,
+      m_execPathQS,
+      m_exec,
+      getElementName( index )
+      );
+  }
 }
 
 void DFGPEModel_ExecPorts::reorderElements(
