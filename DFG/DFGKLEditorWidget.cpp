@@ -123,8 +123,6 @@ void DFGKLEditorWidget::onExecChanged()
     try
     {
       QString code = getExec().getCode();
-      if ( code.length() == 0 )
-        code = "dfgEntry {\n  //result = lhs + rhs;\n}\n";
       m_klEditor->sourceCodeWidget()->setCodeAndExec( code, &exec );
     }
     catch ( FabricCore::Exception e )

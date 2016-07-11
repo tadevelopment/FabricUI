@@ -27,6 +27,7 @@ public:
       title,
       pos
       )
+    , m_initialCode( initialCode )
     {}
 
   static FTL::CStrRef CmdName()
