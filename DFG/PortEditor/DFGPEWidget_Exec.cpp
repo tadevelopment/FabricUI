@@ -67,6 +67,10 @@ void DFGPEWidget_Exec::setExec(
     this, SLOT(onExecBlockInserted(unsigned, FTL::CStrRef))
     );
   connect(
+    m_execNotifier.data(), SIGNAL(execBlockRenamed(unsigned, FTL::CStrRef, FTL::CStrRef)),
+    this, SLOT(onExecBlockRenamed(unsigned, FTL::CStrRef, FTL::CStrRef))
+    );
+  connect(
     m_execNotifier.data(), SIGNAL(execBlockRemoved(unsigned, FTL::CStrRef)),
     this, SLOT(onExecBlockRemoved(unsigned, FTL::CStrRef))
     );
@@ -147,6 +151,18 @@ void DFGPEWidget_Exec::onExecBlockInserted(
       );
 
   m_tabWidget->insertTab( 2 + blockIndex, execBlockPorts, desc );
+}
+
+void DFGPEWidget_Exec::onExecBlockRenamed(
+  unsigned blockIndex,
+  FTL::CStrRef oldBlockName,
+  FTL::CStrRef newBlockName
+  )
+{
+  QString desc = "Block '";
+  desc += QString::fromUtf8( newBlockName.data(), newBlockName.size() );
+  desc += '\'';
+  m_tabWidget->setTabText( 2 + blockIndex, desc );
 }
 
 void DFGPEWidget_Exec::onExecBlockRemoved(

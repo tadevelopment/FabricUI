@@ -54,6 +54,12 @@ protected slots:
     FTL::CStrRef blockName
     );
 
+  void onExecBlockRenamed(
+    unsigned blockIndex,
+    FTL::CStrRef oldBlockName,
+    FTL::CStrRef newBlockName
+    );
+
   void onExecBlockRemoved(
     unsigned blockIndex,
     FTL::CStrRef blockName
