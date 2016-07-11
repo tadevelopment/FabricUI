@@ -38,7 +38,7 @@ DFGPEWidget_Elements::DFGPEWidget_Elements(
   , m_layout( new QVBoxLayout )
 {
   setObjectName( "DFGPEWidget_Elements" );
-  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
   m_layout->setContentsMargins( 0, 0, 0, 0 );
   m_layout->setSpacing( 0 );
   m_portTypeLabels << "In" << "IO" << "Out";
@@ -132,7 +132,7 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
 
     m_tableWidget =
       new DFGPEWidget_Elements_TableWidget( m_model, 0, colCount );
-    m_tableWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+    m_tableWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
     m_tableWidget->setContextMenuPolicy( Qt::CustomContextMenu );
     QObject::connect(
       m_tableWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
