@@ -32,6 +32,7 @@ public:
   virtual bool canInspectElements() /*override*/ { return false; }
   virtual bool hasPortType() /*override*/ { return false; }
   virtual bool hasTypeSpec() /*override*/ { return true; }
+  virtual bool allowReordering() /*override*/ { return true; }
 
   virtual int getElementCount() /*override*/;
   virtual QString getElementName( int index ) /*override*/;

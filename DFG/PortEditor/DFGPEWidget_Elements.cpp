@@ -521,11 +521,15 @@ DFGPEWidget_Elements_TableWidget::DFGPEWidget_Elements_TableWidget(
   // setAcceptDrops( True );
   // viewport().setAcceptDrops( True );
   setShowGrid( false );
-  setDragDropOverwriteMode( false );
-  setDropIndicatorShown( true );
+  if ( model->allowReordering() )
+  {
+    setDragDropMode( QAbstractItemView::InternalMove );
+    setDragDropOverwriteMode( false );
+    setDropIndicatorShown( true );
+  }
+  else setDragDropMode( QAbstractItemView::NoDragDrop );
   setSelectionMode( QAbstractItemView::ExtendedSelection );
   setSelectionBehavior( QAbstractItemView::SelectRows );
-  setDragDropMode( QAbstractItemView::InternalMove );
 }
 
 bool DFGPEWidget_Elements_TableWidget::isDragValid( QDropEvent *event )

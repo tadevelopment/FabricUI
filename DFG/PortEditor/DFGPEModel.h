@@ -24,6 +24,7 @@ public:
   virtual bool canInspectElements() = 0;
   virtual bool hasPortType() = 0;
   virtual bool hasTypeSpec() = 0;
+  virtual bool allowReordering() = 0;
   bool isReadOnly() { return m_isReadOnly; }
 
   QString getElementDesc() const
