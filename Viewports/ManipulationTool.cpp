@@ -52,6 +52,11 @@ class ManipulationEventFilterObject : public QObject {
 static ManipulationEventFilterObject sEventFilterObject;
 ManipulationTool::ManipulationTool(GLViewportWidget * glView) : m_active(false), m_view(glView) {}
 
+ManipulationTool::~ManipulationTool()
+{
+  ManipulationCmd::setStaticRTValCommands( FabricCore::RTVal() );
+}
+
 void ManipulationTool::toolOnSetup() {
   try
   {

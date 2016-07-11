@@ -642,6 +642,8 @@ class CanvasWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.closeEvent(self, event)
 
         self.astManager = None
+        self.setCentralWidget(None)
+        self.viewport = None
         self.client.close()
 
         if os.path.exists(self.autosaveFilename):
