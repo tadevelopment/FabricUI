@@ -508,6 +508,16 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->getObject( FTL_STR("portDesc") )
         );
     }
+    else if( descStr == FTL_STR("execBlockPortRenamed") )
+    {
+      onExecBlockPortRenamed(
+        jsonObject->getSInt32( FTL_STR("blockIndex") ),
+        jsonObject->getString( FTL_STR("blockName") ),
+        jsonObject->getSInt32( FTL_STR("portIndex") ),
+        jsonObject->getString( FTL_STR("oldPortName") ),
+        jsonObject->getString( FTL_STR("portName") )
+        );
+    }
     else if( descStr == FTL_STR("execBlockPortRemoved") )
     {
       onExecBlockPortRemoved(
@@ -902,6 +912,29 @@ void DFGNotificationRouter::onExecBlockPortInserted(
       );
   uiPin->setDataType( resolvedType );
   uiNode->addPin( uiPin );
+}
+
+void DFGNotificationRouter::onExecBlockPortRenamed(
+  int blockIndex,
+  FTL::CStrRef blockName,
+  int portIndex,
+  FTL::CStrRef oldPortName,
+  FTL::CStrRef newPortName
+  )
+{
+  FabricCore::DFGExec &exec = m_dfgController->getExec();
+  if ( !exec )
+    return;
+
+  GraphView::Graph *uiGraph = m_dfgController->graph();
+  if ( !uiGraph )
+    return;
+
+  GraphView::Node *uiNode = uiGraph->node( blockName );
+  if ( !uiNode )
+    return;
+
+  uiNode->renamePin( oldPortName, newPortName );
 }
 
 void DFGNotificationRouter::onExecBlockPortRemoved(

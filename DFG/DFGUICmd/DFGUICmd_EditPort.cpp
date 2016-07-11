@@ -13,7 +13,7 @@ void DFGUICmd_EditPort::appendDesc( QString &desc )
   appendDesc_PortPath( m_oldPortName, desc );
   if ( m_actualNewPortName != m_oldPortName )
   {
-    desc += "(renamed to ";
+    desc += " (renamed to ";
     appendDesc_PortPath( m_actualNewPortName, desc );
     desc += ')';
   }
@@ -38,7 +38,7 @@ void DFGUICmd_EditPort::invoke( unsigned &coreUndoCount )
 
 FTL::CStrRef DFGUICmd_EditPort::invoke(
   FTL::CStrRef execPath,
-  FTL::CStrRef oldPortName,
+  FTL::CStrRef oldPortPath,
   FTL::CStrRef desiredNewPortName,
   FabricCore::DFGPortType portType,
   FTL::CStrRef typeSpec,
@@ -57,58 +57,70 @@ FTL::CStrRef DFGUICmd_EditPort::invoke(
   }
 
   FTL::CStrRef newPortName;
+  std::string newPortPath;
   if ( !desiredNewPortName.empty()
-    && desiredNewPortName != oldPortName )
+    && desiredNewPortName != oldPortPath )
   {
     newPortName = exec.renameExecPort(
-      oldPortName.c_str(),
+      oldPortPath.c_str(),
       desiredNewPortName.c_str()
       );
+    FTL::CStrRef::Split split = oldPortPath.rsplit('.');
+    newPortPath = split.first;
+    if ( !newPortPath.empty() )
+      newPortPath += '.';
+    newPortPath += newPortName;
     ++coreUndoCount;
   }
   else
-    newPortName = oldPortName;
-
-  FabricCore::DFGPortType oldPortType =
-    exec.getExecPortType( newPortName.c_str() );
-  if ( portType != oldPortType )
   {
-    exec.setExecPortType( newPortName.c_str(), portType );
-    ++coreUndoCount;
+    newPortPath = oldPortPath;
+    newPortName = oldPortPath.rsplit('.').second;
   }
 
-  // Only set type & value if the type is different (else we loose the value even if the type didn't change!)
-  FTL::CStrRef oldTypeSpec = exec.getExecPortTypeSpec( newPortName.c_str() );
-  if ( !typeSpec.empty() && oldTypeSpec != typeSpec )
+  if ( newPortPath.find('.') == newPortPath.npos )
   {
-    exec.setExecPortTypeSpec(
-      newPortName.c_str(),
-      typeSpec.c_str()
-      );
-    ++coreUndoCount;
-
-    if ( execPath.empty()
-      && !typeSpec.empty()
-      && typeSpec.find('$') == typeSpec.end() )
+    FabricCore::DFGPortType oldPortType =
+      exec.getExecPortType( newPortName.c_str() );
+    if ( portType != oldPortType )
     {
-      FabricCore::DFGHost host = binding.getHost();
-      FabricCore::Context context = host.getContext();
+      exec.setExecPortType( newPortName.c_str(), portType );
+      ++coreUndoCount;
+    }
 
-
-
-      FabricCore::RTVal argValue =
-        FabricCore::RTVal::Construct(
-          context,
-          typeSpec.c_str(),
-          0,
-          0
-          );
-      binding.setArgValue(
+    // Only set type & value if the type is different (else we loose the value even if the type didn't change!)
+    FTL::CStrRef oldTypeSpec = exec.getExecPortTypeSpec( newPortName.c_str() );
+    if ( !typeSpec.empty() && oldTypeSpec != typeSpec )
+    {
+      exec.setExecPortTypeSpec(
         newPortName.c_str(),
-        argValue,
-        true
+        typeSpec.c_str()
         );
       ++coreUndoCount;
+
+      if ( execPath.empty()
+        && !typeSpec.empty()
+        && typeSpec.find('$') == typeSpec.end() )
+      {
+        FabricCore::DFGHost host = binding.getHost();
+        FabricCore::Context context = host.getContext();
+
+
+
+        FabricCore::RTVal argValue =
+          FabricCore::RTVal::Construct(
+            context,
+            typeSpec.c_str(),
+            0,
+            0
+            );
+        binding.setArgValue(
+          newPortName.c_str(),
+          argValue,
+          true
+          );
+        ++coreUndoCount;
+      }
     }
   }
 
@@ -126,8 +138,8 @@ FTL::CStrRef DFGUICmd_EditPort::invoke(
       {
         FTL::CStrRef key = it->first;
         FTL::CStrRef value = it->second->getStringValue();
-        exec.setExecPortMetadata(
-          newPortName.c_str(),
+        exec.setPortMetadata(
+          newPortPath.c_str(),
           key.c_str(),
           !value.empty()? value.c_str(): NULL,
           true

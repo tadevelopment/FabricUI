@@ -85,6 +85,13 @@ namespace FabricUI
         int portIndex,
         FTL::JSONObject const *portDesc
         );
+      void onExecBlockPortRenamed(
+        int blockIndex,
+        FTL::CStrRef blockName,
+        int portIndex,
+        FTL::CStrRef oldPortName,
+        FTL::CStrRef newPortName
+        );
       void onInstBlockPortRemoved(
         FTL::CStrRef instName,
         int blockIndex,

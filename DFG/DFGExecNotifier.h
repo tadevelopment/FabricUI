@@ -139,6 +139,13 @@ signals:
     FTL::JSONObject const *portDesc
     );
 
+  void execBlockPortRenamed(
+    FTL::CStrRef blockName,
+    unsigned portIndex,
+    FTL::CStrRef oldPortName,
+    FTL::CStrRef newPortName
+    );
+
   void execBlockPortRemoved(
     FTL::CStrRef blockName,
     unsigned portIndex,
@@ -353,6 +360,7 @@ private:
   void handler_execBlockPortDefaultValuesChanged( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortInserted( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortRemoved( FTL::JSONObject const *jsonObject );
+  void handler_execBlockPortRenamed( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_execBlockRemoved( FTL::JSONObject const *jsonObject );
   void handler_execBlockRenamed( FTL::JSONObject const *jsonObject );

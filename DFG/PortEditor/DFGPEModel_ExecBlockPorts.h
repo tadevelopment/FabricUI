@@ -91,6 +91,13 @@ protected slots:
     FTL::JSONObject const *portDesc
     );
 
+  void onExecBlockPortRenamed(
+    FTL::CStrRef blockName,
+    unsigned portIndex,
+    FTL::CStrRef oldPortName,
+    FTL::CStrRef newPortName
+    );
+
   void onExecBlockPortRemoved(
     FTL::CStrRef blockName,
     unsigned portIndex,

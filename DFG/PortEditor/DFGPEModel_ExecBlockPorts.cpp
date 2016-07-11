@@ -39,6 +39,10 @@ DFGPEModel_ExecBlockPorts::DFGPEModel_ExecBlockPorts(
     this, SLOT(onExecBlockPortInserted(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::JSONObject const *))
     );
   connect(
+    m_notifier.data(), SIGNAL(execBlockPortRenamed(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef)),
+    this, SLOT(onExecBlockPortRenamed(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef))
+    );
+  connect(
     m_notifier.data(), SIGNAL(execBlockPortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef)),
     this, SLOT(onExecBlockPortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef))
     );
@@ -228,6 +232,22 @@ void DFGPEModel_ExecBlockPorts::onExecBlockPortInserted(
       QString::fromUtf8( portName.data(), portName.size() ),
       FabricCore::DFGPortType_In,
       QString::fromUtf8( typeSpec.data(), typeSpec.size() )
+      );
+  }
+}
+
+void DFGPEModel_ExecBlockPorts::onExecBlockPortRenamed(
+  FTL::CStrRef blockName,
+  unsigned portIndex,
+  FTL::CStrRef oldPortName,
+  FTL::CStrRef newPortName
+  )
+{
+  if ( blockName == m_execBlockName )
+  {
+    emit elementRenamed(
+      portIndex,
+      QString::fromUtf8( newPortName.data(), newPortName.size() )
       );
   }
 }
