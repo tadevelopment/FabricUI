@@ -155,7 +155,6 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
           )
         );
     m_tableWidget->setHorizontalHeaderLabels( headerLabels );
-    m_tableWidget->setEnabled( !m_model->isReadOnly() );
     m_tableWidget->model()->setHeaderData( m_portNameCol, Qt::Horizontal, Qt::AlignLeft, Qt::TextAlignmentRole );
     if ( m_hasPortType )
       m_tableWidget->model()->setHeaderData( m_portTypeCol, Qt::Horizontal, Qt::AlignLeft, Qt::TextAlignmentRole );
