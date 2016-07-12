@@ -29,13 +29,6 @@
   spacing: 0px;
 }
 
-#DFGExecHeaderWidget #DFGRegWidget #DFGPathAndPresetFrame
-{
-  margin: 0px;
-  padding: 0px;
-  spacing: 2px;
-}
-
 #DFGExecHeaderWidget QLabel,
 #DFGExecHeaderWidget QLineEdit,
 #DFGPEWidget_Elements QLineEdit
@@ -44,6 +37,17 @@
   color: #C7D2DA;
 }
 
+#DFGExecHeaderWidget #DFGPresetPathSep
+{
+  color: #3c4450;
+  font-weight: bold;
+  qproperty-text: "//";
+}
+
+#DFGExecHeaderWidget #DFGPresetSplitLabel
+{
+  qproperty-text: "This node or one of its parents is an instance of a preset and cannot be changed unless split from the preset";
+}
 
 #DFGExecHeaderWidget QPushButton,
 #DFGPEWidget_Elements QPushButton
@@ -120,12 +124,6 @@
   background-color: #555849;
 }
 
-#DFGExecHeaderWidget QPushButton
-{
-  margin: 0px;
-  padding: 0px 4px;
-}
-
 #DFGPEWidget_Elements_AddElementContainer QPushButton
 {
   border: 1px solid #333333;
@@ -138,11 +136,16 @@
   background-color: #333333;
 }
 
+#DFGExecHeaderWidget QPushButton
+{
+  margin: 0px;
+  padding: 0px 4px;
+}
+
 #DFGExecHeaderWidget #DFGBackButton
 {
-  margin: 0px 8px 0px 0px;
-  padding: 0px 4px 0px 0px;
   icon-size: 16px 16px;
+  padding: 0px 4px 0px 0px;
 }
 
 #DFGExecHeaderWidget #DFGRequiredExtensionsLineEdit

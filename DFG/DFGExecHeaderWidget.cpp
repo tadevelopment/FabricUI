@@ -13,25 +13,6 @@
 using namespace FabricUI;
 using namespace FabricUI::DFG;
 
-class NoFocusOutlineStyle : public QProxyStyle
-{
-public:
-
-  void drawPrimitive(
-    PrimitiveElement element,
-    const QStyleOption *option,
-    QPainter *painter,
-    const QWidget *widget
-    ) const
-  {
-    /* do not draw focus rectangles - this permits modern styling */
-    if ( element == QStyle::PE_FrameFocusRect )
-        return;
-
-    QProxyStyle::drawPrimitive(element, option, painter, widget);
-  }
-};
-
 DFGExecHeaderWidget::DFGExecHeaderWidget(
   QWidget * parent,
   DFGController *dfgController,
@@ -51,15 +32,14 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
   m_pen = config.headerPen;
 
   QIcon backIcon = LoadPixmap( "DFGBack.png" );
-  m_backButton = new QPushButton( backIcon, "Back", this );
+  m_backButton = new QPushButton( backIcon, "Back" );
   m_backButton->setObjectName( "DFGBackButton" );
-  m_backButton->setStyle( new NoFocusOutlineStyle );
   m_backButton->setFocusPolicy( Qt::NoFocus );
+  m_backButton->setAutoFillBackground(false);
   QObject::connect(
     m_backButton, SIGNAL(clicked()),
     this, SIGNAL(goUpPressed())
     );
-  m_backButton->setAutoFillBackground(false);
 
   m_execPathLabel = new QLabel;
   m_execPathLabel->setObjectName( "DFGExecPathLabel" );
@@ -67,21 +47,22 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
   m_presetNameLabel = new QLabel;
   m_presetNameLabel->setObjectName( "DFGPresetNameLabel" );
 
-  QVBoxLayout *pathAndPresetLayout = new QVBoxLayout;
-  pathAndPresetLayout->setContentsMargins( 0, 0, 0, 0 );
-  pathAndPresetLayout->addWidget( m_execPathLabel );
-  pathAndPresetLayout->addWidget( m_presetNameLabel );
-
-  QFrame *pathAndPresetFrame = new QFrame;
-  pathAndPresetFrame->setObjectName( "DFGPathAndPresetFrame" );
-  pathAndPresetFrame->setLayout( pathAndPresetLayout );
+  m_presetPathSep = new QLabel;
+  m_presetPathSep->setObjectName( "DFGPresetPathSep" );
 
   m_reloadButton = new QPushButton( "Reload" );
+  m_reloadButton->setObjectName( "DFGReloadButton" );
+  m_reloadButton->setFocusPolicy( Qt::NoFocus );
+  m_reloadButton->setAutoFillBackground(false);
   connect(
     m_reloadButton, SIGNAL(clicked()),
     this, SIGNAL(reloadPressed())
     );
+
   m_saveButton = new QPushButton( "Save" );
+  m_saveButton->setObjectName( "DFGSaveButton" );
+  m_saveButton->setFocusPolicy( Qt::NoFocus );
+  m_saveButton->setAutoFillBackground(false);
   connect(
     m_saveButton, SIGNAL(clicked()),
     this, SIGNAL(savePressed())
@@ -96,7 +77,9 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
     this, SLOT(reqExtEditingFinished())
     );
 
-  layout->addWidget( pathAndPresetFrame );
+  layout->addWidget( m_presetNameLabel );
+  layout->addWidget( m_presetPathSep );
+  layout->addWidget( m_execPathLabel );
   layout->addStretch( 1 );  
   layout->addWidget( m_backButton );
   layout->addWidget( m_reloadButton );
@@ -115,7 +98,7 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
     this, SLOT(onSplitFromPresetClicked())
     );
 
-  QLabel *presetSplitLabel = new QLabel( "This node or one of its parents is an instance of a preset\nand cannot be changed unless split from the preset" );
+  QLabel *presetSplitLabel = new QLabel;
   presetSplitLabel->setObjectName( "DFGPresetSplitLabel" );
 
   QHBoxLayout *presetSplitLayout = new QHBoxLayout;
@@ -129,10 +112,11 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
   m_presetSplitWidget->setLayout( presetSplitLayout );
 
   QVBoxLayout *vLayout = new QVBoxLayout;
-  vLayout->setContentsMargins(0, 0, 0, 0);
+  vLayout->setContentsMargins( 0, 0, 0, 0 );
+  vLayout->setSpacing( 0 );
   vLayout->addWidget( m_presetSplitWidget );
   vLayout->addWidget( regWidget );
-  setLayout(vLayout);
+  setLayout( vLayout );
 
   QObject::connect(
     m_dfgController, SIGNAL(execChanged()),
@@ -186,6 +170,7 @@ void DFGExecHeaderWidget::refresh()
       presetNameText += QString::fromAscii( title.data(), title.size() );
       m_presetNameLabel->setText( presetNameText );
     }
+    m_presetPathSep->setVisible( isPreset );
 
     bool showFuncButtons = execBlockName.empty()
       && exec.getType() == FabricCore::DFGExecType_Func;
@@ -204,8 +189,11 @@ void DFGExecHeaderWidget::refresh()
     if ( wouldSplitFromPreset )
     {
       reqExtLabelText += ' ';
-      reqExtLabelText +=
-        QString::fromAscii( extDepsDescCStr.data(), extDepsDescCStr.size() );
+      QString reqExts = QString::fromUtf8( extDepsDescCStr.data(), extDepsDescCStr.size() );
+      if ( !reqExts.isEmpty() )
+        reqExtLabelText += reqExts;
+      else
+        reqExtLabelText += "(none)";
     }
     else m_reqExtLineEdit->setText( extDepsDescCStr.c_str() );
     m_reqExtLabel->setVisible( execBlockName.empty() );
