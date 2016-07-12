@@ -28,17 +28,19 @@ void DFGUICmd_ReorderPorts::invoke( unsigned &coreUndoCount )
     indices.push_back( unsigned( index ) );
 
   invoke(
+    m_itemPath.toUtf8().constData(),
     indices,
     coreUndoCount
     );
 }
 
 void DFGUICmd_ReorderPorts::invoke(
+  FTL::CStrRef itemPath,
   FTL::ArrayRef<unsigned> indices,
   unsigned &coreUndoCount
   )
 {
-  getExec().reorderExecPorts( indices.size(), &indices[0] );
+  getExec().reorderPorts( itemPath.c_str(), indices.size(), &indices[0] );
   ++coreUndoCount;
 }
 

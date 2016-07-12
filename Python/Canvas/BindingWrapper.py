@@ -662,6 +662,7 @@ class BindingWrapper:
     def reorderPorts(
         self,
         execPath,
+        itemPath,
         packedIndices,
         ):
         rootExec = self.binding.getExec()
@@ -671,6 +672,7 @@ class BindingWrapper:
             self.binding,
             execPath,
             exec_,
+            itemPath,
             indices,
             )
         InvokeCmd(cmd, self.qUndoStack)

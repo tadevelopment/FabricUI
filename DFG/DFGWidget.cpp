@@ -1421,6 +1421,7 @@ void DFGWidget::onExecPortAction(QAction * action)
         binding,
         execPath,
         exec,
+        QString(), // itemPath
         indices
         );
     }

@@ -164,6 +164,25 @@ void SidePanel::reorderPorts(QStringList names)
   resetLayout();
 }
 
+void SidePanel::reorderFixedPorts(QStringList names)
+{
+  std::vector<FixedPort *> fixedPorts;
+  fixedPorts.reserve( names.length() );
+  for ( int i = 0; i < names.length(); ++i )
+  {
+    QByteArray nameByteArray = names[i].toUtf8();
+    FTL::CStrRef nameCStr = nameByteArray.constData();
+    FixedPort *fixedPortPtr = fixedPort( nameCStr );
+    if ( !fixedPortPtr )
+      continue; // "exec" fixedPort
+    fixedPortPtr->setIndex( i );
+    fixedPorts.push_back( fixedPortPtr );
+  }
+
+  m_fixedPorts = fixedPorts;
+  resetLayout();
+}
+
 FixedPort *SidePanel::fixedPort( FTL::StrRef name )
 {
   for ( size_t i=0; i<m_fixedPorts.size(); ++i )

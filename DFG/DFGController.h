@@ -308,6 +308,7 @@ namespace FabricUI
         FabricCore::DFGBinding &binding,
         QString execPath,
         FabricCore::DFGExec &exec,
+        QString itemPath,
         QList<int> indices
         );
 

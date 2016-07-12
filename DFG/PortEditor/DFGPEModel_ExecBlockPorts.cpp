@@ -50,6 +50,10 @@ DFGPEModel_ExecBlockPorts::DFGPEModel_ExecBlockPorts(
     m_notifier.data(), SIGNAL(execBlockPortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef)),
     this, SLOT(onExecBlockPortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef))
     );
+  connect(
+    m_notifier.data(), SIGNAL(execBlockPortsReordered(FTL::CStrRef, FTL::ArrayRef<unsigned>)),
+    this, SLOT(onExecBlockPortsReordered(FTL::CStrRef, FTL::ArrayRef<unsigned>))
+    );
 
   init();
 }
@@ -199,7 +203,13 @@ void DFGPEModel_ExecBlockPorts::reorderElements(
   QList<int> newIndices
   )
 {
-  assert( false );
+  m_cmdHandler->dfgDoReorderPorts(
+    m_binding,
+    m_execPathQS,
+    m_exec,
+    m_execBlockNameQS,
+    newIndices
+    );
 }
 
 void DFGPEModel_ExecBlockPorts::onEditWouldSplitFromPresetMayHaveChanged()
@@ -280,6 +290,20 @@ void DFGPEModel_ExecBlockPorts::onExecBlockPortRemoved(
 {
   if ( blockName == m_execBlockName )
     emit elementRemoved( portIndex );
+}
+
+void DFGPEModel_ExecBlockPorts::onExecBlockPortsReordered(
+  FTL::CStrRef blockName,
+  FTL::ArrayRef<unsigned> newOrder
+  )
+{
+  if ( blockName == m_execBlockName )
+  {
+    QList<int> newIndices;
+    for ( size_t i = 0; i < newOrder.size(); ++i )
+      newIndices.push_back( newOrder[i] );
+    emit elementsReordered( newIndices );
+  }
 }
 
 bool DFGPEModel_ExecBlockPorts::isElementReadOnlyImpl( int index )

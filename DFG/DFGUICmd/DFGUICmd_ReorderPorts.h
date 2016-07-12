@@ -16,9 +16,11 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
+    QString itemPath,
     QList<int> indices
     )
     : DFGUICmd_Exec( binding, execPath, exec )
+    , m_itemPath( itemPath )
     , m_indices( indices )
     {}
 
@@ -32,12 +34,14 @@ protected:
   virtual void invoke( unsigned &coreUndoCount );
 
   void invoke(
+    FTL::CStrRef itemPath,
     FTL::ArrayRef<unsigned> indices,
     unsigned &coreUndoCount
     );
 
 private:
 
+  QString m_itemPath;
   QList<int> m_indices;
 };
 

@@ -291,6 +291,7 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
+    QString itemPath,
     QList<int> indices
     ) = 0;
 

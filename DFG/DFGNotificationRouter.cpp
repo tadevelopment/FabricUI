@@ -391,6 +391,46 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
           onExecPortsReordered( indices.size(), &indices[ 0 ] );
       }
     }
+    else if ( descStr == FTL_STR("execFixedPortsReordered") )
+    {
+      const FTL::JSONArray * newOrder = jsonObject->maybeGetArray( FTL_STR("newOrder") );
+      if ( newOrder )
+      {
+        std::vector<unsigned int> indices;
+        for( size_t i = 0; i < newOrder->size(); i++ )
+        {
+          const FTL::JSONValue * indexVal = newOrder->get( i );
+          unsigned int index = indexVal->getSInt32Value();
+          indices.push_back( index );
+        }
+
+        if( indices.size() > 0 )
+          onExecFixedPortsReordered( indices.size(), &indices[ 0 ] );
+      }
+    }
+    else if ( descStr == FTL_STR("execBlockPortsReordered") )
+    {
+      const FTL::JSONArray * newOrder = jsonObject->maybeGetArray( FTL_STR("newOrder") );
+      if ( newOrder )
+      {
+        std::vector<unsigned int> indices;
+        for( size_t i = 0; i < newOrder->size(); i++ )
+        {
+          const FTL::JSONValue * indexVal = newOrder->get( i );
+          unsigned int index = indexVal->getSInt32Value();
+          indices.push_back( index );
+        }
+
+        if( indices.size() > 0 )
+        {
+          FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+          onExecBlockPortsReordered(
+            blockName,
+            indices.size(), &indices[ 0 ]
+            );
+        }
+      }
+    }
     else if (descStr == FTL_STR("nodePortsReordered") )
     {
       FTL::CStrRef nodeName = jsonObject->getString( FTL_STR("nodeName") );
@@ -2221,6 +2261,42 @@ void DFGNotificationRouter::onExecPortsReordered(
 
   leftPanel->reorderPorts(outputs);
   rightPanel->reorderPorts(inputs);
+}
+
+void DFGNotificationRouter::onExecFixedPortsReordered(
+  unsigned int indexCount,
+  unsigned int * indices
+  )
+{
+  GraphView::Graph * uiGraph = m_dfgController->graph();
+  if(!uiGraph)
+    return;
+
+  GraphView::SidePanel * leftPanel = uiGraph->sidePanel(GraphView::PortType_Input);
+  GraphView::SidePanel * rightPanel = uiGraph->sidePanel(GraphView::PortType_Output);
+
+  FabricCore::DFGExec & exec = m_dfgController->getExec();
+  QStringList inputs, outputs;
+  for(unsigned int i=0;i<exec.getExecFixedPortCount();i++)
+  {
+    QString name = exec.getExecFixedPortName(i);
+    if(exec.getExecFixedPortType(i) != FabricCore::DFGPortType_Out)
+      inputs.append(name);
+    if(exec.getExecFixedPortType(i) != FabricCore::DFGPortType_In)
+      outputs.append(name);
+  }
+
+  leftPanel->reorderFixedPorts(outputs);
+  rightPanel->reorderFixedPorts(inputs);
+}
+
+void DFGNotificationRouter::onExecBlockPortsReordered(
+  FTL::CStrRef blockName,
+  unsigned int indexCount,
+  unsigned int * indices
+  )
+{
+  // TODO
 }
 
 void DFGNotificationRouter::onNodePortsReordered(

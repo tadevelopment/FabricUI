@@ -111,6 +111,11 @@ protected slots:
     FTL::CStrRef portName
     );
 
+  void onExecBlockPortsReordered(
+    FTL::CStrRef blockName,
+    FTL::ArrayRef<unsigned> newOrder
+    );
+
 private:
 
   DFGUICmdHandler *m_cmdHandler;

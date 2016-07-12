@@ -647,12 +647,14 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         binding,
         execPath,
         exec_,
+        itemPath,
         indices,
         ):
         return self.evalCmdWithArgs(
             "reorderPorts",
             [
                 UICmdHandler.encodeString(execPath),
+                UICmdHandler.encodeString(itemPath),
                 UICmdHandler.encodeInts(indices),
                 ]
             )

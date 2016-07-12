@@ -1183,6 +1183,7 @@ void DFGController::cmdReorderPorts(
   FabricCore::DFGBinding &binding,
   QString execPath,
   FabricCore::DFGExec &exec,
+  QString itemPath,
   QList<int> indices
   )
 {
@@ -1193,6 +1194,7 @@ void DFGController::cmdReorderPorts(
     binding,
     execPath,
     exec,
+    itemPath,
     indices
     );
 }
@@ -2132,6 +2134,7 @@ void DFGController::gvcDoMoveExecPort(
       m_binding,
       QString::fromUtf8( m_execPath.data(), m_execPath.size() ),
       m_exec,
+      QString(), // itemPath
       indices
       );
 }

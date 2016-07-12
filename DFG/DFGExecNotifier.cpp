@@ -22,6 +22,7 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
     handlerMap[FTL_STR("execBlockPortRemoved")] = &DFGExecNotifier::handler_execBlockPortRemoved;
     handlerMap[FTL_STR("execBlockPortRenamed")] = &DFGExecNotifier::handler_execBlockPortRenamed;
     handlerMap[FTL_STR("execBlockPortResolvedTypeChanged")] = &DFGExecNotifier::handler_execBlockPortResolvedTypeChanged;
+    handlerMap[FTL_STR("execBlockPortsReordered")] = &DFGExecNotifier::handler_execBlockPortsReordered;
     handlerMap[FTL_STR("execBlockPortTypeSpecChanged")] = &DFGExecNotifier::handler_execBlockPortTypeSpecChanged;
     handlerMap[FTL_STR("execBlockRemoved")] = &DFGExecNotifier::handler_execBlockRemoved;
     handlerMap[FTL_STR("execBlockRenamed")] = &DFGExecNotifier::handler_execBlockRenamed;
@@ -31,6 +32,7 @@ DFGExecNotifier::HandlerMap const &DFGExecNotifier::GetHandlerMap()
     handlerMap[FTL_STR("execFixedPortRemoved")] = &DFGExecNotifier::handler_execFixedPortRemoved;
     handlerMap[FTL_STR("execFixedPortRenamed")] = &DFGExecNotifier::handler_execFixedPortRenamed;
     handlerMap[FTL_STR("execFixedPortResolvedTypeChanged")] = &DFGExecNotifier::handler_execFixedPortResolvedTypeChanged;
+    handlerMap[FTL_STR("execFixedPortsReordered")] = &DFGExecNotifier::handler_execFixedPortsReordered;
     handlerMap[FTL_STR("execMetadataChanged")] = &DFGExecNotifier::handler_execMetadataChanged;
     handlerMap[FTL_STR("execPortDefaultValuesChanged")] = &DFGExecNotifier::handler_execPortDefaultValuesChanged;
     handlerMap[FTL_STR("execPortInserted")] = &DFGExecNotifier::handler_execPortInserted;
@@ -408,6 +410,38 @@ void DFGExecNotifier::handler_execPortsReordered( FTL::JSONObject const *jsonObj
     newOrderData[i] = unsigned( newOrderJSONArray->getSInt32( i ) );
 
   emit execPortsReordered(
+    FTL::ArrayRef<unsigned>( newOrderData, newOrderSize )
+    );
+}
+
+void DFGExecNotifier::handler_execFixedPortsReordered( FTL::JSONObject const *jsonObject )
+{
+  FTL::JSONArray const *newOrderJSONArray =
+    jsonObject->getArray( FTL_STR("newOrder") );
+  size_t newOrderSize = newOrderJSONArray->size();
+  unsigned *newOrderData =
+    (unsigned *)alloca( newOrderSize * sizeof( unsigned ) );
+  for ( size_t i = 0; i < newOrderSize; ++i )
+    newOrderData[i] = unsigned( newOrderJSONArray->getSInt32( i ) );
+
+  emit execFixedPortsReordered(
+    FTL::ArrayRef<unsigned>( newOrderData, newOrderSize )
+    );
+}
+
+void DFGExecNotifier::handler_execBlockPortsReordered( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef blockName = jsonObject->getString( FTL_STR("blockName") );
+  FTL::JSONArray const *newOrderJSONArray =
+    jsonObject->getArray( FTL_STR("newOrder") );
+  size_t newOrderSize = newOrderJSONArray->size();
+  unsigned *newOrderData =
+    (unsigned *)alloca( newOrderSize * sizeof( unsigned ) );
+  for ( size_t i = 0; i < newOrderSize; ++i )
+    newOrderData[i] = unsigned( newOrderJSONArray->getSInt32( i ) );
+
+  emit execBlockPortsReordered(
+    blockName,
     FTL::ArrayRef<unsigned>( newOrderData, newOrderSize )
     );
 }

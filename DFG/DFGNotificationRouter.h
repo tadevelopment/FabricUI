@@ -276,6 +276,15 @@ namespace FabricUI
         unsigned int indexCount,
         unsigned int * indices
         );
+      void onExecFixedPortsReordered(
+        unsigned int indexCount,
+        unsigned int * indices
+        );
+      void onExecBlockPortsReordered(
+        FTL::CStrRef blockName,
+        unsigned int indexCount,
+        unsigned int * indices
+        );
       void onNodePortsReordered(
         FTL::CStrRef nodeName,
         unsigned int indexCount,

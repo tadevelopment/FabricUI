@@ -73,10 +73,10 @@ namespace FabricUI
 
       void addFixedPort( FixedPort *fixedPort );
       void removeFixedPort( FixedPort *fixedPort );
+      void reorderFixedPorts( QStringList names );
 
       void addPort( Port *port );
       void removePort( Port *port );
-
       void reorderPorts( QStringList names );
 
       void scroll(float delta);

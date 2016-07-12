@@ -144,6 +144,10 @@ signals:
     FTL::ArrayRef<unsigned> newOrder
     );
 
+  void execFixedPortsReordered(
+    FTL::ArrayRef<unsigned> newOrder
+    );
+
   // The executable's blocks
 
   void execBlockInserted(
@@ -169,6 +173,11 @@ signals:
     FTL::CStrRef blockName,
     unsigned portIndex,
     FTL::CStrRef portName
+    );
+
+  void execBlockPortsReordered(
+    FTL::CStrRef blockName,
+    FTL::ArrayRef<unsigned> newOrder
     );
 
   void execBlockRemoved(
@@ -388,6 +397,7 @@ private:
   void handler_execBlockPortRemoved( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortRenamed( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
+  void handler_execBlockPortsReordered( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortTypeSpecChanged( FTL::JSONObject const *jsonObject );
   void handler_execBlockRemoved( FTL::JSONObject const *jsonObject );
   void handler_execBlockRenamed( FTL::JSONObject const *jsonObject );
@@ -397,6 +407,7 @@ private:
   void handler_execFixedPortRemoved( FTL::JSONObject const *jsonObject );
   void handler_execFixedPortRenamed( FTL::JSONObject const *jsonObject );
   void handler_execFixedPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
+  void handler_execFixedPortsReordered( FTL::JSONObject const *jsonObject );
   void handler_execMetadataChanged( FTL::JSONObject const *jsonObject );
   void handler_execPortDefaultValuesChanged( FTL::JSONObject const *jsonObject );
   void handler_execPortInserted( FTL::JSONObject const *jsonObject );

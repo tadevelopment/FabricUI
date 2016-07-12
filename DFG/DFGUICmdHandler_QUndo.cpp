@@ -671,6 +671,7 @@ void DFGUICmdHandler_QUndo::dfgDoReorderPorts(
   FabricCore::DFGBinding const &binding,
   QString execPath,
   FabricCore::DFGExec const &exec,
+  QString itemPath,
   QList<int> indices
   )
 {
@@ -679,6 +680,7 @@ void DFGUICmdHandler_QUndo::dfgDoReorderPorts(
       binding,
       execPath,
       exec,
+      itemPath,
       indices
       );
   m_qUndoStack->push( new WrappedCommand( cmd ) );

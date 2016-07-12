@@ -201,6 +201,7 @@ void DFGPEModel_ExecPorts::reorderElements(
     m_binding,
     m_execPathQS,
     m_exec,
+    QString(), // itemPath
     newIndices
     );
 }
