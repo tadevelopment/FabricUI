@@ -45,10 +45,6 @@ public:
 
 protected slots:
 
-  void onExecBlockAddedThroughUI(
-    int newExecBlockIndex
-    );
-
   void onExecBlockInserted(
     unsigned blockIndex,
     FTL::CStrRef blockName

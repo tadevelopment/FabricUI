@@ -107,10 +107,6 @@ void DFGPEWidget_Exec::setExec(
         m_dfgWidget,
         execBlocksModel
         );
-    connect(
-      execBlocksWidget, SIGNAL(elementAddedThroughUI(int)),
-      this, SLOT(onExecBlockAddedThroughUI(int))
-      );
     m_tabWidget->addTab( execBlocksWidget, "Blocks" );
 
     unsigned execBlockCount = exec.getExecBlockCount();
@@ -121,13 +117,6 @@ void DFGPEWidget_Exec::setExec(
       onExecBlockInserted( execBlockIndex, execBlockName );
     }
   }
-}
-
-void DFGPEWidget_Exec::onExecBlockAddedThroughUI(
-  int newExecBlockIndex
-  )
-{
-  m_tabWidget->setCurrentIndex( 2 + newExecBlockIndex );
 }
 
 void DFGPEWidget_Exec::onExecBlockInserted(
