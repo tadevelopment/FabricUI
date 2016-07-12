@@ -128,7 +128,7 @@ private:
 
   QStringList m_portTypeLabels;
   QPixmap m_plusPixmap;
-  QPixmap m_dotsPixmap;
+  QPixmap m_editPixmap;
   QPixmap m_minusPixmap;
   QIcon m_plusIcon;
   QIcon m_editIcon;
