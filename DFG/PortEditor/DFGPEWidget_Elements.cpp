@@ -261,7 +261,7 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
   if ( m_canInspectElements )
   {
     QAction *inspectAction =
-      new QAction( m_dotsIcon, "Inspect Selected", &menu );
+      new QAction( m_dotsIcon, "Edit Selected", &menu );
     connect(
       inspectAction, SIGNAL(triggered()),
       this, SLOT(onInspectSelected())
