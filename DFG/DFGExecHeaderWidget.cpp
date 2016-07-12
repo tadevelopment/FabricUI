@@ -96,11 +96,11 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
     this, SLOT(reqExtEditingFinished())
     );
 
-  layout->addWidget( m_backButton );
   layout->addWidget( pathAndPresetFrame );
+  layout->addStretch( 1 );  
+  layout->addWidget( m_backButton );
   layout->addWidget( m_reloadButton );
   layout->addWidget( m_saveButton );
-  layout->addStretch( 1 );
   layout->addWidget( m_reqExtLabel );
   layout->addWidget( m_reqExtLineEdit );
 
