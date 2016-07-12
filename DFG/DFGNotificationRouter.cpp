@@ -2296,7 +2296,24 @@ void DFGNotificationRouter::onExecBlockPortsReordered(
   unsigned int * indices
   )
 {
-  // TODO
+  GraphView::Graph * uiGraph = m_dfgController->graph();
+  if(!uiGraph)
+    return;
+
+  GraphView::Node * uiNode = uiGraph->node(blockName);
+  if(!uiNode)
+    return;
+
+  FabricCore::DFGExec & exec = m_dfgController->getExec();
+
+  QStringList names;
+  for ( unsigned i=0; i<indexCount; ++i )
+  {
+    QString name = exec.getItemPortName( blockName.c_str(), i );
+    names.append(name);
+  }
+
+  uiNode->reorderPins(names);
 }
 
 void DFGNotificationRouter::onNodePortsReordered(
