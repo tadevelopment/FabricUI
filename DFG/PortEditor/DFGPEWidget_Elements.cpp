@@ -30,10 +30,10 @@ DFGPEWidget_Elements::DFGPEWidget_Elements(
   , m_model( NULL )
   , m_ignoreCellChanged( false )
   , m_plusPixmap( LoadPixmap( "DFGPlus.png" ) )
-  , m_dotsPixmap( LoadPixmap( "DFGDots.png" ) )
+  , m_editPixmap( LoadPixmap( "DFGEdit.png" ) )
   , m_minusPixmap( LoadPixmap( "DFGMinus.png" ) )
   , m_plusIcon( m_plusPixmap )
-  , m_dotsIcon( m_dotsPixmap )
+  , m_editIcon( m_editPixmap )
   , m_minusIcon( m_minusPixmap )
   , m_layout( new QVBoxLayout )
 {
@@ -262,7 +262,7 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
   if ( m_canInspectElements )
   {
     QAction *inspectAction =
-      new QAction( m_dotsIcon, "Edit Selected", &menu );
+      new QAction( m_editIcon, "Edit Selected", &menu );
     connect(
       inspectAction, SIGNAL(triggered()),
       this, SLOT(onInspectSelected())
@@ -339,7 +339,7 @@ void DFGPEWidget_Elements::onPortInserted(
   QWidget *controlCellWidget;
   if ( m_canInspectElements )
     controlCellWidget =
-      new DFGPEWidget_Elements_ControlCell( index, m_minusIcon, m_dotsIcon );
+      new DFGPEWidget_Elements_ControlCell( index, m_minusIcon, m_editIcon );
   else
     controlCellWidget =
       new DFGPEWidget_Elements_ControlCell( index, m_minusIcon );

@@ -210,7 +210,7 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
               QPoint widgetPos = view->mapFromScene( QPoint(
                 int( m_connectionPos.x() ), int( m_connectionPos.y() ) ) );
               QPoint globalPos = view->mapToGlobal(widgetPos);
-              
+
               // map the exit rect. if the mouse leaves the area the tooltip will disappear
               QRectF circleRect = pinCircle->boundingRect();
               QPointF circleTopLeft = circleRect.topLeft();
@@ -454,7 +454,7 @@ ExposePortAction::ExposePortAction(
   , m_connectionPortType( connectionPortType )
 {
   setText( "Expose new port" );
-  setIcon( FabricUI::LoadPixmap( "expose-new-port.png" ) );
+  setIcon( FabricUI::LoadPixmap( "DFGPlus.png" ) );
   connect(
     this, SIGNAL(triggered()),
     this, SLOT(onTriggered())
@@ -602,7 +602,7 @@ void ExposeInstPortAction::invokeAddPort(
         metaData
         );
       break;
-      
+
     case Node::NodeType_Block:
       cmdHandler->dfgDoAddBlockPort(
         m_dfgController->getBinding(),

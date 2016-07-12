@@ -41,7 +41,7 @@ public:
     { return m_portTypeLabels; }
 
 signals:
-  
+
   void elementAddedThroughUI( int newElementIndex );
 
 protected:
@@ -131,7 +131,7 @@ private:
   QPixmap m_dotsPixmap;
   QPixmap m_minusPixmap;
   QIcon m_plusIcon;
-  QIcon m_dotsIcon;
+  QIcon m_editIcon;
   QIcon m_minusIcon;
 
   bool m_canInspectElements;
@@ -211,7 +211,7 @@ public:
     { m_row = row; }
 
 signals:
-  
+
   void oneClicked( int row );
   void twoClicked( int row );
 

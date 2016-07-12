@@ -2,7 +2,8 @@
  *  Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
  */
 
-#DFGErrorsWidget QTableWidget {
+#DFGErrorsWidget QTableWidget
+{
   border: none;
   margin: 0px;
   padding: 0px;
@@ -36,10 +37,16 @@
 }
 
 #DFGExecHeaderWidget QLabel,
-#DFGExecHeaderWidget QPushButton,
-#DFGPEWidget_Elements QPushButton,
 #DFGExecHeaderWidget QLineEdit,
 #DFGPEWidget_Elements QLineEdit
+{
+  font: 12px "Lucida";
+  color: #C7D2DA;
+}
+
+
+#DFGExecHeaderWidget QPushButton,
+#DFGPEWidget_Elements QPushButton
 {
   font: bold 12px "Lucida";
   color: #C7D2DA;
@@ -67,6 +74,40 @@
   background-color: #525a66;
 }
 
+#DFGPEWidget_Elements QComboBox
+{
+  border: 0;
+  border-radius: 3px;
+  padding: 3px 3px 3px 6px;
+  margin: 0;
+
+  color: #e1ffff;
+  background-color: #333;
+}
+
+#DFGPEWidget_Elements QComboBox::drop-down
+{
+    width: 18px;
+    background-color: #50626e;
+
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+#DFGPEWidget_Elements QComboBox QAbstractItemView
+{
+    color: #e1ffff;
+    background-color: #333;
+}
+
+#DFGPEWidget_Elements QComboBox::down-arrow
+{
+    image: url(${FABRIC_DIR}/Resources/Icons/DFGDown.png);
+    width: 9px;
+    height: 9px;
+}
+
+
 #DFGPEWidget_Elements QPushButton,
 #DFGPEWidget_Elements QLineEdit
 {
@@ -87,7 +128,14 @@
 
 #DFGPEWidget_Elements_AddElementContainer QPushButton
 {
+  border: 1px solid #333333;
+  background-color: #444444;
   padding: 2px 4px;
+}
+
+#DFGPEWidget_Elements_AddElementContainer QPushButton:hover
+{
+  background-color: #333333;
 }
 
 #DFGExecHeaderWidget #DFGBackButton
@@ -181,6 +229,17 @@
 #DFGPEWidget_Elements_ControlCell QPushButton
 {
   margin: 0px;
+  background-color: #2E2E2E;
+}
+
+#DFGPEWidget_Elements_ControlCell QPushButton:hover
+{
+  background-color: #4E4E4E;
+}
+
+#DFGPEWidget_Exec
+{
+  background-color: #222222;
 }
 
 #DFGPEWidget_Exec QTabWidget::pane
@@ -190,17 +249,23 @@
 
 #DFGPEWidget_Exec QTabBar::tab
 {
-  background-color: #2E2E2E;
+  background-color: #333333;
   color: white;
-  border-left: 1px solid #434343;
-  border-right: 1px solid #434343;
-  padding: 3px 6px;
+  border-top-left-radius: 0.25em 0.25em;
+  border-top-right-radius: 0.25em 0.25em;
+  padding: 6px 12px;
+  margin-top: 3px;
+  margin-right: 1px;
 }
 
-#DFGPEWidget_Exec QTabBar::tab:selected,
-#DFGPEWidget_Exec QTabBar::tab:hover
+#DFGPEWidget_Exec QTabBar::tab:selected
 {
   background-color: #434343;
+}
+
+#DFGPEWidget_Exec QTabBar::tab:hover
+{
+  background-color: #4E4E4E;
 }
 
 #DFGPEWidget_Elements_AddElementContainer QLineEdit
