@@ -710,7 +710,7 @@ void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
 
   static const FTL::CStrRef initialCode = FTL_STR("\
 dfgEntry {\n\
-// result = a + b;\n\
+  // result = a + b;\n\
 }\n");
   QString nodeName =
     m_uiController->cmdAddInstWithEmptyFunc(
