@@ -195,8 +195,8 @@ public:
     QString execPath,
     FabricCore::DFGExec const &exec,
     QString oldPortName,
-    FabricCore::DFGPortType portType,
     QString desiredNewPortName,
+    FabricCore::DFGPortType portType,
     QString typeSpec,
     QString extDep,
     QString uiMetadata
