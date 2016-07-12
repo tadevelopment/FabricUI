@@ -95,6 +95,7 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
     m_addElementButton =
       new QPushButton( m_plusIcon, "Add " + elementDescCapitalized );
     m_addElementButton->setEnabled( !m_model->isReadOnly() );
+    m_addElementButton->setDefault(true);
     connect(
       m_addElementButton, SIGNAL(clicked()),
       this, SLOT(onAddElementClicked())
