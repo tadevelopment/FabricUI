@@ -43,6 +43,10 @@ DFGPEModel_ExecBlockPorts::DFGPEModel_ExecBlockPorts(
     this, SLOT(onExecBlockPortRenamed(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef))
     );
   connect(
+    m_notifier.data(), SIGNAL(execBlockPortOutsidePortTypeChanged(FTL::CStrRef, unsigned, FTL::CStrRef, FabricCore::DFGPortType)),
+    this, SLOT(onExecBlockPortOutsidePortTypeChanged(FTL::CStrRef, unsigned, FTL::CStrRef, FabricCore::DFGPortType))
+    );
+  connect(
     m_notifier.data(), SIGNAL(execBlockPortTypeSpecChanged(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef)),
     this, SLOT(onExecBlockPortTypeSpecChanged(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef))
     );
@@ -147,10 +151,26 @@ void DFGPEModel_ExecBlockPorts::renameElement(
 
 void DFGPEModel_ExecBlockPorts::setElementPortType(
   int index,
-  FabricCore::DFGPortType type
+  FabricCore::DFGPortType portType
   )
 {
-  assert( false );
+  QString portName = getElementName( index );
+
+  QString portPath = m_execBlockNameQS;
+  portPath += '.';
+  portPath += portName;
+
+  m_cmdHandler->dfgDoEditPort(
+    m_binding,
+    m_execPathQS,
+    m_exec,
+    portPath,
+    portName,
+    portType,
+    getElementTypeSpec( index ),
+    QString(), // extDep
+    QString() // uiMetadata
+    );
 }
 
 void DFGPEModel_ExecBlockPorts::setElementTypeSpec(
@@ -264,6 +284,17 @@ void DFGPEModel_ExecBlockPorts::onExecBlockPortRenamed(
       QString::fromUtf8( newPortName.data(), newPortName.size() )
       );
   }
+}
+
+void DFGPEModel_ExecBlockPorts::onExecBlockPortOutsidePortTypeChanged(
+  FTL::CStrRef blockName,
+  unsigned portIndex,
+  FTL::CStrRef portName,
+  FabricCore::DFGPortType newOutsidePortType
+  )
+{
+  if ( blockName == m_execBlockName )
+    emit elementPortTypeChanged( portIndex, newOutsidePortType );
 }
 
 void DFGPEModel_ExecBlockPorts::onExecBlockPortTypeSpecChanged(

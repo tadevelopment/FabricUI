@@ -191,6 +191,13 @@ signals:
     FTL::CStrRef value
     );
 
+  void execBlockPortOutsidePortTypeChanged(
+    FTL::CStrRef nodeName,
+    unsigned portIndex,
+    FTL::CStrRef portName,
+    FabricCore::DFGPortType newOutsidePortType
+    );
+
   void execBlockPortResolvedTypeChanged(
     FTL::CStrRef blockName,
     FTL::CStrRef portName,
@@ -394,6 +401,7 @@ private:
   void handler_execBlockMetadataChanged( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortDefaultValuesChanged( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortInserted( FTL::JSONObject const *jsonObject );
+  void handler_execBlockPortOutsidePortTypeChanged( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortRemoved( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortRenamed( FTL::JSONObject const *jsonObject );
   void handler_execBlockPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );

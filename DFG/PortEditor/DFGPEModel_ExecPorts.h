@@ -29,7 +29,7 @@ public:
     );
 
   virtual bool canInspectElements() /*override*/ { return true; }
-  virtual bool hasPortType() /*override*/ { return true; }
+  virtual bool hasPortType() /*override*/;
   virtual bool hasTypeSpec() /*override*/ { return true; }
   virtual bool allowReordering() /*override*/ { return true; }
 

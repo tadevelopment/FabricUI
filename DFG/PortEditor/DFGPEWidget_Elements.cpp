@@ -798,7 +798,6 @@ void DFGPEWidget_Elements_PortTypeDelegate_ComboxBox::onActivated(
   int index
   )
 {
-  qDebug() << index;
   QApplication::instance()->postEvent(
     this,
     new QKeyEvent(

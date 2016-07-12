@@ -30,7 +30,7 @@ public:
     );
 
   virtual bool canInspectElements() /*override*/ { return false; }
-  virtual bool hasPortType() /*override*/ { return false; }
+  virtual bool hasPortType() /*override*/ { return true; }
   virtual bool hasTypeSpec() /*override*/ { return true; }
   virtual bool allowReordering() /*override*/ { return true; }
 
@@ -96,6 +96,13 @@ protected slots:
     unsigned portIndex,
     FTL::CStrRef oldPortName,
     FTL::CStrRef newPortName
+    );
+
+  void onExecBlockPortOutsidePortTypeChanged(
+    FTL::CStrRef blockName,
+    unsigned portIndex,
+    FTL::CStrRef portName,
+    FabricCore::DFGPortType newOutsidePortType
     );
 
   void onExecBlockPortTypeSpecChanged(

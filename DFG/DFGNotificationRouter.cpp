@@ -317,6 +317,14 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
         jsonObject->getString( FTL_STR("newNodePortType") )
         );
     }
+    else if(descStr == FTL_STR("execBlockPortOutsidePortTypeChanged"))
+    {
+      onExecBlockPortOutsidePortTypeChanged(
+        jsonObject->getString( FTL_STR("blockName") ),
+        jsonObject->getString( FTL_STR("portName") ),
+        jsonObject->getString( FTL_STR("newOutsidePortType") )
+        );
+    }
     else if(descStr == FTL_STR("refVarPathChanged"))
     {
       onRefVarPathChanged(
@@ -2105,6 +2113,15 @@ void DFGNotificationRouter::onExecPortTypeChanged(
 }
 
 void DFGNotificationRouter::onNodePortTypeChanged(
+  FTL::CStrRef nodeName,
+  FTL::CStrRef portName,
+  FTL::CStrRef nodePortType
+  )
+{
+  // todo: we don't do anything here...
+}
+
+void DFGNotificationRouter::onExecBlockPortOutsidePortTypeChanged(
   FTL::CStrRef nodeName,
   FTL::CStrRef portName,
   FTL::CStrRef nodePortType

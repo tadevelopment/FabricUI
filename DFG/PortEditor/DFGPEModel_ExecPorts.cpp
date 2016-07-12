@@ -56,6 +56,11 @@ DFGPEModel_ExecPorts::DFGPEModel_ExecPorts(
   init();
 }
 
+bool DFGPEModel_ExecPorts::hasPortType()
+{
+  return !m_exec.isInstBlockExec();
+}
+
 bool DFGPEModel_ExecPorts::computeIsReadOnly()
 {
   return m_exec.editWouldSplitFromPreset();
