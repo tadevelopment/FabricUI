@@ -23,7 +23,7 @@ int BaseModelItem::getNumChildren()
   return 0;
 }
 
-BaseModelItem* BaseModelItem::getChild( FTL::CStrRef childName, bool doCreate )
+BaseModelItem* BaseModelItem::getChild( FTL::StrRef childName, bool doCreate )
 {
   int res = getChildIndex( childName );
   if (res >= 0)
@@ -36,6 +36,20 @@ BaseModelItem* BaseModelItem::getChild( int index, bool doCreate )
   return NULL;
 }
 
+FabricUI::ValueEditor::BaseModelItem *
+BaseModelItem::getDescendant( FTL::StrRef descendantPath )
+{
+  FTL::StrRef::Split split = descendantPath.split('.');
+
+  FabricUI::ValueEditor::BaseModelItem *item = this;
+  while ( !split.first.empty() && !!item )
+  {
+    item = item->getChild( split.first, false );
+    split = split.second.split('.');
+  }
+  return item;
+}
+
 FTL::CStrRef BaseModelItem::getChildName( int i )
 {
   BaseModelItem* pChild = getChild( i );
@@ -44,7 +58,7 @@ FTL::CStrRef BaseModelItem::getChildName( int i )
   return FTL::CStrRef();
 }
 
-int BaseModelItem::getChildIndex( FTL::CStrRef childName )
+int BaseModelItem::getChildIndex( FTL::StrRef childName )
 {
   int numChildren = getNumChildren();
   for ( int i = 0; i < numChildren; i++ )

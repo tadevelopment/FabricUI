@@ -33,7 +33,8 @@ VarModelItem::~VarModelItem()
 {
 }
 
-FabricUI::ValueEditor::BaseModelItem *VarModelItem::createChild( FTL::CStrRef portName )
+FabricUI::ValueEditor::BaseModelItem *
+VarModelItem::createChild( FTL::StrRef portName )
 {
   return pushChild(new VarPortModelItem(
     m_dfgUICmdHandler,

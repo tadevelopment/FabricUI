@@ -1017,8 +1017,8 @@ void DFGVEEditorOwner::onInstBlockRenamed(
 }
 
 void DFGVEEditorOwner::onExecPortsConnectedOrDisconnected(
-  FTL::CStrRef srcPort,
-  FTL::CStrRef dstPort
+  FTL::CStrRef srcPortPath,
+  FTL::CStrRef dstPortPath
   )
 {
   assert( m_modelRoot );
@@ -1028,23 +1028,17 @@ void DFGVEEditorOwner::onExecPortsConnectedOrDisconnected(
     ItemModelItem *itemModelItem =
       static_cast<ItemModelItem *>( m_modelRoot );
 
-    std::string nodeName = srcPort.c_str();
-    std::string portName = SplitLast( nodeName );
-    if ( nodeName == itemModelItem->getItemPath() )
-    {
-      if( ValueEditor::BaseModelItem* destChild =
-        m_modelRoot->getChild( portName, false ) )
-        emit modelItemTypeChange( destChild, "" );
-    }
+    FTL::CStrRef::Split srcPortPathSplit = srcPortPath.split('.');
+    if ( srcPortPathSplit.first == itemModelItem->getItemPath() )
+      if ( ValueEditor::BaseModelItem *srcChild =
+        itemModelItem->getDescendant( srcPortPathSplit.second ) )
+        emit modelItemTypeChange( srcChild, "" );
 
-    nodeName = dstPort.c_str();
-    portName = SplitLast( nodeName );
-    if ( nodeName == itemModelItem->getItemPath() )
-    {
-      if( ValueEditor::BaseModelItem* destChild =
-        m_modelRoot->getChild( portName, false ) )
-        emit modelItemTypeChange( destChild, "" );
-    }
+    FTL::CStrRef::Split dstPortPathSplit = dstPortPath.split('.');
+    if ( dstPortPath.split('.').first == itemModelItem->getItemPath() )
+      if ( ValueEditor::BaseModelItem *dstChild =
+        itemModelItem->getDescendant( dstPortPathSplit.second ) )
+        emit modelItemTypeChange( dstChild, "" );
   }
 }
 

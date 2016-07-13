@@ -47,13 +47,14 @@ namespace FabricUI
       RootModelItem( );
       ~RootModelItem();
 
-      virtual FabricUI::ValueEditor::BaseModelItem* createChild( FTL::CStrRef name ) { return 0; } /* To override */
+      virtual FabricUI::ValueEditor::BaseModelItem *
+      createChild( FTL::StrRef name ) { return 0; } /* To override */
 
       ChildVec::iterator GetChildItrBegin() { return m_children.begin(); }
       ChildVec::iterator GetChildItrEnd() { return m_children.end(); }
 
       virtual FabricUI::ValueEditor::BaseModelItem *getChild(
-        FTL::CStrRef childName,
+        FTL::StrRef childName,
         bool doCreate = true
         ) /*override*/;
       virtual FabricUI::ValueEditor::BaseModelItem *getChild(
@@ -61,7 +62,7 @@ namespace FabricUI
         bool doCreate = true
         ) /*override*/;
 
-      virtual int getChildIndex( FTL::CStrRef name ) /*override*/;
+      virtual int getChildIndex( FTL::StrRef name ) /*override*/;
       
       void childRemoved( unsigned index, FTL::CStrRef name );
 

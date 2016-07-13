@@ -38,7 +38,7 @@ const FabricCore::RTVal& SGObjectPropertyModelItem::getSGObjectProperty() {
   return m_rtVal; 
 }
 
-FabricUI::ValueEditor::BaseModelItem *SGObjectPropertyModelItem::createChild(FTL::CStrRef name) {
+FabricUI::ValueEditor::BaseModelItem *SGObjectPropertyModelItem::createChild(FTL::StrRef name) {
   // return new ArgModelItem(
   //   m_dfgUICmdHandler,
   //   m_binding,

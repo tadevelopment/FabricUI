@@ -49,9 +49,13 @@ FTL::CStrRef InstModelItem::getChildName( int i )
     return m_exec.getInstBlockName( m_itemPath.c_str(), i - itemPortCount );
 }
 
-FabricUI::ValueEditor::BaseModelItem *InstModelItem::createChild( FTL::CStrRef portOrBlockName )
+FabricUI::ValueEditor::BaseModelItem *
+InstModelItem::createChild( FTL::StrRef portOrBlockName )
 {
-  if ( m_exec.isInstBlock( m_itemPath.c_str(), portOrBlockName.c_str() ) )
+  if ( m_exec.isInstBlock(
+    m_itemPath.c_str(),
+    std::string( portOrBlockName ).c_str()
+    ) )
     return pushChild( new InstBlockModelItem(
       m_dfgUICmdHandler,
       m_binding,

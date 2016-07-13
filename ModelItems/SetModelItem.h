@@ -24,7 +24,8 @@ public:
     );
   ~SetModelItem();
 
-  virtual FabricUI::ValueEditor::BaseModelItem* createChild( FTL::CStrRef name ) /*override*/;
+  virtual FabricUI::ValueEditor::BaseModelItem *
+  createChild( FTL::StrRef name ) /*override*/;
 };
 
 } // namespace ModelItems

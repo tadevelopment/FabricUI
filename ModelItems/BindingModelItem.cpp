@@ -37,7 +37,8 @@ FTL::CStrRef BindingModelItem::getChildName( int i )
   return m_rootExec.getExecPortName( i );
 }
 
-FabricUI::ValueEditor::BaseModelItem *BindingModelItem::createChild( FTL::CStrRef name ) /**/
+FabricUI::ValueEditor::BaseModelItem *
+BindingModelItem::createChild( FTL::StrRef name ) /**/
 {
   return pushChild(new ArgModelItem(
     m_dfgUICmdHandler,

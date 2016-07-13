@@ -36,7 +36,8 @@ class DFGUICmdHandler;
 
       virtual bool isBinding() const /*override*/ { return true; }
 
-      FabricUI::ValueEditor::BaseModelItem *createChild( FTL::CStrRef name ) /*override*/;
+      FabricUI::ValueEditor::BaseModelItem *
+      createChild( FTL::StrRef name ) /*override*/;
 
       virtual int getNumChildren() /*override*/;
 

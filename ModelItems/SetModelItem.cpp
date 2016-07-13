@@ -30,7 +30,8 @@ SetModelItem::~SetModelItem()
 {
 }
 
-FabricUI::ValueEditor::BaseModelItem *SetModelItem::createChild( FTL::CStrRef portName )
+FabricUI::ValueEditor::BaseModelItem *
+SetModelItem::createChild( FTL::StrRef portName )
 {
   if ( portName == FTL_STR("varPath") )
     return pushChild(new VarPathModelItem(

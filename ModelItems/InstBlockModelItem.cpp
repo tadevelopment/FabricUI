@@ -91,7 +91,8 @@ FTL::CStrRef InstBlockModelItem::getChildName( int i )
     );
 }
 
-FabricUI::ValueEditor::BaseModelItem *InstBlockModelItem::createChild( FTL::CStrRef instBlockPortName )
+FabricUI::ValueEditor::BaseModelItem *
+InstBlockModelItem::createChild( FTL::StrRef instBlockPortName )
 {
   return pushChild( new InstBlockPortModelItem(
     m_dfgUICmdHandler,
