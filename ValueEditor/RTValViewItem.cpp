@@ -33,7 +33,8 @@ RTValViewItem::RTValViewItem( QString name,
                       strcmp( typeName, "Vec3" ) == 0 ||
                       strcmp( typeName, "Vec4" ) == 0 ||
                       strcmp( typeName, "Quat" ) == 0 ||
-                      strcmp( typeName, "Xfo" ) == 0);
+                      strcmp( typeName, "Xfo" ) == 0 ||
+                      strcmp( typeName, "Complex" ) == 0);
   // Do not change state if editable (we inherit our
   // parents editable status)
   if (!m_isEditableType)

@@ -69,6 +69,7 @@ DFGConfig::DFGConfig()
   registerDataTypeColor("RGB", QColor(255, 0, 0));
   registerDataTypeColor("RGBA", QColor(255, 0, 0));
   registerDataTypeColor("ARGB", QColor(255, 0, 0));
+  registerDataTypeColor("Complex", QColor("#E30761"));
   registerDataTypeColor("Geometry", QColor(51, 1, 106));
   registerDataTypeColor("Lines", QColor(51, 1, 106));
   registerDataTypeColor("Points", QColor(51, 1, 106));
