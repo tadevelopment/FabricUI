@@ -92,13 +92,16 @@ public:
     bool doCreate = true
     );
   virtual BaseModelItem* getChild(
-    FTL::CStrRef childName,
+    FTL::StrRef childName,
     bool doCreate = true
     );
 
+  FabricUI::ValueEditor::BaseModelItem *
+  getDescendant( FTL::StrRef descendantPath );
+
   // Enable switching between index/name
   virtual FTL::CStrRef getChildName( int i );
-  virtual int getChildIndex( FTL::CStrRef name );
+  virtual int getChildIndex( FTL::StrRef name );
 
   /////////////////////////////////////////////////////////////////////////
   // Name

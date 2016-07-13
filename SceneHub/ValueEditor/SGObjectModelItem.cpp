@@ -63,7 +63,9 @@ const FabricCore::RTVal& SGObjectModelItem::getSGObject() {
   return m_rtVal; 
 }
 
-ValueEditor::BaseModelItem *SGObjectModelItem::createChild(FTL::CStrRef name) {
+ValueEditor::BaseModelItem *
+SGObjectModelItem::createChild( FTL::StrRef name )
+{
   
   ensurePropertiesRTVal();
   

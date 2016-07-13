@@ -34,7 +34,7 @@ ValueEditor::BaseModelItem * RootModelItem::pushChild( BaseModelItem * item )
 }
 
 ValueEditor::BaseModelItem *RootModelItem::getChild(
-  FTL::CStrRef childName,
+  FTL::StrRef childName,
   bool doCreate
   )
 {
@@ -61,7 +61,7 @@ ValueEditor::BaseModelItem *RootModelItem::getChild( int index, bool doCreate )
   return getChild( childName, doCreate );
 }
 
-int RootModelItem::getChildIndex( FTL::CStrRef name )
+int RootModelItem::getChildIndex( FTL::StrRef name )
 {
   int numChildren = getNumChildren();
   for (int i = 0; i < numChildren; i++)

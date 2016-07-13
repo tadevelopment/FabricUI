@@ -35,7 +35,7 @@ class SGObjectPropertyModelItem : public ValueEditor::BaseModelItem {
     virtual ~SGObjectPropertyModelItem();
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
-    virtual BaseModelItem *createChild(FTL::CStrRef name);
+    virtual BaseModelItem *createChild(FTL::StrRef name);
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
     virtual int getNumChildren();

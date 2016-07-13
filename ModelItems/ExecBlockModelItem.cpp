@@ -33,7 +33,8 @@ ExecBlockModelItem::~ExecBlockModelItem()
 {
 }
 
-FabricUI::ValueEditor::BaseModelItem *ExecBlockModelItem::createChild( FTL::CStrRef portName )
+FabricUI::ValueEditor::BaseModelItem *
+ExecBlockModelItem::createChild( FTL::StrRef portName )
 {
   return pushChild( new ExecBlockPortModelItem(
     m_dfgUICmdHandler,

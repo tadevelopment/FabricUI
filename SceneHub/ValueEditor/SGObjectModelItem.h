@@ -31,7 +31,7 @@ class SGObjectModelItem : public ModelItems::RootModelItem {
     virtual ~SGObjectModelItem();
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
-    virtual BaseModelItem *createChild(FTL::CStrRef name);
+    virtual BaseModelItem *createChild(FTL::StrRef name);
 
     /// Implementation of :`ValueEditor::BaseModelItem`.
     virtual int getNumChildren();

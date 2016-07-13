@@ -38,7 +38,9 @@ class DFGUICmdHandler;
 
       virtual int getNumChildren() /*override*/;
       virtual FTL::CStrRef getChildName( int i ) /*override*/;
-      virtual FabricUI::ValueEditor::BaseModelItem* createChild( FTL::CStrRef name );
+      
+      virtual FabricUI::ValueEditor::BaseModelItem *
+      createChild( FTL::StrRef name ) /*override*/;
 
       virtual QVariant getValue();
 
