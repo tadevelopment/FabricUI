@@ -16,6 +16,11 @@
   spacing: 0px;
 }
 
+#DFGExecHeaderWidget #DFGRegWidget
+{
+  background-color: #50626e;
+}
+
 #DFGExecHeaderWidget #DFGRegWidget > QWidget
 {
   vertical-align: middle;
@@ -133,6 +138,11 @@
   icon-size: 20px 20px;
 }
 
+#DFGPEWidget_Elements_AddElementContainer QLabel
+{
+  color: white;
+}
+
 #DFGPEWidget_Elements_AddElementContainer QPushButton:hover
 {
   background-color: #333333;
@@ -211,6 +221,7 @@
 #DFGPEWidget_Elements QTableWidget::item
 {
   border-top: 1px solid #434343;
+  color: white;
   padding: 2px 0px;
 }
 
