@@ -85,7 +85,13 @@ QString DFGPEModel_ExecBlockPorts::getElementName( int index )
 
 FabricCore::DFGPortType DFGPEModel_ExecBlockPorts::getElementPortType( int index )
 {
-  return FabricCore::DFGPortType_In;
+  std::string portPath = m_execBlockName;
+  portPath += '.';
+  portPath += m_exec.getItemPortName(
+    m_execBlockName.c_str(),
+    index
+    );
+  return m_exec.getOutsidePortType( portPath.c_str() );
 }
 
 QString DFGPEModel_ExecBlockPorts::getElementTypeSpec( int index )
@@ -251,6 +257,16 @@ void DFGPEModel_ExecBlockPorts::onExecBlockRenamed(
   }
 }
 
+static FabricCore::DFGPortType PortTypeStrToDFGPortType( FTL::StrRef portTypeStr )
+{
+  if ( portTypeStr == FTL_STR("Out") )
+    return FabricCore::DFGPortType_Out;
+  else if ( portTypeStr == FTL_STR("IO") )
+    return FabricCore::DFGPortType_IO;
+  else
+    return FabricCore::DFGPortType_In;
+}
+
 void DFGPEModel_ExecBlockPorts::onExecBlockPortInserted(
   FTL::CStrRef blockName,
   unsigned portIndex,
@@ -264,7 +280,7 @@ void DFGPEModel_ExecBlockPorts::onExecBlockPortInserted(
     emit elementInserted(
       portIndex,
       QString::fromUtf8( portName.data(), portName.size() ),
-      FabricCore::DFGPortType_In,
+      PortTypeStrToDFGPortType( portDesc->getStringOrEmpty( FTL_STR("outsidePortType") ) ),
       QString::fromUtf8( typeSpec.data(), typeSpec.size() )
       );
   }
