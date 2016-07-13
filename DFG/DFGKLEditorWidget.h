@@ -9,7 +9,6 @@
 #include <FabricUI/KLEditor/KLEditorWidget.h>
 #include "DFGConfig.h"
 #include "DFGController.h"
-#include "DFGKLEditorPortTableWidget.h"
 
 
 namespace FabricUI

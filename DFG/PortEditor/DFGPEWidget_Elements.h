@@ -241,7 +241,6 @@ public:
 
   /// \internal
   /// Sets the QTableWidget target element with a specifid style and options
-  /// It is used to force the DFGKLEditorPortTableWidget text elements to support alpha-numerical string only
   QWidget *createEditor(
     QWidget *parent,
     QStyleOptionViewItem const &option,

@@ -96,6 +96,9 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
       FabricCore::Client client = m_dfgWidget->getDFGController()->getClient();
       m_addElementTypeSpec = new DFGRegisteredTypeLineEdit( NULL, client, "" );
       m_addElementTypeSpec->setEnabled( !m_model->isReadOnly() );
+      m_addElementTypeSpec->setValidator(
+        new QRegExpValidator( m_typeSpecRegExp )
+        );
     }
     m_addElementButton =
       new QPushButton( m_plusIcon, "Add " + elementDescCapitalized );
