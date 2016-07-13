@@ -134,6 +134,9 @@ private:
   QIcon m_editIcon;
   QIcon m_minusIcon;
 
+  QRegExp m_portNameRegExp;
+  QRegExp m_typeSpecRegExp;
+
   bool m_canInspectElements;
   bool m_hasPortType;
   bool m_hasTypeSpec;
@@ -225,6 +228,33 @@ private:
   int m_row;
 };
 
+/// \note http://doc.qt.io/qt-4.8/qitemdelegate.html
+/// \notehttp://stackoverflow.com/questions/22708623/qtablewidget-only-numbers-permitted
+class DFGPEWidget_Elements_PortNameDelegate : public QStyledItemDelegate
+{
+public:
+
+  /// Constructor
+  /// Sets regex string
+  /// \params regexFilter The regex filter
+  DFGPEWidget_Elements_PortNameDelegate( QRegExp regexFilter );
+
+  /// \internal
+  /// Sets the QTableWidget target element with a specifid style and options
+  /// It is used to force the DFGKLEditorPortTableWidget text elements to support alpha-numerical string only
+  QWidget *createEditor(
+    QWidget *parent,
+    QStyleOptionViewItem const &option,
+    QModelIndex const &index
+    ) const;
+
+private:
+
+  /// \internal
+  /// Regex filter definition
+  QRegExp m_regexFilter;
+};
+
 class DFGPEWidget_Elements_PortTypeDelegate : public QStyledItemDelegate
 {
   Q_OBJECT
@@ -285,6 +315,7 @@ public:
 
   DFGPEWidget_Elements_PortTypeSpecDelegate(
     FabricCore::Client client,
+    QRegExp typeSpecRegExp,
     QObject *parent
     );
 
@@ -314,6 +345,7 @@ public:
 private:
 
   FabricCore::Client m_client;
+  QRegExp m_typeSpecRegExp;
 };
 
 } // namespace DFG

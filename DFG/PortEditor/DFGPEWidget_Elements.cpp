@@ -35,6 +35,8 @@ DFGPEWidget_Elements::DFGPEWidget_Elements(
   , m_plusIcon( m_plusPixmap )
   , m_editIcon( m_editPixmap )
   , m_minusIcon( m_minusPixmap )
+  , m_portNameRegExp( "^[a-zA-Z][_a-zA-Z0-9]*$" )
+  , m_typeSpecRegExp( "^[_a-zA-Z][_a-zA-Z0-9]*$" )
   , m_layout( new QVBoxLayout )
 {
   setObjectName( "DFGPEWidget_Elements" );
@@ -79,6 +81,9 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
 
     m_addElementName = new QLineEdit;
     m_addElementName->setEnabled( !m_model->isReadOnly() );
+    m_addElementName->setValidator(
+      new QRegExpValidator( m_portNameRegExp )
+      );
     if ( m_hasPortType )
     {
       m_addElementType = new QComboBox;
@@ -139,6 +144,10 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
       m_tableWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
       this, SLOT(onCustomContextMenuRequested(const QPoint &))
       );
+    m_tableWidget->setItemDelegateForColumn(
+      m_portNameCol,
+      new DFGPEWidget_Elements_PortNameDelegate( m_portNameRegExp )
+      );
     if ( m_hasPortType )
       m_tableWidget->setItemDelegateForColumn(
         m_portTypeCol,
@@ -152,6 +161,7 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
         m_portTypeSpecCol,
         new DFGPEWidget_Elements_PortTypeSpecDelegate(
           m_dfgWidget->getDFGController()->getClient(),
+          m_typeSpecRegExp,
           m_tableWidget
           )
         );
@@ -713,6 +723,26 @@ void DFGPEWidget_Elements_TableWidget_ProxyStyle::drawPrimitive(
     );
 }
 
+DFGPEWidget_Elements_PortNameDelegate::DFGPEWidget_Elements_PortNameDelegate(
+  QRegExp regexFilter
+  )
+  : m_regexFilter( regexFilter )
+{
+}
+
+QWidget* DFGPEWidget_Elements_PortNameDelegate::createEditor(
+  QWidget *parent,
+  QStyleOptionViewItem const &option,
+  QModelIndex const &index
+  ) const
+{
+  QLineEdit *lineEdit = new QLineEdit( parent );
+  lineEdit->setValidator(
+    new QRegExpValidator( m_regexFilter )
+    );
+  return lineEdit;
+}
+
 DFGPEWidget_Elements_PortTypeDelegate::DFGPEWidget_Elements_PortTypeDelegate(
   QStringList portTypeLabels,
   QObject *parent
@@ -819,10 +849,12 @@ void DFGPEWidget_Elements_PortTypeDelegate_ComboxBox::onActivated(
 
 DFGPEWidget_Elements_PortTypeSpecDelegate::DFGPEWidget_Elements_PortTypeSpecDelegate(
   FabricCore::Client client,
+  QRegExp typeSpecRegExp,
   QObject *parent
   )
   : QStyledItemDelegate( parent )
   , m_client( client )
+  , m_typeSpecRegExp( typeSpecRegExp )
 {
 }
 
@@ -838,6 +870,9 @@ QWidget *DFGPEWidget_Elements_PortTypeSpecDelegate::createEditor(
       const_cast<DFGPEWidget_Elements_PortTypeSpecDelegate *>( this )->m_client,
       ""
       );
+  lineEdit->setValidator(
+    new QRegExpValidator( m_typeSpecRegExp )
+    );
   return lineEdit;
 }
 
