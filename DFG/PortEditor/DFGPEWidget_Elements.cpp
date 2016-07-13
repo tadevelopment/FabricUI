@@ -36,7 +36,7 @@ DFGPEWidget_Elements::DFGPEWidget_Elements(
   , m_editIcon( m_editPixmap )
   , m_minusIcon( m_minusPixmap )
   , m_portNameRegExp( "^[a-zA-Z][_a-zA-Z0-9]*$" )
-  , m_typeSpecRegExp( "^[_a-zA-Z][_a-zA-Z0-9]*$" )
+  , m_typeSpecRegExp( "^[^ ]*$" )
   , m_layout( new QVBoxLayout )
 {
   setObjectName( "DFGPEWidget_Elements" );
