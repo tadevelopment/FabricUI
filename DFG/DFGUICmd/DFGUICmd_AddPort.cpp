@@ -125,9 +125,9 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
     if ( portToConnectNodePortType == FabricCore::DFGPortType_In )
     {
       FTL::CStrRef::Split split = portToConnectPath.rsplit('.');
-      std::string portToConnectSubExecPath = split.first;
+      std::string portToConnectNodeName = split.first;
       FTL::CStrRef portToConnectName = split.second;
-      if ( !portToConnectSubExecPath.empty() )
+      if ( !portToConnectNodeName.empty() )
       {
         FTL::CStrRef resolvedType =
           exec.getPortResolvedType( portToConnectPath.c_str() );
@@ -148,8 +148,6 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
           }
         }
 
-        FabricCore::DFGExec portToConnectSubExec =
-          exec.getSubExec( portToConnectSubExecPath.c_str() );
 
         char const *metadatasToCopy[5] =
         {
@@ -160,18 +158,42 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
           DFG_METADATA_UIPERSISTVALUE
         };
 
-        for ( unsigned i = 0; i < 5; ++i )
+        if ( !exec.isExecBlock( portToConnectNodeName.c_str() )
+          && exec.getNodeType( portToConnectNodeName.c_str() ) == FabricCore::DFGNodeType_Inst )
         {
-          exec.setExecPortMetadata(
-            portName.c_str(),
-            metadatasToCopy[i],
-            portToConnectSubExec.getPortMetadata(
-              portToConnectName.c_str(),
-              metadatasToCopy[i]
-              ),
-            true
-            );
-          ++coreUndoCount;
+          // In the specific case of instances, copy metadata from subexec
+          
+          FabricCore::DFGExec portToConnectSubExec =
+            exec.getSubExec( portToConnectNodeName.c_str() );
+          for ( unsigned i = 0; i < 5; ++i )
+          {
+            exec.setExecPortMetadata(
+              portName.c_str(),
+              metadatasToCopy[i],
+              portToConnectSubExec.getPortMetadata(
+                portToConnectName.c_str(),
+                metadatasToCopy[i]
+                ),
+              true
+              );
+            ++coreUndoCount;
+          }
+        }
+        else
+        {
+          for ( unsigned i = 0; i < 5; ++i )
+          {
+            exec.setExecPortMetadata(
+              portName.c_str(),
+              metadatasToCopy[i],
+              exec.getPortMetadata(
+                portToConnectPath.c_str(),
+                metadatasToCopy[i]
+                ),
+              true
+              );
+            ++coreUndoCount;
+          }
         }
       }
     }
