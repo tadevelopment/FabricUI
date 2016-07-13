@@ -212,6 +212,52 @@ DFGExecHeaderWidget * DFGWidget::getHeaderWidget()
   return m_uiHeader;
 }
 
+static void CountNodeTypes(
+  FabricCore::DFGExec exec,
+  FTL::ArrayRef<GraphView::Node *> nodes,
+  unsigned &varNodeCount,
+  unsigned &getNodeCount,
+  unsigned &setNodeCount,
+  unsigned &instNodeCount,
+  unsigned &userNodeCount,
+  unsigned &blockNodeCount
+  )
+{
+  varNodeCount = 0;
+  getNodeCount = 0;
+  setNodeCount = 0;
+  instNodeCount = 0;
+  userNodeCount = 0;
+  blockNodeCount = 0;
+  for(unsigned int i=0;i<nodes.size();i++)
+  {
+    if (nodes[i]->isBackDropNode())
+    {
+      userNodeCount++;
+      continue;
+    }
+
+    char const * nodeName = nodes[i]->name().c_str();
+    if ( exec.isExecBlock( nodeName ) )
+      ++blockNodeCount;
+    else
+    {
+      FabricCore::DFGNodeType dfgNodeType = exec.getNodeType( nodeName );
+      
+      if ( dfgNodeType == FabricCore::DFGNodeType_Var)
+        varNodeCount++;
+      else if ( dfgNodeType == FabricCore::DFGNodeType_Get)
+        getNodeCount++;
+      else if ( dfgNodeType == FabricCore::DFGNodeType_Set)
+        setNodeCount++;
+      else if ( dfgNodeType == FabricCore::DFGNodeType_Inst)
+        instNodeCount++;
+      else
+        userNodeCount++;
+    }
+  }
+}
+
 QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, void* userData)
 {
   DFGWidget * graphWidget = (DFGWidget*)userData;
@@ -233,8 +279,25 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     new NewBackdropNodeAction( graphWidget, QCursor::pos(), result )
     );
 
-  const std::vector<GraphView::Node*> & nodes = graph->selectedNodes();
-  if(nodes.size() > 0)
+  FTL::ArrayRef<GraphView::Node *> nodes = graph->selectedNodes();
+  unsigned varNodeCount;
+  unsigned getNodeCount;
+  unsigned setNodeCount;
+  unsigned instNodeCount;
+  unsigned userNodeCount;
+  unsigned blockNodeCount;
+  CountNodeTypes(
+    controller->getExec(),
+    nodes,
+    varNodeCount,
+    getNodeCount,
+    setNodeCount,
+    instNodeCount,
+    userNodeCount,
+    blockNodeCount
+    );
+  bool onlyInstNodes = instNodeCount == nodes.size();
+  if ( onlyInstNodes && nodes.size() > 0 )
   {
     result->addSeparator();
     result->addAction(DFG_IMPLODE_NODE);
@@ -303,44 +366,27 @@ QMenu *DFGWidget::nodeContextMenuCallback(
       return NULL;
     dfgWidget->m_contextNode = uiNode;
 
-    unsigned int varNodeCount = 0;
-    unsigned int getNodeCount = 0;
-    unsigned int setNodeCount = 0;
-    unsigned int instNodeCount = 0;
-    unsigned int userNodeCount = 0;
-    unsigned int blockNodeCount = 0;
-
-    const std::vector<GraphView::Node*> & nodes =
+    FTL::ArrayRef<GraphView::Node *> nodes =
       dfgWidget->getUIController()->graph()->selectedNodes();
-    for(unsigned int i=0;i<nodes.size();i++)
-    {
-      if (nodes[i]->isBackDropNode())
-      {
-        userNodeCount++;
-        continue;
-      }
-
-      char const * nodeName = nodes[i]->name().c_str();
-      if ( exec.isExecBlock( nodeName ) )
-        ++blockNodeCount;
-      else
-      {
-        FabricCore::DFGNodeType dfgNodeType = exec.getNodeType( nodeName );
-        
-        if ( dfgNodeType == FabricCore::DFGNodeType_Var)
-          varNodeCount++;
-        else if ( dfgNodeType == FabricCore::DFGNodeType_Get)
-          getNodeCount++;
-        else if ( dfgNodeType == FabricCore::DFGNodeType_Set)
-          setNodeCount++;
-        else if ( dfgNodeType == FabricCore::DFGNodeType_Inst)
-          instNodeCount++;
-        else
-          userNodeCount++;
-      }
-    }
-
+    unsigned varNodeCount;
+    unsigned getNodeCount;
+    unsigned setNodeCount;
+    unsigned instNodeCount;
+    unsigned userNodeCount;
+    unsigned blockNodeCount;
+    CountNodeTypes(
+      exec,
+      nodes,
+      varNodeCount,
+      getNodeCount,
+      setNodeCount,
+      instNodeCount,
+      userNodeCount,
+      blockNodeCount
+      );
     bool onlyInstNodes = instNodeCount == nodes.size();
+    bool onlyInstOrBlockNodes =
+      ( instNodeCount + blockNodeCount ) == nodes.size();
     bool someVarNodes = varNodeCount > 0;
     bool someGetNodes = getNodeCount > 0;
     bool someSetNodes = setNodeCount > 0;
@@ -349,26 +395,26 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     QMenu* result = new QMenu(NULL);
 
-    bool needSeparator = false;
-    if (onlyInstNodes)
+    if ( !exec.isExecBlock( nodeName )
+      && exec.getNodeType( nodeName ) == FabricCore::DFGNodeType_Inst )
     {
-      if (instNodeCount == 1)
+      QString uiDocUrl = exec.getNodeMetadata( nodeName, "uiDocUrl" );
+      if ( uiDocUrl.isEmpty() )
       {
-        QString uiDocUrl = exec.getNodeMetadata( nodeName, "uiDocUrl" );
-        if (uiDocUrl.length() == 0)
-        {
-          FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
-          uiDocUrl = subExec.getMetadata( "uiDocUrl" );
-        }
-        if (uiDocUrl.length() > 0)
-        {
-          result->addAction(DFG_OPEN_PRESET_DOC);
-          result->addSeparator();
-        }
+        FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+        uiDocUrl = subExec.getMetadata( "uiDocUrl" );
       }
+      if ( !uiDocUrl.isEmpty() )
+      {
+        result->addAction(DFG_OPEN_PRESET_DOC);
+        result->addSeparator();
+      }
+    }
 
+    bool needSeparator = false;
+    if ( onlyInstOrBlockNodes )
+    {
       result->addAction(DFG_INSPECT_PRESET);
-
       result->addSeparator();
 
       GraphView::Node::EditingTargets editingTargets;
@@ -460,9 +506,9 @@ QMenu *DFGWidget::nodeContextMenuCallback(
       result->addAction(DFG_DISCONNECT_ALL_PORTS);
     }
 
-    if (onlyInstNodes)
+    if ( onlyInstNodes )
     {
-      if (instNodeCount == 1)
+      if ( instNodeCount == 1 )
       {
         result->addSeparator();
         if (dfgWidget->isEditable())
@@ -470,7 +516,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
         result->addAction(DFG_EXPORT_GRAPH);
       }
 
-      if (dfgWidget->isEditable())
+      if ( dfgWidget->isEditable() )
       {
         result->addSeparator();
         result->addAction(DFG_IMPLODE_NODE);
