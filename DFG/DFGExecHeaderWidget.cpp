@@ -22,7 +22,7 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
   , m_dfgController( dfgController )
 {
   setObjectName( "DFGExecHeaderWidget" );
-  setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum));
+  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum );
   setContentsMargins(0, 0, 0, 0);
 
   QHBoxLayout * layout = new QHBoxLayout();
@@ -93,6 +93,9 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
 
   QPushButton *presetSplitButton = new QPushButton( "Split from Preset" );
   presetSplitButton->setObjectName( "DFGPresetSplitButton" );
+  presetSplitButton->setSizePolicy(
+    QSizePolicy::Minimum, QSizePolicy::Minimum
+    );
   connect(
     presetSplitButton, SIGNAL(clicked()),
     this, SLOT(onSplitFromPresetClicked())
@@ -100,11 +103,13 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
 
   QLabel *presetSplitLabel = new QLabel;
   presetSplitLabel->setObjectName( "DFGPresetSplitLabel" );
+  presetSplitLabel->setSizePolicy(
+    QSizePolicy::Expanding, QSizePolicy::Minimum
+    );
 
   QHBoxLayout *presetSplitLayout = new QHBoxLayout;
   presetSplitLayout->setContentsMargins( 0, 0, 0, 0 );
   presetSplitLayout->addWidget( presetSplitLabel );
-  presetSplitLayout->addStretch( 1 );
   presetSplitLayout->addWidget( presetSplitButton );
 
   m_presetSplitWidget = new QFrame;

@@ -47,6 +47,7 @@
 #DFGExecHeaderWidget #DFGPresetSplitLabel
 {
   qproperty-text: "This node or one of its parents is an instance of a preset and cannot be changed unless split from the preset";
+  qproperty-wordWrap: true;
 }
 
 #DFGExecHeaderWidget QPushButton,
