@@ -152,6 +152,7 @@
 #DFGExecHeaderWidget #DFGRequiredExtensionsLineEdit
 {
   padding: 0px 2px;
+  qproperty-placeholderText: "(none)";
 }
 
 #DFGExecHeaderWidget QLineEdit
