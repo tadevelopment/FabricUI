@@ -130,6 +130,7 @@
   border: 1px solid #333333;
   background-color: #444444;
   padding: 2px 4px;
+  icon-size: 20px 20px;
 }
 
 #DFGPEWidget_Elements_AddElementContainer QPushButton:hover
@@ -141,6 +142,8 @@
 {
   margin: 0px;
   padding: 0px 4px;
+  icon-size: 16px 16px;
+
 }
 
 #DFGExecHeaderWidget #DFGBackButton
