@@ -279,7 +279,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     new NewBackdropNodeAction( graphWidget, QCursor::pos(), result )
     );
 
-  FTL::ArrayRef<GraphView::Node *> nodes = graph->selectedNodes();
+  std::vector<GraphView::Node *> nodes = graph->selectedNodes();
   unsigned varNodeCount;
   unsigned getNodeCount;
   unsigned setNodeCount;
@@ -366,7 +366,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
       return NULL;
     dfgWidget->m_contextNode = uiNode;
 
-    FTL::ArrayRef<GraphView::Node *> nodes =
+    std::vector<GraphView::Node *> nodes =
       dfgWidget->getUIController()->graph()->selectedNodes();
     unsigned varNodeCount;
     unsigned getNodeCount;
