@@ -169,6 +169,15 @@ DFGWidget::DFGWidget(
     );
 
   m_uiController->setHostBindingExec( host, binding, execPath, exec );
+
+  QAction *reloadStylesAction = new QAction( "Reload QSS Styles", this );
+  reloadStylesAction->setShortcut( QKeySequence( "Ctrl+Shift+R" ) );
+  reloadStylesAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+  connect(
+    reloadStylesAction, SIGNAL(triggered()),
+    this, SLOT(onReloadStyles())
+    );
+  addAction( reloadStylesAction );
 }
 
 DFGWidget::~DFGWidget()
@@ -2456,4 +2465,11 @@ void DFGWidget::onNodeEditRequested(FabricUI::GraphView::Node *node)
   {
     printf("Exception: %s\n", e.getDesc_cstr());
   }
+}
+
+void DFGWidget::onReloadStyles()
+{
+  reloadStyles();
+  qDebug() << "Reloaded DFGWidget.qss";
+  emit stylesReloaded();
 }

@@ -68,7 +68,10 @@ void VETreeWidget::reloadStyles()
 {
   QString styleSheet = LoadFabricStyleSheet( FTL_STR("ValueEditor.qss") );
   if ( !styleSheet.isEmpty() )
+  {
     setStyleSheet( styleSheet );
+    qDebug() << "Reloaded ValueEditor.qss";
+  }
 }
 
 // Perform a depth-first gather of the child widgets of this item

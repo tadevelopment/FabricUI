@@ -308,6 +308,7 @@ class CanvasWindow(QtGui.QMainWindow):
         """Initializes the value editor."""
 
         self.valueEditor = FabricUI.DFG.DFGVEEditorOwner(self.dfgWidget)
+        self.dfgWidget.stylesReloaded.connect(self.valueEditor.reloadStyles)
 
     def _initLog(self):
         """Initializes the DFGLogWidget and Undo view."""

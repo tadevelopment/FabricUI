@@ -84,3 +84,8 @@ void VEEditorOwner::onModelValueChanged( QVariant const &newValue )
   BaseModelItem * item = (BaseModelItem *)QObject::sender();
   emit modelItemValueChanged(item, newValue);
 }
+
+void VEEditorOwner::reloadStyles()
+{
+  m_valueEditor->reloadStyles();
+}

@@ -148,6 +148,7 @@ namespace FabricUI {
         );
 
     public slots :
+
       virtual void onOutputsChanged(); // Call after each evaluation
 
     protected slots:

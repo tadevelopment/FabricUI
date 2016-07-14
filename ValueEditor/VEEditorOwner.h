@@ -51,7 +51,9 @@ namespace FabricUI {
       virtual void initConnections();
 
     public slots :
+    
       virtual void onOutputsChanged() {} // Call after each evaluation
+      void reloadStyles();
 
     protected slots:
       virtual void onFrameChanged(int frame) {}

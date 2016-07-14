@@ -100,6 +100,7 @@ namespace DFG {
       void portEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData);
       void nodeInspectRequested(FabricUI::GraphView::Node *);
       void urlDropped( QUrl url, bool bypassUnsavedChanges );
+      void stylesReloaded();
       
     public slots:
 
@@ -125,6 +126,10 @@ namespace DFG {
       void onToggleDimConnections();
       void onTogglePortsCentered();
       void onEditPropertiesForCurrentSelection();
+
+    protected slots:
+
+      void onReloadStyles();
 
     private slots:
 
