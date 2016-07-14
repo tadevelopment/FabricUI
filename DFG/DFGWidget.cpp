@@ -172,7 +172,7 @@ DFGWidget::DFGWidget(
 
   QAction *reloadStylesAction = new QAction( "Reload QSS Styles", this );
   reloadStylesAction->setShortcut( QKeySequence( "Ctrl+Shift+R" ) );
-  reloadStylesAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+  reloadStylesAction->setShortcutContext( Qt::WindowShortcut );
   connect(
     reloadStylesAction, SIGNAL(triggered()),
     this, SLOT(onReloadStyles())
@@ -2469,7 +2469,7 @@ void DFGWidget::onNodeEditRequested(FabricUI::GraphView::Node *node)
 
 void DFGWidget::onReloadStyles()
 {
+  qDebug() << "Reloading Fabric stylesheets";
   reloadStyles();
-  qDebug() << "Reloaded DFGWidget.qss";
   emit stylesReloaded();
 }
