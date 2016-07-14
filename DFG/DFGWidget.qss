@@ -42,17 +42,29 @@
   color: #C7D2DA;
 }
 
+#DFGExecHeaderWidget #DFGPresetNameLabel
+{
+  background-color: #50626e;
+}
+
 #DFGExecHeaderWidget #DFGPresetPathSep
 {
   color: #3c4450;
   font-weight: bold;
   qproperty-text: "//";
+  background-color: #50626e;
+}
+
+#DFGExecHeaderWidget #DFGExecPathLabel
+{
+  background-color: #50626e;
 }
 
 #DFGExecHeaderWidget #DFGPresetSplitLabel
 {
   qproperty-text: "This node or one of its parents is an instance of a preset and cannot be changed unless split from the preset";
   qproperty-wordWrap: true;
+  background-color: #ccb455;
 }
 
 #DFGExecHeaderWidget QPushButton,
@@ -162,6 +174,11 @@
   padding: 0px 4px 0px 0px;
 }
 
+#DFGExecHeaderWidget #DFGRequiredExtensionsLabel
+{
+  background-color: #50626e;
+}
+
 #DFGExecHeaderWidget #DFGRequiredExtensionsLineEdit
 {
   padding: 0px 2px;
@@ -263,7 +280,6 @@
 
 #DFGPEWidget_Exec QTabWidget::pane
 {
-  border: none;
 }
 
 #DFGPEWidget_Exec QTabBar::tab
