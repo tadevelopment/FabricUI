@@ -280,7 +280,6 @@
 
 #DFGPEWidget_Exec QTabWidget::pane
 {
-  border: none;
 }
 
 #DFGPEWidget_Exec QTabBar::tab
