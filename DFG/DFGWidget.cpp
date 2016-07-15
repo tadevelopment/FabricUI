@@ -289,6 +289,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     );
 
   std::vector<GraphView::Node *> nodes = graph->selectedNodes();
+  
   unsigned varNodeCount;
   unsigned getNodeCount;
   unsigned setNodeCount;
@@ -305,8 +306,8 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     userNodeCount,
     blockNodeCount
     );
-  bool onlyInstNodes = instNodeCount == nodes.size();
-  if ( onlyInstNodes && nodes.size() > 0 )
+
+  if ( blockNodeCount == 0 && nodes.size() > 0 )
   {
     result->addSeparator();
     result->addAction(DFG_IMPLODE_NODE);
@@ -524,12 +525,21 @@ QMenu *DFGWidget::nodeContextMenuCallback(
           result->addAction(DFG_CREATE_PRESET);
         result->addAction(DFG_EXPORT_GRAPH);
       }
+    }
 
+    if ( nodes.size() > 0 && blockNodeCount == 0 )
+    {
       if ( dfgWidget->isEditable() )
       {
         result->addSeparator();
         result->addAction(DFG_IMPLODE_NODE);
+      }
+    }
 
+    if ( onlyInstNodes )
+    {
+      if ( dfgWidget->isEditable() )
+      {
         if (instNodeCount == 1)
         {
           FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
