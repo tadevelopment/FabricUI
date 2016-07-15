@@ -57,6 +57,7 @@ namespace FabricUI
       QFont nodeFont;
       QColor nodeFontColor;
       QColor nodeFontHighlightColor;
+      QFont instBlockHeaderFont;
       float nodeContentMargins;
       float nodeWidthReduction;
       float nodeHeaderContentMargins;

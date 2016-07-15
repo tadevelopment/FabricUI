@@ -44,7 +44,7 @@ InstBlockHeader::InstBlockHeader(
     QString::fromUtf8( name.data(), name.size() ),
     graphConfig.nodeFontColor,
     graphConfig.nodeFontHighlightColor,
-    graphConfig.nodeFont
+    graphConfig.instBlockHeaderFont
     );
 
   m_inCircle = new PinCircle( this, PortType_Input, node->color() );
