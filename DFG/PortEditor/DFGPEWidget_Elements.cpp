@@ -255,7 +255,7 @@ void DFGPEWidget_Elements::onRemoveSelected()
   for ( int i = 0; i < selectedItems.size(); ++i )
     if ( selectedItems[i]->column() == 0 )
     {
-      int index = selectedItems[0]->row();
+      int index = selectedItems[i]->row();
       if ( !m_model->isElementReadOnly( index ) )
         selectedIndices << index;
     }
