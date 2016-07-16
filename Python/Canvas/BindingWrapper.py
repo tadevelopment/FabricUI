@@ -607,7 +607,7 @@ class BindingWrapper:
             QtCore.QPointF(cursorPosX, cursorPosY),
             )
         InvokeCmd(cmd, self.qUndoStack)
-        return cmd.getPastedNodeNames()
+        return cmd.getPastedItemNames()
 
     def setArgValue(
         self,
