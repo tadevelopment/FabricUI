@@ -3,12 +3,12 @@ echo "Launching Alembic Viewer"
 echo "========================"
 echo ""
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-FABRIC_DIR=$DIR/../../..
+BASEDIR=$(dirname "$0")
+FABRIC_DIR=$BASEDIR/../../..
 
 source $FABRIC_DIR/environment.sh
 
-PYTHONPATH=$DIR/../:$PYTHONPATH
+PYTHONPATH=$BASEDIR/../:$PYTHONPATH
 export PYTHONPATH
 
-python alembic_viewer.py
+python $BASEDIR/alembic_viewer.py
