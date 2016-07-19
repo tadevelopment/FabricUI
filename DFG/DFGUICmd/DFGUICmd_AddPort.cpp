@@ -149,7 +149,8 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
         }
 
 
-        char const *metadatasToCopy[5] =
+        static unsigned const metadatasToCopyCount = 5;
+        char const *metadatasToCopy[metadatasToCopyCount] =
         {
           "uiRange",
           "uiCombo",
@@ -159,13 +160,14 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
         };
 
         if ( !exec.isExecBlock( portToConnectNodeName.c_str() )
-          && exec.getNodeType( portToConnectNodeName.c_str() ) == FabricCore::DFGNodeType_Inst )
+          && ( exec.isInstBlock( portToConnectNodeName.c_str() )
+            || exec.getNodeType( portToConnectNodeName.c_str() ) == FabricCore::DFGNodeType_Inst ) )
         {
           // In the specific case of instances, copy metadata from subexec
           
           FabricCore::DFGExec portToConnectSubExec =
             exec.getSubExec( portToConnectNodeName.c_str() );
-          for ( unsigned i = 0; i < 5; ++i )
+          for ( unsigned i = 0; i < metadatasToCopyCount; ++i )
           {
             exec.setExecPortMetadata(
               portName.c_str(),
@@ -181,7 +183,7 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
         }
         else
         {
-          for ( unsigned i = 0; i < 5; ++i )
+          for ( unsigned i = 0; i < metadatasToCopyCount; ++i )
           {
             exec.setExecPortMetadata(
               portName.c_str(),
