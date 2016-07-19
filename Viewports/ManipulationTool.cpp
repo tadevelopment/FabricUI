@@ -115,7 +115,7 @@ bool ManipulationTool::onEvent(QEvent *event) {
     return false;
 
   // Now we translate the Qt events to FabricEngine events..
-  FabricCore::RTVal klevent = QtToKLEvent(event, m_view->getClient(), m_view->getViewport());
+  FabricCore::RTVal klevent = QtToKLEvent(event, m_view->getClient(), m_view->getViewport(), "Canvas");
 
   try
   {

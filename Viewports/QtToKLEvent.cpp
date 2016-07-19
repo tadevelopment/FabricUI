@@ -20,7 +20,7 @@ inline FabricCore::RTVal QtToKLMousePosition(QPoint pos, Client const& client, R
   return klpos;
 }
 
-RTVal QtToKLEvent(QEvent *event, Client const& client, RTVal viewport, bool swapAxis) {
+RTVal QtToKLEvent(QEvent *event, Client const& client, RTVal viewport, char const *hostName, bool swapAxis) {
   // Now we translate the Qt events to FabricEngine events..
   RTVal klevent;
 
@@ -80,7 +80,10 @@ RTVal QtToKLEvent(QEvent *event, Client const& client, RTVal viewport, bool swap
     // Setup the Host
     // We cannot set an interface value via RTVals.
     RTVal host = RTVal::Create(client, "Host", 0, 0);
-    host.setMember("hostName", RTVal::ConstructString(client, "Canvas"));
+    if ( hostName )
+      host.setMember("hostName", RTVal::ConstructString(client, hostName ));
+    else
+      host.setMember("hostName", RTVal::ConstructString(client, "Canvas"));
     klevent.setMember("host", host);
   }
   return klevent;
