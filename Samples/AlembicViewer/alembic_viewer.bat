@@ -20,6 +20,4 @@ REM ==================================
 REM Launches the Python application.
 REM ==================================
 
-call cmd /k "python alembic_viewer.py"
-
-PAUSE
+call python alembic_viewer.py

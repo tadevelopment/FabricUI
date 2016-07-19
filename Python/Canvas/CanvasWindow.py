@@ -508,11 +508,13 @@ class CanvasWindow(QtGui.QMainWindow):
     def updateRecentFileActions(self):
         files = self.settings.value('mainWindow/recentFiles', [])
 
-        for i,filepath in enumerate(files):
-            text = "&%d %s" % (i + 1, filepath)
-            self.recentFilesAction[i].setText(text)
-            self.recentFilesAction[i].setData(filepath)
-            self.recentFilesAction[i].setVisible(True)
+        if len(self.recentFilesAction) >0:
+            for i,filepath in enumerate(files):
+                text = "&%d %s" % (i + 1, filepath)
+                self.recentFilesAction[i].setText(text)
+                self.recentFilesAction[i].setData(filepath)
+                self.recentFilesAction[i].setVisible(True)
+            
 
     def loadGraph(self, filePath):
         """Method to load a graph from disk.

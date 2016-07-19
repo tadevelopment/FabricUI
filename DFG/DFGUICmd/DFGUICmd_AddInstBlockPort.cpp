@@ -39,7 +39,7 @@ FTL::CStrRef DFGUICmd_AddInstBlockPort::invoke(
   FTL::CStrRef blockName,
   FTL::CStrRef desiredPortName,
   FTL::CStrRef typeSpec,
-  FTL::CStrRef pathToConnect,
+  FTL::CStrRef portToConnectPath,
   FTL::CStrRef extDep,
   FTL::CStrRef metaData,
   unsigned &coreUndoCount
@@ -104,56 +104,87 @@ FTL::CStrRef DFGUICmd_AddInstBlockPort::invoke(
       );
   ++coreUndoCount;
 
-  if ( !pathToConnect.empty() )
+  if ( !portToConnectPath.empty() )
   {
     std::string instBlockPortPath = instBlockPath;
     instBlockPortPath += '.';
     instBlockPortPath += portName;
 
-    FabricCore::DFGPortType pathToConnectNodePortType =
-      exec.getNodePortType( pathToConnect.c_str() );
-
-    if ( pathToConnectNodePortType == FabricCore::DFGPortType_In )
+    FabricCore::DFGPortType portToConnectNodePortType =
+      exec.getPortType( portToConnectPath.c_str() );
+    if ( portToConnectNodePortType == FabricCore::DFGPortType_In )
     {
-      FTL::CStrRef resolvedType =
-        exec.getPortResolvedType( pathToConnect.c_str() );
-      if ( !resolvedType.empty() )
+      FTL::CStrRef::Split split = portToConnectPath.rsplit('.');
+      std::string portToConnectNodeName = split.first;
+      FTL::CStrRef portToConnectName = split.second;
+      if ( !portToConnectNodeName.empty() )
       {
-        FabricCore::RTVal defaultValue =
-          exec.getPortResolvedDefaultValue(
-            pathToConnect.c_str(),
-            resolvedType.c_str()
-            );
-        if ( defaultValue.isValid() )
+        FTL::CStrRef resolvedType =
+          exec.getPortResolvedType( portToConnectPath.c_str() );
+        if ( !resolvedType.empty() )
         {
-          exec.setPortDefaultValue( instBlockPortPath.c_str(), defaultValue, true );
-          ++coreUndoCount;
+          FabricCore::RTVal defaultValue =
+            exec.getPortResolvedDefaultValue(
+              portToConnectPath.c_str(),
+              resolvedType.c_str()
+              );
+          if ( defaultValue.isValid() )
+          {
+            exec.setPortDefaultValue( instBlockPortPath.c_str(), defaultValue, true );
+            ++coreUndoCount;
+          }
         }
-      }
 
-      char const *metadatasToCopy[5] =
-      {
-        "uiRange",
-        "uiCombo",
-        DFG_METADATA_UIPERSISTVALUE
-      };
+        static unsigned const metadatasToCopyCount = 3;
+        char const *metadatasToCopy[metadatasToCopyCount] =
+        {
+          "uiRange",
+          "uiCombo",
+          DFG_METADATA_UIPERSISTVALUE
+        };
 
-      for ( unsigned i = 0; i < 5; ++i )
-      {
-        instBlockExec.setExecPortMetadata(
-          portName.c_str(),
-          metadatasToCopy[i],
-          exec.getPortModelMetadata(
-            pathToConnect.c_str(),
-            metadatasToCopy[i]
-            ),
-          true
-          );
-        ++coreUndoCount;
+        if ( !exec.isExecBlock( portToConnectNodeName.c_str() )
+          && ( exec.isInstBlock( portToConnectNodeName.c_str() )
+            || exec.getNodeType( portToConnectNodeName.c_str() ) == FabricCore::DFGNodeType_Inst ) )
+        {
+          // In the specific case of instances, copy metadata from subexec
+          
+          FabricCore::DFGExec portToConnectSubExec =
+            exec.getSubExec( portToConnectNodeName.c_str() );
+          for ( unsigned i = 0; i < metadatasToCopyCount; ++i )
+          {
+            instBlockExec.setExecPortMetadata(
+              portName.c_str(),
+              metadatasToCopy[i],
+              portToConnectSubExec.getPortMetadata(
+                portToConnectName.c_str(),
+                metadatasToCopy[i]
+                ),
+              true
+              );
+            ++coreUndoCount;
+          }
+        }
+        else
+        {
+          for ( unsigned i = 0; i < metadatasToCopyCount; ++i )
+          {
+            instBlockExec.setExecPortMetadata(
+              portName.c_str(),
+              metadatasToCopy[i],
+              exec.getPortMetadata(
+                portToConnectPath.c_str(),
+                metadatasToCopy[i]
+                ),
+              true
+              );
+            ++coreUndoCount;
+          }
+        }
       }
     }
 
-    exec.connectTo( pathToConnect.c_str(), instBlockPortPath.c_str() );
+    exec.connectTo( portToConnectPath.c_str(), instBlockPortPath.c_str() );
     ++coreUndoCount;
   }
 
