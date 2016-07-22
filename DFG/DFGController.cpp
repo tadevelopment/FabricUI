@@ -1488,6 +1488,8 @@ void DFGController::updatePresetPathDB()
     m_presetNameSpaceDict.add(m_presetNameSpaceDictSTL[i].c_str(), '.', m_presetNameSpaceDictSTL[i].c_str());
   for(size_t i=0;i<m_presetPathDictSTL.size();i++)
     m_presetPathDict.add(m_presetPathDictSTL[i].c_str(), '.', m_presetPathDictSTL[i].c_str());
+
+  m_presetPathDict.loadPrefs( m_tabSearchPrefsJSONFilename.c_str() );
 }
 
 DFGNotificationRouter * DFGController::createRouter()
