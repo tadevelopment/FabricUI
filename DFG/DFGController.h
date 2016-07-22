@@ -93,6 +93,8 @@ namespace FabricUI
         );
       void refreshExec();
 
+      void savePrefs();
+
       void focusNode( FTL::StrRef nodeName );
 
       DFGNotificationRouter * getRouter();
@@ -471,6 +473,7 @@ namespace FabricUI
       bool const m_overTakeBindingNotifications;
       FabricServices::SplitSearch::Dict m_presetNameSpaceDict;
       FabricServices::SplitSearch::Dict m_presetPathDict;
+      std::string m_tabSearchPrefsJSONFilename;
       std::vector<std::string> m_presetNameSpaceDictSTL;
       std::vector<std::string> m_presetPathDictSTL;
       bool m_presetDictsUpToDate;

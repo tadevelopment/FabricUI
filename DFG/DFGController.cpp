@@ -59,6 +59,15 @@ DFGController::DFGController(
   , m_topoDirtyPending( false )
   , m_dirtyPending( false )
 {
+  m_tabSearchPrefsJSONFilename = FabricCore::GetFabricPrivateDir();
+#ifdef FTL_PLATFORM_WINDOWS
+  m_tabSearchPrefsJSONFilename += '\\';
+#else
+  m_tabSearchPrefsJSONFilename += '/';
+#endif
+  m_tabSearchPrefsJSONFilename += "TabSearch.prefs.json";
+  m_presetPathDict.loadPrefs( m_tabSearchPrefsJSONFilename.c_str() );
+
   m_notificationTimer->setSingleShot( true );
   connect(
     m_notificationTimer, SIGNAL(timeout()),
@@ -2153,4 +2162,9 @@ void DFGController::gvcDoMoveExecPort(
       QString(), // itemPath
       indices
       );
+}
+
+void DFGController::savePrefs()
+{
+  m_presetPathDict.savePrefs( m_tabSearchPrefsJSONFilename.c_str() );
 }

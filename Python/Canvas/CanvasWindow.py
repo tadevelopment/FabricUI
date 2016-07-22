@@ -636,6 +636,10 @@ class CanvasWindow(QtGui.QMainWindow):
             event.ignore()
             return
 
+        if self.dfgWidget:
+            if dfgController = self.dfgWidget.getDFGController():
+                dfgController.savePrefs()
+
         self.viewport.setManipulationActive(False)
         self.settings.setValue("mainWindow/geometry", self.saveGeometry())
         self.settings.setValue("mainWindow/state", self.saveState())
@@ -742,10 +746,13 @@ class CanvasWindow(QtGui.QMainWindow):
 
         # [andrew 20150909] can happen if this triggers while the licensing
         # dialogs are up
-        if not self.dfgWidget or not self.dfgWidget.getDFGController():
+        if not self.dfgWidget:
+            return
+        dfgController = self.dfgWidget.getDFGController();
+        if not dfgController:
             return
 
-        binding = self.dfgWidget.getDFGController().getBinding()
+        binding = dfgController.getBinding()
         if binding:
             bindingVersion = binding.getVersion()
             if bindingVersion != self.lastAutosaveBindingVersion:
@@ -758,6 +765,9 @@ class CanvasWindow(QtGui.QMainWindow):
                         os.remove(self.autosaveFilename)
                     os.rename(tmpAutosaveFilename, self.autosaveFilename)
                     self.lastAutosaveBindingVersion = bindingVersion
+
+        dfgController.savePrefs()
+
 
     def execNewGraph(self, skip_save=False):
         """Callback Executed when a key or menu command has requested a new graph.
