@@ -1402,9 +1402,9 @@ void DFGController::updatePresetPathDB()
   m_presetPathDictSTL.clear();
 
   // insert fixed results for special nodes
-  m_presetPathDictSTL.push_back("var");
-  m_presetPathDictSTL.push_back("get");
-  m_presetPathDictSTL.push_back("set");
+  m_presetPathDictSTL.push_back( std::pair<std::string, int>( "var", 1 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, int>( "get", 1 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, int>( "set", 1 ) );
 
   QStringList variables =
     getVariableWordsFromBinding(
@@ -1413,8 +1413,12 @@ void DFGController::updatePresetPathDB()
       );
   for(int i=0;i<variables.length();i++)
   {
-    m_presetPathDictSTL.push_back("get." + std::string(variables[i].toUtf8().constData()));
-    m_presetPathDictSTL.push_back("set." + std::string(variables[i].toUtf8().constData()));
+    m_presetPathDictSTL.push_back( std::pair<std::string, int>(
+      "get." + std::string(variables[i].toUtf8().constData()), 0
+      ) );
+    m_presetPathDictSTL.push_back( std::pair<std::string, int>(
+      "set." + std::string(variables[i].toUtf8().constData()), 0
+      ) );
   }
 
   std::vector<std::string> paths;
@@ -1439,7 +1443,7 @@ void DFGController::updatePresetPathDB()
         std::string objectType = objectTypeVar->getStringData();
         if(objectType == "Preset")
         {
-          m_presetPathDictSTL.push_back(prefix+name);
+          m_presetPathDictSTL.push_back( std::pair<std::string, int>( prefix+name, -1 ) );
         }
         else if(objectType == "NameSpace")
         {
@@ -1457,7 +1461,12 @@ void DFGController::updatePresetPathDB()
   for(size_t i=0;i<m_presetNameSpaceDictSTL.size();i++)
     m_presetNameSpaceDict.add(m_presetNameSpaceDictSTL[i].c_str(), '.', m_presetNameSpaceDictSTL[i].c_str());
   for(size_t i=0;i<m_presetPathDictSTL.size();i++)
-    m_presetPathDict.add(m_presetPathDictSTL[i].c_str(), '.', m_presetPathDictSTL[i].c_str());
+    m_presetPathDict.add(
+      m_presetPathDictSTL[i].first.c_str(),
+      '.',
+      m_presetPathDictSTL[i].first.c_str(),
+      m_presetPathDictSTL[i].second
+      );
 
   m_presetPathDict.loadPrefs( m_tabSearchPrefsJSONFilename.c_str() );
 }
