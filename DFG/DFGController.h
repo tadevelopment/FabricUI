@@ -476,7 +476,7 @@ namespace FabricUI
       FabricServices::SplitSearch::Dict m_presetPathDict;
       std::string m_tabSearchPrefsJSONFilename;
       std::vector<std::string> m_presetNameSpaceDictSTL;
-      std::vector< std::pair<std::string, int> > m_presetPathDictSTL;
+      std::vector< std::pair<std::string, unsigned> > m_presetPathDictSTL;
       bool m_presetDictsUpToDate;
 
       uint32_t m_updateSignalBlockCount;

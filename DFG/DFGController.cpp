@@ -1402,9 +1402,9 @@ void DFGController::updatePresetPathDB()
   m_presetPathDictSTL.clear();
 
   // insert fixed results for special nodes
-  m_presetPathDictSTL.push_back( std::pair<std::string, int>( "var", INT_MAX - 1 ) );
-  m_presetPathDictSTL.push_back( std::pair<std::string, int>( "get", INT_MAX - 1 ) );
-  m_presetPathDictSTL.push_back( std::pair<std::string, int>( "set", INT_MAX - 1 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "var", 2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "get", 2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "set", 2 ) );
 
   QStringList variables =
     getVariableWordsFromBinding(
@@ -1413,11 +1413,11 @@ void DFGController::updatePresetPathDB()
       );
   for(int i=0;i<variables.length();i++)
   {
-    m_presetPathDictSTL.push_back( std::pair<std::string, int>(
-      "get." + std::string(variables[i].toUtf8().constData()), INT_MAX - 2
+    m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>(
+      "get." + std::string(variables[i].toUtf8().constData()), 1
       ) );
-    m_presetPathDictSTL.push_back( std::pair<std::string, int>(
-      "set." + std::string(variables[i].toUtf8().constData()), INT_MAX - 2
+    m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>(
+      "set." + std::string(variables[i].toUtf8().constData()), 1
       ) );
   }
 
@@ -1443,7 +1443,7 @@ void DFGController::updatePresetPathDB()
         std::string objectType = objectTypeVar->getStringData();
         if(objectType == "Preset")
         {
-          m_presetPathDictSTL.push_back( std::pair<std::string, int>( prefix+name, -1 ) );
+          m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( prefix+name, 0 ) );
         }
         else if(objectType == "NameSpace")
         {
