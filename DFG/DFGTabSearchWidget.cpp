@@ -308,7 +308,8 @@ QString DFGTabSearchWidget::resultLabel(unsigned int index) const
   if ( !splitOne.second.empty() )
   {
     FTL::StrRef::Split splitTwo = splitOne.first.rsplit('.');
-    if ( !splitTwo.second.empty() )
+    if ( !splitTwo.first.empty()
+      && !splitTwo.second.empty() )
     {
       QString result = "...";
       result += QString::fromUtf8( splitTwo.second.data(), splitTwo.second.size() );
