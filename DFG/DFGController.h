@@ -353,7 +353,8 @@ namespace FabricUI
         std::string &failureReason
         ) const;
 
-      virtual QStringList getPresetPathsFromSearch(char const * search, bool includePresets = true, bool includeNameSpaces = false);
+      FabricServices::SplitSearch::Matches
+      getPresetPathsFromSearch( char const * search );
 
       virtual DFGNotificationRouter *createRouter();
 

@@ -66,7 +66,6 @@ DFGController::DFGController(
   m_tabSearchPrefsJSONFilename += '/';
 #endif
   m_tabSearchPrefsJSONFilename += "TabSearch.prefs.json";
-  m_presetPathDict.loadPrefs( m_tabSearchPrefsJSONFilename.c_str() );
 
   m_notificationTimer->setSingleShot( true );
   connect(
@@ -1364,15 +1363,14 @@ void DFGController::onBindingVarRemoved(
   emitVarsChanged();
 }
 
-QStringList DFGController::getPresetPathsFromSearch(char const * search, bool includePresets, bool includeNameSpaces)
+FabricServices::SplitSearch::Matches
+DFGController::getPresetPathsFromSearch( char const * search )
 {
   FTL::StrRef searchRef(search);
   if(searchRef.size() == 0)
-    return QStringList();
+    return FabricServices::SplitSearch::Matches();
 
   updatePresetPathDB();
-
-  QStringList results;
 
   // [pzion 20150305] This is a little evil but avoids lots of copying
 
@@ -1389,35 +1387,7 @@ QStringList DFGController::getPresetPathsFromSearch(char const * search, bool in
   for ( size_t i = 0; i < searchSplit.size(); ++i )
     cStrs[i] = searchSplit[i].data();
 
-  if(includePresets)
-  {
-    SplitSearch::Matches matches =
-      m_presetPathDict.search( searchSplit.size(), cStrs );
-
-    if(matches.getSize() == 0)
-      return results;
-    std::vector<const char *> userDatas;
-    userDatas.resize(matches.getSize());
-    matches.getUserdatas(matches.getSize(), (const void**)&userDatas[0]);
-
-    for(size_t i=0;i<userDatas.size();i++)
-      results.push_back(userDatas[i]);
-  }
-  if(includeNameSpaces)
-  {
-    SplitSearch::Matches matches = m_presetNameSpaceDict.search( searchSplit.size(), cStrs );
-
-    if(matches.getSize() == 0)
-      return results;
-    std::vector<const char *> userDatas;
-    userDatas.resize(matches.getSize());
-    matches.getUserdatas(matches.getSize(), (const void**)&userDatas[0]);
-
-    for(size_t i=0;i<userDatas.size();i++)
-      results.push_back(userDatas[i]);
-  }
-
-  return results;
+  return m_presetPathDict.search( searchSplit.size(), cStrs );
 }
 
 void DFGController::updatePresetPathDB()
@@ -2168,5 +2138,6 @@ void DFGController::gvcDoMoveExecPort(
 
 void DFGController::savePrefs()
 {
-  m_presetPathDict.savePrefs( m_tabSearchPrefsJSONFilename.c_str() );
+  if ( m_presetDictsUpToDate )
+    m_presetPathDict.savePrefs( m_tabSearchPrefsJSONFilename.c_str() );
 }
