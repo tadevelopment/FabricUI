@@ -60,6 +60,7 @@ DFGWidget::DFGWidget(
   , m_manager( manager )
   , m_dfgConfig( dfgConfig )
   , m_isEditable( false )
+  , m_uiGraphZoomBeforeQuickZoom( 0 )
 {
   reloadStyles();
 
@@ -1752,18 +1753,39 @@ void DFGWidget::keyPressEvent(QKeyEvent * event)
   Parent::keyPressEvent(event);  
 }
 
+template<typename Ty>
+Ty clamp( Ty const &v, Ty const &lo, Ty const &hi )
+{
+  return std::min( std::max( v, lo ), hi );
+}
+
 void DFGWidget::keyReleaseEvent(QKeyEvent * event)
 {
   // qDebug() << "DFGWidget::keyReleaseEvent";
   if ( event->key() == Qt::Key_QuoteLeft
-    && !event->isAutoRepeat() )
+    && !event->isAutoRepeat()
+    && m_uiGraphZoomBeforeQuickZoom != 0 )
   {
     event->accept();
 
     QPoint globalPos = QCursor::pos();
     // qDebug() << "globalPos " << globalPos;
     GraphView::GraphViewWidget *graphViewWidget = getGraphViewWidget();
+    QRect graphViewWidgetRect = graphViewWidget->geometry();
     QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
+    // [pz 20160724] Constraint point to widget geometry
+    graphViewWidgetPos = QPoint(
+      clamp(
+        graphViewWidgetPos.x(),
+        graphViewWidgetRect.left(),
+        graphViewWidgetRect.right()
+        ),
+      clamp(
+        graphViewWidgetPos.y(),
+        graphViewWidgetRect.top(),
+        graphViewWidgetRect.bottom()
+        )
+      );
     // qDebug() << "graphViewWidgetPos " << graphViewWidgetPos;
     QPointF scenePos = graphViewWidget->mapToScene( graphViewWidgetPos );
     // qDebug() << "scenePos " << scenePos;
@@ -1772,6 +1794,8 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
     QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
     // qDebug() << "mainPanelPos " << mainPanelPos;
     mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
+
+    m_uiGraphZoomBeforeQuickZoom = 0;
 
     return;
   }
