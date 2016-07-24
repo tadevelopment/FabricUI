@@ -1720,7 +1720,62 @@ void DFGWidget::onKeyReleased(QKeyEvent * event)
   if(getUIGraph() && !event->isAutoRepeat() && getUIGraph()->releaseHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))
     event->accept();
   else
-    keyPressEvent(event);  
+    keyReleaseEvent(event);  
+}
+
+void DFGWidget::keyPressEvent(QKeyEvent * event)
+{
+  // qDebug() << "DFGWidget::keyPressEvent";
+  if ( event->key() == Qt::Key_QuoteLeft
+    && !event->isAutoRepeat() )
+  {
+    event->accept();
+
+    FTL::CStrRef uiGraphZoomStr =
+      m_uiController->getExec().getMetadata( "uiGraphZoom" );
+    FTL::JSONStrWithLoc jsonStrWithLoc( uiGraphZoomStr );
+    FTL::OwnedPtr<FTL::JSONValue const> jsonValue(
+      FTL::JSONValue::Decode( jsonStrWithLoc )
+      );
+    if ( jsonValue )
+    {
+      FTL::JSONObject const *jsonObject = jsonValue->cast<FTL::JSONObject>();
+      m_uiGraphZoomBeforeQuickZoom =
+        jsonObject->getFloat64( FTL_STR("value") );
+    }
+    // qDebug() << "m_uiGraphZoomBeforeQuickZoom " << m_uiGraphZoomBeforeQuickZoom;
+
+    m_uiController->frameAllNodes();
+
+    return;
+  }
+  Parent::keyPressEvent(event);  
+}
+
+void DFGWidget::keyReleaseEvent(QKeyEvent * event)
+{
+  // qDebug() << "DFGWidget::keyReleaseEvent";
+  if ( event->key() == Qt::Key_QuoteLeft
+    && !event->isAutoRepeat() )
+  {
+    event->accept();
+
+    QPoint globalPos = QCursor::pos();
+    // qDebug() << "globalPos " << globalPos;
+    GraphView::GraphViewWidget *graphViewWidget = getGraphViewWidget();
+    QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
+    // qDebug() << "graphViewWidgetPos " << graphViewWidgetPos;
+    QPointF scenePos = graphViewWidget->mapToScene( graphViewWidgetPos );
+    // qDebug() << "scenePos " << scenePos;
+    GraphView::Graph *graph = graphViewWidget->graph();
+    GraphView::MainPanel *mainPanel = graph->mainPanel();
+    QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
+    // qDebug() << "mainPanelPos " << mainPanelPos;
+    mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
+
+    return;
+  }
+  Parent::keyReleaseEvent(event);  
 }
 
 void DFGWidget::onBubbleEditRequested(FabricUI::GraphView::Node * node)

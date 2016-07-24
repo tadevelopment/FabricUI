@@ -65,6 +65,11 @@ namespace FabricUI
       void setAlwaysPan(bool state) {m_alwaysPan = state;}
       bool grabsEvent( QEvent * e ); // When manipulating camera, events must be forwarded here and not to individual widgets (Alt, Space)
 
+      void performZoom(
+        float zoomFactor,
+        QPointF zoomCenter
+        );
+
     signals:
 
       void canvasZoomChanged(float zoom);
@@ -72,11 +77,6 @@ namespace FabricUI
       void geometryChanged();
       
     protected:
-
-      void performZoom(
-        float zoomFactor,
-        QPointF zoomCenter
-        );
 
     private:
 
