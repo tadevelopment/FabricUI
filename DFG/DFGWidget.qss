@@ -308,3 +308,89 @@
   color: #cbcbcb;
   background-color: #333;
 }
+
+#DFGTimelineWidget QWidget
+{
+  font: 10px "Lucida";
+}
+
+#DFGTimelineWidget QPushButton
+{
+  height: 16px;
+  border: none;
+  border-style: outset;
+  border-radius: 3px;
+  color: #C7D2DA;
+  background-color: #3c4450;
+}
+
+#DFGTimelineWidget QPushButton:hover
+{
+  color: #eee;
+  background-color: #525a66;
+}
+
+#DFGTimelineWidget QComboBox
+{
+  border: 0;
+  border-radius: 3px;
+  padding: 3px 3px 3px 6px;
+  margin: 0;
+  height: 10px;
+
+  color: #e1ffff;
+  background-color: #333;
+}
+
+#DFGTimelineWidget QComboBox::drop-down
+{
+  width: 18px;
+  background-color: #50626e;
+
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+#DFGTimelineWidget QComboBox QAbstractItemView
+{
+    color: #e1ffff;
+    background-color: #333;
+}
+
+#DFGTimelineWidget QComboBox::down-arrow
+{
+    image: url(${FABRIC_DIR}/Resources/Icons/DFGDown.png);
+    width: 9px;
+    height: 9px;
+}
+
+#DFGTimelineWidget QSlider
+{
+}
+
+#DFGTimelineWidget QSlider::handle:horizontal
+{
+  background: white;
+  border: none;
+  height: 10px;
+  width: 1px;
+  margin: -6px 0px;
+  border-radius: 3px;
+}
+
+/*
+#DFGTimelineWidget QSlider::add-page:horizontal {
+    background: yellow;
+}
+
+#DFGTimelineWidget QSlider::sub-page:horizontal {
+    background: pink;
+}
+*/
+
+#DFGTimelineWidget #DFGTimelineSeparator
+{
+  color: gray;
+  font-weight: bold;
+  qproperty-text: "//";
+}
