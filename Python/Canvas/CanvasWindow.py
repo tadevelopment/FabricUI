@@ -1180,7 +1180,7 @@ class CanvasWindow(QtGui.QMainWindow):
             graph.defineHotkey(QtCore.Qt.Key_A, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.SELECT_ALL)
             graph.defineHotkey(QtCore.Qt.Key_D, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.DISCONNECT_ALL_PORTS)
+                               DFG.DFGHotkeys.REMOVE_CONNECTIONS)
             graph.defineHotkey(QtCore.Qt.Key_C, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.COPY)
             graph.defineHotkey(QtCore.Qt.Key_V, QtCore.Qt.ControlModifier,

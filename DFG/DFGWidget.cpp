@@ -342,7 +342,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  QAction * removeConnectionsAction = new QAction(DFG_DISCONNECT_ALL_PORTS, graphWidget);
+  QAction * removeConnectionsAction = new QAction(DFG_REMOVE_CONNECTIONS, graphWidget);
   removeConnectionsAction->setShortcut( QKeySequence(Qt::Key_D) );
   // [Julien] When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
   removeConnectionsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -513,7 +513,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     if (nodes.size() && dfgWidget->isEditable())
     {
       result->addSeparator();
-      result->addAction(DFG_DISCONNECT_ALL_PORTS);
+      result->addAction(DFG_REMOVE_CONNECTIONS);
     }
 
     if ( onlyInstNodes )
@@ -932,7 +932,7 @@ void DFGWidget::onGraphAction(QAction * action)
   {
     onSelectAll();
   }
-  else if(action->text() == DFG_DISCONNECT_ALL_PORTS)
+  else if(action->text() == DFG_REMOVE_CONNECTIONS)
   {
     onRemoveConnections();
   }
@@ -1273,7 +1273,7 @@ void DFGWidget::onNodeAction(QAction * action)
     m_uiController->setNodeCommentExpanded( nodeName, false );
     m_uiController->cmdSetNodeComment( nodeName, QString() );
   }
-  else if(action->text() == DFG_DISCONNECT_ALL_PORTS)
+  else if(action->text() == DFG_REMOVE_CONNECTIONS)
   {
     onRemoveConnections();
   }
@@ -1644,7 +1644,7 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     onSelectAll();
   }
-  else if(m_isEditable && hotkey == DFGHotkeys::DISCONNECT_ALL_PORTS)
+  else if(m_isEditable && hotkey == DFGHotkeys::REMOVE_CONNECTIONS)
   {
     onRemoveConnections();
   }
