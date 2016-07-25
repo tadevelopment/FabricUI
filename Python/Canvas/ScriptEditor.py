@@ -208,7 +208,7 @@ class ScriptEditor(QtGui.QWidget):
 
         def keyPressEvent(self, event):
             # print "event.key() = %s" % str(event.key())
-            if event.key() == QtCore.Qt.Key_Return:
+            if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
                 if event.modifiers() == QtCore.Qt.ControlModifier:
                     event.ignore()
                     return
@@ -426,7 +426,7 @@ class ScriptEditor(QtGui.QWidget):
         saveAsAction.triggered.connect(self.saveAs)
 
         executeAction = QtGui.QAction("Execute", self)
-        executeAction.setShortcut(QtGui.QKeySequence("Ctrl+Return"))
+        executeAction.setShortcuts([QtGui.QKeySequence("Ctrl+Return"), QtGui.QKeySequence("Ctrl+Enter")])
         executeAction.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
         executeAction.setToolTip("Execute script (%s)" % executeAction.shortcut().toString(QtGui.QKeySequence.NativeText))
         executeAction.triggered.connect(self.execute)
