@@ -232,11 +232,6 @@ void Node::setCollapsedState(Node::CollapseState state)
   updatePinLayout();
 }
 
-void Node::toggleCollapsedState()
-{
-  setCollapsedState(CollapseState((int(m_collapsedState) + 1) % int(CollapseState_NumStates)));
-}
-
 void Node::setSelected(bool state, bool quiet)
 {
   if(state == m_selected)

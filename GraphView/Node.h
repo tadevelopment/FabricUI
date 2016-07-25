@@ -128,7 +128,6 @@ namespace FabricUI
       CollapseState collapsedState() const
         { return m_collapsedState; }
       virtual void setCollapsedState(CollapseState state);
-      virtual void toggleCollapsedState();
 
       virtual QString error() const;
       virtual bool hasError() const;
