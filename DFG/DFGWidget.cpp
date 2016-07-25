@@ -2039,13 +2039,14 @@ void DFGWidget::onEditPropertiesForCurrentSelection()
         controller->log("the node editor is not available for variable nodes.");
         return;
       }
-
+      FabricCore::DFGExec subExec = exec.getSubExec( oldNodeName.c_str() );
       DFG::DFGNodePropertiesDialog dialog(
         NULL,
         controller,
         oldNodeName.c_str(),
         getConfig(),
-        true
+        true /* setAlphaNum */,
+        !subExec.editWouldSplitFromPreset() /* isEditable */
         );
       if ( dialog.exec() )
       {
