@@ -185,8 +185,6 @@ void Controller::onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderButt
   if(button->name() == "node_collapse")
   {
     int state = (button->state() + 1) % 3;
-    std::vector<Node*> nodes;
-    nodes.push_back(button->header()->node());
     button->header()->node()->setCollapsedState((Node::CollapseState)state);
   }
 }

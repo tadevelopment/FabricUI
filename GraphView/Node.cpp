@@ -227,7 +227,6 @@ void Node::setCollapsedState(Node::CollapseState state)
   m_collapsedState = state;
   if(!m_graph->config().nodeHeaderAlwaysShowPins)
     m_header->setCirclesVisible(state != CollapseState_Expanded);
-  emit collapsedStateChanged(this, m_collapsedState);
   m_header->setHeaderButtonState("node_collapse", (int)m_collapsedState);
   updatePinLayout();
 }
