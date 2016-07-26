@@ -735,23 +735,23 @@ void DFGController::setNodeCollapseState(int collapsedState, GraphView::Node *no
   if (node->type() != GraphView::QGraphicsItemType_Node)
     return;
   node->setCollapsedState((GraphView::Node::CollapseState)collapsedState);
-  FabricCore::Variant collapsedStateVar = FabricCore::Variant::CreateSInt32(collapsedState);
   FabricCore::DFGExec &exec = getExec();
-  exec.setNodeMetadata(node->name().c_str(), "uiCollapsedState", collapsedStateVar.getJSONEncoding().getStringData(), false, false);
-} 
+  char const * const collapsedStateMetadataValues[GraphView::Node::CollapseState::CollapseState_NumStates] = { "0", "1", "2" };
+  exec.setNodeMetadata(node->name().c_str(), "uiCollapsedState", collapsedStateMetadataValues[collapsedState], false, false);
+}
 
 void DFGController::setSelectedNodesCollapseState(int collapsedState) {
   collapseSelectedNodes(collapsedState);
-  FabricCore::Variant collapsedStateVar = FabricCore::Variant::CreateSInt32(collapsedState);
   FabricCore::DFGExec &exec = getExec();
+  char const * const collapsedStateMetadataValues[GraphView::Node::CollapseState::CollapseState_NumStates] = { "0", "1", "2" };
   const std::vector<GraphView::Node*> & nodes = graph()->selectedNodes();
   for(unsigned int i=0;i<nodes.size();i++)
   {
     if(nodes[i]->type() != GraphView::QGraphicsItemType_Node)
       continue;
-    exec.setNodeMetadata(nodes[i]->name().c_str(), "uiCollapsedState", collapsedStateVar.getJSONEncoding().getStringData(), false, false);
+    exec.setNodeMetadata(nodes[i]->name().c_str(), "uiCollapsedState", collapsedStateMetadataValues[collapsedState], false, false);
   }
-} 
+}
 
 std::string DFGController::copy()
 {
