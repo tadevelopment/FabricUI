@@ -61,7 +61,7 @@ void FloatViewItem::onSpinBoxValueChanged( double value )
 
 void FloatViewItem::metadataChanged()
 {
-  FTL::StrRef uiRangeString = m_metadata.getString( "uiRange" );
+  FTL::StrRef uiRangeString = m_metadata.getString( "uiHardRange" );
   
   double minValue, maxValue;
   if ( FabricUI::DecodeUIRange( uiRangeString, minValue, maxValue ) )

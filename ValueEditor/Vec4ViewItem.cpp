@@ -207,7 +207,7 @@ void Vec4ViewItem::doAppendChildViewItems(QList<BaseViewItem *>& items)
 
 void Vec4ViewItem::metadataChanged()
 {
-  FTL::StrRef uiRangeString = m_metadata.getString( "uiRange" );
+  FTL::StrRef uiRangeString = m_metadata.getString( "uiHardRange" );
   
   double minValue, maxValue;
   if ( FabricUI::DecodeUIRange( uiRangeString, minValue, maxValue ) )
