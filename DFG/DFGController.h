@@ -329,9 +329,10 @@ namespace FabricUI
       virtual bool panCanvas(QPointF pan);
       virtual bool relaxNodes(QStringList paths = QStringList());
       virtual bool setNodeColor(const char * nodeName, const char * key, QColor color);
-      /// Sets the collapse state of the selected node.
-      /// Saves it in the node preferences    
-      virtual void setSelectedNodeCollapseState(int collapseState);
+      /// Sets the collapse state of a node and saves it in its preferences    
+      virtual void setNodeCollapseState(int collapseState, GraphView::Node *node);
+      /// Sets the collapse state of the selected nodes and saves it in their preferences    
+      virtual void setSelectedNodesCollapseState(int collapseState);
       
       virtual std::string copy();
 

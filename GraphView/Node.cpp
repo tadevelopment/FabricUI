@@ -227,14 +227,8 @@ void Node::setCollapsedState(Node::CollapseState state)
   m_collapsedState = state;
   if(!m_graph->config().nodeHeaderAlwaysShowPins)
     m_header->setCirclesVisible(state != CollapseState_Expanded);
-  emit collapsedStateChanged(this, m_collapsedState);
   m_header->setHeaderButtonState("node_collapse", (int)m_collapsedState);
   updatePinLayout();
-}
-
-void Node::toggleCollapsedState()
-{
-  setCollapsedState(CollapseState((int(m_collapsedState) + 1) % int(CollapseState_NumStates)));
 }
 
 void Node::setSelected(bool state, bool quiet)

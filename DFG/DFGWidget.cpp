@@ -1685,15 +1685,15 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   }
   else if(hotkey == DFGHotkeys::COLLAPSE_LEVEL_1)
   {
-    getUIController()->setSelectedNodeCollapseState(2);
+    getUIController()->setSelectedNodesCollapseState(2);
   }
   else if(hotkey == DFGHotkeys::COLLAPSE_LEVEL_2)
   {
-    getUIController()->setSelectedNodeCollapseState(1);
+    getUIController()->setSelectedNodesCollapseState(1);
   }
   else if(hotkey == DFGHotkeys::COLLAPSE_LEVEL_3)
   {
-    getUIController()->setSelectedNodeCollapseState(0);
+    getUIController()->setSelectedNodesCollapseState(0);
   }
 
   FabricCore::FlagUserInteraction();
