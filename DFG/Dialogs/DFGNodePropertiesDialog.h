@@ -29,8 +29,9 @@ namespace FabricUI
         QWidget * parent, 
         DFGController * controller, 
         const char * nodeName, 
-        const DFGConfig & dfgConfig = DFGConfig(),
-        bool setAlphaNum = false
+        const DFGConfig & dfgConfig,
+        bool setAlphaNum,
+        bool isEditable
         );
       /// Destructor
       virtual ~DFGNodePropertiesDialog();
