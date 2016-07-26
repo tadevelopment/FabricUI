@@ -1,9 +1,9 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include "DFGLogWidget.h"
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QMenu>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QVBoxLayout>
 
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 

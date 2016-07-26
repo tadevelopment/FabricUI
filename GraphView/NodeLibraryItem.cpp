@@ -5,7 +5,9 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPaintEvent>
 #include <QtGui/QPainter>
-#include <QtGui/QStyleOption>
+#include <QtGui/QDrag>
+#include <QtCore/QMimeData>
+#include <QtWidgets/QStyleOption>
 
 using namespace FabricUI::GraphView;
 

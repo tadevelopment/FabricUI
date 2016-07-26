@@ -7,12 +7,12 @@
 
 #include <FabricCore.h>
 #include <QtCore/QTimer>
-#include <QtGui/QComboBox>
-#include <QtGui/QFrame>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QFrame>
 #include <QtGui/QIcon>
-#include <QtGui/QStyledItemDelegate>
-#include <QtGui/QProxyStyle>
-#include <QtGui/QTableWidget>
+#include <QtWidgets/QStyledItemDelegate>
+#include <QtWidgets/QProxyStyle>
+#include <QtWidgets/QTableWidget>
 
 class QPushButton;
 

@@ -2,10 +2,10 @@
 
 #include "FabricStyle.h"
 
-#include <QtGui/QStyleHintReturn>
-#include <QtGui/QStyleOptionComplex>
-#include <QtGui/QStyleOptionButton>
-#include <QtGui/QStyleOption>
+#include <QtWidgets/QStyleHintReturn>
+#include <QtWidgets/QStyleOptionComplex>
+#include <QtWidgets/QStyleOptionButton>
+#include <QtWidgets/QStyleOption>
 
 using namespace FabricUI::Style;
 
@@ -46,4 +46,17 @@ void FabricStyle::polish(QPalette &palette)
   palette.setBrush(QPalette::Shadow, baseColor.darker(int(spread/2)));
   palette.setBrush(QPalette::Highlight, highlightColor);
   palette.setBrush(QPalette::HighlightedText, highlightedTextColor);
+}
+
+QIcon FabricStyle::standardIcon( QStyle::StandardPixmap, const QStyleOption *,
+                                 const QWidget * ) const
+{
+  return QIcon();
+}
+
+int FabricStyle::layoutSpacing( QSizePolicy::ControlType,
+                                QSizePolicy::ControlType, Qt::Orientation,
+                                const QStyleOption *, const QWidget * ) const
+{
+  return 0;
 }

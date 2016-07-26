@@ -8,11 +8,11 @@
 #include "VELineEdit.h"
 
 #include <QtCore/QVariant>
-#include <QtGui/QWidget>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QLineEdit>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QFileDialog>
 
 using namespace FabricUI::ValueEditor;
 
@@ -112,7 +112,7 @@ FabricCore::RTVal ToFilePath( FabricCore::RTVal& val, const QString& text )
 {
   FabricCore::RTVal asString = FabricCore::RTVal::ConstructString(
     val.getContext(),
-    text.toAscii().data() );
+    text.toUtf8().constData() );
 
   return FabricCore::RTVal::Create(
     val.getContext(),

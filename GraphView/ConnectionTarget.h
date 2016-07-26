@@ -4,7 +4,7 @@
 #define __UI_GraphView_ConnectionTarget__
 
 #include <FTL/Config.h>
-#include <QtGui/QGraphicsWidget>
+#include <QtWidgets/QGraphicsWidget>
 #include <QtCore/QPointF>
 #include "PortType.h"
 #include <string>

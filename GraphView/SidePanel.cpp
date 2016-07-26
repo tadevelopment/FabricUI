@@ -9,8 +9,8 @@
 
 #include <QtCore/QDebug>
 #include <QtGui/QPainter>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QGraphicsView>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsView>
 
 #include <float.h>
 #include <math.h>

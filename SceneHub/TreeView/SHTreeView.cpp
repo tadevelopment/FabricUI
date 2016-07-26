@@ -6,7 +6,7 @@
 #include <QtCore/QUrl>
 #include <QtCore/QMimeData>
 #include <QtGui/QDrag>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QTreeWidgetItem>
 #include <QtCore/QAbstractItemModel>
 
 using namespace FabricCore;

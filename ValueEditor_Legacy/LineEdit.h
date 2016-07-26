@@ -3,9 +3,9 @@
 #ifndef __UI_ValueEditor_LineEdit__
 #define __UI_ValueEditor_LineEdit__
 
-#include <QtGui/QSlider>
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit>
+#include <QtWidgets/QSlider>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QLineEdit>
 
 #include "ValueWidget.h"
 

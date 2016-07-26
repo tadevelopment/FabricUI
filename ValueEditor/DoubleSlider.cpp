@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <algorithm>
-#include <QtGui/QStyleOptionSlider>
+#include <QtWidgets/QStyleOptionSlider>
 #include <QtGui/QMouseEvent>
 
 #include <FTL/AutoSet.h>

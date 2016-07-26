@@ -28,12 +28,12 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
-#include <QtGui/QApplication>
-#include <QtGui/QColorDialog>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QColorDialog>
 #include <QtGui/QCursor>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QSplitter>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QSplitter>
 
 using namespace FabricServices;
 using namespace FabricUI;

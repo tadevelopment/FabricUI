@@ -6,8 +6,8 @@
 #include <QtGui/QColor>
 #include <QtGui/QFont>
 #include <QtGui/QFontMetrics>
-#include <QtGui/QWidget>
-#include <QtGui/QPlainTextEdit>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QPlainTextEdit>
 
 #include "EditorConfig.h"
 #include "MetaTypes.h"

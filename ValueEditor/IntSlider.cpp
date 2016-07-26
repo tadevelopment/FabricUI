@@ -3,7 +3,7 @@
 //
 
 #include "IntSlider.h"
-#include <QtGui/QStyleOptionSlider>
+#include <QtWidgets/QStyleOptionSlider>
 
 using namespace FabricUI::ValueEditor;
 

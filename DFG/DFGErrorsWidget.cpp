@@ -8,11 +8,11 @@
 #include <FabricUI/Util/LoadPixmap.h>
 
 #include <FTL/JSONValue.h>
-#include <QtGui/QLabel>
-#include <QtGui/QHeaderView>
-#include <QtGui/QMenu>
-#include <QtGui/QTableWidget>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QHeaderView>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QTableWidget>
+#include <QtWidgets/QVBoxLayout>
 
 namespace FabricUI {
 namespace DFG {
@@ -30,9 +30,10 @@ DFGErrorsWidget::DFGErrorsWidget(
 {
   m_tableWidget->setColumnCount( 2 );
   QHeaderView *horizontalHeader = m_tableWidget->horizontalHeader();
-  horizontalHeader->setMovable( false );
-  horizontalHeader->setClickable( false );
-  horizontalHeader->setResizeMode( QHeaderView::ResizeToContents );
+  // FIXME
+  //horizontalHeader->setMovable( false );
+  //horizontalHeader->setClickable( false );
+  //horizontalHeader->setResizeMode( QHeaderView::ResizeToContents );
   horizontalHeader->setStretchLastSection( true );
   m_tableWidget->setHorizontalHeaderLabels(
     QStringList() << "Location" << "Description"

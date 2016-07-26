@@ -106,7 +106,9 @@ void SHCmdHandler::onSynchronizeCommands() {
         // Check if the command is registered
         int id = QMetaType::type(cmdVal.callMethod("String", "type", 0, 0).getStringCString());
         if(id != 0) 
-          cmd = static_cast <SHCmd*>(QMetaType::construct(id));
+          // FIXME
+          // cmd = static_cast <SHCmd*>(QMetaType::construct(id));
+          cmd = new SHCmd();
           
         // Otherwise, create generic command
         else 

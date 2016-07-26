@@ -5,7 +5,7 @@
 #ifndef FABRICUI_VALUEEDITOR_INTSLIDER_H
 #define FABRICUI_VALUEEDITOR_INTSLIDER_H
 
-#include <QtGui/QSlider>
+#include <QtWidgets/QSlider>
 #include <QtGui/qevent.h>
 
 namespace FabricUI {

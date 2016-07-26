@@ -5,7 +5,7 @@
 #ifndef FABRICUI_VALUEEDITOR_VEDIALOG_H
 #define FABRICUI_VALUEEDITOR_VEDIALOG_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 #include <QtGui/QShowEvent>
 
 namespace FabricUI {

@@ -3,8 +3,8 @@
 #ifndef __UI_GraphView_TextContainer__
 #define __UI_GraphView_TextContainer__
 
-#include <QtGui/QGraphicsWidget>
-#include <QtGui/QGraphicsTextItem>
+#include <QtWidgets/QGraphicsWidget>
+#include <QtWidgets/QGraphicsTextItem>
 #include <QtGui/QColor>
 #include <QtGui/QFont>
 

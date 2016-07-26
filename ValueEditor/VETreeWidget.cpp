@@ -14,9 +14,9 @@
 #include <FabricUI/Util/QTSignalBlocker.h>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
-#include <QtGui/QAction>
-#include <QtGui/QHeaderView>
-#include <QtGui/QMenu>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QHeaderView>
+#include <QtWidgets/QMenu>
 
 using namespace FabricUI::ValueEditor;
 

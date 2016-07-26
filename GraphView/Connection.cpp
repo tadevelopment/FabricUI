@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtGui/QGraphicsSceneHoverEvent>
-#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsSceneHoverEvent>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtGui/QPainter>
 
 #include <FabricUI/GraphView/Connection.h>

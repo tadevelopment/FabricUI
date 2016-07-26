@@ -4,10 +4,10 @@
 #define __UI_GraphView_FixedPort__
 
 #include <QtCore/QMimeData>
-#include <QtGui/QGraphicsWidget>
+#include <QtWidgets/QGraphicsWidget>
 #include <QtGui/QColor>
 #include <QtGui/QPen>
-#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
 
 #include <FTL/CStrRef.h>
 

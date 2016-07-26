@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGBaseDialog__
 #define __UI_DFG_DFGBaseDialog__
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 #include <vector>
 #include "../DFGConfig.h"
 #include "DFGCollapsableWidget.h"

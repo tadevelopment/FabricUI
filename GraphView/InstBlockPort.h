@@ -5,7 +5,7 @@
 #ifndef _FabricUI_GraphView_InstBlockPort_h
 #define _FabricUI_GraphView_InstBlockPort_h
 
-#include <QtGui/QGraphicsWidget>
+#include <QtWidgets/QGraphicsWidget>
 #include <QtGui/QColor>
 #include <QtGui/QPen>
 

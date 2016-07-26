@@ -11,8 +11,8 @@
 
 #include <limits.h>
 #include <QtCore/QVariant>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QSlider>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QSlider>
 #include <QtGui/QIntValidator>
 
 #include <FabricUI/Util/UIRange.h>

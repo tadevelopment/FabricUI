@@ -10,7 +10,7 @@
 #include <FabricCore.h>
 #include <math.h>
 #include <QtGui/QColor>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QPushButton>
 
 
 namespace FabricUI {

@@ -2,7 +2,7 @@
 
 #include <FabricUI/GraphView/NodeLibrary.h>
 
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 #include <QtCore/QRegExp>
 
 #include <map>

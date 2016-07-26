@@ -3,8 +3,8 @@
 #ifndef __UI_GraphView_SidePanelItemGroup__
 #define __UI_GraphView_SidePanelItemGroup__
 
-#include <QtGui/QGraphicsWidget>
-#include <QtGui/QGraphicsSceneResizeEvent>
+#include <QtWidgets/QGraphicsWidget>
+#include <QtWidgets/QGraphicsSceneResizeEvent>
 
 namespace FabricUI
 {

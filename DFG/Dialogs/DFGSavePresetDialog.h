@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGSavePresetDialog__
 #define __UI_DFG_DFGSavePresetDialog__
 
-#include <QtGui/QLineEdit>
+#include <QtWidgets/QLineEdit>
 #include "DFGBaseDialog.h"
 #include "../PresetTreeWidget.h"
 

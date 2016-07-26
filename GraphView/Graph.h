@@ -3,11 +3,11 @@
 #ifndef __UI_GraphView_Graph__
 #define __UI_GraphView_Graph__
 
-#include <QtGui/QGraphicsWidget>
-#include <QtGui/QGraphicsScene>
+#include <QtWidgets/QGraphicsWidget>
+#include <QtWidgets/QGraphicsScene>
 #include <QtGui/QColor>
 #include <QtGui/QPen>
-#include <QtGui/QMenu>
+#include <QtWidgets/QMenu>
 
 #include <FTL/StrRef.h>
 

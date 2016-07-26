@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGVariablePathComboBox__
 #define __UI_DFG_DFGVariablePathComboBox__
 
-#include <QtGui/QComboBox>
+#include <QtWidgets/QComboBox>
 #include <FabricCore.h>
 #include <FTL/CStrRef.h>
 

@@ -13,7 +13,7 @@
 #include <QtGui/QDrag>
 #include <QtGui/QVector3D>
 #include <QtGui/QMouseEvent>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
  
 namespace FabricUI {
 namespace SceneHub {

@@ -4,15 +4,15 @@
 
 #include <FabricUI/Util/DocUrl.h>
 
-#include <QtGui/QTextEdit>
+#include <QtWidgets/QTextEdit>
 #include <QtGui/QPainter>
 #include <QtGui/QPaintEvent>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QContextMenuEvent>
-#include <QtGui/QScrollBar>
-#include <QtGui/QToolTip>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QtWidgets/QScrollBar>
+#include <QtWidgets/QToolTip>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
 #include <QtCore/QUrl>
 
 #include <FTL/Config.h>

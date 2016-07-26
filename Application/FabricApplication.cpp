@@ -10,5 +10,6 @@ static char **s_argv = NULL;
 
 FabricApplication::FabricApplication() : QApplication(s_argc, s_argv)
 {
-  setStyle(new FabricUI::Style::FabricStyle());
+  // FIXME
+  //setStyle(new FabricUI::Style::FabricStyle());
 }

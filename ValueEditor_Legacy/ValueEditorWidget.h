@@ -3,8 +3,8 @@
 #ifndef __UI_ValueEditor_ValueEditorWidget__
 #define __UI_ValueEditor_ValueEditorWidget__
 
-#include <QtGui/QLabel> 
-#include <QtGui/QWidget>
+#include <QtWidgets/QLabel> 
+#include <QtWidgets/QWidget>
 #include <QtGui/QKeyEvent>
 
 #include <FabricUI/TreeView/TreeViewWidget.h>

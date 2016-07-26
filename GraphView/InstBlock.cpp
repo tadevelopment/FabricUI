@@ -10,7 +10,7 @@
 #include <FabricUI/GraphView/NodeLabel.h>
 
 #include <QtCore/QDebug>
-#include <QtGui/QGraphicsLinearLayout>
+#include <QtWidgets/QGraphicsLinearLayout>
 #include <QtGui/QPainter>
 
 namespace FabricUI {

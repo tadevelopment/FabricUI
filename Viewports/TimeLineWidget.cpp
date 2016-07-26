@@ -2,9 +2,9 @@
 #include <iostream>
 #include "TimeLineWidget.h"
 
-#include <QtGui/QMenu>
-#include <QtGui/QInputDialog>
-#include <QtGui/QDesktopWidget>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QInputDialog>
+#include <QtWidgets/QDesktopWidget>
 
 #include <algorithm>
 #include <math.h>

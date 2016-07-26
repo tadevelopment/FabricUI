@@ -1,10 +1,10 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMenuBar>
 
 #include "DFGCombinedWidget.h"
 #include <FabricUI/Style/FabricStyle.h>
@@ -25,7 +25,8 @@ DFGCombinedWidget::DFGCombinedWidget(QWidget *parent)
   m_dfgLogWidget = NULL;
   m_setGraph = NULL;
 
-  setStyle(new FabricUI::Style::FabricStyle());
+  // FIXME
+  //setStyle(new FabricUI::Style::FabricStyle());
   setOrientation(Qt::Vertical);
 }
 
