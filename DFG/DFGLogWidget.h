@@ -3,8 +3,8 @@
 #ifndef __UI_DFG_DFGLogWidget__
 #define __UI_DFG_DFGLogWidget__
 
-#include <QtGui/QWidget>
-#include <QtGui/QPlainTextEdit>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QPlainTextEdit>
 
 #include "DFGConfig.h"
 #include "DFGController.h"

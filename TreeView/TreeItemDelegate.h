@@ -3,8 +3,8 @@
 #ifndef __UI_TreeView_TreeItemDelegate__
 #define __UI_TreeView_TreeItemDelegate__
 
-#include <QtGui/QWidget>
-#include <QtGui/QStyledItemDelegate>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QStyledItemDelegate>
 
 #include <vector>
 

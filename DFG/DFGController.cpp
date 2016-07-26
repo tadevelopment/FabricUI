@@ -3,11 +3,11 @@
 #include <iostream>
 #include <QtCore/QDebug>
 #include <QtCore/QRegExp>
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <QtGui/QClipboard>
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QMessageBox>
 
 #include <FTL/JSONEnc.h>
 #include <FTL/Str.h>

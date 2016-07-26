@@ -11,7 +11,7 @@
 #include <QtGui/QLinearGradient>
 #include <QtGui/QPainter>
 #include <QtGui/QPen>
-#include <QtGui/QStyleOptionGraphicsItem>
+#include <QtWidgets/QStyleOptionGraphicsItem>
 
 #ifdef FABRICUI_TIMERS
   #include <Util/Timer.h>

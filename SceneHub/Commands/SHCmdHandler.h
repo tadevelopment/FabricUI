@@ -6,7 +6,7 @@
 #define __UI_SCENEHUB_CMD_HANDLER_H__
 
 #include "SHCmd.h"
-#include <QtGui/QUndoStack>
+#include <QtWidgets/QUndoStack>
  
 namespace FabricUI {
 namespace SceneHub {

@@ -3,7 +3,7 @@
 #ifndef __UI_Application_FabricApplication__
 #define __UI_Application_FabricApplication__
 
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 
 namespace FabricUI
 {

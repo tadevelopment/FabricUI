@@ -8,7 +8,7 @@
 #include <FabricCore.h>
 #include <FTL/CStrRef.h>
 #include <FTL/ArrayRef.h>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QMetaType>
 #include <QtCore/QSharedPointer>
 

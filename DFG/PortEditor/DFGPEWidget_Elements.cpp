@@ -8,14 +8,14 @@
 #include <FabricUI/DFG/PortEditor/DFGPEWidget_Elements.h>
 #include <FabricUI/Util/LoadPixmap.h>
 #include <QtCore/QDebug>
-#include <QtGui/QApplication>
-#include <QtGui/QComboBox>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
 #include <QtGui/QDropEvent>
-#include <QtGui/QHeaderView>
+#include <QtWidgets/QHeaderView>
 #include <QtGui/QMouseEvent>
-#include <QtGui/QPushButton>
-#include <QtGui/QTableWidget>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QTableWidget>
+#include <QtWidgets/QVBoxLayout>
 
 namespace FabricUI {
 namespace DFG {

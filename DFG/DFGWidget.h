@@ -4,8 +4,8 @@
 #define __UI_DFG_DFGWidget__
 
 #include <QtCore/QSettings>
-#include <QtGui/QWidget>
-#include <QtGui/QMenuBar>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QMenuBar>
 #include <Commands/CommandStack.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/DFG/DFGConfig.h>
@@ -16,7 +16,7 @@
 #include <FabricUI/DFG/DFGNotificationRouter.h>
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
 #include <FabricUI/DFG/Dialogs/DFGBaseDialog.h>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONEnc.h>

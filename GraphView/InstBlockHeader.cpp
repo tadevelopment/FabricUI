@@ -5,9 +5,9 @@
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Graph.h>
 
-#include <QtGui/QGraphicsLinearLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QGraphicsProxyWidget>
+#include <QtWidgets/QGraphicsLinearLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QGraphicsProxyWidget>
 
 using namespace FabricUI::GraphView;
 

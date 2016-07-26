@@ -6,11 +6,11 @@
 #define __FABRICUI_LICENSING_LICENSEOKDIALOG_H
 
 #include <QtGui/QCursor>
-#include <QtGui/QDialog>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QTextBrowser>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QTextBrowser>
+#include <QtWidgets/QVBoxLayout>
 
 class LicenseOkDialog : public QDialog
 {

@@ -10,7 +10,7 @@
 #include <FTL/OwnedPtr.h>
 #include <FTL/StrRef.h>
 #include <QtGui/QIcon>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class QTableWidget;
 

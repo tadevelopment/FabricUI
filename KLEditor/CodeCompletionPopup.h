@@ -6,7 +6,7 @@
 #include <QtGui/QColor>
 #include <QtGui/QFont>
 #include <QtGui/QFontMetrics>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include "EditorConfig.h"
 #include "CodeCompletionEntry.h"
 

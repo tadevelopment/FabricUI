@@ -5,7 +5,7 @@
 #include "SIntViewItem.h"
 #include "QVariantRTVal.h"
 
-#include <QtGui/QSpinBox>
+#include <QtWidgets/QSpinBox>
 #include <limits.h>
 #include "VEIntSpinBox.h"
 

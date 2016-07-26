@@ -3,7 +3,7 @@
 #ifndef __UI_TreeView_TreeModel__
 #define __UI_TreeView_TreeModel__
 
-#include <QtGui/QTreeView>
+#include <QtWidgets/QTreeView>
 
 #include "TreeItem.h"
 #include <vector>

@@ -3,7 +3,7 @@
 #ifndef __UI_GraphView_ProxyPort__
 #define __UI_GraphView_ProxyPort__
 
-#include <QtGui/QGraphicsWidget>
+#include <QtWidgets/QGraphicsWidget>
 #include <QtGui/QColor>
 #include <QtGui/QPen>
 

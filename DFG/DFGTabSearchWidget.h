@@ -5,7 +5,7 @@
 
 #include "DFGConfig.h"
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtGui/QFocusEvent>
 
 namespace FabricUI

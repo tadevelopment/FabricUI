@@ -5,7 +5,7 @@
 #ifndef __FABRICUI_BASEMENU_H__
 #define __FABRICUI_BASEMENU_H__
 
-#include <QtGui/QMenu>
+#include <QtWidgets/QMenu>
 #include <FabricCore.h>
 
 namespace FabricUI {

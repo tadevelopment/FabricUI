@@ -11,8 +11,8 @@
 #include <FabricCore.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/SharedPtr.h>
-#include <QtGui/QMenu>
-#include <QtGui/QTreeView>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QTreeView>
 #include <QtCore/QAbstractItemModel>
 
  

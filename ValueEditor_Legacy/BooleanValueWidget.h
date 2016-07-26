@@ -3,7 +3,7 @@
 #ifndef __UI_ValueEditor_BooleanValueWidget__
 #define __UI_ValueEditor_BooleanValueWidget__
 
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QCheckBox>
 
 #include "ValueWidget.h"
 

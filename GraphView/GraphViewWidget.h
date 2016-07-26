@@ -4,7 +4,7 @@
 #define __UI_GraphView_GraphViewWidget__
 
 #include <QtCore/QUrl>
-#include <QtGui/QGraphicsView>
+#include <QtWidgets/QGraphicsView>
 #include <QtGui/QColor>
 #include <QtGui/QPen>
 

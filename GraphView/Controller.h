@@ -3,6 +3,7 @@
 #ifndef __UI_GraphView_Controller__
 #define __UI_GraphView_Controller__
 
+#include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QPointF>
 #include <QtCore/QSizeF>

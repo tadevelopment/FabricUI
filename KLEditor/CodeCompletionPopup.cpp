@@ -4,10 +4,10 @@
 
 #include <FTL/MapCharToLower.h>
 #include <FTL/StrRef.h>
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 #include <QtGui/QPainter>
 #include <QtGui/QPaintEvent>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 
 using namespace FabricServices::ASTWrapper;
 using namespace FabricUI::KLEditor;
@@ -354,9 +354,9 @@ void CodeCompletionPopup::updateSearch()
         static QString s_maxResultsLabel;
         if ( s_maxResultsLabel.isEmpty() )
         {
-          s_maxResultsLabel += QString::fromAscii( "Only first " );
+          s_maxResultsLabel += QString::fromUtf8( "Only first " );
           s_maxResultsLabel += QString::number( m_maxResults );
-          s_maxResultsLabel += QString::fromAscii( " matches shown..." );
+          s_maxResultsLabel += QString::fromUtf8( " matches shown..." );
         }
         QLabel *maxResultsLabel = new QLabel( s_maxResultsLabel );
         maxResultsLabel->setStyleSheet(

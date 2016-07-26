@@ -6,7 +6,7 @@
 #define _FabricUI_DFG_HighlightEffect_h
 
 #include <QtGui/QBrush>
-#include <QtGui/QGraphicsEffect>
+#include <QtWidgets/QGraphicsEffect>
 
 namespace FabricUI {
 

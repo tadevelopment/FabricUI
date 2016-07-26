@@ -10,7 +10,7 @@
 #include <FabricCore.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/SharedPtr.h>
-#include <QtGui/QTreeView>
+#include <QtWidgets/QTreeView>
 #include <QtCore/QAbstractItemModel>
  
 namespace FabricUI {

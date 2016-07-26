@@ -17,10 +17,10 @@
 
 #include <QtGui/QPainter>
 #include <QtGui/QCursor>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
 
 using namespace FabricUI::GraphView;
 

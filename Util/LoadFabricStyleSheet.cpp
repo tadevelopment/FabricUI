@@ -35,7 +35,7 @@ static QString ExpandEnvironmentVariables( QString string )
       result += string.midRef( offset, pos - offset );
 
     QString envvarName = re.cap( 1 );
-    char const *envvarValue = getenv( envvarName.toAscii().constData() );
+    char const *envvarValue = getenv( envvarName.toLatin1().constData() );
     if ( envvarValue )
     {
 #if defined(FTL_PLATFORM_WINDOWS)

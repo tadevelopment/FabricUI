@@ -3,7 +3,7 @@
  */
 
 #include <QtCore/QString>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 #include "SHBaseTreeViewsManager.h"
 
 using namespace FabricCore;

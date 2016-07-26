@@ -6,8 +6,9 @@
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/PortLabel.h>
 
-#include <QtGui/QApplication>
-#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QtGui/QDrag>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
 
 namespace FabricUI {
 namespace GraphView {

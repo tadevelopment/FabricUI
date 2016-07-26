@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_VariablePathValueWidget__
 #define __UI_DFG_VariablePathValueWidget__
 
-#include <QtGui/QLineEdit>
+#include <QtWidgets/QLineEdit>
 
 #include <FabricUI/ValueEditor_Legacy/ValueWidget.h>
 #include "Dialogs/DFGVariablePathLineEdit.h"

@@ -3,9 +3,9 @@
 #ifndef __UI_DFG_DFGEditPortDialog__
 #define __UI_DFG_DFGEditPortDialog__
 
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit>
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QCheckBox>
 #include <QtGui/QShowEvent>
 
 #include "DFGBaseDialog.h"

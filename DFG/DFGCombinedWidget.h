@@ -3,8 +3,8 @@
 #ifndef _DFGCOMBINEDWIDGET_H_
 #define _DFGCOMBINEDWIDGET_H_
 
-#include <QtGui/QWidget>
-#include <QtGui/QSplitter>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QSplitter>
 
 #include <map>
 

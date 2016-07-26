@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGExecBlockEditorWidget__
 #define __UI_DFG_DFGExecBlockEditorWidget__
 
-#include <QtGui/QFrame>
+#include <QtWidgets/QFrame>
 
 class QVBoxLayout;
 

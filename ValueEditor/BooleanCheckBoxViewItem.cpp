@@ -7,7 +7,7 @@
 #include "QVariantRTVal.h"
 
 #include <QtCore/QVariant>
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QCheckBox>
 
 using namespace FabricUI::ValueEditor;
 

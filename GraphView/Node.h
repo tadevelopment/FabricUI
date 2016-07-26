@@ -3,8 +3,8 @@
 #ifndef __UI_GraphView_Node__
 #define __UI_GraphView_Node__
 
-#include <QtGui/QGraphicsWidget>
-#include <QtGui/QGraphicsLinearLayout>
+#include <QtWidgets/QGraphicsWidget>
+#include <QtWidgets/QGraphicsLinearLayout>
 #include <QtGui/QColor>
 #include <QtGui/QPen>
 

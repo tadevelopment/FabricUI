@@ -3,7 +3,7 @@
 #ifndef __UI_GraphView_MainPanelBackground__
 #define __UI_GraphView_MainPanelBackground__
 
-#include <QtGui/QGraphicsWidget>
+#include <QtWidgets/QGraphicsWidget>
 #include <QtGui/QPen>
 #include <QtGui/QColor>
 

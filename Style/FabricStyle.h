@@ -3,7 +3,7 @@
 #ifndef __UI_Style_FabricStyle__
 #define __UI_Style_FabricStyle__
 
-#include <QtGui/QWindowsStyle>
+#include <QtWidgets/QStyle>
 
 namespace FabricUI
 {
@@ -11,7 +11,7 @@ namespace FabricUI
   namespace Style
   {
 
-    class FabricStyle : public QWindowsStyle
+    class FabricStyle : public QStyle
     {
         Q_OBJECT
 
@@ -19,6 +19,8 @@ namespace FabricUI
         FabricStyle() {}
 
         virtual void polish(QPalette &palette);
+        virtual QIcon standardIcon(QStyle::StandardPixmap, const QStyleOption*, const QWidget*) const;
+        virtual int layoutSpacing(QSizePolicy::ControlType, QSizePolicy::ControlType, Qt::Orientation, const QStyleOption*, const QWidget*) const;
     };
 
   };

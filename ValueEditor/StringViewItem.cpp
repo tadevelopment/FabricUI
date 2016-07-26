@@ -7,12 +7,12 @@
 #include "VELineEdit.h"
 #include "VEDialog.h"
 
-#include <QtGui/QPushButton>
-#include <QtGui/QLineEdit>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QDialogButtonBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QDialogButtonBox>
 
 using namespace FabricUI::ValueEditor;
 

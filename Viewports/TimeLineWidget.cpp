@@ -6,8 +6,10 @@
 #include "TimeLineWidget.h"
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 
-#include <QtGui/QInputDialog>
-#include <QtGui/QLabel>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QInputDialog>
+#include <QtWidgets/QDesktopWidget>
+#include <QtWidgets/QLabel>
 
 #include <algorithm>
 #include <math.h>

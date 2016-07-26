@@ -3,8 +3,8 @@
 #ifndef __UI_DFG_DFGCollapsableHeaderWidget__
 #define __UI_DFG_DFGCollapsableHeaderWidget__
 
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
 #include <QtGui/QMouseEvent>
 #include "../DFGConfig.h"
 

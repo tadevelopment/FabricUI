@@ -15,6 +15,7 @@ const QVariant::Handler* RTVariant::origh = NULL;
 // operations in QVariant
 void RTVariant::injectRTHandler()
 {
+  /* FIXME
   origh = handler;
   Handler* h = new Handler;
   *h = *origh;
@@ -23,6 +24,7 @@ void RTVariant::injectRTHandler()
   h->convert = rtConvert;
   h->debugStream = rtStreamDebug;
   handler = h;
+  */
 }
 
 bool isRTVal( const QVariant::Private *d )

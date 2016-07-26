@@ -7,7 +7,7 @@
 #include "ViewItemFactory.h"
 
 #include <QtCore/QVariant>
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 
 using namespace FabricUI::ValueEditor;
 

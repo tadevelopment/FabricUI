@@ -6,7 +6,7 @@
 #include "MetaTypes.h"
 #include "KLEditorWidget.h"
 
-#include <QtGui/QTabWidget>
+#include <QtWidgets/QTabWidget>
 
 namespace FabricUI
 {

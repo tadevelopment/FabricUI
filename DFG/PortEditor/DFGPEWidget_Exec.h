@@ -7,7 +7,7 @@
 
 #include <FabricCore.h>
 #include <FTL/StrRef.h>
-#include <QtGui/QFrame>
+#include <QtWidgets/QFrame>
 #include <QtGui/QIcon>
 
 class QLineEdit;
