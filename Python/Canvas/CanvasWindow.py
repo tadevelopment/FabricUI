@@ -329,6 +329,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timeLine = TimeLine.TimeLineWidget()
         self.timeLine.setTimeRange(CanvasWindow.defaultFrameIn, CanvasWindow.defaultFrameOut)
         self.timeLine.updateTime(1)
+        self.dfgWidget.stylesReloaded.connect(self.timeline.reloadStyles)
         self.timeLine.frameChanged.connect(self.onFrameChanged)
         self.timeLine.frameChanged.connect(self.valueEditor.onFrameChanged)
 
