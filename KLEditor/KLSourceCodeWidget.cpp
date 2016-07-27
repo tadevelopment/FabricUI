@@ -5,6 +5,8 @@
 #include <FabricUI/Util/DocUrl.h>
 
 #include <QtGui/QTextEdit>
+#include <QtGui/QApplication>
+#include <QtGui/QClipboard>
 #include <QtGui/QPainter>
 #include <QtGui/QPaintEvent>
 #include <QtGui/QKeyEvent>
@@ -236,6 +238,28 @@ void KLSourceCodeWidget::keyPressEvent(QKeyEvent * event)
     }
     else
       hidePopup();
+  }
+
+  if((event->key() == Qt::Key_C || event->key() == Qt::Key_X) && !m_popup)
+  {
+    if(event->modifiers().testFlag(Qt::ControlModifier))
+    {
+      QClipboard *clipboard = QApplication::clipboard();
+      clipboard->clear();
+      copy();
+      if (clipboard->text().isEmpty())
+      {
+        QTextCursor cursor = textCursor();
+        cursor.select(QTextCursor::LineUnderCursor);
+        cursor.movePosition(QTextCursor::StartOfLine);
+        cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor);
+        clipboard->setText(cursor.selectedText());
+        if (event->key() == Qt::Key_X)
+          cursor.removeSelectedText();
+        event->accept();
+        return;
+      }
+    }
   }
 
   if(event->key() == Qt::Key_Tab)
