@@ -16,6 +16,7 @@
 
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/GraphRelaxer.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
 
@@ -736,14 +737,14 @@ void DFGController::setNodeCollapseState(int collapsedState, GraphView::Node *no
     return;
   node->setCollapsedState((GraphView::Node::CollapseState)collapsedState);
   FabricCore::DFGExec &exec = getExec();
-  char const * const collapsedStateMetadataValues[GraphView::Node::CollapseState::CollapseState_NumStates] = { "0", "1", "2" };
+  char const * const collapsedStateMetadataValues[GraphView::Node::CollapseState_NumStates] = { "0", "1", "2" };
   exec.setNodeMetadata(node->name().c_str(), "uiCollapsedState", collapsedStateMetadataValues[collapsedState], false, false);
 }
 
 void DFGController::setSelectedNodesCollapseState(int collapsedState) {
   collapseSelectedNodes(collapsedState);
   FabricCore::DFGExec &exec = getExec();
-  char const * const collapsedStateMetadataValues[GraphView::Node::CollapseState::CollapseState_NumStates] = { "0", "1", "2" };
+  char const * const collapsedStateMetadataValues[GraphView::Node::CollapseState_NumStates] = { "0", "1", "2" };
   const std::vector<GraphView::Node*> & nodes = graph()->selectedNodes();
   for(unsigned int i=0;i<nodes.size();i++)
   {
