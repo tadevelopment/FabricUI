@@ -5,11 +5,11 @@
 #ifndef __UI_SCENEHUB_RTR_GLVIEWPORT_WIDGET_H__
 #define __UI_SCENEHUB_RTR_GLVIEWPORT_WIDGET_H__
 
-#include <QtGui/QDrag>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QWheelEvent>
-#include <QtOpenGL/QGLWidget>
+#include <QDrag>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
+#include <QGLWidget>
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>
 #include <FabricUI/Viewports/ViewportWidget.h>

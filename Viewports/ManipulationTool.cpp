@@ -1,8 +1,8 @@
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QWidget>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QWheelEvent>
+#include <QApplication>
+#include <QWidget>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
 
 #include "ManipulationTool.h"
 #include <FabricUI/Viewports/QtToKLEvent.h>

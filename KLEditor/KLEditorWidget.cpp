@@ -2,7 +2,7 @@
 
 #include "KLEditorWidget.h"
 
-#include <QtWidgets/QHBoxLayout>
+#include <QHBoxLayout>
 
 using namespace FabricServices;
 using namespace FabricUI::KLEditor;

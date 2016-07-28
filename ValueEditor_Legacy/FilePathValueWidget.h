@@ -3,7 +3,7 @@
 #ifndef __UI_ValueEditor_FilePathValueWidget__
 #define __UI_ValueEditor_FilePathValueWidget__
 
-#include <QtWidgets/QPushButton>
+#include <QPushButton>
 
 #include "ValueWidget.h"
 #include "LineEdit.h"

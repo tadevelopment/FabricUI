@@ -3,9 +3,9 @@
 #ifndef __UI_GraphView_MouseGrabber__
 #define __UI_GraphView_MouseGrabber__
 
-#include <QtWidgets/QAction>
-#include <QtWidgets/QGraphicsWidget>
-#include <QtWidgets/QToolTip>
+#include <QAction>
+#include <QGraphicsWidget>
+#include <QToolTip>
 #include "ConnectionTarget.h"
 #include "PortType.h"
 

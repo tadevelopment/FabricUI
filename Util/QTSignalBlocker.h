@@ -1,7 +1,7 @@
 #ifndef FABRICUI_UTIL_QTSIGNALBLOCKER_H
 #define FABRICUI_UTIL_QTSIGNALBLOCKER_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 namespace FabricUI {
   namespace Util {

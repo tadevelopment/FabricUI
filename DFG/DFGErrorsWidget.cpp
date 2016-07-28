@@ -8,11 +8,11 @@
 #include <FabricUI/Util/LoadPixmap.h>
 
 #include <FTL/JSONValue.h>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QHeaderView>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QTableWidget>
-#include <QtWidgets/QVBoxLayout>
+#include <QLabel>
+#include <QHeaderView>
+#include <QMenu>
+#include <QTableWidget>
+#include <QVBoxLayout>
 
 namespace FabricUI {
 namespace DFG {

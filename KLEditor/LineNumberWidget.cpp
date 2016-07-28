@@ -2,8 +2,8 @@
 
 #include "LineNumberWidget.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QPaintEvent>
+#include <QPainter>
+#include <QPaintEvent>
 #include <string>
 
 #include <stdio.h>

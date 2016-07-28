@@ -3,9 +3,9 @@
 #ifndef __UI_GraphView_NodeRectangle__
 #define __UI_GraphView_NodeRectangle__
 
-#include <QtWidgets/QGraphicsWidget>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
+#include <QGraphicsWidget>
+#include <QColor>
+#include <QPen>
 #include "GraphicItemTypes.h"
 
 namespace FabricUI

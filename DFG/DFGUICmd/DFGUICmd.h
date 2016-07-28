@@ -7,7 +7,7 @@
 #include <FabricUI/DFG/DFGUINamespace.h>
 #include <FabricCore.h>
 #include <FTL/StrRef.h>
-#include <QtWidgets/QUndoCommand>
+#include <QUndoCommand>
 
 FABRIC_UI_DFG_NAMESPACE_BEGIN
 

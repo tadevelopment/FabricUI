@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGGetStringDialog__
 #define __UI_DFG_DFGGetStringDialog__
 
-#include <QtWidgets/QLineEdit>
+#include <QLineEdit>
 #include "DFGBaseDialog.h"
 
 namespace FabricUI

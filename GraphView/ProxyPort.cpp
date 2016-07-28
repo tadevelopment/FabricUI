@@ -7,7 +7,7 @@
 #include <FabricUI/GraphView/ProxyPort.h>
 #include <FabricUI/GraphView/SidePanel.h>
 
-#include <QtWidgets/QGraphicsLinearLayout>
+#include <QGraphicsLinearLayout>
 
 using namespace FabricUI::GraphView;
 

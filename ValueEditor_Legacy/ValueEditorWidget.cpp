@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtWidgets/QVBoxLayout> 
-#include <QtCore/Qt>
+#include <QVBoxLayout> 
+#include <Qt>
 
 #include "ValueEditorWidget.h"
 #include "ValueWidgetFactory.h"

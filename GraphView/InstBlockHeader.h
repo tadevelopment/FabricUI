@@ -6,8 +6,8 @@
 #include <FabricUI/GraphView/ConnectionTarget.h>
 
 #include <FTL/StrRef.h>
-#include <QtCore/QString>
-#include <QtGui/QColor>
+#include <QString>
+#include <QColor>
 
 namespace FabricUI {
 namespace GraphView {

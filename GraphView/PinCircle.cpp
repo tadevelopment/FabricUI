@@ -6,9 +6,9 @@
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
 
-#include <QtCore/QDebug>
-#include <QtWidgets/QGraphicsSceneHoverEvent>
-#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QDebug>
+#include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
 
 using namespace FabricUI::GraphView;
 

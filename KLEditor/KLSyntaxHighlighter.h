@@ -3,9 +3,9 @@
 #ifndef __UI_KLEditor_KLSyntaxHighlighter__
 #define __UI_KLEditor_KLSyntaxHighlighter__
 
-#include <QtCore/QHash>
-#include <QtGui/QSyntaxHighlighter>
-#include <QtGui/QTextDocument>
+#include <QHash>
+#include <QSyntaxHighlighter>
+#include <QTextDocument>
 
 #include "EditorConfig.h"
 #include "Helpers.h"

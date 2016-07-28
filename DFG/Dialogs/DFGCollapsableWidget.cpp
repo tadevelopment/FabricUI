@@ -1,9 +1,9 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include <iostream>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QHBoxLayout>
+#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QHBoxLayout>
 
 #include "DFGCollapsableWidget.h"
 

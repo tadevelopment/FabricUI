@@ -5,8 +5,8 @@
 #include "Node.h"
 #include "Graph.h"
 
-#include <QtGui/QPainter>
-#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QPainter>
+#include <QGraphicsSceneMouseEvent>
 
 #ifdef FABRICUI_TIMERS
   #include <Util/Timer.h>

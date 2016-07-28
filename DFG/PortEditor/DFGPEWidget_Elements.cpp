@@ -7,15 +7,15 @@
 #include <FabricUI/DFG/PortEditor/DFGPEModel.h>
 #include <FabricUI/DFG/PortEditor/DFGPEWidget_Elements.h>
 #include <FabricUI/Util/LoadPixmap.h>
-#include <QtCore/QDebug>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QComboBox>
-#include <QtGui/QDropEvent>
-#include <QtWidgets/QHeaderView>
-#include <QtGui/QMouseEvent>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QTableWidget>
-#include <QtWidgets/QVBoxLayout>
+#include <QDebug>
+#include <QApplication>
+#include <QComboBox>
+#include <QDropEvent>
+#include <QHeaderView>
+#include <QMouseEvent>
+#include <QPushButton>
+#include <QTableWidget>
+#include <QVBoxLayout>
 
 namespace FabricUI {
 namespace DFG {

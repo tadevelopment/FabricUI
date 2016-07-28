@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGGetTextDialog__
 #define __UI_DFG_DFGGetTextDialog__
 
-#include <QtWidgets/QTextEdit>
+#include <QTextEdit>
 #include "DFGBaseDialog.h"
 
 namespace FabricUI

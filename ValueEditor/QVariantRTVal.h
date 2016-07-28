@@ -6,7 +6,7 @@
 #define FABRICUI_VALUEEDITOR_QVARIANTRTVAL_H
 
 #include <FabricCore.h>
-#include <QtCore/QVariant>
+#include <QVariant>
 
 // Import RTVal into the QVariant types
 Q_DECLARE_METATYPE(FabricCore::RTVal);

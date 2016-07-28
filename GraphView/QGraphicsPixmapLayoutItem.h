@@ -3,8 +3,8 @@
 #ifndef __UI_GraphView_LockIcon__
 #define __UI_GraphView_LockIcon__
 
-#include <QtWidgets/QGraphicsPixmapItem>
-#include <QtWidgets/QGraphicsLayoutItem>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsLayoutItem>
 
 namespace FabricUI {
 namespace GraphView {

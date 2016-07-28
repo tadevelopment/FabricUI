@@ -2,8 +2,8 @@
  *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
  */
 
-#include <QtCore/QString>
-#include <QtWidgets/QVBoxLayout>
+#include <QString>
+#include <QVBoxLayout>
 #include "SHBaseTreeViewsManager.h"
 
 using namespace FabricCore;

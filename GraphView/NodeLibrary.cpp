@@ -2,8 +2,8 @@
 
 #include <FabricUI/GraphView/NodeLibrary.h>
 
-#include <QtWidgets/QVBoxLayout>
-#include <QtCore/QRegExp>
+#include <QVBoxLayout>
+#include <QRegExp>
 
 #include <map>
 

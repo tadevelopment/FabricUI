@@ -5,8 +5,8 @@
 
 #include <FabricCore.h>
 
-#include <QtWidgets/QGraphicsWidget>
-#include <QtWidgets/QGraphicsLinearLayout>
+#include <QGraphicsWidget>
+#include <QGraphicsLinearLayout>
 #include <vector>
 
 #include "FixedPort.h"

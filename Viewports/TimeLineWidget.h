@@ -1,18 +1,18 @@
 #ifndef __TIMELINEWIDGET_H__
 #define __TIMELINEWIDGET_H__
 
-#include <QtWidgets/QWidget>
-#include <QtOpenGL/QGLWidget>
-#include <QtGui/QContextMenuEvent>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QHBoxLayout>
-#include <QtCore/QTimer>
-#include <QtCore/QTime>
+#include <QWidget>
+#include <QGLWidget>
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QHBoxLayout>
+#include <QTimer>
+#include <QTime>
 
-#include <QtWidgets/QDoubleSpinBox>
-#include <QtWidgets/QSlider>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QComboBox>
+#include <QDoubleSpinBox>
+#include <QSlider>
+#include <QPushButton>
+#include <QComboBox>
 
 #include <map>
 #include <set>

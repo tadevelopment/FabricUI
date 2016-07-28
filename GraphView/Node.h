@@ -3,10 +3,10 @@
 #ifndef __UI_GraphView_Node__
 #define __UI_GraphView_Node__
 
-#include <QtWidgets/QGraphicsWidget>
-#include <QtWidgets/QGraphicsLinearLayout>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
+#include <QGraphicsWidget>
+#include <QGraphicsLinearLayout>
+#include <QColor>
+#include <QPen>
 
 #include <FTL/CStrRef.h>
 

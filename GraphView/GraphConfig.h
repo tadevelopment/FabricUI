@@ -3,9 +3,9 @@
 #ifndef __UI_GraphView_GraphConfig__
 #define __UI_GraphView_GraphConfig__
 
-#include <QtGui/QColor>
-#include <QtGui/QPen>
-#include <QtGui/QFont>
+#include <QColor>
+#include <QPen>
+#include <QFont>
 
 namespace FabricUI
 {

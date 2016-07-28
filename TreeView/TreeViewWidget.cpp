@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include "TreeViewWidget.h"
-#include <QtWidgets/QHeaderView>
+#include <QHeaderView>
 #include "TreeModel.h"
 #include "TreeItemDelegate.h"
 #include "TreeItem.h"

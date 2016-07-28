@@ -10,10 +10,10 @@
 #include "VELineEdit.h"
 
 #include <limits.h>
-#include <QtCore/QVariant>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QSlider>
-#include <QtGui/QIntValidator>
+#include <QVariant>
+#include <QHBoxLayout>
+#include <QSlider>
+#include <QIntValidator>
 
 #include <FabricUI/Util/UIRange.h>
 #include <FTL/AutoSet.h>

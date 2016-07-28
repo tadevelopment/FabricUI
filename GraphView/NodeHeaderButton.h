@@ -3,9 +3,9 @@
 #ifndef __UI_GraphView_NodeHeaderButton__
 #define __UI_GraphView_NodeHeaderButton__
 
-#include <QtWidgets/QGraphicsWidget>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
+#include <QGraphicsWidget>
+#include <QColor>
+#include <QPen>
 #include "GraphicItemTypes.h"
 #include <map>
 

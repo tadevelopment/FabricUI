@@ -5,8 +5,8 @@
 #ifndef FABRICUI_VALUEEDITOR_COMBOBOX_H
 #define FABRICUI_VALUEEDITOR_COMBOBOX_H
 
-#include <QtWidgets/QComboBox>
-#include <QtGui/QWheelEvent>
+#include <QComboBox>
+#include <QWheelEvent>
 
 
 namespace FabricUI {

@@ -3,12 +3,12 @@
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGExecHeaderWidget.h>
 #include <FabricUI/Util/LoadPixmap.h>
-#include <QtWidgets/QFrame>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QPaintEvent>
-#include <QtWidgets/QProxyStyle>
+#include <QFrame>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QProxyStyle>
 
 using namespace FabricUI;
 using namespace FabricUI::DFG;

@@ -1,8 +1,8 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtWidgets/QGraphicsSceneHoverEvent>
-#include <QtWidgets/QGraphicsSceneMouseEvent>
-#include <QtGui/QPainter>
+#include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QPainter>
 
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/FixedPort.h>

@@ -3,10 +3,10 @@
 #ifndef __UI_DFG_DFGEditPortDialog__
 #define __UI_DFG_DFGEditPortDialog__
 
-#include <QtWidgets/QComboBox>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QCheckBox>
-#include <QtGui/QShowEvent>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QShowEvent>
 
 #include "DFGBaseDialog.h"
 #include "DFGRegisteredTypeLineEdit.h"

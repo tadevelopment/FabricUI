@@ -5,10 +5,10 @@
 
 #include <FabricCore.h>
 
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QFrame>
+#include <QApplication>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QFrame>
 
 #include <FTL/StrRef.h>
 

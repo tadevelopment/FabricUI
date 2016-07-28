@@ -2,8 +2,8 @@
 
 #include "CodeCompletionEntry.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QPaintEvent>
+#include <QPainter>
+#include <QPaintEvent>
 
 using namespace FabricUI::KLEditor;
 

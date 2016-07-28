@@ -3,9 +3,9 @@
 #ifndef __UI_DFG_DFGCollapsableHeaderWidget__
 #define __UI_DFG_DFGCollapsableHeaderWidget__
 
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QLabel>
-#include <QtGui/QMouseEvent>
+#include <QWidget>
+#include <QLabel>
+#include <QMouseEvent>
 #include "../DFGConfig.h"
 
 namespace FabricUI

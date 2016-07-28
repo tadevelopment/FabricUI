@@ -5,7 +5,7 @@
 #include "QVariantRTVal.h"
 
 #include <assert.h>
-#include <QtGui/QtGui>
+#include <QtGui>
 
 using namespace FabricUI::ValueEditor;
 

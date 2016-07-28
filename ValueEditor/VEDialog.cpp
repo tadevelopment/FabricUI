@@ -4,8 +4,8 @@
 
 #include "VEDialog.h"
 
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QDesktopWidget>
+#include <QApplication>
+#include <QDesktopWidget>
 
 using namespace FabricUI::ValueEditor;
 

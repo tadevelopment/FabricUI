@@ -3,7 +3,7 @@
 #ifndef __UI_Style_FabricStyle__
 #define __UI_Style_FabricStyle__
 
-#include <QtWidgets/QStyle>
+#include <QStyle>
 
 namespace FabricUI
 {

@@ -25,15 +25,15 @@
 #include <FabricUI/Util/DocUrl.h>
 #include <FTL/FS.h>
 #include <Persistence/RTValToJSONEncoder.hpp>
-#include <QtCore/QCoreApplication>
-#include <QtCore/QDebug>
-#include <QtCore/QUrl>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QColorDialog>
-#include <QtGui/QCursor>
-#include <QtWidgets/QFileDialog>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QSplitter>
+#include <QCoreApplication>
+#include <QDebug>
+#include <QUrl>
+#include <QApplication>
+#include <QColorDialog>
+#include <QCursor>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QSplitter>
 
 using namespace FabricServices;
 using namespace FabricUI;

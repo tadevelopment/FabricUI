@@ -3,7 +3,7 @@
 #ifndef __UI_GraphView_GraphicItemTypes__
 #define __UI_GraphView_GraphicItemTypes__
 
-#include <QtWidgets/QGraphicsItem>
+#include <QGraphicsItem>
 
 namespace FabricUI
 {

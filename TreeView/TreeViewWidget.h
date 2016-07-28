@@ -3,8 +3,8 @@
 #ifndef __UI_TreeView_TreeViewWidget__
 #define __UI_TreeView_TreeViewWidget__
 
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QTreeView>
+#include <QWidget>
+#include <QTreeView>
 
 #include "TreeItem.h"
 #include "TreeItemDelegate.h"
