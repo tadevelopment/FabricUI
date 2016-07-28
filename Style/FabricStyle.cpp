@@ -48,15 +48,3 @@ void FabricStyle::polish(QPalette &palette)
   palette.setBrush(QPalette::HighlightedText, highlightedTextColor);
 }
 
-QIcon FabricStyle::standardIcon( QStyle::StandardPixmap, const QStyleOption *,
-                                 const QWidget * ) const
-{
-  return QIcon();
-}
-
-int FabricStyle::layoutSpacing( QSizePolicy::ControlType,
-                                QSizePolicy::ControlType, Qt::Orientation,
-                                const QStyleOption *, const QWidget * ) const
-{
-  return 0;
-}
