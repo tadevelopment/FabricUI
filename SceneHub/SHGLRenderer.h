@@ -7,13 +7,13 @@
 
 #include "SHStates.h"
 #include <FabricCore.h>
-#include <QtCore/QList>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
-#include <QtGui/QDrag>
-#include <QtGui/QVector3D>
-#include <QtGui/QMouseEvent>
-#include <QtWidgets/QWidget>
+#include <QList>
+#include <QString>
+#include <QStringList>
+#include <QDrag>
+#include <QVector3D>
+#include <QMouseEvent>
+#include <QWidget>
  
 namespace FabricUI {
 namespace SceneHub {

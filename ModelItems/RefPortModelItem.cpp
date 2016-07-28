@@ -6,7 +6,7 @@
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/ModelItems/RefPortModelItem.h>
 #include <FabricUI/ModelItems/RootModelItem.h>
-#include <QtCore/QStringList>
+#include <QStringList>
 
 namespace FabricUI {
 namespace ModelItems {

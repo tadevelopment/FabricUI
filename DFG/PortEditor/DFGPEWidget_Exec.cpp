@@ -10,11 +10,11 @@
 #include <FabricUI/DFG/PortEditor/DFGPEWidget_Elements.h>
 #include <FabricUI/DFG/PortEditor/DFGPEWidget_Exec.h>
 #include <FabricUI/Util/LoadPixmap.h>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QTabWidget>
-#include <QtWidgets/QVBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QTabWidget>
+#include <QVBoxLayout>
 
 namespace FabricUI {
 namespace DFG {

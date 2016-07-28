@@ -9,10 +9,10 @@
 
 #include <assert.h>
 #include <FabricUI/Util/UIRange.h>
-#include <QtCore/QVariant>
-#include <QtWidgets/QBoxLayout>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QWidget>
+#include <QVariant>
+#include <QBoxLayout>
+#include <QLineEdit>
+#include <QWidget>
 
 using namespace FabricUI::ValueEditor;
 

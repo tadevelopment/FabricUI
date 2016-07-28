@@ -8,7 +8,7 @@
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/SidePanel.h>
 
-#include <QtWidgets/QGraphicsLinearLayout>
+#include <QGraphicsLinearLayout>
 
 using namespace FabricUI::GraphView;
 

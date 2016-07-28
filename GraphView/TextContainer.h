@@ -3,10 +3,10 @@
 #ifndef __UI_GraphView_TextContainer__
 #define __UI_GraphView_TextContainer__
 
-#include <QtWidgets/QGraphicsWidget>
-#include <QtWidgets/QGraphicsTextItem>
-#include <QtGui/QColor>
-#include <QtGui/QFont>
+#include <QGraphicsWidget>
+#include <QGraphicsTextItem>
+#include <QColor>
+#include <QFont>
 
 namespace FabricUI
 {

@@ -9,9 +9,9 @@
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/NodeLabel.h>
 
-#include <QtCore/QDebug>
-#include <QtWidgets/QGraphicsLinearLayout>
-#include <QtGui/QPainter>
+#include <QDebug>
+#include <QGraphicsLinearLayout>
+#include <QPainter>
 
 namespace FabricUI {
 namespace GraphView {

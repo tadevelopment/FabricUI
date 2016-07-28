@@ -7,7 +7,7 @@
 
 #include <FTL/StrRef.h>
 #include <FTL/JSONEnc.h>
-#include <QtGui/QColor>
+#include <QColor>
 
 namespace FabricUI {
 namespace DFG {

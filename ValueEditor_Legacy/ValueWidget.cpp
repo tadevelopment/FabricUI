@@ -3,8 +3,8 @@
 #include "ValueWidget.h"
 #include "ValueItem.h"
 #include "ValueEditorWidget.h"
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMainWindow>
+#include <QApplication>
+#include <QMainWindow>
 
 using namespace FabricUI::TreeView;
 using namespace FabricUI::ValueEditor_Legacy;

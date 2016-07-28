@@ -1,8 +1,8 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include "TextContainer.h"
-#include <QtGui/QPen>
-#include <QtGui/QFontMetrics>
+#include <QPen>
+#include <QFontMetrics>
 
 using namespace FabricUI::GraphView;
 

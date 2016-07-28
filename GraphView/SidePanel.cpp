@@ -7,10 +7,10 @@
 #include <FabricUI/GraphView/PortLabel.h>
 #include <FabricUI/GraphView/SidePanel.h>
 
-#include <QtCore/QDebug>
-#include <QtGui/QPainter>
-#include <QtWidgets/QGraphicsSceneMouseEvent>
-#include <QtWidgets/QGraphicsView>
+#include <QDebug>
+#include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
 
 #include <float.h>
 #include <math.h>

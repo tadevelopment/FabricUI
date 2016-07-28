@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <FabricCore.h>
 #include <math.h>
-#include <QtGui/QColor>
-#include <QtWidgets/QPushButton>
+#include <QColor>
+#include <QPushButton>
 
 
 namespace FabricUI {

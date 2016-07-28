@@ -3,9 +3,9 @@
 #ifndef __UI_GraphView_SelectionRect__
 #define __UI_GraphView_SelectionRect__
 
-#include <QtWidgets/QGraphicsWidget>
-#include <QtGui/QPen>
-#include <QtGui/QColor>
+#include <QGraphicsWidget>
+#include <QPen>
+#include <QColor>
 
 namespace FabricUI
 {

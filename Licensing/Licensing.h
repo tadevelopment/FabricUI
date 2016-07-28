@@ -7,7 +7,7 @@
 
 #include <FabricCore.h>
 #include <FTL/StrRef.h>
-#include <QtWidgets/QDialog>
+#include <QDialog>
 
 void FabricUI_HandleLicenseData(
   QWidget *widgetParent,

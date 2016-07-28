@@ -5,12 +5,12 @@
 #ifndef __FABRICUI_LICENSING_EXPIRYWARNINGDIALOG_H
 #define __FABRICUI_LICENSING_EXPIRYWARNINGDIALOG_H
 
-#include <QtGui/QCursor>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QTextBrowser>
-#include <QtWidgets/QVBoxLayout>
+#include <QCursor>
+#include <QDialog>
+#include <QLabel>
+#include <QPushButton>
+#include <QTextBrowser>
+#include <QVBoxLayout>
 
 #include <FTL/CStrRef.h>
 

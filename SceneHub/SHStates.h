@@ -5,8 +5,8 @@
 #ifndef __UI_SCENEHUB_STATES_H__
 #define __UI_SCENEHUB_STATES_H__
 
-#include <QtCore/QString>
-#include <QtCore/QStringList>
+#include <QString>
+#include <QStringList>
 #include <FabricCore.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
 

@@ -10,8 +10,8 @@
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONValue.h>
 #include <FabricCore.h>
-#include <QtCore/QString>
-#include <QtCore/QMetaType>
+#include <QString>
+#include <QMetaType>
 
 namespace FabricUI {
 namespace SceneHub {

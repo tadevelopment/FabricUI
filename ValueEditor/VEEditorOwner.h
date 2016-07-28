@@ -8,9 +8,9 @@
 #include <FabricCore.h>
 #include <FTL/CStrRef.h>
 #include <FTL/ArrayRef.h>
-#include <QtWidgets/QWidget>
-#include <QtCore/QMetaType>
-#include <QtCore/QSharedPointer>
+#include <QWidget>
+#include <QMetaType>
+#include <QSharedPointer>
 
 
 namespace FTL {

@@ -3,10 +3,10 @@
 #ifndef __UI_GraphView_GraphViewWidget__
 #define __UI_GraphView_GraphViewWidget__
 
-#include <QtCore/QUrl>
-#include <QtWidgets/QGraphicsView>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
+#include <QUrl>
+#include <QGraphicsView>
+#include <QColor>
+#include <QPen>
 
 #include "GraphConfig.h"
 #include "Graph.h"

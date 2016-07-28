@@ -10,8 +10,8 @@
 #include <FabricCore.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/SharedPtr.h>
-#include <QtWidgets/QTreeView>
-#include <QtCore/QAbstractItemModel>
+#include <QTreeView>
+#include <QAbstractItemModel>
  
 namespace FabricUI {
 namespace SceneHub {

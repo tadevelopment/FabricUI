@@ -5,11 +5,11 @@
 #ifndef __FABRICUI_LICENSING_MAINLICENSEDIALOG_H
 #define __FABRICUI_LICENSING_MAINLICENSEDIALOG_H
 
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QTextBrowser>
-#include <QtGui/QCursor>
-#include <QtWidgets/QDialog>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QTextBrowser>
+#include <QCursor>
+#include <QDialog>
 
 #include <FTL/JSONValue.h>
 

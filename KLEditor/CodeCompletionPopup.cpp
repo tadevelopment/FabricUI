@@ -4,10 +4,10 @@
 
 #include <FTL/MapCharToLower.h>
 #include <FTL/StrRef.h>
-#include <QtWidgets/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QPaintEvent>
-#include <QtWidgets/QVBoxLayout>
+#include <QLabel>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QVBoxLayout>
 
 using namespace FabricServices::ASTWrapper;
 using namespace FabricUI::KLEditor;

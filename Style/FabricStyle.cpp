@@ -2,10 +2,10 @@
 
 #include "FabricStyle.h"
 
-#include <QtWidgets/QStyleHintReturn>
-#include <QtWidgets/QStyleOptionComplex>
-#include <QtWidgets/QStyleOptionButton>
-#include <QtWidgets/QStyleOption>
+#include <QStyleHintReturn>
+#include <QStyleOptionComplex>
+#include <QStyleOptionButton>
+#include <QStyleOption>
 
 using namespace FabricUI::Style;
 

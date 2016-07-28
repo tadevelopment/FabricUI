@@ -10,13 +10,13 @@
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/NodeRectangle.h>
 
-#include <QtCore/QDebug>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QGraphicsDropShadowEffect>
-#include <QtWidgets/QGraphicsLinearLayout>
-#include <QtWidgets/QGraphicsSceneMouseEvent>
-#include <QtGui/QLinearGradient>
-#include <QtGui/QPainter>
+#include <QDebug>
+#include <QApplication>
+#include <QGraphicsDropShadowEffect>
+#include <QGraphicsLinearLayout>
+#include <QGraphicsSceneMouseEvent>
+#include <QLinearGradient>
+#include <QPainter>
 
 #include <algorithm>
 

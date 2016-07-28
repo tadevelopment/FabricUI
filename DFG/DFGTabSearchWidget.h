@@ -5,8 +5,8 @@
 
 #include "DFGConfig.h"
 
-#include <QtWidgets/QWidget>
-#include <QtGui/QFocusEvent>
+#include <QWidget>
+#include <QFocusEvent>
 
 namespace FabricUI
 {

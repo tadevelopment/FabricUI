@@ -13,9 +13,9 @@
 #include <float.h>
 #include <FTL/JSONValue.h>
 #include <FTL/AutoSet.h>
-#include <QtCore/QVariant>
-#include <QtWidgets/QHBoxLayout>
-#include <QtGui/QDoubleValidator>
+#include <QVariant>
+#include <QHBoxLayout>
+#include <QDoubleValidator>
 
 using namespace FabricUI::ValueEditor;
 

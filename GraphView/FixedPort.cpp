@@ -10,9 +10,9 @@
 #include <FabricUI/GraphView/SidePanel.h>
 #include <FabricUI/Util/LoadPixmap.h>
 
-#include <QtWidgets/QGraphicsLinearLayout>
-#include <QtWidgets/QGraphicsProxyWidget>
-#include <QtWidgets/QLabel>
+#include <QGraphicsLinearLayout>
+#include <QGraphicsProxyWidget>
+#include <QLabel>
 
 using namespace FabricUI::GraphView;
 

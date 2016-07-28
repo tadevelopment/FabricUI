@@ -1,9 +1,9 @@
   // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include <iostream>
-#include <QtWidgets/QLayout>
-#include <QtGui/QDoubleValidator>
-#include <QtCore/QTimer>
+#include <QLayout>
+#include <QDoubleValidator>
+#include <QTimer>
 
 #include "DFGNodePropertiesDialog.h"
 

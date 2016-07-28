@@ -2,9 +2,9 @@
 #include "QtToKLEvent.h"
 #include <map>
 #include <iostream>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QWheelEvent>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
 
 using namespace FabricCore;
 

@@ -15,7 +15,7 @@
 #include <assert.h>
 
 #pragma warning(push, 0)
-#include <QtGui/QtGui>
+#include <QtGui>
 #include <FabricCore.h>
 #pragma warning(pop)
 

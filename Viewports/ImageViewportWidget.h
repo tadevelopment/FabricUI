@@ -2,11 +2,11 @@
 #define __IMAGEVIEWPORT_H__
 
 
-#include <QtCore/QtCore>
-#include <QtCore/QTime>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QImage>
-#include <QtOpenGL/QGLWidget>
+#include <QtCore>
+#include <QTime>
+#include <QMouseEvent>
+#include <QImage>
+#include <QGLWidget>
 
 #include <FabricCore.h>
 

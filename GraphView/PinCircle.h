@@ -4,10 +4,10 @@
 #define __UI_GraphView_PinCircle__
 
 #include "PortType.h"
-#include <QtWidgets/QGraphicsWidget>
-#include <QtWidgets/QGraphicsEllipseItem>
-#include <QtGui/QPen>
-#include <QtGui/QColor>
+#include <QGraphicsWidget>
+#include <QGraphicsEllipseItem>
+#include <QPen>
+#include <QColor>
 #include "GraphicItemTypes.h"
 
 namespace FabricUI

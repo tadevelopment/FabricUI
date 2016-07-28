@@ -3,7 +3,7 @@
 #ifndef __UI_KLEditor_Helpers__
 #define __UI_KLEditor_Helpers__
 
-#include <QtCore/QString>
+#include <QString>
 #include <string>
 
 namespace FabricUI

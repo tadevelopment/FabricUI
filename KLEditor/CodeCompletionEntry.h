@@ -3,10 +3,10 @@
 #ifndef __UI_KLEditor_CodeCompletionEntry__
 #define __UI_KLEditor_CodeCompletionEntry__
 
-#include <QtGui/QColor>
-#include <QtGui/QFont>
-#include <QtGui/QFontMetrics>
-#include <QtWidgets/QWidget>
+#include <QColor>
+#include <QFont>
+#include <QFontMetrics>
+#include <QWidget>
 #include "EditorConfig.h"
 
 namespace FabricUI

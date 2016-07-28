@@ -11,9 +11,9 @@
 #include <FabricCore.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/SharedPtr.h>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QTreeView>
-#include <QtCore/QAbstractItemModel>
+#include <QMenu>
+#include <QTreeView>
+#include <QAbstractItemModel>
 
  
 namespace FabricUI {

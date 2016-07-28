@@ -6,9 +6,9 @@
 #define FABRICUI_VALUEEDITOR_BASEMODELITEM_H
 
 #include <FTL/CStrRef.h>
-#include <QtCore/QObject>
-#include <QtCore/QString>
-#include <QtCore/QVariant>
+#include <QObject>
+#include <QString>
+#include <QVariant>
 
 
 namespace FabricUI {

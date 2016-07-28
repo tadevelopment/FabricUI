@@ -6,7 +6,7 @@
 #define FABRICUI_DFG_DFGNOTIFIER_H
 
 #include <FTL/StrRef.h>
-#include <QtCore/QObject>
+#include <QObject>
 #include <stdint.h>
 
 namespace FabricUI {

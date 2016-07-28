@@ -6,8 +6,8 @@
 #define FABRICUI_VALUEEDITOR_BASEVIEWITEM_H
 
 #include "ItemMetadata.h"
-#include <QtCore/QObject>
-#include <QtCore/QVariant>
+#include <QObject>
+#include <QVariant>
 
 class QTreeWidget;
 class QTreeWidgetItem;

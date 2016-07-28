@@ -7,7 +7,7 @@
 #include "QVariantRTVal.h"
 
 #include <assert.h>
-#include <QtWidgets/QLabel>
+#include <QLabel>
 
 using namespace FabricUI::ValueEditor;
 

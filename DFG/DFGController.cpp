@@ -1,13 +1,13 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include <iostream>
-#include <QtCore/QDebug>
-#include <QtCore/QRegExp>
-#include <QtWidgets/QApplication>
-#include <QtGui/QClipboard>
-#include <QtWidgets/QGraphicsScene>
-#include <QtWidgets/QGraphicsView>
-#include <QtWidgets/QMessageBox>
+#include <QDebug>
+#include <QRegExp>
+#include <QApplication>
+#include <QClipboard>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QMessageBox>
 
 #include <FTL/JSONEnc.h>
 #include <FTL/Str.h>

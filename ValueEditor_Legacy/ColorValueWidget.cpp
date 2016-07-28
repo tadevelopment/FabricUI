@@ -4,8 +4,8 @@
 #include "ValueItem.h"
 #include "ValueEditorEventFilters.h"
 
-#include <QtGui/QDoubleValidator>
-#include <QtWidgets/QColorDialog>
+#include <QDoubleValidator>
+#include <QColorDialog>
 
 using namespace FabricUI::TreeView;
 using namespace FabricUI::ValueEditor_Legacy;

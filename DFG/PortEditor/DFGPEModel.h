@@ -7,8 +7,8 @@
 
 #include <FabricCore.h>
 #include <FTL/ArrayRef.h>
-#include <QtCore/QObject>
-#include <QtCore/QTimer>
+#include <QObject>
+#include <QTimer>
 
 namespace FabricUI {
 namespace DFG {

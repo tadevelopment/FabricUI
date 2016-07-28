@@ -5,7 +5,7 @@
 #ifndef FABRICUI_VALUEEDITOR_VELINEEDIT_H
 #define FABRICUI_VALUEEDITOR_VELINEEDIT_H
 
-#include <QtWidgets/QLineEdit>
+#include <QLineEdit>
 
 namespace FabricUI {
 namespace ValueEditor {

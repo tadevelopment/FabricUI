@@ -4,11 +4,11 @@
 #include "Graph.h"
 #include "Controller.h"
 
-#include <QtWidgets/QGraphicsRectItem>
-#include <QtWidgets/QGraphicsLinearLayout>
-#include <QtWidgets/QGraphicsSceneMouseEvent>
-#include <QtWidgets/QGraphicsSimpleTextItem>
-#include <QtGui/QPainter>
+#include <QGraphicsRectItem>
+#include <QGraphicsLinearLayout>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSimpleTextItem>
+#include <QPainter>
 
 namespace FabricUI {
 namespace GraphView {

@@ -3,9 +3,9 @@
 #ifndef __UI_GraphView_MainPanel__
 #define __UI_GraphView_MainPanel__
 
-#include <QtWidgets/QGraphicsWidget>
-#include <QtGui/QPen>
-#include <QtGui/QColor>
+#include <QGraphicsWidget>
+#include <QPen>
+#include <QColor>
 #include <vector>
 
 #include "SelectionRect.h"

@@ -3,8 +3,8 @@
 #ifndef __UI_DFG_PresetTreeWidget__
 #define __UI_DFG_PresetTreeWidget__
 
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QLineEdit>
+#include <QWidget>
+#include <QLineEdit>
 #include <FabricUI/TreeView/TreeViewWidget.h>
 #include <FabricUI/TreeView/TreeModel.h>
 #include <FabricUI/TreeView/TreeItem.h>

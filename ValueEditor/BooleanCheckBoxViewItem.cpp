@@ -6,8 +6,8 @@
 #include "ItemMetadata.h"
 #include "QVariantRTVal.h"
 
-#include <QtCore/QVariant>
-#include <QtWidgets/QCheckBox>
+#include <QVariant>
+#include <QCheckBox>
 
 using namespace FabricUI::ValueEditor;
 

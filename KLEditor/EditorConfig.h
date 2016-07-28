@@ -3,9 +3,9 @@
 #ifndef __UI_KLEditor_EditorConfig__
 #define __UI_KLEditor_EditorConfig__
 
-#include <QtGui/QColor>
-#include <QtGui/QFont>
-#include <QtGui/QTextCharFormat>
+#include <QColor>
+#include <QFont>
+#include <QTextCharFormat>
 
 namespace FabricUI
 {

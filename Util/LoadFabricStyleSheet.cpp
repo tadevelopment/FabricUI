@@ -5,8 +5,8 @@
 #include "LoadFabricStyleSheet.h"
 
 #include <FTL/Path.h>
-#include <QtCore/QFile>
-#include <QtCore/QRegExp>
+#include <QFile>
+#include <QRegExp>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>

@@ -5,8 +5,8 @@
 #include "ValueEditorEventFilters.h"
 #include <FabricUI/Util/QString_Conversion.h>
 
-#include <QtWidgets/QFileDialog>
-#include <QtCore/QFileInfo>
+#include <QFileDialog>
+#include <QFileInfo>
 
 using namespace FabricUI::TreeView;
 using namespace FabricUI::ValueEditor_Legacy;

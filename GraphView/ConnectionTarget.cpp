@@ -4,8 +4,8 @@
 #include "Graph.h"
 #include "PinCircle.h"
 
-#include <QtWidgets/QGraphicsSceneHoverEvent>
-#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
 
 #include <math.h>
 

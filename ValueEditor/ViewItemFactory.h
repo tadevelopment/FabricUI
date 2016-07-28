@@ -5,7 +5,7 @@
 #ifndef FABRICUI_VALUEEDITOR_VIEWITEMFACTORY_H
 #define FABRICUI_VALUEEDITOR_VIEWITEMFACTORY_H
 
-#include <QtCore/QObject>
+#include <QObject>
 #include <vector>
 
 namespace FabricUI {

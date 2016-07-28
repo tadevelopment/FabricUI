@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QGraphicsSceneHoverEvent>
+#include <QApplication>
+#include <QGraphicsSceneHoverEvent>
 
 #include <FabricUI/GraphView/BackDropNode.h>
 #include <FabricUI/GraphView/NodeBubble.h>

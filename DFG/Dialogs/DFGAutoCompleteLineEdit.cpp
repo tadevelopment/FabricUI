@@ -5,7 +5,7 @@
 # pragma warning( disable : 4267 )
 #endif
 
-#include <QtWidgets/QCompleter>
+#include <QCompleter>
 #include "DFGAutoCompleteLineEdit.h"
 
 using namespace FabricUI;
