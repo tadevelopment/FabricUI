@@ -520,6 +520,8 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     {
       if ( instNodeCount == 1 )
       {
+        if (exec.getSubExec(nodes[0]->name().c_str()).editWouldSplitFromPreset())
+          result->addAction(DFG_SPLIT_PRESET);
         result->addSeparator();
         if (dfgWidget->isEditable())
           result->addAction(DFG_CREATE_PRESET);
@@ -966,6 +968,10 @@ void DFGWidget::onNodeAction(QAction * action)
   else if(action->text() == DFG_DELETE_PRESET)
   {
     m_uiController->gvcDoRemoveNodes(m_contextNode);
+  }
+  else if(action->text() == DFG_SPLIT_PRESET)
+  {
+   printf("split me!\n");
   }
   else if(action->text() == DFG_COPY_PRESET)
   {

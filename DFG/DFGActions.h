@@ -17,6 +17,7 @@ namespace FabricUI
     #define DFG_DELETE_PRESET           "Delete - Del"
     #define DFG_SELECT_ALL_PRESET       "Select all - Ctrl+A"
     #define DFG_REMOVE_CONNECTIONS      "Remove connections to selected node(s) - D"
+    #define DFG_SPLIT_PRESET            "Split from preset"
     #define DFG_COPY_PRESET             "Copy - Ctrl+C"
     #define DFG_CUT_PRESET              "Cut - Ctrl+X"
     #define DFG_PASTE_PRESET            "Paste - Ctrl+V"
