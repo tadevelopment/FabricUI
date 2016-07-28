@@ -277,6 +277,7 @@ void KLSourceCodeWidget::keyPressEvent(QKeyEvent * event)
   if((event->key() == Qt::Key_X || event->key() == Qt::Key_C || event->key() == Qt::Key_V) && !m_popup && event->modifiers().testFlag(Qt::ControlModifier))
   {
     QTextCursor cursor = textCursor();
+    // we only do our manual thing if no text is selected.
     if (cursor.position() == cursor.anchor())
     {
       QClipboard *clipboard = QApplication::clipboard();
