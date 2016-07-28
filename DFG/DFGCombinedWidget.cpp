@@ -25,8 +25,7 @@ DFGCombinedWidget::DFGCombinedWidget(QWidget *parent)
   m_dfgLogWidget = NULL;
   m_setGraph = NULL;
 
-  // FIXME
-  //setStyle(new FabricUI::Style::FabricStyle());
+  setStyle(new FabricUI::Style::FabricStyle());
   setOrientation(Qt::Vertical);
 }
 

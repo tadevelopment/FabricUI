@@ -30,10 +30,15 @@ DFGErrorsWidget::DFGErrorsWidget(
 {
   m_tableWidget->setColumnCount( 2 );
   QHeaderView *horizontalHeader = m_tableWidget->horizontalHeader();
-  // FIXME
-  //horizontalHeader->setMovable( false );
-  //horizontalHeader->setClickable( false );
-  //horizontalHeader->setResizeMode( QHeaderView::ResizeToContents );
+#if QT_VERSION >= 0x050000
+  horizontalHeader->setSectionsMovable( false );
+  horizontalHeader->setSectionsClickable( false );
+  horizontalHeader->setSectionResizeMode( QHeaderView::ResizeToContents );
+#else
+  horizontalHeader->setMovable( false );
+  horizontalHeader->setClickable( false );
+  horizontalHeader->setResizeMode( QHeaderView::ResizeToContents );
+#endif
   horizontalHeader->setStretchLastSection( true );
   m_tableWidget->setHorizontalHeaderLabels(
     QStringList() << "Location" << "Description"

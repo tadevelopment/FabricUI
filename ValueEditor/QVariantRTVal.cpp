@@ -15,7 +15,8 @@ const QVariant::Handler* RTVariant::origh = NULL;
 // operations in QVariant
 void RTVariant::injectRTHandler()
 {
-  /* FIXME
+  // [andrew 2016-07-28] FE-7145
+#if QT_VERSION < 0x050000
   origh = handler;
   Handler* h = new Handler;
   *h = *origh;
@@ -24,7 +25,7 @@ void RTVariant::injectRTHandler()
   h->convert = rtConvert;
   h->debugStream = rtStreamDebug;
   handler = h;
-  */
+#endif
 }
 
 bool isRTVal( const QVariant::Private *d )
