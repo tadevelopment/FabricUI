@@ -971,7 +971,9 @@ void DFGWidget::onNodeAction(QAction * action)
   }
   else if(action->text() == DFG_SPLIT_PRESET)
   {
-   printf("split me!\n");
+    FabricCore::DFGExec &exec = m_uiController->getExec();
+    FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+    subExec.maybeSplitFromPreset();
   }
   else if(action->text() == DFG_COPY_PRESET)
   {
