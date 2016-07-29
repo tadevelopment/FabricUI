@@ -118,7 +118,7 @@ void DFGPEModel_ExecPorts::inspectElement(
   DFGWidget *dfgWidget
   )
 {
-  dfgWidget->editExecPort( m_exec.getExecPortName( index ) );
+  dfgWidget->editExecPort( m_exec.getExecPortName( index ), false /* duplicatePort */ );
 }
 
 void DFGPEModel_ExecPorts::renameElement(

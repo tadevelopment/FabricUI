@@ -88,7 +88,7 @@ namespace DFG {
       bool priorExecStackIsEmpty() const
         { return m_priorExecStack.empty(); }
 
-      void editExecPort( FTL::CStrRef execPortName );
+      void editExecPort( FTL::CStrRef execPortName, bool duplicatePort );
 
     signals:
 

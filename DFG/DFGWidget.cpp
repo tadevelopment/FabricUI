@@ -601,6 +601,10 @@ QMenu* DFGWidget::portContextMenuCallback(
   deleteAction->setEnabled( port->allowEdits() );
   result->addAction(deleteAction);
 
+  QAction *duplicateAction = new QAction("Duplicate", result);
+  duplicateAction->setEnabled( port->allowEdits() );
+  result->addAction(duplicateAction);
+
   try
   {
     FabricCore::DFGExec &exec = graphWidget->m_uiController->getExec();
@@ -1289,7 +1293,7 @@ void DFGWidget::onNodeAction(QAction * action)
   m_contextNode = NULL;
 }
 
-void DFGWidget::editExecPort( FTL::CStrRef execPortName )
+void DFGWidget::editExecPort( FTL::CStrRef execPortName, bool duplicatePort)
 {
   try
   {
@@ -1305,7 +1309,7 @@ void DFGWidget::editExecPort( FTL::CStrRef execPortName )
       false,
       true, //canEditPortType
       m_dfgConfig,
-      true
+      true // setAlphaNum
       );
 
     dialog.setTitle( execPortName_QS );
@@ -1419,14 +1423,28 @@ void DFGWidget::editExecPort( FTL::CStrRef execPortName )
     if ( FTL::StrRef( uiMetadata ) == FTL_STR("{}") )
       uiMetadata.clear();
 
-    m_uiController->cmdEditPort(
-      execPortName_QS,
-      newPortName,
-      exec.getExecPortType( execPortName.c_str() ),
-      typeSpec,
-      extDep,
-      QString::fromUtf8( uiMetadata.c_str() )
-      );
+    if (!duplicatePort)
+    {
+      m_uiController->cmdEditPort(
+        execPortName_QS,
+        newPortName,
+        exec.getExecPortType( execPortName.c_str() ),
+        typeSpec,
+        extDep,
+        QString::fromUtf8( uiMetadata.c_str() )
+        );
+    }
+    else
+    {
+      m_uiController->cmdAddPort(
+        newPortName,
+        exec.getExecPortType( execPortName.c_str() ),
+        exec.getExecPortResolvedType( execPortName.c_str() ),
+        QString(), // portToConnect
+        extDep,
+        QString::fromUtf8( uiMetadata.c_str() )
+        );
+    }
   }
   catch(FabricCore::Exception e)
   {
@@ -1446,7 +1464,11 @@ void DFGWidget::onExecPortAction(QAction * action)
   }
   else if(action->text() == "Edit")
   {
-    editExecPort( portName );
+    editExecPort( portName, false /* duplicatePort */ );
+  }
+  else if(action->text() == "Duplicate")
+  {
+    editExecPort( portName, true /* duplicatePort */ );
   }
   else if ( action->text() == DFG_MOVE_INPUTS_TO_END
     || action->text() == DFG_MOVE_OUTPUTS_TO_END )
