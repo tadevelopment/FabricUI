@@ -5,6 +5,7 @@
 #include <FabricUI/DFG/PresetTreeItem.h>
 #include <FabricUI/DFG/PresetTreeWidget.h>
 #include <FabricUI/DFG/VariableListTreeItem.h>
+#include <FabricUI/DFG/DFGWidget.h>
 
 #include <FTL/JSONValue.h>
 #include <FTL/MapCharSingle.h>
@@ -127,6 +128,9 @@ PresetTreeWidget::PresetTreeWidget(
     QObject::connect(m_treeView, SIGNAL(customContextMenuRequested(QPoint, FabricUI::TreeView::TreeItem *)), 
       this, SLOT(onCustomContextMenuRequested(QPoint, FabricUI::TreeView::TreeItem *)));
   }
+  
+  QObject::connect(m_treeView, SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(onRowDoubleClick(const QModelIndex &)));
+  
 }
 
 PresetTreeWidget::~PresetTreeWidget()
@@ -397,5 +401,27 @@ void PresetTreeWidget::updatePresetPathDB()
   for(size_t i=0;i<m_presetPathDictSTL.size();i++)
   {
     m_presetPathDict.add(m_presetPathDictSTL[i].c_str(), '.', m_presetPathDictSTL[i].c_str());
+  }
+}
+
+void PresetTreeWidget::onRowDoubleClick(const QModelIndex &index)
+{
+  FabricUI::TreeView::TreeItem * item = NULL;
+  if (index.isValid())
+  {
+    item = static_cast<FabricUI::TreeView::TreeItem *>(index.internalPointer());
+  }
+  if(item && item->type() == "Preset")
+  {
+    try
+    {
+      FabricCore::DFGHost host = m_dfgController->getHost();
+      QPointF pos = m_dfgController->getDFGWidget()->getGraphViewWidget()->lastEventPos();
+      QString itemString = QString::fromStdString(item->path());
+      m_dfgController->gvcDoAddInstFromPreset(itemString, pos);
+    }
+    catch(FabricCore::Exception e)
+    {
+    }    
   }
 }
