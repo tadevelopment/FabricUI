@@ -32,11 +32,12 @@ Connection::Connection(
   , m_aboutToBeDeleted( false )
   , m_hasSelectedTarget( false )
 {
-  m_isExposedConnection = 
-    m_src->targetType() == TargetType_ProxyPort ||
-    m_src->targetType() == TargetType_Port ||
-    m_dst->targetType() == TargetType_ProxyPort ||
-    m_dst->targetType() == TargetType_Port;
+  m_isExposedConnection =    m_src->targetType() == TargetType_Port
+                          || m_src->targetType() == TargetType_FixedPort
+                          || m_src->targetType() == TargetType_ProxyPort
+                          || m_dst->targetType() == TargetType_Port
+                          || m_dst->targetType() == TargetType_FixedPort
+                          || m_dst->targetType() == TargetType_ProxyPort;
 
   if(m_isExposedConnection)
   {
