@@ -1408,7 +1408,7 @@ void DFGController::appendPresetsAtPrefix(
     }
     else if ( jeKey.stringIs( FTL_STR("members") ) )
     {
-      FTL::JSONStr ds( jeVal.getRawStr() );
+      FTL::JSONStr ds( jeVal.getRawJSONStr() );
       FTL::JSONObjectDec<FTL::JSONStr> jod( ds );
       FTL::JSONEnt<FTL::JSONStr> jeKey, jeVal;
       while ( jod.getNext( jeKey, jeVal ) )
@@ -1419,7 +1419,7 @@ void DFGController::appendPresetsAtPrefix(
         jeKey.stringAppendTo( prefixedName );
         m_presetNameSpaceDictSTL.push_back( prefixedName );
 
-        FTL::JSONStr ds( jeVal.getRawStr() );
+        FTL::JSONStr ds( jeVal.getRawJSONStr() );
         appendPresetsAtPrefix( prefixedName, ds );
 
         prefixedName.resize( oldPrefixedNameSize );
