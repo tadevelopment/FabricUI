@@ -36,7 +36,7 @@ GraphConfig::GraphConfig()
   nodeFont = QFont("Roboto", 12, QFont::Bold);
   nodeFont.setHintingPreference( QFont::PreferFullHinting );
   nodeFont.setBold(true);
-  instBlockHeaderFont = QFont("Roboto", 10, QFont::Bold);
+  instBlockHeaderFont = QFont("Roboto", 11, QFont::Bold);
   instBlockHeaderFont.setHintingPreference( QFont::PreferFullHinting );
   instBlockHeaderFont.setBold(true);
   nodeFontColor = QColor(20, 20, 20, 255);
@@ -67,7 +67,7 @@ GraphConfig::GraphConfig()
   nodeHeaderButtonSeparator = 2.0f;
   nodeHeaderButtonIconDir = "${FABRIC_DIR}/Resources/Icons/";
 
-  pinFont = QFont("Roboto Condensed", 12, QFont::Normal);
+  pinFont = QFont("Roboto", 11, QFont::Normal);
   pinFont.setHintingPreference( QFont::PreferFullHinting );
   pinFontColor = nodeFontColor;
   pinFontHighlightColor = nodeFontHighlightColor;
@@ -97,7 +97,7 @@ GraphConfig::GraphConfig()
   sidePanelPen = QPen(Qt::NoPen);
   sidePanelContentMargins = 4.0f;
   sidePanelSpacing = 10.0f;
-  sidePanelFont = QFont("Roboto", 12, QFont::Normal);
+  sidePanelFont = QFont("Roboto", 11, QFont::Normal);
   sidePanelFont.setHintingPreference( QFont::PreferFullHinting );
   sidePanelFontColor = pinFontColor;
   sidePanelFontHighlightColor = QColor(255, 255, 255, 255);
