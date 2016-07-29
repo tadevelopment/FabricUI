@@ -309,6 +309,11 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+  // [FE-6836] don't draw connections for IO ports.
+  if (m_src->path() == m_dst->path())
+    return;
+
+  // draw dimmed connection.
   if(m_isExposedConnection && !m_hovered && !m_hasSelectedTarget && m_graph->config().dimConnectionLines)
   {
     painter->setOpacity(0.15);
@@ -319,6 +324,8 @@ void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
     painter->setClipping(false);
     painter->setOpacity(1.0);
   }
+
+  // draw regular connection.
   else
   {
     QGraphicsPathItem::paint(painter, option, widget);
