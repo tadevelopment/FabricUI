@@ -1391,7 +1391,7 @@ DFGController::getPresetPathsFromSearch( char const * search )
 }
 
 void DFGController::appendPresetsAtPrefix(
-  FTL::StrRef prefixStr,
+  std::string &prefixedName,
   FTL::JSONStrWithLoc &ds
   )
 {
@@ -1403,7 +1403,7 @@ void DFGController::appendPresetsAtPrefix(
       && jeVal.stringIs( FTL_STR("Preset") ) )
     {
       m_presetPathDictSTL.push_back(
-        std::pair<std::string, unsigned>( prefixStr, 0 )
+        std::pair<std::string, unsigned>( prefixedName, 0 )
         );
     }
     else if ( jeKey.stringIs( FTL_STR("members") ) )
@@ -1415,7 +1415,7 @@ void DFGController::appendPresetsAtPrefix(
       FTL::JSONEnt jeKey, jeVal;
       while ( jod.getNext( jeKey, jeVal ) )
       {
-        std::string prefixedName = prefixStr;
+        size_t oldPrefixedNameSize = prefixedName.size();
         if ( !prefixedName.empty() )
           prefixedName += '.';
         jeKey.stringAppendTo( prefixedName );
@@ -1425,6 +1425,8 @@ void DFGController::appendPresetsAtPrefix(
           jeVal.getRawStr(), jeVal.getLine(), jeVal.getColumn()
           );
         appendPresetsAtPrefix( prefixedName, ds );
+
+        prefixedName.resize( oldPrefixedNameSize );
       }
     }
   }
@@ -1466,7 +1468,8 @@ void DFGController::updatePresetPathDB()
   uint32_t jsonStrSize;
   jsonString.getCStrAndSize( jsonStrCStr, jsonStrSize );
   FTL::JSONStrWithLoc ds( FTL::StrRef( jsonStrCStr, jsonStrSize ) );
-  appendPresetsAtPrefix( FTL::StrRef(), ds );
+  std::string prefixedName;
+  appendPresetsAtPrefix( prefixedName, ds );
 
   for(size_t i=0;i<m_presetNameSpaceDictSTL.size();i++)
     m_presetNameSpaceDict.add(m_presetNameSpaceDictSTL[i].c_str(), '.', m_presetNameSpaceDictSTL[i].c_str());

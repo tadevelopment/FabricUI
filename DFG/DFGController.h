@@ -450,7 +450,7 @@ namespace FabricUI
       }
 
       void appendPresetsAtPrefix(
-        FTL::StrRef prefixStr,
+        std::string &prefixedName,
         FTL::JSONStrWithLoc &ds
         );
 
