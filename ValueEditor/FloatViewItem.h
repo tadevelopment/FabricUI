@@ -42,6 +42,7 @@ public:
 
 private:
 
+  QWidget *m_widget;
 	VEDoubleSpinBox *m_spinBox;
 
 private slots:

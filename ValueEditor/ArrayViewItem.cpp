@@ -35,9 +35,26 @@ ArrayViewItem::ArrayViewItem( QString name,
     // By default don't display more than 100 elements
     m_max = min( arraySize, 100 );
   }
-  m_minIndexEdit = new VEIntSpinBox( );
-  m_maxIndexEdit = new VEIntSpinBox( );
-  m_arraySizeEdit = new VEIntSpinBox( );
+
+  m_minIndexEdit = new VEIntSpinBox;
+  m_minIndexEdit->setObjectName( "VELeft" );
+  m_minIndexEdit->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum ) );
+
+  QLabel *toLabel = new QLabel( "to" );
+  toLabel->setObjectName( "VEMiddle" );
+  toLabel->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
+
+  m_maxIndexEdit = new VEIntSpinBox;
+  m_maxIndexEdit->setObjectName( "VEMiddle" );
+  m_maxIndexEdit->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum ) );
+
+  QLabel *ofLabel = new QLabel( "of" );
+  ofLabel->setObjectName( "VEMiddle" );
+  ofLabel->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
+
+  m_arraySizeEdit = new VEIntSpinBox;
+  m_arraySizeEdit->setObjectName( "VERight" );
+  m_arraySizeEdit->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum ) );
 
   updateWidgets();
 
@@ -55,14 +72,14 @@ ArrayViewItem::ArrayViewItem( QString name,
     );
 
   QHBoxLayout *layout = new QHBoxLayout( m_widget );
-  m_minIndexEdit->setObjectName( "MinIndexEdit" );
-  m_maxIndexEdit->setObjectName( "MaxIndexEdit" );
-  m_arraySizeEdit->setObjectName( "ArraySizeEdit" );
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_minIndexEdit );
-  layout->addWidget( new QLabel( "to" ) );
+  layout->addWidget( toLabel );
   layout->addWidget( m_maxIndexEdit );
-  layout->addWidget( new QLabel( "of" ) );
+  layout->addWidget( ofLabel );
   layout->addWidget( m_arraySizeEdit );
+  layout->addStretch();
 }
 
 ArrayViewItem::~ArrayViewItem()

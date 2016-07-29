@@ -12,7 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QLineEdit>
-#include <QtGui/QWidget>
+#include <QtGui/QFrame>
 
 using namespace FabricUI::ValueEditor;
 
@@ -24,14 +24,17 @@ Vec3ViewItem::Vec3ViewItem(
   : BaseComplexViewItem( name, metadata )
   , m_vec3dValue( value.value<QVector3D>() )
 {
-  m_widget = new QWidget;
+  m_widget = new QFrame;
   m_widget->setObjectName( "Vec3Item" );
 
   m_xSpinBox = new VEDoubleSpinBox;
+  m_xSpinBox->setObjectName( "VELeft" );
   m_xSpinBox->setValue( m_vec3dValue.x() );
   m_ySpinBox = new VEDoubleSpinBox;
+  m_ySpinBox->setObjectName( "VEMiddle" );
   m_ySpinBox->setValue( m_vec3dValue.y() );
   m_zSpinBox = new VEDoubleSpinBox;
+  m_zSpinBox->setObjectName( "VERight" );
   m_zSpinBox->setValue( m_vec3dValue.z() );
 
   // Connect em up.
@@ -77,10 +80,11 @@ Vec3ViewItem::Vec3ViewItem(
 
   QHBoxLayout *layout = new QHBoxLayout( m_widget );
   layout->setContentsMargins( 0, 0, 0, 0 );
-  layout->setSpacing( 8 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_xSpinBox );
   layout->addWidget( m_ySpinBox );
   layout->addWidget( m_zSpinBox );
+  layout->addStretch();
 
   metadataChanged();
 }

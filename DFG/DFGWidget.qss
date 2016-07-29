@@ -323,15 +323,14 @@ QMenu::item:disabled:selected {
 
 #DFGTimelineWidget QWidget
 {
-  font: 10px "Lucida";
+  font: 11px "Roboto";
 }
 
 #DFGTimelineWidget QPushButton
 {
-  width: 32px;
-  height: 16px;
+  width: 24px;
+  padding: 3px;
   border: none;
-  border-style: outset;
   border-radius: 3px;
   color: #C7D2DA;
   background-color: #50626e;
@@ -378,9 +377,8 @@ QMenu::item:disabled:selected {
 {
   border: 0;
   border-radius: 3px;
-  padding: 3px 3px 3px 6px;
+  padding: 1px 1px 1px 4px;
   margin: 0;
-  height: 10px;
 
   color: #e1ffff;
   background-color: #333;

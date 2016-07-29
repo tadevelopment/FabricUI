@@ -8,6 +8,7 @@
 
 #include <FabricUI/Util/UIRange.h>
 #include <float.h>
+#include <QtGui/QHBoxLayout>
 
 using namespace FabricUI::ValueEditor;
 
@@ -19,8 +20,18 @@ FloatViewItem::FloatViewItem(
   : BaseViewItem( name, metadata )
 {
   m_spinBox = new VEDoubleSpinBox;
-  m_spinBox->setObjectName( "FloatItem" );
+  m_spinBox->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::MinimumExpanding );
   onModelValueChanged( value );
+
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
+  layout->addWidget( m_spinBox );
+  layout->addStretch();
+
+  m_widget = new QWidget;
+  m_widget->setObjectName( "VEFloatViewItem" );
+  m_widget->setLayout( layout );
 
   connect(
     m_spinBox, SIGNAL(interactionBegin()), 
@@ -44,7 +55,7 @@ FloatViewItem::~FloatViewItem()
 
 QWidget *FloatViewItem::getWidget()
 {
-  return m_spinBox;
+  return m_widget;
 }
 
 void FloatViewItem::onModelValueChanged( QVariant const &v )

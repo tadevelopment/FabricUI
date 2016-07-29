@@ -12,7 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QLineEdit>
-#include <QtGui/QWidget>
+#include <QtGui/QFrame>
 
 using namespace FabricUI::ValueEditor;
 
@@ -24,12 +24,14 @@ Vec2ViewItem::Vec2ViewItem(
   : BaseComplexViewItem( name, metadata )
   , m_vec2dValue( value.value<QVector2D>() )
 {
-  m_widget = new QWidget;
+  m_widget = new QFrame;
   m_widget->setObjectName( "Vec2Item" );
 
   m_xSpinBox = new VEDoubleSpinBox;
+  m_xSpinBox->setObjectName( "VELeft" );
   m_xSpinBox->setValue( m_vec2dValue.x() );
   m_ySpinBox = new VEDoubleSpinBox;
+  m_ySpinBox->setObjectName( "VERight" );
   m_ySpinBox->setValue( m_vec2dValue.y() );
 
   // Connect em up.
@@ -62,10 +64,11 @@ Vec2ViewItem::Vec2ViewItem(
 
   QHBoxLayout *layout = new QHBoxLayout( m_widget );
   layout->setContentsMargins( 0, 0, 0, 0 );
-  layout->setSpacing( 8 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_xSpinBox );
   layout->addWidget( m_ySpinBox );
-
+  layout->addStretch();
+  
   metadataChanged();
 }
 

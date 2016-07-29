@@ -381,7 +381,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.treeDock)
 
         # Timeline Dock Widget
-        self.timeLineDock = QtGui.QDockWidget("TimeLine", self)
+        self.timeLineDock = QtGui.QDockWidget("Timeline", self)
         self.timeLineDock.setObjectName("TimeLine")
         self.timeLineDock.setFeatures(self.dockFeatures)
         self.timeLineDock.setWidget(self.timeLine)
