@@ -191,7 +191,7 @@ namespace FabricUI
         void updateFrameRange();
         
         /// start or stop the playback ( act as a switch on the playing state )
-        void play();
+        void onPlayButtonToggled( bool checked );
         
         /// stop the playback
         void pause();

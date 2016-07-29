@@ -189,7 +189,7 @@ if uiLibPrefix == 'ui':
           Glob(os.path.join(env.Dir('DFG').Dir('Fonts').Dir(name).srcnode().abspath, '*')),
           ]
         ),
-    ['Roboto', 'Roboto_Condensed', 'Roboto_Mono', 'Roboto_Slab']
+    ['Roboto', 'Roboto_Condensed', 'Roboto_Mono', 'Roboto_Slab', 'FontAwesome']
     )
   env.Depends(uiLib, fonts)
   qss = env.Install(

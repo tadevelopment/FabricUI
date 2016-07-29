@@ -68,8 +68,9 @@ QString LoadFabricStyleSheet( FTL::StrRef basename )
       );
     return QString();
   }
+  QByteArray qssFileBytes = qssFile.readAll();
 
-  QString styleSheet = QLatin1String( qssFile.readAll() );
+  QString styleSheet = QString::fromUtf8( qssFileBytes.constData(), qssFileBytes.size() );
   if ( styleSheet.isEmpty() )
   {
     fprintf(
