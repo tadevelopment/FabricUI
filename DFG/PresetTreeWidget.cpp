@@ -411,7 +411,7 @@ void PresetTreeWidget::onRowDoubleClick(const QModelIndex &index)
   {
     item = static_cast<FabricUI::TreeView::TreeItem *>(index.internalPointer());
   }
-  if(item && item->type() == "Preset")
+  if (item && item->type() == "Preset")
   {
     try
     {
