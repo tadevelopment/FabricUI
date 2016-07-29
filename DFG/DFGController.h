@@ -449,6 +449,11 @@ namespace FabricUI
           m_notificationTimer->start( 0 );
       }
 
+      void appendPresetsAtPrefix(
+        FTL::StrRef prefixStr,
+        FTL::JSONStrWithLoc &ds
+        );
+
     protected slots:
 
       void onNotificationTimer();

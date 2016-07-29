@@ -10,6 +10,7 @@
 #include <QtGui/QMessageBox>
 
 #include <FTL/JSONEnc.h>
+#include <FTL/JSONDec.h>
 #include <FTL/Str.h>
 #include <FTL/Math.h>
 #include <FTL/MapCharSingle.h>
@@ -1389,6 +1390,46 @@ DFGController::getPresetPathsFromSearch( char const * search )
   return m_presetPathDict.search( searchSplit.size(), cStrs );
 }
 
+void DFGController::appendPresetsAtPrefix(
+  FTL::StrRef prefixStr,
+  FTL::JSONStrWithLoc &ds
+  )
+{
+  FTL::JSONObjectDec jod( ds );
+  FTL::JSONEnt jeKey, jeVal;
+  while ( jod.getNext( jeKey, jeVal ) )
+  {
+    if ( jeKey.stringIs( FTL_STR("objectType") )
+      && jeVal.stringIs( FTL_STR("Preset") ) )
+    {
+      m_presetPathDictSTL.push_back(
+        std::pair<std::string, unsigned>( prefixStr, 0 )
+        );
+    }
+    else if ( jeKey.stringIs( FTL_STR("members") ) )
+    {
+      FTL::JSONStrWithLoc ds(
+        jeVal.getRawStr(), jeVal.getLine(), jeVal.getColumn()
+        );
+      FTL::JSONObjectDec jod( ds );
+      FTL::JSONEnt jeKey, jeVal;
+      while ( jod.getNext( jeKey, jeVal ) )
+      {
+        std::string prefixedName = prefixStr;
+        if ( !prefixedName.empty() )
+          prefixedName += '.';
+        jeKey.stringAppendTo( prefixedName );
+        m_presetNameSpaceDictSTL.push_back( prefixedName );
+
+        FTL::JSONStrWithLoc ds(
+          jeVal.getRawStr(), jeVal.getLine(), jeVal.getColumn()
+          );
+        appendPresetsAtPrefix( prefixedName, ds );
+      }
+    }
+  }
+}
+
 void DFGController::updatePresetPathDB()
 {
   if(m_presetDictsUpToDate || !m_host.isValid())
@@ -1420,42 +1461,12 @@ void DFGController::updatePresetPathDB()
       ) );
   }
 
-  std::vector<std::string> paths;
-  paths.push_back("");
-
-  for(size_t i=0;i<paths.size();i++)
-  {
-    std::string prefix = paths[i];
-    if(prefix.length() > 0)
-      prefix += ".";
-
-    try
-    {
-      FabricCore::DFGStringResult jsonStr = m_host.getPresetDesc(paths[i].c_str());
-      FabricCore::Variant jsonVar = FabricCore::Variant::CreateFromJSON(jsonStr.getCString());
-      const FabricCore::Variant * membersVar = jsonVar.getDictValue("members");
-      for(FabricCore::Variant::DictIter memberIter(*membersVar); !memberIter.isDone(); memberIter.next())
-      {
-        std::string name = memberIter.getKey()->getStringData();
-        const FabricCore::Variant * memberVar = memberIter.getValue();
-        const FabricCore::Variant * objectTypeVar = memberVar->getDictValue("objectType");
-        std::string objectType = objectTypeVar->getStringData();
-        if(objectType == "Preset")
-        {
-          m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( prefix+name, 0 ) );
-        }
-        else if(objectType == "NameSpace")
-        {
-          paths.push_back(prefix+name);
-          m_presetNameSpaceDictSTL.push_back(prefix+name);
-        }
-      }
-    }
-    catch (FabricCore::Exception e)
-    {
-      logError(e.getDesc_cstr());
-    }
-  }
+  FabricCore::String jsonString = m_host.getPresetDesc( "" );
+  char const *jsonStrCStr;
+  uint32_t jsonStrSize;
+  jsonString.getCStrAndSize( jsonStrCStr, jsonStrSize );
+  FTL::JSONStrWithLoc ds( FTL::StrRef( jsonStrCStr, jsonStrSize ) );
+  appendPresetsAtPrefix( FTL::StrRef(), ds );
 
   for(size_t i=0;i<m_presetNameSpaceDictSTL.size();i++)
     m_presetNameSpaceDict.add(m_presetNameSpaceDictSTL[i].c_str(), '.', m_presetNameSpaceDictSTL[i].c_str());
