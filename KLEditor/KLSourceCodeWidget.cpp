@@ -240,39 +240,6 @@ void KLSourceCodeWidget::keyPressEvent(QKeyEvent * event)
       hidePopup();
   }
 
-  /*
-    // [FE-6839]
-  if((event->key() == Qt::Key_X || event->key() == Qt::Key_C || event->key() == Qt::Key_V) && !m_popup && event->modifiers().testFlag(Qt::ControlModifier))
-  {
-    QClipboard *clipboard = QApplication::clipboard();
-    QTextCursor cursor = textCursor();
-    if (event->key() == Qt::Key_V)
-    {
-      if (clipboard->text().endsWith("\n"))
-        cursor.movePosition(QTextCursor::StartOfLine);
-      cursor.insertText(clipboard->text());
-    }
-    else
-    {
-      clipboard->clear();
-      copy();
-      if (clipboard->text().isEmpty())
-      {
-        cursor.select(QTextCursor::LineUnderCursor);
-        cursor.movePosition(QTextCursor::StartOfLine);
-        cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor);
-        clipboard->setText(cursor.selectedText());
-      }
-      if (event->key() == Qt::Key_X)
-        cursor.removeSelectedText();
-    }
-    event->accept();
-    return;
-  }
-
-  */
-
-
   // [FE-6839]
   if((event->key() == Qt::Key_X || event->key() == Qt::Key_C || event->key() == Qt::Key_V) && !m_popup && event->modifiers().testFlag(Qt::ControlModifier))
   {
