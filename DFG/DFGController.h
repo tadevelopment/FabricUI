@@ -451,7 +451,7 @@ namespace FabricUI
 
       void appendPresetsAtPrefix(
         std::string &prefixedName,
-        FTL::JSONStrWithLoc &ds
+        FTL::JSONStr &ds
         );
 
     protected slots:
