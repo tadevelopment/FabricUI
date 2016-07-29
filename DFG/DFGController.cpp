@@ -13,6 +13,7 @@
 #include <FTL/Str.h>
 #include <FTL/Math.h>
 #include <FTL/MapCharSingle.h>
+#include <FTL/Path.h>
 
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
@@ -60,12 +61,10 @@ DFGController::DFGController(
   , m_dirtyPending( false )
 {
   m_tabSearchPrefsJSONFilename = FabricCore::GetFabricPrivateDir();
-#ifdef FTL_PLATFORM_WINDOWS
-  m_tabSearchPrefsJSONFilename += '\\';
-#else
-  m_tabSearchPrefsJSONFilename += '/';
-#endif
-  m_tabSearchPrefsJSONFilename += "TabSearch.prefs.json";
+  FTL::PathAppendEntry(
+    m_tabSearchPrefsJSONFilename,
+    "TabSearch.prefs.json"
+    );
 
   m_notificationTimer->setSingleShot( true );
   connect(
