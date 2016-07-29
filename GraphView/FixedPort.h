@@ -40,6 +40,7 @@ namespace FabricUI
         SidePanel * parent,
         FTL::StrRef name,
         PortType portType,
+        bool portIsIO,
         FTL::StrRef dataType,
         QColor color,
         FTL::StrRef label = FTL::StrRef()
@@ -142,7 +143,7 @@ namespace FabricUI
 
     private:
 
-      void init();
+      void init(bool portIsIO);
 
       SidePanel * m_sidePanel;
       std::string m_name;

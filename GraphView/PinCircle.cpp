@@ -67,7 +67,6 @@ const ConnectionTarget * PinCircle::target() const
   return m_target;
 }
 
-
 QColor PinCircle::color() const
 {
   return m_color;
