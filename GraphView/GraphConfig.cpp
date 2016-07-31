@@ -57,7 +57,7 @@ GraphConfig::GraphConfig()
   nodeCornerRadius = 5.0f;
   nodeSpaceAbovePorts = 4.0f;
   nodeSpaceBelowPorts = 4.0f;
-  nodePinSpacing = 4.0f;
+  nodePinSpacing = 7.0f;
   nodePinStretch = 16.0f;
   nodeShadowEnabled = true;
   nodeShadowColor = QColor(0, 0, 0, 75);
