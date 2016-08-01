@@ -1269,7 +1269,7 @@ void DFGNotificationRouter::onExecPortInserted(
         uiPanel,
         portName,
         GraphView::PortType_Input,
-        execPortType == FTL_STR("IO"),
+        execPortType == FTL_STR("IO") && portIndex,
         dataType,
         color,
         portName
@@ -1289,7 +1289,7 @@ void DFGNotificationRouter::onExecPortInserted(
         uiPanel,
         portName,
         GraphView::PortType_Output,
-        execPortType == FTL_STR("IO"),
+        execPortType == FTL_STR("IO") && portIndex,
         dataType,
         color,
         portName
@@ -1342,7 +1342,7 @@ void DFGNotificationRouter::onExecFixedPortInserted(
         uiPanel,
         portName,
         GraphView::PortType_Input,
-        outsidePortType == FTL_STR("IO"),
+        outsidePortType == FTL_STR("IO") && portIndex,
         dataType,
         color,
         portName
@@ -1362,7 +1362,7 @@ void DFGNotificationRouter::onExecFixedPortInserted(
         uiPanel,
         portName,
         GraphView::PortType_Output,
-        outsidePortType == FTL_STR("IO"),
+        outsidePortType == FTL_STR("IO") && portIndex,
         dataType,
         color,
         portName
