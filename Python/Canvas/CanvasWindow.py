@@ -248,6 +248,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self.evalContext = self.client.RT.types.EvalContext.create()
         self.evalContext = self.evalContext.getInstance('EvalContext')
+        self.evalContext.host = 'Canvas'
 
         self.astManager = KLASTManager(self.client)
         self.host = self.client.getDFGHost()
