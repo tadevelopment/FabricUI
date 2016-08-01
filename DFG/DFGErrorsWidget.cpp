@@ -13,6 +13,8 @@
 #include <QtGui/QMenu>
 #include <QtGui/QTableWidget>
 #include <QtGui/QVBoxLayout>
+#include <QtGui/QClipboard>
+#include <QtGui/QApplication>
 
 namespace FabricUI {
 namespace DFG {
@@ -313,6 +315,14 @@ void DFGErrorsWidget::onCustomContextMenuRequested( QPoint const &pos )
     this, SLOT(onDismissSelected())
     );
   menu.addAction( dismissAction );
+  
+  QAction *copyAction = new QAction( "Copy Selected", &menu );
+  copyAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_C) );
+  connect(
+    copyAction, SIGNAL(triggered()),
+    this, SLOT(onCopySelected())
+    );
+  menu.addAction( copyAction );
 
   bool haveDiagIndex = false;
   // [FABMODO-8] ** temporary fix consisting of changing the crash into a memory leak **
@@ -353,6 +363,25 @@ void DFGErrorsWidget::onLoadDiagInserted( unsigned diagIndex )
 void DFGErrorsWidget::onLoadDiagRemoved( unsigned diagIndex )
 {
   onErrorsMayHaveChanged();
+}
+
+void DFGErrorsWidget::onCopySelected()
+{
+  QList<QTableWidgetSelectionRange> *ptr_ranges = new QList<QTableWidgetSelectionRange>;
+  QList<QTableWidgetSelectionRange> &ranges = *ptr_ranges;
+  ranges = m_tableWidget->selectedRanges();
+  QString errorsText = "";
+  for ( int i = 0; i < ranges.size(); ++i )
+  {
+    QTableWidgetSelectionRange const &range = ranges[i];
+    for ( int row = range.topRow(); row <= range.bottomRow(); ++row )
+    {
+      errorsText += m_tableWidget->item(row, 0)->text() + " " +
+                    m_tableWidget->item(row, 1)->text() + "\n";
+    }
+  }
+  QClipboard *clipboard = QApplication::clipboard();
+  clipboard->setText(errorsText);
 }
 
 } // namespace DFG
