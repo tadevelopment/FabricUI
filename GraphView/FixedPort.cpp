@@ -20,7 +20,6 @@ FixedPort::FixedPort(
   SidePanel * parent,
   FTL::StrRef name,
   PortType portType,
-  bool portIsIO,
   FTL::StrRef dataType,
   QColor color,
   FTL::StrRef label
@@ -38,10 +37,10 @@ FixedPort::FixedPort(
   m_color = color;
   m_index = 0;
 
-  init(portIsIO);
+  init();
 }
 
-void FixedPort::init(bool portIsIO)
+void FixedPort::init()
 {
   setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding));
 
@@ -57,11 +56,6 @@ void FixedPort::init(bool portIsIO)
     new QGraphicsPixmapLayoutItem(
       FabricUI::LoadPixmap( "fixed-port-lock.png" )
       );
-  QGraphicsPixmapLayoutItem *ioItem = NULL;
-  if (portIsIO)
-    ioItem = new QGraphicsPixmapLayoutItem(
-               FabricUI::LoadPixmap( "io-port.png" )
-               );
   m_label = new PortLabel(
     this,
     QSTRING_FROM_STL_UTF8(m_labelCaption),
@@ -77,11 +71,6 @@ void FixedPort::init(bool portIsIO)
     layout->setAlignment(m_circle, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem( lockItem );
     layout->setAlignment(lockItem, Qt::AlignHCenter | Qt::AlignVCenter);
-    if (portIsIO)
-    {
-      layout->addItem( ioItem );
-      layout->setAlignment(ioItem, Qt::AlignHCenter | Qt::AlignVCenter);
-    }
     layout->addItem(m_label);
     layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addStretch(1);
@@ -91,11 +80,6 @@ void FixedPort::init(bool portIsIO)
     layout->addStretch(1);
     layout->addItem(m_label);
     layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
-    if (portIsIO)
-    {
-      layout->addItem( ioItem );
-      layout->setAlignment(ioItem, Qt::AlignHCenter | Qt::AlignVCenter);
-    }
     layout->addItem( lockItem );
     layout->setAlignment(lockItem, Qt::AlignHCenter | Qt::AlignVCenter);
     layout->addItem(m_circle);
