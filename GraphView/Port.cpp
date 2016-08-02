@@ -6,9 +6,7 @@
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Port.h>
-#include <FabricUI/GraphView/QGraphicsPixmapLayoutItem.h>
 #include <FabricUI/GraphView/SidePanel.h>
-#include <FabricUI/Util/LoadPixmap.h>
 
 #include <QtGui/QGraphicsLinearLayout>
 
