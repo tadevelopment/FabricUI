@@ -54,8 +54,7 @@ QRectF BackDropNode::boundingRect() const
 {
   // [FE-6865]
   QRectF rect = QGraphicsWidget::boundingRect().adjusted( 0, -4, 0, 4 );
-  rect.unite( header()->boundingRect() ); // compensate for long header text
-  return rect;
+  return rect.united( header()->boundingRect() ); // compensate for long header text
 }
 
 void BackDropNode::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
