@@ -5,6 +5,7 @@
 
 #include <FabricUI/GraphView/BackDropNode.h>
 #include <FabricUI/GraphView/NodeBubble.h>
+#include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Graph.h>
 
 using namespace FabricUI::GraphView;
@@ -47,6 +48,14 @@ void BackDropNode::setSize( QSizeF size )
 {
   m_mainWidget->setMinimumSize( size );
   m_mainWidget->setMaximumSize( size );
+}
+
+QRectF BackDropNode::boundingRect() const
+{
+  // [FE-6865]
+  QRectF rect = QGraphicsWidget::boundingRect().adjusted( 0, -4, 0, 4 );
+  rect.united( header()->boundingRect() ); // compensate for long header text
+  return rect;
 }
 
 void BackDropNode::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
