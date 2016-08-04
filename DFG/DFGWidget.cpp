@@ -1825,8 +1825,7 @@ void DFGWidget::onSelectAll()
 
 void DFGWidget::onAutoConnections()
 {
-  FabricUI::DFG::DFGController *controller = getUIController();
-  getUIGraph()->autoConnections(controller ? (void (*)(const char *))controller->log : NULL);
+  getUIGraph()->autoConnections();
 }
 
 void DFGWidget::onRemoveConnections()
