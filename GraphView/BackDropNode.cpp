@@ -26,12 +26,11 @@ BackDropNode::BackDropNode(
     titleColor
     )
 {
-  m_mainWidget->setMinimumWidth(graph()->config().nodeMinWidth * 2.0f);
+  m_mainWidget->setMinimumWidth(m_mainWidget->boundingRect().width() * 2.0f);
   m_mainWidget->setMinimumHeight(graph()->config().nodeMinHeight * 2.0f);
-  m_mainWidget->setMaximumWidth(graph()->config().nodeMinWidth * 2.0f);
   m_mainWidget->setMaximumHeight(graph()->config().nodeMinHeight * 2.0f);
 
-  m_minSize.setWidth(int(graph()->config().nodeMinWidth * 2.0f));
+  m_minSize.setWidth(int(m_mainWidget->boundingRect().width() * 2.0f));
   m_minSize.setHeight(int(graph()->config().nodeMinHeight * 2.0f));
 
   m_resizeDistance = 32.0;
