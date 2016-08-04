@@ -162,6 +162,7 @@ namespace FabricUI
       virtual Connection * addConnection(ConnectionTarget * src, ConnectionTarget * dst, bool quiet = false);
       virtual bool removeConnection(ConnectionTarget * src, ConnectionTarget * dst, bool quiet = false);
       virtual bool removeConnection(Connection * connection, bool quiet = false);
+      virtual bool autoConnections(void (*log)(const char *) = NULL);
       virtual bool removeConnections();
       virtual void resetMouseGrabber();
 

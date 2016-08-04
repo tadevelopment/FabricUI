@@ -342,6 +342,12 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
+  QAction * autoConnectionsAction = new QAction(DFG_AUTO_CONNECTIONS, graphWidget);
+  autoConnectionsAction->setShortcut( QKeySequence(Qt::Key_C) );
+  // [Julien] When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
+  autoConnectionsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  result->addAction(autoConnectionsAction);
+
   QAction * removeConnectionsAction = new QAction(DFG_REMOVE_CONNECTIONS, graphWidget);
   removeConnectionsAction->setShortcut( QKeySequence(Qt::Key_D) );
   // [Julien] When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
@@ -513,6 +519,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     if (nodes.size() && dfgWidget->isEditable())
     {
       result->addSeparator();
+      result->addAction(DFG_AUTO_CONNECTIONS);
       result->addAction(DFG_REMOVE_CONNECTIONS);
     }
 
@@ -938,6 +945,10 @@ void DFGWidget::onGraphAction(QAction * action)
   {
     onSelectAll();
   }
+  else if(action->text() == DFG_AUTO_CONNECTIONS)
+  {
+    onAutoConnections();
+  }
   else if(action->text() == DFG_REMOVE_CONNECTIONS)
   {
     onRemoveConnections();
@@ -1284,6 +1295,10 @@ void DFGWidget::onNodeAction(QAction * action)
     QString nodeName = QString::fromUtf8( m_contextNode->name().c_str() );
     m_uiController->setNodeCommentExpanded( nodeName, false );
     m_uiController->cmdSetNodeComment( nodeName, QString() );
+  }
+  else if(action->text() == DFG_AUTO_CONNECTIONS)
+  {
+    onAutoConnections();
   }
   else if(action->text() == DFG_REMOVE_CONNECTIONS)
   {
@@ -1674,6 +1689,10 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     onSelectAll();
   }
+  else if(m_isEditable && hotkey == DFGHotkeys::AUTO_CONNECTIONS)
+  {
+    onAutoConnections();
+  }
   else if(m_isEditable && hotkey == DFGHotkeys::REMOVE_CONNECTIONS)
   {
     onRemoveConnections();
@@ -1802,6 +1821,12 @@ void DFGWidget::onBubbleEditRequested(FabricUI::GraphView::Node * node)
 void DFGWidget::onSelectAll()
 {
   getUIGraph()->selectAllNodes();
+}
+
+void DFGWidget::onAutoConnections()
+{
+  FabricUI::DFG::DFGController *controller = getUIController();
+  getUIGraph()->autoConnections(controller ? (void (*)(const char *))controller->log : NULL);
 }
 
 void DFGWidget::onRemoveConnections()

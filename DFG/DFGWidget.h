@@ -118,6 +118,7 @@ namespace DFG {
       void onKeyReleased(QKeyEvent * event);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
       void onSelectAll();
+      void onAutoConnections();
       void onRemoveConnections();
       void onCut();
       void onCopy();
