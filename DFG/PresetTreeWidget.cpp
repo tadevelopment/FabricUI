@@ -416,9 +416,19 @@ void PresetTreeWidget::onRowDoubleClick(const QModelIndex &index)
     try
     {
       FabricCore::DFGHost host = m_dfgController->getHost();
-      QPointF pos = m_dfgController->getDFGWidget()->getGraphViewWidget()->lastEventPos();
+      QRectF bound = m_dfgController->getDFGWidget()->getUIGraph()->mainPanel()->boundingRect();
+      GraphView::GraphViewWidget *gvWidget = m_dfgController->getDFGWidget()->getGraphViewWidget();
+      const QPoint pos(bound.width()/2.0f, bound.height()/2.0f);
+      QPointF graphPos = gvWidget->mapToGraph(gvWidget->mapToGlobal(pos));
+      graphPos += QPointF((qrand() % 200) - 100, (qrand() % 200) - 100); // Hardcode a random offset for x and y
       QString itemString = QString::fromStdString(item->path());
-      m_dfgController->gvcDoAddInstFromPreset(itemString, pos);
+      QString nodeName = m_dfgController->cmdAddInstFromPreset(itemString, graphPos);
+      if ( !nodeName.isEmpty() )
+      {
+        gvWidget->graph()->clearSelection();
+        if ( GraphView::Node *uiNode = gvWidget->graph()->node( nodeName ) )
+          uiNode->setSelected( true );
+      }
     }
     catch(FabricCore::Exception e)
     {
