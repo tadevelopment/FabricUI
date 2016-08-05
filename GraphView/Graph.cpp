@@ -618,8 +618,16 @@ bool Graph::removeConnection(Connection * connection, bool quiet)
 bool Graph::autoConnections()
 {
   std::vector<Node *> nodes = Graph::selectedNodes();
-  if (nodes.size() < 2)
-    return true;  // auto connect requires at least two selected nodes.
+
+  // for this first implementation of "auto connect"
+  // we require exacty two selected nodes.
+  if (nodes.size() != 2)
+    return true; 
+
+  Node &node1 = *nodes[0];
+  Node &node2 = *nodes[1];
+
+
 
   printf("FE-6844 is not yet implemented.\n");
   return true;
