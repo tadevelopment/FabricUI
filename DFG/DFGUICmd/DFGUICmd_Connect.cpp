@@ -9,31 +9,55 @@ FABRIC_UI_DFG_NAMESPACE_BEGIN
 void DFGUICmd_Connect::appendDesc( QString &desc )
 {
   desc += "Connect ";
-  appendDesc_Path( m_srcPath, desc );
+  appendDesc_Path( m_srcPaths.join("|"), desc );
   desc += " to ";
-  appendDesc_Path( m_dstPath, desc );
+  appendDesc_Path( m_dstPaths.join("|"), desc );
 }
 
 void DFGUICmd_Connect::invoke( unsigned &coreUndoCount )
 {
+  QList<QByteArray> srcPathBAs;
+  srcPathBAs.reserve( m_srcPaths.size() );
+  foreach ( QString nodeName, m_srcPaths )
+    srcPathBAs.push_back( nodeName.toUtf8() );
+
+  std::vector<FTL::CStrRef> srcPaths;
+  srcPaths.reserve( m_srcPaths.size() );
+  foreach ( QByteArray srcPathBA, srcPathBAs )
+    srcPaths.push_back( srcPathBA.constData() );
+
+  QList<QByteArray> dstPathBAs;
+  dstPathBAs.reserve( m_dstPaths.size() );
+  foreach ( QString nodeName, m_dstPaths )
+    dstPathBAs.push_back( nodeName.toUtf8() );
+
+  std::vector<FTL::CStrRef> dstPaths;
+  dstPaths.reserve( m_dstPaths.size() );
+  foreach ( QByteArray dstPathBA, dstPathBAs )
+    dstPaths.push_back( dstPathBA.constData() );
+
   invokeAdd(
-    m_srcPath.toUtf8().constData(),
-    m_dstPath.toUtf8().constData(),
+    srcPaths,
+    dstPaths,
     coreUndoCount
     );
 }
 
 void DFGUICmd_Connect::invokeAdd(
-  FTL::CStrRef srcPath,
-  FTL::CStrRef dstPath,
+  FTL::ArrayRef<FTL::CStrRef> srcPaths,
+  FTL::ArrayRef<FTL::CStrRef> dstPaths,
   unsigned &coreUndoCount
   )
 {
-  getExec().connectTo(
-    srcPath.c_str(),
-    dstPath.c_str()
-    );
-  ++coreUndoCount;
+  size_t num = ( srcPaths.size() <= dstPaths.size() ? srcPaths.size() : dstPaths.size() );
+  for ( size_t i = 0; i < num; ++i )
+  {
+    getExec().connectTo(
+      srcPaths[i].c_str(),
+      dstPaths[i].c_str()
+      );
+    ++coreUndoCount;
+  }
 }
 
 FABRIC_UI_DFG_NAMESPACE_END

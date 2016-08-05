@@ -112,9 +112,9 @@ namespace FabricUI
         FTL::ArrayRef<GraphView::Node *> nodes
         );
 
-      virtual bool gvcDoAddConnection(
-        GraphView::ConnectionTarget * src,
-        GraphView::ConnectionTarget * dst
+      virtual bool gvcDoAddConnections(
+        std::vector<GraphView::ConnectionTarget *> const &srcs,
+        std::vector<GraphView::ConnectionTarget *> const &dsts
         );
 
       virtual bool gvcDoRemoveConnections(
@@ -166,8 +166,8 @@ namespace FabricUI
         );
 
       void cmdConnect(
-        QString srcPath, 
-        QString dstPath
+        QStringList srcPaths, 
+        QStringList dstPaths
         );
 
       void cmdDisconnect(

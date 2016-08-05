@@ -410,35 +410,45 @@ QString DFGController::cmdRenameExecPort(
   return result;
 }
 
-bool DFGController::gvcDoAddConnection(
-  GraphView::ConnectionTarget * src,
-  GraphView::ConnectionTarget * dst
+bool DFGController::gvcDoAddConnections(
+  std::vector<GraphView::ConnectionTarget *> const &srcs,
+  std::vector<GraphView::ConnectionTarget *> const &dsts
   )
 {
-  std::string srcPath;
-  if(src->targetType() == GraphView::TargetType_Pin)
-    srcPath = ((GraphView::Pin*)src)->path();
-  else if(src->targetType() == GraphView::TargetType_Port)
-    srcPath = ((GraphView::Port*)src)->path();
-  else if(src->targetType() == GraphView::TargetType_FixedPort)
-    srcPath = ((GraphView::FixedPort*)src)->path();
-  else if(src->targetType() == GraphView::TargetType_InstBlockPort)
-    srcPath = ((GraphView::InstBlockPort*)src)->path();
+  QStringList srcPaths;
+  QStringList dstPaths;
 
-  std::string dstPath;
-  if(dst->targetType() == GraphView::TargetType_Pin)
-    dstPath = ((GraphView::Pin*)dst)->path();
-  else if(dst->targetType() == GraphView::TargetType_Port)
-    dstPath = ((GraphView::Port*)dst)->path();
-  else if(dst->targetType() == GraphView::TargetType_FixedPort)
-    dstPath = ((GraphView::FixedPort*)dst)->path();
-  else if(dst->targetType() == GraphView::TargetType_InstBlockPort)
-    dstPath = ((GraphView::InstBlockPort*)dst)->path();
+  for (size_t i=0;i<srcs.size();i++)
+  {
+    GraphView::ConnectionTarget *src = srcs[i];
+    std::string srcPath;
+    if(src->targetType() == GraphView::TargetType_Pin)
+      srcPath = ((GraphView::Pin*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_Port)
+      srcPath = ((GraphView::Port*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_FixedPort)
+      srcPath = ((GraphView::FixedPort*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_InstBlockPort)
+      srcPath = ((GraphView::InstBlockPort*)src)->path();
+    srcPaths.push_back( QString::fromUtf8( srcPath.data(), srcPath.size() ) );
+  }
 
-  cmdConnect(
-    QString::fromUtf8( srcPath.data(), srcPath.size() ),
-    QString::fromUtf8( dstPath.data(), dstPath.size() )
-    );
+  for (size_t i=0;i<dsts.size();i++)
+  {
+    GraphView::ConnectionTarget *dst = dsts[i];
+    std::string dstPath;
+    if(dst->targetType() == GraphView::TargetType_Pin)
+      dstPath = ((GraphView::Pin*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_Port)
+      dstPath = ((GraphView::Port*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_FixedPort)
+      dstPath = ((GraphView::FixedPort*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_InstBlockPort)
+      dstPath = ((GraphView::InstBlockPort*)dst)->path();
+    dstPaths.push_back( QString::fromUtf8( dstPath.data(), dstPath.size() ) );
+  }
+
+  cmdConnect( srcPaths, dstPaths );
   
   return true;
 }
@@ -1603,8 +1613,8 @@ void DFGController::cmdRemoveNodes(
 }
 
 void DFGController::cmdConnect(
-  QString srcPath, 
-  QString dstPath
+  QStringList srcPaths, 
+  QStringList dstPaths
   )
 {
   if(!validPresetSplit())
@@ -1614,8 +1624,8 @@ void DFGController::cmdConnect(
     getBinding(),
     getExecPath_QS(),
     getExec(),
-    srcPath,
-    dstPath
+    srcPaths,
+    dstPaths
     );
 }
 

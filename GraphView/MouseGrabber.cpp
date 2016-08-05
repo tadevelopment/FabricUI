@@ -389,7 +389,11 @@ void MouseGrabber::invokeConnect(ConnectionTarget * source, ConnectionTarget * t
   }
   else
   {
-    graph()->controller()->gvcDoAddConnection(source, target);
+    std::vector<ConnectionTarget  *> sources;
+    std::vector<ConnectionTarget  *> targets;
+    sources.push_back(source);
+    targets.push_back(target);
+    graph()->controller()->gvcDoAddConnections(sources, targets);
   }
 }
 
