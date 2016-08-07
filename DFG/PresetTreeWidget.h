@@ -44,6 +44,7 @@ namespace FabricUI
       void refresh();
       void setBinding( FabricCore::DFGBinding const &binding );
       void onCustomContextMenuRequested(QPoint globalPos, FabricUI::TreeView::TreeItem * item);
+      void onRowDoubleClick(const QModelIndex &item);
       void onContextMenuAction(QAction * action);
 
     private:

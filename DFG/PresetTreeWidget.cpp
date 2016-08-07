@@ -5,6 +5,7 @@
 #include <FabricUI/DFG/PresetTreeItem.h>
 #include <FabricUI/DFG/PresetTreeWidget.h>
 #include <FabricUI/DFG/VariableListTreeItem.h>
+#include <FabricUI/DFG/DFGWidget.h>
 
 #include <FTL/JSONValue.h>
 #include <FTL/MapCharSingle.h>
@@ -127,6 +128,9 @@ PresetTreeWidget::PresetTreeWidget(
     QObject::connect(m_treeView, SIGNAL(customContextMenuRequested(QPoint, FabricUI::TreeView::TreeItem *)), 
       this, SLOT(onCustomContextMenuRequested(QPoint, FabricUI::TreeView::TreeItem *)));
   }
+  
+  QObject::connect(m_treeView, SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(onRowDoubleClick(const QModelIndex &)));
+  
 }
 
 PresetTreeWidget::~PresetTreeWidget()
@@ -397,5 +401,37 @@ void PresetTreeWidget::updatePresetPathDB()
   for(size_t i=0;i<m_presetPathDictSTL.size();i++)
   {
     m_presetPathDict.add(m_presetPathDictSTL[i].c_str(), '.', m_presetPathDictSTL[i].c_str());
+  }
+}
+
+void PresetTreeWidget::onRowDoubleClick(const QModelIndex &index)
+{
+  FabricUI::TreeView::TreeItem * item = NULL;
+  if (index.isValid())
+  {
+    item = static_cast<FabricUI::TreeView::TreeItem *>(index.internalPointer());
+  }
+  if (item && item->type() == "Preset")
+  {
+    try
+    {
+      FabricCore::DFGHost host = m_dfgController->getHost();
+      QRectF bound = m_dfgController->getDFGWidget()->getUIGraph()->mainPanel()->boundingRect();
+      GraphView::GraphViewWidget *gvWidget = m_dfgController->getDFGWidget()->getGraphViewWidget();
+      const QPoint pos(bound.width()/2.0f, bound.height()/2.0f);
+      QPointF graphPos = gvWidget->mapToGraph(gvWidget->mapToGlobal(pos));
+      graphPos += QPointF((qrand() % 200) - 100, (qrand() % 200) - 100); // Hardcode a random offset for x and y
+      QString itemString = QString::fromStdString(item->path());
+      QString nodeName = m_dfgController->cmdAddInstFromPreset(itemString, graphPos);
+      if ( !nodeName.isEmpty() )
+      {
+        gvWidget->graph()->clearSelection();
+        if ( GraphView::Node *uiNode = gvWidget->graph()->node( nodeName ) )
+          uiNode->setSelected( true );
+      }
+    }
+    catch(FabricCore::Exception e)
+    {
+    }    
   }
 }
