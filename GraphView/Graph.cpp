@@ -443,6 +443,16 @@ bool Graph::isConnectedAsSource(const ConnectionTarget * target) const
   return false;
 }
 
+bool Graph::isConnectedAsTarget(const ConnectionTarget * target) const
+{
+  for(size_t i=0;i<m_connections.size();i++)
+  {
+    if(m_connections[i]->dst() == target)
+      return true;
+  }
+  return false;
+}
+
 void Graph::updateColorForConnections(const ConnectionTarget * target) const
 {
   if(!m_config.connectionUsePinColor)
@@ -624,13 +634,75 @@ bool Graph::autoConnections()
   if (nodes.size() != 2)
     return true; 
 
-  Node &node1 = *nodes[0];
-  Node &node2 = *nodes[1];
+  // get the pointers at the left and the right node.
+  Node *nodeL = nodes[0];
+  Node *nodeR = nodes[1];
+  if (nodeL->sceneBoundingRect().center().rx() > nodeR->sceneBoundingRect().center().rx())
+    std::swap(nodeL, nodeR);
 
+  // create lists of usable left ports.
+  std::vector<Pin *> pinsL;
+  for(unsigned int i=0;i<nodeL->pinCount();i++)
+  {
+    Pin *pin = nodeL->pin(i);
+    // skip default exec port.
+    if (i == 0)
+      continue;
+    // skip if already connected?
+    if (pin->isConnectedAsSource())
+      continue;
+    // use if port is output or IO.
+    if (pin->portType() != PortType::PortType_Input)
+      pinsL.push_back(pin);
+    // use if node only has one input port except for the exec one.
+    else if (nodeL->pinCount() == 2)
+        pinsL.push_back(pin);
+  }
 
+  // create lists of usable right ports.
+  std::vector<Pin *> pinsR;
+  for(unsigned int i=0;i<nodeR->pinCount();i++)
+  {
+    Pin *pin = nodeR->pin(i);
+    // skip default exec port.
+    if (i == 0)
+      continue;
+    // skip if already connected?
+    if (pin->isConnectedAsTarget())
+      continue;
+    // use if port is input or IO.
+    if (pin->portType() != PortType::PortType_Output)
+      pinsR.push_back(pin);
+  }
 
-  printf("FE-6844 is not yet implemented.\n");
+  // create the connections.
+  std::vector<ConnectionTarget *> ctSrcs;
+  std::vector<ConnectionTarget *> ctDsts;
+  for (unsigned int i=0;i<pinsL.size();i++)
+  {
+    std::string failureReason;
+    for (unsigned int j=0;j<pinsR.size();j++)
+    {
+      if (!!pinsR[j] && pinsL[i]->canConnectTo(pinsR[j], failureReason))
+      {
+        ctSrcs.push_back(pinsL[i]);
+        ctDsts.push_back(pinsR[j]);
+        pinsR[j] = NULL;
+        break;
+      }
+printf("failureReason: %s\n", failureReason.c_str());
+    }
+  }
+
+  // create connections.
+  for(int i=0;i<(int)ctSrcs.size();i++)
+    controller()->gvcDoAddConnection(ctSrcs[i], ctDsts[i]);
   return true;
+  // TODO: remove the above and use the new gvcDoAddConnections() instead!!!!
+  // TODO: remove the above and use the new gvcDoAddConnections() instead!!!!
+  // TODO: remove the above and use the new gvcDoAddConnections() instead!!!!
+  // TODO: remove the above and use the new gvcDoAddConnections() instead!!!!
+  //return (ctSrcs.size() ? controller()->gvcDoAddConnections(ctSrcs, ctDsts) : true);
 }
 
 bool Graph::removeConnections()
