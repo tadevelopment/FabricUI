@@ -627,82 +627,111 @@ bool Graph::removeConnection(Connection * connection, bool quiet)
 
 bool Graph::autoConnections()
 {
-  std::vector<Node *> nodes = Graph::selectedNodes();
-
-  // for this first implementation of "auto connect"
-  // we require exacty two selected nodes.
-  if (nodes.size() != 2)
-    return true; 
-
-  // get the pointers at the left and the right node.
-  Node *nodeL = nodes[0];
-  Node *nodeR = nodes[1];
-  if (nodeL->sceneBoundingRect().center().rx() > nodeR->sceneBoundingRect().center().rx())
-    std::swap(nodeL, nodeR);
-
-  // create lists of usable left ports.
-  std::vector<Pin *> pinsL;
-  for(unsigned int i=0;i<nodeL->pinCount();i++)
+  // get the selected nodes and create an array of arrays of horizontal node groups.
+  std::vector<Node *>              selectedNodes = Graph::selectedNodes();
+  std::vector<std::vector<Node *>> nodeGroups;
+  while (selectedNodes.size() > 0)
   {
-    Pin *pin = nodeL->pin(i);
-    // skip default exec port.
-    if (i == 0)
-      continue;
-    // skip if already connected?
-    if (pin->isConnectedAsSource())
-      continue;
-    // use if port is output or IO.
-    if (pin->portType() != PortType::PortType_Input)
-      pinsL.push_back(pin);
-    // use if node only has one input port except for the exec one.
-    else if (nodeL->pinCount() == 2)
-        pinsL.push_back(pin);
+    // find the index of the left-most node in selectedNodes.
+    int mostLeftIdx = 0;
+    for (unsigned int i=0;i<selectedNodes.size();i++)
+      if (selectedNodes[i]->sceneBoundingRect().left() < selectedNodes[mostLeftIdx]->sceneBoundingRect().left())
+        mostLeftIdx = i;
+
+    // init new nodeGroup rect with the left-most node's rect
+    // and add all nodes to the nodeGroup that intersect with it.
+    QRectF nodeGroupRect = selectedNodes[mostLeftIdx]->sceneBoundingRect();
+    nodeGroupRect.setTop   (FLT_MIN);
+    nodeGroupRect.setBottom(FLT_MAX);
+    std::vector<Node *> nodeGroup;
+    for (int i=0;i<(int)selectedNodes.size();i++)
+      if (nodeGroupRect.intersects(selectedNodes[i]->sceneBoundingRect()))
+      {
+        nodeGroup.push_back(selectedNodes[i]);
+        nodeGroupRect |= selectedNodes[i]->sceneBoundingRect();
+        selectedNodes.erase(selectedNodes.begin() + i);
+        i = -1;
+      }
+
+    // sort the nodes in the group from top
+    // to bottom using a simple bubble sort.
+    for (unsigned int i=0;i<nodeGroup.size();i++)
+      for (unsigned int j=i+1;j<nodeGroup.size();j++)
+        if (nodeGroup[i]->sceneBoundingRect().center().y() > nodeGroup[j]->sceneBoundingRect().center().y())
+          std::swap(nodeGroup[i], nodeGroup[j]);
+
+    // add the result to nodeGroups.
+    nodeGroups.push_back(nodeGroup);
   }
 
-  // create lists of usable right ports.
-  std::vector<Pin *> pinsR;
-  for(unsigned int i=0;i<nodeR->pinCount();i++)
-  {
-    Pin *pin = nodeR->pin(i);
-    // skip default exec port.
-    if (i == 0)
-      continue;
-    // skip if already connected?
-    if (pin->isConnectedAsTarget())
-      continue;
-    // use if port is input or IO.
-    if (pin->portType() != PortType::PortType_Output)
-      pinsR.push_back(pin);
-  }
-
-  // create the connections.
+  // create the final src/dst arrays of connections.
   std::vector<ConnectionTarget *> ctSrcs;
   std::vector<ConnectionTarget *> ctDsts;
-  for (unsigned int i=0;i<pinsL.size();i++)
+  for (unsigned int ci=0;ci+1<nodeGroups.size();ci++)
   {
-    std::string failureReason;
-    for (unsigned int j=0;j<pinsR.size();j++)
+    std::vector<Node *> &nodesL = nodeGroups[ci];
+    std::vector<Node *> &nodesR = nodeGroups[ci + 1];
+
+    // get usable left ports.
+    std::vector<Pin *> pinsL;
+    for(unsigned int i=0;i<nodesL.size();i++)
     {
-      if (!!pinsR[j] && pinsL[i]->canConnectTo(pinsR[j], failureReason))
+      Node *node = nodesL[i];
+      for(unsigned int j=0;j<node->pinCount();j++)
       {
-        ctSrcs.push_back(pinsL[i]);
-        ctDsts.push_back(pinsR[j]);
-        pinsR[j] = NULL;
-        break;
+        Pin *pin = node->pin(j);
+        // skip default exec port.
+        if (j == 0)
+          continue;
+        // skip if already connected?
+        if (pin->isConnectedAsSource())
+          continue;
+        // use if port is output or IO.
+        if (pin->portType() != PortType::PortType_Input)
+          pinsL.push_back(pin);
+        // use if node only has one input port except for the exec one.
+        else if (node->pinCount() == 2)
+            pinsL.push_back(pin);
       }
-printf("failureReason: %s\n", failureReason.c_str());
+    }
+
+    // get usable right ports.
+    std::vector<Pin *> pinsR;
+    for(unsigned int i=0;i<nodesR.size();i++)
+    {
+      Node *node = nodesR[i];
+      for(unsigned int j=0;j<node->pinCount();j++)
+      {
+        Pin *pin = node->pin(j);
+        // skip default exec port.
+        if (j == 0)
+          continue;
+        // skip if already connected?
+        if (pin->isConnectedAsTarget())
+          continue;
+        // use if port is input or IO.
+        if (pin->portType() != PortType::PortType_Output)
+          pinsR.push_back(pin);
+      }
+    }
+
+    // add connectable things to the src/dst arrays.
+    for (unsigned int i=0;i<pinsL.size();i++)
+    {
+      std::string failureReason;
+      for (unsigned int j=0;j<pinsR.size();j++)
+        if (!!pinsR[j] && pinsL[i]->canConnectTo(pinsR[j], failureReason))
+        {
+          ctSrcs.push_back(pinsL[i]);
+          ctDsts.push_back(pinsR[j]);
+          pinsR[j] = NULL;
+          break;
+        }
     }
   }
 
-  // create connections.
-  for(int i=0;i<(int)ctSrcs.size();i++)
-    controller()->gvcDoAddConnection(ctSrcs[i], ctDsts[i]);
-  return true;
-  // TODO: remove the above and use the new gvcDoAddConnections() instead!!!!
-  // TODO: remove the above and use the new gvcDoAddConnections() instead!!!!
-  // TODO: remove the above and use the new gvcDoAddConnections() instead!!!!
-  // TODO: remove the above and use the new gvcDoAddConnections() instead!!!!
-  //return (ctSrcs.size() ? controller()->gvcDoAddConnections(ctSrcs, ctDsts) : true);
+  // create final connections from src/dst arrays.
+  return (ctSrcs.size() ? controller()->gvcDoAddConnections(ctSrcs, ctDsts) : true);
 }
 
 bool Graph::removeConnections()
