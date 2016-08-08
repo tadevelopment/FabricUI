@@ -340,17 +340,19 @@ class BindingWrapper:
     def connect(
         self,
         execPath,
-        srcPort,
-        dstPort,
+        packedSrcPorts,
+        packedDstPorts,
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
+        srcPorts = BindingWrapper.splitNames(packedSrcPorts)
+        dstPorts = BindingWrapper.splitNames(packedDstPorts)
         cmd = DFG.DFGUICmd_Connect(
             self.binding,
             execPath,
             exec_,
-            srcPort,
-            dstPort
+            srcPorts,
+            dstPorts
             )
         InvokeCmd(cmd, self.qUndoStack)
 
