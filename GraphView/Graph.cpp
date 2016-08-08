@@ -683,7 +683,7 @@ bool Graph::autoConnections()
         // skip default exec port.
         if (j == 0)
           continue;
-        // skip if already connected?
+        // skip if already connected.
         if (pin->isConnectedAsSource())
           continue;
         // use if port is output or IO.
@@ -706,7 +706,7 @@ bool Graph::autoConnections()
         // skip default exec port.
         if (j == 0)
           continue;
-        // skip if already connected?
+        // skip if already connected.
         if (pin->isConnectedAsTarget())
           continue;
         // use if port is input or IO.
