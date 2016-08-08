@@ -627,7 +627,7 @@ bool Graph::removeConnection(Connection * connection, bool quiet)
 
 bool Graph::autoConnections()
 {
-  // get the selected nodes and create an array of arrays of horizontal node groups.
+  // get the selected nodes and create an array of arrays of vertical node groups.
   std::vector<Node *>              selectedNodes = Graph::selectedNodes();
   std::vector<std::vector<Node *>> nodeGroups;
   while (selectedNodes.size() > 0)
