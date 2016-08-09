@@ -87,11 +87,9 @@ DFGController * DFGBaseDialog::getDFGController()
 
 void DFGBaseDialog::showEvent(QShowEvent * event)
 {
-printf("\n\n");
   QPoint pos = QCursor().pos();
   QSize currSize = size();
   pos -= QPoint(int(currSize.width() * 0.5), int(currSize.height() * 0.5));
-printf("%d %d\n", pos.x(), pos.y());
 
   // get parent rect.
   QRect parentRect = QApplication::desktop()->screenGeometry();
@@ -104,11 +102,9 @@ printf("%d %d\n", pos.x(), pos.y());
       parentRect = getDFGWidget()->topLevelWidget()->rect();
       pos = getDFGWidget()->topLevelWidget()->mapFromGlobal(QCursor().pos());
     }
-printf("%d %d\n", pos.x(), pos.y());
-printf("%d %d   %d %d\n", parentRect.left(), parentRect.top(), parentRect.right(), parentRect.bottom());
   }
 
-  // ensure widget is inside parentRect.
+  // ensure widget's position is inside parentRect.
   const int offset = 5;
   if (pos.x() + currSize.width() + offset >= parentRect.width())
     pos.setX(parentRect.width() - currSize.width() - offset);
@@ -118,13 +114,14 @@ printf("%d %d   %d %d\n", parentRect.left(), parentRect.top(), parentRect.right(
     pos.setY(parentRect.height() - currSize.height() - offset);
   if (pos.y() < offset)
     pos.setY(offset);
+
+  // set new position.
   if (getDFGWidget())
   {
     if (getDFGWidget()->topLevelWidget())
       pos = getDFGWidget()->topLevelWidget()->mapToGlobal(pos);
     else
       pos = getDFGWidget()->mapToGlobal(pos);
-printf("%d %d\n", pos.x(), pos.y());
   }
   setGeometry(pos.x(), pos.y(), currSize.width(), currSize.height());
   update();
