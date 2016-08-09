@@ -77,6 +77,31 @@ namespace FabricUI
         }
         QSlider::mousePressEvent( event );
       }
+
+      virtual void  resizeEvent(QResizeEvent * event)
+      {
+        QSlider::resizeEvent( event );
+
+        if ( int width = this->width() )
+        {
+          int min = minimum();
+          int max = maximum();
+          int frames = max - min + 1;
+          int tickInterval = 1;
+          double pixelsPerTicks = double( width ) / double( frames );
+          while ( pixelsPerTicks < 6 )
+          {
+            tickInterval *= 2;
+            pixelsPerTicks *= 2;
+            if ( pixelsPerTicks < 6 )
+            {
+              tickInterval *= 5;
+              pixelsPerTicks *= 5;
+            }
+          }
+          setTickInterval( tickInterval );
+        }
+      }
     };
 
     /// \brief an Basic Time slider Widget using QT
@@ -185,6 +210,9 @@ namespace FabricUI
 
         /// called each time the timer is triggered ( basicly when playing )
         void timerUpdate();
+
+        /// Called to reload the QSS styles
+        void reloadStyles();
 
       private slots:
 

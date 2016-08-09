@@ -249,7 +249,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.evalContext = self.client.RT.types.EvalContext.create()
         self.evalContext = self.evalContext.getInstance('EvalContext')
         self.evalContext.host = 'Canvas'
-        self.evalContext.graph = ''
 
         self.astManager = KLASTManager(self.client)
         self.host = self.client.getDFGHost()
@@ -331,6 +330,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timeLine = TimeLine.TimeLineWidget()
         self.timeLine.setTimeRange(CanvasWindow.defaultFrameIn, CanvasWindow.defaultFrameOut)
         self.timeLine.updateTime(1)
+        self.dfgWidget.stylesReloaded.connect(self.timeLine.reloadStyles)
         self.timeLine.frameChanged.connect(self.onFrameChanged)
         self.timeLine.frameChanged.connect(self.valueEditor.onFrameChanged)
 
@@ -548,8 +548,6 @@ class CanvasWindow(QtGui.QMainWindow):
             self.lastSavedBindingVersion = binding.getVersion()
             self.dfgWidget.replaceBinding(binding)
             self.scriptEditor.updateBinding(binding)
-
-            self.evalContext.currentFilePath = filePath
 
             dfgExec = binding.getExec()
             tl_start = dfgExec.getMetadata("timeline_start")
@@ -949,8 +947,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
         if self.dfgWidget:
             self.dfgWidget.getDFGController().log("graph saved.")
-
-        self.evalContext.currentFilePath = filePath
 
         self.lastFileName = filePath
 
