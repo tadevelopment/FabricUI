@@ -231,7 +231,8 @@ void Port::mousePressEvent( QGraphicsSceneMouseEvent *event )
     QMenu * menu = graph()->getPortContextMenu(this);
     if(menu)
     {
-      menu->exec(QCursor::pos());
+      menu->exec( QCursor::pos() );
+      menu->setParent( NULL );
       menu->deleteLater();
     }
     return;

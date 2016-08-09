@@ -207,6 +207,7 @@ void SidePanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
     if(menu)
     {
       menu->exec(QCursor::pos());
+      menu->setParent( NULL );
       menu->deleteLater();
     }
     event->accept();

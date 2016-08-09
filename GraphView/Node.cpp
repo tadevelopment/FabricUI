@@ -675,7 +675,8 @@ bool Node::onMousePress(Qt::MouseButton button, Qt::KeyboardModifiers modifiers,
       QMenu * menu = graph()->getNodeContextMenu(hitNode);
       if(menu)
       {
-        menu->exec(QCursor::pos());
+        menu->exec( QCursor::pos() );
+        menu->setParent( NULL );
         menu->deleteLater();
       }
     }
