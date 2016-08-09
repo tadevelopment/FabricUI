@@ -87,23 +87,50 @@ DFGController * DFGBaseDialog::getDFGController()
 
 void DFGBaseDialog::showEvent(QShowEvent * event)
 {
+printf("\n\n");
   QPoint pos = QCursor().pos();
   QSize currSize = size();
   pos -= QPoint(int(currSize.width() * 0.5), int(currSize.height() * 0.5));
+printf("%d %d\n", pos.x(), pos.y());
 
-  QRect desktop = QApplication::desktop()->screenGeometry();
-  if(pos.x() < 5)
-    pos.setX(5);
-  else if(pos.x() + currSize.width() + 5 >= desktop.width())
-    pos.setX(desktop.width() - currSize.width() - 5);
-  if(pos.y() < 5)
-    pos.setY(5);
-  else if(pos.y() + currSize.height() + 5>= desktop.height())
-    pos.setY(desktop.height() - currSize.height() - 5);
+  // get parent rect.
+  QRect parentRect = QApplication::desktop()->screenGeometry();
+  if (getDFGWidget())
+  {
+    parentRect = getDFGWidget()->rect();
+    pos = getDFGWidget()->mapFromGlobal(QCursor().pos());
+    if (getDFGWidget()->topLevelWidget())
+    {
+      parentRect = getDFGWidget()->topLevelWidget()->rect();
+      pos = getDFGWidget()->topLevelWidget()->mapFromGlobal(QCursor().pos());
+    }
+printf("%d %d\n", pos.x(), pos.y());
+printf("%d %d   %d %d\n", parentRect.left(), parentRect.top(), parentRect.right(), parentRect.bottom());
+  }
 
+  // ensure widget is inside parentRect.
+  const int offset = 5;
+  if (pos.x() + currSize.width() + offset >= parentRect.width())
+    pos.setX(parentRect.width() - currSize.width() - offset);
+  if (pos.x() < offset)
+    pos.setX(offset);
+  if (pos.y() + currSize.height() + offset>= parentRect.height())
+    pos.setY(parentRect.height() - currSize.height() - offset);
+  if (pos.y() < offset)
+    pos.setY(offset);
+  if (getDFGWidget())
+  {
+    if (getDFGWidget()->topLevelWidget())
+      pos = getDFGWidget()->topLevelWidget()->mapToGlobal(pos);
+    else
+      pos = getDFGWidget()->mapToGlobal(pos);
+printf("%d %d\n", pos.x(), pos.y());
+  }
   setGeometry(pos.x(), pos.y(), currSize.width(), currSize.height());
+  update();
 
-  if(m_inputs.size() > 0)
+  // set focus on first child widget.
+  if (m_inputs.size() > 0)
     m_inputs[0]->setFocus();
 }
 
