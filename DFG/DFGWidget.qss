@@ -2,6 +2,15 @@
  *  Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
  */
 
+QMenu::item:disabled {
+  color: #333;
+}
+
+QMenu::item:disabled:selected {
+  color: #333;
+  background-color: #3C3C3C;
+}
+
 #DFGErrorsWidget QTableWidget
 {
   border: none;
