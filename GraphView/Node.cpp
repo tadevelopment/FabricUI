@@ -535,6 +535,21 @@ Pin * Node::pin(FTL::StrRef name)
   return NULL;
 }
 
+Pin * Node::nextPin(FTL::StrRef name)
+{
+  for(unsigned int i=0;i<m_pins.size();i++)
+  {
+    if(name == m_pins[i]->name())
+    {
+      if (i + 1 < m_pins.size())
+        return m_pins[i + 1];
+      else
+        return NULL;
+    }
+  }
+  return NULL;
+}
+
 Pin *Node::renamePin( FTL::StrRef oldName, FTL::StrRef newName )
 {
   Pin *p = pin( oldName );
