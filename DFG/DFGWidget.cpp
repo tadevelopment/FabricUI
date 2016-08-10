@@ -61,6 +61,7 @@ DFGWidget::DFGWidget(
   , m_dfgConfig( dfgConfig )
   , m_isEditable( false )
 {
+  setStyle( new DFGWidgetProxyStyle( style() ) );
   reloadStyles();
 
   m_uiController = new DFGController(
@@ -2525,4 +2526,33 @@ void DFGWidget::onReloadStyles()
   qDebug() << "Reloading Fabric stylesheets";
   reloadStyles();
   emit stylesReloaded();
+}
+
+DFGWidgetProxyStyle::DFGWidgetProxyStyle( QStyle* style )
+  : QProxyStyle( style )
+{
+}
+
+void DFGWidgetProxyStyle::drawControl(
+  ControlElement element,
+  const QStyleOption * option,
+  QPainter * painter,
+  const QWidget * widget
+  ) const
+{
+  if ( element == QStyle::CE_MenuItem )
+  {
+    QStyleOptionMenuItem const &opt =
+      *static_cast<QStyleOptionMenuItem const *>( option );
+    if ( opt.menuItemType == QStyleOptionMenuItem::Normal
+      && !( opt.state & QStyle::State_Enabled ) )
+    {
+      QStyleOptionMenuItem optCopy( opt );
+      optCopy.state = opt.state | QStyle::State_Enabled;
+      QProxyStyle::drawControl( element, &optCopy, painter, widget );
+      return;
+    }
+  }
+
+  QProxyStyle::drawControl( element, option, painter, widget );
 }

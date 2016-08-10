@@ -3,12 +3,11 @@
  */
 
 QMenu::item:disabled {
-  color: #333;
+  color: #282828;
 }
 
 QMenu::item:disabled:selected {
-  color: #333;
-  background-color: #3C3C3C;
+  background-color: transparent;
 }
 
 #DFGErrorsWidget QTableWidget
