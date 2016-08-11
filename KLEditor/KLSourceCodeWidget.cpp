@@ -822,4 +822,5 @@ bool KLSourceCodeWidget::hidePopup()
 void KLSourceCodeWidget::focusOutEvent(QFocusEvent * event)
 {
   hidePopup();
+  QPlainTextEdit::focusOutEvent( event );
 }

@@ -637,7 +637,8 @@ class CanvasWindow(QtGui.QMainWindow):
             return
 
         if self.dfgWidget:
-            if dfgController = self.dfgWidget.getDFGController():
+            dfgController = self.dfgWidget.getDFGController()
+            if dfgController:
                 dfgController.savePrefs()
 
         self.viewport.setManipulationActive(False)

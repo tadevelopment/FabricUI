@@ -6,6 +6,7 @@
 #include <QtCore/QSettings>
 #include <QtGui/QWidget>
 #include <QtGui/QMenuBar>
+#include <QtGui/QProxyStyle>
 #include <Commands/CommandStack.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/DFG/DFGConfig.h>
@@ -28,6 +29,23 @@ namespace DFG {
     class DFGExecBlockEditorWidget;
     class DFGExecHeaderWidget;
     class DFGUICmdHandler;
+
+    class DFGWidgetProxyStyle
+      : public QProxyStyle
+    {
+    public:
+
+      DFGWidgetProxyStyle(
+        QStyle* style = NULL
+        );
+
+      virtual void drawControl(
+        ControlElement element,
+        const QStyleOption * option,
+        QPainter * painter,
+        const QWidget * widget
+        ) const /*override*/;
+    };
 
     class DFGWidget : public QWidget
     {

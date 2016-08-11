@@ -40,7 +40,7 @@ void DFGTabSearchWidget::mousePressEvent(QMouseEvent * event)
   {
     // Get the element index from the click pos
     int index = indexFromPos( event->pos() );
-    if ( index >= 0 && index < m_results.getSize() )
+    if ( index >= 0 && index < int(m_results.getSize()) )
     {
       // Then add the node to the graph
       addNodeForIndex( index );
@@ -101,7 +101,7 @@ void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
   }
   else if(key == Qt::Key_Down)
   {
-    if(m_currentIndex < m_results.getSize() -1)
+    if ( m_currentIndex < int(m_results.getSize()) - 1 )
     {
       m_currentIndex++;
       update();
@@ -110,7 +110,7 @@ void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
   }
   else if(key == Qt::Key_Enter || key == Qt::Key_Return)
   {
-    if(m_currentIndex > -1 && m_currentIndex < m_results.getSize())
+    if(m_currentIndex > -1 && m_currentIndex < int(m_results.getSize()))
     {
       addNodeForIndex( m_currentIndex );
     }
@@ -150,7 +150,7 @@ void DFGTabSearchWidget::paintEvent(QPaintEvent * event)
     m_config.searchCursorColor
     );
 
-  if(m_currentIndex > -1 && m_currentIndex < m_results.getSize())
+  if(m_currentIndex > -1 && m_currentIndex < int(m_results.getSize()) )
   {
     int offset = m_resultsMetrics.lineSpacing() * (m_currentIndex + 1) + margin();
     painter.fillRect(margin(), offset, width - 2 * margin(), m_resultsMetrics.lineSpacing(), m_config.searchHighlightColor);
@@ -166,7 +166,7 @@ void DFGTabSearchWidget::paintEvent(QPaintEvent * event)
   offset += m_queryMetrics.lineSpacing();
 
   painter.setFont(m_config.searchResultsFont);
-  for(int i=0;i<m_results.getSize();i++)
+  for(int i=0;i<int(m_results.getSize());i++)
   {
     painter.drawText(margin(), offset, resultLabel(i));
     offset += m_resultsMetrics.lineSpacing();
@@ -240,7 +240,7 @@ void DFGTabSearchWidget::updateSearch()
   {
     m_currentIndex = 0;
   }
-  else if(m_currentIndex >= m_results.getSize())
+  else if(m_currentIndex >= int(m_results.getSize()))
   {
     m_currentIndex = 0;
   }
@@ -327,7 +327,7 @@ int DFGTabSearchWidget::indexFromPos(QPoint pos)
   y -= margin();
   y -= m_queryMetrics.lineSpacing();
   y /= (int)m_resultsMetrics.lineSpacing();
-  if ( y < 0 || y >= m_results.getSize() )
+  if ( y < 0 || y >= int(m_results.getSize()) )
     return -1;
   return y;
 }
@@ -340,7 +340,7 @@ int DFGTabSearchWidget::widthFromResults() const
   if(w > width)
     width = w;
 
-  for(int i=0;i<m_results.getSize();i++)
+  for(int i=0;i<int(m_results.getSize());i++)
   {
     w = m_resultsMetrics.width(resultLabel(i));
     if(w > width)
