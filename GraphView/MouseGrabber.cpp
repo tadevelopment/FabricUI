@@ -276,42 +276,58 @@ void MouseGrabber::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 
     invokeConnect(source, target);
 
+    // [FE-6842]
     if (event->modifiers().testFlag(Qt::ControlModifier))
     {
-      if (m_otherPortType == PortType_Input)
+      bool forceUseOfPinColor = true;
+      if (m_target->targetType() == TargetType_Pin)
       {
-        // 0 TargetType_Pin,
-        // 1 TargetType_Port,
-        // 2 TargetType_FixedPort,
-        // 3 TargetType_ProxyPort,
-        // 4 TargetType_MouseGrabber,
-        // 5 TargetType_NodeHeader,
-        // 6 TargetType_InstBlockHeader,
-        // 7 TargetType_InstBlockPort
-        // printf("source->targetType = %d\n", (int)source->targetType());
-
-        if (m_target->targetType() == TargetType_Pin)
+        Pin  *p    = static_cast<Pin *>( m_target );
+        Node *node = p->node();
+        Pin  *next = p;
+        while (true)
         {
-          Pin  *pin     = static_cast<Pin *>( m_target );
-          Node *node    = pin->node();
-          Pin  *nextPin = pin;
-          while (true)
-          {
-            nextPin = node->nextPin(nextPin->name());
-            if (!nextPin || nextPin->portType() == pin->portType())
-              break;
-          }
-          if (nextPin)
-          {
-            m_target = nextPin;
-            m_connection->invalidate();
-            graph()->scene()->removeItem(m_connection);
-            m_connection->deleteLater();
-            m_connection = new Connection(graph(), m_target, this, true /* forceUseOfPinColor */);
-          }
-          else
-            ungrab = true;
+          next = node->nextPin(next->name());
+          if (!next || next->portType() == p->portType())
+            break;
         }
+        if (next)
+        {
+          m_target = next;
+          m_connection->invalidate();
+          graph()->scene()->removeItem(m_connection);
+          m_connection->deleteLater();
+          if (m_otherPortType == PortType_Input)
+            m_connection = new Connection(graph(), m_target, this, forceUseOfPinColor);
+          else
+            m_connection = new Connection(graph(), this, m_target, forceUseOfPinColor);
+        }
+        else
+          ungrab = true;
+      }
+      else if (m_target->targetType() == TargetType_Port)
+      {
+        Port *p    = static_cast<Port *>( m_target );
+        Port *next = p;
+        while (true)
+        {
+          next = graph()->nextPort(next->name());
+          if (!next || next->portType() == p->portType())
+            break;
+        }
+        if (next)
+        {
+          m_target = next;
+          m_connection->invalidate();
+          graph()->scene()->removeItem(m_connection);
+          m_connection->deleteLater();
+          if (m_otherPortType == PortType_Input)
+            m_connection = new Connection(graph(), m_target, this, forceUseOfPinColor);
+          else
+            m_connection = new Connection(graph(), this, m_target, forceUseOfPinColor);
+        }
+        else
+          ungrab = true;
       }
     }
   }
