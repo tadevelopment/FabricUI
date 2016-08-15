@@ -3,7 +3,7 @@
  */
 
 QMenu::item:disabled {
-  color: #282828;
+  color: #777777;
 }
 
 QMenu::item:disabled:selected {
