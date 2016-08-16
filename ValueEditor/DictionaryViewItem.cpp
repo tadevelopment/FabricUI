@@ -36,7 +36,6 @@ void DictionaryViewItem::doAppendChildViewItems( QList<BaseViewItem *>& items )
 {
   try
   {
-    // Construct a child for each instance between min & max
     ViewItemFactory* factory = ViewItemFactory::GetInstance();
     FabricCore::RTVal keys = m_val.getDictKeys();
     for( int i = 0; i < keys.getArraySize(); i++ )
@@ -60,7 +59,7 @@ void DictionaryViewItem::doAppendChildViewItems( QList<BaseViewItem *>& items )
   }
   catch (FabricCore::Exception e)
   {
-    printf( "DictionaryViewItem::doAppendChildViewItems : %s", e.getDesc_cstr() );
+    printf( "DictionaryViewItem::doAppendChildViewItems : %s\n", e.getDesc_cstr() );
   }
 }
 
@@ -79,7 +78,7 @@ void DictionaryViewItem::onChildViewValueChanged( int index, QVariant value )
   }
   catch (FabricCore::Exception e)
   {
-    printf( "DictionaryViewItem::onChildViewValueChanged : %s", e.getDesc_cstr() );
+    printf( "DictionaryViewItem::onChildViewValueChanged : %s\n", e.getDesc_cstr() );
   }
 }
 
@@ -104,7 +103,7 @@ void DictionaryViewItem::onModelValueChanged( QVariant const &value )
   }
   catch (FabricCore::Exception e)
   {
-    printf( "DictionaryViewItem::onModelValueChanged : %s", e.getDesc_cstr() );
+    printf( "DictionaryViewItem::onModelValueChanged : %s\n", e.getDesc_cstr() );
   }
 }
 
