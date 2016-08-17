@@ -378,6 +378,31 @@ Port * Graph::port(FTL::StrRef name) const
   return NULL;
 }
 
+Port * Graph::nextPort(FTL::StrRef name) const
+{
+  if(!hasSidePanels())
+    return NULL;
+
+  for(unsigned int i=0;i<m_leftPanel->portCount();i++)
+  {
+    if(name == m_leftPanel->port(i)->name())
+      if (i + 1 < m_leftPanel->portCount())
+        return m_leftPanel->port(i + 1);
+      else
+        return NULL;
+  }
+  for(unsigned int i=0;i<m_rightPanel->portCount();i++)
+  {
+    if(name == m_rightPanel->port(i)->name())
+      if (i + 1 < m_rightPanel->portCount())
+        return m_rightPanel->port(i + 1);
+      else
+        return NULL;
+  }
+
+  return NULL;
+}
+
 std::vector<Port *> Graph::ports(FTL::StrRef name) const
 { 
   std::vector<Port *> result;
