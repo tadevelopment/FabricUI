@@ -8,6 +8,8 @@
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 
+#include <float.h>
+
 using namespace FabricUI::GraphView;
 
 Graph::Graph(
@@ -666,7 +668,7 @@ bool Graph::autoConnections()
 {
   // get the selected nodes and create an array of arrays of vertical node groups.
   std::vector<Node *>              selectedNodes = Graph::selectedNodes();
-  std::vector<std::vector<Node *>> nodeGroups;
+  std::vector< std::vector<Node *> > nodeGroups;
   while (selectedNodes.size() > 0)
   {
     // find the index of the left-most node in selectedNodes.
@@ -724,7 +726,7 @@ bool Graph::autoConnections()
         if (pin->isConnectedAsSource())
           continue;
         // use if port is output or IO.
-        if (pin->portType() != PortType::PortType_Input)
+        if (pin->portType() != PortType_Input)
           pinsL.push_back(pin);
         // use if node only has one input port except for the exec one.
         else if (node->pinCount() == 2)
@@ -747,7 +749,7 @@ bool Graph::autoConnections()
         if (pin->isConnectedAsTarget())
           continue;
         // use if port is input or IO.
-        if (pin->portType() != PortType::PortType_Output)
+        if (pin->portType() != PortType_Output)
           pinsR.push_back(pin);
       }
     }
