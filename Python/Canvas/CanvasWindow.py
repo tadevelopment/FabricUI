@@ -249,7 +249,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.evalContext = self.client.RT.types.EvalContext.create()
         self.evalContext = self.evalContext.getInstance('EvalContext')
         self.evalContext.host = 'Canvas'
-        self.evalContext.graph = ''
 
         self.astManager = KLASTManager(self.client)
         self.host = self.client.getDFGHost()
@@ -331,6 +330,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timeLine = TimeLine.TimeLineWidget()
         self.timeLine.setTimeRange(CanvasWindow.defaultFrameIn, CanvasWindow.defaultFrameOut)
         self.timeLine.updateTime(1)
+        self.dfgWidget.stylesReloaded.connect(self.timeLine.reloadStyles)
         self.timeLine.frameChanged.connect(self.onFrameChanged)
         self.timeLine.frameChanged.connect(self.valueEditor.onFrameChanged)
 
@@ -549,8 +549,6 @@ class CanvasWindow(QtGui.QMainWindow):
             self.dfgWidget.replaceBinding(binding)
             self.scriptEditor.updateBinding(binding)
 
-            self.evalContext.currentFilePath = filePath
-
             dfgExec = binding.getExec()
             tl_start = dfgExec.getMetadata("timeline_start")
             tl_end = dfgExec.getMetadata("timeline_end")
@@ -637,6 +635,11 @@ class CanvasWindow(QtGui.QMainWindow):
         if not self.scriptEditor.checkUnsavedChanges():
             event.ignore()
             return
+
+        if self.dfgWidget:
+            dfgController = self.dfgWidget.getDFGController()
+            if dfgController:
+                dfgController.savePrefs()
 
         self.viewport.setManipulationActive(False)
         self.settings.setValue("mainWindow/geometry", self.saveGeometry())
@@ -744,10 +747,13 @@ class CanvasWindow(QtGui.QMainWindow):
 
         # [andrew 20150909] can happen if this triggers while the licensing
         # dialogs are up
-        if not self.dfgWidget or not self.dfgWidget.getDFGController():
+        if not self.dfgWidget:
+            return
+        dfgController = self.dfgWidget.getDFGController();
+        if not dfgController:
             return
 
-        binding = self.dfgWidget.getDFGController().getBinding()
+        binding = dfgController.getBinding()
         if binding:
             bindingVersion = binding.getVersion()
             if bindingVersion != self.lastAutosaveBindingVersion:
@@ -760,6 +766,9 @@ class CanvasWindow(QtGui.QMainWindow):
                         os.remove(self.autosaveFilename)
                     os.rename(tmpAutosaveFilename, self.autosaveFilename)
                     self.lastAutosaveBindingVersion = bindingVersion
+
+        dfgController.savePrefs()
+
 
     def execNewGraph(self, skip_save=False):
         """Callback Executed when a key or menu command has requested a new graph.
@@ -949,8 +958,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
         if self.dfgWidget:
             self.dfgWidget.getDFGController().log("graph saved.")
-
-        self.evalContext.currentFilePath = filePath
 
         self.lastFileName = filePath
 

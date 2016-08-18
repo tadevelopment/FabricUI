@@ -61,6 +61,7 @@ DFGWidget::DFGWidget(
   , m_dfgConfig( dfgConfig )
   , m_isEditable( false )
 {
+  setStyle( new DFGWidgetProxyStyle( style() ) );
   reloadStyles();
 
   m_uiController = new DFGController(
@@ -277,7 +278,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   if ( !graphWidget->isEditable() )
     return NULL;
 
-  QMenu* result = new QMenu(NULL);
+  QMenu* result = new QMenu( graph->scene()->views()[0] );
   result->addAction(
     new NewGraphNodeAction( graphWidget, QCursor::pos(), result )
     );
@@ -409,7 +410,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     char const * nodeName = uiNode->name().c_str();
 
-    QMenu* result = new QMenu(NULL);
+    QMenu* result = new QMenu( uiNode->scene()->views()[0] );
 
     if ( !exec.isExecBlock( nodeName )
       && exec.getNodeType( nodeName ) == FabricCore::DFGNodeType_Inst )
@@ -598,7 +599,7 @@ QMenu* DFGWidget::portContextMenuCallback(
   if (!graphWidget->getDFGController()->validPresetSplit())
     return NULL;
   graphWidget->m_contextPort = port;
-  QMenu* result = new QMenu(NULL);
+  QMenu* result = new QMenu( port->scene()->views()[0] );
 
   QAction *editAction = new QAction("Edit", result);
   editAction->setEnabled( port->allowEdits() );
@@ -647,7 +648,7 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   if (!graphWidget->getDFGController()->validPresetSplit())
     return NULL;
 
-  QMenu *menu = new QMenu( NULL );
+  QMenu *menu = new QMenu( fixedPort->scene()->views()[0] );
   QAction *dummyAction = new QAction( "Port is locked", menu );
   dummyAction->setEnabled( false );
   menu->addAction( dummyAction );
@@ -667,7 +668,7 @@ QMenu* DFGWidget::sidePanelContextMenuCallback(
   if(graph->controller() == NULL)
     return NULL;
   graphWidget->m_contextSidePanel = panel;
-  QMenu* result = new QMenu(NULL);
+  QMenu* result = new QMenu( panel->scene()->views()[0] );
 
   if ( graphWidget->getDFGController()->validPresetSplit() )
   {
@@ -2549,4 +2550,33 @@ void DFGWidget::onReloadStyles()
   qDebug() << "Reloading Fabric stylesheets";
   reloadStyles();
   emit stylesReloaded();
+}
+
+DFGWidgetProxyStyle::DFGWidgetProxyStyle( QStyle* style )
+  : QProxyStyle( style )
+{
+}
+
+void DFGWidgetProxyStyle::drawControl(
+  ControlElement element,
+  const QStyleOption * option,
+  QPainter * painter,
+  const QWidget * widget
+  ) const
+{
+  if ( element == QStyle::CE_MenuItem )
+  {
+    QStyleOptionMenuItem const &opt =
+      *static_cast<QStyleOptionMenuItem const *>( option );
+    if ( opt.menuItemType == QStyleOptionMenuItem::Normal
+      && !( opt.state & QStyle::State_Enabled ) )
+    {
+      QStyleOptionMenuItem optCopy( opt );
+      optCopy.state = opt.state | QStyle::State_Enabled;
+      QProxyStyle::drawControl( element, &optCopy, painter, widget );
+      return;
+    }
+  }
+
+  QProxyStyle::drawControl( element, option, painter, widget );
 }

@@ -1,10 +1,13 @@
+/*
+ *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
+ */
 
 #include <iostream>
 #include "TimeLineWidget.h"
+#include <FabricUI/Util/LoadFabricStyleSheet.h>
 
-#include <QtGui/QMenu>
 #include <QtGui/QInputDialog>
-#include <QtGui/QDesktopWidget>
+#include <QtGui/QLabel>
 
 #include <algorithm>
 #include <math.h>
@@ -13,6 +16,9 @@ using namespace FabricUI::TimeLine;
 
 TimeLineWidget::TimeLineWidget()
 {
+  setObjectName( "DFGTimelineWidget" );
+  reloadStyles();
+
   m_settingTime = false;
 
   // last frame processed
@@ -34,58 +40,52 @@ TimeLineWidget::TimeLineWidget()
 
   // layout
   setLayout(new QHBoxLayout());
-  setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed));
+  setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
   setContentsMargins(0, 0, 0, 0);
   layout()->setContentsMargins(0, 0, 0, 0);
 
   // elements
   m_startSpinBox = new QDoubleSpinBox(this);
-  m_startSpinBox->setMinimumWidth(60);
-  m_startSpinBox->setMaximumWidth(60);
+  m_startSpinBox->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed));
   m_startSpinBox->setWrapping(false);
   m_startSpinBox->setFrame(false);
   m_startSpinBox->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
   m_startSpinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
   m_startSpinBox->setDecimals(0);
-  m_startSpinBox->setMinimum(-1000000.000000000000000);
-  m_startSpinBox->setMaximum(1000000.000000000000000);
-  m_startSpinBox->setValue(0.000000000000000);
+  m_startSpinBox->setMinimum(-99999);
+  m_startSpinBox->setMaximum(+99999);
   layout()->addWidget(m_startSpinBox);
 
   m_frameSlider = new FrameSlider(this);
-  m_frameSlider->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed));
+  m_frameSlider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
   m_frameSlider->setOrientation(Qt::Horizontal);
   m_frameSlider->setInvertedControls(false);
   m_frameSlider->setTickPosition(QSlider::TicksBelow);
-  m_frameSlider->setTickInterval(10);
-  m_frameSlider->setMinimum(0);
-  m_frameSlider->setMaximum(1000);
   layout()->addWidget(m_frameSlider);
 
   m_endSpinBox = new QDoubleSpinBox(this);
-  m_endSpinBox->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  m_endSpinBox->setMinimumWidth(60);
-  m_endSpinBox->setMaximumWidth(60);
+  m_endSpinBox->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed));
   m_endSpinBox->setFrame(false);
   m_endSpinBox->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
   m_endSpinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
   m_endSpinBox->setDecimals(0);
-  m_endSpinBox->setMinimum(-1000000.000000000000000);
-  m_endSpinBox->setMaximum(100000000.000000000000000);
-  m_endSpinBox->setValue(1000.000000000000000);
+  m_endSpinBox->setMinimum(-99999);
+  m_endSpinBox->setMaximum(+99999);
   layout()->addWidget(m_endSpinBox);
 
+  QLabel *separator = new QLabel;
+  separator->setObjectName( "DFGTimelineSeparator" );
+  separator->setContentsMargins(0, 0, 0, 0);
+  layout()->addWidget(separator);
+
   m_currentFrameSpinBox = new QDoubleSpinBox(this);
-  m_currentFrameSpinBox->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  m_currentFrameSpinBox->setMinimumWidth(70);
-  m_currentFrameSpinBox->setMaximumWidth(70);
+  m_currentFrameSpinBox->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed));
   m_currentFrameSpinBox->setFrame(false);
   m_currentFrameSpinBox->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
   m_currentFrameSpinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
   m_currentFrameSpinBox->setDecimals(0);
-  m_currentFrameSpinBox->setMinimum(-1000000.000000000000000);
-  m_currentFrameSpinBox->setMaximum(100000000.000000000000000);
-  m_currentFrameSpinBox->setValue(1000.000000000000000);
+  m_currentFrameSpinBox->setMinimum(-99999);
+  m_currentFrameSpinBox->setMaximum(+99999);
   layout()->addWidget(m_currentFrameSpinBox);
 
   m_goToStartFrameButton = new QPushButton(this);
@@ -119,9 +119,6 @@ TimeLineWidget::TimeLineWidget()
   layout()->addWidget(m_goToEndFrameButton);
 
   m_frameRateComboBox = new QComboBox(this);
-  //m_frameRateComboBox->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  //m_frameRateComboBox->setMinimumWidth(70);
-  //m_frameRateComboBox->setMaximumWidth(70);
   m_frameRateComboBox->setFrame(false);
   m_frameRateComboBox->setLayoutDirection(Qt::LeftToRight);
   m_frameRateComboBox->setEditable(false);
@@ -139,9 +136,6 @@ TimeLineWidget::TimeLineWidget()
   layout()->addWidget(m_frameRateComboBox);
 
   m_loopModeComBox = new QComboBox(this);
-  m_loopModeComBox->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  m_loopModeComBox->setMinimumWidth(70);
-  m_loopModeComBox->setMaximumWidth(70);
   m_loopModeComBox->setFrame(false);
   m_loopModeComBox->setLayoutDirection(Qt::LeftToRight);
   m_loopModeComBox->setEditable(false);
@@ -152,9 +146,6 @@ TimeLineWidget::TimeLineWidget()
   layout()->addWidget(m_loopModeComBox);
 
   m_simModeComBox = new QComboBox(this);
-  m_simModeComBox->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  m_simModeComBox->setMinimumWidth(70);
-  m_simModeComBox->setMaximumWidth(70);
   m_simModeComBox->setFrame(false);
   m_simModeComBox->setLayoutDirection(Qt::LeftToRight);
   m_simModeComBox->setEditable(false);
@@ -371,8 +362,11 @@ void TimeLineWidget::updateFrameRange()
   m_currentFrameSpinBox->setMinimum( m_startSpinBox->value() );
   m_currentFrameSpinBox->setMaximum( m_endSpinBox->value() );
 
-  m_frameSlider->setMinimum( static_cast<int>( m_startSpinBox->value() ) );
-  m_frameSlider->setMaximum( static_cast<int>( m_endSpinBox->value() ) );
+  int min = static_cast<int>( m_startSpinBox->value() );
+  int max = static_cast<int>( m_endSpinBox->value() );
+
+  m_frameSlider->setMinimum( min );
+  m_frameSlider->setMaximum( max );
 }
 
 void TimeLineWidget::play()
@@ -531,4 +525,11 @@ void TimeLineWidget::loopModeChanged(int index)
 void TimeLineWidget::simModeChanged(int index)
 {
   m_simMode = index;
+}
+
+void TimeLineWidget::reloadStyles()
+{
+  QString styleSheet = LoadFabricStyleSheet( FTL_STR("DFGWidget.qss") );
+  if ( !styleSheet.isEmpty() )
+    setStyleSheet( styleSheet );
 }

@@ -93,6 +93,8 @@ namespace FabricUI
         );
       void refreshExec();
 
+      void savePrefs();
+
       void focusNode( FTL::StrRef nodeName );
 
       DFGNotificationRouter * getRouter();
@@ -351,7 +353,8 @@ namespace FabricUI
         std::string &failureReason
         ) const;
 
-      virtual QStringList getPresetPathsFromSearch(char const * search, bool includePresets = true, bool includeNameSpaces = false);
+      FabricServices::SplitSearch::Matches
+      getPresetPathsFromSearch( char const * search );
 
       virtual DFGNotificationRouter *createRouter();
 
@@ -446,6 +449,11 @@ namespace FabricUI
           m_notificationTimer->start( 0 );
       }
 
+      void appendPresetsAtPrefix(
+        std::string &prefixedName,
+        FTL::JSONStr &ds
+        );
+
     protected slots:
 
       void onNotificationTimer();
@@ -471,8 +479,9 @@ namespace FabricUI
       bool const m_overTakeBindingNotifications;
       FabricServices::SplitSearch::Dict m_presetNameSpaceDict;
       FabricServices::SplitSearch::Dict m_presetPathDict;
+      std::string m_tabSearchPrefsJSONFilename;
       std::vector<std::string> m_presetNameSpaceDictSTL;
-      std::vector<std::string> m_presetPathDictSTL;
+      std::vector< std::pair<std::string, unsigned> > m_presetPathDictSTL;
       bool m_presetDictsUpToDate;
 
       uint32_t m_updateSignalBlockCount;

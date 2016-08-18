@@ -418,8 +418,8 @@ void PresetTreeWidget::onRowDoubleClick(const QModelIndex &index)
       FabricCore::DFGHost host = m_dfgController->getHost();
       QRectF bound = m_dfgController->getDFGWidget()->getUIGraph()->mainPanel()->boundingRect();
       GraphView::GraphViewWidget *gvWidget = m_dfgController->getDFGWidget()->getGraphViewWidget();
-      const QPoint pos(bound.width()/2.0f, bound.height()/2.0f);
-      QPointF graphPos = gvWidget->mapToGraph(gvWidget->mapToGlobal(pos));
+      const QPointF pos(bound.width()/2.0f, bound.height()/2.0f);
+      QPointF graphPos = gvWidget->mapToGraph(gvWidget->mapToGlobal(pos.toPoint()));
       graphPos += QPointF((qrand() % 200) - 100, (qrand() % 200) - 100); // Hardcode a random offset for x and y
       QString itemString = QString::fromStdString(item->path());
       QString nodeName = m_dfgController->cmdAddInstFromPreset(itemString, graphPos);

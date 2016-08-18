@@ -245,6 +245,7 @@ void FixedPort::mousePressEvent( QGraphicsSceneMouseEvent *event )
     if ( QMenu *menu = graph()->getFixedPortContextMenu( this ) )
     {
       menu->exec( QCursor::pos() );
+      menu->setParent( NULL );
       menu->deleteLater();
     }
 

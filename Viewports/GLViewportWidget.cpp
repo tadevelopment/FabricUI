@@ -275,7 +275,7 @@ bool GLViewportWidget::manipulateCamera(
   try
   {
     // Now we translate the Qt events to FabricEngine events..
-    FabricCore::RTVal klevent = QtToKLEvent(event, m_client, m_viewport);
+    FabricCore::RTVal klevent = QtToKLEvent(event, m_client, m_viewport, "Canvas");
 
     // And then pass the event to the camera manipulator for handling.
     m_cameraManipulator.callMethod("", "onEvent", 1, &klevent);

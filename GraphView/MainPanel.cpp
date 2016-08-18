@@ -174,6 +174,7 @@ void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
     if(menu)
     {
       menu->exec(QCursor::pos());
+      menu->setParent( NULL );
       menu->deleteLater();
     }
     else

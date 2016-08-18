@@ -14,9 +14,14 @@ QStringList DFGUICmd_Exec::adjustNewItems(
   unsigned &coreUndoCount
   )
 {
+  char const *newItemNamesJSONCStr;
+  uint32_t newItemNamesJSONSize;
+  newItemNamesJSON.getCStrAndSize( newItemNamesJSONCStr, newItemNamesJSONSize );
+  FTL::StrRef newItemNamesStr( newItemNamesJSONCStr, newItemNamesJSONSize );
+  FTL::JSONStr newItemNamesJSONStr( newItemNamesStr );
   FTL::OwnedPtr<FTL::JSONArray const> newItemNamesJA(
-    FTL::JSONValue::Decode(
-      newItemNamesJSON.getCString()
+    FTL::JSONValue::Decode<FTL::JSONStr>(
+      newItemNamesJSONStr
       )->cast<FTL::JSONArray>()
     );
 
@@ -115,8 +120,9 @@ QPointF DFGUICmd_Exec::getNodeUIGraphPos(
     exec.getItemMetadata( itemName.c_str(), "uiGraphPos" );
   if ( !uiGraphPosJSON.empty() )
   {
+    FTL::JSONStr uiGraphPosJSONStr( uiGraphPosJSON );
     FTL::OwnedPtr<FTL::JSONValue const> uiGraphPosJV(
-      FTL::JSONValue::Decode( uiGraphPosJSON )
+      FTL::JSONValue::Decode( uiGraphPosJSONStr )
       );
 
     if ( FTL::JSONObject const *uiGraphPosJO =
