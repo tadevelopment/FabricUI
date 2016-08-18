@@ -22,6 +22,7 @@
 #include "Vec4ViewItem.h"
 #include "ComboBoxViewItem.h"
 #include "ArrayViewItem.h"
+#include "DictionaryViewItem.h"
 #include "ViewItemFactory.h"
 
 using namespace FabricUI::ValueEditor;
@@ -97,6 +98,7 @@ BaseViewItem *ViewItemFactory::createViewItem(
     registerCreator( Vec4ViewItem::CreateItem, Vec4ViewItem::Priority );
     registerCreator( ComboBoxViewItem::CreateItem, ComboBoxViewItem::Priority );
     registerCreator( ArrayViewItem::CreateItem, ArrayViewItem::Priority );
+    registerCreator( DictionaryViewItem::CreateItem, DictionaryViewItem::Priority );
 
      // We put the QVariantRTVal bridge injection
     // code here, as before we build a view it won't
