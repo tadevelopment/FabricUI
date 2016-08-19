@@ -63,6 +63,7 @@ public slots:
   void onDismissSelected();
   void onLoadDiagInserted( unsigned diagIndex );
   void onLoadDiagRemoved( unsigned diagIndex );
+  void onCopySelected();
 
 private slots:
 
