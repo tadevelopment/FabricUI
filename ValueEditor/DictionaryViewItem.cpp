@@ -38,7 +38,7 @@ void DictionaryViewItem::doAppendChildViewItems( QList<BaseViewItem *>& items )
   {
     ViewItemFactory* factory = ViewItemFactory::GetInstance();
     FabricCore::RTVal keys = m_val.getDictKeys();
-    for( int i = 0; i < keys.getArraySize(); i++ )
+    for( unsigned int i = 0; i < keys.getArraySize(); i++ )
     {
       FabricCore::RTVal key = keys.getArrayElement( i );
       FabricCore::RTVal childVal = m_val.getDictElement( key );
@@ -94,7 +94,7 @@ void DictionaryViewItem::onModelValueChanged( QVariant const &value )
     RTVariant::toRTVal( value, m_val );
 
     FabricCore::RTVal keys = m_val.getDictKeys();
-    for( int i = 0; i < keys.getArraySize(); i++ )
+    for( unsigned int i = 0; i < keys.getArraySize(); i++ )
     {
       FabricCore::RTVal key = keys.getArrayElement( i );
       FabricCore::RTVal childVal = m_val.getDictElement( key );
