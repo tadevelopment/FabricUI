@@ -30,6 +30,7 @@
 #include <FabricUI/ValueEditor/NotInspectableViewItem.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 #include <FabricUI/ValueEditor/RTValViewItem.h>
+#include <FabricUI/ValueEditor/WrappedRTValViewItem.h>
 #include <FabricUI/ValueEditor/SIntViewItem.h>
 #include <FabricUI/ValueEditor/StringViewItem.h>
 #include <FabricUI/ValueEditor/UIntViewItem.h>
@@ -138,6 +139,7 @@
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeViewsManager.h>
 #include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
+#include <FabricUI/SceneHub/ValueEditor/SHOptionsEditor.h>
 #include <FabricUI/Viewports/ManipulationTool.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>
 #include <FabricUI/Util/GetFilenameForFileURL.h>
