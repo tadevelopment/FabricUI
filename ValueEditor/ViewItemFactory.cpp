@@ -14,6 +14,7 @@
 #include "NotInspectableViewItem.h"
 #include "QVariantRTVal.h"
 #include "RTValViewItem.h"
+#include "WrappedRTValViewItem.h"
 #include "SIntViewItem.h"
 #include "StringViewItem.h"
 #include "UIntViewItem.h"
@@ -90,6 +91,7 @@ BaseViewItem *ViewItemFactory::createViewItem(
     registerCreator( IntSliderViewItem::CreateItem, IntSliderViewItem::Priority );
     registerCreator( NotInspectableViewItem::CreateItem, NotInspectableViewItem::Priority );
     registerCreator( RTValViewItem::CreateItem, RTValViewItem::Priority );
+    registerCreator( WrappedRTValViewItem::CreateItem, WrappedRTValViewItem::Priority );
     registerCreator( SIntViewItem::CreateItem, SIntViewItem::Priority );
     registerCreator( StringViewItem::CreateItem, StringViewItem::Priority );
     registerCreator( UIntViewItem::CreateItem, UIntViewItem::Priority );
