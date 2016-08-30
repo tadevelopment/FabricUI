@@ -83,6 +83,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self._initDFG()
         self._initTreeView()
         self._initValueEditor()
+        self._initRenderingOptions()
         self._initGL()
         self._initTimeLine()
         self._initDocks()
@@ -289,6 +290,10 @@ class CanvasWindow(QtGui.QMainWindow):
         controller.dirty.connect(self.onDirty)
         controller.topoDirty.connect(self.onTopoDirty)
 
+    def _initRenderingOptions(self):
+
+        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor(self.client)
+
     def _initGL(self):
         """Initializes the Open GL viewport widget."""
 
@@ -302,6 +307,16 @@ class CanvasWindow(QtGui.QMainWindow):
         self.viewport = Viewports.GLViewportWidget(self.client, self.config.defaultWindowColor, glFormat, self, self.settings)
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
+
+        # When the rendering options of the viewport have changed, redraw
+        self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
+
+        self.renderingOptionsDockWidget = QtGui.QDockWidget("Rendering Options", self)
+        self.renderingOptionsDockWidget.setObjectName("Rendering Options")
+        self.renderingOptionsDockWidget.setWidget( self.renderingOptionsWidget )
+        self.renderingOptionsDockWidget.setFeatures(self.dockFeatures)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.renderingOptionsDockWidget, QtCore.Qt.Vertical)
+        self.renderingOptionsDockWidget.hide()
 
     def _initValueEditor(self):
         """Initializes the value editor."""
@@ -446,6 +461,11 @@ class CanvasWindow(QtGui.QMainWindow):
         toggleAction = self.scriptEditorDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_7)
         windowMenu.addAction(toggleAction)
+
+        # Toggle Rendering Options Widget Action
+        toggleAction = self.renderingOptionsDockWidget.toggleViewAction()
+        toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
+        windowMenu.addAction( toggleAction )
 
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested form manipulators
