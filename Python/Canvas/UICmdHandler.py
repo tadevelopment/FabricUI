@@ -342,8 +342,8 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
             "connect",
             [
                 UICmdHandler.encodeString(execPath),
-                UICmdHandler.encodeString(srcPorts),
-                UICmdHandler.encodeString(dstPorts),
+                UICmdHandler.encodeStrings(srcPorts),
+                UICmdHandler.encodeStrings(dstPorts),
                 ]
             )
  
