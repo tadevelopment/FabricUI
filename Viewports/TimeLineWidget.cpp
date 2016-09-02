@@ -89,33 +89,24 @@ TimeLineWidget::TimeLineWidget()
   layout()->addWidget(m_currentFrameSpinBox);
 
   m_goToStartFrameButton = new QPushButton(this);
-  m_goToStartFrameButton->setMinimumWidth(40);
-  m_goToStartFrameButton->setMaximumWidth(40);
-  m_goToStartFrameButton->setText("|<<");
+  m_goToStartFrameButton->setObjectName( "DFGTimelineGoToStartFrame" );
   layout()->addWidget(m_goToStartFrameButton);
 
   m_goToPreviousFrameButton = new QPushButton(this);
-  m_goToPreviousFrameButton->setMinimumWidth(40);
-  m_goToPreviousFrameButton->setMaximumWidth(40);
-  m_goToPreviousFrameButton->setText("|<");
+  m_goToPreviousFrameButton->setObjectName( "DFGTimelineGoToPreviousFrame" );
   layout()->addWidget(m_goToPreviousFrameButton);
 
   m_playButton = new QPushButton(this);
-  m_playButton->setMinimumWidth(40);
-  m_playButton->setMaximumWidth(40);
-  m_playButton->setText(">");
+  m_playButton->setObjectName( "DFGTimelinePlay" );
+  m_playButton->setCheckable( true );
   layout()->addWidget(m_playButton);
 
   m_goToNextFrameButton = new QPushButton(this);
-  m_goToNextFrameButton->setMinimumWidth(40);
-  m_goToNextFrameButton->setMaximumWidth(40);
-  m_goToNextFrameButton->setText(">|");
+  m_goToNextFrameButton->setObjectName( "DFGTimelineGoToNextFrame" );
   layout()->addWidget(m_goToNextFrameButton);
 
   m_goToEndFrameButton = new QPushButton(this);
-  m_goToEndFrameButton->setMinimumWidth(40);
-  m_goToEndFrameButton->setMaximumWidth(40);
-  m_goToEndFrameButton->setText(">>|");
+  m_goToEndFrameButton->setObjectName( "DFGTimelineGoToEndFrame" );
   layout()->addWidget(m_goToEndFrameButton);
 
   m_frameRateComboBox = new QComboBox(this);
@@ -172,7 +163,7 @@ TimeLineWidget::TimeLineWidget()
   connect( m_goToStartFrameButton , SIGNAL(clicked()) , this , SLOT( goToStartFrame() ) );
   connect( m_goToPreviousFrameButton , SIGNAL(clicked()) , this , SLOT( goToPreviousFrame() )  );
 
-  connect( m_playButton , SIGNAL(clicked()) , this , SLOT( play() ) );
+  connect( m_playButton , SIGNAL(toggled(bool)) , this , SLOT( onPlayButtonToggled(bool) ) );
 
   connect( m_goToNextFrameButton , SIGNAL(clicked()) , this , SLOT( goToNextFrame() ) );
   connect( m_goToEndFrameButton , SIGNAL(clicked()) , this , SLOT( goToEndFrame() ) );
@@ -369,31 +360,31 @@ void TimeLineWidget::updateFrameRange()
   m_frameSlider->setMaximum( max );
 }
 
-void TimeLineWidget::play()
+void TimeLineWidget::onPlayButtonToggled( bool checked )
 {
-  if (m_timer->isActive() )
+  if ( !checked && m_timer->isActive() )
   {
+    m_playButton->setText( QString::fromUtf8( "\xEF\x81\x8B" ) ); /* FontAwesome > */
     m_timer->stop();
-    m_playButton->setText(">");
     emit playbackChanged(false);
   }
-  else
+  else if ( checked && !m_timer->isActive() )
   {
+    m_playButton->setText( QString::fromUtf8( "\xEF\x81\x8C" ) ); /* FontAwesome || */
     if (m_loopMode == LOOP_MODE_PLAY_ONCE && getTime() >=  m_endSpinBox->value())
       goToStartFrame();
     m_timer->start();
     m_lastFrameTime.start();
-    m_playButton->setText( "||" );
     emit playbackChanged(true);
   }
 }
 
 void TimeLineWidget::pause()
 {
-  if (m_timer->isActive() )
+  if ( m_timer->isActive() )
   {
     m_timer->stop();
-    m_playButton->setText(">");
+    m_playButton->setChecked( false );
     emit playbackChanged(false);
   }
 }

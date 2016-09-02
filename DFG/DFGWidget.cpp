@@ -20,10 +20,12 @@
 #include <FabricUI/DFG/Dialogs/DFGSavePresetDialog.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/Util/FabricResourcePath.h>
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 #include <FabricUI/Util/UIRange.h>
 #include <FabricUI/Util/DocUrl.h>
 #include <FTL/FS.h>
+#include <FTL/Path.h>
 #include <Persistence/RTValToJSONEncoder.hpp>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
@@ -61,7 +63,42 @@ DFGWidget::DFGWidget(
   , m_dfgConfig( dfgConfig )
   , m_isEditable( false )
 {
+  std::string fontsDir = FabricResourcePath( FTL_STR("Fonts") );
+  std::vector<std::string> familyNames;
+  FTL::FSDirAppendEntries( fontsDir.c_str(), familyNames );
+  for ( std::vector<std::string>::const_iterator it = familyNames.begin();
+    it != familyNames.end(); ++it )
+  {
+    FTL::StrRef familyName = *it;
+
+    std::string familyDir = fontsDir;
+    FTL::PathAppendEntry( familyDir, familyName );
+
+    if ( FTL::FSIsDir( familyDir ) )
+    {
+      std::vector<std::string> fontFilenames;
+      FTL::FSDirAppendEntries( familyDir.c_str(), fontFilenames );
+      for ( std::vector<std::string>::const_iterator it = fontFilenames.begin();
+        it != fontFilenames.end(); ++it )
+      {
+        FTL::StrRef fontFilename = *it;
+
+        std::string fontPathname = familyDir;
+        FTL::PathAppendEntry( fontPathname, fontFilename );
+
+        if ( FTL::FSIsFile( fontPathname )
+          && FTL::StrRef( fontPathname ).endswith( FTL_STR(".ttf") ) )
+        {
+          QString fontPathnameQS = StrRefFilenameToQString( fontPathname );
+          // qDebug() << fontPathnameQS;
+          QFontDatabase::addApplicationFont( fontPathnameQS );
+        }
+      }
+    }
+  }
+
   setStyle( new DFGWidgetProxyStyle( style() ) );
+  
   reloadStyles();
 
   m_uiController = new DFGController(

@@ -20,6 +20,7 @@ BooleanCheckBoxViewItem::BooleanCheckBoxViewItem(
 {
   m_checkBox = new QCheckBox;
   m_checkBox->setObjectName( "BooleanItem" );
+  m_checkBox->setContentsMargins( 0, 0, 0, 0 );
   connect(
     m_checkBox, SIGNAL( stateChanged( int ) ),
     this, SLOT( onStateChanged( int ) )

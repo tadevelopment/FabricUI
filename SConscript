@@ -181,6 +181,17 @@ if uiLibPrefix == 'ui':
       ]
     )
   env.Depends(uiLib, icons)
+  fonts = map(
+    lambda name: 
+      env.Install(
+        stageDir.srcnode().Dir('Resources').Dir('Fonts').Dir(name),
+        [
+          Glob(os.path.join(env.Dir('DFG').Dir('Fonts').Dir(name).srcnode().abspath, '*')),
+          ]
+        ),
+    ['Roboto', 'Roboto_Condensed', 'Roboto_Mono', 'Roboto_Slab', 'FontAwesome']
+    )
+  env.Depends(uiLib, fonts)
   qss = env.Install(
     stageDir.srcnode().Dir('Resources').Dir('QSS'),
     [

@@ -7,6 +7,7 @@
 #include "QVariantRTVal.h"
 
 #include <FTL/StrSplit.h>
+#include <QtGui/QHBoxLayout>
 #include "QVariantRTVal.h"
 
 using namespace FabricUI::ValueEditor;
@@ -17,7 +18,16 @@ ComboBoxViewItem::ComboBoxViewItem( QString const &name, QVariant const &v, Item
   , m_isString(isString)
 {
   m_comboBox = new ComboBox;
-  m_comboBox->setObjectName( "ComboBoxItem" );
+
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
+  layout->addWidget( m_comboBox );
+  layout->addStretch();
+
+  m_widget = new QWidget;
+  m_widget->setObjectName( "VEComboBoxViewItem" );
+  m_widget->setLayout( layout );
 
   metadataChanged();
   onModelValueChanged(v);
@@ -62,7 +72,7 @@ void ComboBoxViewItem::metadataChanged()
 
 QWidget *ComboBoxViewItem::getWidget()
 {
-  return m_comboBox;
+  return m_widget;
 }
 
 void ComboBoxViewItem::onModelValueChanged( QVariant const &v )

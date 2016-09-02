@@ -13,6 +13,7 @@
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QPlainTextEdit>
 #include <QtGui/QDialogButtonBox>
+#include <QtGui/QFrame>
 
 using namespace FabricUI::ValueEditor;
 
@@ -23,16 +24,25 @@ StringViewItem::StringViewItem(
   )
   : BaseViewItem( name, metadata )
 {
-  m_widget = new QWidget;
-  m_widget->setObjectName( "StringItem" );
-  QHBoxLayout *layout = new QHBoxLayout( m_widget );
-  QPushButton* inspectButton = new QPushButton( m_widget );
-  m_edit = new VELineEdit( m_widget );
+  m_edit = new VELineEdit;
+  m_edit->setObjectName( "VELeft" );
+  m_edit->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::MinimumExpanding );
   
+  QPushButton* inspectButton = new QPushButton;
+  inspectButton->setObjectName( "VERight" );
+  inspectButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::MinimumExpanding );
+
   onModelValueChanged( value );
 
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_edit );
   layout->addWidget( inspectButton );
+
+  m_widget = new QFrame;
+  m_widget->setObjectName( "VEStringViewItem" );
+  m_widget->setLayout( layout );
 
   connect(
     m_edit, SIGNAL( textModified( QString ) ),

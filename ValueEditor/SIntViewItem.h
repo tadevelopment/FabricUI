@@ -43,6 +43,7 @@ public:
 
 private:
 
+  QWidget *m_widget;
   QSpinBox* m_spinner;
 
 private slots:

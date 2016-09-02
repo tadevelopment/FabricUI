@@ -3,5 +3,6 @@
  */
 
 QPlainTextEdit {
-    background-color: rgb(39,40,34);
+  background-color: rgb(39,40,34);
+  font: 11px "Roboto Mono";
 }

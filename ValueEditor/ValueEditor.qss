@@ -2,7 +2,47 @@
  *  Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
  */
 
-QLineEdit, QTextEdit, QDoubleSpinBox, QSpinBox, QComboBox {
+QTreeView#ValueEditor
+{
+    font: 11pt "Roboto";
+}
+
+QTreeView#ValueEditor::item
+{
+    height: 20px;
+    margin: 2px 0px 2px 4px;
+}
+
+#VELeft
+{
+    margin-right: 2px;
+}
+
+#VEMiddle
+{
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+#VERight
+{
+    margin-left: 2px;
+}
+
+QTreeView#ValueEditor::item QLabel
+{
+    font: 12pt "Roboto";
+    font-weight: bold;
+}
+
+QLineEdit,
+QTextEdit,
+QDoubleSpinBox,
+QSpinBox,
+QComboBox
+{
+    font: 11pt "Roboto";
+
     border: 0px;
     border-radius: 4px;
     padding: 3px;
@@ -11,80 +51,103 @@ QLineEdit, QTextEdit, QDoubleSpinBox, QSpinBox, QComboBox {
     background-color: #333;
 }
 
-QDoubleSpinBox, QSpinBox {
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-}
-
-#MinIndexEdit, #MaxIndexEdit, #ArraySizeEdit {
-    margin-left:0px;
-    margin-bottom: 0px;
-}
-
-QLineEdit:focus, QDoubleSpinBox:focus, QSpinBox:focus, QTextEdit:focus {
+QLineEdit:focus,
+QDoubleSpinBox:focus,
+QSpinBox:focus,
+QTextEdit:focus,
+QComboBox:focus
+{
     background-color: #2F2F2F;    
 }
 
-QTreeView#ValueEditor::item {
-    padding: 1px;
+#VEIntSliderViewItem QLineEdit
+{
+    width: 40px;
+}
+
+#VEFloatSliderViewItem QLineEdit
+{
+    width: 72px;
+}
+
+QDoubleSpinBox
+{
+    min-width: 90px;
+}
+
+QComboBox::drop-down
+{
+  width: 18px;
+  background-color: #50626e;
+
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+QComboBox::down-arrow
+{
+    image: url(${FABRIC_DIR}/Resources/Icons/DFGDown.png);
+    width: 9px;
+    height: 9px;
+}
+
+QPushButton
+{
+    padding: 3px;
+    border: none;
+    border-radius: 3px;
+    color: #C7D2DA;
+    background-color: #50626e;
+}
+
+QPushButton#VERight
+{
     height: 20px;
 }
 
-QWidget#BooleanItem {
-    padding-left: 11px;
+QPushButton:hover
+{
+    color: #eee;
+    background-color: #a0a0a0;
 }
 
-QWidget#ColorItem > QPushButton {
-    width: 20px;
-    height: 20px;
-    max-width: 20px;
-    max-height: 20px;
-    border-style: outset;
-    border-radius: 3px;
+#VEStringViewItem > QPushButton
+{
+    font: 11px "FontAwesome";
+    qproperty-text: ""; /* FontAwesome magnifying glass */
 }
 
-QWidget#FilePathItem > QPushButton {
-    max-width: 20px;
+#VEFilepathViewItem > QPushButton
+{
+    font: 11px "FontAwesome";
+    qproperty-text: ""; /* FontAwesome open folder */
 }
 
-QWidget#FilePathItem > QLineEdit {
-    margin: 0px;
+QSlider
+{
 }
 
-QWidget#StringItem > QPushButton {
-    max-width: 20px;
-    max-height: 20px;
-    border-image: url(${FABRIC_DIR}/Resources/Icons/mag_glass.png);
-    border-style: outset;
-    border-radius: 3px;
-    background-color: #2A2A2A;
+QSlider::handle:horizontal
+{
+  background: #e1ffff;
+  border: none;
+  height: 4px;
+  width: 1px;
+  border-radius: 3px;
 }
 
-QWidget#ColorItem > QComboBox {
-    margin-left: 0px;
-    margin-right: 0px;
+QSlider::add-page:horizontal {
+    background-color: #2F2F2F;    
+    border: none;
+    border-radius: 1px;
+    height: 4px;
+    margin: 8px 0px;
 }
 
-QWidget#ColorItem > QComboBox::drop-down {
-    subcontrol-origin: margin;
-}
-
-QWidget#ColorItem QAbstractItemView {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-
-QWidget > QComboBox {
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
-QWidget > QComboBox::drop-down {
-    subcontrol-origin: margin;
-}
-
-QComboBox QAbstractItemView {
-    margin-left: 10px;
-    margin-right: 10px;
+QSlider::sub-page:horizontal {
+    background-color: #50626e;
+    border: none;
+    border-radius: 1px;
+    height: 4px;
+    margin: 8px 0px;
 }
