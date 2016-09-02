@@ -39,6 +39,7 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
   unsigned &coreUndoCount
   )
 {
+  FabricCore::DFGNotifBracket notifBracket( getHost() );
   FabricCore::DFGBinding &binding = getBinding();
   FabricCore::DFGExec &exec = getExec();
 
