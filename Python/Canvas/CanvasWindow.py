@@ -83,7 +83,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self._initDFG()
         self._initTreeView()
         self._initValueEditor()
-        self._initRenderingOptions()
         self._initGL()
         self._initTimeLine()
         self._initDocks()
@@ -290,10 +289,6 @@ class CanvasWindow(QtGui.QMainWindow):
         controller.dirty.connect(self.onDirty)
         controller.topoDirty.connect(self.onTopoDirty)
 
-    def _initRenderingOptions(self):
-
-        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor(self.client)
-
     def _initGL(self):
         """Initializes the Open GL viewport widget."""
 
@@ -308,6 +303,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
+        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor(self.client)
         # When the rendering options of the viewport have changed, redraw
         self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
 
