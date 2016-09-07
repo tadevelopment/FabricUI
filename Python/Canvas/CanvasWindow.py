@@ -620,6 +620,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
             self.setCurrentFile(filePath)
 
+            if self.dfgWidget:
+                self.dfgWidget.getDFGController().log("graph loaded \"" + str(filePath) + "\"")
+
         except Exception as e:
             sys.stderr.write("Exception: " + str(e) + "\n")
 
