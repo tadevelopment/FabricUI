@@ -53,7 +53,7 @@ QWidget *SIntViewItem::getWidget()
 
 void SIntViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_spinner->setValue( v.value<int>() );
+  m_spinner->setValue( getQVariantRTValValue<int>(v) );
 }
 
 void SIntViewItem::OnSpinnerChanged( int value )

@@ -55,7 +55,7 @@ QWidget *StringViewItem::getWidget()
 
 void StringViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_edit->setText( v.value<QString>() );
+  m_edit->setText( getQVariantRTValValue<QString>(v) );
 }
 
 void StringViewItem::onTextModified( QString text )

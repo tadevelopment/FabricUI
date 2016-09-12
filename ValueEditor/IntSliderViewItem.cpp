@@ -33,7 +33,7 @@ IntSliderViewItem::IntSliderViewItem(
 
   metadataChanged();
 
-  int value = variant.value<int>();
+  int value = getQVariantRTValValue<int>(variant);
 
   // correct the softrange
   if(value < m_slider->minimum())
@@ -89,7 +89,7 @@ QWidget *IntSliderViewItem::getWidget()
 void IntSliderViewItem::onModelValueChanged( QVariant const &v )
 {
   FTL::AutoSet<bool> settingValue(m_isSettingValue, true);
-  int value = v.value<int>();
+  int value = getQVariantRTValValue<int>(v);
 
   // correct the softrange
   if(value < m_slider->minimum())

@@ -39,7 +39,7 @@ QWidget *BooleanCheckBoxViewItem::getWidget()
 
 void BooleanCheckBoxViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_checkBox->setChecked( v.value<bool>() );
+  m_checkBox->setChecked( getQVariantRTValValue<bool>(v) );
 }
 
 void BooleanCheckBoxViewItem::onStateChanged( int value )

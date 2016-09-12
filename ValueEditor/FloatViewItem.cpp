@@ -49,7 +49,7 @@ QWidget *FloatViewItem::getWidget()
 
 void FloatViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_spinBox->setValue( v.value<double>() );
+  m_spinBox->setValue( getQVariantRTValValue<double>(v) );
 }
 
 void FloatViewItem::onSpinBoxValueChanged( double value )

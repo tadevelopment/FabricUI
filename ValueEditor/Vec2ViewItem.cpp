@@ -22,7 +22,7 @@ Vec2ViewItem::Vec2ViewItem(
   ItemMetadata* metadata
   )
   : BaseComplexViewItem( name, metadata )
-  , m_vec2dValue( value.value<QVector2D>() )
+  , m_vec2dValue( getQVariantRTValValue<QVector2D>( value ) )
 {
   m_widget = new QWidget;
   m_widget->setObjectName( "Vec2Item" );
@@ -80,7 +80,7 @@ QWidget *Vec2ViewItem::getWidget()
 
 void Vec2ViewItem::onModelValueChanged( QVariant const &value )
 {
-  QVector2D newVec2dValue = value.value<QVector2D>();
+  QVector2D newVec2dValue = getQVariantRTValValue<QVector2D>(value);
   if ( newVec2dValue.x() != m_vec2dValue.x() )
   {
     m_xSpinBox->setValue( newVec2dValue.x() );
