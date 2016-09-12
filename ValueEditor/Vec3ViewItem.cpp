@@ -12,7 +12,7 @@
 #include <QVariant>
 #include <QBoxLayout>
 #include <QLineEdit>
-#include <QWidget>
+#include <QFrame>
 
 using namespace FabricUI::ValueEditor;
 

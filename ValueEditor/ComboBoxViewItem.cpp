@@ -7,6 +7,7 @@
 #include "QVariantRTVal.h"
 
 #include <FTL/StrSplit.h>
+#include <QHBoxLayout>
 #include "QVariantRTVal.h"
 
 using namespace FabricUI::ValueEditor;

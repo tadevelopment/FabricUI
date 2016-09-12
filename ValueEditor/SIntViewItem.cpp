@@ -8,6 +8,7 @@
 #include <QSpinBox>
 #include <limits.h>
 #include "VEIntSpinBox.h"
+#include <QHBoxLayout>
 
 using namespace FabricUI::ValueEditor;
 
