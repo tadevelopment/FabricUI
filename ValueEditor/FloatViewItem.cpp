@@ -8,7 +8,7 @@
 
 #include <FabricUI/Util/UIRange.h>
 #include <float.h>
-#include <QtGui/QHBoxLayout>
+#include <QHBoxLayout>
 
 using namespace FabricUI::ValueEditor;
 
