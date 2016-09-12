@@ -24,6 +24,18 @@ inline QVariant toVariant(const FabricCore::RTVal& val)
   return QVariant::fromValue<FabricCore::RTVal>(val); 
 }
 
+template<typename T>
+T getQVariantRTValValue(const FabricCore::RTVal& v);
+
+template<typename T>
+T getQVariantRTValValue(const QVariant& v) {
+
+  if (v.userType() == qMetaTypeId<FabricCore::RTVal>()) {
+    const FabricCore::RTVal& val = v.value<FabricCore::RTVal>();
+    return getQVariantRTValValue<T>(val);
+  }
+  return v.value<T>();
+}
 
 namespace FabricUI {
 namespace ValueEditor {

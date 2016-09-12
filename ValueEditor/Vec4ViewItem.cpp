@@ -22,7 +22,7 @@ Vec4ViewItem::Vec4ViewItem(
   ItemMetadata* metadata
   )
   : BaseComplexViewItem( name, metadata )
-  , m_vec4dValue( value.value<QVector4D>() )
+  , m_vec4dValue( getQVariantRTValValue<QVector4D>( value ) )
 {
   m_widget = new QFrame;
   m_widget->setObjectName( "Vec4Item" );
@@ -115,7 +115,7 @@ QWidget *Vec4ViewItem::getWidget()
 
 void Vec4ViewItem::onModelValueChanged( QVariant const &value )
 {
-  QVector4D newVec4dValue = value.value<QVector4D>();
+  QVector4D newVec4dValue = getQVariantRTValValue<QVector4D>( value );
   if ( newVec4dValue.x() != m_vec4dValue.x() )
   {
     m_xSpinBox->setValue( newVec4dValue.x() );

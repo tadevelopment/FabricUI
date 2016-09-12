@@ -37,7 +37,7 @@ FloatSliderViewItem::FloatSliderViewItem(
 
   metadataChanged();
 
-  double value = variant.value<double>();
+  double value = getQVariantRTValValue<double>(variant);
 
   // correct the softrange
   if(value < m_slider->min())
@@ -91,7 +91,7 @@ void FloatSliderViewItem::onModelValueChanged( QVariant const &v )
 {
   FTL::AutoSet<bool> settingValue(m_isSettingValue, true);
 
-  double value = v.value<double>();
+  double value = getQVariantRTValValue<double>(v);
 
   // correct the softrange
   if(value < m_slider->min())

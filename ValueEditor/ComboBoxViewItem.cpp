@@ -79,12 +79,12 @@ void ComboBoxViewItem::onModelValueChanged( QVariant const &v )
 {
   if( m_isString )
   {
-    int index = m_comboBox->findText( v.value<QString>() );
+    int index = m_comboBox->findText( getQVariantRTValValue<QString>(v) );
     m_comboBox->setCurrentIndex( index );
   }
   else
   {
-    m_comboBox->setCurrentIndex( v.value<int>() );
+    m_comboBox->setCurrentIndex( getQVariantRTValValue<int>(v) );
   }
 }
 
