@@ -30,10 +30,12 @@ T getQVariantRTValValue(const FabricCore::RTVal& v);
 template<typename T>
 T getQVariantRTValValue(const QVariant& v) {
 
+#if QT_VERSION >= 0x050000
   if (v.userType() == qMetaTypeId<FabricCore::RTVal>()) {
     const FabricCore::RTVal& val = v.value<FabricCore::RTVal>();
     return getQVariantRTValValue<T>(val);
   }
+#endif
   return v.value<T>();
 }
 

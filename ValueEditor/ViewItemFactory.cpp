@@ -98,6 +98,11 @@ BaseViewItem *ViewItemFactory::createViewItem(
     registerCreator( ComboBoxViewItem::CreateItem, ComboBoxViewItem::Priority );
     registerCreator( ArrayViewItem::CreateItem, ArrayViewItem::Priority );
 
+    // We put the QVariantRTVal bridge injection
+    // code here, as before we build a view it won't
+    // be needed
+    RTVariant::injectRTHandler();
+
     initialized = true;
   }
 
