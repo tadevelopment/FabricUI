@@ -378,6 +378,8 @@ void RTVariant::rtStreamDebug( QDebug dbg, const QVariant &v )
     origh->debugStream( dbg, v );
 }
 
+#if QT_VERSION >= 0x050000
+
 template<>
 double getQVariantRTValValue(const FabricCore::RTVal& val) {
   if (val.isFloat32()) { return val.getFloat32(); }
@@ -476,6 +478,8 @@ QVector4D getQVariantRTValValue(const FabricCore::RTVal& val) {
     return QVector4D();
   }
 }
+
+#endif
 
 bool RTVariant::toRTVal( const QVariant & var, FabricCore::RTVal & ioVal )
 {
