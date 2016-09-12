@@ -55,6 +55,12 @@ class SHStates : public QObject {
     /// Might be valid even if !isInspectingSGCanvasOperator() (eg: generator writing to inspected property)
     FabricCore::RTVal getInspectedSGCanvasOperator();
 
+    /// Returns a Ref to SHStates.options
+    FabricCore::RTVal getOptionsRef();
+
+    /// Updates SceneHub from the values of SHStates.options
+    void updateFromOptions();
+
     /// Returns the active SHBaseScene (which can be driven by the TreeView)
     SHGLScene* getActiveScene();
 

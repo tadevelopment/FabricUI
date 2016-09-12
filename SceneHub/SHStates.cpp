@@ -76,6 +76,33 @@ bool SHStates::isInspectingSGCanvasOperator() {
   return result;
 }
 
+FabricCore::RTVal SHStates::getOptionsRef() {
+
+  FabricCore::RTVal result;
+  try 
+  {
+    result = m_shStateVal.maybeGetMemberRef("options");
+  }
+  catch(Exception e)
+  {
+    printf("SHStates::getOptionsRef: exception: %s\n", e.getDesc_cstr());
+  }
+  return result;
+}
+
+void SHStates::updateFromOptions() {
+
+  try 
+  {
+    m_shStateVal.callMethod( "", "updateSceneHubFromOptions", 0, 0 );
+    emit sceneChanged();
+  }
+  catch(Exception e)
+  {
+    printf("SHStates::updateFromOptions: exception: %s\n", e.getDesc_cstr());
+  }
+}
+
 FabricCore::RTVal SHStates::getInspectedSGObject() {
   FabricCore::RTVal result;
   try 

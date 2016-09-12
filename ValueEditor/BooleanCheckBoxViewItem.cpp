@@ -20,6 +20,7 @@ BooleanCheckBoxViewItem::BooleanCheckBoxViewItem(
 {
   m_checkBox = new QCheckBox;
   m_checkBox->setObjectName( "BooleanItem" );
+  m_checkBox->setContentsMargins( 0, 0, 0, 0 );
   connect(
     m_checkBox, SIGNAL( stateChanged( int ) ),
     this, SLOT( onStateChanged( int ) )
@@ -39,7 +40,7 @@ QWidget *BooleanCheckBoxViewItem::getWidget()
 
 void BooleanCheckBoxViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_checkBox->setChecked( v.value<bool>() );
+  m_checkBox->setChecked( getQVariantRTValValue<bool>(v) );
 }
 
 void BooleanCheckBoxViewItem::onStateChanged( int value )

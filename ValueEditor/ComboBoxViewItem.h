@@ -39,6 +39,7 @@ public:
 
 private:
 
+  QWidget *m_widget;
   ComboBox* m_comboBox;
   bool m_isString;
 

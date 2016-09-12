@@ -14,6 +14,7 @@
 #include "NotInspectableViewItem.h"
 #include "QVariantRTVal.h"
 #include "RTValViewItem.h"
+#include "WrappedRTValViewItem.h"
 #include "SIntViewItem.h"
 #include "StringViewItem.h"
 #include "UIntViewItem.h"
@@ -22,6 +23,7 @@
 #include "Vec4ViewItem.h"
 #include "ComboBoxViewItem.h"
 #include "ArrayViewItem.h"
+#include "DictionaryViewItem.h"
 #include "ViewItemFactory.h"
 
 using namespace FabricUI::ValueEditor;
@@ -89,6 +91,7 @@ BaseViewItem *ViewItemFactory::createViewItem(
     registerCreator( IntSliderViewItem::CreateItem, IntSliderViewItem::Priority );
     registerCreator( NotInspectableViewItem::CreateItem, NotInspectableViewItem::Priority );
     registerCreator( RTValViewItem::CreateItem, RTValViewItem::Priority );
+    registerCreator( WrappedRTValViewItem::CreateItem, WrappedRTValViewItem::Priority );
     registerCreator( SIntViewItem::CreateItem, SIntViewItem::Priority );
     registerCreator( StringViewItem::CreateItem, StringViewItem::Priority );
     registerCreator( UIntViewItem::CreateItem, UIntViewItem::Priority );
@@ -97,11 +100,7 @@ BaseViewItem *ViewItemFactory::createViewItem(
     registerCreator( Vec4ViewItem::CreateItem, Vec4ViewItem::Priority );
     registerCreator( ComboBoxViewItem::CreateItem, ComboBoxViewItem::Priority );
     registerCreator( ArrayViewItem::CreateItem, ArrayViewItem::Priority );
-
-     // We put the QVariantRTVal bridge injection
-    // code here, as before we build a view it won't
-    // be needed
-    RTVariant::injectRTHandler();
+    registerCreator( DictionaryViewItem::CreateItem, DictionaryViewItem::Priority );
 
     initialized = true;
   }

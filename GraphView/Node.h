@@ -128,7 +128,6 @@ namespace FabricUI
       CollapseState collapsedState() const
         { return m_collapsedState; }
       virtual void setCollapsedState(CollapseState state);
-      virtual void toggleCollapsedState();
 
       virtual QString error() const;
       virtual bool hasError() const;
@@ -160,6 +159,7 @@ namespace FabricUI
       virtual unsigned int pinCount() const;
       virtual Pin * pin(unsigned int index);
       virtual Pin * pin(FTL::StrRef name);
+      virtual Pin * nextPin(FTL::StrRef name);
 
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
@@ -222,7 +222,6 @@ namespace FabricUI
     signals:
 
       void selectionChanged(FabricUI::GraphView::Node *, bool);
-      void collapsedStateChanged(FabricUI::GraphView::Node *, FabricUI::GraphView::Node::CollapseState);
       void positionChanged(FabricUI::GraphView::Node *, QPointF);
       void doubleClicked(FabricUI::GraphView::Node *, Qt::MouseButton, Qt::KeyboardModifiers);
       void bubbleEditRequested(FabricUI::GraphView::Node * nod);

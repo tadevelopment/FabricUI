@@ -227,14 +227,8 @@ void Node::setCollapsedState(Node::CollapseState state)
   m_collapsedState = state;
   if(!m_graph->config().nodeHeaderAlwaysShowPins)
     m_header->setCirclesVisible(state != CollapseState_Expanded);
-  emit collapsedStateChanged(this, m_collapsedState);
   m_header->setHeaderButtonState("node_collapse", (int)m_collapsedState);
   updatePinLayout();
-}
-
-void Node::toggleCollapsedState()
-{
-  setCollapsedState(CollapseState((int(m_collapsedState) + 1) % int(CollapseState_NumStates)));
 }
 
 void Node::setSelected(bool state, bool quiet)
@@ -541,6 +535,21 @@ Pin * Node::pin(FTL::StrRef name)
   return NULL;
 }
 
+Pin * Node::nextPin(FTL::StrRef name)
+{
+  for(unsigned int i=0;i<m_pins.size();i++)
+  {
+    if(name == m_pins[i]->name())
+    {
+      if (i + 1 < m_pins.size())
+        return m_pins[i + 1];
+      else
+        return NULL;
+    }
+  }
+  return NULL;
+}
+
 Pin *Node::renamePin( FTL::StrRef oldName, FTL::StrRef newName )
 {
   Pin *p = pin( oldName );
@@ -681,7 +690,8 @@ bool Node::onMousePress(Qt::MouseButton button, Qt::KeyboardModifiers modifiers,
       QMenu * menu = graph()->getNodeContextMenu(hitNode);
       if(menu)
       {
-        menu->exec(QCursor::pos());
+        menu->exec( QCursor::pos() );
+        menu->setParent( NULL );
         menu->deleteLater();
       }
     }

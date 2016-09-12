@@ -335,15 +335,15 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         binding,
         execPath,
         exec_,
-        srcPort,
-        dstPort,
+        srcPorts,
+        dstPorts,
         ):
         return self.evalCmdWithArgs(
             "connect",
             [
                 UICmdHandler.encodeString(execPath),
-                UICmdHandler.encodeString(srcPort),
-                UICmdHandler.encodeString(dstPort),
+                UICmdHandler.encodeStrings(srcPorts),
+                UICmdHandler.encodeStrings(dstPorts),
                 ]
             )
  

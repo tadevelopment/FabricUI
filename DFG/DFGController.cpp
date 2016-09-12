@@ -10,12 +10,15 @@
 #include <QMessageBox>
 
 #include <FTL/JSONEnc.h>
+#include <FTL/JSONDec.h>
 #include <FTL/Str.h>
 #include <FTL/Math.h>
 #include <FTL/MapCharSingle.h>
+#include <FTL/Path.h>
 
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/GraphRelaxer.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
 
@@ -58,6 +61,12 @@ DFGController::DFGController(
   , m_topoDirtyPending( false )
   , m_dirtyPending( false )
 {
+  m_tabSearchPrefsJSONFilename = FabricCore::GetFabricPrivateDir();
+  FTL::PathAppendEntry(
+    m_tabSearchPrefsJSONFilename,
+    "TabSearch.prefs.json"
+    );
+
   m_notificationTimer->setSingleShot( true );
   connect(
     m_notificationTimer, SIGNAL(timeout()),
@@ -409,35 +418,45 @@ QString DFGController::cmdRenameExecPort(
   return result;
 }
 
-bool DFGController::gvcDoAddConnection(
-  GraphView::ConnectionTarget * src,
-  GraphView::ConnectionTarget * dst
+bool DFGController::gvcDoAddConnections(
+  std::vector<GraphView::ConnectionTarget *> const &srcs,
+  std::vector<GraphView::ConnectionTarget *> const &dsts
   )
 {
-  std::string srcPath;
-  if(src->targetType() == GraphView::TargetType_Pin)
-    srcPath = ((GraphView::Pin*)src)->path();
-  else if(src->targetType() == GraphView::TargetType_Port)
-    srcPath = ((GraphView::Port*)src)->path();
-  else if(src->targetType() == GraphView::TargetType_FixedPort)
-    srcPath = ((GraphView::FixedPort*)src)->path();
-  else if(src->targetType() == GraphView::TargetType_InstBlockPort)
-    srcPath = ((GraphView::InstBlockPort*)src)->path();
+  QStringList srcPaths;
+  QStringList dstPaths;
 
-  std::string dstPath;
-  if(dst->targetType() == GraphView::TargetType_Pin)
-    dstPath = ((GraphView::Pin*)dst)->path();
-  else if(dst->targetType() == GraphView::TargetType_Port)
-    dstPath = ((GraphView::Port*)dst)->path();
-  else if(dst->targetType() == GraphView::TargetType_FixedPort)
-    dstPath = ((GraphView::FixedPort*)dst)->path();
-  else if(dst->targetType() == GraphView::TargetType_InstBlockPort)
-    dstPath = ((GraphView::InstBlockPort*)dst)->path();
+  for (size_t i=0;i<srcs.size();i++)
+  {
+    GraphView::ConnectionTarget *src = srcs[i];
+    std::string srcPath;
+    if(src->targetType() == GraphView::TargetType_Pin)
+      srcPath = ((GraphView::Pin*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_Port)
+      srcPath = ((GraphView::Port*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_FixedPort)
+      srcPath = ((GraphView::FixedPort*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_InstBlockPort)
+      srcPath = ((GraphView::InstBlockPort*)src)->path();
+    srcPaths.push_back( QString::fromUtf8( srcPath.data(), srcPath.size() ) );
+  }
 
-  cmdConnect(
-    QString::fromUtf8( srcPath.data(), srcPath.size() ),
-    QString::fromUtf8( dstPath.data(), dstPath.size() )
-    );
+  for (size_t i=0;i<dsts.size();i++)
+  {
+    GraphView::ConnectionTarget *dst = dsts[i];
+    std::string dstPath;
+    if(dst->targetType() == GraphView::TargetType_Pin)
+      dstPath = ((GraphView::Pin*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_Port)
+      dstPath = ((GraphView::Port*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_FixedPort)
+      dstPath = ((GraphView::FixedPort*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_InstBlockPort)
+      dstPath = ((GraphView::InstBlockPort*)dst)->path();
+    dstPaths.push_back( QString::fromUtf8( dstPath.data(), dstPath.size() ) );
+  }
+
+  cmdConnect( srcPaths, dstPaths );
   
   return true;
 }
@@ -731,22 +750,27 @@ bool DFGController::setNodeColor(
   return true;
 }
 
-/// Sets the collapse state of the selected node.
-/// Saves it in the node preferences
-void DFGController::setSelectedNodeCollapseState(int collapsedState) {
-  // Call the parent function
-  collapseSelectedNodes(collapsedState);
-  // Now, set the collapse state in the node preferences
-  FabricCore::Variant collapsedStateVar = FabricCore::Variant::CreateSInt32(collapsedState);
+void DFGController::setNodeCollapseState(int collapsedState, GraphView::Node *node) {
+  if (node->type() != GraphView::QGraphicsItemType_Node)
+    return;
+  node->setCollapsedState((GraphView::Node::CollapseState)collapsedState);
   FabricCore::DFGExec &exec = getExec();
+  char const * const collapsedStateMetadataValues[GraphView::Node::CollapseState_NumStates] = { "0", "1", "2" };
+  exec.setNodeMetadata(node->name().c_str(), "uiCollapsedState", collapsedStateMetadataValues[collapsedState], false, false);
+}
+
+void DFGController::setSelectedNodesCollapseState(int collapsedState) {
+  collapseSelectedNodes(collapsedState);
+  FabricCore::DFGExec &exec = getExec();
+  char const * const collapsedStateMetadataValues[GraphView::Node::CollapseState_NumStates] = { "0", "1", "2" };
   const std::vector<GraphView::Node*> & nodes = graph()->selectedNodes();
   for(unsigned int i=0;i<nodes.size();i++)
   {
     if(nodes[i]->type() != GraphView::QGraphicsItemType_Node)
       continue;
-    exec.setNodeMetadata(nodes[i]->name().c_str(), "uiCollapsedState", collapsedStateVar.getJSONEncoding().getStringData(), false, false);
+    exec.setNodeMetadata(nodes[i]->name().c_str(), "uiCollapsedState", collapsedStateMetadataValues[collapsedState], false, false);
   }
-} 
+}
 
 std::string DFGController::copy()
 {
@@ -1256,7 +1280,7 @@ void DFGController::onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderB
   GraphView::Node * node = button->header()->node();  
   if(button->name() == "node_collapse")
   {
-    setSelectedNodeCollapseState((int)node->collapsedState());
+    setNodeCollapseState((int)node->collapsedState(), node);
   }
   else if(button->name() == "node_edit")
   {
@@ -1339,15 +1363,14 @@ void DFGController::onBindingVarRemoved(
   emitVarsChanged();
 }
 
-QStringList DFGController::getPresetPathsFromSearch(char const * search, bool includePresets, bool includeNameSpaces)
+FabricServices::SplitSearch::Matches
+DFGController::getPresetPathsFromSearch( char const * search )
 {
   FTL::StrRef searchRef(search);
   if(searchRef.size() == 0)
-    return QStringList();
+    return FabricServices::SplitSearch::Matches();
 
   updatePresetPathDB();
-
-  QStringList results;
 
   // [pzion 20150305] This is a little evil but avoids lots of copying
 
@@ -1364,35 +1387,45 @@ QStringList DFGController::getPresetPathsFromSearch(char const * search, bool in
   for ( size_t i = 0; i < searchSplit.size(); ++i )
     cStrs[i] = searchSplit[i].data();
 
-  if(includePresets)
+  return m_presetPathDict.search( searchSplit.size(), cStrs );
+}
+
+void DFGController::appendPresetsAtPrefix(
+  std::string &prefixedName,
+  FTL::JSONStr &ds
+  )
+{
+  FTL::JSONObjectDec<FTL::JSONStr> jod( ds );
+  FTL::JSONEnt<FTL::JSONStr> jeKey, jeVal;
+  while ( jod.getNext( jeKey, jeVal ) )
   {
-    SplitSearch::Matches matches =
-      m_presetPathDict.search( searchSplit.size(), cStrs );
+    if ( jeKey.stringIs( FTL_STR("objectType") )
+      && jeVal.stringIs( FTL_STR("Preset") ) )
+    {
+      m_presetPathDictSTL.push_back(
+        std::pair<std::string, unsigned>( prefixedName, 0 )
+        );
+    }
+    else if ( jeKey.stringIs( FTL_STR("members") ) )
+    {
+      FTL::JSONStr ds( jeVal.getRawJSONStr() );
+      FTL::JSONObjectDec<FTL::JSONStr> jod( ds );
+      FTL::JSONEnt<FTL::JSONStr> jeKey, jeVal;
+      while ( jod.getNext( jeKey, jeVal ) )
+      {
+        size_t oldPrefixedNameSize = prefixedName.size();
+        if ( !prefixedName.empty() )
+          prefixedName += '.';
+        jeKey.stringAppendTo( prefixedName );
+        m_presetNameSpaceDictSTL.push_back( prefixedName );
 
-    if(matches.getSize() == 0)
-      return results;
-    std::vector<const char *> userDatas;
-    userDatas.resize(matches.getSize());
-    matches.getUserdatas(matches.getSize(), (const void**)&userDatas[0]);
+        FTL::JSONStr ds( jeVal.getRawJSONStr() );
+        appendPresetsAtPrefix( prefixedName, ds );
 
-    for(size_t i=0;i<userDatas.size();i++)
-      results.push_back(userDatas[i]);
+        prefixedName.resize( oldPrefixedNameSize );
+      }
+    }
   }
-  if(includeNameSpaces)
-  {
-    SplitSearch::Matches matches = m_presetNameSpaceDict.search( searchSplit.size(), cStrs );
-
-    if(matches.getSize() == 0)
-      return results;
-    std::vector<const char *> userDatas;
-    userDatas.resize(matches.getSize());
-    matches.getUserdatas(matches.getSize(), (const void**)&userDatas[0]);
-
-    for(size_t i=0;i<userDatas.size();i++)
-      results.push_back(userDatas[i]);
-  }
-
-  return results;
 }
 
 void DFGController::updatePresetPathDB()
@@ -1407,9 +1440,9 @@ void DFGController::updatePresetPathDB()
   m_presetPathDictSTL.clear();
 
   // insert fixed results for special nodes
-  m_presetPathDictSTL.push_back("var");
-  m_presetPathDictSTL.push_back("get");
-  m_presetPathDictSTL.push_back("set");
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "var", 2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "get", 2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "set", 2 ) );
 
   QStringList variables =
     getVariableWordsFromBinding(
@@ -1418,51 +1451,33 @@ void DFGController::updatePresetPathDB()
       );
   for(int i=0;i<variables.length();i++)
   {
-    m_presetPathDictSTL.push_back("get." + std::string(variables[i].toUtf8().constData()));
-    m_presetPathDictSTL.push_back("set." + std::string(variables[i].toUtf8().constData()));
+    m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>(
+      "get." + std::string(variables[i].toUtf8().constData()), 1
+      ) );
+    m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>(
+      "set." + std::string(variables[i].toUtf8().constData()), 1
+      ) );
   }
 
-  std::vector<std::string> paths;
-  paths.push_back("");
-
-  for(size_t i=0;i<paths.size();i++)
-  {
-    std::string prefix = paths[i];
-    if(prefix.length() > 0)
-      prefix += ".";
-
-    try
-    {
-      FabricCore::DFGStringResult jsonStr = m_host.getPresetDesc(paths[i].c_str());
-      FabricCore::Variant jsonVar = FabricCore::Variant::CreateFromJSON(jsonStr.getCString());
-      const FabricCore::Variant * membersVar = jsonVar.getDictValue("members");
-      for(FabricCore::Variant::DictIter memberIter(*membersVar); !memberIter.isDone(); memberIter.next())
-      {
-        std::string name = memberIter.getKey()->getStringData();
-        const FabricCore::Variant * memberVar = memberIter.getValue();
-        const FabricCore::Variant * objectTypeVar = memberVar->getDictValue("objectType");
-        std::string objectType = objectTypeVar->getStringData();
-        if(objectType == "Preset")
-        {
-          m_presetPathDictSTL.push_back(prefix+name);
-        }
-        else if(objectType == "NameSpace")
-        {
-          paths.push_back(prefix+name);
-          m_presetNameSpaceDictSTL.push_back(prefix+name);
-        }
-      }
-    }
-    catch (FabricCore::Exception e)
-    {
-      logError(e.getDesc_cstr());
-    }
-  }
+  FabricCore::String jsonString = m_host.getPresetDesc( "" );
+  char const *jsonStrCStr;
+  uint32_t jsonStrSize;
+  jsonString.getCStrAndSize( jsonStrCStr, jsonStrSize );
+  FTL::JSONStr ds( FTL::StrRef( jsonStrCStr, jsonStrSize ) );
+  std::string prefixedName;
+  appendPresetsAtPrefix( prefixedName, ds );
 
   for(size_t i=0;i<m_presetNameSpaceDictSTL.size();i++)
     m_presetNameSpaceDict.add(m_presetNameSpaceDictSTL[i].c_str(), '.', m_presetNameSpaceDictSTL[i].c_str());
   for(size_t i=0;i<m_presetPathDictSTL.size();i++)
-    m_presetPathDict.add(m_presetPathDictSTL[i].c_str(), '.', m_presetPathDictSTL[i].c_str());
+    m_presetPathDict.add(
+      m_presetPathDictSTL[i].first.c_str(),
+      '.',
+      m_presetPathDictSTL[i].first.c_str(),
+      m_presetPathDictSTL[i].second
+      );
+
+  m_presetPathDict.loadPrefs( m_tabSearchPrefsJSONFilename.c_str() );
 }
 
 DFGNotificationRouter * DFGController::createRouter()
@@ -1597,8 +1612,8 @@ void DFGController::cmdRemoveNodes(
 }
 
 void DFGController::cmdConnect(
-  QString srcPath, 
-  QString dstPath
+  QStringList srcPaths, 
+  QStringList dstPaths
   )
 {
   if(!validPresetSplit())
@@ -1608,8 +1623,8 @@ void DFGController::cmdConnect(
     getBinding(),
     getExecPath_QS(),
     getExec(),
-    srcPath,
-    dstPath
+    srcPaths,
+    dstPaths
     );
 }
 
@@ -2137,4 +2152,10 @@ void DFGController::gvcDoMoveExecPort(
       QString(), // itemPath
       indices
       );
+}
+
+void DFGController::savePrefs()
+{
+  if ( m_presetDictsUpToDate )
+    m_presetPathDict.savePrefs( m_tabSearchPrefsJSONFilename.c_str() );
 }

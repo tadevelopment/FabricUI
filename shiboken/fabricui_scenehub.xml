@@ -27,6 +27,7 @@
       <object-type name="SGObjectModelItem" copyable="false"/>
       <object-type name="SGObjectPropertyModelItem" copyable="false"/>
       <object-type name="SHVEEditorOwner" copyable="false"/>
+      <object-type name="SHOptionsEditor" copyable="false"/>
     </namespace-type>
   </namespace-type>
 </typesystem>

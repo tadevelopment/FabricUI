@@ -305,7 +305,8 @@ bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool dragging
     RTVal klEvent = QtToKLEvent(
       event, 
       m_client, 
-      getOrAddViewport(viewportID), 
+      getOrAddViewport(viewportID),
+      "Canvas",
       true);
 
     if(!klEvent.isValid())

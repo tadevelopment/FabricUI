@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QWidget>
 #include <QMenuBar>
+#include <QProxyStyle>
 #include <Commands/CommandStack.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/DFG/DFGConfig.h>
@@ -28,6 +29,23 @@ namespace DFG {
     class DFGExecBlockEditorWidget;
     class DFGExecHeaderWidget;
     class DFGUICmdHandler;
+
+    class DFGWidgetProxyStyle
+      : public QProxyStyle
+    {
+    public:
+
+      DFGWidgetProxyStyle(
+        QStyle* style = NULL
+        );
+
+      virtual void drawControl(
+        ControlElement element,
+        const QStyleOption * option,
+        QPainter * painter,
+        const QWidget * widget
+        ) const /*override*/;
+    };
 
     class DFGWidget : public QWidget
     {
@@ -88,7 +106,7 @@ namespace DFG {
       bool priorExecStackIsEmpty() const
         { return m_priorExecStack.empty(); }
 
-      void editExecPort( FTL::CStrRef execPortName );
+      void editExecPort( FTL::CStrRef execPortName, bool duplicatePort );
 
     signals:
 
@@ -118,6 +136,7 @@ namespace DFG {
       void onKeyReleased(QKeyEvent * event);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
       void onSelectAll();
+      void onAutoConnections();
       void onRemoveConnections();
       void onCut();
       void onCopy();

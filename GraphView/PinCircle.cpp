@@ -67,7 +67,6 @@ const ConnectionTarget * PinCircle::target() const
   return m_target;
 }
 
-
 QColor PinCircle::color() const
 {
   return m_color;
@@ -245,6 +244,7 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
       if(menu)
       {
         menu->exec(QCursor::pos());
+        menu->setParent( NULL );
         menu->deleteLater();
       }
     }
@@ -254,6 +254,7 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
       if(menu)
       {
         menu->exec(QCursor::pos());
+        menu->setParent( NULL );
         menu->deleteLater();
       }
     }
@@ -263,6 +264,7 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
       if(menu)
       {
         menu->exec(QCursor::pos());
+        menu->setParent( NULL );
         menu->deleteLater();
       }
     }

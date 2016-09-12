@@ -55,9 +55,9 @@ namespace FabricUI
         FTL::ArrayRef<GraphView::Node *> nodes
         ) = 0;
 
-      virtual bool gvcDoAddConnection(
-        ConnectionTarget * src,
-        ConnectionTarget * dst
+      virtual bool gvcDoAddConnections(
+        std::vector<ConnectionTarget  *> const &srcs,
+        std::vector<ConnectionTarget  *> const &dsts
         ) = 0;
 
       virtual bool gvcDoRemoveConnections(

@@ -8,6 +8,8 @@
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 
+#include <float.h>
+
 using namespace FabricUI::GraphView;
 
 Graph::Graph(
@@ -378,6 +380,43 @@ Port * Graph::port(FTL::StrRef name) const
   return NULL;
 }
 
+Port * Graph::nextPort(FTL::StrRef name) const
+{
+  if(!hasSidePanels())
+    return NULL;
+
+  for(unsigned int i=0;i<m_leftPanel->portCount();i++)
+  {
+    if(name == m_leftPanel->port(i)->name())
+    {
+      if (i + 1 < m_leftPanel->portCount())
+      {
+        return m_leftPanel->port(i + 1);
+      }
+      else
+      {
+        return NULL;
+      }
+    }
+  }
+  for(unsigned int i=0;i<m_rightPanel->portCount();i++)
+  {
+    if(name == m_rightPanel->port(i)->name())
+    {
+      if (i + 1 < m_rightPanel->portCount())
+      {
+        return m_rightPanel->port(i + 1);
+      }
+      else
+      {
+        return NULL;
+      }
+    }
+  }
+
+  return NULL;
+}
+
 std::vector<Port *> Graph::ports(FTL::StrRef name) const
 { 
   std::vector<Port *> result;
@@ -438,6 +477,16 @@ bool Graph::isConnectedAsSource(const ConnectionTarget * target) const
   for(size_t i=0;i<m_connections.size();i++)
   {
     if(m_connections[i]->src() == target)
+      return true;
+  }
+  return false;
+}
+
+bool Graph::isConnectedAsTarget(const ConnectionTarget * target) const
+{
+  for(size_t i=0;i<m_connections.size();i++)
+  {
+    if(m_connections[i]->dst() == target)
       return true;
   }
   return false;
@@ -613,6 +662,115 @@ bool Graph::removeConnection(Connection * connection, bool quiet)
   controller()->endInteraction();
 
   return true;
+}
+
+bool Graph::autoConnections()
+{
+  // get the selected nodes and create an array of arrays of vertical node groups.
+  std::vector<Node *>              selectedNodes = Graph::selectedNodes();
+  std::vector< std::vector<Node *> > nodeGroups;
+  while (selectedNodes.size() > 0)
+  {
+    // find the index of the left-most node in selectedNodes.
+    int mostLeftIdx = 0;
+    for (unsigned int i=0;i<selectedNodes.size();i++)
+      if (selectedNodes[i]->sceneBoundingRect().left() < selectedNodes[mostLeftIdx]->sceneBoundingRect().left())
+        mostLeftIdx = i;
+
+    // init new nodeGroup rect with the left-most node's rect
+    // and add all nodes to the nodeGroup that intersect with it.
+    QRectF nodeGroupRect = selectedNodes[mostLeftIdx]->sceneBoundingRect();
+    nodeGroupRect.setTop   (FLT_MIN);
+    nodeGroupRect.setBottom(FLT_MAX);
+    std::vector<Node *> nodeGroup;
+    for (int i=0;i<(int)selectedNodes.size();i++)
+      if (nodeGroupRect.intersects(selectedNodes[i]->sceneBoundingRect()))
+      {
+        nodeGroup.push_back(selectedNodes[i]);
+        nodeGroupRect |= selectedNodes[i]->sceneBoundingRect();
+        selectedNodes.erase(selectedNodes.begin() + i);
+        i = -1;
+      }
+
+    // sort the nodes in the group from top
+    // to bottom using a simple bubble sort.
+    for (unsigned int i=0;i<nodeGroup.size();i++)
+      for (unsigned int j=i+1;j<nodeGroup.size();j++)
+        if (nodeGroup[i]->sceneBoundingRect().center().y() > nodeGroup[j]->sceneBoundingRect().center().y())
+          std::swap(nodeGroup[i], nodeGroup[j]);
+
+    // add the result to nodeGroups.
+    nodeGroups.push_back(nodeGroup);
+  }
+
+  // create the final src/dst arrays of connections.
+  std::vector<ConnectionTarget *> ctSrcs;
+  std::vector<ConnectionTarget *> ctDsts;
+  for (unsigned int ci=0;ci+1<nodeGroups.size();ci++)
+  {
+    std::vector<Node *> &nodesL = nodeGroups[ci];
+    std::vector<Node *> &nodesR = nodeGroups[ci + 1];
+
+    // get usable left ports.
+    std::vector<Pin *> pinsL;
+    for(unsigned int i=0;i<nodesL.size();i++)
+    {
+      Node *node = nodesL[i];
+      for(unsigned int j=0;j<node->pinCount();j++)
+      {
+        Pin *pin = node->pin(j);
+        // skip default exec port.
+        if (j == 0)
+          continue;
+        // skip if already connected.
+        if (pin->isConnectedAsSource())
+          continue;
+        // use if port is output or IO.
+        if (pin->portType() != PortType_Input)
+          pinsL.push_back(pin);
+        // use if node only has one input port except for the exec one.
+        else if (node->pinCount() == 2)
+            pinsL.push_back(pin);
+      }
+    }
+
+    // get usable right ports.
+    std::vector<Pin *> pinsR;
+    for(unsigned int i=0;i<nodesR.size();i++)
+    {
+      Node *node = nodesR[i];
+      for(unsigned int j=0;j<node->pinCount();j++)
+      {
+        Pin *pin = node->pin(j);
+        // skip default exec port.
+        if (j == 0)
+          continue;
+        // skip if already connected.
+        if (pin->isConnectedAsTarget())
+          continue;
+        // use if port is input or IO.
+        if (pin->portType() != PortType_Output)
+          pinsR.push_back(pin);
+      }
+    }
+
+    // add connectable things to the src/dst arrays.
+    for (unsigned int i=0;i<pinsL.size();i++)
+    {
+      std::string failureReason;
+      for (unsigned int j=0;j<pinsR.size();j++)
+        if (!!pinsR[j] && pinsL[i]->canConnectTo(pinsR[j], failureReason))
+        {
+          ctSrcs.push_back(pinsL[i]);
+          ctDsts.push_back(pinsR[j]);
+          pinsR[j] = NULL;
+          break;
+        }
+    }
+  }
+
+  // create final connections from src/dst arrays.
+  return (ctSrcs.size() ? controller()->gvcDoAddConnections(ctSrcs, ctDsts) : true);
 }
 
 bool Graph::removeConnections()

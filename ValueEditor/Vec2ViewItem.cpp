@@ -12,7 +12,7 @@
 #include <QVariant>
 #include <QBoxLayout>
 #include <QLineEdit>
-#include <QWidget>
+#include <QFrame>
 
 using namespace FabricUI::ValueEditor;
 
@@ -22,14 +22,16 @@ Vec2ViewItem::Vec2ViewItem(
   ItemMetadata* metadata
   )
   : BaseComplexViewItem( name, metadata )
-  , m_vec2dValue( value.value<QVector2D>() )
+  , m_vec2dValue( getQVariantRTValValue<QVector2D>( value ) )
 {
-  m_widget = new QWidget;
+  m_widget = new QFrame;
   m_widget->setObjectName( "Vec2Item" );
 
   m_xSpinBox = new VEDoubleSpinBox;
+  m_xSpinBox->setObjectName( "VELeft" );
   m_xSpinBox->setValue( m_vec2dValue.x() );
   m_ySpinBox = new VEDoubleSpinBox;
+  m_ySpinBox->setObjectName( "VERight" );
   m_ySpinBox->setValue( m_vec2dValue.y() );
 
   // Connect em up.
@@ -62,10 +64,11 @@ Vec2ViewItem::Vec2ViewItem(
 
   QHBoxLayout *layout = new QHBoxLayout( m_widget );
   layout->setContentsMargins( 0, 0, 0, 0 );
-  layout->setSpacing( 8 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_xSpinBox );
   layout->addWidget( m_ySpinBox );
-
+  layout->addStretch();
+  
   metadataChanged();
 }
 
@@ -80,7 +83,7 @@ QWidget *Vec2ViewItem::getWidget()
 
 void Vec2ViewItem::onModelValueChanged( QVariant const &value )
 {
-  QVector2D newVec2dValue = value.value<QVector2D>();
+  QVector2D newVec2dValue = getQVariantRTValValue<QVector2D>(value);
   if ( newVec2dValue.x() != m_vec2dValue.x() )
   {
     m_xSpinBox->setValue( newVec2dValue.x() );
@@ -145,7 +148,7 @@ void Vec2ViewItem::doAppendChildViewItems(QList<BaseViewItem *>& items)
 
 void Vec2ViewItem::metadataChanged()
 {
-  FTL::StrRef uiRangeString = m_metadata.getString( "uiRange" );
+  FTL::StrRef uiRangeString = m_metadata.getString( "uiHardRange" );
   
   double minValue, maxValue;
   if ( FabricUI::DecodeUIRange( uiRangeString, minValue, maxValue ) )

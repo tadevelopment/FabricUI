@@ -29,11 +29,16 @@ IntSliderViewItem::IntSliderViewItem(
   , m_isSettingValue( false )
 {
   m_lineEdit = new VELineEdit;
+  m_lineEdit->setObjectName( "VELeft" );
+  m_lineEdit->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::MinimumExpanding );
+
   m_slider = new IntSlider;
+  m_slider->setObjectName( "VERight" );
+  m_slider->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::MinimumExpanding );
 
   metadataChanged();
 
-  int value = variant.value<int>();
+  int value = getQVariantRTValValue<int>(variant);
 
   // correct the softrange
   if(value < m_slider->minimum())
@@ -45,19 +50,16 @@ IntSliderViewItem::IntSliderViewItem(
   m_lineEdit->setText( QString::number( value ) );
   m_slider->setValue( value );
 
-  m_widget = new QWidget;
-  QHBoxLayout *layout = new QHBoxLayout( m_widget );
-
-  QSizePolicy sp(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
-  sp.setHorizontalStretch(VE_H_STRETCH_SLIDER_LINEEDIT);
-  m_lineEdit->setSizePolicy(sp);
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_lineEdit );
-
-  sp.setHorizontalStretch(VE_H_STRETCH_SLIDER_SLIDER);
-  m_slider->setSizePolicy(sp);
   layout->addWidget( m_slider );
 
+  m_widget = new QWidget;
+  m_widget->setObjectName( "VEIntSliderViewItem" );
+  m_widget->setLayout( layout );
+  
   connect(
     m_lineEdit, SIGNAL( textModified( QString ) ),
     this, SLOT( onLineEditTextModified( QString ) )
@@ -89,7 +91,7 @@ QWidget *IntSliderViewItem::getWidget()
 void IntSliderViewItem::onModelValueChanged( QVariant const &v )
 {
   FTL::AutoSet<bool> settingValue(m_isSettingValue, true);
-  int value = v.value<int>();
+  int value = getQVariantRTValValue<int>(v);
 
   // correct the softrange
   if(value < m_slider->minimum())

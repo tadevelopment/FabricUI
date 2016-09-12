@@ -52,8 +52,8 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString srcPath, 
-    QString dstPath
+    QStringList srcPortPaths, 
+    QStringList dstPortPaths
     ) = 0;
 
   virtual void dfgDoDisconnect(

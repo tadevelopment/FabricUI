@@ -12,13 +12,14 @@ pytestmark = pytest.mark.skipif(
 def canvas_win():
     from FabricEngine.FabricUI import Application
     from FabricEngine.Canvas.CanvasWindow import CanvasWindow
-    from PySide import QtCore
+    from PySide import QtCore, QtGui
     from PySide.QtTest import QTest
 
-    global app
-    app = Application.FabricApplication()
-    app.setOrganizationName('Fabric Software Inc')
-    app.setApplicationName('Fabric Canvas Standalone')
+    if not QtGui.QApplication.instance():
+        global app
+        app = Application.FabricApplication()
+        app.setOrganizationName('Fabric Software Inc')
+        app.setApplicationName('Fabric Canvas Standalone')
 
     settings = QtCore.QSettings()
     unguarded = False

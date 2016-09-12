@@ -1,6 +1,18 @@
 /*
  *  Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+ *
+ * NOTE:: this file is loaded as UTF-8, so make sure your editor edits it
+ * with a UTF-8 encoding
+ *
  */
+
+QMenu::item:disabled {
+  color: #777777;
+}
+
+QMenu::item:disabled:selected {
+  background-color: transparent;
+}
 
 #DFGErrorsWidget QTableWidget
 {
@@ -307,4 +319,120 @@
 {
   color: #cbcbcb;
   background-color: #333;
+}
+
+#DFGTimelineWidget QWidget
+{
+  font: 11px "Roboto";
+}
+
+#DFGTimelineWidget QPushButton
+{
+  width: 24px;
+  padding: 3px;
+  border: none;
+  border-radius: 3px;
+  color: #C7D2DA;
+  background-color: #50626e;
+  font: 11px "FontAwesome";
+}
+
+#DFGTimelineWidget #DFGTimelineGoToStartFrame
+{
+  qproperty-text: ""; /* FontAwesome |<< */
+}
+
+#DFGTimelineWidget #DFGTimelineGoToPreviousFrame
+{
+  qproperty-text: ""; /* FontAwesome |< */
+}
+
+#DFGTimelineWidget #DFGTimelinePlay
+{
+  qproperty-text: ""; /* FontAwesome > */
+}
+
+#DFGTimelineWidget #DFGTimelinePlay:checked:!pressed
+{
+  margin: 0px;
+}
+
+#DFGTimelineWidget #DFGTimelineGoToNextFrame
+{
+  qproperty-text: ""; /* FontAwesome >| */
+}
+
+#DFGTimelineWidget #DFGTimelineGoToEndFrame
+{
+  qproperty-text: ""; /* FontAwesome >>| */
+}
+
+#DFGTimelineWidget QPushButton:hover
+{
+  color: #eee;
+  background-color: #a0a0a0;
+}
+
+#DFGTimelineWidget QComboBox
+{
+  border: 0;
+  border-radius: 3px;
+  padding: 1px 1px 1px 4px;
+  margin: 0;
+
+  color: #e1ffff;
+  background-color: #333;
+}
+
+#DFGTimelineWidget QComboBox::drop-down
+{
+  width: 18px;
+  background-color: #50626e;
+
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+#DFGTimelineWidget QComboBox QAbstractItemView
+{
+    color: #e1ffff;
+    background-color: #333;
+}
+
+#DFGTimelineWidget QComboBox::down-arrow
+{
+    image: url(${FABRIC_DIR}/Resources/Icons/DFGDown.png);
+    width: 9px;
+    height: 9px;
+}
+
+#DFGTimelineWidget QSlider
+{
+}
+
+#DFGTimelineWidget QSlider::handle:horizontal
+{
+  background: white;
+  border: none;
+  height: 10px;
+  width: 1px;
+  margin: -6px 0px;
+  border-radius: 3px;
+}
+
+/*
+#DFGTimelineWidget QSlider::add-page:horizontal {
+    background: yellow;
+}
+
+#DFGTimelineWidget QSlider::sub-page:horizontal {
+    background: pink;
+}
+*/
+
+#DFGTimelineWidget #DFGTimelineSeparator
+{
+  color: gray;
+  font-weight: bold;
+  qproperty-text: "//";
 }

@@ -17,6 +17,8 @@ ValueEditorWidget::ValueEditorWidget(
   : m_config( config )
   , m_updatingOutputs( false )
 {
+  setObjectName( "ValueEditorWidget" );
+  
   setMinimumHeight(24);
   setBackgroundRole(QPalette::Window);
   setAutoFillBackground(true);

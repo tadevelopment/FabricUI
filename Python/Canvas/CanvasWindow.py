@@ -249,7 +249,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.evalContext = self.client.RT.types.EvalContext.create()
         self.evalContext = self.evalContext.getInstance('EvalContext')
         self.evalContext.host = 'Canvas'
-        self.evalContext.graph = ''
 
         self.astManager = KLASTManager(self.client)
         self.host = self.client.getDFGHost()
@@ -304,6 +303,17 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
+        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor(self.client)
+        # When the rendering options of the viewport have changed, redraw
+        self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
+
+        self.renderingOptionsDockWidget = QtGui.QDockWidget("Rendering Options", self)
+        self.renderingOptionsDockWidget.setObjectName("Rendering Options")
+        self.renderingOptionsDockWidget.setWidget( self.renderingOptionsWidget )
+        self.renderingOptionsDockWidget.setFeatures(self.dockFeatures)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.renderingOptionsDockWidget, QtCore.Qt.Vertical)
+        self.renderingOptionsDockWidget.hide()
+
     def _initValueEditor(self):
         """Initializes the value editor."""
 
@@ -331,6 +341,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timeLine = TimeLine.TimeLineWidget()
         self.timeLine.setTimeRange(CanvasWindow.defaultFrameIn, CanvasWindow.defaultFrameOut)
         self.timeLine.updateTime(1)
+        self.dfgWidget.stylesReloaded.connect(self.timeLine.reloadStyles)
         self.timeLine.frameChanged.connect(self.onFrameChanged)
         self.timeLine.frameChanged.connect(self.valueEditor.onFrameChanged)
 
@@ -381,7 +392,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.treeDock)
 
         # Timeline Dock Widget
-        self.timeLineDock = QtGui.QDockWidget("TimeLine", self)
+        self.timeLineDock = QtGui.QDockWidget("Timeline", self)
         self.timeLineDock.setObjectName("TimeLine")
         self.timeLineDock.setFeatures(self.dockFeatures)
         self.timeLineDock.setWidget(self.timeLine)
@@ -446,6 +457,11 @@ class CanvasWindow(QtGui.QMainWindow):
         toggleAction = self.scriptEditorDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_7)
         windowMenu.addAction(toggleAction)
+
+        # Toggle Rendering Options Widget Action
+        toggleAction = self.renderingOptionsDockWidget.toggleViewAction()
+        toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
+        windowMenu.addAction( toggleAction )
 
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested form manipulators
@@ -549,8 +565,6 @@ class CanvasWindow(QtGui.QMainWindow):
             self.dfgWidget.replaceBinding(binding)
             self.scriptEditor.updateBinding(binding)
 
-            self.evalContext.currentFilePath = filePath
-
             dfgExec = binding.getExec()
             tl_start = dfgExec.getMetadata("timeline_start")
             tl_end = dfgExec.getMetadata("timeline_end")
@@ -602,6 +616,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
             self.setCurrentFile(filePath)
 
+            if self.dfgWidget:
+                self.dfgWidget.getDFGController().log("graph loaded \"" + str(filePath) + "\"")
+
         except Exception as e:
             sys.stderr.write("Exception: " + str(e) + "\n")
 
@@ -637,6 +654,11 @@ class CanvasWindow(QtGui.QMainWindow):
         if not self.scriptEditor.checkUnsavedChanges():
             event.ignore()
             return
+
+        if self.dfgWidget:
+            dfgController = self.dfgWidget.getDFGController()
+            if dfgController:
+                dfgController.savePrefs()
 
         self.viewport.setManipulationActive(False)
         self.settings.setValue("mainWindow/geometry", self.saveGeometry())
@@ -744,10 +766,13 @@ class CanvasWindow(QtGui.QMainWindow):
 
         # [andrew 20150909] can happen if this triggers while the licensing
         # dialogs are up
-        if not self.dfgWidget or not self.dfgWidget.getDFGController():
+        if not self.dfgWidget:
+            return
+        dfgController = self.dfgWidget.getDFGController();
+        if not dfgController:
             return
 
-        binding = self.dfgWidget.getDFGController().getBinding()
+        binding = dfgController.getBinding()
         if binding:
             bindingVersion = binding.getVersion()
             if bindingVersion != self.lastAutosaveBindingVersion:
@@ -760,6 +785,9 @@ class CanvasWindow(QtGui.QMainWindow):
                         os.remove(self.autosaveFilename)
                     os.rename(tmpAutosaveFilename, self.autosaveFilename)
                     self.lastAutosaveBindingVersion = bindingVersion
+
+        dfgController.savePrefs()
+
 
     def execNewGraph(self, skip_save=False):
         """Callback Executed when a key or menu command has requested a new graph.
@@ -949,8 +977,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
         if self.dfgWidget:
             self.dfgWidget.getDFGController().log("graph saved.")
-
-        self.evalContext.currentFilePath = filePath
 
         self.lastFileName = filePath
 
@@ -1179,6 +1205,8 @@ class CanvasWindow(QtGui.QMainWindow):
                                DFG.DFGHotkeys.TAB_SEARCH)
             graph.defineHotkey(QtCore.Qt.Key_A, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.SELECT_ALL)
+            graph.defineHotkey(QtCore.Qt.Key_C, QtCore.Qt.NoModifier,
+                               DFG.DFGHotkeys.AUTO_CONNECTIONS)
             graph.defineHotkey(QtCore.Qt.Key_D, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.REMOVE_CONNECTIONS)
             graph.defineHotkey(QtCore.Qt.Key_C, QtCore.Qt.ControlModifier,

@@ -7,6 +7,7 @@
 #include "VEIntSpinBox.h"
 
 #include <limits.h>
+#include <QtGui/QHBoxLayout>
 
 using namespace FabricUI::ValueEditor;
 
@@ -18,11 +19,21 @@ UIntViewItem::UIntViewItem(
   : BaseViewItem( name, metadata )
 {
   m_spinner = new VEIntSpinBox;
-  m_spinner->setObjectName( "UIntItem" );
+  m_spinner->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::MinimumExpanding );
   m_spinner->setMinimum( 0 );
   m_spinner->setMaximum( INT_MAX );
   m_spinner->setKeyboardTracking( false );
   
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
+  layout->addWidget( m_spinner );
+  layout->addStretch();
+
+  m_widget = new QWidget;
+  m_widget->setObjectName( "VEUIntViewItem" );
+  m_widget->setLayout( layout );
+
   onModelValueChanged( value );
 
   connect(
@@ -47,12 +58,12 @@ UIntViewItem::~UIntViewItem()
 
 QWidget *UIntViewItem::getWidget()
 {
-  return m_spinner;
+  return m_widget;
 }
 
 void UIntViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_spinner->setValue( int( v.value<unsigned>() ) );
+  m_spinner->setValue( getQVariantRTValValue<unsigned>( v ) );
 }
 
 void UIntViewItem::OnSpinnerChanged( int value )
