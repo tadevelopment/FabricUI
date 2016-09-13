@@ -324,6 +324,16 @@
   background-color: #3c4450;
 }
 
+#DFGTimelineWidget QInputDialog QPushButton
+{
+  min-width: 50px;
+  padding: 3px;
+  border: none;
+  border-radius: 3px;
+  color: #C7D2DA;
+  background-color: #50626e;
+}
+
 #DFGTimelineWidget QPushButton:hover
 {
   color: #eee;
