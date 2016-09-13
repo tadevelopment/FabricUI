@@ -337,6 +337,17 @@ QMenu::item:disabled:selected {
   font: 11px "FontAwesome";
 }
 
+#DFGTimelineWidget QInputDialog QPushButton
+{
+  min-width: 50px;
+  padding: 3px;
+  border: none;
+  border-radius: 3px;
+  color: #C7D2DA;
+  background-color: #50626e;
+  font: 11px "Roboto";
+}
+
 #DFGTimelineWidget #DFGTimelineGoToStartFrame
 {
   qproperty-text: ""; /* FontAwesome |<< */
