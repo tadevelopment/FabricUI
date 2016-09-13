@@ -3,7 +3,8 @@
 #ifndef __UI_Style_FabricStyle__
 #define __UI_Style_FabricStyle__
 
-#include <QCommonStyle>
+#include <QProxyStyle>
+#include <QStyleFactory>
 
 namespace FabricUI
 {
@@ -11,12 +12,12 @@ namespace FabricUI
   namespace Style
   {
 
-    class FabricStyle : public QCommonStyle
+    class FabricStyle : public QProxyStyle
     {
         Q_OBJECT
 
     public:
-        FabricStyle() {}
+        FabricStyle() : QProxyStyle(QStyleFactory::create("windows")) {}
 
         virtual void polish(QPalette &palette);
     };
