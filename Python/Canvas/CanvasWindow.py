@@ -344,6 +344,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget.stylesReloaded.connect(self.timeLine.reloadStyles)
         self.timeLine.frameChanged.connect(self.onFrameChanged)
         self.timeLine.frameChanged.connect(self.valueEditor.onFrameChanged)
+        self.scriptEditor.setTimeLineGlobal(self.timeLine)
 
     def _initDocks(self):
         """Initializes all of dock widgets for the application.

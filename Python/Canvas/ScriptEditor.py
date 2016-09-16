@@ -456,6 +456,9 @@ class ScriptEditor(QtGui.QWidget):
         self.setContentsMargins(0,0,0,0)
         self.setLayout(layout)
 
+    def setTimeLineGlobal(self, timeLine):
+        self.eval_globals["timeLine"] = timeLine
+        
     def onLinesSelected(self, startLineNum, endLineNum):
         startTextBlock = self.cmd.document().findBlockByLineNumber(startLineNum)
         endTextBlock = self.cmd.document().findBlockByLineNumber(endLineNum)
