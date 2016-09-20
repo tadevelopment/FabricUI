@@ -71,7 +71,8 @@ def save_image(canvas_win, width, height, filepath):
   # Make sure to process all the events before setting the geometry of the viewport an drawing
   app.processEvents()
   canvas_win.viewport.setGeometry(0,0,width,height)  
-  canvas_win.viewport.paintGL()    
+  canvas_win.viewport.paintGL()
+  canvas_win.viewport.swapBuffers()
   image = canvas_win.viewport.grabFrameBuffer()
   #print "there is an image with width and height",image.width(),image.height()  
   status = image.save(filepath + os.extsep + "png", "PNG")
