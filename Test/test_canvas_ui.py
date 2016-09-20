@@ -28,12 +28,14 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.fixture(scope="module")
 def canvas_win():
+    global app
     if not QtGui.QApplication.instance():
-        global app
         app = Application.FabricApplication()
         app.setOrganizationName('Fabric Software Inc')
         app.setApplicationName('Fabric Canvas Standalone')
-
+    else:
+        app = QtGui.QApplication.instance()
+        
     settings = QtCore.QSettings()
     unguarded = False
     noopt = True
