@@ -9,9 +9,9 @@ from optparse import OptionParser
 
 import png
 
-from FabricEngine.FabricUI import Application
+from FabricEngine.FabricUI import Application, Viewports
 from FabricEngine.Canvas.CanvasWindow import CanvasWindow
-from PySide import QtCore, QtGui
+from PySide import QtCore, QtGui, QtOpenGL
 from PySide.QtTest import QTest
 
 base_dir              = os.environ['FABRIC_SCENE_GRAPH_DIR']
@@ -26,6 +26,43 @@ pytestmark = pytest.mark.skipif(
             platform.system() == 'Darwin',
         reason = "missing display")
 
+class CanvasTestWindow(CanvasWindow):
+
+  #test_name = ""
+  test_output = ""
+  
+  def setTest(self, name):    
+    self.test_output = ""
+    
+  def _reportCallback(self, source, level, line):
+    if not (line.startswith("[FABRIC:MT] Loaded extension") or line.startswith("graph loaded")):
+      self.test_output += line + "\n"
+    super(CanvasTestWindow, self)._reportCallback(source, level, line)
+    
+  def _initGL(self):
+    """Initializes the Open GL viewport widget."""
+
+    glFormat = QtOpenGL.QGLFormat()
+    glFormat.setDoubleBuffer(True)
+    glFormat.setDepth(True)
+    glFormat.setAlpha(True)
+    glFormat.setSampleBuffers(False)
+
+    self.viewport = Viewports.GLViewportWidget(self.client, self.config.defaultWindowColor, glFormat, self, self.settings)
+    self.setCentralWidget(self.viewport)
+    self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
+
+    self.renderingOptionsWidget = Viewports.ViewportOptionsEditor(self.client)
+    # When the rendering options of the viewport have changed, redraw
+    self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
+
+    self.renderingOptionsDockWidget = QtGui.QDockWidget("Rendering Options", self)
+    self.renderingOptionsDockWidget.setObjectName("Rendering Options")
+    self.renderingOptionsDockWidget.setWidget( self.renderingOptionsWidget )
+    self.renderingOptionsDockWidget.setFeatures(self.dockFeatures)
+    self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.renderingOptionsDockWidget, QtCore.Qt.Vertical)
+    self.renderingOptionsDockWidget.hide() 
+    
 @pytest.fixture(scope="module")
 def canvas_win():
     global app
@@ -39,7 +76,7 @@ def canvas_win():
     settings = QtCore.QSettings()
     unguarded = False
     noopt = True
-    main_win = CanvasWindow(settings, unguarded, noopt)
+    main_win = CanvasTestWindow(settings, unguarded, noopt)
     main_win.show()
 
     # https://doc.qt.io/qt-4.8/qttest-module.html
