@@ -5,7 +5,7 @@
 #include "Node.h"
 #include "Graph.h"
 
-#include <QtGui/QPainter>
+#include <QPainter>
 
 using namespace FabricUI::GraphView;
 

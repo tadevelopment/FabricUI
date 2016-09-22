@@ -5,10 +5,10 @@
 #include "SIntViewItem.h"
 #include "QVariantRTVal.h"
 
-#include <QtGui/QSpinBox>
+#include <QSpinBox>
 #include <limits.h>
 #include "VEIntSpinBox.h"
-#include <QtGui/QHBoxLayout>
+#include <QHBoxLayout>
 
 using namespace FabricUI::ValueEditor;
 
@@ -64,7 +64,7 @@ QWidget *SIntViewItem::getWidget()
 
 void SIntViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_spinner->setValue( v.value<int>() );
+  m_spinner->setValue( getQVariantRTValValue<int>(v) );
 }
 
 void SIntViewItem::OnSpinnerChanged( int value )

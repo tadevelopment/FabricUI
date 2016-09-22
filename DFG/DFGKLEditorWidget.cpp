@@ -1,11 +1,11 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QFontMetrics>
-#include <QtGui/QSplitter>
-#include <QtGui/QMessageBox>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QFontMetrics>
+#include <QSplitter>
+#include <QMessageBox>
 
 #include <FabricUI/DFG/PortEditor/DFGPEWidget_Exec.h>
 #include <FabricUI/GraphView/Graph.h>

@@ -6,7 +6,7 @@
 #include <FabricUI/ModelItems/ArgItemMetadata.h>
 #include <FabricUI/ModelItems/ArgModelItem.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
-#include <QtCore/QVariant>
+#include <QVariant>
 
 namespace FabricUI {
 namespace ModelItems {

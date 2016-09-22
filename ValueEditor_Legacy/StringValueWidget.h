@@ -3,7 +3,7 @@
 #ifndef __UI_ValueEditor_StringValueWidget__
 #define __UI_ValueEditor_StringValueWidget__
 
-#include <QtGui/QComboBox>
+#include <QComboBox>
 
 #include "ValueWidget.h"
 #include "LineEdit.h"

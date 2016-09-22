@@ -8,7 +8,7 @@
 
 #include <FabricUI/Util/UIRange.h>
 #include <float.h>
-#include <QtGui/QHBoxLayout>
+#include <QHBoxLayout>
 
 using namespace FabricUI::ValueEditor;
 
@@ -60,7 +60,7 @@ QWidget *FloatViewItem::getWidget()
 
 void FloatViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_spinBox->setValue( v.value<double>() );
+  m_spinBox->setValue( getQVariantRTValValue<double>(v) );
 }
 
 void FloatViewItem::onSpinBoxValueChanged( double value )

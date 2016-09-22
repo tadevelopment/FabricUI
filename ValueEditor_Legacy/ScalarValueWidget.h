@@ -3,7 +3,7 @@
 #ifndef __UI_ValueEditor_ScalarValueWidget__
 #define __UI_ValueEditor_ScalarValueWidget__
 
-#include <QtGui/QSlider>
+#include <QSlider>
 
 #include "ValueWidget.h"
 #include "LineEdit.h"

@@ -3,10 +3,11 @@
 #ifndef __UI_GraphView_Controller__
 #define __UI_GraphView_Controller__
 
-#include <QtCore/QString>
-#include <QtCore/QPointF>
-#include <QtCore/QSizeF>
-#include <QtGui/QColor>
+#include <QObject>
+#include <QString>
+#include <QPointF>
+#include <QSizeF>
+#include <QColor>
 
 #include <Commands/CommandStack.h>
 #include <Commands/CompoundCommand.h>

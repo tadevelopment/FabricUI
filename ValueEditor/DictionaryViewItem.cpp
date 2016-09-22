@@ -5,9 +5,9 @@
 #include "DictionaryViewItem.h"
 #include "ViewItemFactory.h"
 #include "QVariantRTVal.h"
-#include <QtGui/QWidget>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QLabel>
+#include <QWidget>
+#include <QBoxLayout>
+#include <QLabel>
 
 using namespace FabricUI::ValueEditor;
 

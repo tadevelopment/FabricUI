@@ -3,7 +3,7 @@
 #ifndef _DFGHOTKEYS_H_
 #define _DFGHOTKEYS_H_
  
-#include <QtGui/QKeyEvent>
+#include <QKeyEvent>
 
 namespace FabricUI
 {

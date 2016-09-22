@@ -15,7 +15,7 @@
 #include <SplitSearch/SplitSearch.hpp>
 #include <vector>
 #include <ASTWrapper/KLASTManager.h>
-#include <QtCore/QTimer>
+#include <QTimer>
 
 using namespace FabricUI::ValueEditor_Legacy;
 

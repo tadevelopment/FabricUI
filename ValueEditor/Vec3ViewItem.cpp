@@ -9,10 +9,10 @@
 
 #include <assert.h>
 #include <FabricUI/Util/UIRange.h>
-#include <QtCore/QVariant>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QLineEdit>
-#include <QtGui/QFrame>
+#include <QVariant>
+#include <QBoxLayout>
+#include <QLineEdit>
+#include <QFrame>
 
 using namespace FabricUI::ValueEditor;
 
@@ -22,7 +22,7 @@ Vec3ViewItem::Vec3ViewItem(
   ItemMetadata* metadata
   )
   : BaseComplexViewItem( name, metadata )
-  , m_vec3dValue( value.value<QVector3D>() )
+  , m_vec3dValue( getQVariantRTValValue<QVector3D>( value ) )
 {
   m_widget = new QFrame;
   m_widget->setObjectName( "Vec3Item" );
@@ -100,7 +100,7 @@ QWidget *Vec3ViewItem::getWidget()
 
 void Vec3ViewItem::onModelValueChanged( QVariant const &value )
 {
-  QVector3D newVec3dValue = value.value<QVector3D>();
+  QVector3D newVec3dValue = getQVariantRTValValue<QVector3D>( value );
   if ( newVec3dValue.x() != m_vec3dValue.x() )
   {
     m_xSpinBox->setValue( newVec3dValue.x() );

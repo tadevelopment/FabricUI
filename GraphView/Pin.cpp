@@ -8,7 +8,7 @@
 #include <FabricUI/GraphView/PinCircle.h>
 #include <FabricUI/GraphView/ProxyPort.h>
 
-#include <QtGui/QGraphicsLinearLayout>
+#include <QGraphicsLinearLayout>
 
 using namespace FabricUI::GraphView;
 

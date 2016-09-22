@@ -4,12 +4,12 @@
 #include "Graph.h"
 #include "Controller.h"
 
-#include <QtGui/QGraphicsLinearLayout>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QLinearGradient>
-#include <QtGui/QGraphicsDropShadowEffect>
-#include <QtCore/QDebug>
+#include <QGraphicsLinearLayout>
+#include <QGraphicsSceneMouseEvent>
+#include <QPainter>
+#include <QLinearGradient>
+#include <QGraphicsDropShadowEffect>
+#include <QDebug>
 
 using namespace FabricUI::GraphView;
 

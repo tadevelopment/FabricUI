@@ -4,7 +4,7 @@
 #define __UI_DFG_DFGUICmd_Paste__
 
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_Exec.h>
-#include <QtCore/QPoint>
+#include <QPoint>
 
 FABRIC_UI_DFG_NAMESPACE_BEGIN
 

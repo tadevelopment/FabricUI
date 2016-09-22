@@ -3,8 +3,8 @@
 #ifndef __UI_ValueEditor_IntegerValueWidget__
 #define __UI_ValueEditor_IntegerValueWidget__
 
-#include <QtGui/QSlider>
-#include <QtGui/QComboBox>
+#include <QSlider>
+#include <QComboBox>
 
 #include "ValueWidget.h"
 #include "LineEdit.h"

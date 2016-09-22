@@ -4,9 +4,9 @@
 
 #include "DocUrl.h"
 
-#include <QtCore/QStringList>
-#include <QtCore/QUrl>
-#include <QtGui/QDesktopServices>
+#include <QStringList>
+#include <QUrl>
+#include <QDesktopServices>
 
 using namespace FabricUI::Util;
 

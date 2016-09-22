@@ -9,8 +9,8 @@
 #include <FabricCore.h>
 
 #include <assert.h>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItem>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 
 using namespace FabricUI::ValueEditor;
 

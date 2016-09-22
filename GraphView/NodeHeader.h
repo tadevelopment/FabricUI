@@ -3,9 +3,9 @@
 #ifndef __UI_GraphView_NodeHeader__
 #define __UI_GraphView_NodeHeader__
 
-#include <QtGui/QGraphicsWidget>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
+#include <QGraphicsWidget>
+#include <QColor>
+#include <QPen>
 #include "ConnectionTarget.h"
 #include "PinCircle.h"
 #include "NodeHeaderButton.h"

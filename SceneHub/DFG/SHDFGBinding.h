@@ -5,9 +5,9 @@
 #ifndef __UI_SCENEHUB_DFG_CANVAS_H__
 #define __UI_SCENEHUB_DFG_CANVAS_H__
 
-#include <QtCore/QList>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
+#include <QList>
+#include <QString>
+#include <QStringList>
 #include <FabricCore.h>
 #include <FTL/JSONEnc.h>
 #include <FTL/OwnedPtr.h>

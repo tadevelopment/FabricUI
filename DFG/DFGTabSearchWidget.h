@@ -6,8 +6,8 @@
 #include "DFGConfig.h"
 #include <SplitSearch/SplitSearch.hpp>
 
-#include <QtGui/QWidget>
-#include <QtGui/QFocusEvent>
+#include <QWidget>
+#include <QFocusEvent>
 
 namespace FabricUI
 {

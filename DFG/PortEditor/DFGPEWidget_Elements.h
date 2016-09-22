@@ -6,13 +6,13 @@
 #define _DFGPEWidget_Elements_h
 
 #include <FabricCore.h>
-#include <QtCore/QTimer>
-#include <QtGui/QComboBox>
-#include <QtGui/QFrame>
-#include <QtGui/QIcon>
-#include <QtGui/QStyledItemDelegate>
-#include <QtGui/QProxyStyle>
-#include <QtGui/QTableWidget>
+#include <QTimer>
+#include <QComboBox>
+#include <QFrame>
+#include <QIcon>
+#include <QStyledItemDelegate>
+#include <QProxyStyle>
+#include <QTableWidget>
 
 class QPushButton;
 

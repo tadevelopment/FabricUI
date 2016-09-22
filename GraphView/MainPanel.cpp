@@ -1,11 +1,11 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtCore/QDebug>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QGraphicsSceneWheelEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QCursor>
-#include <QtGui/QGraphicsView>
+#include <QDebug>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneWheelEvent>
+#include <QPainter>
+#include <QCursor>
+#include <QGraphicsView>
 
 #include <FabricUI/GraphView/MainPanel.h>
 #include <FabricUI/GraphView/Pin.h>

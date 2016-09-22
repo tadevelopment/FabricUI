@@ -91,7 +91,7 @@ void BindingModelItem::setValue(
 {
   if (commit)
   {
-    QByteArray asciiArr = var.toString().toAscii();
+    QByteArray asciiArr = var.toString().toLatin1();
     m_rootExec.setTitle( asciiArr.data() );
     emitModelValueChanged(var);
   }

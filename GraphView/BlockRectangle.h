@@ -3,7 +3,7 @@
 #ifndef __UI_GraphView_BlockRectangle__
 #define __UI_GraphView_BlockRectangle__
 
-#include <QtGui/QGraphicsWidget>
+#include <QGraphicsWidget>
 
 namespace FabricUI {
 namespace GraphView {

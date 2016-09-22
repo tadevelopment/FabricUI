@@ -4,8 +4,8 @@
 #define __UI_KLEditor_MetaTypes__
 
 #include <ASTWrapper/KLDecl.h>
-#include <QtGui/QFont>
-#include <QtGui/QTextCharFormat>
+#include <QFont>
+#include <QTextCharFormat>
 
 namespace FabricUI
 {

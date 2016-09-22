@@ -5,8 +5,8 @@
 #ifndef FABRICUI_VALUEEDITOR_INTSLIDER_H
 #define FABRICUI_VALUEEDITOR_INTSLIDER_H
 
-#include <QtGui/QSlider>
-#include <QtGui/qevent.h>
+#include <QSlider>
+#include <qevent.h>
 
 namespace FabricUI {
 namespace ValueEditor {

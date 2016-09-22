@@ -5,12 +5,12 @@
 #ifndef __FABRICUI_LICENSING_LASTWARNINGDIALOG_H
 #define __FABRICUI_LICENSING_LASTWARNINGDIALOG_H
 
-#include <QtGui/QCursor>
-#include <QtGui/QDialog>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QTextBrowser>
-#include <QtGui/QVBoxLayout>
+#include <QCursor>
+#include <QDialog>
+#include <QLabel>
+#include <QPushButton>
+#include <QTextBrowser>
+#include <QVBoxLayout>
 
 class LastWarningDialog : public QDialog
 {

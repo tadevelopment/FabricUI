@@ -6,8 +6,8 @@
 #include "ItemMetadata.h"
 #include "QVariantRTVal.h"
 
-#include <QtCore/QVariant>
-#include <QtGui/QCheckBox>
+#include <QVariant>
+#include <QCheckBox>
 
 using namespace FabricUI::ValueEditor;
 
@@ -40,7 +40,7 @@ QWidget *BooleanCheckBoxViewItem::getWidget()
 
 void BooleanCheckBoxViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_checkBox->setChecked( v.value<bool>() );
+  m_checkBox->setChecked( getQVariantRTValValue<bool>(v) );
 }
 
 void BooleanCheckBoxViewItem::onStateChanged( int value )

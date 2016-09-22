@@ -11,10 +11,10 @@
 
 #include <assert.h>
 #include <FTL/JSONValue.h>
-#include <QtCore/QVariant>
-#include <QtGui/QColorDialog>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QPainter>
+#include <QVariant>
+#include <QColorDialog>
+#include <QHBoxLayout>
+#include <QPainter>
 
 using namespace FabricUI::ValueEditor;
 

@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtGui/QLayout>
-#include <QtGui/QMessageBox>
+#include <QLayout>
+#include <QMessageBox>
 #include "DFGSavePresetDialog.h"
 #include "DFGGetStringDialog.h"
 #include <FTL/FS.h>

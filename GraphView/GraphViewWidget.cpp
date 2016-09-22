@@ -2,9 +2,9 @@
 
 #include "GraphViewWidget.h"
 
-#include <QtCore/QDebug>
-#include <QtGui/QPainter>
-#include <QtOpenGL/QGLWidget>
+#include <QDebug>
+#include <QPainter>
+#include <QGLWidget>
 
 #ifdef FABRICUI_TIMERS
   #include <Util/Timer.h>

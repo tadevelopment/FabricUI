@@ -6,11 +6,11 @@
 #include "Node.h"
 #include "Graph.h"
 
-#include <QtGui/QWidget>
-#include <QtGui/QPainter>
-#include <QtGui/QLinearGradient>
-#include <QtGui/QStyleOptionGraphicsItem>
-#include <QtCore/QDebug>
+#include <QWidget>
+#include <QPainter>
+#include <QLinearGradient>
+#include <QStyleOptionGraphicsItem>
+#include <QDebug>
 
 #ifdef FABRICUI_TIMERS
   #include <Util/Timer.h>

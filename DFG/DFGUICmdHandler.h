@@ -9,10 +9,10 @@
 
 #include <FabricUI/DFG/DFGUINamespace.h>
 
-#include <QtCore/QList>
-#include <QtCore/QPoint>
-#include <QtCore/QSize>
-#include <QtCore/QString>
+#include <QList>
+#include <QPoint>
+#include <QSize>
+#include <QString>
 
 FABRIC_UI_DFG_NAMESPACE_BEGIN
 

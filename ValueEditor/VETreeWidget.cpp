@@ -12,11 +12,11 @@
 #include <FabricCore.h>
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 #include <FabricUI/Util/QTSignalBlocker.h>
-#include <QtCore/QDebug>
-#include <QtCore/QFile>
-#include <QtGui/QAction>
-#include <QtGui/QHeaderView>
-#include <QtGui/QMenu>
+#include <QDebug>
+#include <QFile>
+#include <QAction>
+#include <QHeaderView>
+#include <QMenu>
 
 using namespace FabricUI::ValueEditor;
 

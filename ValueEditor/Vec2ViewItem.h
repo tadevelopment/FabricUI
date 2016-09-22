@@ -6,7 +6,7 @@
 #define FABRICUI_VALUEEDITOR_VEC2VIEWITEM_H
 
 #include "BaseComplexViewItem.h"
-#include <QtGui/QVector2D>
+#include <QVector2D>
 
 class QLayout;
 

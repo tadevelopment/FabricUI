@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <QtCore/QUrl>
-#include <QtCore/QString>
+#include <QUrl>
+#include <QString>
 
 namespace FabricUI {
 namespace Util {

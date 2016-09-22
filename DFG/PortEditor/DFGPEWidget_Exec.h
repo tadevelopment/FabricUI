@@ -7,8 +7,8 @@
 
 #include <FabricCore.h>
 #include <FTL/StrRef.h>
-#include <QtGui/QFrame>
-#include <QtGui/QIcon>
+#include <QFrame>
+#include <QIcon>
 
 class QLineEdit;
 class QPushButton;

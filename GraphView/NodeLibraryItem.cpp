@@ -2,10 +2,12 @@
 
 #include "NodeLibraryItem.h"
 
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPaintEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QStyleOption>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPainter>
+#include <QDrag>
+#include <QMimeData>
+#include <QStyleOption>
 
 using namespace FabricUI::GraphView;
 

@@ -2,8 +2,8 @@
 
 #include "ValueEditorEventFilters.h"
 
-#include <QtCore/Qt>
-#include <QtGui/QKeyEvent>
+#include <Qt>
+#include <QKeyEvent>
 
 using namespace FabricUI::ValueEditor_Legacy;
 

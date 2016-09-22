@@ -102,7 +102,7 @@ BaseViewItem *ViewItemFactory::createViewItem(
     registerCreator( ArrayViewItem::CreateItem, ArrayViewItem::Priority );
     registerCreator( DictionaryViewItem::CreateItem, DictionaryViewItem::Priority );
 
-     // We put the QVariantRTVal bridge injection
+    // We put the QVariantRTVal bridge injection
     // code here, as before we build a view it won't
     // be needed
     RTVariant::injectRTHandler();

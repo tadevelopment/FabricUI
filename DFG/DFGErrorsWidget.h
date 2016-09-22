@@ -9,8 +9,8 @@
 #include <FabricCore.h>
 #include <FTL/OwnedPtr.h>
 #include <FTL/StrRef.h>
-#include <QtGui/QIcon>
-#include <QtGui/QWidget>
+#include <QIcon>
+#include <QWidget>
 
 class QTableWidget;
 

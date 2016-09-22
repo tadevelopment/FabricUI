@@ -6,8 +6,8 @@
 #include <FabricUI/Util/FabricResourcePath.h>
 
 #include <FTL/Path.h>
-#include <QtCore/QFile>
-#include <QtCore/QRegExp>
+#include <QFile>
+#include <QRegExp>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -36,7 +36,7 @@ static QString ExpandEnvironmentVariables( QString string )
       result += string.midRef( offset, pos - offset );
 
     QString envvarName = re.cap( 1 );
-    char const *envvarValue = getenv( envvarName.toAscii().constData() );
+    char const *envvarValue = getenv( envvarName.toLatin1().constData() );
     if ( envvarValue )
     {
 #if defined(FTL_PLATFORM_WINDOWS)

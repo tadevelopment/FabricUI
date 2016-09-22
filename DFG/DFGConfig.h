@@ -5,9 +5,9 @@
 
 #include <map>
 #include <string>
-#include <QtGui/QFont>
-#include <QtGui/QColor>
-#include <QtGui/QTextCharFormat>
+#include <QFont>
+#include <QColor>
+#include <QTextCharFormat>
 #include <FabricUI/KLEditor/EditorConfig.h>
 #include <FabricUI/GraphView/GraphConfig.h>
 #include <FTL/StrRef.h>

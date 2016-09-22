@@ -7,7 +7,7 @@
 #include <FabricUI/ModelItems/InstBlockPortItemMetadata.h>
 #include <FabricUI/ModelItems/InstBlockPortModelItem.h>
 #include <FabricUI/ModelItems/RootModelItem.h>
-#include <QtCore/QStringList>
+#include <QStringList>
 
 namespace FabricUI {
 namespace ModelItems {

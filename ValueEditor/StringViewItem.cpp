@@ -7,13 +7,13 @@
 #include "VELineEdit.h"
 #include "VEDialog.h"
 
-#include <QtGui/QPushButton>
-#include <QtGui/QLineEdit>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QFrame>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QPlainTextEdit>
+#include <QDialogButtonBox>
+#include <QFrame>
 
 using namespace FabricUI::ValueEditor;
 
@@ -65,7 +65,7 @@ QWidget *StringViewItem::getWidget()
 
 void StringViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_edit->setText( v.value<QString>() );
+  m_edit->setText( getQVariantRTValValue<QString>(v) );
 }
 
 void StringViewItem::onTextModified( QString text )

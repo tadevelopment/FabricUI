@@ -3,11 +3,11 @@
 #ifndef __UI_TreeView_TreeItem__
 #define __UI_TreeView_TreeItem__
 
-#include <QtGui/QWidget>
-#include <QtGui/QItemSelection>
-#include <QtGui/QPainter>
-#include <QtGui/QStyleOptionViewItem>
-#include <QtCore/QEvent>
+#include <QWidget>
+#include <QItemSelection>
+#include <QPainter>
+#include <QStyleOptionViewItem>
+#include <QEvent>
 
 #include <vector>
 

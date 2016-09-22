@@ -3,11 +3,11 @@
 #ifndef __UI_GraphView_Port__
 #define __UI_GraphView_Port__
 
-#include <QtCore/QMimeData>
-#include <QtGui/QGraphicsWidget>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
-#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QMimeData>
+#include <QGraphicsWidget>
+#include <QColor>
+#include <QPen>
+#include <QGraphicsSceneMouseEvent>
 
 #include <FTL/CStrRef.h>
 

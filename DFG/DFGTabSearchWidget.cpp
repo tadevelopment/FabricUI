@@ -6,7 +6,7 @@
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/DFG/Dialogs/DFGNewVariableDialog.h>
 
-#include <QtGui/QCursor>
+#include <QCursor>
 
 using namespace FabricServices;
 using namespace FabricUI;

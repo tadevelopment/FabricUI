@@ -12,11 +12,11 @@
 #include <FTL/Str.h>
 #include <FTL/FS.h>
 
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QDesktopServices>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
-#include <QtCore/QUrl>
+#include <QVBoxLayout>
+#include <QDesktopServices>
+#include <QMenu>
+#include <QAction>
+#include <QUrl>
 
 using namespace FabricServices;
 using namespace FabricUI;

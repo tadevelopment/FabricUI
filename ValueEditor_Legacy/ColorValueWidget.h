@@ -3,8 +3,8 @@
 #ifndef __UI_ValueEditor_ColorValueWidget__
 #define __UI_ValueEditor_ColorValueWidget__
 
-#include <QtGui/QMouseEvent>
-#include <QtGui/QColorDialog>
+#include <QMouseEvent>
+#include <QColorDialog>
 
 #include "ValueWidget.h"
 #include "LineEdit.h"

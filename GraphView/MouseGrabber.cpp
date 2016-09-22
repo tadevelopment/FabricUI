@@ -15,12 +15,12 @@
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/Util/LoadPixmap.h>
 
-#include <QtGui/QPainter>
-#include <QtGui/QCursor>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QPainter>
+#include <QCursor>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
+#include <QMenu>
+#include <QAction>
 
 using namespace FabricUI::GraphView;
 

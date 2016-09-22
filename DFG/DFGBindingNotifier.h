@@ -9,7 +9,7 @@
 #include <FTL/ArrayRef.h>
 #include <FTL/StrRef.h>
 #include <FabricUI/DFG/DFGNotifier.h>
-#include <QtCore/QSharedPointer>
+#include <QSharedPointer>
 
 namespace FabricUI {
 namespace DFG {

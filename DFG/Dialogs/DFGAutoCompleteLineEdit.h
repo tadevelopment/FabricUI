@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGAutoCompleteLineEdit__
 #define __UI_DFG_DFGAutoCompleteLineEdit__
 
-#include <QtGui/QLineEdit>
+#include <QLineEdit>
 
 namespace FabricUI
 {

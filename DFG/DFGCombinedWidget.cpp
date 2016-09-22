@@ -1,10 +1,10 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
 
 #include "DFGCombinedWidget.h"
 #include <FabricUI/Style/FabricStyle.h>

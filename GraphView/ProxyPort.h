@@ -3,9 +3,9 @@
 #ifndef __UI_GraphView_ProxyPort__
 #define __UI_GraphView_ProxyPort__
 
-#include <QtGui/QGraphicsWidget>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
+#include <QGraphicsWidget>
+#include <QColor>
+#include <QPen>
 
 #include "PortType.h"
 #include "PinCircle.h"

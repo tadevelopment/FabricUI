@@ -1,16 +1,16 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include <iostream>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QGridLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QCursor>
-#include <QtGui/QLabel>
-#include <QtCore/QDebug>
-#include <QtGui/QLineEdit>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QCursor>
+#include <QLabel>
+#include <QDebug>
+#include <QLineEdit>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include "DFGBaseDialog.h"
 

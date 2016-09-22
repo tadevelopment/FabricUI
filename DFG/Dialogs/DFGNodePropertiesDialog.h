@@ -3,12 +3,12 @@
 #ifndef __UI_DFG_DFGNodePropertiesDialog__
 #define __UI_DFG_DFGNodePropertiesDialog__
 
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QCheckBox>
-#include <QtGui/QShowEvent>
-#include <QtGui/QCheckBox>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QCheckBox>
+#include <QShowEvent>
+#include <QCheckBox>
 #include "DFGBaseDialog.h"
 #include "DFGRegisteredTypeLineEdit.h"
 #include "DFGExtensionLineEdit.h"

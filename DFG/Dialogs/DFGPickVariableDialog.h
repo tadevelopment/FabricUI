@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGPickVariableDialog__
 #define __UI_DFG_DFGPickVariableDialog__
 
-#include <QtGui/QLineEdit>
+#include <QLineEdit>
 #include "DFGBaseDialog.h"
 #include "DFGVariablePathComboBox.h"
 #include "DFGRegisteredTypeLineEdit.h"

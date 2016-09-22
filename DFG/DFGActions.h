@@ -3,7 +3,7 @@
 #ifndef _DFGACTIONS_H_
 #define _DFGACTIONS_H_
  
-#include <QtGui/QKeyEvent>
+#include <QKeyEvent>
 #include <FabricUI/DFG/DFGHotkeys.h>
 
 namespace FabricUI

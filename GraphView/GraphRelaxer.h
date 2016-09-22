@@ -3,7 +3,7 @@
 #ifndef __UI_GraphView_GraphRelaxer__
 #define __UI_GraphView_GraphRelaxer__
 
-#include <QtCore/QPointF>
+#include <QPointF>
 
 #include "GraphConfig.h"
 #include <FTL/CStrRef.h>

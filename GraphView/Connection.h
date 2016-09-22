@@ -3,11 +3,11 @@
 #ifndef __UI_GraphView_Connection__
 #define __UI_GraphView_Connection__
 
-#include <QtGui/QGraphicsPathItem>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
-#include <QtCore/QPointF>
-#include <QtCore/QRectF>
+#include <QGraphicsPathItem>
+#include <QColor>
+#include <QPen>
+#include <QPointF>
+#include <QRectF>
 
 #include "ConnectionTarget.h"
 #include "GraphicItemTypes.h"

@@ -5,8 +5,8 @@
 #ifndef FABRICUI_VALUEEDITOR_VIEWITEMCHILDROUTER_H
 #define FABRICUI_VALUEEDITOR_VIEWITEMCHILDROUTER_H
 
-#include <QtCore/QObject>
-#include <QtCore/QVariant>
+#include <QObject>
+#include <QVariant>
 
 namespace FabricUI {
 namespace ValueEditor {

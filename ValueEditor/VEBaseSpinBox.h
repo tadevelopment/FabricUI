@@ -9,11 +9,11 @@
 #include <assert.h>
 #include <FabricUI/Util/QTSignalBlocker.h>
 #include <math.h>
-#include <QtCore/QTimer>
-#include <QtGui/QApplication>
-#include <QtGui/qevent.h>
-#include <QtGui/QLineEdit>
-#include <QtGui/QSpinBox>
+#include <QTimer>
+#include <QApplication>
+#include <qevent.h>
+#include <QLineEdit>
+#include <QSpinBox>
 
 namespace FabricUI {
 namespace ValueEditor {

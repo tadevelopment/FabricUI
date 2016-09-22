@@ -5,9 +5,9 @@
 
 #include "NodeLibraryItem.h"
 
-#include <QtGui/QWidget>
-#include <QtGui/QLineEdit>
-#include <QtGui/QScrollArea>
+#include <QWidget>
+#include <QLineEdit>
+#include <QScrollArea>
 
 #include <vector>
 

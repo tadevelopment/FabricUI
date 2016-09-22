@@ -2,10 +2,10 @@
 
 #include "FabricStyle.h"
 
-#include <QtGui/QStyleHintReturn>
-#include <QtGui/QStyleOptionComplex>
-#include <QtGui/QStyleOptionButton>
-#include <QtGui/QStyleOption>
+#include <QStyleHintReturn>
+#include <QStyleOptionComplex>
+#include <QStyleOptionButton>
+#include <QStyleOption>
 
 using namespace FabricUI::Style;
 
@@ -47,3 +47,4 @@ void FabricStyle::polish(QPalette &palette)
   palette.setBrush(QPalette::Highlight, highlightColor);
   palette.setBrush(QPalette::HighlightedText, highlightedTextColor);
 }
+
