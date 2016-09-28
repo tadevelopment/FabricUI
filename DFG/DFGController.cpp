@@ -1440,9 +1440,10 @@ void DFGController::updatePresetPathDB()
   m_presetPathDictSTL.clear();
 
   // insert fixed results for special nodes
-  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "var", 2 ) );
-  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "get", 2 ) );
-  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "set", 2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "var",      2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "get",      2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "set",      2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "backdrop", 2 ) );
 
   QStringList variables =
     getVariableWordsFromBinding(
