@@ -120,6 +120,7 @@ namespace FabricUI
 
       QColor                           m_nodeDefaultHeaderColor;
       QLineEdit                       *m_presetNameLabel;
+      QLineEdit                       *m_presetImportPathname;
       QLineEdit                       *m_textEdit;
       QLineEdit                       *m_nameEdit;
       QPlainTextEdit                  *m_toolTipEdit;

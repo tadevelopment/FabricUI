@@ -25,6 +25,7 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
   setWindowTitle("Node Properties");
 
   m_presetNameLabel = NULL;
+  m_presetImportPathname = NULL;
   m_textEdit = NULL;
   m_nameEdit = new QLineEdit("", this);
   m_nameEdit->setMinimumWidth(250);
@@ -87,6 +88,12 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
       {
         m_presetNameLabel = new QLineEdit( subExec.getTitle(), this );
         m_presetNameLabel->setReadOnly(true);
+
+        QString importPathname = subExec.getImportPathname();
+        if (importPathname.isEmpty())
+          importPathname = "file not found, using embedded version";
+        m_presetImportPathname = new QLineEdit( importPathname, this );
+        m_presetImportPathname->setReadOnly(true);
       }
     }
     else if ( nodeType == FabricCore::DFGNodeType_User )
@@ -118,6 +125,8 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
 
   if ( m_presetNameLabel )
     addInput( m_presetNameLabel, "preset name", "properties" );
+  if ( m_presetImportPathname )
+    addInput( m_presetImportPathname, "preset filepath", "properties" );
   if ( m_textEdit )
     addInput( m_textEdit, "text", "properties" );
   addInput( m_nameEdit, "node name", "properties" );
