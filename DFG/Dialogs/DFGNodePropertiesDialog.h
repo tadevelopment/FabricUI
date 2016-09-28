@@ -119,14 +119,14 @@ namespace FabricUI
       DFGController                   *m_controller;
 
       QColor                           m_nodeDefaultHeaderColor;
-      QLabel                          *m_presetNameLabel;
-      QLineEdit *m_textEdit;
+      QLineEdit                       *m_presetNameLabel;
+      QLineEdit                       *m_textEdit;
       QLineEdit                       *m_nameEdit;
       QPlainTextEdit                  *m_toolTipEdit;
       QLineEdit                       *m_docUrlEdit;
       ColorButton *m_nodeColorButton;
       ColorButton *m_headerColorButton;
-      QCheckBox *m_allowHeaderColorCheckBox;
+      QCheckBox   *m_allowHeaderColorCheckBox;
       ColorButton *m_textColorButton;
     };
 

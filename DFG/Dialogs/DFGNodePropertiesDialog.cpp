@@ -84,7 +84,10 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
     {
       subExec = exec.getSubExec( m_nodeName.c_str() );
       if ( subExec.isPreset() )
-        m_presetNameLabel = new QLabel( subExec.getTitle(), this );
+      {
+        m_presetNameLabel = new QLineEdit( subExec.getTitle(), this );
+        m_presetNameLabel->setReadOnly(true);
+      }
     }
     else if ( nodeType == FabricCore::DFGNodeType_User )
     {
@@ -118,8 +121,8 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
   if ( m_textEdit )
     addInput( m_textEdit, "text", "properties" );
   addInput( m_nameEdit, "node name", "properties" );
-  addInput(m_toolTipEdit, "tooltip", "properties");
-  addInput(m_docUrlEdit, "doc url", "properties");
+  addInput( m_toolTipEdit, "tooltip", "properties" );
+  addInput( m_docUrlEdit, "doc url", "properties" );
   addInput( m_nodeColorButton, "node color", "properties" );
   addInput( m_textColorButton, "text color", "properties" );
   addInput( m_allowHeaderColorCheckBox, "custom header color", "properties" );
