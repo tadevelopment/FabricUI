@@ -337,11 +337,11 @@ void DFGCombinedWidget::onAdditionalMenuActionsRequested(QString name, QMenu * m
 
       menu->addSeparator();
 
-      QAction *importGraphInDCCAction = menu->addAction("Import Graph");
+      QAction *importGraphInDCCAction = menu->addAction("Load Graph");
       menu->addAction( importGraphInDCCAction );
       QObject::connect(importGraphInDCCAction, SIGNAL(triggered()), this, SLOT(onImportGraphInDCC()));
 
-      QAction *exportGraphInDCCAction = menu->addAction("Export Graph");
+      QAction *exportGraphInDCCAction = menu->addAction("Save Graph");
       menu->addAction( exportGraphInDCCAction );
       QObject::connect(exportGraphInDCCAction, SIGNAL(triggered()), this, SLOT(onExportGraphInDCC()));
     }
