@@ -1591,6 +1591,20 @@ QStringList DFGController::getVariableWordsFromBinding(
   return words;
 }
 
+QList<FabricCore::RTVal> DFGController::getVariableValuesFromBinding(
+  FabricCore::DFGBinding &binding,
+  FTL::CStrRef currentExecPath,
+  QStringList varTypes)
+{
+  QList<FabricCore::RTVal> varValueList;
+  foreach(QString valName, getVariableWordsFromBinding(binding, currentExecPath, varTypes))
+  {
+    if(binding.getExec().hasVar(valName.toUtf8().constData()))
+      varValueList.append(binding.getExec().getVarValue(valName.toUtf8().constData()));
+  }
+  return varValueList;
+}
+
 QStringList DFGController::getVariableWordsFromBinding(FabricCore::DFGBinding & binding, FTL::CStrRef currentExecPath)
 {
   QStringList varTypes;
