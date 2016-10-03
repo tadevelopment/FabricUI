@@ -18,6 +18,8 @@ std::vector<std::string> DFGLogWidget::sUnconsumedMessages;
 DFGLogWidget::DFGLogWidget( const DFGConfig & config )
   : m_config( config )
 {
+  setObjectName( "DFGLogWidget" );
+  
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
   QVBoxLayout * layout = new QVBoxLayout();
