@@ -37,7 +37,7 @@ DFGLogWidget::DFGLogWidget( const DFGConfig & config )
     );
   layout->addWidget(m_text);
 
-  QString styleSheet = LoadFabricStyleSheet( "DFGLogWidget.qss" );
+  QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
   if ( !styleSheet.isEmpty() )
     setStyleSheet( styleSheet );
 

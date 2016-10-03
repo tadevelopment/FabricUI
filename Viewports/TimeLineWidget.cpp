@@ -520,7 +520,7 @@ void TimeLineWidget::simModeChanged(int index)
 
 void TimeLineWidget::reloadStyles()
 {
-  QString styleSheet = LoadFabricStyleSheet( FTL_STR("DFGWidget.qss") );
+  QString styleSheet = LoadFabricStyleSheet( FTL_STR("FabricUI.qss") );
   if ( !styleSheet.isEmpty() )
     setStyleSheet( styleSheet );
 }

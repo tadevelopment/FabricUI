@@ -63,7 +63,7 @@ QString LoadFabricStyleSheet( FTL::StrRef basename )
   {
     fprintf(
       stderr,
-      "VETreeWidget::reloadStyles: unable to open '%s'\n",
+      "LoadFabricStyleSheet: unable to open '%s'\n",
       qssPath.toUtf8().constData()
       );
     return QString();
@@ -75,7 +75,7 @@ QString LoadFabricStyleSheet( FTL::StrRef basename )
   {
     fprintf(
       stderr,
-      "VETreeWidget::reloadStyles: style sheet '%s' is empty\n",
+      "LoadFabricStyleSheet: style sheet '%s' is empty\n",
       qssPath.toUtf8().constData()
       );
   }

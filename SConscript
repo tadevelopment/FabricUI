@@ -197,6 +197,7 @@ if uiLibPrefix == 'ui':
     [
       Glob(os.path.join(env.Dir('ValueEditor').srcnode().abspath, '*.qss')),
       Glob(os.path.join(env.Dir('DFG').srcnode().abspath, '*.qss')),
+      Glob(os.path.join(env.Dir('.').srcnode().abspath, '*.qss')),
       ]
     )
   env.Depends(uiLib, qss)

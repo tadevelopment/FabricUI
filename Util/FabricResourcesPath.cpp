@@ -21,7 +21,7 @@ FTL::StrRef FabricResourcesDirPath()
     {
       fprintf(
         stderr,
-        "VETreeWidget::reloadStyles: missing FABRIC_DIR environment variable\n"
+        "FabricResourcesDirPath: missing FABRIC_DIR environment variable\n"
         );
     }
     else

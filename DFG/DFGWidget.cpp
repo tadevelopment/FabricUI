@@ -2478,7 +2478,7 @@ void DFGWidget::onExecChanged()
 
 void DFGWidget::reloadStyles()
 {
-  QString styleSheet = LoadFabricStyleSheet( "DFGWidget.qss" );
+  QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
   if ( !styleSheet.isEmpty() )
     setStyleSheet( styleSheet );
 }

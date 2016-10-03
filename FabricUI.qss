@@ -6,44 +6,18 @@
  *
  */
 
-QMenu::item:disabled {
+/****************************************************************************
+ * Shared
+ ***************************************************************************/
+
+QMenu::item:disabled
+{
   color: #777777;
 }
 
-QMenu::item:disabled:selected {
+QMenu::item:disabled:selected
+{
   background-color: transparent;
-}
-
-#DFGErrorsWidget QTableWidget
-{
-  border: none;
-  margin: 0px;
-  padding: 0px;
-}
-
-#DFGExecHeaderWidget
-{
-  margin: 0px;
-  padding: 0px;
-  spacing: 0px;
-}
-
-#DFGExecHeaderWidget #DFGRegWidget
-{
-  background-color: #50626e;
-}
-
-#DFGExecHeaderWidget #DFGRegWidget > QWidget
-{
-  vertical-align: middle;
-}
-
-#DFGExecHeaderWidget #DFGRegWidget,
-#DFGExecHeaderWidget #DFGPresetSplitWidget
-{
-  margin: 0px;
-  padding: 3px 4px;
-  spacing: 0px;
 }
 
 #DFGExecHeaderWidget QLabel,
@@ -52,31 +26,6 @@ QMenu::item:disabled:selected {
 {
   font: 12px "Lucida";
   color: #C7D2DA;
-}
-
-#DFGExecHeaderWidget #DFGPresetNameLabel
-{
-  background-color: #50626e;
-}
-
-#DFGExecHeaderWidget #DFGPresetPathSep
-{
-  color: #3c4450;
-  font-weight: bold;
-  qproperty-text: "//";
-  background-color: #50626e;
-}
-
-#DFGExecHeaderWidget #DFGExecPathLabel
-{
-  background-color: #50626e;
-}
-
-#DFGExecHeaderWidget #DFGPresetSplitLabel
-{
-  qproperty-text: "This node or one of its parents is an instance of a preset and cannot be changed unless split from the preset";
-  qproperty-wordWrap: true;
-  background-color: #ccb455;
 }
 
 #DFGExecHeaderWidget QPushButton,
@@ -97,80 +46,20 @@ QMenu::item:disabled:selected {
   border-radius: 3px;
 }
 
-#DFGExecHeaderWidget QPushButton
+/****************************************************************************
+ * DFGExecHeaderWidget
+ ***************************************************************************/
+
+#DFGErrorsWidget QTableWidget
 {
-  background-color: #3c4450;
+  border: none;
+  margin: 0px;
+  padding: 0px;
 }
 
-#DFGExecHeaderWidget QPushButton:hover
-{
-  color: #eee;
-  background-color: #525a66;
-}
-
-#DFGPEWidget_Elements QComboBox
-{
-  border: 0;
-  border-radius: 3px;
-  padding: 3px 3px 3px 6px;
-  margin: 0;
-
-  color: #e1ffff;
-  background-color: #333;
-}
-
-#DFGPEWidget_Elements QComboBox::drop-down
-{
-    width: 18px;
-    background-color: #50626e;
-
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-}
-
-#DFGPEWidget_Elements QComboBox QAbstractItemView
-{
-    color: #e1ffff;
-    background-color: #333;
-}
-
-#DFGPEWidget_Elements QComboBox::down-arrow
-{
-    image: url(${FABRIC_DIR}/Resources/Icons/DFGDown.png);
-    width: 9px;
-    height: 9px;
-}
-
-
-#DFGPEWidget_Elements QPushButton,
-#DFGPEWidget_Elements QLineEdit
-{
-  background-color: #272822;
-}
-
-#DFGPEWidget_Elements QPushButton:hover
-{
-  color: #eee;
-  background-color: #555849;
-}
-
-#DFGPEWidget_Elements_AddElementContainer QPushButton
-{
-  border: 1px solid #333333;
-  background-color: #444444;
-  padding: 2px 4px;
-  icon-size: 20px 20px;
-}
-
-#DFGPEWidget_Elements_AddElementContainer QLabel
-{
-  color: white;
-}
-
-#DFGPEWidget_Elements_AddElementContainer QPushButton:hover
-{
-  background-color: #333333;
-}
+/****************************************************************************
+ * DFGExecHeaderWidget
+ ***************************************************************************/
 
 #DFGExecHeaderWidget QPushButton
 {
@@ -222,6 +111,71 @@ QMenu::item:disabled:selected {
 {
   padding: 0px 4px 0px 4px;
 }
+
+#DFGExecHeaderWidget
+{
+  margin: 0px;
+  padding: 0px;
+  spacing: 0px;
+}
+
+#DFGExecHeaderWidget #DFGRegWidget
+{
+  background-color: #50626e;
+}
+
+#DFGExecHeaderWidget #DFGRegWidget > QWidget
+{
+  vertical-align: middle;
+}
+
+#DFGExecHeaderWidget #DFGRegWidget,
+#DFGExecHeaderWidget #DFGPresetSplitWidget
+{
+  margin: 0px;
+  padding: 3px 4px;
+  spacing: 0px;
+}
+
+#DFGExecHeaderWidget #DFGPresetNameLabel
+{
+  background-color: #50626e;
+}
+
+#DFGExecHeaderWidget #DFGPresetPathSep
+{
+  color: #3c4450;
+  font-weight: bold;
+  qproperty-text: "//";
+  background-color: #50626e;
+}
+
+#DFGExecHeaderWidget #DFGExecPathLabel
+{
+  background-color: #50626e;
+}
+
+#DFGExecHeaderWidget #DFGPresetSplitLabel
+{
+  qproperty-text: "This node or one of its parents is an instance of a preset and cannot be changed unless split from the preset";
+  qproperty-wordWrap: true;
+  background-color: #ccb455;
+}
+
+#DFGExecHeaderWidget QPushButton
+{
+  background-color: #3c4450;
+}
+
+#DFGExecHeaderWidget QPushButton:hover
+{
+  color: #eee;
+  background-color: #525a66;
+}
+
+/****************************************************************************
+ * DFGPEWidget
+ ***************************************************************************/
 
 #DFGPEWidget_Elements
 {
@@ -320,6 +274,74 @@ QMenu::item:disabled:selected {
   color: #cbcbcb;
   background-color: #333;
 }
+
+#DFGPEWidget_Elements QComboBox
+{
+  border: 0;
+  border-radius: 3px;
+  padding: 3px 3px 3px 6px;
+  margin: 0;
+
+  color: #e1ffff;
+  background-color: #333;
+}
+
+#DFGPEWidget_Elements QComboBox::drop-down
+{
+    width: 18px;
+    background-color: #50626e;
+
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+#DFGPEWidget_Elements QComboBox QAbstractItemView
+{
+    color: #e1ffff;
+    background-color: #333;
+}
+
+#DFGPEWidget_Elements QComboBox::down-arrow
+{
+    image: url(${FABRIC_DIR}/Resources/Icons/DFGDown.png);
+    width: 9px;
+    height: 9px;
+}
+
+
+#DFGPEWidget_Elements QPushButton,
+#DFGPEWidget_Elements QLineEdit
+{
+  background-color: #272822;
+}
+
+#DFGPEWidget_Elements QPushButton:hover
+{
+  color: #eee;
+  background-color: #555849;
+}
+
+#DFGPEWidget_Elements_AddElementContainer QPushButton
+{
+  border: 1px solid #333333;
+  background-color: #444444;
+  padding: 2px 4px;
+  icon-size: 20px 20px;
+}
+
+#DFGPEWidget_Elements_AddElementContainer QLabel
+{
+  color: white;
+}
+
+#DFGPEWidget_Elements_AddElementContainer QPushButton:hover
+{
+  background-color: #333333;
+}
+
+/****************************************************************************
+ * DFGTimelineWidget
+ ***************************************************************************/
 
 #DFGTimelineWidget QWidget
 {
@@ -446,4 +468,14 @@ QMenu::item:disabled:selected {
   color: gray;
   font-weight: bold;
   qproperty-text: "//";
+}
+
+/****************************************************************************
+ * DFGLogWidget
+ ***************************************************************************/
+
+#DFGLogWidget QPlainTextEdit {
+  background-color: rgb(39,40,34);
+  font: 11px "Roboto Mono";
+  border: 1px solid black;
 }
