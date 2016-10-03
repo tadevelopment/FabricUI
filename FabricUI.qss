@@ -345,7 +345,7 @@ QMenu::item:disabled:selected
 
 #DFGTimelineWidget QWidget
 {
-  font: 11px "Roboto";
+  font: 11px "Roboto Regular";
 }
 
 #DFGTimelineWidget QPushButton
@@ -367,7 +367,7 @@ QMenu::item:disabled:selected
   border-radius: 3px;
   color: #C7D2DA;
   background-color: #50626e;
-  font: 11px "Roboto";
+  font: 11px "Roboto Regular";
 }
 
 #DFGTimelineWidget #DFGTimelineGoToStartFrame
@@ -505,7 +505,7 @@ QMenu::item:disabled:selected
 #ValueEditor QComboBox,
 #ValueEditor QCheckBox::indicator
 {
-  font: 11pt "Roboto";
+  font: 11pt "Roboto Regular";
 
   border: 0px;
   border-radius: 4px;
@@ -610,7 +610,7 @@ QTreeView#ValueEditor::item
 
 QTreeView#ValueEditor
 {
-  font: 11pt "Roboto";
+  font: 11pt "Roboto Regular";
 }
 
 #ValueEditor #VELeft
@@ -631,7 +631,7 @@ QTreeView#ValueEditor
 
 QTreeView#ValueEditor::item QLabel
 {
-  font: 12pt "Roboto";
+  font: 12pt "Roboto Bold";
   font-weight: bold;
 }
 
