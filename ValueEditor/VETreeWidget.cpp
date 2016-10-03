@@ -66,7 +66,7 @@ VETreeWidget::~VETreeWidget()
 
 void VETreeWidget::reloadStyles()
 {
-  QString styleSheet = LoadFabricStyleSheet( FTL_STR("ValueEditor.qss") );
+  QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
   if ( !styleSheet.isEmpty() )
     setStyleSheet( styleSheet );
 }

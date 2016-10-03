@@ -7,6 +7,8 @@
 #include <FabricUI/DFG/VariableListTreeItem.h>
 #include <FabricUI/DFG/DFGWidget.h>
 
+#include <FabricUI/Util/LoadFabricStyleSheet.h>
+
 #include <FTL/JSONValue.h>
 #include <FTL/MapCharSingle.h>
 #include <FTL/Str.h>
@@ -35,6 +37,12 @@ PresetTreeWidget::PresetTreeWidget(
   : m_dfgController( dfgController )
   , m_showsPresets( showsPresets )
 {
+  setObjectName( "DFGPresetTreeWidget" );
+
+  QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
+  if ( !styleSheet.isEmpty() )
+    setStyleSheet( styleSheet );
+
   if(showSearch)
     m_searchEdit = new QLineEdit(this);
   else
