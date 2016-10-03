@@ -60,6 +60,9 @@ ManipulationTool::~ManipulationTool()
 void ManipulationTool::toolOnSetup() {
   try
   {
+    // Proto tool setup
+    FabricCore::RTVal::Create( m_view->getClient(), "RenderEngineInlineDrawingSetup", 0, 0 );
+
     FabricCore::RTVal eventDispatcherHandle = FabricCore::RTVal::Create(m_view->getClient(), "EventDispatcherHandle", 0, 0);
     if(eventDispatcherHandle.isValid())
     {
