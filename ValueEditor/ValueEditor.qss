@@ -2,45 +2,21 @@
  *  Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
  */
 
-QTreeView#ValueEditor
-{
-    font: 11pt "Roboto";
+#ValueEditor, #ValueEditor QWidget {
+    background-color: rgb(72,72,72);
 }
 
-QTreeView#ValueEditor::item
-{
-    height: 20px;
-    margin: 2px 8px 2px 4px;
+#ValueEditor QLineEdit,
+#ValueEditor QTextEdit {
+    background: #333;
 }
 
-#VELeft
-{
-    margin-right: 2px;
-}
-
-#VEMiddle
-{
-    margin-left: 2px;
-    margin-right: 2px;
-}
-
-#VERight
-{
-    margin-left: 2px;
-}
-
-QTreeView#ValueEditor::item QLabel
-{
-    font: 12pt "Roboto";
-    font-weight: bold;
-}
-
-QLineEdit,
-QTextEdit,
-QDoubleSpinBox,
-QSpinBox,
-QComboBox
-{
+#ValueEditor QLineEdit,
+#ValueEditor QTextEdit,
+#ValueEditor QDoubleSpinBox,
+#ValueEditor QSpinBox,
+#ValueEditor QComboBox,
+#ValueEditor QCheckBox::indicator {
     font: 11pt "Roboto";
 
     border: 0px;
@@ -51,31 +27,159 @@ QComboBox
     background-color: #333;
 }
 
-QLineEdit:focus,
-QDoubleSpinBox:focus,
-QSpinBox:focus,
-QTextEdit:focus,
-QComboBox:focus
-{
+#ValueEditor QLineEdit:focus,
+#ValueEditor QDoubleSpinBox:focus,
+#ValueEditor QSpinBox:focus,
+#ValueEditor QTextEdit:focus,
+#ValueEditor QComboBox:focus {
     background-color: #2F2F2F;    
 }
 
-#VEIntSliderViewItem QLineEdit
+#ValueEditor #MinIndexEdit,
+#ValueEditor #MaxIndexEdit,
+#ValueEditor #ArraySizeEdit {
+    margin-left:0px;
+    margin-bottom: 0px;
+}
+
+#ValueEditor QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+}
+
+#ValueEditor QCheckBox::indicator:checked {
+    image: url(${FABRIC_DIR}/Resources/Icons/DFGCheck.png);
+}
+
+#ValueEditor #ColorItem > QPushButton {
+    width: 20px;
+    height: 20px;
+    max-width: 20px;
+    max-height: 20px;
+    border-style: outset;
+    border-radius: 3px;
+}
+
+#ValueEditor #FilePathItem > QPushButton {
+    max-width: 20px;
+}
+
+#ValueEditor #FilePathItem > QLineEdit {
+    margin: 0px;
+}
+
+#ValueEditor #StringItem > QPushButton {
+    max-width: 20px;
+    max-height: 20px;
+    border-image: url(${FABRIC_DIR}/Resources/Icons/mag_glass.png);
+    border-style: outset;
+    border-radius: 3px;
+    background-color: #2A2A2A;
+}
+
+#ValueEditor #ColorItem > QComboBox {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+#ValueEditor #ColorItem > QComboBox::drop-down {
+  subcontrol-origin: margin;
+}
+
+#ValueEditor #ColorItem QAbstractItemView {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+#ValueEditor QComboBox::drop-down {
+    subcontrol-origin: margin;  
+}
+
+#ValueEditor QComboBox QAbstractItemView {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+QTreeView#ValueEditor::item {
+    padding: 1px;
+    height: 20px;
+}
+
+QTreeView#ValueEditor
+{
+    font: 11pt "Roboto";
+}
+
+#ValueEditor #VELeft
+{
+    margin-right: 2px;
+}
+
+#ValueEditor #VEMiddle
+{
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+#ValueEditor #VERight
+{
+    margin-left: 2px;
+}
+
+QTreeView#ValueEditor::item QLabel
+{
+    font: 12pt "Roboto";
+    font-weight: bold;
+}
+
+#ValueEditor #VEIntSliderViewItem QLineEdit
 {
     width: 40px;
 }
 
-#VEFloatSliderViewItem QLineEdit
+#ValueEditor #VEFloatSliderViewItem QLineEdit
 {
     width: 72px;
 }
 
-QDoubleSpinBox
+#ValueEditor QDoubleSpinBox
 {
     min-width: 90px;
 }
 
-QComboBox::drop-down
+#ValueEditor QSpinBox::up-button,
+#ValueEditor QSpinBox::down-button,
+#ValueEditor QDoubleSpinBox::up-button,
+#ValueEditor QDoubleSpinBox::down-button {
+    subcontrol-origin: margin;
+    border: 0px;
+    width: 14px;
+    padding: 2px;
+    background-color: #50626e;
+}
+
+#ValueEditor QSpinBox::up-button:hover,
+#ValueEditor QSpinBox::down-button:hover,
+#ValueEditor QDoubleSpinBox::up-button:hover,
+#ValueEditor QDoubleSpinBox::down-button:hover {
+    background-color: #a0a0a0;
+}
+
+#ValueEditor QSpinBox::up-button,
+#ValueEditor QDoubleSpinBox::up-button {
+    border-top-right-radius: 4px;
+    subcontrol-position: top right;
+    image: url(${FABRIC_DIR}/Resources/Icons/DFGOneUp.png);
+}
+
+#ValueEditor QSpinBox::down-button,
+#ValueEditor QDoubleSpinBox::down-button {
+    border-bottom-right-radius: 4px;
+    subcontrol-position: bottom right;
+    image: url(${FABRIC_DIR}/Resources/Icons/DFGOneDown.png);
+}
+
+#ValueEditor QComboBox::drop-down
 {
   width: 18px;
   background-color: #50626e;
@@ -84,14 +188,18 @@ QComboBox::drop-down
   border-bottom-right-radius: 3px;
 }
 
-QComboBox::down-arrow
+#ValueEditor QComboBox::drop-down:hover {
+    background-color: #a0a0a0;
+}
+
+#ValueEditor QComboBox::down-arrow
 {
     image: url(${FABRIC_DIR}/Resources/Icons/DFGDown.png);
     width: 9px;
     height: 9px;
 }
 
-QPushButton
+#ValueEditor QPushButton
 {
     padding: 3px;
     border: none;
@@ -100,34 +208,30 @@ QPushButton
     background-color: #50626e;
 }
 
-QPushButton#VERight
+#ValueEditor QPushButton#VERight
 {
     height: 20px;
 }
 
-QPushButton:hover
+#ValueEditor QPushButton:hover
 {
     color: #eee;
     background-color: #a0a0a0;
 }
 
-#VEStringViewItem > QPushButton
+#ValueEditor #VEStringViewItem > QPushButton
 {
     font: 11px "FontAwesome";
     qproperty-text: ""; /* FontAwesome magnifying glass */
 }
 
-#VEFilepathViewItem > QPushButton
+#ValueEditor #VEFilepathViewItem > QPushButton
 {
     font: 11px "FontAwesome";
     qproperty-text: ""; /* FontAwesome open folder */
 }
 
-QSlider
-{
-}
-
-QSlider::handle:horizontal
+#ValueEditor QSlider::handle:horizontal
 {
   background: #e1ffff;
   border: none;
@@ -136,7 +240,7 @@ QSlider::handle:horizontal
   border-radius: 3px;
 }
 
-QSlider::add-page:horizontal {
+#ValueEditor QSlider::add-page:horizontal {
     background-color: #2F2F2F;    
     border: none;
     border-radius: 1px;
@@ -144,7 +248,7 @@ QSlider::add-page:horizontal {
     margin: 8px 0px;
 }
 
-QSlider::sub-page:horizontal {
+#ValueEditor QSlider::sub-page:horizontal {
     background-color: #50626e;
     border: none;
     border-radius: 1px;
