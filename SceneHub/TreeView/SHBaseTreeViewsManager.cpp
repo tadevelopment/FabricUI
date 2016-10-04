@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVBoxLayout>
 #include "SHBaseTreeViewsManager.h"
+#include <FabricUI/DFG/DFGBindingUtils.h>
 
 using namespace FabricCore;
 using namespace FabricUI;
@@ -227,7 +228,7 @@ void SHBaseTreeViewsManager::onUpdateSceneList() {
  
   QStringList typeList;
   typeList.append("SHGLScene");
-  QStringList sceneNameList = DFG::DFGController::getVariableWordsFromBinding( 
+  QStringList sceneNameList = DFG::DFGBindingUtils::getVariableWordsFromBinding( 
     m_dfgWidget->getDFGController()->getBinding(), 
     ".", 
     typeList);

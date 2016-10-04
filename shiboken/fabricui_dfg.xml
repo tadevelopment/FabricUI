@@ -3,6 +3,7 @@
   <namespace-type name="FabricUI" generate="no">
     <namespace-type name="DFG" generate="yes">
       <object-type name="DFGConfig" />-
+      <object-type name="DFGBindingUtils" />-
       <object-type name="DFGController" />-
       <object-type name="DFGHotkeys" />
       <object-type name="DFGLogWidget" />

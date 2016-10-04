@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include "DFGVariablePathComboBox.h"
-#include "../DFGController.h"
+#include "../DFGBindingUtils.h"
 #include <FTL/CStrRef.h>
 #include <FTL/JSONValue.h>
 
@@ -19,7 +19,7 @@ DFGVariablePathComboBox::DFGVariablePathComboBox(
   setEditable(true);
 
   FabricCore::DFGBinding localBinding = binding;
-  QStringList words = DFGController::getVariableWordsFromBinding(localBinding, currentExecPath);
+  QStringList words = DFGBindingUtils::getVariableWordsFromBinding(localBinding, currentExecPath);
   words.sort();
   addItems(words);
 }
