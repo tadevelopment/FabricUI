@@ -6,7 +6,9 @@
 #include "TimeLineWidget.h"
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 
+#include <QMenu>
 #include <QInputDialog>
+#include <QDesktopWidget>
 #include <QLabel>
 
 #include <algorithm>
