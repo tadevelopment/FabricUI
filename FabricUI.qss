@@ -345,7 +345,8 @@ QMenu::item:disabled:selected
 
 #DFGTimelineWidget QWidget
 {
-  font: 11px "Roboto Regular";
+  font: 11px "Roboto";
+  font-weight: normal;
 }
 
 #DFGTimelineWidget QPushButton
@@ -367,7 +368,8 @@ QMenu::item:disabled:selected
   border-radius: 3px;
   color: #C7D2DA;
   background-color: #50626e;
-  font: 11px "Roboto Regular";
+  font: 11px "Roboto";
+  font-weight: normal;
 }
 
 #DFGTimelineWidget #DFGTimelineGoToStartFrame
@@ -505,7 +507,7 @@ QMenu::item:disabled:selected
 #ValueEditor QComboBox,
 #ValueEditor QCheckBox::indicator
 {
-  font: 11pt "Roboto Regular";
+  font: 11pt "Roboto";
 
   border: 0px;
   border-radius: 4px;
@@ -602,15 +604,17 @@ QMenu::item:disabled:selected
   margin-right: 0px;
 }
 
-QTreeView#ValueEditor::item
+#ValueEditor::item
 {
   padding: 1px;
   height: 20px;
 }
 
-QTreeView#ValueEditor
+#ValueEditor,
+#ValueEditor::item
 {
-  font: 11pt "Roboto Regular";
+  font: 11pt "Roboto";
+  font-weight: normal;
 }
 
 #ValueEditor #VELeft
@@ -629,9 +633,10 @@ QTreeView#ValueEditor
   margin-left: 2px;
 }
 
-QTreeView#ValueEditor::item QLabel
+#ValueEditor::item #NotInspectableItem,
+#ValueEditor::item #RTValItem
 {
-  font: 12pt "Roboto Bold";
+  font: 12pt "Roboto";
   font-weight: bold;
 }
 

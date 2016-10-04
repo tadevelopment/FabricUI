@@ -91,7 +91,8 @@ DFGWidget::DFGWidget(
         {
           QString fontPathnameQS = StrRefFilenameToQString( fontPathname );
           // qDebug() << fontPathnameQS;
-          QFontDatabase::addApplicationFont( fontPathnameQS );
+          if ( QFontDatabase::addApplicationFont( fontPathnameQS ) == -1 )
+            qDebug() << "WARNING: failed to add font: " << fontPathnameQS;
         }
       }
     }
