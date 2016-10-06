@@ -309,7 +309,7 @@ class SceneHubWindow(CanvasWindow):
         """ Toggles the playback.
         """
         
-        self.timeLine.play()
+        self.timeLine.onPlayButtonToggled(True)
 
     def _onToggleSharedObjectSelection(self):
         self.viewportsManager.getSHRenderer().enableSharedObjectSelection( self.toggleSharedObjectSelection.isChecked() )
