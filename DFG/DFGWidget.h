@@ -4,7 +4,7 @@
 #define __UI_DFG_DFGWidget__
 
 #include <QSettings>
-#include <QWidget>
+#include <QFrame>
 #include <QMenuBar>
 #include <Commands/CommandStack.h>
 #include <FabricUI/GraphView/InstBlock.h>
@@ -29,7 +29,7 @@ namespace DFG {
     class DFGExecHeaderWidget;
     class DFGUICmdHandler;
 
-    class DFGWidget : public QWidget
+    class DFGWidget : public QFrame
     {
       Q_OBJECT
 

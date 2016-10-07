@@ -34,6 +34,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSplitter>
+#include <QFrame>
 
 using namespace FabricServices;
 using namespace FabricUI;
@@ -53,7 +54,7 @@ DFGWidget::DFGWidget(
   const DFGConfig & dfgConfig,
   bool overTakeBindingNotifications
   )
-  : QWidget( parent )
+  : QFrame( parent )
   , m_errorsWidget( 0 )
   , m_uiGraph( 0 )
   , m_router( 0 )
@@ -61,6 +62,8 @@ DFGWidget::DFGWidget(
   , m_dfgConfig( dfgConfig )
   , m_isEditable( false )
 {
+  setObjectName("DFGWidget");
+
   reloadStyles();
 
   m_uiController = new DFGController(
