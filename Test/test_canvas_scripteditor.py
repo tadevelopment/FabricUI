@@ -36,10 +36,12 @@ class CanvasTestWindow(CanvasWindow):
   
   def setTest(self, name):    
     self.test_output = ""
+    # Overwrite the scripteditor output to capture prints
+    self.scriptEditor.stdout = self
     
   def _reportCallback(self, source, level, line):
     if not (line.startswith("[FABRIC:MT] Loaded extension") or line.startswith("graph loaded")):
-      self.test_output += line + "\n"
+      self.test_output += line
     super(CanvasTestWindow, self)._reportCallback(source, level, line)
     
   def _initGL(self):
@@ -65,6 +67,10 @@ class CanvasTestWindow(CanvasWindow):
     self.renderingOptionsDockWidget.setFeatures(self.dockFeatures)
     self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.renderingOptionsDockWidget, QtCore.Qt.Vertical)
     self.renderingOptionsDockWidget.hide() 
+    
+  def write(self, text):
+    self._reportCallback(1,1,text)
+    
         
 @pytest.fixture(scope="module")
 def canvas_win():
