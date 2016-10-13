@@ -97,6 +97,7 @@ namespace DFG {
 
       void createPort( FabricUI::GraphView::PortType portType );
       void deletePort( FabricUI::GraphView::Port *port );
+      void editPort( FTL::CStrRef execPortName, bool duplicatePort );
 
       void createNewGraphNode( QPoint const &pos );
       void createNewFunctionNode( QPoint const &pos );
@@ -107,8 +108,6 @@ namespace DFG {
       void replaceBinding( FabricCore::DFGBinding &binding );
       bool priorExecStackIsEmpty() const
         { return m_priorExecStack.empty(); }
-
-      void editExecPort( FTL::CStrRef execPortName, bool duplicatePort );
 
     signals:
 
@@ -269,6 +268,74 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->deletePort( m_port );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      FabricUI::GraphView::Port *m_port;
+    };
+
+    class DuplicatePortAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      DuplicatePortAction(
+        DFGWidget *dfgWidget,
+        FabricUI::GraphView::Port *port,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_port( port )
+      {
+        setText( "Duplicate" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->editPort( m_port->name(), true /* duplicatePort */ );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      FabricUI::GraphView::Port *m_port;
+    };
+
+    class EditPortAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      EditPortAction(
+        DFGWidget *dfgWidget,
+        FabricUI::GraphView::Port *port,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_port( port )
+      {
+        setText( "Edit" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->editPort( m_port->name(), false /* duplicatePort */ );
       }
 
     private:

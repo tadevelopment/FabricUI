@@ -639,17 +639,17 @@ QMenu* DFGWidget::portContextMenuCallback(
   graphWidget->m_contextPort = port;
   QMenu* result = new QMenu( port->scene()->views()[0] );
 
-  QAction *editAction = new QAction("Edit", result);
-  editAction->setEnabled( port->allowEdits() );
-  result->addAction(editAction);
+  QAction *editPortAction = new EditPortAction( graphWidget, port, result );
+  editPortAction->setEnabled( port->allowEdits() );
+  result->addAction( editPortAction );
 
   QAction *deletePortAction = new DeletePortAction( graphWidget, port, result );
   deletePortAction->setEnabled( port->allowEdits() );
   result->addAction( deletePortAction );
 
-  QAction *duplicateAction = new QAction("Duplicate", result);
-  duplicateAction->setEnabled( port->allowEdits() );
-  result->addAction(duplicateAction);
+  QAction *duplicatePortAction = new DuplicatePortAction( graphWidget, port, result );
+  duplicatePortAction->setEnabled( port->allowEdits() );
+  result->addAction( duplicatePortAction );
 
   try
   {
@@ -1347,7 +1347,7 @@ void DFGWidget::onNodeAction(QAction * action)
   m_contextNode = NULL;
 }
 
-void DFGWidget::editExecPort( FTL::CStrRef execPortName, bool duplicatePort)
+void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
 {
   try
   {
@@ -1512,15 +1512,7 @@ void DFGWidget::onExecPortAction(QAction * action)
     return;
 
   char const * portName = m_contextPort->name().c_str();
-  if(action->text() == "Edit")
-  {
-    editExecPort( portName, false /* duplicatePort */ );
-  }
-  else if(action->text() == "Duplicate")
-  {
-    editExecPort( portName, true /* duplicatePort */ );
-  }
-  else if ( action->text() == DFG_MOVE_INPUTS_TO_END
+  if ( action->text() == DFG_MOVE_INPUTS_TO_END
     || action->text() == DFG_MOVE_OUTPUTS_TO_END )
   {
     try
