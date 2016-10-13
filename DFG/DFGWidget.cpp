@@ -1347,165 +1347,6 @@ void DFGWidget::onNodeAction(QAction * action)
   m_contextNode = NULL;
 }
 
-void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
-{
-  try
-  {
-    QString execPortName_QS =
-      QString::fromUtf8( execPortName.data(), execPortName.size() );
-
-    FabricCore::Client &client = m_uiController->getClient();
-    FabricCore::DFGExec &exec = m_uiController->getExec();
-
-    DFGEditPortDialog dialog(
-      this,
-      client,
-      false,
-      true, //canEditPortType
-      m_dfgConfig,
-      true // setAlphaNum
-      );
-
-    dialog.setTitle( execPortName_QS );
-    dialog.setDataType(exec.getExecPortTypeSpec(execPortName.c_str()));
-
-    FTL::StrRef uiHidden = exec.getExecPortMetadata(execPortName.c_str(), "uiHidden");
-    if( uiHidden == "true" )
-      dialog.setHidden();
-
-    FTL::StrRef uiOpaque = exec.getExecPortMetadata(execPortName.c_str(), "uiOpaque");
-    if( uiOpaque == "true" )
-      dialog.setOpaque();
-
-    FTL::StrRef uiPersistValue = exec.getExecPortMetadata(execPortName.c_str(), DFG_METADATA_UIPERSISTVALUE);
-    dialog.setPersistValue( uiPersistValue == "true" );
-
-    bool expandMetadataSection = false; // [FE-6068]
-
-    FTL::StrRef uiRange = exec.getExecPortMetadata(execPortName.c_str(), "uiRange");
-    double softMinimum = 0.0;
-    double softMaximum = 0.0;
-    if(FabricUI::DecodeUIRange(uiRange, softMinimum, softMaximum))
-    {
-      dialog.setHasSoftRange(true);
-      dialog.setSoftRangeMin(softMinimum);
-      dialog.setSoftRangeMax(softMaximum);
-      expandMetadataSection = true;
-    }
-
-    FTL::StrRef uiHardRange = exec.getExecPortMetadata(execPortName.c_str(), "uiHardRange");
-    double hardMinimum = 0.0;
-    double hardMaximum = 0.0;
-    if(FabricUI::DecodeUIRange(uiHardRange, hardMinimum, hardMaximum))
-    {
-      dialog.setHasHardRange(true);
-      dialog.setHardRangeMin(hardMinimum);
-      dialog.setHardRangeMax(hardMaximum);
-      expandMetadataSection = true;
-    }
-
-    FTL::StrRef uiCombo = exec.getExecPortMetadata(execPortName.c_str(), "uiCombo");
-    std::string uiComboStr;
-    if(uiCombo.size() > 0)
-      uiComboStr = uiCombo.data();
-    if(uiComboStr.size() > 0)
-    {
-      if(uiComboStr[0] == '(')
-        uiComboStr = uiComboStr.substr(1);
-      if(uiComboStr[uiComboStr.size()-1] == ')')
-        uiComboStr = uiComboStr.substr(0, uiComboStr.size()-1);
-      QStringList parts = QString(uiComboStr.c_str()).split(',');
-      dialog.setHasCombo(true);
-      dialog.setComboValues(parts);
-      expandMetadataSection = true;
-    }
-
-    dialog.setSectionCollapsed("metadata", !expandMetadataSection);
-
-    emit portEditDialogCreated(&dialog);
-
-    if(dialog.exec() != QDialog::Accepted)
-      return;
-
-    emit portEditDialogInvoked(&dialog, NULL);
-
-    QString newPortName = dialog.title();
-    QString typeSpec = dialog.dataType();
-    QString extDep = dialog.extension();
-
-    std::string uiMetadata;
-    {
-      FTL::JSONEnc<> metaDataEnc( uiMetadata );
-      FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
-
-      DFGAddMetaDataPair( metaDataObjectEnc, "uiHidden", dialog.hidden() ? "true" : "" );//"" will remove the metadata
-      DFGAddMetaDataPair( metaDataObjectEnc, "uiOpaque", dialog.opaque() ? "true" : "" );//"" will remove the metadata
-      DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, dialog.persistValue() ? "true" : "" );//"" will remove the metadata
-
-      if(dialog.hasSoftRange())
-      {
-        QString range = "(" + QString::number(dialog.softRangeMin()) + ", " + QString::number(dialog.softRangeMax()) + ")";
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiRange", range.toUtf8().constData() );
-      } else
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiRange", "" );//"" will remove the metadata
-
-      if(dialog.hasHardRange())
-      {
-        QString range = "(" + QString::number(dialog.hardRangeMin()) + ", " + QString::number(dialog.hardRangeMax()) + ")";
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiHardRange", range.toUtf8().constData() );
-      } else
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiHardRange", "" );//"" will remove the metadata
-
-      if(dialog.hasCombo())
-      {
-        QStringList combo = dialog.comboValues();
-        QString flat = "(";
-        for(int i=0;i<combo.length();i++)
-        {
-          if(i > 0)
-            flat += ", ";
-          flat += "\"" + combo[i] + "\"";
-        }
-        flat += ")";
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", flat.toUtf8().constData() );
-      } else
-        DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", "" );//"" will remove the metadata
-
-      emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
-    }
-
-    if ( FTL::StrRef( uiMetadata ) == FTL_STR("{}") )
-      uiMetadata.clear();
-
-    if (!duplicatePort)
-    {
-      m_uiController->cmdEditPort(
-        execPortName_QS,
-        newPortName,
-        exec.getExecPortType( execPortName.c_str() ),
-        typeSpec,
-        extDep,
-        QString::fromUtf8( uiMetadata.c_str() )
-        );
-    }
-    else
-    {
-      m_uiController->cmdAddPort(
-        newPortName,
-        exec.getExecPortType( execPortName.c_str() ),
-        exec.getExecPortResolvedType( execPortName.c_str() ),
-        QString(), // portToConnect
-        extDep,
-        QString::fromUtf8( uiMetadata.c_str() )
-        );
-    }
-  }
-  catch(FabricCore::Exception e)
-  {
-    printf("Exception: %s\n", e.getDesc_cstr());
-  }
-}
-
 void DFGWidget::onExecPortAction(QAction * action)
 {
   if(m_contextPort == NULL)
@@ -1676,6 +1517,232 @@ void DFGWidget::deletePort( FabricUI::GraphView::Port *port )
 {
   m_uiController->cmdRemovePort( port->nameQString() );
 }
+
+void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
+{
+  try
+  {
+    QString execPortName_QS =
+      QString::fromUtf8( execPortName.data(), execPortName.size() );
+
+    FabricCore::Client &client = m_uiController->getClient();
+    FabricCore::DFGExec &exec = m_uiController->getExec();
+
+    DFGEditPortDialog dialog(
+      this,
+      client,
+      false,
+      true, //canEditPortType
+      m_dfgConfig,
+      true // setAlphaNum
+      );
+
+    dialog.setTitle( execPortName_QS );
+    dialog.setDataType(exec.getExecPortTypeSpec(execPortName.c_str()));
+
+    FTL::StrRef uiHidden = exec.getExecPortMetadata(execPortName.c_str(), "uiHidden");
+    if( uiHidden == "true" )
+      dialog.setHidden();
+
+    FTL::StrRef uiOpaque = exec.getExecPortMetadata(execPortName.c_str(), "uiOpaque");
+    if( uiOpaque == "true" )
+      dialog.setOpaque();
+
+    FTL::StrRef uiPersistValue = exec.getExecPortMetadata(execPortName.c_str(), DFG_METADATA_UIPERSISTVALUE);
+    dialog.setPersistValue( uiPersistValue == "true" );
+
+    bool expandMetadataSection = false; // [FE-6068]
+
+    FTL::StrRef uiRange = exec.getExecPortMetadata(execPortName.c_str(), "uiRange");
+    double softMinimum = 0.0;
+    double softMaximum = 0.0;
+    if(FabricUI::DecodeUIRange(uiRange, softMinimum, softMaximum))
+    {
+      dialog.setHasSoftRange(true);
+      dialog.setSoftRangeMin(softMinimum);
+      dialog.setSoftRangeMax(softMaximum);
+      expandMetadataSection = true;
+    }
+
+    FTL::StrRef uiHardRange = exec.getExecPortMetadata(execPortName.c_str(), "uiHardRange");
+    double hardMinimum = 0.0;
+    double hardMaximum = 0.0;
+    if(FabricUI::DecodeUIRange(uiHardRange, hardMinimum, hardMaximum))
+    {
+      dialog.setHasHardRange(true);
+      dialog.setHardRangeMin(hardMinimum);
+      dialog.setHardRangeMax(hardMaximum);
+      expandMetadataSection = true;
+    }
+
+    FTL::StrRef uiCombo = exec.getExecPortMetadata(execPortName.c_str(), "uiCombo");
+    std::string uiComboStr;
+    if(uiCombo.size() > 0)
+      uiComboStr = uiCombo.data();
+    if(uiComboStr.size() > 0)
+    {
+      if(uiComboStr[0] == '(')
+        uiComboStr = uiComboStr.substr(1);
+      if(uiComboStr[uiComboStr.size()-1] == ')')
+        uiComboStr = uiComboStr.substr(0, uiComboStr.size()-1);
+      QStringList parts = QString(uiComboStr.c_str()).split(',');
+      dialog.setHasCombo(true);
+      dialog.setComboValues(parts);
+      expandMetadataSection = true;
+    }
+
+    dialog.setSectionCollapsed("metadata", !expandMetadataSection);
+
+    emit portEditDialogCreated(&dialog);
+
+    if(dialog.exec() != QDialog::Accepted)
+      return;
+
+    emit portEditDialogInvoked(&dialog, NULL);
+
+    QString newPortName = dialog.title();
+    QString typeSpec = dialog.dataType();
+    QString extDep = dialog.extension();
+
+    std::string uiMetadata;
+    {
+      FTL::JSONEnc<> metaDataEnc( uiMetadata );
+      FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
+
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiHidden", dialog.hidden() ? "true" : "" );//"" will remove the metadata
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiOpaque", dialog.opaque() ? "true" : "" );//"" will remove the metadata
+      DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, dialog.persistValue() ? "true" : "" );//"" will remove the metadata
+
+      if(dialog.hasSoftRange())
+      {
+        QString range = "(" + QString::number(dialog.softRangeMin()) + ", " + QString::number(dialog.softRangeMax()) + ")";
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiRange", range.toUtf8().constData() );
+      } else
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiRange", "" );//"" will remove the metadata
+
+      if(dialog.hasHardRange())
+      {
+        QString range = "(" + QString::number(dialog.hardRangeMin()) + ", " + QString::number(dialog.hardRangeMax()) + ")";
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiHardRange", range.toUtf8().constData() );
+      } else
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiHardRange", "" );//"" will remove the metadata
+
+      if(dialog.hasCombo())
+      {
+        QStringList combo = dialog.comboValues();
+        QString flat = "(";
+        for(int i=0;i<combo.length();i++)
+        {
+          if(i > 0)
+            flat += ", ";
+          flat += "\"" + combo[i] + "\"";
+        }
+        flat += ")";
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", flat.toUtf8().constData() );
+      } else
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", "" );//"" will remove the metadata
+
+      emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
+    }
+
+    if ( FTL::StrRef( uiMetadata ) == FTL_STR("{}") )
+      uiMetadata.clear();
+
+    if (!duplicatePort)
+    {
+      m_uiController->cmdEditPort(
+        execPortName_QS,
+        newPortName,
+        exec.getExecPortType( execPortName.c_str() ),
+        typeSpec,
+        extDep,
+        QString::fromUtf8( uiMetadata.c_str() )
+        );
+    }
+    else
+    {
+      m_uiController->cmdAddPort(
+        newPortName,
+        exec.getExecPortType( execPortName.c_str() ),
+        exec.getExecPortResolvedType( execPortName.c_str() ),
+        QString(), // portToConnect
+        extDep,
+        QString::fromUtf8( uiMetadata.c_str() )
+        );
+    }
+  }
+  catch(FabricCore::Exception e)
+  {
+    printf("Exception: %s\n", e.getDesc_cstr());
+  }
+}
+
+void DFGWidget::movePortsToEnd(bool moveInputs)
+{
+  if(m_contextPort == NULL)
+    return;
+
+  char const * portName = m_contextPort->name().c_str();
+  if ( action->text() == DFG_MOVE_INPUTS_TO_END
+    || action->text() == DFG_MOVE_OUTPUTS_TO_END )
+  {
+    try
+    {
+      FabricCore::DFGBinding &binding = m_uiController->getBinding();
+      QString execPath = m_uiController->getExecPath_QS();
+      FabricCore::DFGExec &exec = m_uiController->getExec();
+
+      // create an index list with the inputs first
+      QList<int> inputsFirst;
+      QList<int> outputsFirst;
+      for(unsigned i=0;i<exec.getExecPortCount();i++)
+      {
+        if(exec.getExecPortType(i) == FEC_DFGPortType_IO)
+        {
+          inputsFirst.append(i);
+          outputsFirst.append(i);
+        }
+      }
+      for(unsigned i=0;i<exec.getExecPortCount();i++)
+      {
+        if(exec.getExecPortType(i) == FEC_DFGPortType_In)
+          inputsFirst.append(i);
+        else if(exec.getExecPortType(i) == FEC_DFGPortType_Out)
+          outputsFirst.append(i);
+      }
+      for(unsigned i=0;i<exec.getExecPortCount();i++)
+      {
+        if(exec.getExecPortType(i) == FEC_DFGPortType_In)
+          outputsFirst.append(i);
+        else if(exec.getExecPortType(i) == FEC_DFGPortType_Out)
+          inputsFirst.append(i);
+      }
+
+      QList<int> indices;
+
+      if(action->text() == DFG_MOVE_INPUTS_TO_END)
+        indices = outputsFirst;
+      else if(action->text() == DFG_MOVE_OUTPUTS_TO_END)
+        indices = inputsFirst;
+
+      m_uiController->cmdReorderPorts(
+        binding,
+        execPath,
+        exec,
+        QString(), // itemPath
+        indices
+        );
+    }
+    catch(FabricCore::Exception e)
+    {
+      printf("Exception: %s\n", e.getDesc_cstr());
+    }
+  }
+
+  m_contextPort = NULL;
+}
+
+
 
 void DFGWidget::onSidePanelAction(QAction * action)
 {
