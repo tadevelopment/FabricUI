@@ -643,9 +643,9 @@ QMenu* DFGWidget::portContextMenuCallback(
   editAction->setEnabled( port->allowEdits() );
   result->addAction(editAction);
 
-  QAction *deleteAction = new QAction("Delete", result);
-  deleteAction->setEnabled( port->allowEdits() );
-  result->addAction(deleteAction);
+  QAction *deletePortAction = new DeletePortAction( graphWidget, port, result );
+  deletePortAction->setEnabled( port->allowEdits() );
+  result->addAction( deletePortAction );
 
   QAction *duplicateAction = new QAction("Duplicate", result);
   duplicateAction->setEnabled( port->allowEdits() );
@@ -1512,11 +1512,7 @@ void DFGWidget::onExecPortAction(QAction * action)
     return;
 
   char const * portName = m_contextPort->name().c_str();
-  if(action->text() == "Delete")
-  {
-    m_uiController->cmdRemovePort( portName );
-  }
-  else if(action->text() == "Edit")
+  if(action->text() == "Edit")
   {
     editExecPort( portName, false /* duplicatePort */ );
   }
@@ -1682,7 +1678,12 @@ void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
       QString::fromUtf8( metaData.c_str() )
       );
   }
-}  
+}
+
+void DFGWidget::deletePort( FabricUI::GraphView::Port *port )
+{
+  m_uiController->cmdRemovePort( port->nameQString() );
+}
 
 void DFGWidget::onSidePanelAction(QAction * action)
 {

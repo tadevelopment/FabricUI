@@ -96,6 +96,8 @@ namespace DFG {
       void reloadStyles();
 
       void createPort( FabricUI::GraphView::PortType portType );
+      void deletePort( FabricUI::GraphView::Port *port );
+
       void createNewGraphNode( QPoint const &pos );
       void createNewFunctionNode( QPoint const &pos );
       void createNewBackdropNode( QPoint const &pos );
@@ -239,6 +241,40 @@ namespace DFG {
 
       DFGWidget *m_dfgWidget;
       FabricUI::GraphView::PortType m_portType;
+    };
+
+    class DeletePortAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      DeletePortAction(
+        DFGWidget *dfgWidget,
+        FabricUI::GraphView::Port *port,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_port( port )
+      {
+        setText( "Delete" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->deletePort( m_port );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      FabricUI::GraphView::Port *m_port;
     };
 
     class NewBlockNodeAction : public QAction
