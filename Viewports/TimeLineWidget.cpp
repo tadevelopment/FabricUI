@@ -6,7 +6,9 @@
 #include "TimeLineWidget.h"
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 
+#include <QMenu>
 #include <QInputDialog>
+#include <QDesktopWidget>
 #include <QLabel>
 
 #include <algorithm>
@@ -520,7 +522,7 @@ void TimeLineWidget::simModeChanged(int index)
 
 void TimeLineWidget::reloadStyles()
 {
-  QString styleSheet = LoadFabricStyleSheet( FTL_STR("DFGWidget.qss") );
+  QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
   if ( !styleSheet.isEmpty() )
     setStyleSheet( styleSheet );
 }

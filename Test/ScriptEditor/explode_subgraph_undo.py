@@ -1,0 +1,7 @@
+binding.instPreset("", "Fabric.Compounds.PolygonMesh.Deform.Turbulize", 720.0, 168.0)
+binding_exec = binding.binding.getExec()
+print binding_exec.getNodeCount()
+binding.explodeNode("", "Turbulize_1")
+print binding_exec.getNodeCount()
+binding.undo()
+print binding_exec.getNodeCount()

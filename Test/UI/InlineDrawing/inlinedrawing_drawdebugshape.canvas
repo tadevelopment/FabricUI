@@ -1,0 +1,923 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "camera_mat44" : "{\n  \"row0\" : {\n    \"x\" : 0.9993204474449158,\n    \"y\" : 0.01846351101994515,\n    \"z\" : -0.0314767062664032,\n    \"t\" : -2.327033519744873\n    },\n  \"row1\" : {\n    \"x\" : 9.685624036137597e-07,\n    \"y\" : 0.8625363111495972,\n    \"z\" : 0.5059771537780762,\n    \"t\" : 16.87383079528809\n    },\n  \"row2\" : {\n    \"x\" : 0.03649204596877098,\n    \"y\" : -0.5056389570236206,\n    \"z\" : 0.8619639277458191,\n    \"t\" : 30.33780288696289\n    },\n  \"row3\" : {\n    \"x\" : 0,\n    \"y\" : 0,\n    \"z\" : 0,\n    \"t\" : 1\n    }\n  }",
+    "timeline_start" : "1",
+    "uiGraphZoom" : "{\"value\": 0.733904}",
+    "timeline_loopMode" : "1",
+    "timeline_simMode" : "0",
+    "camera_focalDistance" : "47.27143478393555",
+    "timeline_current" : "14",
+    "timeline_end" : "50",
+    "uiGraphPan" : "{\n  \"x\" : 203.1679992675781,\n  \"y\" : 89.56300354003906\n  }"
+    },
+  "title" : "",
+  "ports" : [
+    {
+      "objectType" : "Port",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "nodePortType" : "Out",
+      "name" : "from",
+      "execPortType" : "In",
+      "typeSpec" : "Vec3"
+      },
+    {
+      "objectType" : "Port",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "nodePortType" : "Out",
+      "name" : "to",
+      "execPortType" : "In",
+      "typeSpec" : "Vec3"
+      },
+    {
+      "objectType" : "Port",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "nodePortType" : "Out",
+      "name" : "numSegments",
+      "execPortType" : "In",
+      "typeSpec" : "Size"
+      },
+    {
+      "objectType" : "Port",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "nodePortType" : "Out",
+      "name" : "ratio",
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "Port",
+      "nodePortType" : "In",
+      "name" : "this",
+      "execPortType" : "Out",
+      "typeSpec" : "InlineDebugShape"
+      }
+    ],
+  "extDeps" : {},
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-26.62016296386719,\"y\":-30.26317977905273}"
+        },
+      "name" : "EmptyDrawingHandle",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "Out",
+          "name" : "handle"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.DrawingHandle.EmptyDrawingHandle",
+      "presetGUID" : "2440020BA6A1CAB1CEB690A198F99C70"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1113.762939453125,\"y\":101.6374206542969}"
+        },
+      "name" : "DrawCircle",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "IO",
+          "name" : "this"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "name" : "xfo"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : 2
+            },
+          "name" : "radius"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "SInt32" : 12
+            },
+          "name" : "detail"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "Out",
+          "name" : "result"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.InlineDebugShape.DrawCircle",
+      "presetGUID" : "E48CB42C08CC7580AB2B64B2C801797B"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":221.3711547851563,\"y\":-18.0}"
+        },
+      "name" : "GetEmptyDebugShape",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "IO",
+          "name" : "this"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "name" : "name"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "Out",
+          "name" : "result"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.DrawingHandle.GetEmptyDebugShape",
+      "presetGUID" : "DB3916AA2CE58EEAFAEDB9E2653EF4D6"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1260.739013671875,\"y\":110.5380554199219}"
+        },
+      "name" : "DrawCapsuleLines",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "IO",
+          "name" : "this"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "name" : "xfo"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : 1
+            },
+          "name" : "radius"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : 3
+            },
+          "name" : "height"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "SInt32" : 12
+            },
+          "name" : "detail"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "Out",
+          "name" : "result"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.InlineDebugShape.DrawCapsuleLines",
+      "presetGUID" : "F65AAF83C5C1361B1DB7F6AC0C84C949"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\": 747.5, \"y\": 367}"
+        },
+      "name" : "ComposeXfo",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "name" : "ori"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "name" : "tr"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "name" : "sc"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "Out",
+          "name" : "result"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Xfo.ComposeXfo",
+      "presetGUID" : "C61287D19D84D9733903DDC14FABD4AF"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\": 575.5, \"y\": 98}"
+        },
+      "name" : "SetPen",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "IO",
+          "name" : "this"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Color" : {
+              "r" : 1,
+              "g" : 0,
+              "b" : 0.01568627543747425,
+              "a" : 0
+              }
+            },
+          "name" : "color"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.InlineDebugShape.SetPen",
+      "presetGUID" : "831A0298E12DACF564A86570A7C7AE48"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":994.412353515625,\"y\":93.82452392578125}"
+        },
+      "name" : "SetPen3",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "IO",
+          "name" : "this"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Color" : {
+              "r" : 0.5450980663299561,
+              "g" : 1,
+              "b" : 0.2431372553110123,
+              "a" : 0
+              }
+            },
+          "name" : "color"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.InlineDebugShape.SetPen",
+      "presetGUID" : "831A0298E12DACF564A86570A7C7AE48"
+      },
+    {
+      "objectType" : "User",
+      "metadata" : {
+        "uiTitle" : "Get Debug Shape",
+        "uiGraphPos" : "{\"x\":-66.73428344726563,\"y\":-71.26319885253906}",
+        "uiNodeColor" : "{\n  \"r\" : 143,\n  \"g\" : 32,\n  \"b\" : 108,\n  \"a\" : 115\n  }",
+        "uiGraphSize" : "{\"w\":550.234130859375,\"h\":175.2632141113281}"
+        },
+      "name" : "uiBackDropGetDebugShape0",
+      "ports" : []
+      },
+    {
+      "objectType" : "User",
+      "metadata" : {
+        "uiTitle" : "Draw a Segmented Line",
+        "uiGraphPos" : "{\"x\":555.5,\"y\":57.0}",
+        "uiNodeColor" : "{\n  \"r\" : 85,\n  \"g\" : 255,\n  \"b\" : 255,\n  \"a\" : 115\n  }",
+        "uiGraphSize" : "{\"w\":377.0644836425781,\"h\":224.3625793457031}"
+        },
+      "name" : "uiBackDropDrawASegmentedLine1",
+      "ports" : []
+      },
+    {
+      "objectType" : "User",
+      "metadata" : {
+        "uiTitle" : "Draw a Circle + Capsule",
+        "uiGraphPos" : "{\"x\":972.5,\"y\":50.0}",
+        "uiNodeColor" : "{\n  \"r\" : 85,\n  \"g\" : 255,\n  \"b\" : 255,\n  \"a\" : 115\n  }",
+        "uiGraphSize" : "{\"w\":498.7428894042969,\"h\":256.80126953125}"
+        },
+      "name" : "uiBackDropDrawACircleCapsule2",
+      "ports" : []
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\": 708.305, \"y\": 94.6116}"
+        },
+      "name" : "DrawSegmentedLine",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "IO",
+          "name" : "this"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "name" : "from"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "name" : "to"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "name" : "numSegments"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "In",
+          "name" : "ratio"
+          },
+        {
+          "objectType" : "InstPort",
+          "nodePortType" : "Out",
+          "name" : "result"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.InlineDebugShape.DrawSegmentedLine",
+      "presetGUID" : "36686C3B2AE2E0D326185DA1A665B25B"
+      }
+    ],
+  "connections" : {
+    "from" : [
+      "DrawSegmentedLine.from"
+      ],
+    "to" : [
+      "ComposeXfo.tr",
+      "DrawSegmentedLine.to"
+      ],
+    "numSegments" : [
+      "DrawSegmentedLine.numSegments"
+      ],
+    "ratio" : [
+      "DrawSegmentedLine.ratio"
+      ],
+    "EmptyDrawingHandle.handle" : [
+      "GetEmptyDebugShape.this"
+      ],
+    "DrawCircle.this" : [
+      "DrawCapsuleLines.this"
+      ],
+    "GetEmptyDebugShape.result" : [
+      "SetPen.this"
+      ],
+    "DrawCapsuleLines.this" : [
+      "this"
+      ],
+    "ComposeXfo.result" : [
+      "DrawCapsuleLines.xfo"
+      ],
+    "SetPen.this" : [
+      "DrawSegmentedLine.this"
+      ],
+    "SetPen3.this" : [
+      "DrawCircle.this"
+      ],
+    "DrawSegmentedLine.this" : [
+      "SetPen3.this"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Exts.InlineDrawing.DrawingHandle.EmptyDrawingHandle" : {
+      "objectType" : "Graph",
+      "title" : "EmptyDrawingHandle",
+      "cacheRule" : "never",
+      "ports" : [
+        {
+          "objectType" : "Port",
+          "nodePortType" : "In",
+          "name" : "handle",
+          "execPortType" : "Out",
+          "typeSpec" : "DrawingHandle"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "2440020BA6A1CAB1CEB690A198F99C70",
+      "nodes" : [
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\": 894, \"y\": 100}"
+            },
+          "name" : "Clear",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "nodePortType" : "IO",
+              "name" : "this"
+              }
+            ],
+          "executable" : "Fabric.Exts.InlineDrawing.DrawingHandle.Clear",
+          "presetGUID" : "39E8D81FA7C7C4A825877F16EFE3564F",
+          "cacheRule" : "never"
+          },
+        {
+          "objectType" : "Var",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":567.0,\"y\":56.0}",
+            "uiCollapsedState" : "0"
+            },
+          "name" : "handleVar",
+          "ports" : [
+            {
+              "objectType" : "VarPort",
+              "nodePortType" : "IO",
+              "name" : "value"
+              }
+            ],
+          "dataType" : "DrawingHandle",
+          "extDep" : "InlineDrawing:*"
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":287.0,\"y\":56.0}"
+            },
+          "name" : "CreateDrawingHandle",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "nodePortType" : "Out",
+              "name" : "handle"
+              }
+            ],
+          "definition" : {
+            "objectType" : "Func",
+            "title" : "Create DrawingHandle",
+            "ports" : [
+              {
+                "objectType" : "Port",
+                "nodePortType" : "In",
+                "name" : "handle",
+                "execPortType" : "Out",
+                "typeSpec" : "DrawingHandle"
+                }
+              ],
+            "extDeps" : {
+              "InlineDrawing" : "*"
+              },
+            "code" : "dfgEntry {\n  handle = DrawingHandle();\n}\n"
+            }
+          }
+        ],
+      "connections" : {
+        "Clear.this" : [
+          "handle"
+          ],
+        "handleVar.value" : [
+          "Clear.this"
+          ],
+        "CreateDrawingHandle.handle" : [
+          "handleVar.value"
+          ]
+        }
+      },
+    "Fabric.Exts.InlineDrawing.DrawingHandle.Clear" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/InlineDrawing/DrawingHandle.html",
+        "uiTooltip" : "removes all contents from the DrawingHandle\n\n Supported by DrawingHandle"
+        },
+      "title" : "Clear",
+      "ports" : [
+        {
+          "objectType" : "Port",
+          "nodePortType" : "IO",
+          "name" : "this",
+          "execPortType" : "IO",
+          "typeSpec" : "DrawingHandle"
+          }
+        ],
+      "extDeps" : {
+        "InlineDrawing" : "*"
+        },
+      "presetGUID" : "39E8D81FA7C7C4A825877F16EFE3564F",
+      "code" : "require InlineDrawing;\n\ndfgEntry {\n  this.clear();\n}\n"
+      },
+    "Fabric.Exts.InlineDrawing.InlineDebugShape.DrawCircle" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/InlineDrawing/InlineDebugShape.html",
+        "uiTooltip" : "draws a line circle around the Y axis given a transform for the circle,\na radius and a detail setting. the detail describes the number\nof line segments of the circle (minimum of 3).\n\n Supported by InlineDebugShape"
+        },
+      "title" : "DrawCircle",
+      "ports" : [
+        {
+          "objectType" : "Port",
+          "nodePortType" : "IO",
+          "name" : "this",
+          "execPortType" : "IO",
+          "typeSpec" : "InlineDebugShape"
+          },
+        {
+          "objectType" : "Port",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 249,\n  \"g\" : 157,\n  \"b\" : 28\n  }"
+            },
+          "nodePortType" : "Out",
+          "name" : "xfo",
+          "execPortType" : "In",
+          "typeSpec" : "Xfo"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 3
+            },
+          "name" : "radius",
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 12
+            },
+          "name" : "detail",
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "In",
+          "name" : "result",
+          "execPortType" : "Out",
+          "typeSpec" : "InlineDebugShape"
+          }
+        ],
+      "extDeps" : {
+        "InlineDrawing" : "*"
+        },
+      "presetGUID" : "E48CB42C08CC7580AB2B64B2C801797B",
+      "code" : "require InlineDrawing;\n\ndfgEntry {\n  result = this.drawCircle(xfo, radius, detail);\n}\n"
+      },
+    "Fabric.Exts.InlineDrawing.DrawingHandle.GetEmptyDebugShape" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/InlineDrawing/DrawingHandle.html",
+        "uiTooltip" : "helper function to clear a debug drawing shape\n\n Supported by DrawingHandle"
+        },
+      "title" : "GetEmptyDebugShape",
+      "ports" : [
+        {
+          "objectType" : "Port",
+          "nodePortType" : "IO",
+          "name" : "this",
+          "execPortType" : "IO",
+          "typeSpec" : "DrawingHandle"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : "debug"
+            },
+          "name" : "name",
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "In",
+          "name" : "result",
+          "execPortType" : "Out",
+          "typeSpec" : "InlineDebugShape"
+          }
+        ],
+      "extDeps" : {
+        "InlineDrawing" : "*"
+        },
+      "presetGUID" : "DB3916AA2CE58EEAFAEDB9E2653EF4D6",
+      "code" : "require InlineDrawing;\n\ndfgEntry {\n  result = this.getEmptyDebugShape(name);\n}\n"
+      },
+    "Fabric.Exts.InlineDrawing.InlineDebugShape.DrawCapsuleLines" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/InlineDrawing/InlineDebugShape.html",
+        "uiTooltip" : "draws a capsule shape using lines.\nthe detail describes the number of line segments for each circle (minimum of 3).\n\n Supported by InlineDebugShape"
+        },
+      "title" : "DrawCapsuleLines",
+      "ports" : [
+        {
+          "objectType" : "Port",
+          "nodePortType" : "IO",
+          "name" : "this",
+          "execPortType" : "IO",
+          "typeSpec" : "InlineDebugShape"
+          },
+        {
+          "objectType" : "Port",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 249,\n  \"g\" : 157,\n  \"b\" : 28\n  }"
+            },
+          "nodePortType" : "Out",
+          "name" : "xfo",
+          "execPortType" : "In",
+          "typeSpec" : "Xfo"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 3
+            },
+          "name" : "radius",
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 7
+            },
+          "name" : "height",
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 12
+            },
+          "name" : "detail",
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "In",
+          "name" : "result",
+          "execPortType" : "Out",
+          "typeSpec" : "InlineDebugShape"
+          }
+        ],
+      "extDeps" : {
+        "InlineDrawing" : "*"
+        },
+      "presetGUID" : "F65AAF83C5C1361B1DB7F6AC0C84C949",
+      "code" : "require InlineDrawing;\n\ndfgEntry {\n  result = this.drawCapsuleLines(xfo, radius, height, detail);\n}\n"
+      },
+    "Fabric.Exts.Math.Xfo.ComposeXfo" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/Math/Xfo.html"
+        },
+      "title" : "-> Xfo",
+      "ports" : [
+        {
+          "objectType" : "Port",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 0,\n  \"g\" : 191,\n  \"b\" : 232\n  }"
+            },
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Quat" : {
+              "v" : {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                },
+              "w" : 1
+              }
+            },
+          "name" : "ori",
+          "execPortType" : "In",
+          "typeSpec" : "Quat"
+          },
+        {
+          "objectType" : "Port",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3" : {
+              "x" : 0,
+              "y" : 0,
+              "z" : 0
+              }
+            },
+          "name" : "tr",
+          "execPortType" : "In",
+          "typeSpec" : "Vec3"
+          },
+        {
+          "objectType" : "Port",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3" : {
+              "x" : 1,
+              "y" : 1,
+              "z" : 1
+              }
+            },
+          "name" : "sc",
+          "execPortType" : "In",
+          "typeSpec" : "Vec3"
+          },
+        {
+          "objectType" : "Port",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 249,\n  \"g\" : 157,\n  \"b\" : 28\n  }"
+            },
+          "nodePortType" : "In",
+          "name" : "result",
+          "execPortType" : "Out",
+          "typeSpec" : "Xfo"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "C61287D19D84D9733903DDC14FABD4AF",
+      "code" : "require Math;\n\ndfgEntry {\n  result.ori = ori;\n  result.tr = tr;\n  result.sc = sc;\n}\n"
+      },
+    "Fabric.Exts.InlineDrawing.InlineDebugShape.SetPen" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/InlineDrawing/InlineDebugShape.html",
+        "uiTooltip" : "sets the current pen\n\n Supported by InlineDebugShape"
+        },
+      "title" : "SetPen",
+      "ports" : [
+        {
+          "objectType" : "Port",
+          "nodePortType" : "IO",
+          "name" : "this",
+          "execPortType" : "IO",
+          "typeSpec" : "InlineDebugShape"
+          },
+        {
+          "objectType" : "Port",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 0,\n  \"b\" : 0\n  }"
+            },
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Color" : {
+              "r" : 0,
+              "g" : 1,
+              "b" : 0,
+              "a" : 1
+              }
+            },
+          "name" : "color",
+          "execPortType" : "In",
+          "typeSpec" : "Color"
+          }
+        ],
+      "extDeps" : {
+        "InlineDrawing" : "*"
+        },
+      "presetGUID" : "831A0298E12DACF564A86570A7C7AE48",
+      "code" : "require InlineDrawing;\n\ndfgEntry {\n  this.setPen(color);\n}\n"
+      },
+    "Fabric.Exts.InlineDrawing.InlineDebugShape.DrawSegmentedLine" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/InlineDrawing/InlineDebugShape.html",
+        "uiTooltip" : "draws a segmented line given two positions, a number of segmentation\nsegments (minimum of 2) and a segment ratio (0.0 to 1.0).\n\n Supported by InlineDebugShape"
+        },
+      "title" : "DrawSegmentedLine",
+      "ports" : [
+        {
+          "objectType" : "Port",
+          "nodePortType" : "IO",
+          "name" : "this",
+          "execPortType" : "IO",
+          "typeSpec" : "InlineDebugShape"
+          },
+        {
+          "objectType" : "Port",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3" : {
+              "x" : 0,
+              "y" : 0,
+              "z" : 0
+              }
+            },
+          "name" : "from",
+          "execPortType" : "In",
+          "typeSpec" : "Vec3"
+          },
+        {
+          "objectType" : "Port",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3" : {
+              "x" : 0,
+              "y" : 4,
+              "z" : 0
+              }
+            },
+          "name" : "to",
+          "execPortType" : "In",
+          "typeSpec" : "Vec3"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Size" : 8
+            },
+          "name" : "numSegments",
+          "execPortType" : "In",
+          "typeSpec" : "Size"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0.5
+            },
+          "name" : "ratio",
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "Port",
+          "nodePortType" : "In",
+          "name" : "result",
+          "execPortType" : "Out",
+          "typeSpec" : "InlineDebugShape"
+          }
+        ],
+      "extDeps" : {
+        "InlineDrawing" : "*"
+        },
+      "presetGUID" : "36686C3B2AE2E0D326185DA1A665B25B",
+      "code" : "require InlineDrawing;\n\ndfgEntry {\n  result = this.drawSegmentedLine(from, to, numSegments, ratio);\n}\n"
+      }
+    },
+  "args" : [
+    {
+      "type" : "Vec3",
+      "value" : {
+        "x" : 0,
+        "y" : 0,
+        "z" : 0
+        },
+      "ext" : "Math"
+      },
+    {
+      "type" : "Vec3",
+      "value" : {
+        "x" : 3,
+        "y" : 8,
+        "z" : 0
+        },
+      "ext" : "Math"
+      },
+    {
+      "type" : "UInt32",
+      "value" : 7
+      },
+    {
+      "type" : "Float32",
+      "value" : 0.4711000025272369
+      },
+    {
+      "type" : "InlineDebugShape",
+      "value" : null,
+      "ext" : "InlineDrawing"
+      }
+    ]
+  }
