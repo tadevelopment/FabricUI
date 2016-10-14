@@ -659,7 +659,7 @@ QMenu* DFGWidget::portContextMenuCallback(
   QAction *moveOutputPortsToEndAction = new MoveOutputPortsToEndAction( graphWidget, result );
   moveOutputPortsToEndAction->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
   result->addAction( moveOutputPortsToEndAction );
-
+  
   return result;
 }
 
@@ -695,9 +695,9 @@ QMenu* DFGWidget::sidePanelContextMenuCallback(
     return NULL;
   
   GraphView::Graph * graph = graphWidget->m_uiGraph;
-  if(graph->controller() == NULL)
+  if (graph->controller() == NULL)
     return NULL;
-  graphWidget->m_contextSidePanel = panel;
+
   QMenu* result = new QMenu( panel->scene()->views()[0] );
 
   if ( graphWidget->getDFGController()->validPresetSplit() )
@@ -714,9 +714,15 @@ QMenu* DFGWidget::sidePanelContextMenuCallback(
     result->addAction( createPortAction );
     result->addSeparator();
   }
-  result->addAction(DFG_SCROLL_UP);
-  result->addAction(DFG_SCROLL_DOWN);
-  graphWidget->connect(result, SIGNAL(triggered(QAction*)), graphWidget, SLOT(onSidePanelAction(QAction*)));
+
+  QAction *sidePanelScrollUp = new SidePanelScrollUp( graphWidget, panel, result );
+  sidePanelScrollUp->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
+  result->addAction( sidePanelScrollUp );
+
+  QAction *sidePanelScrollDown = new SidePanelScrollDown( graphWidget, panel, result );
+  sidePanelScrollDown->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
+  result->addAction( sidePanelScrollDown );
+
   return result;
 }
 
@@ -1656,18 +1662,6 @@ void DFGWidget::movePortsToEnd( bool moveInputs )
   catch(FabricCore::Exception e)
   {
     printf("Exception: %s\n", e.getDesc_cstr());
-  }
-}
-
-void DFGWidget::onSidePanelAction(QAction * action)
-{
-  if(action->text() == DFG_SCROLL_UP)
-  {
-    m_contextSidePanel->scroll(m_contextSidePanel->size().height());
-  }
-  else if(action->text() == DFG_SCROLL_DOWN)
-  {
-    m_contextSidePanel->scroll(-m_contextSidePanel->size().height());
   }
 }
 

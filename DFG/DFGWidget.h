@@ -130,7 +130,6 @@ namespace DFG {
       void onGraphAction(QAction * action);
       void onNodeAction(QAction * action);
       void onNodeEditRequested(FabricUI::GraphView::Node *);
-      void onSidePanelAction(QAction * action);
       void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey);
       void onHotkeyReleased(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey);
       void onKeyPressed(QKeyEvent * event);
@@ -185,7 +184,6 @@ namespace DFG {
 
       QPoint m_contextPos;
       FabricUI::GraphView::Node * m_contextNode;
-      FabricUI::GraphView::SidePanel * m_contextSidePanel;
 
       DFGGraphViewWidget * m_uiGraphViewWidget;
       DFGExecHeaderWidget * m_uiHeader;
@@ -403,6 +401,74 @@ namespace DFG {
     private:
 
       DFGWidget *m_dfgWidget;
+    };
+
+    class SidePanelScrollUp : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      SidePanelScrollUp(
+        DFGWidget *dfgWidget,
+        FabricUI::GraphView::SidePanel *sidePanel,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_sidePanel( sidePanel )
+      {
+        setText( "Scroll up" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_sidePanel->scroll(m_sidePanel->size().height());
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      FabricUI::GraphView::SidePanel *m_sidePanel;
+    };
+
+    class SidePanelScrollDown : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      SidePanelScrollDown(
+        DFGWidget *dfgWidget,
+        FabricUI::GraphView::SidePanel *sidePanel,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_sidePanel( sidePanel )
+      {
+        setText( "Scroll down" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_sidePanel->scroll(-m_sidePanel->size().height());
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      FabricUI::GraphView::SidePanel *m_sidePanel;
     };
 
     class NewBlockNodeAction : public QAction
