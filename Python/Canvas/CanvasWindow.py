@@ -1204,8 +1204,6 @@ class CanvasWindow(QtGui.QMainWindow):
                                DFG.DFGHotkeys.FRAME_ALL)
             graph.defineHotkey(QtCore.Qt.Key_Tab, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.TAB_SEARCH)
-            graph.defineHotkey(QtCore.Qt.Key_A, QtCore.Qt.ControlModifier,
-                               DFG.DFGHotkeys.SELECT_ALL)
             graph.defineHotkey(QtCore.Qt.Key_C, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.AUTO_CONNECTIONS)
             graph.defineHotkey(QtCore.Qt.Key_D, QtCore.Qt.NoModifier,
