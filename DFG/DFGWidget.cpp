@@ -632,11 +632,11 @@ QMenu* DFGWidget::portContextMenuCallback(
     return NULL;
 
   GraphView::Graph * graph = graphWidget->m_uiGraph;
-  if(graph->controller() == NULL)
+  if (   !graph->controller()
+      || !graphWidget->getDFGController()->validPresetSplit())
     return NULL;
-  if (!graphWidget->getDFGController()->validPresetSplit())
-    return NULL;
-  QMenu* result = new QMenu( port->scene()->views()[0] );
+
+  QMenu *result = new QMenu( port->scene()->views()[0] );
 
   QAction *editPortAction = new EditPortAction( graphWidget, port, result );
   editPortAction->setEnabled( port->allowEdits() );
@@ -650,24 +650,15 @@ QMenu* DFGWidget::portContextMenuCallback(
   duplicatePortAction->setEnabled( port->allowEdits() );
   result->addAction( duplicatePortAction );
 
-  try
-  {
-    FabricCore::DFGExec &exec = graphWidget->m_uiController->getExec();
-
-    result->addSeparator();
+  result->addSeparator();
     
-    QAction *moveInputPortsToEndAction = new MoveInputPortsToEndAction( graphWidget, result );
-    moveInputPortsToEndAction->setEnabled( exec.getExecPortCount() > 1 );
-    result->addAction( moveInputPortsToEndAction );
+  QAction *moveInputPortsToEndAction = new MoveInputPortsToEndAction( graphWidget, result );
+  moveInputPortsToEndAction->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
+  result->addAction( moveInputPortsToEndAction );
 
-    QAction *moveOutputPortsToEndAction = new MoveOutputPortsToEndAction( graphWidget, result );
-    moveOutputPortsToEndAction->setEnabled( exec.getExecPortCount() > 1 );
-    result->addAction( moveOutputPortsToEndAction );
-  }
-  catch(FabricCore::Exception e)
-  {
-    printf("Exception: %s\n", e.getDesc_cstr());
-  }
+  QAction *moveOutputPortsToEndAction = new MoveOutputPortsToEndAction( graphWidget, result );
+  moveOutputPortsToEndAction->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
+  result->addAction( moveOutputPortsToEndAction );
 
   return result;
 }
