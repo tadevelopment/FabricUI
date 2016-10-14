@@ -15,7 +15,6 @@ namespace FabricUI
     #define DFG_INSPECT_PRESET          "Inspect - DoubleClick"
     #define DFG_EDIT_PRESET_PROPERTIES  "Properties - F2"
     #define DFG_DELETE_PRESET           "Delete - Del"
-    #define DFG_SELECT_ALL_PRESET       "Select all - Ctrl+A"
     #define DFG_AUTO_CONNECTIONS        "Auto connect selected nodes - C"
     #define DFG_REMOVE_CONNECTIONS      "Remove connections to selected node(s) - D"
     #define DFG_SPLIT_PRESET            "Split from preset"

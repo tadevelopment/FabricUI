@@ -136,7 +136,9 @@ DFGWidget::DFGWidget(
     m_uiGraphViewWidget, SIGNAL(urlDropped(QUrl, bool)),
     this, SIGNAL(urlDropped(QUrl, bool))
     );
-  
+  QAction *selectAllNodesAction = new SelectAllNodesAction(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(selectAllNodesAction);
+
   m_klEditor =
     new DFGKLEditorWidget(
       this,
@@ -373,11 +375,8 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   pasteAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   result->addAction(pasteAction);
 
-  QAction * selectAllAction = new QAction(DFG_SELECT_ALL_PRESET, graphWidget);
-  selectAllAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_A) );
-  // [Julien] When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
-  selectAllAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-  result->addAction(selectAllAction);
+  QAction * selectAllNodesAction = new SelectAllNodesAction(graphWidget, result);
+  result->addAction(selectAllNodesAction);
 
   result->addSeparator();
 
@@ -550,7 +549,8 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     }
     else
     {
-      result->addAction(DFG_SELECT_ALL_PRESET);
+      QAction *selectAllNodesAction = new SelectAllNodesAction(dfgWidget, result);
+      result->addAction(selectAllNodesAction);
       if (dfgWidget->isEditable())
        result->addAction(DFG_PASTE_PRESET);
     }
@@ -977,10 +977,6 @@ void DFGWidget::onGraphAction(QAction * action)
   else if(action->text() == DFG_RESET_ZOOM)
   {
     onResetZoom();
-  }
-  else if(action->text() == DFG_SELECT_ALL_PRESET)
-  {
-    onSelectAll();
   }
   else if(action->text() == DFG_AUTO_CONNECTIONS)
   {
@@ -1693,10 +1689,6 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
       getTabSearchWidget()->showForSearch(pos);
     }
   }
-  else if(hotkey == DFGHotkeys::SELECT_ALL)
-  {
-    onSelectAll();
-  }
   else if(m_isEditable && hotkey == DFGHotkeys::AUTO_CONNECTIONS)
   {
     onAutoConnections();
@@ -1824,11 +1816,6 @@ void DFGWidget::onBubbleEditRequested(FabricUI::GraphView::Node * node)
       bubble->collapse();
     bubble->setVisible( visible );
   }
-}
-
-void DFGWidget::onSelectAll()
-{
-  getUIGraph()->selectAllNodes();
 }
 
 void DFGWidget::onAutoConnections()
@@ -2306,10 +2293,9 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
   // http://doc.qt.io/qt-4.8/qaction.html#shortcutContext-prop
   // http://doc.qt.io/qt-4.8/qt.html#ShortcutContext-enum
   // http://doc.qt.io/qt-4.8/qkeysequence.html
-  QAction * selectAction = editMenu->addAction("Select all");
-  QObject::connect(selectAction, SIGNAL(triggered()), this, SLOT(onSelectAll()));
-  selectAction->setShortcut( QKeySequence::SelectAll );
-  selectAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+
+  QAction * selectAllNodesAction = new SelectAllNodesAction(this, menuBar);
+  editMenu->addAction(selectAllNodesAction);
 
   QAction * cutAction = editMenu->addAction("Cut");
   QObject::connect(cutAction, SIGNAL(triggered()), this, SLOT(onCut()));

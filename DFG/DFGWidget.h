@@ -135,7 +135,6 @@ namespace DFG {
       void onKeyPressed(QKeyEvent * event);
       void onKeyReleased(QKeyEvent * event);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
-      void onSelectAll();
       void onAutoConnections();
       void onRemoveConnections();
       void onCut();
@@ -396,6 +395,39 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->movePortsToEnd( false /* moveInputs */ );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class SelectAllNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      SelectAllNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Select all" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( QKeySequence::SelectAll );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIGraph()->selectAllNodes();
       }
 
     private:
