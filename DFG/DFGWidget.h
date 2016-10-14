@@ -98,6 +98,7 @@ namespace DFG {
       void createPort( FabricUI::GraphView::PortType portType );
       void deletePort( FabricUI::GraphView::Port *port );
       void editPort( FTL::CStrRef execPortName, bool duplicatePort );
+      void movePortsToEnd( bool moveInputs /* true: move inputs else outputs */ );
 
       void createNewGraphNode( QPoint const &pos );
       void createNewFunctionNode( QPoint const &pos );
@@ -129,7 +130,6 @@ namespace DFG {
       void onGraphAction(QAction * action);
       void onNodeAction(QAction * action);
       void onNodeEditRequested(FabricUI::GraphView::Node *);
-      void onExecPortAction(QAction * action);
       void onSidePanelAction(QAction * action);
       void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey);
       void onHotkeyReleased(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey);
@@ -185,7 +185,6 @@ namespace DFG {
 
       QPoint m_contextPos;
       FabricUI::GraphView::Node * m_contextNode;
-      FabricUI::GraphView::Port * m_contextPort;
       FabricUI::GraphView::SidePanel * m_contextSidePanel;
 
       DFGGraphViewWidget * m_uiGraphViewWidget;
@@ -342,6 +341,68 @@ namespace DFG {
 
       DFGWidget *m_dfgWidget;
       FabricUI::GraphView::Port *m_port;
+    };
+
+    class MoveInputPortsToEndAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      MoveInputPortsToEndAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Move input ports to end" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->movePortsToEnd( true /* moveInputs */ );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class MoveOutputPortsToEndAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      MoveOutputPortsToEndAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Move output ports to end" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->movePortsToEnd( false /* moveInputs */ );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
     };
 
     class NewBlockNodeAction : public QAction

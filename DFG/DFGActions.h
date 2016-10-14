@@ -34,8 +34,6 @@ namespace FabricUI
     #define DFG_REMOVE_COMMENT          "Remove comment"
     #define DFG_SCROLL_UP               "Scroll up"
     #define DFG_SCROLL_DOWN             "Scroll down"
-    #define DFG_MOVE_INPUTS_TO_END      "Move inputs to end"
-    #define DFG_MOVE_OUTPUTS_TO_END     "Move outputs to end"
   };
 };
 

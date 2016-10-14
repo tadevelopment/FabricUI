@@ -636,7 +636,6 @@ QMenu* DFGWidget::portContextMenuCallback(
     return NULL;
   if (!graphWidget->getDFGController()->validPresetSplit())
     return NULL;
-  graphWidget->m_contextPort = port;
   QMenu* result = new QMenu( port->scene()->views()[0] );
 
   QAction *editPortAction = new EditPortAction( graphWidget, port, result );
@@ -654,20 +653,22 @@ QMenu* DFGWidget::portContextMenuCallback(
   try
   {
     FabricCore::DFGExec &exec = graphWidget->m_uiController->getExec();
-    if(exec.getExecPortCount() > 1)
-    {
-      result->addSeparator();
 
-      result->addAction(DFG_MOVE_INPUTS_TO_END);
-      result->addAction(DFG_MOVE_OUTPUTS_TO_END);
-    }
+    result->addSeparator();
+    
+    QAction *moveInputPortsToEndAction = new MoveInputPortsToEndAction( graphWidget, result );
+    moveInputPortsToEndAction->setEnabled( exec.getExecPortCount() > 1 );
+    result->addAction( moveInputPortsToEndAction );
+
+    QAction *moveOutputPortsToEndAction = new MoveOutputPortsToEndAction( graphWidget, result );
+    moveOutputPortsToEndAction->setEnabled( exec.getExecPortCount() > 1 );
+    result->addAction( moveOutputPortsToEndAction );
   }
   catch(FabricCore::Exception e)
   {
     printf("Exception: %s\n", e.getDesc_cstr());
   }
 
-  graphWidget->connect(result, SIGNAL(triggered(QAction*)), graphWidget, SLOT(onExecPortAction(QAction*)));
   return result;
 }
 
@@ -1347,71 +1348,6 @@ void DFGWidget::onNodeAction(QAction * action)
   m_contextNode = NULL;
 }
 
-void DFGWidget::onExecPortAction(QAction * action)
-{
-  if(m_contextPort == NULL)
-    return;
-
-  char const * portName = m_contextPort->name().c_str();
-  if ( action->text() == DFG_MOVE_INPUTS_TO_END
-    || action->text() == DFG_MOVE_OUTPUTS_TO_END )
-  {
-    try
-    {
-      FabricCore::DFGBinding &binding = m_uiController->getBinding();
-      QString execPath = m_uiController->getExecPath_QS();
-      FabricCore::DFGExec &exec = m_uiController->getExec();
-
-      // create an index list with the inputs first
-      QList<int> inputsFirst;
-      QList<int> outputsFirst;
-      for(unsigned i=0;i<exec.getExecPortCount();i++)
-      {
-        if(exec.getExecPortType(i) == FEC_DFGPortType_IO)
-        {
-          inputsFirst.append(i);
-          outputsFirst.append(i);
-        }
-      }
-      for(unsigned i=0;i<exec.getExecPortCount();i++)
-      {
-        if(exec.getExecPortType(i) == FEC_DFGPortType_In)
-          inputsFirst.append(i);
-        else if(exec.getExecPortType(i) == FEC_DFGPortType_Out)
-          outputsFirst.append(i);
-      }
-      for(unsigned i=0;i<exec.getExecPortCount();i++)
-      {
-        if(exec.getExecPortType(i) == FEC_DFGPortType_In)
-          outputsFirst.append(i);
-        else if(exec.getExecPortType(i) == FEC_DFGPortType_Out)
-          inputsFirst.append(i);
-      }
-
-      QList<int> indices;
-
-      if(action->text() == DFG_MOVE_INPUTS_TO_END)
-        indices = outputsFirst;
-      else if(action->text() == DFG_MOVE_OUTPUTS_TO_END)
-        indices = inputsFirst;
-
-      m_uiController->cmdReorderPorts(
-        binding,
-        execPath,
-        exec,
-        QString(), // itemPath
-        indices
-        );
-    }
-    catch(FabricCore::Exception e)
-    {
-      printf("Exception: %s\n", e.getDesc_cstr());
-    }
-  }
-
-  m_contextPort = NULL;
-}
-
 void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
 {
   FabricCore::Client &client = m_uiController->getClient();
@@ -1677,72 +1613,60 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
   }
 }
 
-void DFGWidget::movePortsToEnd(bool moveInputs)
+void DFGWidget::movePortsToEnd( bool moveInputs )
 {
-  if(m_contextPort == NULL)
-    return;
-
-  char const * portName = m_contextPort->name().c_str();
-  if ( action->text() == DFG_MOVE_INPUTS_TO_END
-    || action->text() == DFG_MOVE_OUTPUTS_TO_END )
+  try
   {
-    try
+    FabricCore::DFGBinding &binding = m_uiController->getBinding();
+    QString execPath = m_uiController->getExecPath_QS();
+    FabricCore::DFGExec &exec = m_uiController->getExec();
+
+    // create an index list with the inputs first
+    QList<int> inputsFirst;
+    QList<int> outputsFirst;
+    for(unsigned i=0;i<exec.getExecPortCount();i++)
     {
-      FabricCore::DFGBinding &binding = m_uiController->getBinding();
-      QString execPath = m_uiController->getExecPath_QS();
-      FabricCore::DFGExec &exec = m_uiController->getExec();
-
-      // create an index list with the inputs first
-      QList<int> inputsFirst;
-      QList<int> outputsFirst;
-      for(unsigned i=0;i<exec.getExecPortCount();i++)
+      if(exec.getExecPortType(i) == FEC_DFGPortType_IO)
       {
-        if(exec.getExecPortType(i) == FEC_DFGPortType_IO)
-        {
-          inputsFirst.append(i);
-          outputsFirst.append(i);
-        }
+        inputsFirst.append(i);
+        outputsFirst.append(i);
       }
-      for(unsigned i=0;i<exec.getExecPortCount();i++)
-      {
-        if(exec.getExecPortType(i) == FEC_DFGPortType_In)
-          inputsFirst.append(i);
-        else if(exec.getExecPortType(i) == FEC_DFGPortType_Out)
-          outputsFirst.append(i);
-      }
-      for(unsigned i=0;i<exec.getExecPortCount();i++)
-      {
-        if(exec.getExecPortType(i) == FEC_DFGPortType_In)
-          outputsFirst.append(i);
-        else if(exec.getExecPortType(i) == FEC_DFGPortType_Out)
-          inputsFirst.append(i);
-      }
-
-      QList<int> indices;
-
-      if(action->text() == DFG_MOVE_INPUTS_TO_END)
-        indices = outputsFirst;
-      else if(action->text() == DFG_MOVE_OUTPUTS_TO_END)
-        indices = inputsFirst;
-
-      m_uiController->cmdReorderPorts(
-        binding,
-        execPath,
-        exec,
-        QString(), // itemPath
-        indices
-        );
     }
-    catch(FabricCore::Exception e)
+    for(unsigned i=0;i<exec.getExecPortCount();i++)
     {
-      printf("Exception: %s\n", e.getDesc_cstr());
+      if(exec.getExecPortType(i) == FEC_DFGPortType_In)
+        inputsFirst.append(i);
+      else if(exec.getExecPortType(i) == FEC_DFGPortType_Out)
+        outputsFirst.append(i);
     }
+    for(unsigned i=0;i<exec.getExecPortCount();i++)
+    {
+      if(exec.getExecPortType(i) == FEC_DFGPortType_In)
+        outputsFirst.append(i);
+      else if(exec.getExecPortType(i) == FEC_DFGPortType_Out)
+        inputsFirst.append(i);
+    }
+
+    QList<int> indices;
+
+    if (moveInputs)
+      indices = outputsFirst;
+    else
+      indices = inputsFirst;
+
+    m_uiController->cmdReorderPorts(
+      binding,
+      execPath,
+      exec,
+      QString(), // itemPath
+      indices
+      );
   }
-
-  m_contextPort = NULL;
+  catch(FabricCore::Exception e)
+  {
+    printf("Exception: %s\n", e.getDesc_cstr());
+  }
 }
-
-
 
 void DFGWidget::onSidePanelAction(QAction * action)
 {
