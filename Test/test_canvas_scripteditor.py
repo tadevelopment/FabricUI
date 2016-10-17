@@ -199,12 +199,12 @@ def enumerate_canvas_tests(base_dir):
   for dir_name, _subdir_list, file_list in os.walk(base_dir):
     for file_name in file_list:
       file_base, file_ext = os.path.splitext(file_name)
-      if file_ext == '.py':      
-        canvas_tests += [(os.path.relpath(dir_name, base_dir), file_base)]
+      if file_ext == '.py':
+        if not os.path.exists(os.path.join(base_dir,dir_name,file_base) + os.extsep + "skip"):
+          canvas_tests += [(os.path.relpath(dir_name, base_dir), file_base)]
   return canvas_tests
 
 canvas_tests = enumerate_canvas_tests(canvas_tests_dir)
-
 
 for test in canvas_tests:  
   canvas_test = 'def test_' + test[1] + '(canvas_win, replace_ref = False): comparison(canvas_win, "' + test[0] + '", "' + test[1] + '", replace_ref)'
