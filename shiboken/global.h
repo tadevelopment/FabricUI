@@ -76,6 +76,7 @@
 #include <FabricUI/ModelItems/VarPortItemMetadata.h>
 #include <FabricUI/ModelItems/VarPortModelItem.h>
 #include <FabricUI/DFG/DFGConfig.h>
+#include <FabricUI/DFG/DFGBindingUtils.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGHotkeys.h>
 #include <FabricUI/DFG/DFGLogWidget.h>
