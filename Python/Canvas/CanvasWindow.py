@@ -465,7 +465,7 @@ class CanvasWindow(QtGui.QMainWindow):
         windowMenu.addAction( toggleAction )
 
     def onPortManipulationRequested(self, portName):
-        """Method to trigger value changes that are requested form manipulators
+        """Method to trigger value changes that are requested by manipulators
         in the viewport.
 
         Arguments:
