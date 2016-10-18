@@ -1,0 +1,6 @@
+Number of Port after adding : 2
+Port port type 2 soft-range  hard-range 
+After setting soft range (-4.5, 4.5)
+Port port type 2 soft-range (-4.5, 4.5) hard-range 
+After setting hard range (-2.5, 2.5)
+Port port type 2 soft-range (-4.5, 4.5) hard-range (-2.5, 2.5)

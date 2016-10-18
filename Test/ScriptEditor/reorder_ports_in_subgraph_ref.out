@@ -1,0 +1,22 @@
+Number of Port before adding : 1
+Port  exec type 1
+Number of Port after adding : 4
+Port  exec type 1
+Port  firstPort type 2
+Port  secondPort type 2
+Port  thirdPort type 2
+0|1|2|3 -> 0|1|3|2 Reordering : 
+Port  exec type 1
+Port  firstPort type 2
+Port  thirdPort type 2
+Port  secondPort type 2
+0|1|3|2 -> 0|2|3|1 Reordering : 
+Port  exec type 1
+Port  thirdPort type 2
+Port  secondPort type 2
+Port  firstPort type 2
+0|2|3|1 -> 0|2|1|3 Reordering : 
+Port  exec type 1
+Port  secondPort type 2
+Port  thirdPort type 2
+Port  firstPort type 2
