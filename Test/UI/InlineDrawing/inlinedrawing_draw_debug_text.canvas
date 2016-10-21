@@ -1,15 +1,15 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "camera_mat44" : "{\n  \"row0\" : {\n    \"x\" : 0.9712972640991211,\n    \"y\" : 0.07281987369060516,\n    \"z\" : -0.2268499284982681,\n    \"t\" : -1.17630934715271\n    },\n  \"row1\" : {\n    \"x\" : -4.649547008739319e-06,\n    \"y\" : 0.9520581960678101,\n    \"z\" : 0.3057948350906372,\n    \"t\" : 14.51015472412109\n    },\n  \"row2\" : {\n    \"x\" : 0.2382165193557739,\n    \"y\" : -0.2968950867652893,\n    \"z\" : 0.9249573349952698,\n    \"t\" : 21.04444122314453\n    },\n  \"row3\" : {\n    \"x\" : 0,\n    \"y\" : 0,\n    \"z\" : 0,\n    \"t\" : 1\n    }\n  }",
+    "camera_mat44" : "{\n  \"row0\" : {\n    \"x\" : 0.9900140166282654,\n    \"y\" : -0.02556317113339901,\n    \"z\" : 0.13991978764534,\n    \"t\" : 8.795631408691406\n    },\n  \"row1\" : {\n    \"x\" : 1.244463078364788e-06,\n    \"y\" : 0.9836441278457642,\n    \"z\" : 0.1798927485942841,\n    \"t\" : 10.99170112609863\n    },\n  \"row2\" : {\n    \"x\" : -0.1421957463026047,\n    \"y\" : -0.177970677614212,\n    \"z\" : 0.9741697311401367,\n    \"t\" : 19.53498649597168\n    },\n  \"row3\" : {\n    \"x\" : 0,\n    \"y\" : 0,\n    \"z\" : 0,\n    \"t\" : 1\n    }\n  }",
     "timeline_start" : "1",
-    "uiGraphZoom" : "{\n  \"value\" : 0.179853156208992\n  }",
+    "uiGraphZoom" : "{\n  \"value\" : 0.3193933665752411\n  }",
     "timeline_loopMode" : "1",
     "timeline_simMode" : "0",
-    "camera_focalDistance" : "21.33920288085938",
-    "timeline_current" : "120",
+    "camera_focalDistance" : "41.71600723266602",
+    "timeline_current" : "163",
     "timeline_end" : "200",
-    "uiGraphPan" : "{\n  \"x\" : 401.6762583499976,\n  \"y\" : 111.9043251168425\n  }"
+    "uiGraphPan" : "{\n  \"x\" : -147.6011199951172,\n  \"y\" : 222.7066955566406\n  }"
     },
   "title" : "",
   "ports" : [
@@ -61,6 +61,13 @@
     {
       "objectType" : "ExecPort",
       "name" : "this_4",
+      "nodePortType" : "In",
+      "execPortType" : "Out",
+      "typeSpec" : "DrawingHandle"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this_3",
       "nodePortType" : "In",
       "execPortType" : "Out",
       "typeSpec" : "DrawingHandle"
@@ -122,7 +129,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1397.71310067,\"y\":206.99688077}"
+        "uiGraphPos" : "{\"x\":1632.31594229,\"y\":206.996887207}"
         },
       "name" : "EmptyPolygonMesh",
       "ports" : [
@@ -148,7 +155,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2874.25372601,\"y\":-469.112072468}"
+        "uiGraphPos" : "{\"x\":3015.95774221,\"y\":-446.451130867}"
         },
       "name" : "EmptyDrawingHandle",
       "ports" : [
@@ -169,7 +176,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":3091.6101954,\"y\":199.4549191}"
+        "uiGraphPos" : "{\"x\":2761.89695168,\"y\":215.306523085}"
         },
       "name" : "Cache",
       "ports" : [
@@ -190,7 +197,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2480.87236834,\"y\":-365.440102577}"
+        "uiGraphPos" : "{\"x\":2664.7502296,\"y\":-349.588505268}"
         },
       "name" : "ComposeXfo",
       "ports" : [
@@ -233,7 +240,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2189.62310076,\"y\":-402.111794472}"
+        "uiGraphPos" : "{\"x\":2373.50096202,\"y\":-386.260197163}"
         },
       "name" : "ComposeVec3",
       "ports" : [
@@ -269,7 +276,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1747.5040822,\"y\":-376.370827675}"
+        "uiGraphPos" : "{\"x\":1931.38243175,\"y\":-360.519230366}"
         },
       "name" : "Mul",
       "ports" : [
@@ -303,7 +310,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1586.55608416,\"y\":-382.741372108}"
+        "uiGraphPos" : "{\"x\":1770.4344337,\"y\":-366.889774799}"
         },
       "name" : "Sin",
       "ports" : [
@@ -329,7 +336,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1392.72979021,\"y\":-381.905312538}"
+        "uiGraphPos" : "{\"x\":1576.60813975,\"y\":-366.053715229}"
         },
       "name" : "Mul_2",
       "ports" : [
@@ -363,7 +370,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1969.0978322,\"y\":-381.043251991}"
+        "uiGraphPos" : "{\"x\":2152.97557139,\"y\":-365.191654682}"
         },
       "name" : "Add",
       "ports" : [
@@ -398,9 +405,9 @@
       "objectType" : "User",
       "metadata" : {
         "uiTitle" : "Generate Teapot and Cache",
-        "uiGraphPos" : "{\"x\":1353.12618661,\"y\":74.65287137030001}",
+        "uiGraphPos" : "{\"x\":1552.85571289,\"y\":74.6528701782}",
         "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143,\n  \"a\" : 115\n  }",
-        "uiGraphSize" : "{\"w\":1995.56958008,\"h\":528.575744629}"
+        "uiGraphSize" : "{\"w\":1513.68225098,\"h\":430.295959473}"
         },
       "name" : "uiBackDropGenerateTeapotAndCache0",
       "ports" : []
@@ -409,7 +416,7 @@
       "objectType" : "User",
       "metadata" : {
         "uiTitle" : "Animate Base on Time",
-        "uiGraphPos" : "{\"x\":1355.55925798,\"y\":-508.007363319}",
+        "uiGraphPos" : "{\"x\":1539.43760753,\"y\":-492.15576601}",
         "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143,\n  \"a\" : 115\n  }",
         "uiGraphSize" : "{\"w\":1354.50927734,\"h\":463.152038574}"
         },
@@ -419,7 +426,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2056.57096684,\"y\":768.918569803}"
+        "uiGraphPos" : "{\"x\":1939.70555854,\"y\":667.585876465}"
         },
       "name" : "StringArray_1",
       "ports" : [
@@ -456,7 +463,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2055.15128911,\"y\":1357.95659471}"
+        "uiGraphPos" : "{\"x\":1939.62294531,\"y\":1107.01470518}"
         },
       "name" : "ColorArray_1",
       "ports" : [
@@ -495,7 +502,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1389.62711918,\"y\":789.601858377}"
+        "uiGraphPos" : "{\"x\":1712.30681944,\"y\":688.269255161}"
         },
       "name" : "UInt32_1",
       "ports" : [
@@ -519,7 +526,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2070.90104496,\"y\":1037.89891648}"
+        "uiGraphPos" : "{\"x\":1930.73109961,\"y\":893.303462505}"
         },
       "name" : "Vec3Array_1",
       "ports" : [
@@ -555,7 +562,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1691.12003911,\"y\":979.3884184360001}"
+        "uiGraphPos" : "{\"x\":1699.15569639,\"y\":865.47781229}"
         },
       "name" : "Float32Array_1",
       "ports" : [
@@ -589,7 +596,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1679.61295903,\"y\":1205.19060349}"
+        "uiGraphPos" : "{\"x\":1687.64861631,\"y\":1156.68545389}"
         },
       "name" : "Float32Array_2",
       "ports" : [
@@ -623,7 +630,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1677.38639653,\"y\":1413.47148728}"
+        "uiGraphPos" : "{\"x\":1699.25725889,\"y\":1009.01882792}"
         },
       "name" : "Float32Array_3",
       "ports" : [
@@ -658,7 +665,7 @@
       "objectType" : "Inst",
       "metadata" : {
         "uiComment" : "Compute the dot product \nbetween the normals and \nan input direction.",
-        "uiGraphPos" : "{\"x\":2171.6360743,\"y\":257.2568295}",
+        "uiGraphPos" : "{\"x\":2086.03693914,\"y\":200.191100836}",
         "uiCollapsedState" : "1",
         "uiCommentExpanded" : "true"
         },
@@ -759,7 +766,7 @@
       "objectType" : "Inst",
       "metadata" : {
         "uiComment" : "Blend between two colors based \non an input attribute",
-        "uiGraphPos" : "{\"x\":2611.47689462,\"y\":212.411126375}",
+        "uiGraphPos" : "{\"x\":2418.08725858,\"y\":212.411132812}",
         "uiCommentExpanded" : "true"
         },
       "name" : "ColorInterpolate_2",
@@ -828,7 +835,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":3583.72999525,\"y\":-471.46427393}",
+        "uiGraphPos" : "{\"x\":3468.0496366,\"y\":-439.302627325}",
         "uiCollapsedState" : "0"
         },
       "name" : "DrawColoredPolygonMesh_2",
@@ -918,10 +925,10 @@
       "objectType" : "User",
       "metadata" : {
         "uiTitle" : "Set some text",
-        "uiGraphPos" : "{\"x\":1337.96574223,\"y\":689.763784647}",
+        "uiGraphPos" : "{\"x\":1541.30315733,\"y\":588.431120396}",
         "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }",
         "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
-        "uiGraphSize" : "{\"w\":2023.828125,\"h\":998.046875}"
+        "uiGraphSize" : "{\"w\":1557.79296875,\"h\":791.977050781}"
         },
       "name" : "backDrop",
       "ports" : []
@@ -929,7 +936,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2474.85685551,\"y\":785.189443827}"
+        "uiGraphPos" : "{\"x\":2392.8646841,\"y\":699.708271742}"
         },
       "name" : "Set_1",
       "ports" : [
@@ -956,7 +963,7 @@
           "name" : "element",
           "nodePortType" : "In",
           "defaultValues" : {
-            "String" : "First text"
+            "String" : "3D Array 1"
             }
           }
         ],
@@ -966,7 +973,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2765.237257,\"y\":783.4860839839999}"
+        "uiGraphPos" : "{\"x\":2772.01446104,\"y\":682.153410435}"
         },
       "name" : "Set_2",
       "ports" : [
@@ -993,7 +1000,7 @@
           "name" : "element",
           "nodePortType" : "In",
           "defaultValues" : {
-            "String" : "Second text"
+            "String" : "3D Array 2"
             }
           }
         ],
@@ -1003,7 +1010,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2478.26408207,\"y\":1057.74107957}"
+        "uiGraphPos" : "{\n  \"x\" : 2414.412327051163,\n  \"y\" : 875.3517868518829\n  }"
         },
       "name" : "Set_3",
       "ports" : [
@@ -1032,8 +1039,8 @@
           "defaultValues" : {
             "String" : "Hello World",
             "Vec3" : {
-              "x" : -5,
-              "y" : 0,
+              "x" : -13.89999961853027,
+              "y" : 5.099999904632568,
               "z" : 0
               }
             }
@@ -1045,7 +1052,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2759.33463871,\"y\":1056.03722215}"
+        "uiGraphPos" : "{\"x\":2773.80694151,\"y\":874.20815897}"
         },
       "name" : "Set_4",
       "ports" : [
@@ -1074,8 +1081,8 @@
           "defaultValues" : {
             "String" : "Hello World",
             "Vec3" : {
-              "x" : 1,
-              "y" : 0,
+              "x" : 14.19999980926514,
+              "y" : 0.1000000014901161,
               "z" : 0
               }
             }
@@ -1087,7 +1094,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":2488.48576176,\"y\":1326.88677049}"
+        "uiGraphPos" : "{\n  \"x\" : 2420.291780948639,\n  \"y\" : 1077.003642320633\n  }"
         },
       "name" : "Set_5",
       "ports" : [
@@ -1121,9 +1128,9 @@
               "z" : 0
               },
             "Color" : {
-              "r" : 0.5764706134796143,
-              "g" : 0.364705890417099,
-              "b" : 1,
+              "r" : 0.772549033164978,
+              "g" : 1,
+              "b" : 0.8078431487083435,
               "a" : 1
               }
             }
@@ -1135,7 +1142,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\n  \"x\" : 2757.628274440765,\n  \"y\" : 1331.996603965759\n  }"
+        "uiGraphPos" : "{\"x\":2787.50078917,\"y\":1071.55642557}"
         },
       "name" : "Set_6",
       "ports" : [
@@ -1170,8 +1177,8 @@
               },
             "Color" : {
               "r" : 1,
-              "g" : 0.3058823645114899,
-              "b" : 0.3058823645114899,
+              "g" : 0.7254902124404907,
+              "b" : 0.5843137502670288,
               "a" : 1
               }
             }
@@ -1183,7 +1190,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":3589.83964968,\"y\":70.1397957802}"
+        "uiGraphPos" : "{\"x\":3475.62011719,\"y\":85.4335246086}"
         },
       "name" : "DrawAttributeAsText_2",
       "ports" : [
@@ -1247,7 +1254,7 @@
           "name" : "resolution",
           "nodePortType" : "In",
           "defaultValues" : {
-            "UInt32" : 10
+            "UInt32" : 5
             }
           },
         {
@@ -1280,9 +1287,516 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":3607.24383593,\"y\":691.573425293}"
+        "uiGraphPos" : "{\"x\":2019.8788693,\"y\":1543.49604034}"
         },
-      "name" : "DrawText_2",
+      "name" : "StringArray_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "Hello World"
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "SInt32" : 2
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.StringArray",
+      "presetGUID" : "4DBA9D7C797782494EF63035F9B6545B"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1989.53072476,\"y\":2075.93048859}"
+        },
+      "name" : "ColorArray_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Color" : {
+              "r" : 0.4941176474094391,
+              "g" : 0.6117647290229797,
+              "b" : 1,
+              "a" : 1
+              }
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Constants.ColorArray",
+      "presetGUID" : "04B7C7253C80C73A7D2202633598AA44"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1631.92794156,\"y\":1564.17938995}"
+        },
+      "name" : "UInt32_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "UInt32" : 2
+            }
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.UInt32",
+      "presetGUID" : "522214488375FF199C3D64A3DBF3C762"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1655.68990445,\"y\":1741.38788605}"
+        },
+      "name" : "Float32Array_4",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : -1.900000095367432
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.Float32Array",
+      "presetGUID" : "9BAEB103B0AF589C442E44D03132EB30"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1644.18306851,\"y\":2032.5916214}"
+        },
+      "name" : "Float32Array_5",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : 2.500000238418579
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.Float32Array",
+      "presetGUID" : "9BAEB103B0AF589C442E44D03132EB30"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1655.79146695,\"y\":1884.92792511}"
+        },
+      "name" : "Float32Array_6",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : -2.200000047683716
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.Float32Array",
+      "presetGUID" : "9BAEB103B0AF589C442E44D03132EB30"
+      },
+    {
+      "objectType" : "User",
+      "metadata" : {
+        "uiTitle" : "Set some text",
+        "uiGraphPos" : "{\"x\":1551.73311734,\"y\":1464.34125519}",
+        "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }",
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiGraphSize" : "{\"w\":1535.59985352,\"h\":839.531555176}"
+        },
+      "name" : "backDrop_2",
+      "ports" : []
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2426.45967984,\"y\":1559.76691437}"
+        },
+      "name" : "Set_9",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "index",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "UInt32" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "Left 2D Array "
+            }
+          }
+        ],
+      "executable" : "Fabric.Core.Array.Set",
+      "presetGUID" : "D4D13729AE7853F59417AF7DD50571E2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2761.26082158,\"y\":1553.70179605}"
+        },
+      "name" : "Set_10",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "index",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "UInt32" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "Right 2D Array"
+            }
+          }
+        ],
+      "executable" : "Fabric.Core.Array.Set",
+      "presetGUID" : "D4D13729AE7853F59417AF7DD50571E2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2373.81368375,\"y\":2091.39850616}"
+        },
+      "name" : "Set_13",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "index",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "UInt32" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "Hello World",
+            "Vec3" : {
+              "x" : -2,
+              "y" : 0,
+              "z" : 0
+              },
+            "Color" : {
+              "r" : 1,
+              "g" : 0.9607843160629272,
+              "b" : 0.843137264251709,
+              "a" : 1
+              }
+            }
+          }
+        ],
+      "executable" : "Fabric.Core.Array.Set",
+      "presetGUID" : "D4D13729AE7853F59417AF7DD50571E2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2760.33328199,\"y\":2069.06602907}"
+        },
+      "name" : "Set_14",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "index",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "UInt32" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "Hello World",
+            "Vec3" : {
+              "x" : -2,
+              "y" : 0,
+              "z" : 0
+              },
+            "Color" : {
+              "r" : 0.8156862854957581,
+              "g" : 0.8274509906768799,
+              "b" : 1,
+              "a" : 1
+              }
+            }
+          }
+        ],
+      "executable" : "Fabric.Core.Array.Set",
+      "presetGUID" : "D4D13729AE7853F59417AF7DD50571E2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1998.97994351,\"y\":1779.08637238}"
+        },
+      "name" : "Vec2Array_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "x",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "y",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Vec2.Vec2Array",
+      "presetGUID" : "59474AC0D03D094DE36EAABEB7DE2249"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2406.24337125,\"y\":1796.99750519}"
+        },
+      "name" : "Set_15",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "index",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "UInt32" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "Hello World",
+            "Vec3" : {
+              "x" : -5,
+              "y" : 0,
+              "z" : 0
+              },
+            "Vec2" : {
+              "x" : -1,
+              "y" : 0.800000011920929
+              }
+            }
+          }
+        ],
+      "executable" : "Fabric.Core.Array.Set",
+      "presetGUID" : "D4D13729AE7853F59417AF7DD50571E2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2775.40145302,\"y\":1776.89709473}"
+        },
+      "name" : "Set_16",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "index",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "UInt32" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "Hello World",
+            "Vec3" : {
+              "x" : 1,
+              "y" : 0,
+              "z" : 0
+              },
+            "Vec2" : {
+              "x" : 0.6000000238418579,
+              "y" : 0.800000011920929
+              }
+            }
+          }
+        ],
+      "executable" : "Fabric.Core.Array.Set",
+      "presetGUID" : "D4D13729AE7853F59417AF7DD50571E2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":3773.23158693,\"y\":1539.27394199}"
+        },
+      "name" : "Draw2DText_1",
       "ports" : [
         {
           "objectType" : "InstPort",
@@ -1302,14 +1816,6 @@
         {
           "objectType" : "InstPort",
           "name" : "fontSize",
-          "nodePortType" : "In",
-          "defaultValues" : {
-            "UInt32" : 31
-            }
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "maxCharacterCount",
           "nodePortType" : "In"
           },
         {
@@ -1319,7 +1825,58 @@
           },
         {
           "objectType" : "InstPort",
-          "name" : "positions",
+          "name" : "screenPosition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "color",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "instance",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.DrawingHandle.Draw2DText",
+      "presetGUID" : "6C6E4A1352703A0B6A960F4F4D54071F"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":3413.22635317,\"y\":1539.07693815}"
+        },
+      "name" : "Draw2DTextArray_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "fontPath",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "fontSize",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "text",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "screenPositions",
           "nodePortType" : "In"
           },
         {
@@ -1333,8 +1890,110 @@
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Exts.InlineDrawing.DrawingHandle.DrawText",
-      "presetGUID" : "3496FC9475487E5F4FD2FB44F37B37F0"
+      "executable" : "Fabric.Exts.InlineDrawing.DrawingHandle.Draw2DTextArray",
+      "presetGUID" : "0FDB642B6DC9D3C02A226164B88F2DE2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":3757.03428555,\"y\":626.065626621}"
+        },
+      "name" : "Draw3DText_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "fontPath",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "fontSize",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "text",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "worldPosition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "color",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "instance",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.DrawingHandle.Draw3DText",
+      "presetGUID" : "06B60276B960EBFB838BB5F82B541E5E"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":3457.0107671,\"y\":621.077968121}"
+        },
+      "name" : "Draw3DTextArray_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "fontPath",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "fontSize",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "text",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "worldPositions",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "colors",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "instance",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.DrawingHandle.Draw3DTextArray",
+      "presetGUID" : "B41E4BBACC98A0A66F71947C726EE14F"
       }
     ],
   "connections" : {
@@ -1356,7 +2015,8 @@
     "EmptyDrawingHandle.handle" : [
       "DrawColoredPolygonMesh_2.this",
       "DrawAttributeAsText_2.this",
-      "DrawText_2.this"
+      "Draw3DTextArray_1.this",
+      "Draw2DTextArray_1.this"
       ],
     "Cache.value" : [
       "DrawColoredPolygonMesh_2.mesh",
@@ -1422,25 +2082,74 @@
       "Set_2.array"
       ],
     "Set_2.array" : [
-      "DrawText_2.text"
+      "Draw3DTextArray_1.text"
       ],
     "Set_3.array" : [
       "Set_4.array"
       ],
     "Set_4.array" : [
-      "DrawText_2.positions"
+      "Draw3DTextArray_1.worldPositions"
       ],
     "Set_5.array" : [
       "Set_6.array"
       ],
     "Set_6.array" : [
-      "DrawText_2.colors"
+      "Draw3DTextArray_1.colors"
       ],
     "DrawAttributeAsText_2.this" : [
       "this_4"
       ],
-    "DrawText_2.this" : [
+    "StringArray_2.array" : [
+      "Set_9.array"
+      ],
+    "ColorArray_2.array" : [
+      "Set_13.array"
+      ],
+    "UInt32_2.value" : [
+      "Float32Array_6.count",
+      "Float32Array_5.count",
+      "Float32Array_4.count",
+      "StringArray_2.count",
+      "ColorArray_2.count"
+      ],
+    "Float32Array_4.array" : [
+      "Vec2Array_2.x"
+      ],
+    "Float32Array_5.array" : [
+      "Vec2Array_2.y"
+      ],
+    "Set_9.array" : [
+      "Set_10.array"
+      ],
+    "Set_10.array" : [
+      "Draw2DTextArray_1.text"
+      ],
+    "Set_13.array" : [
+      "Set_14.array"
+      ],
+    "Set_14.array" : [
+      "Draw2DTextArray_1.colors"
+      ],
+    "Vec2Array_2.result" : [
+      "Set_15.array"
+      ],
+    "Set_15.array" : [
+      "Set_16.array"
+      ],
+    "Set_16.array" : [
+      "Draw2DTextArray_1.screenPositions"
+      ],
+    "Draw2DText_1.this" : [
       "this_2"
+      ],
+    "Draw2DTextArray_1.this" : [
+      "Draw2DText_1.this"
+      ],
+    "Draw3DText_1.this" : [
+      "this_3"
+      ],
+    "Draw3DTextArray_1.this" : [
+      "Draw3DText_1.this"
       ]
     },
   "requiredPresets" : {
@@ -4598,9 +5307,96 @@ dfgEntry {
 }
 "
       },
-    "Fabric.Exts.InlineDrawing.DrawingHandle.DrawText" : {
+    "Fabric.Exts.Math.Vec2.Vec2Array" : {
       "objectType" : "Func",
-      "title" : "DrawText",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/Math/Vec2.html",
+        "uiTooltip" : "Constructor from scalar components\n\n Supported by Vec2"
+        },
+      "title" : "Vec2[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "x",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              0
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "y",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              0
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Vec2[]"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "59474AC0D03D094DE36EAABEB7DE2249",
+      "code" : "require Math;
+
+operator Math_Vec2_Vec2_task<<<index>>>(
+  io Vec2[] result
+, in Scalar[] x
+, in Scalar[] y
+) {
+  result[index] = Vec2(x[index < x.size() ? index : x.size() - 1], y[index < y.size() ? index : y.size() - 1]);
+}
+
+dfgEntry {
+  if( x.size() == 0) return;
+  if( y.size() == 0) return;
+  Size task_size = 0;
+  if(task_size < x.size()) task_size = x.size();
+  if(task_size < y.size()) task_size = y.size();
+  result.resize(task_size);
+  if(task_size < 10000 /* pex margin */) {
+    for(Size index = 0; index < task_size; index++) {
+      Math_Vec2_Vec2_task(index, result, x, y);
+    }
+  } else {
+    Math_Vec2_Vec2_task<<<task_size>>>(result, x, y);
+  }
+}
+"
+      },
+    "Fabric.Exts.InlineDrawing.DrawingHandle.Draw2DText" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }",
+        "uiTooltip" : "Draw a string in the screen space."
+        },
+      "title" : "Draw2DText",
       "ports" : [
         {
           "objectType" : "ExecPort",
@@ -4638,17 +5434,120 @@ dfgEntry {
           "name" : "fontSize",
           "nodePortType" : "Out",
           "defaultValues" : {
-            "UInt32" : 20
+            "UInt32" : 31
             },
           "execPortType" : "In",
           "typeSpec" : "UInt32"
           },
         {
           "objectType" : "ExecPort",
-          "name" : "maxCharacterCount",
+          "name" : "text",
           "nodePortType" : "Out",
           "defaultValues" : {
-            "UInt32" : 25
+            "String[]" : [],
+            "String" : "2D Text"
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiHardRange" : "(-1, 1)"
+            },
+          "name" : "screenPosition",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3[]" : [],
+            "Vec2" : {
+              "x" : 0,
+              "y" : 0.75
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec2"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "color",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Color[]" : [],
+            "Color" : {
+              "r" : 1,
+              "g" : 0.3333333432674408,
+              "b" : 0.4313725531101227,
+              "a" : 1
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Color"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "instance",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "InlineInstance" : null
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "InlineInstance"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "6C6E4A1352703A0B6A960F4F4D54071F",
+      "code" : "dfgEntry {
+   if(this)
+     this.draw2DText(fontPath, fontSize, text, screenPosition, color, instance);
+}
+"
+      },
+    "Fabric.Exts.InlineDrawing.DrawingHandle.Draw2DTextArray" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }",
+        "uiTooltip" : "Draw an array of string in the screen space."
+        },
+      "title" : "Draw2DTextArray",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "DrawingHandle" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "DrawingHandle"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "fontPath",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "AtlasGL" : null,
+            "FilePath" : "\"${FABRIC_DIR}/Resources/Fonts/Roboto/Roboto-Regular.ttf\""
+            },
+          "execPortType" : "In",
+          "typeSpec" : "FilePath"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "fontSize",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32" : 31
             },
           "execPortType" : "In",
           "typeSpec" : "UInt32"
@@ -4665,7 +5564,221 @@ dfgEntry {
           },
         {
           "objectType" : "ExecPort",
-          "name" : "positions",
+          "metadata" : {
+            "uiHardRange" : "(-1, 1)"
+            },
+          "name" : "screenPositions",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3[]" : [],
+            "Vec2[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec2[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "colors",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Color[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Color[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "instance",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "InlineInstance" : null
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "InlineInstance"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "0FDB642B6DC9D3C02A226164B88F2DE2",
+      "code" : "dfgEntry {
+   if(this)
+     this.draw2DTextArray(fontPath, fontSize, text, screenPositions, colors, instance);
+}
+"
+      },
+    "Fabric.Exts.InlineDrawing.DrawingHandle.Draw3DText" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }",
+        "uiTooltip" : "Draw a string in the world space."
+        },
+      "title" : "Draw3DText",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "DrawingHandle" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "DrawingHandle"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "fontPath",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "AtlasGL" : null,
+            "FilePath" : "\"${FABRIC_DIR}/Resources/Fonts/Roboto/Roboto-Regular.ttf\""
+            },
+          "execPortType" : "In",
+          "typeSpec" : "FilePath"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "fontSize",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32" : 40
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "text",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String[]" : [],
+            "String" : "3D text"
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "worldPosition",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3[]" : [],
+            "Vec3" : {
+              "x" : 0,
+              "y" : 0,
+              "z" : 0
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec3"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "color",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Color[]" : [],
+            "Color" : {
+              "r" : 0.2274509817361832,
+              "g" : 0.6039215922355652,
+              "b" : 0.9529411792755127,
+              "a" : 1
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Color"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "instance",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "InlineInstance" : null
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "InlineInstance"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "06B60276B960EBFB838BB5F82B541E5E",
+      "code" : "dfgEntry {
+   if(this)
+     this.draw3DText(fontPath, fontSize, text, worldPosition, color, instance);
+}
+"
+      },
+    "Fabric.Exts.InlineDrawing.DrawingHandle.Draw3DTextArray" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }",
+        "uiTooltip" : "Draw an array of string in the world space."
+        },
+      "title" : "Draw3DTextArray",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "DrawingHandle" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "DrawingHandle"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "fontPath",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "AtlasGL" : null,
+            "FilePath" : "\"${FABRIC_DIR}/Resources/Fonts/Roboto/Roboto-Regular.ttf\""
+            },
+          "execPortType" : "In",
+          "typeSpec" : "FilePath"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "fontSize",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32" : 31
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "text",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "worldPositions",
           "nodePortType" : "Out",
           "defaultValues" : {
             "Vec3[]" : []
@@ -4695,10 +5808,10 @@ dfgEntry {
           }
         ],
       "extDeps" : {},
-      "presetGUID" : "3496FC9475487E5F4FD2FB44F37B37F0",
+      "presetGUID" : "B41E4BBACC98A0A66F71947C726EE14F",
       "code" : "dfgEntry {
    if(this)
-     this.drawText(fontPath, fontSize, maxCharacterCount, text, positions, colors, instance);
+     this.draw3DTextArray(fontPath, fontSize, text, worldPositions, colors, instance);
 }
 "
       }
@@ -4714,7 +5827,12 @@ dfgEntry {
       },
     {
       "type" : "Float32",
-      "value" : 120
+      "value" : 163
+      },
+    {
+      "type" : "DrawingHandle",
+      "value" : null,
+      "ext" : "InlineDrawing"
       },
     {
       "type" : "DrawingHandle",
