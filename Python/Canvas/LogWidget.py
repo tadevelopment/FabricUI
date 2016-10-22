@@ -24,7 +24,7 @@ class LogWidget(AppendingTextWidget):
     def __init__(self):
         AppendingTextWidget.__init__(self)
 
-        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
         self.commandColor = QtGui.QColor(QtCore.Qt.white)
         self.commentColor = QtGui.QColor("#9AD6D6")

@@ -18,6 +18,8 @@ std::vector<std::string> DFGLogWidget::sUnconsumedMessages;
 DFGLogWidget::DFGLogWidget( const DFGConfig & config )
   : m_config( config )
 {
+  setObjectName( "DFGLogWidget" );
+  
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
   QVBoxLayout * layout = new QVBoxLayout();
@@ -35,7 +37,7 @@ DFGLogWidget::DFGLogWidget( const DFGConfig & config )
     );
   layout->addWidget(m_text);
 
-  QString styleSheet = LoadFabricStyleSheet( "DFGLogWidget.qss" );
+  QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
   if ( !styleSheet.isEmpty() )
     setStyleSheet( styleSheet );
 

@@ -67,7 +67,7 @@ if buildOS == 'Darwin':
   env.Append(FRAMEWORKS = ['OpenGL', 'Cocoa', 'Foundation'])
 
 
-if buildOS == 'Linux':
+if buildOS == 'Linux' and not env.get('BUILDING_MAYA_2017'):
   env.Replace( CC = '/opt/centos5/usr/bin/gcc' )
   env.Replace( CXX = '/opt/centos5/usr/bin/gcc' )
 
@@ -197,6 +197,7 @@ if uiLibPrefix == 'ui':
     [
       Glob(os.path.join(env.Dir('ValueEditor').srcnode().abspath, '*.qss')),
       Glob(os.path.join(env.Dir('DFG').srcnode().abspath, '*.qss')),
+      Glob(os.path.join(env.Dir('.').srcnode().abspath, '*.qss')),
       ]
     )
   env.Depends(uiLib, qss)

@@ -12,6 +12,7 @@ from PySide import QtCore, QtGui
 from FabricEngine.Canvas.BindingWrapper import BindingWrapper
 from FabricEngine.Canvas.LogWidget import LogWidget
 from FabricEngine.Canvas.PythonHighlighter import PythonHighlighter
+from FabricEngine.FabricUI import DFG
 
 class LogStd:
 
@@ -380,6 +381,7 @@ class ScriptEditor(QtGui.QWidget):
             "newGraph": canvasWindow.onNewGraph,
             "newScript": self.newScript,
             "loadScript": self.loadScript,
+            "bindingUtils": DFG.DFGBindingUtils(),
             }
 
         self.dfgLogWidget = dfgLogWidget

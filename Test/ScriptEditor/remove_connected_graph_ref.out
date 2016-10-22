@@ -1,0 +1,8 @@
+Add new graph, create a output port and connected it to the exec
+Before removing graph
+Graph graph
+Port  exec
+Port  myPort
+After removing graph
+Port  exec
+Port  myPort

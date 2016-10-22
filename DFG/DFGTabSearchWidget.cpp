@@ -442,6 +442,13 @@ void DFGTabSearchWidget::addNodeForIndex( unsigned index )
       scenePos
       );
   }
+  else if( desc == FTL_STR("backdrop") )
+  {
+    controller->cmdAddBackDrop(
+      "backdrop",
+      scenePos
+      );
+  }
   else
   {
     m_results.select( index );
