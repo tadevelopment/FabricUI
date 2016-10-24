@@ -138,6 +138,16 @@ DFGWidget::DFGWidget(
     );
   QAction *selectAllNodesAction = new SelectAllNodesAction(this, m_uiGraphViewWidget);
   m_uiGraphViewWidget->addAction(selectAllNodesAction);
+  QAction *autoConnectionsAction = new AutoConnectionsAction(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(autoConnectionsAction);
+  QAction *removeConnectionsAction = new RemoveConnectionsAction(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(removeConnectionsAction);
+  QAction *cutNodesAction = new CutNodesAction(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(cutNodesAction);
+  QAction *copyNodesAction = new CopyNodesAction(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(copyNodesAction);
+  QAction *pasteNodesAction = new PasteNodesAction(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(pasteNodesAction);
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -369,34 +379,24 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   result->addAction( newBlockAction );
 
   result->addSeparator();
-  QAction * pasteAction = new QAction(DFG_PASTE_PRESET, graphWidget);
-  pasteAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_V) );
-  // [Julien] When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
-  pasteAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-  result->addAction(pasteAction);
+  QAction * pasteNodesAction = new PasteNodesAction(graphWidget, result);
+  result->addAction(pasteNodesAction);
 
   QAction * selectAllNodesAction = new SelectAllNodesAction(graphWidget, result);
   result->addAction(selectAllNodesAction);
 
   result->addSeparator();
 
-  QAction * autoConnectionsAction = new QAction(DFG_AUTO_CONNECTIONS, graphWidget);
-  autoConnectionsAction->setShortcut( QKeySequence(Qt::Key_C) );
-  // [Julien] When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
-  autoConnectionsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  QAction * autoConnectionsAction = new AutoConnectionsAction(graphWidget, result);
   result->addAction(autoConnectionsAction);
 
-  QAction * removeConnectionsAction = new QAction(DFG_REMOVE_CONNECTIONS, graphWidget);
-  removeConnectionsAction->setShortcut( QKeySequence(Qt::Key_D) );
-  // [Julien] When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
-  removeConnectionsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  QAction * removeConnectionsAction = new RemoveConnectionsAction(graphWidget, result);
   result->addAction(removeConnectionsAction);
 
   result->addSeparator();
 
   QAction * resetZoomAction = new QAction(DFG_RESET_ZOOM, graphWidget);
   resetZoomAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_0) );
-  // [Julien] When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
   resetZoomAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   result->addAction(resetZoomAction);
 
@@ -543,23 +543,32 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     if (!someVarNodes)
     {
-      result->addAction(DFG_COPY_PRESET);
-      if (dfgWidget->isEditable())
-        result->addAction(DFG_CUT_PRESET);
+      QAction *copyNodesAction = new CopyNodesAction(dfgWidget, result);
+      result->addAction(copyNodesAction);
+
+      QAction *cutNodesAction = new CutNodesAction(dfgWidget, result);
+      cutNodesAction->setEnabled(dfgWidget->isEditable());
+      result->addAction(cutNodesAction);
     }
     else
     {
       QAction *selectAllNodesAction = new SelectAllNodesAction(dfgWidget, result);
       result->addAction(selectAllNodesAction);
-      if (dfgWidget->isEditable())
-       result->addAction(DFG_PASTE_PRESET);
+
+      QAction *pasteNodesAction = new PasteNodesAction(dfgWidget, result);
+      pasteNodesAction->setEnabled(dfgWidget->isEditable());
+      result->addAction(pasteNodesAction);
     }
 
     if (nodes.size() && dfgWidget->isEditable())
     {
       result->addSeparator();
-      result->addAction(DFG_AUTO_CONNECTIONS);
-      result->addAction(DFG_REMOVE_CONNECTIONS);
+
+      QAction *autoConnectionsAction = new AutoConnectionsAction(dfgWidget, result);
+      result->addAction(autoConnectionsAction);
+
+      QAction *removeConnectionsAction = new RemoveConnectionsAction(dfgWidget, result);
+      result->addAction(removeConnectionsAction);
     }
 
     if ( onlyInstNodes )
@@ -715,13 +724,13 @@ QMenu* DFGWidget::sidePanelContextMenuCallback(
     result->addSeparator();
   }
 
-  QAction *sidePanelScrollUp = new SidePanelScrollUp( graphWidget, panel, result );
-  sidePanelScrollUp->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
-  result->addAction( sidePanelScrollUp );
+  QAction *sidePanelScrollUpAction = new SidePanelScrollUpAction( graphWidget, panel, result );
+  sidePanelScrollUpAction->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
+  result->addAction( sidePanelScrollUpAction );
 
-  QAction *sidePanelScrollDown = new SidePanelScrollDown( graphWidget, panel, result );
-  sidePanelScrollDown->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
-  result->addAction( sidePanelScrollDown );
+  QAction *sidePanelScrollDownAction = new SidePanelScrollDownAction( graphWidget, panel, result );
+  sidePanelScrollDownAction->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
+  result->addAction( sidePanelScrollDownAction );
 
   return result;
 }
@@ -978,18 +987,6 @@ void DFGWidget::onGraphAction(QAction * action)
   {
     onResetZoom();
   }
-  else if(action->text() == DFG_AUTO_CONNECTIONS)
-  {
-    onAutoConnections();
-  }
-  else if(action->text() == DFG_REMOVE_CONNECTIONS)
-  {
-    onRemoveConnections();
-  }
-  else if(action->text() == DFG_PASTE_PRESET)
-  {
-    onPaste();
-  }
 }
 
 void DFGWidget::onNodeAction(QAction * action)
@@ -1022,14 +1019,6 @@ void DFGWidget::onNodeAction(QAction * action)
     FabricCore::DFGExec &exec = m_uiController->getExec();
     FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
     subExec.maybeSplitFromPreset();
-  }
-  else if(action->text() == DFG_COPY_PRESET)
-  {
-    onCopy();
-  }
-  else if(action->text() == DFG_CUT_PRESET)
-  {
-    onCut();
   }
   else if(action->text() == DFG_EXPORT_GRAPH)
   {
@@ -1328,14 +1317,6 @@ void DFGWidget::onNodeAction(QAction * action)
     QString nodeName = QString::fromUtf8( m_contextNode->name().c_str() );
     m_uiController->setNodeCommentExpanded( nodeName, false );
     m_uiController->cmdSetNodeComment( nodeName, QString() );
-  }
-  else if(action->text() == DFG_AUTO_CONNECTIONS)
-  {
-    onAutoConnections();
-  }
-  else if(action->text() == DFG_REMOVE_CONNECTIONS)
-  {
-    onRemoveConnections();
   }
 
   m_contextNode = NULL;
@@ -1689,26 +1670,6 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
       getTabSearchWidget()->showForSearch(pos);
     }
   }
-  else if(m_isEditable && hotkey == DFGHotkeys::AUTO_CONNECTIONS)
-  {
-    onAutoConnections();
-  }
-  else if(m_isEditable && hotkey == DFGHotkeys::REMOVE_CONNECTIONS)
-  {
-    onRemoveConnections();
-  }
-  else if(hotkey == DFGHotkeys::COPY)
-  {
-    onCopy();
-  }
-  else if(m_isEditable && hotkey == DFGHotkeys::CUT)
-  {
-    onCut();
-  }
-  else if(m_isEditable && hotkey == DFGHotkeys::PASTE)
-  {
-    onPaste();
-  }
   else if(hotkey == DFGHotkeys::GO_UP)
   {
     onGoUpPressed();
@@ -1816,31 +1777,6 @@ void DFGWidget::onBubbleEditRequested(FabricUI::GraphView::Node * node)
       bubble->collapse();
     bubble->setVisible( visible );
   }
-}
-
-void DFGWidget::onAutoConnections()
-{
-  getUIGraph()->autoConnections();
-}
-
-void DFGWidget::onRemoveConnections()
-{
-  getUIGraph()->removeConnections();
-}
-
-void DFGWidget::onCopy()
-{
-  getUIController()->copy();
-}
-
-void DFGWidget::onCut()
-{
-  getUIController()->cmdCut();
-}
-
-void DFGWidget::onPaste()
-{
-  getUIController()->cmdPaste();
 }
 
 void DFGWidget::onResetZoom()
@@ -2297,20 +2233,14 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
   QAction * selectAllNodesAction = new SelectAllNodesAction(this, menuBar);
   editMenu->addAction(selectAllNodesAction);
 
-  QAction * cutAction = editMenu->addAction("Cut");
-  QObject::connect(cutAction, SIGNAL(triggered()), this, SLOT(onCut()));
-  cutAction->setShortcut( QKeySequence::Cut );
-  cutAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  QAction * cutNodesAction = new CutNodesAction(this, menuBar);
+  editMenu->addAction(cutNodesAction);
 
-  QAction * copyAction = editMenu->addAction("Copy");
-  QObject::connect(copyAction, SIGNAL(triggered()), this, SLOT(onCopy()));
-  copyAction->setShortcut( QKeySequence::Copy );
-  copyAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  QAction * copyNodesAction = new CopyNodesAction(this, menuBar);
+  editMenu->addAction(copyNodesAction);
 
-  QAction * pasteAction = editMenu->addAction("Paste");
-  QObject::connect(pasteAction, SIGNAL(triggered()), this, SLOT(onPaste()));
-  pasteAction->setShortcut( QKeySequence::Paste );
-  pasteAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
+  editMenu->addAction(pasteNodesAction);
 
   // view menu
   QAction * dimLinesAction = viewMenu->addAction("Dim Connections");

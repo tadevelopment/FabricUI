@@ -19,11 +19,6 @@ namespace FabricUI
       static const char *FRAME_SELECTED;
       static const char *FRAME_ALL;
       static const char *TAB_SEARCH;
-      static const char *AUTO_CONNECTIONS;
-      static const char *REMOVE_CONNECTIONS;
-      static const char *COPY;
-      static const char *CUT;
-      static const char *PASTE;
       static const char *NEW_SCENE;
       static const char *OPEN_SCENE;
       static const char *SAVE_SCENE;

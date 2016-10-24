@@ -215,11 +215,6 @@ void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
     graph->defineHotkey(Qt::Key_F,          Qt::NoModifier,       DFGHotkeys::FRAME_SELECTED);
     graph->defineHotkey(Qt::Key_A,          Qt::NoModifier,       DFGHotkeys::FRAME_ALL);
     graph->defineHotkey(Qt::Key_Tab,        Qt::NoModifier,       DFGHotkeys::TAB_SEARCH);
-    graph->defineHotkey(Qt::Key_C,          Qt::NoModifier,       DFGHotkeys::AUTO_CONNECTIONS);
-    graph->defineHotkey(Qt::Key_D,          Qt::NoModifier,       DFGHotkeys::REMOVE_CONNECTIONS);
-    graph->defineHotkey(Qt::Key_C,          Qt::ControlModifier,  DFGHotkeys::COPY);
-    graph->defineHotkey(Qt::Key_V,          Qt::ControlModifier,  DFGHotkeys::PASTE);
-    graph->defineHotkey(Qt::Key_X,          Qt::ControlModifier,  DFGHotkeys::CUT);
     //                                                            DFGHotkeys::NEW_SCENE);
     //                                                            DFGHotkeys::OPEN_SCENE);
     //                                                            DFGHotkeys::SAVE_SCENE);

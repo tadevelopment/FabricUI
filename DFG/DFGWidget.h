@@ -135,11 +135,6 @@ namespace DFG {
       void onKeyPressed(QKeyEvent * event);
       void onKeyReleased(QKeyEvent * event);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
-      void onAutoConnections();
-      void onRemoveConnections();
-      void onCut();
-      void onCopy();
-      void onPaste();
       void onResetZoom();
       void onToggleDimConnections();
       void onTogglePortsCentered();
@@ -435,13 +430,13 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
     };
 
-    class SidePanelScrollUp : public QAction
+    class SidePanelScrollUpAction : public QAction
     {
       Q_OBJECT
 
     public:
 
-      SidePanelScrollUp(
+      SidePanelScrollUpAction(
         DFGWidget *dfgWidget,
         FabricUI::GraphView::SidePanel *sidePanel,
         QObject *parent )
@@ -469,13 +464,13 @@ namespace DFG {
       FabricUI::GraphView::SidePanel *m_sidePanel;
     };
 
-    class SidePanelScrollDown : public QAction
+    class SidePanelScrollDownAction : public QAction
     {
       Q_OBJECT
 
     public:
 
-      SidePanelScrollDown(
+      SidePanelScrollDownAction(
         DFGWidget *dfgWidget,
         FabricUI::GraphView::SidePanel *sidePanel,
         QObject *parent )
@@ -501,6 +496,171 @@ namespace DFG {
 
       DFGWidget *m_dfgWidget;
       FabricUI::GraphView::SidePanel *m_sidePanel;
+    };
+
+    class AutoConnectionsAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      AutoConnectionsAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Auto connect selected nodes" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_C );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIGraph()->autoConnections();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class RemoveConnectionsAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      RemoveConnectionsAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Remove connections to selected node(s)" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_D );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIGraph()->removeConnections();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class CopyNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CopyNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Copy" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( QKeySequence::Copy );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->copy();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class CutNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CutNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Cut" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( QKeySequence::Cut );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->cmdCut();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class PasteNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      PasteNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Paste" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( QKeySequence::Paste );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->cmdPaste();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
     };
 
     class NewBlockNodeAction : public QAction
