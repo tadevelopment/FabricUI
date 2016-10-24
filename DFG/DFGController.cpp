@@ -773,6 +773,15 @@ void DFGController::setSelectedNodesCollapseState(int collapsedState) {
   }
 }
 
+QStringList DFGController::selectedNodes() {
+  QStringList selectedNodes;
+  const std::vector<GraphView::Node*> & nodes = graph()->selectedNodes();
+  for(unsigned int i=0;i<nodes.size();i++)
+    selectedNodes.append(nodes[i]->name().c_str());
+  return selectedNodes;
+}
+
+
 std::string DFGController::copy()
 {
   std::string json;
