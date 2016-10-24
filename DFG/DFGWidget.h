@@ -794,6 +794,72 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
     };
 
+    class FrameSelectedNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      FrameSelectedNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Frame selected" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_F );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->frameSelectedNodes();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class FrameAllNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      FrameAllNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Frame all" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_A );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->frameAllNodes();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
     class NewBlockNodeAction : public QAction
     {
       Q_OBJECT

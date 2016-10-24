@@ -156,6 +156,10 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(collapseLevel3Action);
   QAction * resetZoomAction = new ResetZoomAction(this, m_uiGraphViewWidget);
   m_uiGraphViewWidget->addAction(resetZoomAction);
+  QAction * frameSelectedNodesAction = new FrameSelectedNodesAction(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(frameSelectedNodesAction);
+  QAction * frameAllNodesAction = new FrameAllNodesAction(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(frameAllNodesAction);
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -1654,14 +1658,6 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     std::vector<GraphView::Node *> nodes = getUIGraph()->selectedNodes();
     getUIController()->gvcDoRemoveNodes(nodes);
-  }
-  else if(hotkey == DFGHotkeys::FRAME_SELECTED)
-  {
-    getUIController()->frameSelectedNodes();
-  }
-  else if(hotkey == DFGHotkeys::FRAME_ALL)
-  {
-    getUIController()->frameAllNodes();
   }
   else if(m_isEditable && hotkey == DFGHotkeys::TAB_SEARCH)
   {

@@ -1198,10 +1198,6 @@ class CanvasWindow(QtGui.QMainWindow):
                                DFG.DFGHotkeys.DELETE_2)
             graph.defineHotkey(QtCore.Qt.Key_F5, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.EXECUTE)
-            graph.defineHotkey(QtCore.Qt.Key_F, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.FRAME_SELECTED)
-            graph.defineHotkey(QtCore.Qt.Key_A, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.FRAME_ALL)
             graph.defineHotkey(QtCore.Qt.Key_Tab, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.TAB_SEARCH)
             graph.defineHotkey(QtCore.Qt.Key_N, QtCore.Qt.ControlModifier,

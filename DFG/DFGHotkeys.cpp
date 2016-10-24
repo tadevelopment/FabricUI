@@ -10,8 +10,6 @@ namespace FabricUI
     const char *DFGHotkeys::DELETE_2 = "Delete2";
     const char *DFGHotkeys::EXECUTE = "Execute";
     const char *DFGHotkeys::PAN_GRAPH = "Pan graph";
-    const char *DFGHotkeys::FRAME_SELECTED = "Frame selected";
-    const char *DFGHotkeys::FRAME_ALL = "Frame all";
     const char *DFGHotkeys::TAB_SEARCH = "Tab search";
     const char *DFGHotkeys::NEW_SCENE = "New scene";
     const char *DFGHotkeys::OPEN_SCENE = "Open scene";

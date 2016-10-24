@@ -16,8 +16,6 @@ namespace FabricUI
       static const char *DELETE_2;
       static const char *EXECUTE;
       static const char *PAN_GRAPH;
-      static const char *FRAME_SELECTED;
-      static const char *FRAME_ALL;
       static const char *TAB_SEARCH;
       static const char *NEW_SCENE;
       static const char *OPEN_SCENE;
