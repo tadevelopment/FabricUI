@@ -162,6 +162,10 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(frameAllNodesAction);
   QAction * relaxNodesAction = new RelaxNodesAction(this, m_uiGraphViewWidget);
   m_uiGraphViewWidget->addAction(relaxNodesAction);
+  QAction * deleteNodes1Action = new DeleteNodes1Action(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(deleteNodes1Action);
+  QAction * deleteNodes2Action = new DeleteNodes2Action(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(deleteNodes2Action);
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -546,7 +550,9 @@ QMenu *DFGWidget::nodeContextMenuCallback(
         needSeparator = false;
       }
 
-      result->addAction(DFG_DELETE_PRESET);
+      QAction *deleteNodes1Action = new DeleteNodes1Action(dfgWidget, result);
+      result->addAction(deleteNodes1Action);
+
       needAnotherSeparator = true;
     }
 
@@ -1021,10 +1027,6 @@ void DFGWidget::onNodeAction(QAction * action)
   else if(action->text() == DFG_INSPECT_PRESET)
   {
     emit nodeInspectRequested(m_contextNode);
-  }
-  else if(action->text() == DFG_DELETE_PRESET)
-  {
-    m_uiController->gvcDoRemoveNodes(m_contextNode);
   }
   else if(action->text() == DFG_SPLIT_PRESET)
   {
@@ -1649,11 +1651,6 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   if(hotkey == DFGHotkeys::PAN_GRAPH)
   {
     m_uiGraph->mainPanel()->setAlwaysPan(true);
-  }
-  else if(m_isEditable && (hotkey == DFGHotkeys::DELETE_1 || hotkey == DFGHotkeys::DELETE_2))
-  {
-    std::vector<GraphView::Node *> nodes = getUIGraph()->selectedNodes();
-    getUIController()->gvcDoRemoveNodes(nodes);
   }
   else if(m_isEditable && hotkey == DFGHotkeys::TAB_SEARCH)
   {

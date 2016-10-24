@@ -14,7 +14,6 @@ namespace FabricUI
     #define DFG_OPEN_PRESET_DOC         "Documentation"
     #define DFG_INSPECT_PRESET          "Inspect - DoubleClick"
     #define DFG_EDIT_PRESET_PROPERTIES  "Properties - F2"
-    #define DFG_DELETE_PRESET           "Delete - Del"
     #define DFG_SPLIT_PRESET            "Split from preset"
     #define DFG_EXPORT_GRAPH            "Export graph"
     #define DFG_IMPLODE_NODE            "Implode nodes"

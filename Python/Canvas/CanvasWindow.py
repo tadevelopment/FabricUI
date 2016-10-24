@@ -1192,10 +1192,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
         if graph != self.currentGraph:
             graph = self.dfgWidget.getUIGraph()
-            graph.defineHotkey(QtCore.Qt.Key_Delete, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.DELETE_1)
-            graph.defineHotkey(QtCore.Qt.Key_Backspace, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.DELETE_2)
             graph.defineHotkey(QtCore.Qt.Key_F5, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.EXECUTE)
             graph.defineHotkey(QtCore.Qt.Key_Tab, QtCore.Qt.NoModifier,

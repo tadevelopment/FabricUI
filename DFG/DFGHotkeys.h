@@ -12,8 +12,6 @@ namespace FabricUI
     class DFGHotkeys
     {
     public:
-      static const char *DELETE_1;
-      static const char *DELETE_2;
       static const char *EXECUTE;
       static const char *PAN_GRAPH;
       static const char *TAB_SEARCH;

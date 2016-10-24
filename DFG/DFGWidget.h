@@ -963,6 +963,80 @@ namespace DFG {
       GraphView::Node *m_node;
     };
 
+    class DeleteNodes1Action : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      DeleteNodes1Action(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Delete" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_Delete );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        if (m_dfgWidget->isEditable())
+        {
+          std::vector<GraphView::Node *> nodes = m_dfgWidget->getUIGraph()->selectedNodes();
+          m_dfgWidget->getUIController()->gvcDoRemoveNodes(nodes);
+        }
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class DeleteNodes2Action : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      DeleteNodes2Action(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Delete" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_Backspace );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        if (m_dfgWidget->isEditable())
+        {
+          std::vector<GraphView::Node *> nodes = m_dfgWidget->getUIGraph()->selectedNodes();
+          m_dfgWidget->getUIController()->gvcDoRemoveNodes(nodes);
+        }
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
     class NewBlockNodeAction : public QAction
     {
       Q_OBJECT
