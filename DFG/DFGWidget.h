@@ -860,6 +860,39 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
     };
 
+    class RelaxNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      RelaxNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Relax nodes" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( QKeySequence(Qt::CTRL + Qt::Key_R) );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->relaxNodes();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
     class NewBlockNodeAction : public QAction
     {
       Q_OBJECT

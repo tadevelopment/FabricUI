@@ -17,7 +17,6 @@ namespace FabricUI
     const char *DFGHotkeys::GO_UP = "Go up";
     const char *DFGHotkeys::EDIT_PRESET = "Edit preset";
     const char *DFGHotkeys::EDIT_PRESET_PROPERTIES = "Edit properties";
-    const char *DFGHotkeys::RELAX_NODES = "Relax nodes";
     const char *DFGHotkeys::TOGGLE_MANIPULATION = "Toggle manipulation";
   }
 }

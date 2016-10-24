@@ -160,6 +160,8 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(frameSelectedNodesAction);
   QAction * frameAllNodesAction = new FrameAllNodesAction(this, m_uiGraphViewWidget);
   m_uiGraphViewWidget->addAction(frameAllNodesAction);
+  QAction * relaxNodesAction = new RelaxNodesAction(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(relaxNodesAction);
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -1682,10 +1684,6 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   else if(hotkey == DFGHotkeys::EDIT_PRESET_PROPERTIES)
   {
     onEditPropertiesForCurrentSelection();
-  }
-  else if(hotkey == DFGHotkeys::RELAX_NODES)
-  {
-    getUIController()->relaxNodes();
   }
 
   FabricCore::FlagUserInteraction();

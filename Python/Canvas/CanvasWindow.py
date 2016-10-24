@@ -1212,8 +1212,6 @@ class CanvasWindow(QtGui.QMainWindow):
                                DFG.DFGHotkeys.EDIT_PRESET)
             graph.defineHotkey(QtCore.Qt.Key_F2, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.EDIT_PRESET_PROPERTIES)
-            graph.defineHotkey(QtCore.Qt.Key_R, QtCore.Qt.ControlModifier,
-                               DFG.DFGHotkeys.RELAX_NODES)
             graph.defineHotkey(QtCore.Qt.Key_Q, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.TOGGLE_MANIPULATION)
 
