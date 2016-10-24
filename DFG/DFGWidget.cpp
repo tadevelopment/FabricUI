@@ -629,8 +629,12 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     if (nodes.size() == 1 && dfgWidget->isEditable())
     {
       result->addSeparator();
-      result->addAction(DFG_SET_COMMENT);
-      result->addAction(DFG_REMOVE_COMMENT);
+
+      QAction *setNodeCommentAction = new SetNodeCommentAction(dfgWidget, nodes[0], result);
+      result->addAction(setNodeCommentAction);
+
+      QAction *removeNodeCommentAction = new RemoveNodeCommentAction(dfgWidget, nodes[0], result);
+      result->addAction(removeNodeCommentAction);
     }
 
     dfgWidget->connect(result, SIGNAL(triggered(QAction*)), dfgWidget, SLOT(onNodeAction(QAction*)));
@@ -1315,16 +1319,6 @@ void DFGWidget::onNodeAction(QAction * action)
   else if(action->text() == DFG_EDIT_PRESET_PROPERTIES)
   {
     onEditPropertiesForCurrentSelection();
-  }
-  else if(action->text() == DFG_SET_COMMENT)
-  {
-    onBubbleEditRequested(m_contextNode);
-  }
-  else if(action->text() == DFG_REMOVE_COMMENT)
-  {
-    QString nodeName = QString::fromUtf8( m_contextNode->name().c_str() );
-    m_uiController->setNodeCommentExpanded( nodeName, false );
-    m_uiController->cmdSetNodeComment( nodeName, QString() );
   }
 
   m_contextNode = NULL;

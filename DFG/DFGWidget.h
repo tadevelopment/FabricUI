@@ -893,6 +893,76 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
     };
 
+    class SetNodeCommentAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      SetNodeCommentAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Set Comment" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->onBubbleEditRequested(m_node);
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
+    };
+
+    class RemoveNodeCommentAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      RemoveNodeCommentAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Remove Comment" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        QString nodeName = QString::fromUtf8( m_node->name().c_str() );
+        m_dfgWidget->getUIController()->setNodeCommentExpanded( nodeName, false );
+        m_dfgWidget->getUIController()->cmdSetNodeComment( nodeName, QString() );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
+    };
+
     class NewBlockNodeAction : public QAction
     {
       Q_OBJECT

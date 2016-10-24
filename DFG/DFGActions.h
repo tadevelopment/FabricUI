@@ -23,8 +23,6 @@ namespace FabricUI
     #define DFG_READ_VARIABLE           "Read variable (Get)"
     #define DFG_WRITE_VARIABLE          "Write variable (Set)"
     #define DFG_RELOAD_EXTENSION        "Reload extension(s)"
-    #define DFG_SET_COMMENT             "Set comment"
-    #define DFG_REMOVE_COMMENT          "Remove comment"
   };
 };
 
