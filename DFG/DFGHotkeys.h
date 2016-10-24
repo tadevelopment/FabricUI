@@ -26,7 +26,6 @@ namespace FabricUI
       static const char *EDIT_PRESET;
       static const char *EDIT_PRESET_PROPERTIES;
       static const char *RELAX_NODES;
-      static const char *RESET_ZOOM;
       static const char *TOGGLE_MANIPULATION;
     };
   }

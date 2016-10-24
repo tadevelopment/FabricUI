@@ -154,6 +154,8 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(collapseLevel2Action);
   QAction *collapseLevel3Action = new CollapseLevel3Action(this, m_uiGraphViewWidget);
   m_uiGraphViewWidget->addAction(collapseLevel3Action);
+  QAction * resetZoomAction = new ResetZoomAction(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(resetZoomAction);
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -401,9 +403,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  QAction * resetZoomAction = new QAction(DFG_RESET_ZOOM, graphWidget);
-  resetZoomAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_0) );
-  resetZoomAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  QAction * resetZoomAction = new ResetZoomAction(graphWidget, result);
   result->addAction(resetZoomAction);
 
   graphWidget->connect(result, SIGNAL(triggered(QAction*)), graphWidget, SLOT(onGraphAction(QAction*)));
@@ -988,10 +988,6 @@ void DFGWidget::onGraphAction(QAction * action)
         QPointF(pos.x(), pos.y())
         );
     }
-  }
-  else if(action->text() == DFG_RESET_ZOOM)
-  {
-    onResetZoom();
   }
 }
 
@@ -1695,10 +1691,6 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     getUIController()->relaxNodes();
   }
-  else if(hotkey == DFGHotkeys::RESET_ZOOM)
-  {
-    onResetZoom();
-  }
 
   FabricCore::FlagUserInteraction();
 }
@@ -1771,11 +1763,6 @@ void DFGWidget::onBubbleEditRequested(FabricUI::GraphView::Node * node)
       bubble->collapse();
     bubble->setVisible( visible );
   }
-}
-
-void DFGWidget::onResetZoom()
-{
-  getUIController()->zoomCanvas(1.0);
 }
 
 void DFGWidget::onToggleDimConnections()

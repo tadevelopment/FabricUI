@@ -1220,8 +1220,6 @@ class CanvasWindow(QtGui.QMainWindow):
                                DFG.DFGHotkeys.RELAX_NODES)
             graph.defineHotkey(QtCore.Qt.Key_Q, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.TOGGLE_MANIPULATION)
-            graph.defineHotkey(QtCore.Qt.Key_0, QtCore.Qt.ControlModifier,
-                               DFG.DFGHotkeys.RESET_ZOOM)
 
             graph.nodeEditRequested.connect(self.onNodeEditRequested)
 

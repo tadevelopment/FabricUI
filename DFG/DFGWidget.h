@@ -135,7 +135,6 @@ namespace DFG {
       void onKeyPressed(QKeyEvent * event);
       void onKeyReleased(QKeyEvent * event);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
-      void onResetZoom();
       void onToggleDimConnections();
       void onTogglePortsCentered();
       void onEditPropertiesForCurrentSelection();
@@ -755,6 +754,39 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->getUIController()->setSelectedNodesCollapseState(0);
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class ResetZoomAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ResetZoomAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Reset zoom" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( QKeySequence(Qt::CTRL + Qt::Key_0) );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->zoomCanvas(1.0);
       }
 
     private:

@@ -20,7 +20,6 @@ namespace FabricUI
     const char *DFGHotkeys::EDIT_PRESET = "Edit preset";
     const char *DFGHotkeys::EDIT_PRESET_PROPERTIES = "Edit properties";
     const char *DFGHotkeys::RELAX_NODES = "Relax nodes";
-    const char *DFGHotkeys::RESET_ZOOM = "Reset zoom";
     const char *DFGHotkeys::TOGGLE_MANIPULATION = "Toggle manipulation";
   }
 }
