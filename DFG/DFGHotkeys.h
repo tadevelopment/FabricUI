@@ -28,9 +28,6 @@ namespace FabricUI
       static const char *RELAX_NODES;
       static const char *RESET_ZOOM;
       static const char *TOGGLE_MANIPULATION;
-      static const char *COLLAPSE_LEVEL_1;
-      static const char *COLLAPSE_LEVEL_2;
-      static const char *COLLAPSE_LEVEL_3;
     };
   }
 }

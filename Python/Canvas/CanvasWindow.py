@@ -1222,12 +1222,6 @@ class CanvasWindow(QtGui.QMainWindow):
                                DFG.DFGHotkeys.TOGGLE_MANIPULATION)
             graph.defineHotkey(QtCore.Qt.Key_0, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.RESET_ZOOM)
-            graph.defineHotkey(QtCore.Qt.Key_1, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.COLLAPSE_LEVEL_1)
-            graph.defineHotkey(QtCore.Qt.Key_2, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.COLLAPSE_LEVEL_2)
-            graph.defineHotkey(QtCore.Qt.Key_3, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.COLLAPSE_LEVEL_3)
 
             graph.nodeEditRequested.connect(self.onNodeEditRequested)
 

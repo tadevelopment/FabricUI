@@ -663,6 +663,105 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
     };
 
+    class CollapseLevel1Action : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CollapseLevel1Action(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Collapse level 1" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_1 );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->setSelectedNodesCollapseState(2);
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class CollapseLevel2Action : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CollapseLevel2Action(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Collapse level 2" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_2 );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->setSelectedNodesCollapseState(1);
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class CollapseLevel3Action : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CollapseLevel3Action(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Collapse level 3" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_3 );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->setSelectedNodesCollapseState(0);
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
     class NewBlockNodeAction : public QAction
     {
       Q_OBJECT

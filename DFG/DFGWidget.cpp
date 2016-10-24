@@ -148,6 +148,12 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(copyNodesAction);
   QAction *pasteNodesAction = new PasteNodesAction(this, m_uiGraphViewWidget);
   m_uiGraphViewWidget->addAction(pasteNodesAction);
+  QAction *collapseLevel1Action = new CollapseLevel1Action(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(collapseLevel1Action);
+  QAction *collapseLevel2Action = new CollapseLevel2Action(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(collapseLevel2Action);
+  QAction *collapseLevel3Action = new CollapseLevel3Action(this, m_uiGraphViewWidget);
+  m_uiGraphViewWidget->addAction(collapseLevel3Action);
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -1692,18 +1698,6 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   else if(hotkey == DFGHotkeys::RESET_ZOOM)
   {
     onResetZoom();
-  }
-  else if(hotkey == DFGHotkeys::COLLAPSE_LEVEL_1)
-  {
-    getUIController()->setSelectedNodesCollapseState(2);
-  }
-  else if(hotkey == DFGHotkeys::COLLAPSE_LEVEL_2)
-  {
-    getUIController()->setSelectedNodesCollapseState(1);
-  }
-  else if(hotkey == DFGHotkeys::COLLAPSE_LEVEL_3)
-  {
-    getUIController()->setSelectedNodesCollapseState(0);
   }
 
   FabricCore::FlagUserInteraction();
