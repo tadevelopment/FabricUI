@@ -306,6 +306,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor(self.client)
         # When the rendering options of the viewport have changed, redraw
         self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
+        # Once the Viewport has been setup (and filled its option values), update the options menu
+        self.viewport.initComplete.connect(self.renderingOptionsWidget.updateOptions)
 
         self.renderingOptionsDockWidget = QtGui.QDockWidget("Rendering Options", self)
         self.renderingOptionsDockWidget.setObjectName("Rendering Options")
