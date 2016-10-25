@@ -28,14 +28,14 @@ public:
     QSettings* settings,
     const std::string namePath,
     const ViewportOptionsEditor& editor
-  ) : m_name(name),
-    m_val(value),
-    m_settings(settings),
+  ) :
+    m_name(name),
     m_namePath(namePath + namePath_Separator + name),
+    m_val(value),
+    m_originalValue(value.clone()),
+    m_settings(settings),
     m_editor(editor)
   {
-    m_originalValue = m_val.clone();
-
     // Fetching the value from the QSettings
     if (m_settings->contains(m_namePath.data())) {
       QString settingsValue = m_settings->value( m_namePath.data() ).value<QString>();
@@ -129,10 +129,11 @@ public:
     QSettings* settings,
     const std::string namePath,
     const ViewportOptionsEditor& editor
-  ) : m_name(name),
+  ) :
+    m_name(name),
+    m_namePath(namePath + namePath_Separator + name),
     m_dict(dict),
     m_settings(settings),
-    m_namePath(namePath + namePath_Separator + name),
     m_editor(editor)
   {
     update();
