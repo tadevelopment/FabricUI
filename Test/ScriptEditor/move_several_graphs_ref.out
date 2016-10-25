@@ -1,8 +1,0 @@
-Before moving
-graph pos {"x":67.0,"y":441.0}
-graph_2 pos {"x":144.0,"y":503.0}
-graph_3 pos {"x":191.0,"y":565.0}
-After moving
-graph pos {"x":46.0,"y":327.0}
-graph_2 pos {"x":123.0,"y":389.0}
-graph_3 pos {"x":170.0,"y":451.0}
