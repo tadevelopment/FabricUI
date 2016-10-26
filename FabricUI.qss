@@ -780,3 +780,49 @@ QMenu::item:disabled:selected
   background-color: rgb(72,72,72);
   border: 1px solid black;
 }
+
+/****************************************************************************
+ * ScriptEditorWidget
+ ***************************************************************************/
+
+#ScriptEditorWidget QToolButton
+{
+  color: #FFFFFF;
+  border: 1px #222222;
+  border-radius: 3px;
+  border-style: outset;
+  padding: 3px;
+  margin: 2px;
+
+  background-color: #2B2B2B;
+}
+
+#ScriptEditorWidget QToolButton::disabled
+{
+  background-color: #444;
+  color: #666666;
+}
+
+#ScriptEditorWidget QToolButton::checked
+{
+  background-color: #335252;
+}
+
+#ScriptEditorWidget QToolButton::checked:hover
+{
+  background-color: #335959;
+}
+
+#ScriptEditorWidget QToolButton:hover
+{
+  background-color: #3B3B3B;
+}
+
+#ScriptEditorWidget QToolButton::pressed
+{
+  border-style: inset;
+  padding-top: 5px;
+  padding-left: 5px;
+
+  background-color: #2B2B2B;
+}

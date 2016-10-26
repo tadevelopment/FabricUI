@@ -7,10 +7,11 @@ users can see exactly what Canvas is doing, and to assist in reproducing
 issues that were initially triggered through the UI.
 """
 
-import sys, os, traceback
+import sys, os, platform, traceback
 from PySide import QtCore, QtGui
 from FabricEngine.Canvas.BindingWrapper import BindingWrapper
 from FabricEngine.Canvas.LogWidget import LogWidget
+from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.PythonHighlighter import PythonHighlighter
 from FabricEngine.FabricUI import DFG
 
@@ -328,48 +329,7 @@ class ScriptEditor(QtGui.QWidget):
         QtGui.QWidget.__init__(self)
 
         self.setObjectName('ScriptEditorWidget')
-
-        widgetStyleSheet = """
-
-        QWidget#ScriptEditorWidget QToolButton {
-            color: #FFFFFF;
-            border: 1px #222222;
-            border-radius: 3px;
-            border-style: outset;
-            padding: 3px;
-            margin: 2px;
-
-            background-color: #2B2B2B;
-        }
-
-        QWidget#ScriptEditorWidget QToolButton::disabled {
-            background-color: #444;
-            color: #666666;
-        }
-
-        QWidget#ScriptEditorWidget QToolButton::checked {
-            background-color: #335252;
-        }
-
-        QWidget#ScriptEditorWidget QToolButton::checked:hover {
-            background-color: #335959;
-        }
-
-        QWidget#ScriptEditorWidget QToolButton:hover {
-            background-color: #3B3B3B;
-        }
-
-        QWidget#ScriptEditorWidget QToolButton::pressed {
-            border-style: inset;
-            padding-top: 5px;
-            padding-left: 5px;
-
-            background-color: #2B2B2B;
-        }
-
-        """
-
-        self.setStyleSheet(widgetStyleSheet)
+        self.setStyleSheet(LoadFabricStyleSheet("FabricUI.qss"))
 
         self.__undoStackIndex = qUndoStack.index()
         qUndoStack.indexChanged.connect(self.undoStackIndexChanged)
