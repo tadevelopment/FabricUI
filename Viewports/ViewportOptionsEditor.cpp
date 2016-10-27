@@ -81,47 +81,11 @@ class ViewportOptionsEditor::ViewportOptionsDictModel : public FabricUI::ValueEd
 
   const std::string m_name;
   const std::string m_namePath;
-  FabricCore::RTVal m_dict;
-  QSettings* m_settings;
-  const ViewportOptionsEditor& m_editor;
 
   std::map<std::string, BaseModelItem*> m_children;
   std::vector<std::string> m_keys;
 
 public:
-
-  // Adding children for new entries in the Dictionary
-  void update() {
-    FabricCore::RTVal keys = m_dict.getDictKeys();
-    for (unsigned i = m_children.size(); i < keys.getArraySize(); i++) {
-      FabricCore::RTVal key = keys.getArrayElementRef(i);
-      FabricCore::RTVal value = m_dict.getDictElement(key);
-      if (value.isWrappedRTVal()) { value = value.getUnwrappedRTVal(); }
-      BaseModelItem* item = NULL;
-      if (value.isDict() && value.dictKeyHasType("String") && value.dictValueHasType("RTVal")) {
-        item = new ViewportOptionsDictModel(
-          key.getStringCString(),
-          value,
-          m_settings,
-          m_namePath,
-          m_editor
-        );
-      }
-      else {
-        item = new ViewportOptionModel(
-          key.getStringCString(),
-          value,
-          m_settings,
-          m_namePath,
-          m_editor
-        );
-      }
-      m_children[key.getStringCString()] = item;
-      m_keys.push_back(key.getStringCString());
-    }
-  }
-
-  void setDict(FabricCore::RTVal dict) { m_dict = dict; }
 
   ViewportOptionsDictModel(
     const std::string name,
@@ -130,12 +94,36 @@ public:
     const std::string namePath,
     const ViewportOptionsEditor& editor
   ) : m_name(name),
-    m_dict(dict),
-    m_settings(settings),
-    m_namePath(namePath + namePath_Separator + name),
-    m_editor(editor)
+    m_namePath(namePath + namePath_Separator + name)
   {
-    update();
+    FabricCore::RTVal keys = dict.getDictKeys();
+    for (unsigned i = 0; i < keys.getArraySize(); i++) {
+
+      FabricCore::RTVal key = keys.getArrayElementRef(i);
+      FabricCore::RTVal value = dict.getDictElement(key);
+      if (value.isWrappedRTVal()) { value = value.getUnwrappedRTVal(); }
+      BaseModelItem* item = NULL;
+      if (value.isDict() && value.dictKeyHasType("String") && value.dictValueHasType("RTVal")) {
+        item = new ViewportOptionsDictModel(
+          key.getStringCString(),
+          value,
+          settings,
+          m_namePath,
+          editor
+        );
+      }
+      else {
+        item = new ViewportOptionModel(
+          key.getStringCString(),
+          value,
+          settings,
+          m_namePath,
+          editor
+        );
+      }
+      m_children[key.getStringCString()] = item;
+      m_keys.push_back(key.getStringCString());
+    }
   }
 
   FTL::CStrRef getName() { return m_name; }
@@ -164,16 +152,7 @@ ViewportOptionsEditor::ViewportOptionsEditor( FabricCore::Client& client )
     client.loadExtension("InlineDrawing", "", false);
     drawContext = FabricCore::RTVal::Create(client, "DrawContext", 0, 0);
     drawContext = drawContext.callMethod( "DrawContext" , "getInstance", 0, NULL);
-    FabricCore::RTVal dict = drawContext.maybeGetMember("viewportParams");
-
-    m_model = new ViewportOptionsDictModel(
-      "Rendering Options",
-      dict,
-      &m_settings,
-      "",
-      *this
-    );
-    this->onSetModelItem(m_model);
+    updateOptions();
   }
   catch(FabricCore::Exception e)
   {
@@ -181,10 +160,21 @@ ViewportOptionsEditor::ViewportOptionsEditor( FabricCore::Client& client )
   }
 }
 
+// Currently destroying and rebuilding the whole tree :
+// we might want to do incremental updates, to keep the state of the items
 void ViewportOptionsEditor::updateOptions() {
 
-  m_model->setDict(drawContext.maybeGetMember("viewportParams"));
-  m_model->update();
+  if (m_model != NULL) { delete m_model; }
+
+  FabricCore::RTVal dict = drawContext.maybeGetMember("viewportParams");
+
+  m_model = new ViewportOptionsDictModel(
+    "Rendering Options",
+    dict,
+    &m_settings,
+    "",
+    *this
+  );
   this->onSetModelItem(m_model);
 }
 
