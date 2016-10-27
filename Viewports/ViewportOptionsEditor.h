@@ -21,7 +21,7 @@ namespace Viewports {
     class ViewportOptionsDictModel;
 
     QSettings m_settings;
-    ViewportOptionsDictModel* m_model = NULL;
+    ViewportOptionsDictModel* m_model;
     FabricCore::RTVal drawContext;
 
   public:

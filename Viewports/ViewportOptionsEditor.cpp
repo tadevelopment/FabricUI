@@ -144,7 +144,7 @@ public:
 };
 
 ViewportOptionsEditor::ViewportOptionsEditor( FabricCore::Client& client )
-  : VETreeWidget(), m_settings()
+  : VETreeWidget(), m_settings(), m_model(NULL)
 {
    try
   {
