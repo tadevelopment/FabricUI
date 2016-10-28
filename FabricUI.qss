@@ -7,6 +7,71 @@
  */
 
 /****************************************************************************
+ * QMainWindow
+ ***************************************************************************/
+
+QMainWindow::separator
+{
+  background: #3C3C3C;
+  width: 3px;
+  height: 3px;
+}
+
+QMainWindow::separator:hover
+{
+  background: #4F4F4F;
+}
+
+QDockWidget
+{
+  font-size: 9pt;
+  font-weight: bold;
+
+  titlebar-close-icon: url(${FABRIC_DIR}/Resources/Icons/dockWidget-close.png);
+  titlebar-normal-icon: url(${FABRIC_DIR}/Resources/Icons/dockWidget-float.png);
+}
+
+QDockWidget::close-button
+{
+  border: none;
+  background: transparent;
+
+  subcontrol-position: top right;
+  subcontrol-origin: margin;
+  position: absolute;
+  top: 0px; right: 8px; bottom: 0px;
+  width: 14px;
+}
+
+QDockWidget::float-button
+{
+  border: none;
+  background: transparent;
+
+  subcontrol-position: top right;
+  subcontrol-origin: margin;
+  position: absolute;
+  top: 0px; right: 24px; bottom: 0px;
+  width: 14px;
+}
+
+QDockWidget::close-button:pressed, QDockWidget::float-button:pressed
+{
+  padding: 1px -1px -1px 1px;
+}
+
+QDockWidget::title
+{
+  border-top: 1px solid #484848;
+  border-right: 1px solid #2B2B2B;
+  border-bottom: 1px solid #2B2B2B;
+  border-left: 1px solid #484848;
+  text-align: left;
+  background-color: #363636;
+  padding: 5px;
+}
+
+/****************************************************************************
  * Shared
  ***************************************************************************/
 
@@ -45,6 +110,281 @@ QMenu::item:disabled:selected
   border-style: outset;
   border-radius: 3px;
 }
+
+QTreeView
+{
+  border: 0;
+}
+
+QTreeView::branch:has-siblings:!adjoins-item
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-vline.png);
+  border-image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-vline.png);
+}
+
+QTreeView::branch:has-siblings:adjoins-item
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-more.png);
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-end.png);
+}
+
+QTreeView::branch:closed:has-children:has-siblings
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-closed.png);
+}
+
+QTreeView::branch:has-children:!has-siblings:closed
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-closed.png);
+}
+
+QTreeView::branch:open:has-children:has-siblings
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-open.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-open.png);
+}
+
+/* =================== */
+/* Scroll Bar Vertical */
+/* =================== */
+QScrollBar:vertical
+{
+  border: 1px solid #2C2C2C;
+  background: #262626;
+  width: 20px;
+  margin: 20px 0 20px 0;
+}
+
+QScrollBar::handle:vertical
+{
+  background: #3F3F3F;
+  border-top: 1px solid #555555;
+  border-bottom: 1px solid #333;
+  min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover
+{
+  background: #4D4D4D;
+  min-height: 20px;
+}
+
+QScrollBar::handle:vertical::pressed
+{
+  background: #50626E;
+  border-top: 1px solid #596D7A;
+  min-height: 20px;
+}
+
+QScrollBar::add-line:vertical
+{
+  background: #3F3F3F;
+  border: 1px solid #2C2C2C;
+
+  height: 20px;
+  subcontrol-position: bottom;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::add-line:vertical:hover
+{
+  background: #3C3C3C;
+
+  height: 20px;
+  subcontrol-position: bottom;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::add-line:vertical::pressed
+{
+  background-color: #50626E;
+
+  height: 20px;
+  padding-bottom: -1px;
+  padding-right: -1px;
+  subcontrol-position: bottom;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical
+{
+  background: #3F3F3F;
+  border: 1px solid #2C2C2C;
+
+  height: 20px;
+  subcontrol-position: top;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical:hover
+{
+  background: #3C3C3C;
+
+  border-bottom: 1px solid #222;
+  height: 20px;
+  subcontrol-position: top;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical::pressed
+{
+  background-color: #50626E;
+
+  border-bottom: 1px solid #222;
+  height: 20px;
+  padding-top: 1px;
+  padding-left: 1px;
+  subcontrol-position: top;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical 
+{
+  border-image: none;
+  image: url(${FABRIC_DIR}/Resources/Icons/scroll-up-arrow.png);
+}
+
+QScrollBar::down-arrow:vertical
+{
+  border-image: none;
+  image: url(${FABRIC_DIR}/Resources/Icons/scroll-down-arrow.png);
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+  background: none;
+}
+
+QScrollBar::add-page:vertical::pressed, QScrollBar::sub-page:vertical::pressed
+{
+  background-color: #50626E;
+}
+
+
+/* ===================== */
+/* Scroll Bar Horizontal */
+/* ===================== */
+QScrollBar:horizontal
+{
+  border: 1px solid #2C2C2C;
+  background: #262626;
+  height: 20px;
+  margin: 20px 0 20px 0;
+}
+
+QScrollBar::handle:horizontal
+{
+  background: #3F3F3F;
+  border-top: 1px solid #555555;
+  border-bottom: 1px solid #333;
+  min-height: 20px;
+}
+
+QScrollBar::handle:horizontal:hover
+{
+  background: #4D4D4D;
+  min-height: 20px;
+}
+
+QScrollBar::handle:horizontal::pressed
+{
+  background: #50626E;
+  border-top: 1px solid #596D7A;
+  min-height: 20px;
+}
+
+QScrollBar::add-line:horizontal
+{
+  background: #3F3F3F;
+  border: 1px solid #2C2C2C;
+
+  width: 20px;
+  subcontrol-position: right;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::add-line:horizontal:hover
+{
+  background: #3C3C3C;
+
+  width: 20px;
+  subcontrol-position: right;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::add-line:horizontal::pressed
+{
+  background-color: #50626E;
+
+  width: 20px;
+  padding-bottom: -1px;
+  padding-right: -1px;
+  subcontrol-position: right;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal
+{
+  background: #3F3F3F;
+  border: 1px solid #2C2C2C;
+
+  width: 20px;
+  subcontrol-position: left;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal:hover
+{
+  background: #3C3C3C;
+
+  border-bottom: 1px solid #222;
+  width: 20px;
+  subcontrol-position: left;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal::pressed
+{
+  background-color: #50626E;
+
+  border-bottom: 1px solid #222;
+  width: 20px;
+  padding-top: 1px;
+  padding-left: 1px;
+  subcontrol-position: left;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::left-arrow:horizontal 
+{
+  border-image: none;
+  image: url(${FABRIC_DIR}/Resources/Icons/scroll-left-arrow.png);
+}
+
+QScrollBar::right-arrow:horizontal
+{
+  border-image: none;
+  image: url(${FABRIC_DIR}/Resources/Icons/scroll-right-arrow.png);
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
+{
+  background: none;
+}
+
+QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::pressed
+{
+  background-color: #50626E;
+}
+
 
 /****************************************************************************
  * DFGExecHeaderWidget
@@ -447,12 +787,21 @@ QMenu::item:disabled:selected
 
 #DFGTimelineWidget QSlider::handle:horizontal
 {
-  background: white;
-  border: none;
+  background: #777777;
   height: 10px;
   width: 1px;
   margin: -6px 0px;
   border-radius: 3px;
+}
+
+#DFGTimelineWidget QSlider::handle:horizontal:hover
+{
+  background: #808080;
+}
+
+#DFGTimelineWidget QSlider::handle:horizontal:pressed
+{
+  background: #50626E;
 }
 
 /*
@@ -481,17 +830,24 @@ QMenu::item:disabled:selected
 #DFGLogWidget QPlainTextEdit
 {
   background-color: rgb(39,40,34);
-  font: 11px "Roboto Mono";
-  border: 1px solid black;
+  font: 10pt "Roboto Mono";
+  border-top: 0;
+  border-right: 1px solid #484848;
+  border-bottom: 1px solid #484848;
+  border-left: 1px solid #2B2B2B;
 }
 
 /****************************************************************************
  * ValueEditor
  ***************************************************************************/
 
+#ValueEditor
+{
+  background-color: #484848;
+}
+
 #ValueEditor, #ValueEditor QWidget
 {
-  background-color: rgb(72,72,72);
 }
 
 #ValueEditor QLineEdit,
@@ -507,7 +863,7 @@ QMenu::item:disabled:selected
 #ValueEditor QComboBox,
 #ValueEditor QCheckBox::indicator
 {
-  font: 11pt "Roboto";
+  font: 10pt "Roboto";
 
   border: 0px;
   border-radius: 4px;
@@ -606,14 +962,14 @@ QMenu::item:disabled:selected
 
 #ValueEditor::item
 {
-  padding: 1px;
+  padding: 1px 10px 1px 1px;
   height: 20px;
 }
 
 #ValueEditor,
 #ValueEditor::item
 {
-  font: 11pt "Roboto";
+  font: 10pt "Roboto";
   font-weight: normal;
 }
 
@@ -636,8 +992,10 @@ QMenu::item:disabled:selected
 #ValueEditor::item #NotInspectableItem,
 #ValueEditor::item #RTValItem
 {
-  font: 12pt "Roboto";
+  color: grey;
+  font: 10pt "Roboto";
   font-weight: bold;
+  font-style: italic;
 }
 
 #ValueEditor #VEIntSliderViewItem QLineEdit
@@ -661,10 +1019,9 @@ QMenu::item:disabled:selected
 #ValueEditor QDoubleSpinBox::down-button
 {
   subcontrol-origin: margin;
-  border: 0px;
   width: 14px;
   padding: 2px;
-  background-color: #50626e;
+  background-color: #777777;
 }
 
 #ValueEditor QSpinBox::up-button:hover,
@@ -672,7 +1029,7 @@ QMenu::item:disabled:selected
 #ValueEditor QDoubleSpinBox::up-button:hover,
 #ValueEditor QDoubleSpinBox::down-button:hover
 {
-  background-color: #a0a0a0;
+  background-color: #50626E;
 }
 
 #ValueEditor QSpinBox::up-button,
@@ -694,7 +1051,7 @@ QMenu::item:disabled:selected
 #ValueEditor QComboBox::drop-down
 {
   width: 18px;
-  background-color: #50626e;
+  background-color: #777777;
 
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
@@ -702,7 +1059,7 @@ QMenu::item:disabled:selected
 
 #ValueEditor QComboBox::drop-down:hover
 {
-  background-color: #a0a0a0;
+  background-color: #50626E;
 }
 
 #ValueEditor QComboBox::down-arrow
@@ -729,7 +1086,7 @@ QMenu::item:disabled:selected
 #ValueEditor QPushButton:hover
 {
   color: #eee;
-  background-color: #a0a0a0;
+  background-color: #50626E;
 }
 
 #ValueEditor #VEStringViewItem > QPushButton
@@ -746,11 +1103,20 @@ QMenu::item:disabled:selected
 
 #ValueEditor QSlider::handle:horizontal
 {
-  background: #e1ffff;
-  border: none;
+  background: #737373;
   height: 4px;
   width: 1px;
   border-radius: 3px;
+}
+
+#ValueEditor QSlider::handle:horizontal::hover
+{
+  background: #808080;
+}
+
+#ValueEditor QSlider::handle:horizontal::pressed
+{
+  background: #50626E;
 }
 
 #ValueEditor QSlider::add-page:horizontal
@@ -775,15 +1141,24 @@ QMenu::item:disabled:selected
  * DFGPresetTreeWidget
  ***************************************************************************/
 
-#DFGPresetTreeWidget
+#DFGPresetTreeWidget QTreeView
 {
-  background-color: rgb(72,72,72);
-  border: 1px solid black;
+  font: 10pt "Roboto";
+  font-weight: normal;
+}
+
+#DFGPresetTreeWidget QTreeView::item
+{
+  padding: 2px;
 }
 
 /****************************************************************************
  * ScriptEditorWidget
  ***************************************************************************/
+
+#ScriptEditorWidget QToolBar {
+  border: 0;
+}
 
 #ScriptEditorWidget QToolButton
 {
@@ -805,12 +1180,12 @@ QMenu::item:disabled:selected
 
 #ScriptEditorWidget QToolButton::checked
 {
-  background-color: #335252;
+  background-color: #176580;
 }
 
 #ScriptEditorWidget QToolButton::checked:hover
 {
-  background-color: #335959;
+  background-color: #1C7A99;
 }
 
 #ScriptEditorWidget QToolButton:hover
@@ -825,4 +1200,23 @@ QMenu::item:disabled:selected
   padding-left: 5px;
 
   background-color: #2B2B2B;
+}
+
+#ScriptEditorLogWidget
+{
+  font: 10pt "Roboto Mono";
+  border-top: 1px solid #2B2B2B;
+  border-right: 1px solid #484848;
+  border-bottom: 1px solid #484848;
+  border-left: 1px solid #2B2B2B;
+}
+
+#ScriptEditorCmdEditor
+{
+  font: 10pt "Roboto Mono";
+  background-color: #272822;
+  border-top: 1px solid #2B2B2B;
+  border-right: 1px solid #484848;
+  border-bottom: 1px solid #484848;
+  border-left: 1px solid #2B2B2B;
 }

@@ -87,6 +87,8 @@ class ScriptEditor(QtGui.QWidget):
             def __init__(self, cmdEditor):
                 QtGui.QWidget.__init__(self, cmdEditor)
                 self.__cmdEditor = cmdEditor
+                
+                self.setObjectName("LineNumberArea")
 
             def sizeHint(self):
                 return QtCore.QSize(self.__cmdEditor.lineNumberAreaWidth(), 0)
@@ -106,7 +108,8 @@ class ScriptEditor(QtGui.QWidget):
         def __init__(self, font):
             QtGui.QPlainTextEdit.__init__(self)
 
-            self.setStyleSheet("background-color: #272822;")
+            self.setObjectName("ScriptEditorCmdEditor")
+
             self.__highlighter = PythonHighlighter(self.document())
 
             lineNumberArea = self.LineNumberArea(self)
