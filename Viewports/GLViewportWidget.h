@@ -56,6 +56,7 @@ namespace FabricUI
  
     signals:
       void dirty();
+      void initComplete();
       void redrawn();
       void portManipulationRequested(QString portName);
 

@@ -307,6 +307,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor(self.client)
         # When the rendering options of the viewport have changed, redraw
         self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
+        # Once the Viewport has been setup (and filled its option values), update the options menu
+        self.viewport.initComplete.connect(self.renderingOptionsWidget.updateOptions)
 
         self.renderingOptionsDockWidget = QtGui.QDockWidget("Rendering Options", self)
         self.renderingOptionsDockWidget.setObjectName("Rendering Options")
@@ -511,6 +513,8 @@ class CanvasWindow(QtGui.QMainWindow):
 
     def setCurrentFile(self, filePath):
         files = list(self.settings.value('mainWindow/recentFiles', []))
+        if type(files) is not list:
+          files = [files]        
 
         # Try to remove the entry if it is already in the list
         try:
@@ -527,6 +531,8 @@ class CanvasWindow(QtGui.QMainWindow):
 
     def updateRecentFileActions(self):
         files = self.settings.value('mainWindow/recentFiles', [])
+        if type(files) is not list:
+          files = [files]        
 
         if len(self.recentFilesAction) >0:
             for i,filepath in enumerate(files):

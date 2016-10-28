@@ -1,6 +1,0 @@
-binding_exec = binding.binding.getExec()
-binding.addPort("", "ioPort", "io", "UInt32", "", "", "{\n  \"uiRange\" : \"\",\n  \"uiHardRange\" : \"\"\n  }")
-portIndex = binding_exec.getExecPortIndex("ioPort")
-print "Current Port Name : " +str(binding_exec.getExecPortName(portIndex))
-binding.editPort("", "ioPort", "ioPort_New", "io", "UInt64", "", "{\n  \"uiHidden\" : \"\",\n  \"uiOpaque\" : \"\",\n  \"uiPersistValue\" : \"\",\n  \"uiRange\" : \"\",\n  \"uiHardRange\" : \"\",\n  \"uiCombo\" : \"\"\n  }")
-print "New Port Name : " +str(binding_exec.getExecPortName(portIndex))
