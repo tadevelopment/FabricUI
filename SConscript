@@ -67,7 +67,7 @@ if buildOS == 'Darwin':
   env.Append(FRAMEWORKS = ['OpenGL', 'Cocoa', 'Foundation'])
 
 
-if buildOS == 'Linux':
+if buildOS == 'Linux' and not env.get('BUILDING_MAYA_2017'):
   env.Replace( CC = '/opt/centos5/usr/bin/gcc' )
   env.Replace( CXX = '/opt/centos5/usr/bin/gcc' )
 

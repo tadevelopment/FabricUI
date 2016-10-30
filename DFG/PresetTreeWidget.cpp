@@ -106,7 +106,7 @@ PresetTreeWidget::PresetTreeWidget(
           if (stream)
           {
             fclose(stream);
-            std::remove(filepath.c_str());
+            FTL::FSMaybeDeleteFile(filepath.c_str());
             continue;
           }
           m_treeModel->removeItem(item);

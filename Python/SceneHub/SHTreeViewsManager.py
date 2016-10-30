@@ -66,7 +66,7 @@ class SHTreeViewsManager(FabricUI.SceneHub.SHBaseTreeViewsManager):
 
         typeList = []
         typeList.append('SHGLScene')
-        sceneNameList = FabricUI.DFG.DFGController.getVariableWordsFromBinding(binding, '.', typeList)
+        sceneNameList = FabricUI.DFG.DFGBindingUtils.getVariableWordsFromBinding(binding, '.', typeList)
 
         if len(sceneNameList) == 0 and not self.m_shGLScene.hasSG(): 
             self.resetTree()
