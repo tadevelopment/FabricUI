@@ -37,8 +37,9 @@ namespace FabricUI
 
       TreeItem(
         FTL::StrRef name,
-        FTL::StrRef label = FTL::StrRef()
-        );
+        FTL::StrRef label = FTL::StrRef(),
+        FTL::StrRef tooltip = FTL::StrRef()
+      );
       virtual ~TreeItem();
 
       virtual FTL::CStrRef type() const { return FTL_STR("item"); }
@@ -97,6 +98,8 @@ namespace FabricUI
 
       std::string m_name;
       std::string m_label;
+      std::string m_tooltip;
+
       QColor m_backgroundColor;
       QColor m_foregroundColor;
       QPixmap m_pixmap;

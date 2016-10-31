@@ -17,8 +17,9 @@ namespace FabricUI
     public:
 
       PresetTreeItem(
-        FTL::CStrRef path,
-        FTL::CStrRef name
+        //FTL::CStrRef path,
+        FTL::CStrRef name,
+        FTL::CStrRef tooltip = FTL::CStrRef()
         );
 
       virtual FTL::CStrRef type() const { return FTL_STR("Preset"); }
@@ -28,7 +29,7 @@ namespace FabricUI
 
     private:
 
-      std::string m_path;
+      //std::string m_path;
     };
 
   };

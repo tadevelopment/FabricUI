@@ -6,11 +6,12 @@ using namespace FabricUI;
 using namespace FabricUI::DFG;
 
 PresetTreeItem::PresetTreeItem(
-  FTL::CStrRef path,
-  FTL::CStrRef name
+  //FTL::CStrRef path,
+  FTL::CStrRef name,
+  FTL::CStrRef tooltip
   )
-  : TreeView::TreeItem( name )
-  , m_path( path )
+  : TreeView::TreeItem( name, "", tooltip)
+  //, m_path( path )
 {
 }
 
@@ -23,5 +24,8 @@ Qt::ItemFlags PresetTreeItem::flags()
 
 QString PresetTreeItem::mimeDataAsText()
 {
-  return ("{\"type\": \"DFGPreset\", \"path\": \""+m_path+"\"}").c_str();
+  QString res = "{\"type\": \"DFGPreset\", \"path\": \"";
+	res+= QString(path().c_str());
+	res +="\"}";
+	return res;
 }

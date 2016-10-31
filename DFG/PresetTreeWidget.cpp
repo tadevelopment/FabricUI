@@ -138,7 +138,6 @@ PresetTreeWidget::PresetTreeWidget(
   }
   
   QObject::connect(m_treeView, SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(onRowDoubleClick(const QModelIndex &)));
-  
 }
 
 PresetTreeWidget::~PresetTreeWidget()

@@ -1,16 +1,20 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include "TreeItem.h"
-
+#include <iostream>
 using namespace FabricUI::TreeView;
 
 TreeItem::TreeItem(
   FTL::StrRef name,
-  FTL::StrRef label
+  FTL::StrRef label,
+  FTL::StrRef tooltip
   )
   : m_name( name )
   , m_label( !label.empty()? label: name )
+  , m_tooltip( tooltip )
 {
+  std::cout << "TreeItem::TreeItem  m_name" << m_name.c_str() << std::endl;
+  std::cout << "TreeItem::TreeItem m_label " << m_label.c_str() << std::endl;
   m_parent = NULL;
   m_model = NULL;
   m_index = 0;
@@ -325,6 +329,10 @@ QVariant TreeItem::data(int role)
     {
       if(backgroundColor().isValid())
         return QBrush(backgroundColor());
+    }
+    case Qt::ToolTipRole:
+    {
+      return QString( m_tooltip.c_str() );
     }
     default:
     {
