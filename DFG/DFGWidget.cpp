@@ -136,6 +136,12 @@ DFGWidget::DFGWidget(
     m_uiGraphViewWidget, SIGNAL(urlDropped(QUrl, bool)),
     this, SIGNAL(urlDropped(QUrl, bool))
     );
+
+  // FE-6926  : Shift + double-clicking in an empty space "Goes up"
+  QObject::connect(
+    m_uiGraphViewWidget, SIGNAL(goUpPressed()),
+    this, SLOT(onGoUpPressed())
+    );
   
   m_klEditor =
     new DFGKLEditorWidget(
@@ -317,6 +323,12 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     return NULL;
 
   QMenu* result = new QMenu( graph->scene()->views()[0] );
+  
+  QAction *goUpAction = new QAction( "Back - U or Shift+DoubleClick", graphWidget );
+  QObject::connect(goUpAction, SIGNAL(triggered()), graphWidget, SLOT(onGoUpPressed()));
+  result->addAction(goUpAction);
+  result->addSeparator();
+
   result->addAction(
     new NewGraphNodeAction( graphWidget, QCursor::pos(), result )
     );

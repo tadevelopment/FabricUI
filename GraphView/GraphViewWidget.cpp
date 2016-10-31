@@ -104,6 +104,19 @@ void GraphViewWidget::mouseMoveEvent(QMouseEvent * event)
   QGraphicsView::mouseMoveEvent(event);
 }
 
+void GraphViewWidget::mouseDoubleClickEvent(QMouseEvent * event)
+{
+  // FE-6926  : Shift + double-clicking in an empty space "Goes up"
+  if(event->modifiers().testFlag(Qt::ShiftModifier) && m_graph->selectedNodes().size() == 0)
+  {
+    emit goUpPressed();
+    event->accept();
+    return;
+  }
+ 
+  QGraphicsView::mouseDoubleClickEvent(event);
+}
+
 void GraphViewWidget::keyPressEvent(QKeyEvent * event)
 {
   if(!event->isAutoRepeat() && graph()->pressHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))

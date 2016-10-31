@@ -560,6 +560,7 @@ Pin *Node::renamePin( FTL::StrRef oldName, FTL::StrRef newName )
 
 void Node::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+
   if(onMousePress(event->button(), event->modifiers(), event->scenePos(), event->lastScenePos()))
   {
     event->accept();
@@ -592,9 +593,11 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
 {
   if(onMouseDoubleClicked(event->button(), event->modifiers(), event->scenePos(), event->lastScenePos()))
   {
+    QGraphicsWidget::mouseDoubleClickEvent(event);
     event->accept();
     return;
   }
+
   QGraphicsWidget::mouseDoubleClickEvent(event);
 }
 
