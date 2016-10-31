@@ -349,6 +349,20 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timeLine.frameChanged.connect(self.valueEditor.onFrameChanged)
         self.scriptEditor.setTimeLineGlobal(self.timeLine)
 
+        self.timelineFrame = QtGui.QFrame()
+        self.timelineFrame.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        self.timelineFrame.setObjectName("DFGTimelineFrame")
+        self.timelineFrame.setLineWidth(0)
+        self.timelineFrame.setContentsMargins(0, 0, 0, 0)
+        self.timelineFrame.setFrameStyle(QtGui.QFrame.NoFrame|QtGui.QFrame.Plain)
+
+        self.timelineFrameLayout = QtGui.QBoxLayout(QtGui.QBoxLayout.LeftToRight)
+        self.timelineFrameLayout.setContentsMargins(0, 0, 0, 0)
+        self.timelineFrameLayout.setSpacing(0)
+        self.timelineFrameLayout.addWidget(self.timeLine)
+        
+        self.timelineFrame.setLayout(self.timelineFrameLayout)
+
     def _initDocks(self):
         """Initializes all of dock widgets for the application.
 
@@ -399,7 +413,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timeLineDock = QtGui.QDockWidget("Timeline", self)
         self.timeLineDock.setObjectName("TimeLine")
         self.timeLineDock.setFeatures(self.dockFeatures)
-        self.timeLineDock.setWidget(self.timeLine)
+        # self.timeLineDock.setWidget(self.timeLine)
+        self.timeLineDock.setWidget(self.timelineFrame)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.timeLineDock, QtCore.Qt.Vertical)
 
         # Script Editor Dock Widget

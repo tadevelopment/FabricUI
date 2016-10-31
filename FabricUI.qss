@@ -622,7 +622,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 3px 3px 3px 6px;
   margin: 0;
 
-  color: #e1ffff;
+  color: #E1FFFF;
   background-color: #333;
 }
 
@@ -637,7 +637,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGPEWidget_Elements QComboBox QAbstractItemView
 {
-  color: #e1ffff;
+  color: #E1FFFF;
   background-color: #333;
 }
 
@@ -755,7 +755,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 1px 1px 1px 4px;
   margin: 0;
 
-  color: #e1ffff;
+  color: #E1FFFF;
   background-color: #333;
 }
 
@@ -770,7 +770,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGTimelineWidget QComboBox QAbstractItemView
 {
-  color: #e1ffff;
+  color: #E1FFFF;
   background-color: #333;
 }
 
@@ -779,6 +779,19 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   image: url(${FABRIC_DIR}/Resources/Icons/DFGDown.png);
   width: 9px;
   height: 9px;
+}
+
+#DFGTimelineFrame
+{
+  margin: 10px 10px;
+}
+
+#DFGTimelineWidget QDoubleSpinBox
+{
+  color: #E1FFFF;
+  padding: 3px;
+  border-radius: 3px;
+  background-color: #333;
 }
 
 #DFGTimelineWidget QSlider
@@ -869,7 +882,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-radius: 4px;
   padding: 3px;
 
-  color: #e1ffff;
+  color: #E1FFFF;
   background-color: #333;
 }
 
@@ -1143,6 +1156,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGPresetTreeWidget QTreeView
 {
+  background: #484848;
   font: 10pt "Roboto";
   font-weight: normal;
 }
