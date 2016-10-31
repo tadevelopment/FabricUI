@@ -235,7 +235,11 @@ void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
   if(event->button() == Qt::LeftButton)
   {
     m_dragging = true;
-    m_lastDragPoint = mapToScene(event->pos());
+    QPointF pos = mapToScene(event->pos());
+    qreal dInput = (pos - m_dst->connectionPos(PortType_Input)).manhattanLength();
+    qreal dOutput = (pos - m_src->connectionPos(PortType_Output)).manhattanLength();
+    m_draggingInput = dInput < dOutput;
+    m_lastDragPoint = pos;
     event->accept();
   }
   else if(event->button() == Qt::MiddleButton)
@@ -275,7 +279,7 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     QPointF delta = scenePos - m_lastDragPoint;
 
     // todo: the disconnect threshold maybe should be a graph setting
-    if(delta.x() < 0 || delta.x() > 0)
+    if(delta.manhattanLength() > 0)
     {
       // create local variables
       // since "this" might be deleted after the removeConnections call
@@ -289,8 +293,7 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       conns.push_back(this);
       if(graph->controller()->gvcDoRemoveConnections(conns))
       {
-        // todo: review the features for disconnecting input vs output based on gesture
-        if(delta.x() < 0)
+        if(m_draggingInput)
         {
           graph->constructMouseGrabber(scenePos, (Pin*)src, PortType_Input);
         }
