@@ -194,8 +194,20 @@ QMessageBox QTextEdit:focus,
 QMessageBox QComboBox:focus,
 QMessageBox QCheckBox::indicator:hover
 {
-  border: 1px solid #50626E;
   background-color: #242424;
+}
+
+QDialog QCheckBox::indicator,
+QMessageBox QCheckBox::indicator
+{
+  width: 12px;
+  height: 12px;
+}
+
+QDialog QCheckBox::indicator:checked,
+QMessageBox QCheckBox::indicator:checked
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/DFGCheck.png);
 }
 
 QDialog QComboBox::drop-down,

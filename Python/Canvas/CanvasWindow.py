@@ -703,7 +703,7 @@ class CanvasWindow(QtGui.QMainWindow):
         binding = self.dfgWidget.getDFGController().getBinding()
 
         if binding.getVersion() != self.lastSavedBindingVersion:
-            msgBox = QtGui.QMessageBox()
+            msgBox = QtGui.QMessageBox(QtGui.QMessageBox.NoIcon, "Fabric Engine", "", parent=self)
             msgBox.setText("Do you want to save your changes?")
             msgBox.setInformativeText(
                 "Your changes will be lost if you don't save them.")
