@@ -145,11 +145,10 @@ class CanvasWindow(QtGui.QMainWindow):
         self.lastFileName = ''
         self.onFileNameChanged('')
 
-        statusBar = QtGui.QStatusBar(self)
-        self.fpsLabel = QtGui.QLabel(statusBar)
-        statusBar.addPermanentWidget(self.fpsLabel)
-        self.setStatusBar(statusBar)
-        statusBar.show()
+        self.fpsLabel = QtGui.QLabel()
+        self.fpsLabel.setObjectName("FPSLabel")
+        self.fpsLabel.setFixedWidth(60)
+        self.fpsLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
 
         self.fpsTimer = QtCore.QTimer()
         self.fpsTimer.setInterval(1000)
@@ -360,6 +359,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timelineFrameLayout.setContentsMargins(0, 0, 0, 0)
         self.timelineFrameLayout.setSpacing(0)
         self.timelineFrameLayout.addWidget(self.timeLine)
+        self.timelineFrameLayout.addWidget(self.fpsLabel)
         
         self.timelineFrame.setLayout(self.timelineFrameLayout)
 

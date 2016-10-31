@@ -683,6 +683,16 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
  * DFGTimelineWidget
  ***************************************************************************/
 
+#DFGTimelineFrame
+{
+  margin: 10px 10px;
+}
+
+#DFGTimelineFrame #FPSLabel
+{
+  border-left: 1px solid red;
+}
+
 #DFGTimelineWidget QWidget
 {
   font: 11px "Roboto";
@@ -779,11 +789,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   image: url(${FABRIC_DIR}/Resources/Icons/DFGDown.png);
   width: 9px;
   height: 9px;
-}
-
-#DFGTimelineFrame
-{
-  margin: 10px 10px;
 }
 
 #DFGTimelineWidget QDoubleSpinBox
