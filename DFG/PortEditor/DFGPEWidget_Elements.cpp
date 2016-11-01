@@ -264,7 +264,7 @@ void DFGPEWidget_Elements::onRemoveSelected()
 
 void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
 {
-  QMenu menu;
+  QMenu menu( this );
 
   QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
   QList<int> selectedIndices;
