@@ -102,6 +102,7 @@ void GLViewportWidget::initializeGL()
     m_viewport.callMethod("", "setup", 1, &m_drawContext);
     m_drawing = m_drawing.callMethod("OGLInlineDrawing", "getInstance", 0, 0);
     setGridVisible(m_gridVisible, false);
+    emit initComplete();
   }
   catch(FabricCore::Exception e)
   {
