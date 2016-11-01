@@ -16,21 +16,16 @@ namespace FabricUI
 
     public:
 
-      PresetTreeItem(
-        FTL::CStrRef name
-        );
+      PresetTreeItem( FTL::CStrRef name );
 
       virtual FTL::CStrRef type() const { return FTL_STR("Preset"); }
-
+      
       virtual Qt::ItemFlags flags();
+      
       virtual QString mimeDataAsText();
-
+      
       virtual QVariant data(int role);
 
-
-    private:
-
-      //std::string m_path;
     };
 
   };
