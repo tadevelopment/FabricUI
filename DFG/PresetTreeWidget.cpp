@@ -174,7 +174,7 @@ void PresetTreeWidget::refresh()
   if(search.length() == 0)
   {
     std::map<std::string, std::string> nameSpaceLookup;
-    std::map<std::string, std::string> presetLookup;
+    std::vector<std::string> presetLookup;
 
     FabricCore::DFGStringResult jsonStr = host.getPresetDesc("");
     FabricCore::Variant jsonVar = FabricCore::Variant::CreateFromJSON(jsonStr.getCString());
@@ -188,7 +188,7 @@ void PresetTreeWidget::refresh()
       std::string objectType = objectTypeVar->getStringData();
       if(objectType == "Preset")
       {
-        presetLookup.insert(std::pair<std::string, std::string>(name, name));
+        presetLookup.push_back(name);
       }
       else if(objectType == "NameSpace")
       {
@@ -207,8 +207,8 @@ void PresetTreeWidget::refresh()
       m_treeModel->addItem(item);
     }
 
-    for(std::map<std::string, std::string>::iterator it=presetLookup.begin();it!=presetLookup.end();it++)
-      m_treeModel->addItem(new PresetTreeItem(it->first.c_str()));//, it->second.c_str()));
+    for(std::vector<std::string>::iterator it=presetLookup.begin();it!=presetLookup.end();it++)
+      m_treeModel->addItem(new PresetTreeItem(it->c_str()));
   }
   else
   {
