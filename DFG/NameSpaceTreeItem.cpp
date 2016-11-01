@@ -26,7 +26,7 @@ unsigned int NameSpaceTreeItem::numChildren()
     std::map<std::string, std::string> presetLookup;
 
     FabricCore::DFGStringResult jsonStringResult = m_coreDFGHost.getPresetDesc(m_nameSpace.c_str());
- 
+
 
     char const *jsonCStr;
     uint32_t jsonSize;
@@ -49,34 +49,13 @@ unsigned int NameSpaceTreeItem::numChildren()
 
       FTL::JSONObject const *memberObject =
         it->second->cast<FTL::JSONObject>();
-      std::cout << "name " << name.c_str() << " has metadata " << memberObject->has(FTL_STR("metadata")) << " " << memberObject->size() << std::endl;
 
       FTL::CStrRef objectType =
         memberObject->getString( FTL_STR("objectType") );
 
-  /*   FTL::JSONArray const *array =  memberObject->getArray(  FTL_STR("metadata") );
-     if(array)
-      std::cout << "Hourra I have an array" << std::endl;
-      
-      if ( FTL::JSONObject const *metadata =
-        memberObject->maybeGetObject( FTL_STR("metadata") ) )
-      {
-        for ( FTL::JSONObject::const_iterator it = metadata->begin();
-          it != metadata->end(); ++it )
-        {
-          FTL::CStrRef key = it->first;
-          std::cout << "key " << key.c_str() << std::endl;
-        
-        }
-      }
-*/
-
-      FTL::CStrRef uiTooltip =name;
-
-
       if(objectType == "Preset" && m_showsPresets)
       {
-        presetLookup.insert(std::pair<std::string, std::string>(name, uiTooltip));
+        presetLookup.insert(std::pair<std::string, std::string>(name, name));
       }
       else if(objectType == FTL_STR("NameSpace"))
       {
@@ -107,7 +86,7 @@ unsigned int NameSpaceTreeItem::numChildren()
       {
         if(!includeChildName(it->first.c_str()))
           continue;
-        addChild(new PresetTreeItem(it->first.c_str(), it->second.c_str()));
+        addChild(new PresetTreeItem(it->first.c_str()));//, it->second.c_str()));
       }
     }
 

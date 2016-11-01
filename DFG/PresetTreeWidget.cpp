@@ -208,7 +208,7 @@ void PresetTreeWidget::refresh()
     }
 
     for(std::map<std::string, std::string>::iterator it=presetLookup.begin();it!=presetLookup.end();it++)
-      m_treeModel->addItem(new PresetTreeItem(it->second.c_str(), it->first.c_str()));
+      m_treeModel->addItem(new PresetTreeItem(it->first.c_str()));//, it->second.c_str()));
   }
   else
   {
