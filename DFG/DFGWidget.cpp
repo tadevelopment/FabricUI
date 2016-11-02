@@ -1420,6 +1420,17 @@ void DFGWidget::editExecPort( FTL::CStrRef execPortName, bool duplicatePort)
       expandMetadataSection = true;
     }
 
+    FTL::StrRef uiFileTypeFilter = exec.getExecPortMetadata(execPortName.c_str(), "uiFileTypeFilter");
+    std::string uiFileTypeFilterStr;
+    if(uiFileTypeFilter.size() > 0)
+      uiFileTypeFilterStr = uiFileTypeFilter.data();
+    if(uiFileTypeFilterStr.size() > 0)
+    {
+      dialog.setHasFileTypeFilter(true);
+      dialog.setFileTypeFilter(uiFileTypeFilterStr.c_str());
+      expandMetadataSection = true;
+    }
+
     dialog.setSectionCollapsed("metadata", !expandMetadataSection);
 
     emit portEditDialogCreated(&dialog);
@@ -1470,6 +1481,13 @@ void DFGWidget::editExecPort( FTL::CStrRef execPortName, bool duplicatePort)
         DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", flat.toUtf8().constData() );
       } else
         DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", "" );//"" will remove the metadata
+
+      if(dialog.hasFileTypeFilter())
+      {
+        QString fileTypeFilter = dialog.fileTypeFilter();
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", fileTypeFilter.toUtf8().constData() );
+      } else
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", "" );//"" will remove the metadata
 
       emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
     }
@@ -1649,6 +1667,12 @@ void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
       }
       flat += ")";
       DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", flat.toUtf8().constData() );
+    }
+
+    if(dialog.hasFileTypeFilter())
+    {
+      QString fileTypeFilter = dialog.fileTypeFilter();
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", fileTypeFilter.toUtf8().constData() );
     }
 
     emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);

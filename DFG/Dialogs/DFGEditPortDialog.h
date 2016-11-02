@@ -67,6 +67,11 @@ namespace FabricUI
       QStringList comboValues() const;
       void setComboValues(QStringList value);
 
+      bool hasFileTypeFilter() const;
+      void setHasFileTypeFilter(bool value);
+      QString fileTypeFilter() const;
+      void setFileTypeFilter(QString value);
+
       virtual void showEvent(QShowEvent * event);
 
       /// Filter the QLineEdit text with the regexFilter
@@ -79,6 +84,7 @@ namespace FabricUI
       void onSoftRangeToggled(int state);
       void onHardRangeToggled(int state);
       void onComboToggled(int state);
+      void onFileTypeFilterToggled(int state);
 
     private:
 
@@ -96,6 +102,8 @@ namespace FabricUI
       QLineEdit * m_hardRangeMax;
       QCheckBox * m_hasCombo;
       QLineEdit * m_combo;
+      QCheckBox * m_hasFileTypeFilter;
+      QLineEdit * m_fileTypeFilter;
 
     };
 
