@@ -286,6 +286,7 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       ConnectionTarget * src = m_src;
       ConnectionTarget * dst = m_dst;
       Graph * graph = m_graph;
+      bool draggingInput = m_draggingInput;
 
       graph->controller()->beginInteraction();
 
@@ -293,7 +294,7 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       conns.push_back(this);
       if(graph->controller()->gvcDoRemoveConnections(conns))
       {
-        if(m_draggingInput)
+        if(draggingInput)
         {
           graph->constructMouseGrabber(scenePos, (Pin*)src, PortType_Input);
         }
