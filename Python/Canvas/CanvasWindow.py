@@ -528,6 +528,8 @@ class CanvasWindow(QtGui.QMainWindow):
 
     def setCurrentFile(self, filePath):
         files = list(self.settings.value('mainWindow/recentFiles', []))
+        if type(files) is not list:
+          files = [files]           
 
         # Try to remove the entry if it is already in the list
         try:
@@ -544,6 +546,8 @@ class CanvasWindow(QtGui.QMainWindow):
 
     def updateRecentFileActions(self):
         files = self.settings.value('mainWindow/recentFiles', [])
+        if type(files) is not list:
+          files = [files]                   
 
         if len(self.recentFilesAction) >0:
             for i,filepath in enumerate(files):
