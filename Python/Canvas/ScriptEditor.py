@@ -467,7 +467,8 @@ class ScriptEditor(QtGui.QWidget):
     def checkUnsavedChanges(self):
         textDocument = self.cmd.document()
         if textDocument.isModified() and not textDocument.isEmpty():
-            msgBox = QtGui.QMessageBox()
+            msgBox = QtGui.QMessageBox(self)
+            msgBox.setWindowTitle("Script Editor")
             msgBox.setText("Do you want to save your Python script?")
             msgBox.setInformativeText(
                 "Your changes will be lost if you don't save them.")
