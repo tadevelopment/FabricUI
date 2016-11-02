@@ -117,6 +117,7 @@ BaseViewItem *ViewItemFactory::createViewItem(
     if ( BaseViewItem* viewItem = itr->createItemFn( name, value, metaData ) )
     {
       viewItem->setBaseModelItem( modelItem );
+      viewItem->setToolTip( RTVariant::getTypeName( value ) );
       return viewItem;
     }
   }

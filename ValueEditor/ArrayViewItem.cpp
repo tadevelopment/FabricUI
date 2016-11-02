@@ -176,7 +176,10 @@ void ArrayViewItem::updateWidgets()
 
   m_minIndexEdit->setRange( 0, arraySize );
   m_maxIndexEdit->setRange( 0, arraySize );
-  m_arraySizeEdit->setRange( 0, INT_MAX );
+  bool isVariableArray = m_val.isVariableArray();
+  if (isVariableArray)
+    m_arraySizeEdit->setRange(0, INT_MAX);
+  m_arraySizeEdit->setEnabled(isVariableArray);
   
   m_minIndexEdit->setValue( m_min );
   m_maxIndexEdit->setValue( m_max );
@@ -240,7 +243,8 @@ void ArrayViewItem::onArraySizeChanged( int newSize )
   {
     int oldSize = m_val.getArraySize();
 
-    m_val.setArraySize( newSize );
+    if(m_val.isVariableArray())
+      m_val.setArraySize( newSize );
 
     emit viewValueChanged( toVariant( m_val ) );
 
