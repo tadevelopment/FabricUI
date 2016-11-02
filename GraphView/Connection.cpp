@@ -236,8 +236,8 @@ void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
   {
     m_dragging = true;
     QPointF pos = mapToScene(event->pos());
-    qreal dInput = (pos - m_dst->connectionPos(PortType_Input)).manhattanLength();
-    qreal dOutput = (pos - m_src->connectionPos(PortType_Output)).manhattanLength();
+    qreal dInput = (pos - m_src->connectionPos(PortType_Output)).manhattanLength();
+    qreal dOutput = (pos - m_dst->connectionPos(PortType_Input)).manhattanLength();
     m_draggingInput = dInput < dOutput;
     m_lastDragPoint = pos;
     event->accept();
@@ -294,7 +294,7 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       conns.push_back(this);
       if(graph->controller()->gvcDoRemoveConnections(conns))
       {
-        if(draggingInput)
+        if(!draggingInput)
         {
           graph->constructMouseGrabber(scenePos, (Pin*)src, PortType_Input);
         }
