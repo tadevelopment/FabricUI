@@ -69,8 +69,8 @@ QWidget *FilepathViewItem::getWidget()
 
 void FilepathViewItem::metadataChanged()
 {
-  if (m_metadata.has( "filter" ))
-    m_filter = m_metadata.getString( "filter" );
+  if (m_metadata.has( "uiFileTypeFilter" ))
+    m_filter = m_metadata.getString( "uiFileTypeFilter" );
   else
     m_filter = QString();
 }
