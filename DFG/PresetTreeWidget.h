@@ -48,6 +48,10 @@ namespace FabricUI
       void onRowDoubleClick(const QModelIndex &item);
       void onContextMenuAction(QAction * action);
 
+      /// Expands the tree-View to show the preset and selects it (FE-7300).
+      void onExpandToAndSelectItem(QString presetPath);
+
+
     private:
       
       void updatePresetPathDB();

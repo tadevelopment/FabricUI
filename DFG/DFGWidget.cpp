@@ -18,6 +18,7 @@
 #include <FabricUI/DFG/Dialogs/DFGNodePropertiesDialog.h>
 #include <FabricUI/DFG/Dialogs/DFGPickVariableDialog.h>
 #include <FabricUI/DFG/Dialogs/DFGSavePresetDialog.h>
+#include <FabricUI/DFG/DFGBindingUtils.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/Util/FabricResourcePath.h>
@@ -577,6 +578,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
         result->addSeparator();
         if (dfgWidget->isEditable())
           result->addAction(DFG_CREATE_PRESET);
+        result->addAction(DFG_REVEAL_IN_EXPLORER);
         result->addAction(DFG_EXPORT_GRAPH);
       }
     }
@@ -1042,6 +1044,10 @@ void DFGWidget::onNodeAction(QAction * action)
   else if(action->text() == DFG_CUT_PRESET)
   {
     onCut();
+  }
+  else if(action->text() == DFG_REVEAL_IN_EXPLORER)
+  {
+    onRevealPresetInExplorer(nodeName);
   }
   else if(action->text() == DFG_EXPORT_GRAPH)
   {
@@ -1910,6 +1916,14 @@ void DFGWidget::onCopy()
 void DFGWidget::onCut()
 {
   getUIController()->cmdCut();
+}
+
+void DFGWidget::onRevealPresetInExplorer(char const *nodeName)
+{
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+  QString presetPath = DFGBindingUtils::getPresetPathFromNode(exec, QString(nodeName));
+  if(!presetPath.isEmpty())
+    emit revealPresetInExplorer(presetPath);
 }
 
 void DFGWidget::onPaste()

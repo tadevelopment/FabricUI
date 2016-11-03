@@ -334,6 +334,47 @@ void PresetTreeWidget::onContextMenuAction(QAction * action)
     }
   }
 }
+ 
+void PresetTreeWidget::onExpandToAndSelectItem(QString presetPath) {
+
+  // e.g FABRIC.Dir1.Dir2...Preset
+  QStringList split = presetPath.split(".");
+
+  // Get the root (Variables, Fabric, User)
+  QString current = split[0] + ".";
+  FTL::StrRef strRef(current.toUtf8().data());
+
+  FabricUI::TreeView::TreeItem *item = m_treeModel->item(strRef);
+  if(item)
+  { 
+    // Expand the root (create its children if needed)
+    QModelIndex modelIndex = item->modelIndex();
+    m_treeView->expand(modelIndex);
+
+    // Iterate through the path (directory)
+    for(int i=1; i<split.size(); ++i)
+    {
+      current = split[i] + ".";
+      strRef = FTL::StrRef(current.toUtf8().data());
+
+      item = item->child(strRef);
+      if(item)
+      {   
+        // If the item is not a leaf, expand it
+        QModelIndex modelIndex = item->modelIndex();
+        if(i < split.size()-1)
+          m_treeView->expand(modelIndex);
+        // Otherwise, select it.
+        else
+        {
+          QItemSelectionModel* selection = m_treeView->selectionModel();
+          selection->select(modelIndex, QItemSelectionModel::ClearAndSelect);
+          m_treeView->scrollTo(modelIndex);
+        }
+      }
+    }
+  }
+}
 
 void PresetTreeWidget::updatePresetPathDB()
 {
