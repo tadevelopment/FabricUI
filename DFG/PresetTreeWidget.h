@@ -38,6 +38,7 @@ namespace FabricUI
 
       TreeView::TreeViewWidget * getTreeView() { return m_treeView; }
       TreeView::TreeModel * getTreeModel() { return m_treeModel; }
+      DFGController* getController() { return m_dfgController; }
 
     public slots:
 
