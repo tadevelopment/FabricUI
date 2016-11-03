@@ -2140,7 +2140,7 @@ void DFGWidget::onEditPropertiesForCurrentSelection()
           isEditable = !exec.getSubExec(oldNodeName.c_str()).editWouldSplitFromPreset();
 
         DFG::DFGNodePropertiesDialog dialog(
-          this,
+          this, 
           controller,
           oldNodeName.c_str(),
           getConfig(),
