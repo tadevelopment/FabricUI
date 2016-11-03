@@ -406,6 +406,8 @@ namespace FabricUI
 
       void updateNodeErrors();
 
+      void processDelayedEvents();  // [FE-6568]
+
     signals:
 
       void hostChanged();

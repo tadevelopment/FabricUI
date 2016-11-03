@@ -516,6 +516,7 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.dfgWidget.getDFGController().logError(message)
                 return
             controller.cmdSetArgValue(portName, value)
+            controller.processDelayedEvents() # [FE-6568]
         except Exception as e:
             self.dfgWidget.getDFGController().logError(str(e))
 
