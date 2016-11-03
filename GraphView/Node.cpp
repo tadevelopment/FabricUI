@@ -593,7 +593,6 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
 {
   if(onMouseDoubleClicked(event->button(), event->modifiers(), event->scenePos(), event->lastScenePos()))
   {
-    QGraphicsWidget::mouseDoubleClickEvent(event);
     event->accept();
     return;
   }
