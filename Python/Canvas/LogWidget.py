@@ -53,7 +53,7 @@ class LogWidget(AppendingTextWidget):
         self.append(text, self.exceptionColor)
 
     def contextMenuEvent(self, event):
-        menu = QtGui.QMenu()
+        menu = QtGui.QMenu(self)
         menu.addAction(self.copyAction)
         menu.addSeparator()
         menu.addAction(self.clearAction("Clear"))
