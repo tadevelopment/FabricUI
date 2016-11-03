@@ -754,7 +754,7 @@ void DFGWidget::createNewBlockNode( QPoint const &globalPos )
   bool isCTRL  = keyMod.testFlag( Qt::ControlModifier );
   if (!isCTRL)
   {
-    DFGGetStringDialog dialog(NULL, "New block", text, m_dfgConfig, true); 
+    DFGGetStringDialog dialog(this, "New block", text, m_dfgConfig, true); 
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -790,7 +790,7 @@ void DFGWidget::createNewGraphNode( QPoint const &globalPos )
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
   if (!isCTRL)
   {
-    DFGGetStringDialog dialog(NULL, "New Empty Graph", text, m_dfgConfig, true);
+    DFGGetStringDialog dialog(this, "New Empty Graph", text, m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -819,7 +819,7 @@ void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
   if (!isCTRL)
   {
-    DFGGetStringDialog dialog(NULL, "New Empty Function", text, m_dfgConfig, true);
+    DFGGetStringDialog dialog(this, "New Empty Function", text, m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -856,7 +856,7 @@ void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
   if (!isCTRL)
   {
-    DFGGetStringDialog dialog(NULL, "New Backdrop", text, m_dfgConfig, false);
+    DFGGetStringDialog dialog(this, "New Backdrop", text, m_dfgConfig, false);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -887,7 +887,7 @@ void DFGWidget::onGraphAction(QAction * action)
     QString text = "graph";
     if (!isCTRL)
     {
-      DFGGetStringDialog dialog(NULL, "Implode Nodes", text, m_dfgConfig, true);
+      DFGGetStringDialog dialog(this, "Implode Nodes", text, m_dfgConfig, true);
       if(dialog.exec() != QDialog::Accepted)
         return;
 
@@ -957,7 +957,7 @@ void DFGWidget::onGraphAction(QAction * action)
     FabricCore::DFGBinding &binding = controller->getBinding();
     FTL::CStrRef execPath = controller->getExecPath();
 
-    DFGPickVariableDialog dialog(NULL, client, binding, execPath, true);
+    DFGPickVariableDialog dialog(this, client, binding, execPath, true);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -1282,7 +1282,7 @@ void DFGWidget::onNodeAction(QAction * action)
   }
   else if(action->text() == DFG_IMPLODE_NODE)
   {
-    DFGGetStringDialog dialog(NULL, "Implode Nodes", "graph", m_dfgConfig, true);
+    DFGGetStringDialog dialog(this, "Implode Nodes", "graph", m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -1860,7 +1860,7 @@ void DFGWidget::onBubbleEditRequested(FabricUI::GraphView::Node * node)
     bubble->expand();
   }
 
-  DFGGetTextDialog dialog(NULL, text);
+  DFGGetTextDialog dialog(this, text);
   if ( dialog.exec() == QDialog::Accepted )
   {
     if ( !text.isEmpty() || !dialog.text().isEmpty() )
@@ -2103,7 +2103,7 @@ void DFGWidget::onEditPropertiesForCurrentSelection()
       if ( exec.isExecBlock( oldNodeName.c_str() ) )
       {
         DFG::DFGBlockPropertiesDialog dialog(
-          NULL,
+          this,
           controller,
           oldNodeName.c_str(),
           getConfig(),
@@ -2170,7 +2170,7 @@ void DFGWidget::onEditPropertiesForCurrentSelection()
           isEditable = !exec.getSubExec(oldNodeName.c_str()).editWouldSplitFromPreset();
 
         DFG::DFGNodePropertiesDialog dialog(
-          NULL,
+          this, 
           controller,
           oldNodeName.c_str(),
           getConfig(),
