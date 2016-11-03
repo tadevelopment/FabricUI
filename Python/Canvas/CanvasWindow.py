@@ -129,6 +129,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.viewport = None
         self.dfgWidget = None
         self.currentGraph = None
+        self.undoAction = None
+        self.redoAction = None
         self.newGraphAction = None
         self.loadGraphAction = None
         self.saveGraphAction = None
@@ -273,7 +275,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.scriptEditor.setDFGControllerGlobal(self.dfgWidget.getDFGController())
 
         tabSearchWidget = self.dfgWidget.getTabSearchWidget()
-        tabSearchWidget.enabled.connect(self.enableShortCuts)
+        tabSearchWidget.enabled.connect(self.enableShortCutsAndUndoRedo)
 
         self.dfgWidget.onGraphSet.connect(self.onGraphSet)
         self.dfgWidget.additionalMenuActionsRequested.connect(self.onAdditionalMenuActionsRequested)
@@ -1036,13 +1038,16 @@ class CanvasWindow(QtGui.QMainWindow):
         else:
             self.setWindowTitle(self.windowTitle + " - " + fileName)
 
-    def enableShortCuts(self, enabled):
+    def enableShortCutsAndUndoRedo(self, enabled):
         """Enables or disables shortcuts.
 
         enabled (bool): Whether or not to enable the shortcuts.
 
         """
-
+        if self.undoAction:
+            self.undoAction.blockSignals(enabled)
+        if self.redoAction:
+            self.redoAction.blockSignals(enabled)
         if self.newGraphAction:
             self.newGraphAction.blockSignals(enabled)
         if self.loadGraphAction:
@@ -1119,12 +1124,12 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.quitAction.triggered.connect(self.close)
         elif name == 'Edit':
             if prefix:
-                undoAction = self.qUndoStack.createUndoAction(self)
-                undoAction.setShortcut(QtGui.QKeySequence.Undo)
-                menu.addAction(undoAction)
-                redoAction = self.qUndoStack.createRedoAction(self)
-                redoAction.setShortcut(QtGui.QKeySequence.Redo)
-                menu.addAction(redoAction)
+                self.undoAction = self.qUndoStack.createUndoAction(self)
+                self.undoAction.setShortcut(QtGui.QKeySequence.Undo)
+                menu.addAction(self.undoAction)
+                self.redoAction = self.qUndoStack.createRedoAction(self)
+                self.redoAction.setShortcut(QtGui.QKeySequence.Redo)
+                menu.addAction(self.redoAction)
             else:
                 if self.isCanvas:
                     menu.addSeparator()
