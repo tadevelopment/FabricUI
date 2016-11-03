@@ -289,7 +289,7 @@ void PresetTreeWidget::onCustomContextMenuRequested(QPoint globalPos, FabricUI::
 {
   m_contextPath = item->path();
 
-  QMenu menu(NULL);
+  QMenu menu(this);
   menu.addAction("Refresh");
   if(item->type() == "NameSpace" || item->type() == "Preset")
     menu.addAction("Open Folder");
