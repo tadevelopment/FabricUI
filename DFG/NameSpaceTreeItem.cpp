@@ -23,13 +23,15 @@ unsigned int NameSpaceTreeItem::numChildren()
   {
     std::string prefix = m_nameSpace + ".";
     std::map<std::string, std::string> nameSpaceLookup;
-    std::map<std::string, std::string> presetLookup;
+    std::vector<std::string> presetLookup;
 
     FabricCore::DFGStringResult jsonStringResult = m_coreDFGHost.getPresetDesc(m_nameSpace.c_str());
+
 
     char const *jsonCStr;
     uint32_t jsonSize;
     jsonStringResult.getStringDataAndLength( jsonCStr, jsonSize );
+
     FTL::CStrRef jsonStr( jsonCStr, jsonSize );
     FTL::JSONStrWithLoc jsonStrWithLoc( jsonStr );
 
@@ -43,14 +45,16 @@ unsigned int NameSpaceTreeItem::numChildren()
       it != membersObject->end(); ++it )
     {
       FTL::CStrRef name = it->first;
+
       FTL::JSONObject const *memberObject =
         it->second->cast<FTL::JSONObject>();
+
       FTL::CStrRef objectType =
         memberObject->getString( FTL_STR("objectType") );
 
       if(objectType == "Preset" && m_showsPresets)
       {
-        presetLookup.insert(std::pair<std::string, std::string>(name, prefix + name.c_str()));
+        presetLookup.push_back(name);
       }
       else if(objectType == FTL_STR("NameSpace"))
       {
@@ -77,11 +81,11 @@ unsigned int NameSpaceTreeItem::numChildren()
 
     if(m_showsPresets)
     {
-      for(std::map<std::string, std::string>::iterator it=presetLookup.begin();it!=presetLookup.end();it++)
+      for(std::vector<std::string>::iterator it=presetLookup.begin();it!=presetLookup.end();it++)
       {
-        if(!includeChildName(it->first.c_str()))
+        if(!includeChildName(it->c_str()))
           continue;
-        addChild(new PresetTreeItem(it->second.c_str(), it->first.c_str()));
+        addChild(new PresetTreeItem(it->c_str()));
       }
     }
 

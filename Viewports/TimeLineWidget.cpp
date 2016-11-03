@@ -497,7 +497,7 @@ void TimeLineWidget::frameRateChanged(int index)
   {
     bool ok;
     double userFps = QInputDialog::getDouble(
-      this, tr("TimeLineWidget::getCustomFpS"), tr("Custom FPS"),
+      this, tr("Custom FPS"), tr(""),
       24.0, 1.0, 1000.0, 2, &ok );
     if(ok)
     {

@@ -16,7 +16,7 @@
 #include <vector>
 #include <ASTWrapper/KLASTManager.h>
 #include <QTimer>
-
+ 
 using namespace FabricUI::ValueEditor_Legacy;
 
 namespace FabricUI
@@ -335,7 +335,10 @@ namespace FabricUI
       virtual void setNodeCollapseState(int collapseState, GraphView::Node *node);
       /// Sets the collapse state of the selected nodes and saves it in their preferences    
       virtual void setSelectedNodesCollapseState(int collapseState);
-      
+      /// Returns the selected nodes name
+      QStringList getSelectedNodesName();
+      /// Returns the selected nodes path
+      QStringList getSelectedNodesPath();
       virtual std::string copy();
 
       virtual bool reloadExtensionDependencies(char const * path);

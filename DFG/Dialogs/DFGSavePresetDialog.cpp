@@ -93,7 +93,7 @@ void DFGSavePresetDialog::onCustomContextMenuRequested(QPoint globalPos, FabricU
     m_contextPath == "Fabric" || m_contextPath == "Variables")
     return;
 
-  QMenu menu(NULL);
+  QMenu menu(this);
   menu.addAction("Create Folder");
 
   QObject::connect(&menu, SIGNAL(triggered(QAction*)), this, SLOT(onContextMenuAction(QAction*)));

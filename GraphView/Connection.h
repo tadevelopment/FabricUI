@@ -88,6 +88,7 @@ namespace FabricUI
       bool m_hovered;
 
       bool m_dragging;
+      bool m_draggingInput; // or Output
       QPointF m_lastDragPoint;
       bool m_aboutToBeDeleted;
       bool m_isExposedConnection;

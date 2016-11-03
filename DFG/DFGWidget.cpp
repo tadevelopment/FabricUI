@@ -18,6 +18,7 @@
 #include <FabricUI/DFG/Dialogs/DFGNodePropertiesDialog.h>
 #include <FabricUI/DFG/Dialogs/DFGPickVariableDialog.h>
 #include <FabricUI/DFG/Dialogs/DFGSavePresetDialog.h>
+#include <FabricUI/DFG/DFGBindingUtils.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/Util/FabricResourcePath.h>
@@ -317,6 +318,12 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     return NULL;
 
   QMenu* result = new QMenu( graph->scene()->views()[0] );
+  
+  QAction *goUpAction = new QAction( "Back - U or Shift+DoubleClick", graphWidget );
+  QObject::connect(goUpAction, SIGNAL(triggered()), graphWidget, SLOT(onGoUpPressed()));
+  result->addAction(goUpAction);
+  result->addSeparator();
+
   result->addAction(
     new NewGraphNodeAction( graphWidget, QCursor::pos(), result )
     );
@@ -571,6 +578,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
         result->addSeparator();
         if (dfgWidget->isEditable())
           result->addAction(DFG_CREATE_PRESET);
+        result->addAction(DFG_REVEAL_IN_EXPLORER);
         result->addAction(DFG_EXPORT_GRAPH);
       }
     }
@@ -748,7 +756,7 @@ void DFGWidget::createNewBlockNode( QPoint const &globalPos )
   bool isCTRL  = keyMod.testFlag( Qt::ControlModifier );
   if (!isCTRL)
   {
-    DFGGetStringDialog dialog(NULL, "New block", text, m_dfgConfig, true); 
+    DFGGetStringDialog dialog(this, "New block", text, m_dfgConfig, true); 
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -784,7 +792,7 @@ void DFGWidget::createNewGraphNode( QPoint const &globalPos )
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
   if (!isCTRL)
   {
-    DFGGetStringDialog dialog(NULL, "New Empty Graph", text, m_dfgConfig, true);
+    DFGGetStringDialog dialog(this, "New Empty Graph", text, m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -813,7 +821,7 @@ void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
   if (!isCTRL)
   {
-    DFGGetStringDialog dialog(NULL, "New Empty Function", text, m_dfgConfig, true);
+    DFGGetStringDialog dialog(this, "New Empty Function", text, m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -850,7 +858,7 @@ void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
   if (!isCTRL)
   {
-    DFGGetStringDialog dialog(NULL, "New Backdrop", text, m_dfgConfig, false);
+    DFGGetStringDialog dialog(this, "New Backdrop", text, m_dfgConfig, false);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -881,7 +889,7 @@ void DFGWidget::onGraphAction(QAction * action)
     QString text = "graph";
     if (!isCTRL)
     {
-      DFGGetStringDialog dialog(NULL, "Implode Nodes", text, m_dfgConfig, true);
+      DFGGetStringDialog dialog(this, "Implode Nodes", text, m_dfgConfig, true);
       if(dialog.exec() != QDialog::Accepted)
         return;
 
@@ -951,7 +959,7 @@ void DFGWidget::onGraphAction(QAction * action)
     FabricCore::DFGBinding &binding = controller->getBinding();
     FTL::CStrRef execPath = controller->getExecPath();
 
-    DFGPickVariableDialog dialog(NULL, client, binding, execPath, true);
+    DFGPickVariableDialog dialog(this, client, binding, execPath, true);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -1036,6 +1044,10 @@ void DFGWidget::onNodeAction(QAction * action)
   else if(action->text() == DFG_CUT_PRESET)
   {
     onCut();
+  }
+  else if(action->text() == DFG_REVEAL_IN_EXPLORER)
+  {
+    onRevealPresetInExplorer(nodeName);
   }
   else if(action->text() == DFG_EXPORT_GRAPH)
   {
@@ -1276,7 +1288,7 @@ void DFGWidget::onNodeAction(QAction * action)
   }
   else if(action->text() == DFG_IMPLODE_NODE)
   {
-    DFGGetStringDialog dialog(NULL, "Implode Nodes", "graph", m_dfgConfig, true);
+    DFGGetStringDialog dialog(this, "Implode Nodes", "graph", m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -1420,6 +1432,17 @@ void DFGWidget::editExecPort( FTL::CStrRef execPortName, bool duplicatePort)
       expandMetadataSection = true;
     }
 
+    FTL::StrRef uiFileTypeFilter = exec.getExecPortMetadata(execPortName.c_str(), "uiFileTypeFilter");
+    std::string uiFileTypeFilterStr;
+    if(uiFileTypeFilter.size() > 0)
+      uiFileTypeFilterStr = uiFileTypeFilter.data();
+    if(uiFileTypeFilterStr.size() > 0)
+    {
+      dialog.setHasFileTypeFilter(true);
+      dialog.setFileTypeFilter(uiFileTypeFilterStr.c_str());
+      expandMetadataSection = true;
+    }
+
     dialog.setSectionCollapsed("metadata", !expandMetadataSection);
 
     emit portEditDialogCreated(&dialog);
@@ -1470,6 +1493,13 @@ void DFGWidget::editExecPort( FTL::CStrRef execPortName, bool duplicatePort)
         DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", flat.toUtf8().constData() );
       } else
         DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", "" );//"" will remove the metadata
+
+      if(dialog.hasFileTypeFilter())
+      {
+        QString fileTypeFilter = dialog.fileTypeFilter();
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", fileTypeFilter.toUtf8().constData() );
+      } else
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", "" );//"" will remove the metadata
 
       emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
     }
@@ -1651,6 +1681,12 @@ void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
       DFGAddMetaDataPair( metaDataObjectEnc, "uiCombo", flat.toUtf8().constData() );
     }
 
+    if(dialog.hasFileTypeFilter())
+    {
+      QString fileTypeFilter = dialog.fileTypeFilter();
+      DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", fileTypeFilter.toUtf8().constData() );
+    }
+
     emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
   }
 
@@ -1830,7 +1866,7 @@ void DFGWidget::onBubbleEditRequested(FabricUI::GraphView::Node * node)
     bubble->expand();
   }
 
-  DFGGetTextDialog dialog(NULL, text);
+  DFGGetTextDialog dialog(this, text);
   if ( dialog.exec() == QDialog::Accepted )
   {
     if ( !text.isEmpty() || !dialog.text().isEmpty() )
@@ -1880,6 +1916,14 @@ void DFGWidget::onCopy()
 void DFGWidget::onCut()
 {
   getUIController()->cmdCut();
+}
+
+void DFGWidget::onRevealPresetInExplorer(char const *nodeName)
+{
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+  QString presetPath = DFGBindingUtils::getPresetPathFromNode(exec, QString(nodeName));
+  if(!presetPath.isEmpty())
+    emit revealPresetInExplorer(presetPath);
 }
 
 void DFGWidget::onPaste()
@@ -2073,7 +2117,7 @@ void DFGWidget::onEditPropertiesForCurrentSelection()
       if ( exec.isExecBlock( oldNodeName.c_str() ) )
       {
         DFG::DFGBlockPropertiesDialog dialog(
-          NULL,
+          this,
           controller,
           oldNodeName.c_str(),
           getConfig(),
@@ -2140,7 +2184,7 @@ void DFGWidget::onEditPropertiesForCurrentSelection()
           isEditable = !exec.getSubExec(oldNodeName.c_str()).editWouldSplitFromPreset();
 
         DFG::DFGNodePropertiesDialog dialog(
-          NULL,
+          this, 
           controller,
           oldNodeName.c_str(),
           getConfig(),
@@ -2404,6 +2448,12 @@ void DFGWidget::onExecChanged()
       this, SLOT(onBubbleEditRequested(FabricUI::GraphView::Node*))
     );
 
+    // FE-6926  : Shift + double-clicking in an empty space "Goes up"
+    QObject::connect(
+      m_uiGraph, SIGNAL(goUpPressed()),
+      this, SLOT(onGoUpPressed())
+    );
+    
     onExecSplitChanged();
 
     // [Julien] FE-5264

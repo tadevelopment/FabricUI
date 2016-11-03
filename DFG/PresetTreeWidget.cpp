@@ -138,7 +138,6 @@ PresetTreeWidget::PresetTreeWidget(
   }
   
   QObject::connect(m_treeView, SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(onRowDoubleClick(const QModelIndex &)));
-  
 }
 
 PresetTreeWidget::~PresetTreeWidget()
@@ -175,7 +174,7 @@ void PresetTreeWidget::refresh()
   if(search.length() == 0)
   {
     std::map<std::string, std::string> nameSpaceLookup;
-    std::map<std::string, std::string> presetLookup;
+    std::vector<std::string> presetLookup;
 
     FabricCore::DFGStringResult jsonStr = host.getPresetDesc("");
     FabricCore::Variant jsonVar = FabricCore::Variant::CreateFromJSON(jsonStr.getCString());
@@ -189,7 +188,7 @@ void PresetTreeWidget::refresh()
       std::string objectType = objectTypeVar->getStringData();
       if(objectType == "Preset")
       {
-        presetLookup.insert(std::pair<std::string, std::string>(name, name));
+        presetLookup.push_back(name);
       }
       else if(objectType == "NameSpace")
       {
@@ -208,8 +207,8 @@ void PresetTreeWidget::refresh()
       m_treeModel->addItem(item);
     }
 
-    for(std::map<std::string, std::string>::iterator it=presetLookup.begin();it!=presetLookup.end();it++)
-      m_treeModel->addItem(new PresetTreeItem(it->second.c_str(), it->first.c_str()));
+    for(std::vector<std::string>::iterator it=presetLookup.begin();it!=presetLookup.end();it++)
+      m_treeModel->addItem(new PresetTreeItem(it->c_str()));
   }
   else
   {
@@ -289,7 +288,7 @@ void PresetTreeWidget::onCustomContextMenuRequested(QPoint globalPos, FabricUI::
 {
   m_contextPath = item->path();
 
-  QMenu menu(NULL);
+  QMenu menu(this);
   menu.addAction("Refresh");
   if(item->type() == "NameSpace" || item->type() == "Preset")
     menu.addAction("Open Folder");
@@ -332,6 +331,47 @@ void PresetTreeWidget::onContextMenuAction(QAction * action)
     }
     catch(FabricCore::Exception e)
     {
+    }
+  }
+}
+ 
+void PresetTreeWidget::onExpandToAndSelectItem(QString presetPath) {
+
+  // e.g FABRIC.Dir1.Dir2...Preset
+  QStringList split = presetPath.split(".");
+
+  // Get the root (Variables, Fabric, User)
+  QString current = split[0] + ".";
+  FTL::StrRef strRef(current.toUtf8().data());
+
+  FabricUI::TreeView::TreeItem *item = m_treeModel->item(strRef);
+  if(item)
+  { 
+    // Expand the root (create its children if needed)
+    QModelIndex modelIndex = item->modelIndex();
+    m_treeView->expand(modelIndex);
+
+    // Iterate through the path (directory)
+    for(int i=1; i<split.size(); ++i)
+    {
+      current = split[i] + ".";
+      strRef = FTL::StrRef(current.toUtf8().data());
+
+      item = item->child(strRef);
+      if(item)
+      {   
+        // If the item is not a leaf, expand it
+        QModelIndex modelIndex = item->modelIndex();
+        if(i < split.size()-1)
+          m_treeView->expand(modelIndex);
+        // Otherwise, select it.
+        else
+        {
+          QItemSelectionModel* selection = m_treeView->selectionModel();
+          selection->select(modelIndex, QItemSelectionModel::ClearAndSelect);
+          m_treeView->scrollTo(modelIndex);
+        }
+      }
     }
   }
 }

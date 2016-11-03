@@ -37,6 +37,11 @@ class DFGBindingUtils
     static QStringList getVariableWordsFromBinding(
       FabricCore::DFGBinding &binding, 
       FTL::CStrRef currentExecPath);
+
+    /// Gets the preset path for this node's name (if it's a preset)
+    static QString getPresetPathFromNode(
+      FabricCore::DFGExec &exec, 
+      QString nodeName);
 };
 
 } // namespace FabricUI

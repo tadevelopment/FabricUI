@@ -58,9 +58,22 @@ void Graph::requestSidePanelInspect(
   emit sidePanelInspectRequested();
 }
 
+void Graph::requestMainPanelAction(
+  Qt::KeyboardModifiers modifiers
+  )
+{
+  // FE-6926  : Shift + double-clicking in an empty space "Goes up"
+  if(modifiers.testFlag(Qt::ShiftModifier))
+    emit goUpPressed();
+}
+
 void Graph::initialize()
 {
   m_mainPanel = new MainPanel(this);
+  QObject::connect(
+    m_mainPanel, SIGNAL(doubleClicked(Qt::KeyboardModifiers)), 
+    this, SLOT(requestMainPanelAction(Qt::KeyboardModifiers))
+    );
 
   m_leftPanel = new SidePanel(this, PortType_Output);
   QObject::connect(
@@ -73,6 +86,7 @@ void Graph::initialize()
     m_rightPanel, SIGNAL(doubleClicked(FabricUI::GraphView::SidePanel*)), 
     this, SLOT(requestSidePanelInspect(FabricUI::GraphView::SidePanel*))
     );
+
 
   QGraphicsLinearLayout * layout = new QGraphicsLinearLayout();
   layout->setSpacing(0);

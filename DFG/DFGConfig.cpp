@@ -74,6 +74,8 @@ DFGConfig::DFGConfig()
   registerDataTypeColor("Lines", QColor(51, 1, 106));
   registerDataTypeColor("Points", QColor(51, 1, 106));
   registerDataTypeColor("PolygonMesh", QColor(51, 1, 106));
+  registerDataTypeColor("ImporterObject", QColor(206, 165, 151));
+  registerDataTypeColor("ImporterContext", QColor(206, 165, 151));
 }
 
 void DFGConfig::registerDataTypeColor(FTL::StrRef dataType, QColor color)

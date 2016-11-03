@@ -94,7 +94,7 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
     if ( m_hasTypeSpec )
     {
       FabricCore::Client client = m_dfgWidget->getDFGController()->getClient();
-      m_addElementTypeSpec = new DFGRegisteredTypeLineEdit( NULL, client, "" );
+      m_addElementTypeSpec = new DFGRegisteredTypeLineEdit( this, client, "" );
       m_addElementTypeSpec->setEnabled( !m_model->isReadOnly() );
       m_addElementTypeSpec->setValidator(
         new QRegExpValidator( m_typeSpecRegExp )
@@ -264,7 +264,7 @@ void DFGPEWidget_Elements::onRemoveSelected()
 
 void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
 {
-  QMenu menu;
+  QMenu menu( this );
 
   QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
   QList<int> selectedIndices;
