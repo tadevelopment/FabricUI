@@ -136,12 +136,6 @@ DFGWidget::DFGWidget(
     m_uiGraphViewWidget, SIGNAL(urlDropped(QUrl, bool)),
     this, SIGNAL(urlDropped(QUrl, bool))
     );
-
-  // FE-6926  : Shift + double-clicking in an empty space "Goes up"
-  QObject::connect(
-    m_uiGraphViewWidget, SIGNAL(goUpPressed()),
-    this, SLOT(onGoUpPressed())
-    );
   
   m_klEditor =
     new DFGKLEditorWidget(
@@ -2416,6 +2410,12 @@ void DFGWidget::onExecChanged()
       this, SLOT(onBubbleEditRequested(FabricUI::GraphView::Node*))
     );
 
+    // FE-6926  : Shift + double-clicking in an empty space "Goes up"
+    QObject::connect(
+      m_uiGraph, SIGNAL(goUpPressed()),
+      this, SLOT(onGoUpPressed())
+    );
+    
     onExecSplitChanged();
 
     // [Julien] FE-5264

@@ -52,6 +52,7 @@ namespace FabricUI
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * event);
+      virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
       virtual void wheelEvent(QGraphicsSceneWheelEvent * event);
       virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
       virtual void resizeEvent(QGraphicsSceneResizeEvent * event);
@@ -70,7 +71,8 @@ namespace FabricUI
       void canvasZoomChanged(float zoom);
       void canvasPanChanged(QPointF pos);
       void geometryChanged();
-      
+      void doubleClicked(Qt::KeyboardModifiers);
+
     protected:
 
       void performZoom(

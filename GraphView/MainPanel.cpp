@@ -258,6 +258,11 @@ void MainPanel::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
     QGraphicsWidget::mouseMoveEvent(event);
 }
 
+void MainPanel::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event )
+{
+  emit doubleClicked(event->modifiers());
+}
+
 void MainPanel::performZoom(
   float newZoomState,
   QPointF zoomCenter

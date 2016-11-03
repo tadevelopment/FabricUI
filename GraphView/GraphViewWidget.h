@@ -65,7 +65,6 @@ namespace FabricUI
 
       virtual void resizeEvent(QResizeEvent * event);
       virtual void mouseMoveEvent(QMouseEvent * event);
-      virtual void mouseDoubleClickEvent(QMouseEvent * event);
       virtual void keyPressEvent(QKeyEvent * event);
       virtual void keyReleaseEvent(QKeyEvent * event);
       QPoint lastEventPos() const;
@@ -80,8 +79,7 @@ namespace FabricUI
 
       void sceneChanged();
       void urlDropped( QUrl url, bool bypassUnsavedChanges );
-      void goUpPressed();
-
+ 
     protected:
 
       virtual bool focusNextPrevChild(bool next);
