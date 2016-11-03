@@ -346,7 +346,7 @@ class ScriptEditor(QtGui.QWidget):
             "loadScript": self.loadScript,
             "bindingUtils": DFG.DFGBindingUtils(),
             }
-
+         
         self.dfgLogWidget = dfgLogWidget
 
         self.settings = settings
@@ -423,6 +423,9 @@ class ScriptEditor(QtGui.QWidget):
 
     def setTimeLineGlobal(self, timeLine):
         self.eval_globals["timeLine"] = timeLine
+
+    def setDFGControllerGlobal(self, dfgController):
+        self.eval_globals["controller"] = dfgController
         
     def onLinesSelected(self, startLineNum, endLineNum):
         startTextBlock = self.cmd.document().findBlockByLineNumber(startLineNum)
