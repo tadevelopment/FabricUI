@@ -70,7 +70,6 @@ namespace FabricUI
 
       void canvasZoomChanged(float zoom);
       void canvasPanChanged(QPointF pos);
-      void geometryChanged();
       void doubleClicked(Qt::KeyboardModifiers);
 
     protected:
