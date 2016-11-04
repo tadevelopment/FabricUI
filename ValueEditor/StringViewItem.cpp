@@ -80,6 +80,7 @@ void StringViewItem::onInspect()
   // Show a multi-line dialog to display 
   // the full string contents
   VEDialog dlg( m_widget, Qt::Window | Qt::Dialog /*| Qt::FramelessWindowHint*/ );
+  dlg.setWindowTitle( getName() );
   dlg.setModal( true );
   // Add text editor
   QVBoxLayout *layout = new QVBoxLayout( &dlg );
