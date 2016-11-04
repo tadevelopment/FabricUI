@@ -22,7 +22,7 @@ GraphConfig::GraphConfig()
   middleClickDeletesConnections = true;
 
   mainPanelBackgroundColor = QColor(68, 68, 68, 255);
-  mainPanelDrawGrid = true;
+  mainPanelDrawGrid = false;
   mainPanelGridSpanS = 30;
   mainPanelGridSpanL = 300;
   mainPanelGridPenS = QPen(QColor(44, 44, 44, 255), 0.5);
