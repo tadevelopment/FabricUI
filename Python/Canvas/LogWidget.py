@@ -26,6 +26,8 @@ class LogWidget(AppendingTextWidget):
 
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
+        self.setObjectName("ScriptEditorLogWidget")
+
         self.commandColor = QtGui.QColor(QtCore.Qt.white)
         self.commentColor = QtGui.QColor("#9AD6D6")
         self.exceptionColor = QtGui.QColor("#E14D59")
@@ -51,7 +53,7 @@ class LogWidget(AppendingTextWidget):
         self.append(text, self.exceptionColor)
 
     def contextMenuEvent(self, event):
-        menu = QtGui.QMenu()
+        menu = QtGui.QMenu(self)
         menu.addAction(self.copyAction)
         menu.addSeparator()
         menu.addAction(self.clearAction("Clear"))

@@ -86,6 +86,10 @@ public:
   // Helper function provides east conversion to provided RTVal
   static bool toRTVal( const QVariant& var, FabricCore::RTVal& ioVal );
 
+  static const char* getTypeName( const QVariant& var ) {
+    return isRTVal(var) ? var.value<FabricCore::RTVal>().getTypeNameCStr() : var.typeName();
+  }
+
 private:
   // Overrides for built-in functionality
 

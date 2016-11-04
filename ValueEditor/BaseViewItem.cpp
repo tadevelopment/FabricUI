@@ -126,6 +126,7 @@ void BaseViewItem::setWidgetsOnTreeItem(
   )
 {
   treeWidgetItem->setText( 0, m_name );
+  treeWidgetItem->setToolTip( 0, m_toolTip );
 
   Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
   if (m_modelItem != NULL && m_modelItem->canRename())

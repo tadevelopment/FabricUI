@@ -121,7 +121,8 @@ namespace DFG {
       void nodeInspectRequested(FabricUI::GraphView::Node *);
       void urlDropped( QUrl url, bool bypassUnsavedChanges );
       void stylesReloaded();
-      
+      void revealPresetInExplorer(QString);
+
     public slots:
 
       void onExecChanged();
@@ -138,6 +139,8 @@ namespace DFG {
       void onToggleDimConnections();
       void onTogglePortsCentered();
       void onEditPropertiesForCurrentSelection();
+      /// Shows this node in the explorer (if it's a preset)
+      void onRevealPresetInExplorer(const char* nodeName);
 
     protected slots:
 

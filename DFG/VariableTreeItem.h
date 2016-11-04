@@ -19,14 +19,12 @@ namespace FabricUI
       VariableTreeItem(char const * name, char const * path);
 
       virtual FTL::CStrRef type() const { return FTL_STR("Variable"); }
-
+      virtual std::string path() const { return m_path; }
       virtual Qt::ItemFlags flags();
       virtual QString mimeDataAsText();
 
     private:
-
-      std::string m_name;
-      std::string m_path;
+        std::string m_path;
     };
 
   };

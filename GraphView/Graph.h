@@ -85,7 +85,7 @@ namespace FabricUI
       Node *renameNode( FTL::StrRef oldName, FTL::StrRef newName );
 
       virtual std::vector<Node *> selectedNodes() const;
-      virtual void selectAllNodes();
+      void selectAllNodes();
       void clearSelection() const;
 
       // ports
@@ -182,6 +182,9 @@ namespace FabricUI
       void requestSidePanelInspect(
         FabricUI::GraphView::SidePanel *sidePanel
         );
+      void requestMainPanelAction(
+         Qt::KeyboardModifiers modifiers
+        );
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
 
     signals:
@@ -200,6 +203,8 @@ namespace FabricUI
       void hotkeyPressed(Qt::Key, Qt::KeyboardModifier, QString);
       void hotkeyReleased(Qt::Key, Qt::KeyboardModifier, QString);
       void bubbleEditRequested(FabricUI::GraphView::Node * node);
+      // FE-6926  : Shift + double-clicking in an empty space "Goes up"
+      void goUpPressed();
 
     private:
 

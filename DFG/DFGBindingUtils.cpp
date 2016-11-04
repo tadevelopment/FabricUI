@@ -141,3 +141,42 @@ QStringList DFGBindingUtils::getVariableWordsFromBinding(
   QStringList varTypes;
   return getVariableWordsFromBinding(binding, currentExecPath, varTypes);
 }
+
+QString DFGBindingUtils::getPresetPathFromNode(
+  FabricCore::DFGExec &exec, 
+  QString nodeName) 
+{
+  QString presetPath;
+
+  try
+  {
+    FabricCore::DFGStringResult desc = exec.getDesc();
+    char const *descData; uint32_t descSize;
+    desc.getStringDataAndLength( descData, descSize );
+
+    FTL::JSONStrWithLoc jsonSrcWithLoc( FTL::StrRef( descData, descSize ) );
+
+    FTL::OwnedPtr<FTL::JSONValue const> execValue( FTL::JSONValue::Decode( jsonSrcWithLoc ) );
+    FTL::JSONObject const *execObject = execValue->cast<FTL::JSONObject>();
+
+    if ( execObject->getString( FTL_STR("objectType") ) == FTL_STR("Graph") )
+    {
+      FTL::JSONArray const *nodesArray = execObject->get( FTL_STR("nodes") )->cast<FTL::JSONArray>();
+      for ( size_t i = 0; i < nodesArray->size(); ++i )
+      {
+        FTL::JSONObject const *nodeObject = nodesArray->get( i )->cast<FTL::JSONObject>();
+        if(nodeObject->getString( FTL_STR("name") ) == nodeName.toUtf8().data())
+        {
+          if(nodeObject->has(FTL_STR("presetPath")))
+            presetPath = QString(nodeObject->getString( FTL_STR("presetPath") ).c_str());
+        }
+      }
+    }
+  }
+  catch ( FTL::JSONException je )
+  {
+    printf(" DFGBindingUtils::getPresetPathFromNode : Caught JSONException: %s\n", je.getDescCStr() );
+  } 
+
+  return presetPath;
+}

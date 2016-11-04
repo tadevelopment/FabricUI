@@ -79,7 +79,7 @@ namespace FabricUI
 
       void sceneChanged();
       void urlDropped( QUrl url, bool bypassUnsavedChanges );
-
+ 
     protected:
 
       virtual bool focusNextPrevChild(bool next);
