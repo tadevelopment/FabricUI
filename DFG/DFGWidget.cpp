@@ -1655,20 +1655,7 @@ void DFGWidget::movePortsToEnd( bool moveInputs )
         inputsFirst.append(i);
     }
 
-<<<<<<< HEAD
     QList<int> indices;
-=======
-    if(dialog.hasFileTypeFilter())
-    {
-      QString fileTypeFilter = dialog.fileTypeFilter();
-      DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", fileTypeFilter.toUtf8().constData() );
-    }
-
-    emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
-  }
-
-  QString title = dialog.title();
->>>>>>> chagall
 
     if (moveInputs)
       indices = outputsFirst;
@@ -1793,33 +1780,6 @@ void DFGWidget::onBubbleEditRequested(FabricUI::GraphView::Node * node)
   }
 }
 
-<<<<<<< HEAD
-=======
-void DFGWidget::onSelectAll()
-{
-  getUIGraph()->selectAllNodes();
-}
-
-void DFGWidget::onAutoConnections()
-{
-  getUIGraph()->autoConnections();
-}
-
-void DFGWidget::onRemoveConnections()
-{
-  getUIGraph()->removeConnections();
-}
-
-void DFGWidget::onCopy()
-{
-  getUIController()->copy();
-}
-
-void DFGWidget::onCut()
-{
-  getUIController()->cmdCut();
-}
-
 void DFGWidget::onRevealPresetInExplorer(char const *nodeName)
 {
   FabricCore::DFGExec &exec = m_uiController->getExec();
@@ -1828,17 +1788,6 @@ void DFGWidget::onRevealPresetInExplorer(char const *nodeName)
     emit revealPresetInExplorer(presetPath);
 }
 
-void DFGWidget::onPaste()
-{
-  getUIController()->cmdPaste();
-}
-
-void DFGWidget::onResetZoom()
-{
-  getUIController()->zoomCanvas(1.0);
-}
-
->>>>>>> chagall
 void DFGWidget::onToggleDimConnections()
 {
   m_uiGraph->config().dimConnectionLines = !m_uiGraph->config().dimConnectionLines;
