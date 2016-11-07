@@ -66,7 +66,13 @@ void DFGTabSearchWidget::mouseMoveEvent( QMouseEvent *event )
 void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
 {
   Qt::Key key = (Qt::Key)event->key();
-  if(key == Qt::Key_Tab || key == Qt::Key_Escape)
+  Qt::KeyboardModifiers modifiers = event->modifiers();
+
+  // Do nothing if control or alt is pressed
+  if(modifiers.testFlag(Qt::ControlModifier) || modifiers.testFlag(Qt::AltModifier))
+    QWidget::keyPressEvent(event);
+ 
+  else if(key == Qt::Key_Tab || key == Qt::Key_Escape)
   {
     hide();
     event->accept();
