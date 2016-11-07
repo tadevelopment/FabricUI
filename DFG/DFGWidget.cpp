@@ -634,7 +634,9 @@ QMenu *DFGWidget::nodeContextMenuCallback(
           if (subExec.getExtDepCount() > 0)
           {
             result->addSeparator();
-            result->addAction(DFG_RELOAD_EXTENSION);
+
+            QAction *reloadExtensionsAction = new ReloadExtensionsAction(dfgWidget, nodes[0], result);
+            result->addAction(reloadExtensionsAction);
           }
         }
       }
@@ -1325,10 +1327,6 @@ void DFGWidget::onNodeAction(QAction * action)
       if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeNames.at( i ) ) )
         uiNode->setSelected( true );
     }
-  }
-  else if(action->text() == DFG_RELOAD_EXTENSION)
-  {
-    m_uiController->reloadExtensionDependencies(nodeName);
   }
   else if(action->text() == DFG_EDIT_PRESET_PROPERTIES)
   {

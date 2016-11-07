@@ -896,6 +896,40 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
     };
 
+    class ReloadExtensionsAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ReloadExtensionsAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Reload extension(s)" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->reloadExtensionDependencies(m_node->name().c_str());
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
+    };
+
     class SetNodeCommentAction : public QAction
     {
       Q_OBJECT

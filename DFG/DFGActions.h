@@ -20,7 +20,6 @@ namespace DFG {
   #define DFG_NEW_VARIABLE            "New variable"
   #define DFG_READ_VARIABLE           "Read variable (Get)"
   #define DFG_WRITE_VARIABLE          "Write variable (Set)"
-  #define DFG_RELOAD_EXTENSION        "Reload extension(s)"
   #define DFG_REVEAL_IN_EXPLORER      "Reveal in explorer"
 }; // namespace DFG
 }; // namespace FabricUI
