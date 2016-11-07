@@ -99,15 +99,14 @@ namespace DFG {
       void deletePort( FabricUI::GraphView::Port *port );
       void editPort( FTL::CStrRef execPortName, bool duplicatePort );
       void movePortsToEnd( bool moveInputs );
-      void createVariable();
-      void createVariableGet();
-      void createVariableSet();
-
-      void createNewGraphNode( QPoint const &pos );
-      void createNewFunctionNode( QPoint const &pos );
-      void createNewBackdropNode( QPoint const &pos );
-      void createNewBlockNode( QPoint const &pos );
-      void createNewCacheNode( QPoint const &pos );
+      void createNewGraphNode( QPoint const &globalPos );
+      void createNewFunctionNode( QPoint const &globalPos );
+      void createNewBackdropNode( QPoint const &globalPos );
+      void createNewBlockNode( QPoint const &globalPos );
+      void createNewCacheNode( QPoint const &globalPos );
+      void createNewVariableNode( QPoint const &globalPos );
+      void createNewVariableGetNode( QPoint const &globalPos );
+      void createNewVariableSetNode( QPoint const &globalPos );
 
       void replaceBinding( FabricCore::DFGBinding &binding );
       bool priorExecStackIsEmpty() const
@@ -340,17 +339,19 @@ namespace DFG {
       FabricUI::GraphView::Port *m_port;
     };
 
-    class CreateVariableAction : public QAction
+    class NewVariableNodeAction : public QAction
     {
       Q_OBJECT
 
     public:
 
-      CreateVariableAction(
+      NewVariableNodeAction(
         DFGWidget *dfgWidget,
+        QPoint const &pos,
         QObject *parent )
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
+        , m_pos( pos )
       {
         setText( "New variable" );
         connect(
@@ -363,25 +364,28 @@ namespace DFG {
 
       void onTriggered()
       {
-        m_dfgWidget->createVariable();
+        m_dfgWidget->createNewVariableNode( m_pos );
       }
 
     private:
 
       DFGWidget *m_dfgWidget;
+      QPoint m_pos;
     };
 
-    class CreateVariableGetAction : public QAction
+    class NewVariableGetNodeAction : public QAction
     {
       Q_OBJECT
 
     public:
 
-      CreateVariableGetAction(
+      NewVariableGetNodeAction(
         DFGWidget *dfgWidget,
+        QPoint const &pos,
         QObject *parent )
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
+        , m_pos( pos )
       {
         setText( "Read variable (Get)" );
         connect(
@@ -394,25 +398,28 @@ namespace DFG {
 
       void onTriggered()
       {
-        m_dfgWidget->createVariableGet();
+        m_dfgWidget->createNewVariableGetNode( m_pos );
       }
 
     private:
 
       DFGWidget *m_dfgWidget;
+      QPoint m_pos;
     };
 
-    class CreateVariableSetAction : public QAction
+    class NewVariableSetNodeAction : public QAction
     {
       Q_OBJECT
 
     public:
 
-      CreateVariableSetAction(
+      NewVariableSetNodeAction(
         DFGWidget *dfgWidget,
+        QPoint const &pos,
         QObject *parent )
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
+        , m_pos( pos )
       {
         setText( "Read variable (Set)" );
         connect(
@@ -425,12 +432,13 @@ namespace DFG {
 
       void onTriggered()
       {
-        m_dfgWidget->createVariableSet();
+        m_dfgWidget->createNewVariableSetNode( m_pos );
       }
 
     private:
 
       DFGWidget *m_dfgWidget;
+      QPoint m_pos;
     };
 
     class MoveInputPortsToEndAction : public QAction
