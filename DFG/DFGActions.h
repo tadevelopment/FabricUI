@@ -15,7 +15,6 @@ namespace DFG {
   #define DFG_EDIT_PRESET_PROPERTIES  "Properties - F2"
   #define DFG_SPLIT_PRESET            "Split from preset"
   #define DFG_EXPORT_GRAPH            "Export graph"
-  #define DFG_IMPLODE_NODE            "Implode nodes"
   #define DFG_EXPLODE_NODE            "Explode node"
   #define DFG_REVEAL_IN_EXPLORER      "Reveal in explorer"
 }; // namespace DFG

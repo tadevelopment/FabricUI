@@ -98,7 +98,10 @@ namespace DFG {
       void createPort( FabricUI::GraphView::PortType portType );
       void deletePort( FabricUI::GraphView::Port *port );
       void editPort( FTL::CStrRef execPortName, bool duplicatePort );
+
       void movePortsToEnd( bool moveInputs );
+      void implodeSelectedNodes( bool displayDialog );
+
       void createNewGraphNode( QPoint const &globalPos );
       void createNewFunctionNode( QPoint const &globalPos );
       void createNewBackdropNode( QPoint const &globalPos );
@@ -130,7 +133,6 @@ namespace DFG {
       void onExecChanged();
       void onExecSplitChanged();
       void onGoUpPressed();
-      void onGraphAction(QAction * action);
       void onNodeAction(QAction * action);
       void onNodeEditRequested(FabricUI::GraphView::Node *);
       void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey);
@@ -496,6 +498,39 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->movePortsToEnd( false /* moveInputs */ );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class ImplodeSelectedNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ImplodeSelectedNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Implode nodes" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
+        bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
+        m_dfgWidget->implodeSelectedNodes(!isCTRL);
       }
 
     private:

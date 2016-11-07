@@ -383,11 +383,10 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     blockNodeCount
     );
 
-  if ( blockNodeCount == 0 && nodes.size() > 0 )
-  {
-    result->addSeparator();
-    result->addAction(DFG_IMPLODE_NODE);
-  }
+  QAction *implodeSelectedNodesAction =
+    new ImplodeSelectedNodesAction( graphWidget, result );
+  implodeSelectedNodesAction->setEnabled( blockNodeCount == 0 && nodes.size() > 0 );
+  result->addAction( implodeSelectedNodesAction );
 
   result->addSeparator();
 
@@ -423,7 +422,6 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   QAction * resetZoomAction = new ResetZoomAction(graphWidget, result);
   result->addAction(resetZoomAction);
 
-  graphWidget->connect(result, SIGNAL(triggered(QAction*)), graphWidget, SLOT(onGraphAction(QAction*)));
   return result;
 }
 
@@ -610,14 +608,10 @@ QMenu *DFGWidget::nodeContextMenuCallback(
       }
     }
 
-    if ( nodes.size() > 0 && blockNodeCount == 0 )
-    {
-      if ( dfgWidget->isEditable() )
-      {
-        result->addSeparator();
-        result->addAction(DFG_IMPLODE_NODE);
-      }
-    }
+    QAction *implodeSelectedNodesAction =
+      new ImplodeSelectedNodesAction( dfgWidget, result );
+    implodeSelectedNodesAction->setEnabled( dfgWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0 );
+    result->addAction( implodeSelectedNodesAction );
 
     if ( onlyInstNodes )
     {
@@ -979,54 +973,6 @@ void DFGWidget::createNewVariableSetNode( QPoint const &globalPos )
     );
 }
 
-void DFGWidget::onGraphAction(QAction * action)
-{
-  QPointF mouseOffset(-40, -15);
-  QPointF pos = m_uiGraphViewWidget->mapToScene(m_uiGraphViewWidget->mapFromGlobal(QCursor::pos()));
-  pos = m_uiGraph->itemGroup()->mapFromScene(pos);
-  pos += mouseOffset;
-
-  Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
-  bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-
-  if(action->text() == DFG_IMPLODE_NODE)
-  {
-    QString text = "graph";
-    if (!isCTRL)
-    {
-      DFGGetStringDialog dialog(this, "Implode Nodes", text, m_dfgConfig, true);
-      if(dialog.exec() != QDialog::Accepted)
-        return;
-
-      text = dialog.text();
-      if(text.length() == 0)
-      { m_uiController->log("Warning: nodes not imploded (empty name).");
-        return; }
-    }
-
-    const std::vector<GraphView::Node*> & nodes =
-      m_uiController->graph()->selectedNodes();
-
-    QStringList nodeNames;
-    nodeNames.reserve( nodes.size() );
-    for ( size_t i = 0; i < nodes.size(); ++i )
-    {
-      FTL::CStrRef nodeName = nodes[i]->name();
-      nodeNames.push_back( QString::fromUtf8( nodeName.data(), nodeName.size() ) );
-    }
-
-    QString newNodeName =
-      m_uiController->cmdImplodeNodes(
-        nodeNames,
-        text.toUtf8().constData()
-        );
-
-    m_uiGraph->clearSelection();
-    if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeName ) )
-      uiNode->setSelected( true );
-  }
-}
-
 void DFGWidget::onNodeAction(QAction * action)
 {
   if(m_contextNode == NULL)
@@ -1294,37 +1240,6 @@ void DFGWidget::onNodeAction(QAction * action)
       msg.exec();
       return;
     }
-  }
-  else if(action->text() == DFG_IMPLODE_NODE)
-  {
-    DFGGetStringDialog dialog(this, "Implode Nodes", "graph", m_dfgConfig, true);
-    if(dialog.exec() != QDialog::Accepted)
-      return;
-
-    QString text = dialog.text();
-    if(text.length() == 0)
-      return;
-
-    const std::vector<GraphView::Node*> & nodes =
-      m_uiController->graph()->selectedNodes();
-
-    QStringList nodeNames;
-    nodeNames.reserve( nodes.size() );
-    for ( size_t i = 0; i < nodes.size(); ++i )
-    {
-      FTL::CStrRef nodeName = nodes[i]->name();
-      nodeNames.push_back( QString::fromUtf8( nodeName.data(), nodeName.size() ) );
-    }
-
-    QString newNodeName =
-      m_uiController->cmdImplodeNodes(
-        nodeNames,
-        text.toUtf8().constData()
-        );
-
-    m_uiGraph->clearSelection();
-    if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeName ) )
-      uiNode->setSelected( true );
   }
   else if(action->text() == DFG_EXPLODE_NODE)
   {
@@ -1682,6 +1597,43 @@ void DFGWidget::movePortsToEnd( bool moveInputs )
   {
     printf("Exception: %s\n", e.getDesc_cstr());
   }
+}
+
+void DFGWidget::implodeSelectedNodes( bool displayDialog )
+{
+  QString text = "graph";
+
+  if (displayDialog)
+  {
+    DFGGetStringDialog dialog(this, "Implode Nodes", text, m_dfgConfig, true);
+    if(dialog.exec() != QDialog::Accepted)
+      return;
+
+    text = dialog.text();
+    if(text.length() == 0)
+      return;
+  }
+
+  const std::vector<GraphView::Node*> & nodes =
+    m_uiController->graph()->selectedNodes();
+
+  QStringList nodeNames;
+  nodeNames.reserve( nodes.size() );
+  for ( size_t i = 0; i < nodes.size(); ++i )
+  {
+    FTL::CStrRef nodeName = nodes[i]->name();
+    nodeNames.push_back( QString::fromUtf8( nodeName.data(), nodeName.size() ) );
+  }
+
+  QString newNodeName =
+    m_uiController->cmdImplodeNodes(
+      nodeNames,
+      text.toUtf8().constData()
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey)
