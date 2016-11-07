@@ -8,6 +8,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QMessageBox>
+#include <QTimer>
 
 #include <FTL/JSONEnc.h>
 #include <FTL/JSONDec.h>
@@ -1145,6 +1146,19 @@ void DFGController::updateNodeErrors()
       m_exec.setMetadata( "uiBackDrops", "", false, false );
     }
     upgradingBackDrops = false;
+  }
+}
+
+void DFGController::processDelayedEvents()
+{
+  if ( m_notificationTimer->isActive() )
+  {
+    // stop the timer and call the slot directly.
+    // (note: we call the slot directly, because in Qt
+    //  one cannot directly emit QTimer::timeout from
+    //  outside of the class)
+    m_notificationTimer->stop();
+    onNotificationTimer();
   }
 }
 
