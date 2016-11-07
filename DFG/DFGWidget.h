@@ -104,6 +104,7 @@ namespace DFG {
       void openPresetDoc( const char *nodeName );
       void splitFromPreset( const char *nodeName );
       void createPreset( const char *nodeName );
+      void exportGraph( const char *nodeName );
 
       void createNewGraphNode( QPoint const &globalPos );
       void createNewFunctionNode( QPoint const &globalPos );
@@ -635,6 +636,40 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->createPreset(m_node->name().c_str());
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
+    };
+
+    class ExportGraphAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ExportGraphAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Export graph" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->exportGraph(m_node->name().c_str());
       }
 
     private:

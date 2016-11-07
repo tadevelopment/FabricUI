@@ -584,35 +584,33 @@ QMenu *DFGWidget::nodeContextMenuCallback(
       result->addAction(pasteNodesAction);
     }
 
-    if (nodes.size() && dfgWidget->isEditable())
-    {
-      result->addSeparator();
+    result->addSeparator();
 
-      QAction *autoConnectionsAction = new AutoConnectionsAction(dfgWidget, result);
-      result->addAction(autoConnectionsAction);
+    QAction *autoConnectionsAction = new AutoConnectionsAction(dfgWidget, result);
+    autoConnectionsAction->setEnabled(nodes.size() && dfgWidget->isEditable());
+    result->addAction(autoConnectionsAction);
 
-      QAction *removeConnectionsAction = new RemoveConnectionsAction(dfgWidget, result);
-      result->addAction(removeConnectionsAction);
-    }
+    QAction *removeConnectionsAction = new RemoveConnectionsAction(dfgWidget, result);
+    removeConnectionsAction->setEnabled(nodes.size() && dfgWidget->isEditable());
+    result->addAction(removeConnectionsAction);
+
+    QAction *splitFromPresetAction = new SplitFromPresetAction(dfgWidget, uiNode, result);
+    splitFromPresetAction->setEnabled(onlyInstNodes && instNodeCount == 1 && exec.getSubExec(uiNode->name().c_str()).editWouldSplitFromPreset());
+    result->addAction(splitFromPresetAction);
+
+    result->addSeparator();
+
+    QAction *createPresetAction = new CreatePresetAction(dfgWidget, uiNode, result);
+    createPresetAction->setEnabled(onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable());
+    result->addAction(createPresetAction);
 
     if ( onlyInstNodes )
-    {
       if ( instNodeCount == 1 )
-      {
-        QAction *splitFromPresetAction = new SplitFromPresetAction(dfgWidget, uiNode, result);
-        splitFromPresetAction->setEnabled(exec.getSubExec(uiNode->name().c_str()).editWouldSplitFromPreset());
-        result->addAction(splitFromPresetAction);
-
-        result->addSeparator();
-
-        QAction *createPresetAction = new CreatePresetAction(dfgWidget, uiNode, result);
-        createPresetAction->setEnabled(dfgWidget->isEditable());
-        result->addAction(createPresetAction);
-
         result->addAction(DFG_REVEAL_IN_EXPLORER);
-        result->addAction(DFG_EXPORT_GRAPH);
-      }
-    }
+
+    QAction *exportGraphAction = new ExportGraphAction(dfgWidget, uiNode, result);
+    exportGraphAction->setEnabled(onlyInstNodes && instNodeCount == 1);
+    result->addAction(exportGraphAction);
 
     QAction *implodeSelectedNodesAction =
       new ImplodeSelectedNodesAction( dfgWidget, result );
@@ -992,117 +990,6 @@ void DFGWidget::onNodeAction(QAction * action)
   else if(action->text() == DFG_REVEAL_IN_EXPLORER)
   {
     onRevealPresetInExplorer(nodeName);
-  }
-  else if(action->text() == DFG_EXPORT_GRAPH)
-  {
-    FabricCore::DFGExec &exec = m_uiController->getExec();
-    if ( exec.getNodeType(nodeName) != FabricCore::DFGNodeType_Inst )
-      return;
-
-    FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
-
-    // Create a new binding from a copy of the subExec
-    FabricCore::DFGHost &host = m_uiController->getHost();
-    FabricCore::DFGBinding newBinding = host.createBindingFromJSON(
-      subExec.exportJSON().getCString() );
-    FabricCore::DFGExec newBindingExec = newBinding.getExec();
-
-    QString title;
-    if ( newBindingExec.isPreset() )
-    {
-      title = newBindingExec.getTitle();
-      if ( title.toLower().endsWith(".canvas") )
-        title = title.left( title.length() - 7 );
-    }
-    else title = nodeName;
-
-    FTL::CStrRef uiNodeColor = exec.getNodeMetadata( nodeName, "uiNodeColor" );
-    if(!uiNodeColor.empty())
-      newBindingExec.setMetadata("uiNodeColor", uiNodeColor.c_str(), true, true);
-    FTL::CStrRef uiHeaderColor = exec.getNodeMetadata( nodeName, "uiHeaderColor" );
-    if(!uiHeaderColor.empty())
-      newBindingExec.setMetadata("uiHeaderColor", uiHeaderColor.c_str(), true, true);
-    FTL::CStrRef uiTextColor = exec.getNodeMetadata( nodeName, "uiTextColor" );
-    if(!uiTextColor.empty())
-      newBindingExec.setMetadata("uiTextColor", uiTextColor.c_str(), true, true);
-    FTL::CStrRef uiTooltip = exec.getNodeMetadata( nodeName, "uiTooltip" );
-    if(!uiTooltip.empty())
-      newBindingExec.setMetadata("uiTooltip", uiTooltip.c_str(), true, true);
-    FTL::CStrRef uiDocUrl = exec.getNodeMetadata( nodeName, "uiDocUrl" );
-    if(!uiDocUrl.empty())
-      newBindingExec.setMetadata("uiDocUrl", uiDocUrl.c_str(), true, true);
-    FTL::CStrRef uiAlwaysShowDaisyChainPorts = exec.getNodeMetadata( nodeName, "uiAlwaysShowDaisyChainPorts" );
-    if(!uiAlwaysShowDaisyChainPorts.empty())
-      newBindingExec.setMetadata("uiAlwaysShowDaisyChainPorts", uiAlwaysShowDaisyChainPorts.c_str(), true, true);
-
-    QString lastPresetFolder = title;
-    if(getSettings())
-    {
-      lastPresetFolder = getSettings()->value("DFGWidget/lastPresetFolder").toString();
-      lastPresetFolder += "/" + title;
-    }
-
-    QString filter = "DFG Preset (*.canvas)";
-    QString filePath = QFileDialog::getSaveFileName(this, DFG_EXPORT_GRAPH, lastPresetFolder, filter, &filter);
-    if(filePath.length() == 0)
-      return;
-    if(filePath.toLower().endsWith(".canvas.canvas"))
-      filePath = filePath.left(filePath.length() - 7);
-
-    if(getSettings())
-    {
-      QDir dir(filePath);
-      dir.cdUp();
-      getSettings()->setValue( "DFGWidget/lastPresetFolder", dir.path() );
-    }
-
-    std::string filePathStr = filePath.toUtf8().constData();
-
-    try
-    {
-      // copy all defaults
-      for(unsigned int i=0;i<newBindingExec.getExecPortCount();i++)
-      {
-        char const *newBindingExecPortName = newBindingExec.getExecPortName(i);
-
-        std::string pinPath = nodeName;
-        pinPath += ".";
-        pinPath += newBindingExecPortName;
-
-        FTL::StrRef rType = exec.getNodePortResolvedType(pinPath.c_str());
-        if(rType.size() == 0 || rType.find('$') != rType.end())
-          continue;
-        if(rType.size() == 0 || rType.find('$') != rType.end())
-          rType = subExec.getExecPortResolvedType(i);
-        if(rType.size() == 0 || rType.find('$') != rType.end())
-          rType = subExec.getExecPortTypeSpec(i);
-        if(rType.size() == 0 || rType.find('$') != rType.end())
-          continue;
-
-        FabricCore::RTVal val =
-          exec.getInstPortResolvedDefaultValue(pinPath.c_str(), rType.data());
-
-        if( val.isValid() ) {
-          newBindingExec.setPortDefaultValue( newBindingExecPortName, val, false );
-
-          // Reflect port values as binding args
-          newBinding.setArgValue( newBindingExecPortName, val, false );
-          newBindingExec.setExecPortMetadata( newBindingExecPortName, DFG_METADATA_UIPERSISTVALUE, "true" );
-        }
-      }
-
-      std::string json = newBinding.exportJSON().getCString();
-      FILE * file = fopen(filePathStr.c_str(), "wb");
-      if(file)
-      {
-        fwrite(json.c_str(), json.length(), 1, file);
-        fclose(file);
-      }
-    }
-    catch(FabricCore::Exception e)
-    {
-      printf("Exception: %s\n", e.getDesc_cstr());
-    }
   }
   else if(action->text() == DFG_EXPLODE_NODE)
   {
@@ -1642,6 +1529,118 @@ void DFGWidget::createPreset( const char *nodeName )
     msg.addButton("Ok", QMessageBox::AcceptRole);
     msg.exec();
     return;
+  }
+}
+
+void DFGWidget::exportGraph( const char *nodeName )
+{
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+  if ( exec.getNodeType(nodeName) != FabricCore::DFGNodeType_Inst )
+    return;
+
+  FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+
+  // Create a new binding from a copy of the subExec
+  FabricCore::DFGHost &host = m_uiController->getHost();
+  FabricCore::DFGBinding newBinding = host.createBindingFromJSON(
+    subExec.exportJSON().getCString() );
+  FabricCore::DFGExec newBindingExec = newBinding.getExec();
+
+  QString title;
+  if ( newBindingExec.isPreset() )
+  {
+    title = newBindingExec.getTitle();
+    if ( title.toLower().endsWith(".canvas") )
+      title = title.left( title.length() - 7 );
+  }
+  else title = nodeName;
+
+  FTL::CStrRef uiNodeColor = exec.getNodeMetadata( nodeName, "uiNodeColor" );
+  if(!uiNodeColor.empty())
+    newBindingExec.setMetadata("uiNodeColor", uiNodeColor.c_str(), true, true);
+  FTL::CStrRef uiHeaderColor = exec.getNodeMetadata( nodeName, "uiHeaderColor" );
+  if(!uiHeaderColor.empty())
+    newBindingExec.setMetadata("uiHeaderColor", uiHeaderColor.c_str(), true, true);
+  FTL::CStrRef uiTextColor = exec.getNodeMetadata( nodeName, "uiTextColor" );
+  if(!uiTextColor.empty())
+    newBindingExec.setMetadata("uiTextColor", uiTextColor.c_str(), true, true);
+  FTL::CStrRef uiTooltip = exec.getNodeMetadata( nodeName, "uiTooltip" );
+  if(!uiTooltip.empty())
+    newBindingExec.setMetadata("uiTooltip", uiTooltip.c_str(), true, true);
+  FTL::CStrRef uiDocUrl = exec.getNodeMetadata( nodeName, "uiDocUrl" );
+  if(!uiDocUrl.empty())
+    newBindingExec.setMetadata("uiDocUrl", uiDocUrl.c_str(), true, true);
+  FTL::CStrRef uiAlwaysShowDaisyChainPorts = exec.getNodeMetadata( nodeName, "uiAlwaysShowDaisyChainPorts" );
+  if(!uiAlwaysShowDaisyChainPorts.empty())
+    newBindingExec.setMetadata("uiAlwaysShowDaisyChainPorts", uiAlwaysShowDaisyChainPorts.c_str(), true, true);
+
+  QString lastPresetFolder = title;
+  if(getSettings())
+  {
+    lastPresetFolder = getSettings()->value("DFGWidget/lastPresetFolder").toString();
+    lastPresetFolder += "/" + title;
+  }
+
+  QString filter = "DFG Preset (*.canvas)";
+  QString filePath = QFileDialog::getSaveFileName(this, "Export graph", lastPresetFolder, filter, &filter);
+  if(filePath.length() == 0)
+    return;
+  if(filePath.toLower().endsWith(".canvas.canvas"))
+    filePath = filePath.left(filePath.length() - 7);
+
+  if(getSettings())
+  {
+    QDir dir(filePath);
+    dir.cdUp();
+    getSettings()->setValue( "DFGWidget/lastPresetFolder", dir.path() );
+  }
+
+  std::string filePathStr = filePath.toUtf8().constData();
+
+  try
+  {
+    // copy all defaults
+    for(unsigned int i=0;i<newBindingExec.getExecPortCount();i++)
+    {
+      char const *newBindingExecPortName = newBindingExec.getExecPortName(i);
+
+      std::string pinPath = nodeName;
+      pinPath += ".";
+      pinPath += newBindingExecPortName;
+
+      FTL::StrRef rType = exec.getNodePortResolvedType(pinPath.c_str());
+      if(rType.size() == 0 || rType.find('$') != rType.end())
+        continue;
+      if(rType.size() == 0 || rType.find('$') != rType.end())
+        rType = subExec.getExecPortResolvedType(i);
+      if(rType.size() == 0 || rType.find('$') != rType.end())
+        rType = subExec.getExecPortTypeSpec(i);
+      if(rType.size() == 0 || rType.find('$') != rType.end())
+        continue;
+
+      FabricCore::RTVal val =
+        exec.getInstPortResolvedDefaultValue(pinPath.c_str(), rType.data());
+
+      if( val.isValid() ) {
+        newBindingExec.setPortDefaultValue( newBindingExecPortName, val, false );
+
+        // Reflect port values as binding args
+        newBinding.setArgValue( newBindingExecPortName, val, false );
+        newBindingExec.setExecPortMetadata( newBindingExecPortName, DFG_METADATA_UIPERSISTVALUE, "true" );
+      }
+    }
+
+    std::string json = newBinding.exportJSON().getCString();
+    FILE * file = fopen(filePathStr.c_str(), "wb");
+    if(file)
+    {
+      fwrite(json.c_str(), json.length(), 1, file);
+      fclose(file);
+    }
+  }
+  catch(FabricCore::Exception e)
+  {
+    printf("Exception: %s\n", e.getDesc_cstr());
   }
 }
 
