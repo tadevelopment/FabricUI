@@ -599,9 +599,12 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     {
       if ( instNodeCount == 1 )
       {
-        if (exec.getSubExec(nodes[0]->name().c_str()).editWouldSplitFromPreset())
-          result->addAction(DFG_SPLIT_PRESET);
+        QAction *splitFromPresetAction = new SplitFromPresetAction(dfgWidget, uiNode, result);
+        splitFromPresetAction->setEnabled(exec.getSubExec(uiNode->name().c_str()).editWouldSplitFromPreset());
+        result->addAction(splitFromPresetAction);
+
         result->addSeparator();
+
         if (dfgWidget->isEditable())
           result->addAction(DFG_CREATE_PRESET);
         result->addAction(DFG_REVEAL_IN_EXPLORER);
@@ -983,12 +986,6 @@ void DFGWidget::onNodeAction(QAction * action)
   if(action->text() == DFG_INSPECT_PRESET)
   {
     emit nodeInspectRequested(m_contextNode);
-  }
-  else if(action->text() == DFG_SPLIT_PRESET)
-  {
-    FabricCore::DFGExec &exec = m_uiController->getExec();
-    FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
-    subExec.maybeSplitFromPreset();
   }
   else if(action->text() == DFG_REVEAL_IN_EXPLORER)
   {
@@ -1636,6 +1633,13 @@ void DFGWidget::openPresetDoc( const char *nodeName )
     uiDocUrl = subExec.getMetadata( "uiDocUrl" );
   }
   Util::DocUrl::openUrl(uiDocUrl);
+}
+
+void DFGWidget::splitFromPreset( const char *nodeName )
+{
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+  FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+  subExec.maybeSplitFromPreset();
 }
 
 void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey)
