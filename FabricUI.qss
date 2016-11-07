@@ -184,89 +184,77 @@ QMenu::item:pressed
   background-color: #637987;
 }
 
-/* QDialog and QMessage Widget Formatting */
-QDialog,
-QMessageBox
+/* QDialog Widget Formatting */
+QDialog
 {
+  background: #484848;
   margin: 4px;
 }
 
-QInputDialog QLineEdit,
-QInputDialog QTextEdit,
-QInputDialog QDoubleSpinBox,
-QInputDialog QSpinBox,
-QInputDialog QComboBox,
-QInputDialog QCheckBox::indicator,
 QDialog QLineEdit,
+QDialog QPlainTextEdit,
 QDialog QTextEdit,
 QDialog QDoubleSpinBox,
 QDialog QSpinBox,
 QDialog QComboBox,
-QDialog QCheckBox::indicator,
-QMessageBox QLineEdit,
-QMessageBox QTextEdit,
-QMessageBox QDoubleSpinBox,
-QMessageBox QSpinBox,
-QMessageBox QComboBox,
-QMessageBox QCheckBox::indicator
+QDialog QCheckBox::indicator
 {
-  font: 10pt "Roboto";
-
+  font-family: "Roboto";
+  font-size: 10pt;
   border: 0px;
   border-radius: 4px;
   padding: 3px;
 
   color: #E1FFFF;
-  background-color: #242424;
+  background-color: #333;
 }
 
-QInputDialog QLineEdit:focus,
-QInputDialog QDoubleSpinBox:focus,
-QInputDialog QSpinBox:focus,
-QInputDialog QTextEdit:focus,
-QInputDialog QComboBox:focus,
-QInputDialog QCheckBox::indicator:hover,
 QDialog QLineEdit:focus,
+QDialog QPlainTextEdit:focus,
 QDialog QDoubleSpinBox:focus,
 QDialog QSpinBox:focus,
 QDialog QTextEdit:focus,
 QDialog QComboBox:focus,
-QDialog QCheckBox::indicator:hover,
-QMessageBox QLineEdit:focus,
-QMessageBox QDoubleSpinBox:focus,
-QMessageBox QSpinBox:focus,
-QMessageBox QTextEdit:focus,
-QMessageBox QComboBox:focus,
-QMessageBox QCheckBox::indicator:hover
+QDialog QLineEdit:hover,
+QDialog QPlainTextEdit:hover,
+QDialog QDoubleSpinBox:hover,
+QDialog QSpinBox:hover,
+QDialog QTextEdit:hover,
+QDialog QComboBox:hover,
+QDialog QCheckBox::indicator:hover
 {
   background-color: #242424;
 }
 
-QInputDialog QCheckBox::indicator,
-QDialog QCheckBox::indicator,
-QMessageBox QCheckBox::indicator
+QDialog QLineEdit:disabled,
+QDialog QPlainTextEdit:disabled,
+QDialog QTextEdit:disabled,
+QDialog QLineEdit::read-only,
+QDialog QPlainTextEdit::read-only,
+QDialog QTextEdit::read-only
+{
+  color: grey;
+  font-style: italic;
+  background-color: #3C3C3C;
+}
+
+QDialog QCheckBox::indicator
 {
   width: 12px;
   height: 12px;
 }
 
-QInputDialog QCheckBox::indicator:checked,
-QDialog QCheckBox::indicator:checked,
-QMessageBox QCheckBox::indicator:checked
+QDialog QCheckBox::indicator:checked
 {
   image: url(${FABRIC_DIR}/Resources/Icons/DFGCheck.png);
 }
 
-QInputDialog QComboBox::drop-down,
-QDialog QComboBox::drop-down,
-QMessageBox QComboBox::drop-down
+QDialog QComboBox::drop-down
 {
   border: 0;
 }
 
-QInputDialog QComboBox::drop-down,
-QDialog QComboBox::drop-down,
-QMessageBox QComboBox::drop-down
+QDialog QComboBox::drop-down
 {
   width: 18px;
   background-color: #777777;
@@ -275,25 +263,19 @@ QMessageBox QComboBox::drop-down
   border-bottom-right-radius: 3px;
 }
 
-QInputDialog QComboBox::drop-down:hover,
-QDialog QComboBox::drop-down:hover,
-QMessageBox QComboBox::drop-down:hover
+QDialog QComboBox::drop-down:hover
 {
   background-color: #888888;
 }
 
-QInputDialog  QComboBox::down-arrow,
-QDialog  QComboBox::down-arrow,
-QMessageBox  QComboBox::down-arrow
+QDialog  QComboBox::down-arrow
 {
   image: url(${FABRIC_DIR}/Resources/Icons/DFGDown.png);
   width: 9px;
   height: 9px;
 }
 
-QInputDialog QPushButton,
-QDialog QPushButton,
-QMessageBox QPushButton
+QDialog QPushButton
 {
   border: 0;
   border-radius: 3px;
@@ -303,26 +285,20 @@ QMessageBox QPushButton
   height: 20px;
 }
 
-QInputDialog QPushButton:hover,
-QDialog QPushButton:hover,
-QMessageBox QPushButton:hover
+QDialog QPushButton:hover
 {
   border: 0;
   background: #50626E;
 }
 
-QInputDialog QPushButton:pressed,
-QDialog QPushButton:pressed,
-QMessageBox QPushButton:pressed
+QDialog QPushButton:pressed
 {
   border: 0;
   margin: 2px 0 0 2px;
   background: #637987;
 }
 
-QInputDialog QPushButton:focus,
-QDialog QPushButton:focus,
-QMessageBox QPushButton:focus
+QDialog QPushButton:focus
 {
   border: 1px solid #555555;
 }
@@ -959,6 +935,11 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #596D7A;
 }
 
+#DFGTimelineWidget QPushButton:focus
+{
+  border: 1px solid #555555;
+}
+
 #DFGTimelineWidget QInputDialog QPushButton
 {
   border: 0;
@@ -1140,6 +1121,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 }
 
 #ValueEditor QLineEdit,
+#ValueEditor QPlainTextEdit,
 #ValueEditor QTextEdit,
 #ValueEditor QDoubleSpinBox,
 #ValueEditor QSpinBox,
@@ -1157,6 +1139,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 }
 
 #ValueEditor QLineEdit:focus,
+#ValueEditor QPlainTextEdit:focus,
 #ValueEditor QDoubleSpinBox:focus,
 #ValueEditor QSpinBox:focus,
 #ValueEditor QTextEdit:focus,
@@ -1357,8 +1340,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 3px;
   border: none;
   border-radius: 3px;
-  color: #C7D2DA;
-  background-color: #50626E;
+  color: #FFFFFF;
+  background-color: #777777;
 }
 
 #ValueEditor QPushButton#VERight
@@ -1368,8 +1351,13 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ValueEditor QPushButton:hover
 {
-  color: #eee;
-  background-color: #50626E;
+  color: #FFFFFF;
+  background-color: #A0A0A0;
+}
+
+#ValueEditor QPushButton::pressed
+{
+  background: #50626E;
 }
 
 #ValueEditor #VEStringViewItem > QPushButton
@@ -1419,6 +1407,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   height: 4px;
   margin: 8px 0px;
 }
+
 
 /****************************************************************************
  * DFGPresetTreeWidget
