@@ -626,7 +626,8 @@ QMenu *DFGWidget::nodeContextMenuCallback(
           FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
           if (subExec.getType() == FabricCore::DFGExecType_Graph)
           {
-            result->addAction(DFG_EXPLODE_NODE);
+            QAction *explodeNodeAction = new ExplodeNodeAction(dfgWidget, uiNode, result);
+            result->addAction(explodeNodeAction);
           }
 
           if (subExec.getExtDepCount() > 0)
@@ -990,18 +991,6 @@ void DFGWidget::onNodeAction(QAction * action)
   else if(action->text() == DFG_REVEAL_IN_EXPLORER)
   {
     onRevealPresetInExplorer(nodeName);
-  }
-  else if(action->text() == DFG_EXPLODE_NODE)
-  {
-    QList<QString> newNodeNames =
-      m_uiController->cmdExplodeNode( QString::fromUtf8( nodeName ) );
-
-    m_uiGraph->clearSelection();
-    for ( int i = 0; i < newNodeNames.size(); ++i )
-    {
-      if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeNames.at( i ) ) )
-        uiNode->setSelected( true );
-    }
   }
   else if(action->text() == DFG_EDIT_PRESET_PROPERTIES)
   {
@@ -1641,6 +1630,19 @@ void DFGWidget::exportGraph( const char *nodeName )
   catch(FabricCore::Exception e)
   {
     printf("Exception: %s\n", e.getDesc_cstr());
+  }
+}
+
+void DFGWidget::explodeNode( const char *nodeName )
+{
+  QList<QString> newNodeNames =
+    m_uiController->cmdExplodeNode( QString::fromUtf8( nodeName ) );
+
+  m_uiGraph->clearSelection();
+  for ( int i = 0; i < newNodeNames.size(); ++i )
+  {
+    if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeNames.at( i ) ) )
+      uiNode->setSelected( true );
   }
 }
 

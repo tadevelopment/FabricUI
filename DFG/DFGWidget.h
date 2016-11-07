@@ -105,6 +105,7 @@ namespace DFG {
       void splitFromPreset( const char *nodeName );
       void createPreset( const char *nodeName );
       void exportGraph( const char *nodeName );
+      void explodeNode( const char *nodeName );
 
       void createNewGraphNode( QPoint const &globalPos );
       void createNewFunctionNode( QPoint const &globalPos );
@@ -670,6 +671,40 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->exportGraph(m_node->name().c_str());
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
+    };
+
+    class ExplodeNodeAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ExplodeNodeAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Explode node" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->explodeNode(m_node->name().c_str());
       }
 
     private:

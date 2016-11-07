@@ -11,7 +11,6 @@ namespace DFG {
 
   #define DFG_INSPECT_PRESET          "Inspect - DoubleClick"
   #define DFG_EDIT_PRESET_PROPERTIES  "Properties - F2"
-  #define DFG_EXPLODE_NODE            "Explode node"
   #define DFG_REVEAL_IN_EXPLORER      "Reveal in explorer"
 }; // namespace DFG
 }; // namespace FabricUI
