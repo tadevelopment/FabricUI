@@ -18,6 +18,7 @@ GLViewportWidget::GLViewportWidget(
   m_manipTool = new ManipulationTool(this);
   setAutoBufferSwap(false);
 
+  m_gridVisible = true; // default value
   if(m_settings)
   {
     if(m_settings->contains("glviewport/gridVisible"))

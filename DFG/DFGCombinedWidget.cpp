@@ -64,7 +64,8 @@ void DFGCombinedWidget::initTreeView() {
   {
     QObject::connect(m_dfgWidget->getUIController(), SIGNAL(varsChanged()), m_treeWidget, SLOT(refresh()) );
     QObject::connect(m_dfgWidget, SIGNAL(newPresetSaved(QString)), m_treeWidget, SLOT(refresh()));
-  }
+    QObject::connect(m_dfgWidget, SIGNAL(revealPresetInExplorer(QString)), m_treeWidget, SLOT(onExpandToAndSelectItem(QString)) );
+}
 }
 
 void DFGCombinedWidget::initValueEditor() {

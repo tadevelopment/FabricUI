@@ -21,7 +21,7 @@ GraphConfig::GraphConfig()
   disconnectInputsAutomatically = true;
   middleClickDeletesConnections = true;
 
-  mainPanelBackgroundColor = QColor(90, 90, 90, 255);
+  mainPanelBackgroundColor = QColor(68, 68, 68, 255);
   mainPanelDrawGrid = false;
   mainPanelGridSpanS = 30;
   mainPanelGridSpanL = 300;
