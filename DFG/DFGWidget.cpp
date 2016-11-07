@@ -390,14 +390,14 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   }
 
   result->addSeparator();
-  result->addAction(DFG_NEW_VARIABLE);
-  result->addAction(DFG_READ_VARIABLE);
-  result->addAction(DFG_WRITE_VARIABLE);
-  result->addAction(
-    new NewCacheNodeAction( graphWidget, QCursor::pos(), result )
-    );
+
+  result->addAction(new CreateVariableAction(graphWidget, result));
+  result->addAction(new CreateVariableGetAction(graphWidget, result));
+  result->addAction(new CreateVariableSetAction(graphWidget, result));
+  result->addAction(new NewCacheNodeAction(graphWidget, QCursor::pos(), result));
 
   result->addSeparator();
+
   QAction *newBlockAction =
     new NewBlockNodeAction( graphWidget, QCursor::pos(), result );
   newBlockAction->setEnabled( controller->getExec().allowsBlocks() );
@@ -950,70 +950,6 @@ void DFGWidget::onGraphAction(QAction * action)
     m_uiGraph->clearSelection();
     if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeName ) )
       uiNode->setSelected( true );
-  }
-  else if(action->text() == DFG_NEW_VARIABLE)
-  {
-    DFGController *controller = getUIController();
-    FabricCore::Client client = controller->getClient();
-    FabricCore::DFGBinding &binding = controller->getBinding();
-    FTL::CStrRef execPath = controller->getExecPath();
-
-    DFGNewVariableDialog dialog( this, client, binding, execPath, true);
-    if(dialog.exec() != QDialog::Accepted)
-      return;
-
-    QString name = dialog.name();
-    QString dataType = dialog.dataType();
-    QString extension = dialog.extension();
-
-    if (name.isEmpty())
-    { controller->log("Warning: no variable created (empty name).");
-      return; }
-    if (dataType.isEmpty())
-    { controller->log("Warning: no variable created (empty type).");
-      return; }
-
-    m_uiController->cmdAddVar(
-      name,
-      dataType,
-      extension,
-      pos
-      );
-
-    pos += QPointF(30, 30);
-  }
-  else if(action->text() == DFG_READ_VARIABLE ||
-    action->text() == DFG_WRITE_VARIABLE)
-  {
-    DFGController *controller = getUIController();
-    FabricCore::Client client = controller->getClient();
-    FabricCore::DFGBinding &binding = controller->getBinding();
-    FTL::CStrRef execPath = controller->getExecPath();
-
-    DFGPickVariableDialog dialog(this, client, binding, execPath, true);
-    if(dialog.exec() != QDialog::Accepted)
-      return;
-
-    QString name = dialog.name();
-    if(name.length() == 0)
-      return;
-
-    if(action->text() == DFG_READ_VARIABLE)
-    {
-      m_uiController->cmdAddGet(
-        "get",
-        name.toUtf8().constData(),
-        QPointF(pos.x(), pos.y())
-        );
-    }
-    else
-    {
-      m_uiController->cmdAddSet(
-        "set",
-        name.toUtf8().constData(),
-        QPointF(pos.x(), pos.y())
-        );
-    }
   }
 }
 
@@ -1672,6 +1608,97 @@ void DFGWidget::movePortsToEnd( bool moveInputs )
   {
     printf("Exception: %s\n", e.getDesc_cstr());
   }
+}
+
+void DFGWidget::createVariable(void)
+{
+  QPointF mouseOffset(-40, -15);
+  QPointF pos = m_uiGraphViewWidget->mapToScene(m_uiGraphViewWidget->mapFromGlobal(QCursor::pos()));
+  pos = m_uiGraph->itemGroup()->mapFromScene(pos);
+  pos += mouseOffset;
+
+  DFGController *controller = getUIController();
+  FabricCore::Client client = controller->getClient();
+  FabricCore::DFGBinding &binding = controller->getBinding();
+  FTL::CStrRef execPath = controller->getExecPath();
+
+  DFGNewVariableDialog dialog( this, client, binding, execPath, true);
+  if(dialog.exec() != QDialog::Accepted)
+    return;
+
+  QString name = dialog.name();
+  QString dataType = dialog.dataType();
+  QString extension = dialog.extension();
+
+  if (name.isEmpty())
+  { controller->log("Warning: no variable created (empty name).");
+    return; }
+  if (dataType.isEmpty())
+  { controller->log("Warning: no variable created (empty type).");
+    return; }
+
+  m_uiController->cmdAddVar(
+    name,
+    dataType,
+    extension,
+    pos
+    );
+
+  pos += QPointF(30, 30);
+}
+
+void DFGWidget::createVariableGet(void)
+{
+  QPointF mouseOffset(-40, -15);
+  QPointF pos = m_uiGraphViewWidget->mapToScene(m_uiGraphViewWidget->mapFromGlobal(QCursor::pos()));
+  pos = m_uiGraph->itemGroup()->mapFromScene(pos);
+  pos += mouseOffset;
+
+  DFGController *controller = getUIController();
+  FabricCore::Client client = controller->getClient();
+  FabricCore::DFGBinding &binding = controller->getBinding();
+  FTL::CStrRef execPath = controller->getExecPath();
+
+  DFGPickVariableDialog dialog(this, client, binding, execPath, true);
+  if(dialog.exec() != QDialog::Accepted)
+    return;
+
+  QString name = dialog.name();
+  if(name.length() == 0)
+    return;
+
+  m_uiController->cmdAddGet(
+    "get",
+    name.toUtf8().constData(),
+    QPointF(pos.x(), pos.y())
+    );
+}
+
+void DFGWidget::createVariableSet(void)
+{
+  QPointF mouseOffset(-40, -15);
+  QPointF pos = m_uiGraphViewWidget->mapToScene(m_uiGraphViewWidget->mapFromGlobal(QCursor::pos()));
+  pos = m_uiGraph->itemGroup()->mapFromScene(pos);
+  pos += mouseOffset;
+
+  DFGController *controller = getUIController();
+  FabricCore::Client client = controller->getClient();
+  FabricCore::DFGBinding &binding = controller->getBinding();
+  FTL::CStrRef execPath = controller->getExecPath();
+
+  DFGPickVariableDialog dialog(this, client, binding, execPath, true);
+  if(dialog.exec() != QDialog::Accepted)
+    return;
+
+  QString name = dialog.name();
+  if(name.length() == 0)
+    return;
+
+  m_uiController->cmdAddSet(
+    "set",
+    name.toUtf8().constData(),
+    QPointF(pos.x(), pos.y())
+    );
 }
 
 void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey)

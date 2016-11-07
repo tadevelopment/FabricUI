@@ -98,7 +98,10 @@ namespace DFG {
       void createPort( FabricUI::GraphView::PortType portType );
       void deletePort( FabricUI::GraphView::Port *port );
       void editPort( FTL::CStrRef execPortName, bool duplicatePort );
-      void movePortsToEnd( bool moveInputs /* true: move inputs else outputs */ );
+      void movePortsToEnd( bool moveInputs );
+      void createVariable();
+      void createVariableGet();
+      void createVariableSet();
 
       void createNewGraphNode( QPoint const &pos );
       void createNewFunctionNode( QPoint const &pos );
@@ -335,6 +338,99 @@ namespace DFG {
 
       DFGWidget *m_dfgWidget;
       FabricUI::GraphView::Port *m_port;
+    };
+
+    class CreateVariableAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CreateVariableAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "New variable" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->createVariable();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class CreateVariableGetAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CreateVariableGetAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Read variable (Get)" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->createVariableGet();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class CreateVariableSetAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CreateVariableSetAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Read variable (Set)" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->createVariableSet();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
     };
 
     class MoveInputPortsToEndAction : public QAction
