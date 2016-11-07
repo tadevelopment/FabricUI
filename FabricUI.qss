@@ -115,6 +115,7 @@ QMainWindow > QDockWidget::title
 
 QMenuBar
 {
+  color: #FFF;
   background-color: #3C3C3C;
 }
 
@@ -136,6 +137,7 @@ QMenuBar::item:pressed
 
 QMenu
 {
+  color: #FFF;
   border: 1px solid #222;
   background-color: #333;
 }
