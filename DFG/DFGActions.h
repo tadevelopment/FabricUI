@@ -9,7 +9,6 @@
 namespace FabricUI {
 namespace DFG {
 
-  #define DFG_CREATE_PRESET           "Create preset"
   #define DFG_INSPECT_PRESET          "Inspect - DoubleClick"
   #define DFG_EDIT_PRESET_PROPERTIES  "Properties - F2"
   #define DFG_EXPORT_GRAPH            "Export graph"

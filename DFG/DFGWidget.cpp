@@ -605,8 +605,10 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
         result->addSeparator();
 
-        if (dfgWidget->isEditable())
-          result->addAction(DFG_CREATE_PRESET);
+        QAction *createPresetAction = new CreatePresetAction(dfgWidget, uiNode, result);
+        createPresetAction->setEnabled(dfgWidget->isEditable());
+        result->addAction(createPresetAction);
+
         result->addAction(DFG_REVEAL_IN_EXPLORER);
         result->addAction(DFG_EXPORT_GRAPH);
       }
@@ -1102,132 +1104,6 @@ void DFGWidget::onNodeAction(QAction * action)
       printf("Exception: %s\n", e.getDesc_cstr());
     }
   }
-  else if(action->text() == DFG_CREATE_PRESET)
-  {
-    FabricCore::DFGExec &exec = m_uiController->getExec();
-    if ( exec.getNodeType( nodeName ) != FabricCore::DFGNodeType_Inst )
-      return;
-    FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
-
-    try
-    {
-      FTL::CStrRef defaultPresetName;
-      if ( subExec.isPreset() )
-        defaultPresetName = subExec.getTitle();
-      else
-        defaultPresetName = nodeName;
-       
-      FabricCore::DFGHost &host = m_uiController->getHost();
-
-      DFGSavePresetDialog dialog(
-        this,
-        m_uiController.get(),
-        true,
-        defaultPresetName.c_str()
-        );
-      while ( true )
-      {
-        if(dialog.exec() != QDialog::Accepted)
-          return;
-
-        QString presetName = dialog.name();
-        // QString version = dialog.version();
-        QString presetDirPath = dialog.location();
-
-        if(presetName.length() == 0 || presetDirPath.length() == 0)
-        {
-          QMessageBox msg(QMessageBox::Warning, "Fabric Warning", 
-            "You need to provide a valid name and pick a valid location!");
-          msg.addButton("Ok", QMessageBox::AcceptRole);
-          msg.exec();
-          continue;
-        }
-
-        if(presetDirPath.startsWith("Fabric.") || presetDirPath.startsWith("Variables.") ||
-          presetDirPath == "Fabric" || presetDirPath == "Variables")
-        {
-          QMessageBox msg(QMessageBox::Warning, "Fabric Warning", 
-            "You can't save a preset into a factory path (below Fabric).");
-          msg.addButton("Ok", QMessageBox::AcceptRole);
-          msg.exec();
-          continue;
-        }
-
-        QString pathname =
-          DFGUICmdHandler::NewPresetPathname(
-            host,
-            presetDirPath,
-            presetName
-            );
-
-        if ( pathname.isEmpty() )
-        {
-          QMessageBox msg(
-            QMessageBox::Warning,
-            "Fabric Error", 
-              "The preset directory '"
-            + presetDirPath
-            + "' does not have an assocaited path and so the preset cannot be saved."
-            );
-          msg.addButton( "Ok", QMessageBox::AcceptRole );
-          msg.exec();
-          continue;
-        }
-
-        if ( FTL::FSExists( QSTRING_TO_CONST_CHAR_FILE( pathname ) ) )
-        {
-          QMessageBox msg(
-            QMessageBox::Warning,
-            "Fabric Warning", 
-              "The file "
-            + pathname
-            + " already exists.\n"
-            + "Are you sure to overwrite the file?"
-            );
-          msg.addButton( "Cancel", QMessageBox::RejectRole );
-          msg.addButton( "Ok", QMessageBox::AcceptRole );
-          if ( msg.exec() != QDialog::Accepted )
-            continue;
-        }
-
-        pathname =
-          m_uiController->cmdCreatePreset(
-            nodeName,
-            presetDirPath.toUtf8().constData(),
-            presetName.toUtf8().constData()
-            );
-        if ( pathname.isEmpty() )
-        {
-          QMessageBox msg(
-            QMessageBox::Warning,
-            "Fabric Warning", 
-              "The file "
-            + pathname
-            + " cannot be opened for writing."
-            );
-          msg.addButton( "Ok", QMessageBox::AcceptRole );
-          msg.exec();
-          continue;
-        }
-
-        emit newPresetSaved( pathname );
-        // update the preset search paths within the controller
-        m_uiController->onVariablesChanged();
-        break;
-      }
-    }
-    catch ( FabricCore::Exception e )
-    {
-      QMessageBox msg(
-        QMessageBox::Warning,
-        "Fabric Warning", 
-        e.getDesc_cstr()
-        );
-      msg.addButton("Ok", QMessageBox::AcceptRole);
-      msg.exec();
-      return;
-    }
-  }
   else if(action->text() == DFG_EXPLODE_NODE)
   {
     QList<QString> newNodeNames =
@@ -1640,6 +1516,133 @@ void DFGWidget::splitFromPreset( const char *nodeName )
   FabricCore::DFGExec &exec = m_uiController->getExec();
   FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
   subExec.maybeSplitFromPreset();
+}
+
+void DFGWidget::createPreset( const char *nodeName )
+{
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+  if ( exec.getNodeType( nodeName ) != FabricCore::DFGNodeType_Inst )
+    return;
+  FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+
+  try
+  {
+    FTL::CStrRef defaultPresetName;
+    if ( subExec.isPreset() )
+      defaultPresetName = subExec.getTitle();
+    else
+      defaultPresetName = nodeName;
+       
+    FabricCore::DFGHost &host = m_uiController->getHost();
+
+    DFGSavePresetDialog dialog(
+      this,
+      m_uiController.get(),
+      true,
+      defaultPresetName.c_str()
+      );
+    while ( true )
+    {
+      if(dialog.exec() != QDialog::Accepted)
+        return;
+
+      QString presetName = dialog.name();
+      // QString version = dialog.version();
+      QString presetDirPath = dialog.location();
+
+      if(presetName.length() == 0 || presetDirPath.length() == 0)
+      {
+        QMessageBox msg(QMessageBox::Warning, "Fabric Warning", 
+          "You need to provide a valid name and pick a valid location!");
+        msg.addButton("Ok", QMessageBox::AcceptRole);
+        msg.exec();
+        continue;
+      }
+
+      if(presetDirPath.startsWith("Fabric.") || presetDirPath.startsWith("Variables.") ||
+        presetDirPath == "Fabric" || presetDirPath == "Variables")
+      {
+        QMessageBox msg(QMessageBox::Warning, "Fabric Warning", 
+          "You can't save a preset into a factory path (below Fabric).");
+        msg.addButton("Ok", QMessageBox::AcceptRole);
+        msg.exec();
+        continue;
+      }
+
+      QString pathname =
+        DFGUICmdHandler::NewPresetPathname(
+          host,
+          presetDirPath,
+          presetName
+          );
+
+      if ( pathname.isEmpty() )
+      {
+        QMessageBox msg(
+          QMessageBox::Warning,
+          "Fabric Error", 
+            "The preset directory '"
+          + presetDirPath
+          + "' does not have an assocaited path and so the preset cannot be saved."
+          );
+        msg.addButton( "Ok", QMessageBox::AcceptRole );
+        msg.exec();
+        continue;
+      }
+
+      if ( FTL::FSExists( QSTRING_TO_CONST_CHAR_FILE( pathname ) ) )
+      {
+        QMessageBox msg(
+          QMessageBox::Warning,
+          "Fabric Warning", 
+            "The file "
+          + pathname
+          + " already exists.\n"
+          + "Are you sure to overwrite the file?"
+          );
+        msg.addButton( "Cancel", QMessageBox::RejectRole );
+        msg.addButton( "Ok", QMessageBox::AcceptRole );
+        if ( msg.exec() != QDialog::Accepted )
+          continue;
+      }
+
+      pathname =
+        m_uiController->cmdCreatePreset(
+          nodeName,
+          presetDirPath.toUtf8().constData(),
+          presetName.toUtf8().constData()
+          );
+      if ( pathname.isEmpty() )
+      {
+        QMessageBox msg(
+          QMessageBox::Warning,
+          "Fabric Warning", 
+            "The file "
+          + pathname
+          + " cannot be opened for writing."
+          );
+        msg.addButton( "Ok", QMessageBox::AcceptRole );
+        msg.exec();
+        continue;
+      }
+
+      emit newPresetSaved( pathname );
+      // update the preset search paths within the controller
+      m_uiController->onVariablesChanged();
+      break;
+    }
+  }
+  catch ( FabricCore::Exception e )
+  {
+    QMessageBox msg(
+      QMessageBox::Warning,
+      "Fabric Warning", 
+      e.getDesc_cstr()
+      );
+    msg.addButton("Ok", QMessageBox::AcceptRole);
+    msg.exec();
+    return;
+  }
 }
 
 void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey)

@@ -103,6 +103,7 @@ namespace DFG {
       void implodeSelectedNodes( bool displayDialog );
       void openPresetDoc( const char *nodeName );
       void splitFromPreset( const char *nodeName );
+      void createPreset( const char *nodeName );
 
       void createNewGraphNode( QPoint const &globalPos );
       void createNewFunctionNode( QPoint const &globalPos );
@@ -600,6 +601,40 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->splitFromPreset(m_node->name().c_str());
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
+    };
+
+    class CreatePresetAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CreatePresetAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Create preset" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->createPreset(m_node->name().c_str());
       }
 
     private:
