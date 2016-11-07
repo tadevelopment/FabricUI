@@ -1532,7 +1532,7 @@ void DFGWidget::createPreset( const char *nodeName )
       defaultPresetName = subExec.getTitle();
     else
       defaultPresetName = nodeName;
-       
+
     FabricCore::DFGHost &host = m_uiController->getHost();
 
     DFGSavePresetDialog dialog(
@@ -1552,7 +1552,7 @@ void DFGWidget::createPreset( const char *nodeName )
 
       if(presetName.length() == 0 || presetDirPath.length() == 0)
       {
-        QMessageBox msg(QMessageBox::Warning, "Fabric Warning", 
+        QMessageBox msg(QMessageBox::Warning, "Fabric Warning",
           "You need to provide a valid name and pick a valid location!");
         msg.addButton("Ok", QMessageBox::AcceptRole);
         msg.exec();
@@ -1562,7 +1562,7 @@ void DFGWidget::createPreset( const char *nodeName )
       if(presetDirPath.startsWith("Fabric.") || presetDirPath.startsWith("Variables.") ||
         presetDirPath == "Fabric" || presetDirPath == "Variables")
       {
-        QMessageBox msg(QMessageBox::Warning, "Fabric Warning", 
+        QMessageBox msg(QMessageBox::Warning, "Fabric Warning",
           "You can't save a preset into a factory path (below Fabric).");
         msg.addButton("Ok", QMessageBox::AcceptRole);
         msg.exec();
@@ -1580,7 +1580,7 @@ void DFGWidget::createPreset( const char *nodeName )
       {
         QMessageBox msg(
           QMessageBox::Warning,
-          "Fabric Error", 
+          "Fabric Error",
             "The preset directory '"
           + presetDirPath
           + "' does not have an assocaited path and so the preset cannot be saved."
@@ -1594,7 +1594,7 @@ void DFGWidget::createPreset( const char *nodeName )
       {
         QMessageBox msg(
           QMessageBox::Warning,
-          "Fabric Warning", 
+          "Fabric Warning",
             "The file "
           + pathname
           + " already exists.\n"
