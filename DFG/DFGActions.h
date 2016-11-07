@@ -10,7 +10,6 @@ namespace FabricUI {
 namespace DFG {
 
   #define DFG_CREATE_PRESET           "Create preset"
-  #define DFG_OPEN_PRESET_DOC         "Documentation"
   #define DFG_INSPECT_PRESET          "Inspect - DoubleClick"
   #define DFG_EDIT_PRESET_PROPERTIES  "Properties - F2"
   #define DFG_SPLIT_PRESET            "Split from preset"

@@ -470,8 +470,10 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     QMenu* result = new QMenu( uiNode->scene()->views()[0] );
 
+    QAction *openPresetDocAction = new OpenPresetDocAction(dfgWidget, uiNode, result);
+    openPresetDocAction->setEnabled(false);
     if ( !exec.isExecBlock( nodeName )
-      && exec.getNodeType( nodeName ) == FabricCore::DFGNodeType_Inst )
+       && exec.getNodeType( nodeName ) == FabricCore::DFGNodeType_Inst )
     {
       QString uiDocUrl = exec.getNodeMetadata( nodeName, "uiDocUrl" );
       if ( uiDocUrl.isEmpty() )
@@ -479,12 +481,11 @@ QMenu *DFGWidget::nodeContextMenuCallback(
         FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
         uiDocUrl = subExec.getMetadata( "uiDocUrl" );
       }
-      if ( !uiDocUrl.isEmpty() )
-      {
-        result->addAction(DFG_OPEN_PRESET_DOC);
-        result->addSeparator();
-      }
+      openPresetDocAction->setEnabled( !uiDocUrl.isEmpty() );
     }
+    result->addAction(openPresetDocAction);
+
+    result->addSeparator();
 
     bool needSeparator = false;
     if ( onlyInstOrBlockNodes )
@@ -979,18 +980,7 @@ void DFGWidget::onNodeAction(QAction * action)
     return;
 
   char const * nodeName = m_contextNode->name().c_str();
-  if(action->text() == DFG_OPEN_PRESET_DOC)
-  {
-    FabricCore::DFGExec &exec = m_uiController->getExec();
-    QString uiDocUrl = exec.getNodeMetadata( nodeName, "uiDocUrl" );
-    if(uiDocUrl.length() == 0 && exec.getNodeType(nodeName) == FabricCore::DFGNodeType_Inst)
-    {
-      FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
-      uiDocUrl = subExec.getMetadata( "uiDocUrl" );
-    }
-    Util::DocUrl::openUrl(uiDocUrl);
-  }
-  else if(action->text() == DFG_INSPECT_PRESET)
+  if(action->text() == DFG_INSPECT_PRESET)
   {
     emit nodeInspectRequested(m_contextNode);
   }
@@ -1634,6 +1624,18 @@ void DFGWidget::implodeSelectedNodes( bool displayDialog )
   m_uiGraph->clearSelection();
   if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeName ) )
     uiNode->setSelected( true );
+}
+
+void DFGWidget::openPresetDoc( const char *nodeName )
+{
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+  QString uiDocUrl = exec.getNodeMetadata( nodeName, "uiDocUrl" );
+  if(uiDocUrl.length() == 0 && exec.getNodeType(nodeName) == FabricCore::DFGNodeType_Inst)
+  {
+    FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+    uiDocUrl = subExec.getMetadata( "uiDocUrl" );
+  }
+  Util::DocUrl::openUrl(uiDocUrl);
 }
 
 void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey)
