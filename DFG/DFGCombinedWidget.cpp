@@ -9,7 +9,6 @@
 #include "DFGCombinedWidget.h"
 #include <FabricUI/Style/FabricStyle.h>
 #include <FabricUI/DFG/Dialogs/DFGNodePropertiesDialog.h>
-#include <FabricUI/DFG/DFGActions.h>
 #include <FabricUI/DFG/DFGVEEditorOwner.h>
 
 using namespace FabricUI::DFG;

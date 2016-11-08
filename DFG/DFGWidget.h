@@ -141,7 +141,6 @@ namespace DFG {
       void onExecChanged();
       void onExecSplitChanged();
       void onGoUpPressed();
-      void onNodeAction(QAction * action);
       void onNodeEditRequested(FabricUI::GraphView::Node *);
       void onKeyPressed(QKeyEvent * event);
       void onKeyReleased(QKeyEvent * event);
@@ -187,9 +186,6 @@ namespace DFG {
       bool maybePopExec( std::string &nodeName );
 
       bool checkForUnsaved();
-
-      QPoint m_contextPos;
-      FabricUI::GraphView::Node * m_contextNode;
 
       DFGGraphViewWidget * m_uiGraphViewWidget;
       DFGExecHeaderWidget * m_uiHeader;

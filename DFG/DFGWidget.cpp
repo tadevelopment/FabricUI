@@ -2,7 +2,6 @@
  
 #include <assert.h>
 #include <FabricCore.h>
-#include <FabricUI/DFG/DFGActions.h>
 #include <FabricUI/DFG/DFGErrorsWidget.h>
 #include <FabricUI/DFG/DFGExecBlockEditorWidget.h>
 #include <FabricUI/DFG/DFGGraphViewWidget.h>
@@ -414,7 +413,6 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     GraphView::Graph * graph = dfgWidget->m_uiGraph;
     if (graph->controller() == NULL)
       return NULL;
-    dfgWidget->m_contextNode = uiNode;
 
     std::vector<GraphView::Node *> nodes =
       dfgWidget->getUIController()->graph()->selectedNodes();
@@ -634,8 +632,6 @@ QMenu *DFGWidget::nodeContextMenuCallback(
       QAction *removeNodeCommentAction = new RemoveNodeCommentAction(dfgWidget, nodes[0], result);
       result->addAction(removeNodeCommentAction);
     }
-
-    dfgWidget->connect(result, SIGNAL(triggered(QAction*)), dfgWidget, SLOT(onNodeAction(QAction*)));
     return result;
   }
   catch(FabricCore::Exception e)
@@ -977,15 +973,6 @@ void DFGWidget::createNewVariableSetNode( QPoint const &globalPos )
     name.toUtf8().constData(),
     m_uiGraphViewWidget->mapToGraph( globalPos )
     );
-}
-
-void DFGWidget::onNodeAction(QAction * action)
-{
-  if(m_contextNode == NULL)
-    return;
-
-
-  m_contextNode = NULL;
 }
 
 void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
