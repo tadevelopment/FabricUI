@@ -138,6 +138,7 @@ DFGWidget::DFGWidget(
     this, SIGNAL(urlDropped(QUrl, bool))
     );
 
+  m_uiGraphViewWidget->addAction(new TabSearchAction                 (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new SelectAllNodesAction            (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new AutoConnectionsAction           (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new RemoveConnectionsAction         (this, m_uiGraphViewWidget));
@@ -769,6 +770,19 @@ void DFGWidget::onGoUpPressed()
     if ( !nodeName.empty() )
       if ( GraphView::Node *uiNode = getUIGraph()->node( nodeName ) )
         uiNode->setSelected( true );
+  }
+}
+
+void DFGWidget::tabSearch()
+{
+  if (m_isEditable)
+  {
+    if (getUIController()->validPresetSplit())
+    {
+      QPoint pos = getGraphViewWidget()->lastEventPos();
+      pos = getGraphViewWidget()->mapToGlobal(pos);
+      getTabSearchWidget()->showForSearch(pos);
+    }
   }
 }
 
@@ -1637,15 +1651,6 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   if(hotkey == DFGHotkeys::PAN_GRAPH)
   {
     m_uiGraph->mainPanel()->setAlwaysPan(true);
-  }
-  else if(m_isEditable && hotkey == DFGHotkeys::TAB_SEARCH)
-  {
-    if (getUIController()->validPresetSplit())
-    {
-      QPoint pos = getGraphViewWidget()->lastEventPos();
-      pos = getGraphViewWidget()->mapToGlobal(pos);
-      getTabSearchWidget()->showForSearch(pos);
-    }
   }
   else if(hotkey == DFGHotkeys::GO_UP)
   {

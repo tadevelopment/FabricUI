@@ -1226,8 +1226,6 @@ class CanvasWindow(QtGui.QMainWindow):
             graph = self.dfgWidget.getUIGraph()
             graph.defineHotkey(QtCore.Qt.Key_F5, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.EXECUTE)
-            graph.defineHotkey(QtCore.Qt.Key_Tab, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.TAB_SEARCH)
             graph.defineHotkey(QtCore.Qt.Key_N, QtCore.Qt.ControlModifier,
                                DFG.DFGHotkeys.NEW_SCENE)
             graph.defineHotkey(QtCore.Qt.Key_O, QtCore.Qt.ControlModifier,

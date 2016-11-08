@@ -8,7 +8,6 @@ namespace FabricUI
   {
     const char *DFGHotkeys::EXECUTE = "Execute";
     const char *DFGHotkeys::PAN_GRAPH = "Pan graph";
-    const char *DFGHotkeys::TAB_SEARCH = "Tab search";
     const char *DFGHotkeys::NEW_SCENE = "New scene";
     const char *DFGHotkeys::OPEN_SCENE = "Open scene";
     const char *DFGHotkeys::SAVE_SCENE = "Save scene";

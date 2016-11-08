@@ -211,7 +211,6 @@ void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
   if(graph != m_setGraph)
   {
     //                                                            DFGHotkeys::EXECUTE);
-    graph->defineHotkey(Qt::Key_Tab,        Qt::NoModifier,       DFGHotkeys::TAB_SEARCH);
     //                                                            DFGHotkeys::NEW_SCENE);
     //                                                            DFGHotkeys::OPEN_SCENE);
     //                                                            DFGHotkeys::SAVE_SCENE);

@@ -95,6 +95,8 @@ namespace DFG {
 
       void reloadStyles();
 
+      void tabSearch();
+
       void createPort( FabricUI::GraphView::PortType portType );
       void deletePort( FabricUI::GraphView::Port *port );
       void editPort( FTL::CStrRef execPortName, bool duplicatePort );
@@ -208,6 +210,39 @@ namespace DFG {
       bool m_isEditable;
 
       static QSettings * g_settings;
+    };
+
+    class TabSearchAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      TabSearchAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Tab search" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_Tab );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->tabSearch();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
     };
 
     class CreatePortAction : public QAction
