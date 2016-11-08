@@ -610,6 +610,39 @@ namespace DFG {
       GraphView::Node *m_node;
     };
 
+    class EditSelectedPresetPropertiesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      EditSelectedPresetPropertiesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Properties" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_F2 );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->onEditPropertiesForCurrentSelection();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
     class SplitFromPresetAction : public QAction
     {
       Q_OBJECT

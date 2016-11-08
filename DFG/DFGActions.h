@@ -10,7 +10,6 @@ namespace FabricUI {
 namespace DFG {
 
   #define DFG_INSPECT_PRESET          "Inspect - DoubleClick"
-  #define DFG_EDIT_PRESET_PROPERTIES  "Properties - F2"
 }; // namespace DFG
 }; // namespace FabricUI
 

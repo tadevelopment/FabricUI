@@ -217,7 +217,6 @@ void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
     //                                                            DFGHotkeys::SAVE_SCENE);
     graph->defineHotkey(Qt::Key_U,          Qt::NoModifier,       DFGHotkeys::GO_UP);
     graph->defineHotkey(Qt::Key_I,          Qt::NoModifier,       DFGHotkeys::EDIT_PRESET);
-    graph->defineHotkey(Qt::Key_F2,         Qt::NoModifier,       DFGHotkeys::EDIT_PRESET_PROPERTIES);
     //                                                            DFGHotkeys::TOGGLE_MANIPULATION);
 
     QObject::connect(graph, SIGNAL(nodeEditRequested(FabricUI::GraphView::Node*)),
