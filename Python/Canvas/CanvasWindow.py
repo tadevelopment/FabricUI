@@ -1198,13 +1198,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         """
 
-        elif hotkey == DFG.DFGHotkeys.NEW_SCENE:
-            self.execNewGraph()
-        elif hotkey == DFG.DFGHotkeys.OPEN_SCENE:
-            self.onLoadGraph()
-        elif hotkey == DFG.DFGHotkeys.SAVE_SCENE:
-            self.saveGraph(False)
-        elif hotkey == DFG.DFGHotkeys.TOGGLE_MANIPULATION:
+        if hotkey == DFG.DFGHotkeys.TOGGLE_MANIPULATION:
             # Make sure we use the Action path, so menu's "checked" state is updated
             if self.isCanvas:
                 if self.manipAction:
@@ -1220,12 +1214,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
         if graph != self.currentGraph:
             graph = self.dfgWidget.getUIGraph()
-            graph.defineHotkey(QtCore.Qt.Key_N, QtCore.Qt.ControlModifier,
-                               DFG.DFGHotkeys.NEW_SCENE)
-            graph.defineHotkey(QtCore.Qt.Key_O, QtCore.Qt.ControlModifier,
-                               DFG.DFGHotkeys.OPEN_SCENE)
-            graph.defineHotkey(QtCore.Qt.Key_S, QtCore.Qt.ControlModifier,
-                               DFG.DFGHotkeys.SAVE_SCENE)
             graph.defineHotkey(QtCore.Qt.Key_Q, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.TOGGLE_MANIPULATION)
 

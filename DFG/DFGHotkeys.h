@@ -12,9 +12,6 @@ namespace FabricUI
     class DFGHotkeys
     {
     public:
-      static const char *NEW_SCENE;
-      static const char *OPEN_SCENE;
-      static const char *SAVE_SCENE;
       static const char *TOGGLE_MANIPULATION;
     };
   }
