@@ -245,6 +245,39 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
     };
 
+    class GoUpAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      GoUpAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Go up" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_U );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->onGoUpPressed();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
     class CreatePortAction : public QAction
     {
       Q_OBJECT

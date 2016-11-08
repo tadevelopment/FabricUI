@@ -139,6 +139,7 @@ DFGWidget::DFGWidget(
     );
 
   m_uiGraphViewWidget->addAction(new TabSearchAction                 (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new GoUpAction                      (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new SelectAllNodesAction            (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new AutoConnectionsAction           (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new RemoveConnectionsAction         (this, m_uiGraphViewWidget));
@@ -1651,10 +1652,6 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   if(hotkey == DFGHotkeys::PAN_GRAPH)
   {
     m_uiGraph->mainPanel()->setAlwaysPan(true);
-  }
-  else if(hotkey == DFGHotkeys::GO_UP)
-  {
-    onGoUpPressed();
   }
 
   FabricCore::FlagUserInteraction();
