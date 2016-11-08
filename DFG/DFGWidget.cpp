@@ -465,7 +465,9 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     bool needSeparator = false;
     if ( onlyInstOrBlockNodes )
     {
-      result->addAction(DFG_INSPECT_PRESET);
+      QAction *inspectNodeAction = new InspectNodeAction(dfgWidget, uiNode, result);
+      result->addAction(inspectNodeAction);
+
       result->addSeparator();
 
       GraphView::Node::EditingTargets editingTargets;
@@ -772,6 +774,11 @@ void DFGWidget::tabSearch()
   }
 }
 
+void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)
+{
+  emit nodeInspectRequested(node);
+}
+
 void DFGWidget::createNewBlockNode( QPoint const &globalPos )
 {
   QString text = "block";
@@ -977,11 +984,6 @@ void DFGWidget::onNodeAction(QAction * action)
   if(m_contextNode == NULL)
     return;
 
-  char const * nodeName = m_contextNode->name().c_str();
-  if(action->text() == DFG_INSPECT_PRESET)
-  {
-    emit nodeInspectRequested(m_contextNode);
-  }
 
   m_contextNode = NULL;
 }

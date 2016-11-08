@@ -96,6 +96,7 @@ namespace DFG {
       void reloadStyles();
 
       void tabSearch();
+      void emitNodeInspectRequested(FabricUI::GraphView::Node *);
 
       void createPort( FabricUI::GraphView::PortType portType );
       void deletePort( FabricUI::GraphView::Port *port );
@@ -274,6 +275,41 @@ namespace DFG {
     private:
 
       DFGWidget *m_dfgWidget;
+    };
+
+    class InspectNodeAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      InspectNodeAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent
+        )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Inspect" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->emitNodeInspectRequested(m_node);
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
     };
 
     class CreatePortAction : public QAction
@@ -1796,7 +1832,6 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
       GraphView::InstBlock *m_instBlock;
     };
-
 } // namespace DFG
 } // namespace FabricUI
 

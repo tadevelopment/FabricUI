@@ -9,7 +9,6 @@
 namespace FabricUI {
 namespace DFG {
 
-  #define DFG_INSPECT_PRESET          "Inspect - DoubleClick"
 }; // namespace DFG
 }; // namespace FabricUI
 
