@@ -337,22 +337,15 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   if ( !graphWidget->isEditable() )
     return NULL;
 
-  QMenu* result = new QMenu( graph->scene()->views()[0] );
+  QMenu *result = new QMenu( graph->scene()->views()[0] );
   
-  QAction *goUpAction = new QAction( "Back - U or Shift+DoubleClick", graphWidget );
-  QObject::connect(goUpAction, SIGNAL(triggered()), graphWidget, SLOT(onGoUpPressed()));
-  result->addAction(goUpAction);
+  result->addAction( new GoUpAction(graphWidget, result) );
+
   result->addSeparator();
 
-  result->addAction(
-    new NewGraphNodeAction( graphWidget, QCursor::pos(), result )
-    );
-  result->addAction(
-    new NewFunctionNodeAction( graphWidget, QCursor::pos(), result )
-    );
-  result->addAction(
-    new NewBackdropNodeAction( graphWidget, QCursor::pos(), result )
-    );
+  result->addAction(new NewGraphNodeAction   (graphWidget, QCursor::pos(), result));
+  result->addAction(new NewFunctionNodeAction(graphWidget, QCursor::pos(), result));
+  result->addAction(new NewBackdropNodeAction(graphWidget, QCursor::pos(), result));
 
   std::vector<GraphView::Node *> nodes = graph->selectedNodes();
   
@@ -373,44 +366,36 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     blockNodeCount
     );
 
-  QAction *implodeSelectedNodesAction =
-    new ImplodeSelectedNodesAction( graphWidget, result );
-  implodeSelectedNodesAction->setEnabled( blockNodeCount == 0 && nodes.size() > 0 );
-  result->addAction( implodeSelectedNodesAction );
+  QAction *implodeSelectedNodesAction = new ImplodeSelectedNodesAction(graphWidget, result);
+  implodeSelectedNodesAction->setEnabled(blockNodeCount == 0 && nodes.size() > 0);
+  result->addAction(implodeSelectedNodesAction);
 
   result->addSeparator();
 
-  result->addAction(new NewVariableNodeAction(graphWidget, QCursor::pos(), result));
+  result->addAction(new NewVariableNodeAction   (graphWidget, QCursor::pos(), result));
   result->addAction(new NewVariableGetNodeAction(graphWidget, QCursor::pos(), result));
   result->addAction(new NewVariableSetNodeAction(graphWidget, QCursor::pos(), result));
-  result->addAction(new NewCacheNodeAction(graphWidget, QCursor::pos(), result));
+  result->addAction(new NewCacheNodeAction      (graphWidget, QCursor::pos(), result));
 
   result->addSeparator();
 
-  QAction *newBlockAction =
-    new NewBlockNodeAction( graphWidget, QCursor::pos(), result );
-  newBlockAction->setEnabled( controller->getExec().allowsBlocks() );
+  QAction *newBlockAction = new NewBlockNodeAction(graphWidget, QCursor::pos(), result);
+  newBlockAction->setEnabled(controller->getExec().allowsBlocks());
   result->addAction( newBlockAction );
 
   result->addSeparator();
-  QAction * pasteNodesAction = new PasteNodesAction(graphWidget, result);
-  result->addAction(pasteNodesAction);
 
-  QAction * selectAllNodesAction = new SelectAllNodesAction(graphWidget, result);
-  result->addAction(selectAllNodesAction);
+  result->addAction(new PasteNodesAction    (graphWidget, result));
+  result->addAction(new SelectAllNodesAction(graphWidget, result));
 
   result->addSeparator();
 
-  QAction * autoConnectionsAction = new AutoConnectionsAction(graphWidget, result);
-  result->addAction(autoConnectionsAction);
-
-  QAction * removeConnectionsAction = new RemoveConnectionsAction(graphWidget, result);
-  result->addAction(removeConnectionsAction);
+  result->addAction(new AutoConnectionsAction  (graphWidget, result));
+  result->addAction(new RemoveConnectionsAction(graphWidget, result));
 
   result->addSeparator();
 
-  QAction * resetZoomAction = new ResetZoomAction(graphWidget, result);
-  result->addAction(resetZoomAction);
+  result->addAction(new ResetZoomAction(graphWidget, result));
 
   return result;
 }
