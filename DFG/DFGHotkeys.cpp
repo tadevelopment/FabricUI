@@ -6,7 +6,6 @@ namespace FabricUI
 {
   namespace DFG
   {
-    const char *DFGHotkeys::EXECUTE = "Execute";
     const char *DFGHotkeys::NEW_SCENE = "New scene";
     const char *DFGHotkeys::OPEN_SCENE = "Open scene";
     const char *DFGHotkeys::SAVE_SCENE = "Save scene";
