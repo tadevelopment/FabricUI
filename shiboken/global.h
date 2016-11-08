@@ -78,7 +78,6 @@
 #include <FabricUI/DFG/DFGConfig.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
 #include <FabricUI/DFG/DFGController.h>
-#include <FabricUI/DFG/DFGHotkeys.h>
 #include <FabricUI/DFG/DFGLogWidget.h>
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>

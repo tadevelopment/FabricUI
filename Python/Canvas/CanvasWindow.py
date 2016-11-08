@@ -1188,22 +1188,6 @@ class CanvasWindow(QtGui.QMainWindow):
                 menu.addSeparator()
                 menu.addAction(self.blockCompilationsAction)
 
-    def onHotkeyPressed(self, key, modifiers, hotkey):
-        """Callback for when a hot key is pressed.
-
-        Arguments:
-            key: Key that is pressed.
-            modifiers: Modifiers that were pressed.
-            hotkey (str): Hot key constant.
-
-        """
-
-        if hotkey == DFG.DFGHotkeys.TOGGLE_MANIPULATION:
-            # Make sure we use the Action path, so menu's "checked" state is updated
-            if self.isCanvas:
-                if self.manipAction:
-                    self.manipAction.trigger()
-
     def onGraphSet(self, graph):
         """Callback when the graph is set.
 

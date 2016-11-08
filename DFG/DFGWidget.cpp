@@ -5,7 +5,6 @@
 #include <FabricUI/DFG/DFGErrorsWidget.h>
 #include <FabricUI/DFG/DFGExecBlockEditorWidget.h>
 #include <FabricUI/DFG/DFGGraphViewWidget.h>
-#include <FabricUI/DFG/DFGHotkeys.h>
 #include <FabricUI/DFG/DFGMetaDataHelpers.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/DFG/DFGWidget.h>
