@@ -185,26 +185,6 @@ QWidget* FabricUI::DFG::DFGCombinedWidget::getDfgValueEditor()
   return m_valueEditor->getWidget();
 }
 
-void DFGCombinedWidget::keyPressEvent(QKeyEvent * event)
-{
-  // [FE-5660] no need to filter out undo/redo,
-  // instead simply pass all keyboard events to
-  // the parent class.
-  QSplitter::keyPressEvent(event);
-
-  /*
-  if(event->modifiers().testFlag(Qt::ControlModifier))
-  {
-    // filter out undo redo
-    if(event->key() == Qt::Key_Z || event->key() == Qt::Key_Y)
-    {
-      return QSplitter::keyPressEvent(event);
-    }
-  }
-  event->accept();
-  */
-}
-
 void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
 {
   if(graph != m_setGraph)
