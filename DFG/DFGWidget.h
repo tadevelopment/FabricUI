@@ -148,7 +148,6 @@ namespace DFG {
       void onToggleDimConnections();
       void onTogglePortsCentered();
       void onEditPropertiesForCurrentSelection();
-      /// Shows this node in the explorer (if it's a preset)
       void onRevealPresetInExplorer(const char* nodeName);
 
     protected slots:
@@ -569,6 +568,40 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->openPresetDoc(m_node->name().c_str());
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
+    };
+
+    class RevealPresetInExplorerAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      RevealPresetInExplorerAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Reveal in explorer" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->onRevealPresetInExplorer(m_node->name().c_str());
       }
 
     private:

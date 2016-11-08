@@ -604,9 +604,9 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     createPresetAction->setEnabled(onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable());
     result->addAction(createPresetAction);
 
-    if ( onlyInstNodes )
-      if ( instNodeCount == 1 )
-        result->addAction(DFG_REVEAL_IN_EXPLORER);
+    QAction *revealPresetInExplorerAction = new RevealPresetInExplorerAction(dfgWidget, uiNode, result);
+    revealPresetInExplorerAction->setEnabled(onlyInstNodes && instNodeCount == 1);
+    result->addAction(revealPresetInExplorerAction);
 
     QAction *exportGraphAction = new ExportGraphAction(dfgWidget, uiNode, result);
     exportGraphAction->setEnabled(onlyInstNodes && instNodeCount == 1);
@@ -987,10 +987,6 @@ void DFGWidget::onNodeAction(QAction * action)
   if(action->text() == DFG_INSPECT_PRESET)
   {
     emit nodeInspectRequested(m_contextNode);
-  }
-  else if(action->text() == DFG_REVEAL_IN_EXPLORER)
-  {
-    onRevealPresetInExplorer(nodeName);
   }
   else if(action->text() == DFG_EDIT_PRESET_PROPERTIES)
   {
