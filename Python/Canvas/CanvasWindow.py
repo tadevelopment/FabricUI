@@ -1236,8 +1236,6 @@ class CanvasWindow(QtGui.QMainWindow):
                                DFG.DFGHotkeys.SAVE_SCENE)
             graph.defineHotkey(QtCore.Qt.Key_U, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.GO_UP)
-            graph.defineHotkey(QtCore.Qt.Key_I, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.EDIT_PRESET)
             graph.defineHotkey(QtCore.Qt.Key_Q, QtCore.Qt.NoModifier,
                                DFG.DFGHotkeys.TOGGLE_MANIPULATION)
 

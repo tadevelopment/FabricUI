@@ -138,22 +138,23 @@ DFGWidget::DFGWidget(
     this, SIGNAL(urlDropped(QUrl, bool))
     );
 
-  m_uiGraphViewWidget->addAction(new SelectAllNodesAction              (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new AutoConnectionsAction             (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new RemoveConnectionsAction           (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new CutNodesAction                    (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new CopyNodesAction                   (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new PasteNodesAction                  (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new CollapseLevel1Action              (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new CollapseLevel2Action              (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new CollapseLevel3Action              (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new ResetZoomAction                   (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new FrameSelectedNodesAction          (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new FrameAllNodesAction               (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new RelaxNodesAction                  (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new DeleteNodes1Action                (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new DeleteNodes2Action                (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new EditSelectedPresetPropertiesAction(this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new SelectAllNodesAction            (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new AutoConnectionsAction           (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new RemoveConnectionsAction         (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new CutNodesAction                  (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new CopyNodesAction                 (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new PasteNodesAction                (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new CollapseLevel1Action            (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new CollapseLevel2Action            (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new CollapseLevel3Action            (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new ResetZoomAction                 (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new FrameSelectedNodesAction        (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new FrameAllNodesAction             (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new RelaxNodesAction                (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new DeleteNodes1Action              (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new DeleteNodes2Action              (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new EditSelectedNodeAction          (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new EditSelectedNodePropertiesAction(this, m_uiGraphViewWidget));
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -509,7 +510,10 @@ QMenu *DFGWidget::nodeContextMenuCallback(
             );
         else assert( false );
         if ( inTopPriority )
-          editAction->setText( editAction->text() + " - I or Shift+DoubleClick" );
+        {
+          editAction->setShortcut( Qt::Key_I );
+          editAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        }
         result->addAction( editAction );
 
         lastPriority = priority;
@@ -531,7 +535,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
         needSeparator = false;
       }
 
-      QAction *editSelectedPresetPropertiesAction = new EditSelectedPresetPropertiesAction(dfgWidget, result);
+      QAction *editSelectedPresetPropertiesAction = new EditSelectedNodePropertiesAction(dfgWidget, result);
       editSelectedPresetPropertiesAction->setEnabled(nodes.size() == 1 && !someVarNodes && !someGetNodes && !someSetNodes);
       result->addAction(editSelectedPresetPropertiesAction);
 
@@ -1647,13 +1651,6 @@ void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString h
   {
     onGoUpPressed();
   }
-  else if ( hotkey == DFGHotkeys::EDIT_PRESET )
-  {
-    std::vector<GraphView::Node*> const &nodes =
-      m_uiController->graph()->selectedNodes();
-    if ( nodes.size() == 1 )
-      onNodeEditRequested( nodes.front() );
-  }
 
   FabricCore::FlagUserInteraction();
 }
@@ -1895,7 +1892,14 @@ bool DFGWidget::maybePopExec( std::string &nodeName )
   return true;  
 }
 
-void DFGWidget::onEditPropertiesForCurrentSelection()
+void DFGWidget::onEditSelectedNode()
+{
+  std::vector<GraphView::Node*> const &nodes = m_uiController->graph()->selectedNodes();
+  if ( nodes.size() == 1 )
+    onNodeEditRequested( nodes[0] );
+}
+
+void DFGWidget::onEditSelectedNodeProperties()
 {
   try
   {

@@ -19,7 +19,6 @@ namespace FabricUI
       static const char *OPEN_SCENE;
       static const char *SAVE_SCENE;
       static const char *GO_UP;
-      static const char *EDIT_PRESET;
       static const char *TOGGLE_MANIPULATION;
     };
   }

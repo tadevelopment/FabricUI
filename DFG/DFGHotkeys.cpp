@@ -13,7 +13,6 @@ namespace FabricUI
     const char *DFGHotkeys::OPEN_SCENE = "Open scene";
     const char *DFGHotkeys::SAVE_SCENE = "Save scene";
     const char *DFGHotkeys::GO_UP = "Go up";
-    const char *DFGHotkeys::EDIT_PRESET = "Edit preset";
     const char *DFGHotkeys::TOGGLE_MANIPULATION = "Toggle manipulation";
   }
 }

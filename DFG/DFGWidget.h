@@ -147,7 +147,8 @@ namespace DFG {
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
       void onToggleDimConnections();
       void onTogglePortsCentered();
-      void onEditPropertiesForCurrentSelection();
+      void onEditSelectedNode();
+      void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);
 
     protected slots:
@@ -610,13 +611,46 @@ namespace DFG {
       GraphView::Node *m_node;
     };
 
-    class EditSelectedPresetPropertiesAction : public QAction
+    class EditSelectedNodeAction : public QAction
     {
       Q_OBJECT
 
     public:
 
-      EditSelectedPresetPropertiesAction(
+      EditSelectedNodeAction(
+        DFGWidget *dfgWidget,
+        QObject *parent )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Edit" );
+        connect(
+          this, SIGNAL(triggered()),
+          this, SLOT(onTriggered())
+          );
+        setShortcut( Qt::Key_I );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->onEditSelectedNode();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class EditSelectedNodePropertiesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      EditSelectedNodePropertiesAction(
         DFGWidget *dfgWidget,
         QObject *parent )
         : QAction( parent )
@@ -635,7 +669,7 @@ namespace DFG {
 
       void onTriggered()
       {
-        m_dfgWidget->onEditPropertiesForCurrentSelection();
+        m_dfgWidget->onEditSelectedNodeProperties();
       }
 
     private:
