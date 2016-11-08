@@ -1211,8 +1211,6 @@ class CanvasWindow(QtGui.QMainWindow):
             if self.isCanvas:
                 if self.manipAction:
                     self.manipAction.trigger()
-        else:
-            self.dfgWidget.onHotkeyPressed(key, modifiers, hotkey)
 
     def onGraphSet(self, graph):
         """Callback when the graph is set.

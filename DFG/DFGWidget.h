@@ -142,8 +142,6 @@ namespace DFG {
       void onGoUpPressed();
       void onNodeAction(QAction * action);
       void onNodeEditRequested(FabricUI::GraphView::Node *);
-      void onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey);
-      void onHotkeyReleased(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey);
       void onKeyPressed(QKeyEvent * event);
       void onKeyReleased(QKeyEvent * event);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);

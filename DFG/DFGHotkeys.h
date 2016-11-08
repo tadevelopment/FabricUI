@@ -13,7 +13,6 @@ namespace FabricUI
     {
     public:
       static const char *EXECUTE;
-      static const char *PAN_GRAPH;
       static const char *NEW_SCENE;
       static const char *OPEN_SCENE;
       static const char *SAVE_SCENE;

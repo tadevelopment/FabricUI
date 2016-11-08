@@ -1647,24 +1647,6 @@ void DFGWidget::explodeNode( const char *nodeName )
   }
 }
 
-void DFGWidget::onHotkeyPressed(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey)
-{ 
-  if(hotkey == DFGHotkeys::PAN_GRAPH)
-  {
-    m_uiGraph->mainPanel()->setAlwaysPan(true);
-  }
-
-  FabricCore::FlagUserInteraction();
-}
-
-void DFGWidget::onHotkeyReleased(Qt::Key key, Qt::KeyboardModifier mod, QString hotkey)
-{
-  if(hotkey == DFGHotkeys::PAN_GRAPH)
-  {
-    m_uiGraph->mainPanel()->setAlwaysPan(false);
-  }
-}
-
 void DFGWidget::onKeyPressed(QKeyEvent * event)
 {
   if(getUIGraph() && !event->isAutoRepeat() && getUIGraph()->pressHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))
@@ -2232,16 +2214,7 @@ void DFGWidget::onExecChanged()
     m_uiGraph = new GraphView::Graph( NULL, m_dfgConfig.graphConfig );
     m_uiGraph->setController(m_uiController.get());
     m_uiController->setGraph(m_uiGraph);
-    m_uiGraph->defineHotkey(Qt::Key_Space, Qt::NoModifier, DFGHotkeys::PAN_GRAPH);
 
-    QObject::connect(
-      m_uiGraph, SIGNAL(hotkeyPressed(Qt::Key, Qt::KeyboardModifier, QString)), 
-      this, SLOT(onHotkeyPressed(Qt::Key, Qt::KeyboardModifier, QString))
-    );  
-    QObject::connect(
-      m_uiGraph, SIGNAL(hotkeyReleased(Qt::Key, Qt::KeyboardModifier, QString)), 
-      this, SLOT(onHotkeyReleased(Qt::Key, Qt::KeyboardModifier, QString))
-    );  
     QObject::connect(
       m_uiGraph, SIGNAL(bubbleEditRequested(FabricUI::GraphView::Node*)), 
       this, SLOT(onBubbleEditRequested(FabricUI::GraphView::Node*))
