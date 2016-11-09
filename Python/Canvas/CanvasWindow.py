@@ -1136,7 +1136,7 @@ class CanvasWindow(QtGui.QMainWindow):
                 if self.isCanvas:
                     menu.addSeparator()
                     self.manipAction = QtGui.QAction(
-                        DFG.DFGHotkeys.TOGGLE_MANIPULATION, self.viewport)
+                        'Toggle manipulation', self.viewport)
                     self.manipAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Q))
                     self.manipAction.setShortcutContext(
                         QtCore.Qt.WidgetWithChildrenShortcut)
@@ -1198,11 +1198,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         if graph != self.currentGraph:
             graph = self.dfgWidget.getUIGraph()
-            graph.defineHotkey(QtCore.Qt.Key_Q, QtCore.Qt.NoModifier,
-                               DFG.DFGHotkeys.TOGGLE_MANIPULATION)
-
             graph.nodeEditRequested.connect(self.onNodeEditRequested)
-
             self.currentGraph = graph
 
     def dragEnterEvent(self, event):
