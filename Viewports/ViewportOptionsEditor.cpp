@@ -45,7 +45,7 @@ public:
   }
 
   QVariant getValue() {
-    return toVariant(m_val);
+    return toVariant(m_val.clone());
   }
 
   void setValue(
@@ -53,7 +53,12 @@ public:
     bool commit,
     QVariant valueAtInteractionBegin
   ) {
-    FabricUI::ValueEditor::RTVariant::toRTVal( value, m_val );
+
+    // RTVariant::toRTVal might change the pointer in ioVal,
+    // so we copy it to make sure that m_val will always point to the same place
+    FabricCore::RTVal m_valCopy = m_val.clone();
+    FabricUI::ValueEditor::RTVariant::toRTVal( value, m_valCopy );
+    m_val.setJSON( m_valCopy.getJSON() ); // TODO : don't use JSON for assignment
 
     // Storing the value in the Settings
     m_settings->setValue( m_namePath.data(), QString( m_val.getJSON().getStringCString() ));
