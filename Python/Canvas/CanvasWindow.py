@@ -309,7 +309,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
-        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor(self.client)
+        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor( self.client, self.qUndoStack )
         # When the rendering options of the viewport have changed, redraw
         self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
         # Once the Viewport has been setup (and filled its option values), update the options menu
