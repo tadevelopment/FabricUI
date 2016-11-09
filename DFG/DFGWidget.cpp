@@ -332,8 +332,6 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     static_cast<DFGController *>( graph->controller() );
   if ( !controller )
     return NULL;
-  if ( !graphWidget->isEditable() )
-    return NULL;
 
   QMenu *result = new QMenu( graph->scene()->views()[0] );
   
@@ -341,9 +339,9 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  result->addAction(new NewGraphNodeAction   (graphWidget, QCursor::pos(), result));
-  result->addAction(new NewFunctionNodeAction(graphWidget, QCursor::pos(), result));
-  result->addAction(new NewBackdropNodeAction(graphWidget, QCursor::pos(), result));
+  result->addAction(new NewGraphNodeAction   (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewFunctionNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewBackdropNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
 
   std::vector<GraphView::Node *> nodes = graph->selectedNodes();
   
@@ -364,32 +362,30 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     blockNodeCount
     );
 
-  QAction *implodeSelectedNodesAction = new ImplodeSelectedNodesAction(graphWidget, result);
-  implodeSelectedNodesAction->setEnabled(blockNodeCount == 0 && nodes.size() > 0);
-  result->addAction(implodeSelectedNodesAction);
+  result->addAction(new ImplodeSelectedNodesAction(graphWidget, result, graphWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
 
   result->addSeparator();
 
-  result->addAction(new NewVariableNodeAction   (graphWidget, QCursor::pos(), result));
-  result->addAction(new NewVariableGetNodeAction(graphWidget, QCursor::pos(), result));
-  result->addAction(new NewVariableSetNodeAction(graphWidget, QCursor::pos(), result));
-  result->addAction(new NewCacheNodeAction      (graphWidget, QCursor::pos(), result));
+  result->addAction(new NewVariableNodeAction   (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewVariableGetNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewVariableSetNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewCacheNodeAction      (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
 
   result->addSeparator();
 
-  QAction *newBlockAction = new NewBlockNodeAction(graphWidget, QCursor::pos(), result);
-  newBlockAction->setEnabled(controller->getExec().allowsBlocks());
-  result->addAction( newBlockAction );
+  result->addAction(new NewBlockNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable() && controller->getExec().allowsBlocks()));
 
   result->addSeparator();
 
-  result->addAction(new PasteNodesAction    (graphWidget, result));
-  result->addAction(new SelectAllNodesAction(graphWidget, result));
+  result->addAction(new CopyNodesAction     (graphWidget, result, nodes.size() > 0));
+  result->addAction(new CutNodesAction      (graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
+  result->addAction(new PasteNodesAction    (graphWidget, result, graphWidget->isEditable()));
+  result->addAction(new SelectAllNodesAction(graphWidget, result, nodes.size() > 0));
 
   result->addSeparator();
 
-  result->addAction(new AutoConnectionsAction  (graphWidget, result));
-  result->addAction(new RemoveConnectionsAction(graphWidget, result));
+  result->addAction(new AutoConnectionsAction  (graphWidget, result, graphWidget->isEditable() && nodes.size() > 1));
+  result->addAction(new RemoveConnectionsAction(graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
 
   result->addSeparator();
 
@@ -405,16 +401,13 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 {
   try
   {
-    DFGWidget *dfgWidget = static_cast<DFGWidget *>( dfgWidgetVoidPtr );
-
-    FabricCore::DFGExec &exec = dfgWidget->m_uiController->getExec();
-
-    GraphView::Graph * graph = dfgWidget->m_uiGraph;
+    DFGWidget           *dfgWidget = static_cast<DFGWidget *>(dfgWidgetVoidPtr);
+    FabricCore::DFGExec &exec      = dfgWidget->m_uiController->getExec();
+    GraphView::Graph    *graph     = dfgWidget->m_uiGraph;
     if (graph->controller() == NULL)
       return NULL;
 
-    std::vector<GraphView::Node *> nodes =
-      dfgWidget->getUIController()->graph()->selectedNodes();
+    std::vector<GraphView::Node *> nodes = dfgWidget->getUIController()->graph()->selectedNodes();
     unsigned varNodeCount;
     unsigned getNodeCount;
     unsigned setNodeCount;
@@ -431,41 +424,39 @@ QMenu *DFGWidget::nodeContextMenuCallback(
       userNodeCount,
       blockNodeCount
       );
-    bool onlyInstNodes = instNodeCount == nodes.size();
-    bool onlyInstOrBlockNodes =
-      ( instNodeCount + blockNodeCount ) == nodes.size();
-    bool someVarNodes = varNodeCount > 0;
-    bool someGetNodes = getNodeCount > 0;
-    bool someSetNodes = setNodeCount > 0;
+    bool onlyInstNodes        = (instNodeCount == nodes.size());
+    bool onlyInstOrBlockNodes = (nodes.size() == (instNodeCount + blockNodeCount));
+    bool someVarNodes         = (varNodeCount > 0);
+    bool someGetNodes         = (getNodeCount > 0);
+    bool someSetNodes         = (setNodeCount > 0);
 
-    char const * nodeName = uiNode->name().c_str();
+    char const *nodeName = uiNode->name().c_str();
 
-    QMenu* result = new QMenu( uiNode->scene()->views()[0] );
+    bool uiNodeIsInstOrBlockNode = (uiNode->isInstNode() || uiNode->isBlockNode());
 
-    QAction *openPresetDocAction = new OpenPresetDocAction(dfgWidget, uiNode, result);
-    openPresetDocAction->setEnabled(false);
-    if ( !exec.isExecBlock( nodeName )
-       && exec.getNodeType( nodeName ) == FabricCore::DFGNodeType_Inst )
+    bool uiNodeHasDocUrl = false;
+    if (  !exec.isExecBlock(nodeName)
+        && exec.getNodeType(nodeName) == FabricCore::DFGNodeType_Inst)
     {
-      QString uiDocUrl = exec.getNodeMetadata( nodeName, "uiDocUrl" );
-      if ( uiDocUrl.isEmpty() )
-      {
-        FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
-        uiDocUrl = subExec.getMetadata( "uiDocUrl" );
-      }
-      openPresetDocAction->setEnabled( !uiDocUrl.isEmpty() );
+      QString uiDocUrl = exec.getNodeMetadata(nodeName, "uiDocUrl");
+      if (uiDocUrl.isEmpty())
+        uiDocUrl = exec.getSubExec(nodeName).getMetadata("uiDocUrl");
+      uiNodeHasDocUrl = !uiDocUrl.isEmpty();
     }
-    result->addAction(openPresetDocAction);
+
+    QMenu *result = new QMenu(uiNode->scene()->views()[0]);
+
+    result->addAction(new OpenPresetDocAction(dfgWidget, uiNode, result, uiNodeHasDocUrl));
+
+    result->addSeparator();
+
+    result->addAction(new InspectNodeAction(dfgWidget, uiNode, result, uiNodeIsInstOrBlockNode));
 
     result->addSeparator();
 
     bool needSeparator = false;
     if ( onlyInstOrBlockNodes )
     {
-      QAction *inspectNodeAction = new InspectNodeAction(dfgWidget, uiNode, result);
-      result->addAction(inspectNodeAction);
-
-      result->addSeparator();
 
       GraphView::Node::EditingTargets editingTargets;
       uiNode->collectEditingTargets( editingTargets );
