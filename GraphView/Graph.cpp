@@ -910,39 +910,6 @@ void Graph::setCentralOverlayText(QString text)
   updateOverlays(rect().width(), height);
 }
 
-void Graph::defineHotkey(Qt::Key key, Qt::KeyboardModifier modifiers, QString name)
-{
-  Hotkey hotkey(key, modifiers);
-  std::map<Hotkey, QString>::iterator it = m_hotkeys.find(hotkey);
-  if(it == m_hotkeys.end())
-    m_hotkeys.insert(std::pair<Hotkey, QString>(hotkey, name));
-  else
-    it->second = name;
-}
-
-bool Graph::pressHotkey(Qt::Key key, Qt::KeyboardModifier modifiers)
-{
-  if(m_mouseGrabber != NULL)
-    return false;
-  
-  Hotkey hotkey(key, modifiers);
-  std::map<Hotkey, QString>::iterator it = m_hotkeys.find(hotkey);
-  if(it == m_hotkeys.end())
-    return false;
-  emit hotkeyPressed(it->first.key, it->first.modifiers, it->second);
-  return true;
-}
-
-bool Graph::releaseHotkey(Qt::Key key, Qt::KeyboardModifier modifiers)
-{
-  Hotkey hotkey(key, modifiers);
-  std::map<Hotkey, QString>::iterator it = m_hotkeys.find(hotkey);
-  if(it == m_hotkeys.end())
-    return false;
-  emit hotkeyReleased(it->first.key, it->first.modifiers, it->second);
-  return true;
-}
-
 void Graph::onNodeDoubleClicked(FabricUI::GraphView::Node * node, Qt::MouseButton button, Qt::KeyboardModifiers modifiers)
 {
   if ( modifiers.testFlag( Qt::ShiftModifier ) )

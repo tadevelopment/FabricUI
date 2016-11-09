@@ -101,9 +101,6 @@ namespace FabricUI
       virtual bool isConnectedAsTarget(const ConnectionTarget * target) const;
       virtual void updateColorForConnections(const ConnectionTarget * target) const;
 
-      // hotkeys
-      virtual void defineHotkey(Qt::Key key, Qt::KeyboardModifier modifiers, QString name);
-
       // context menus
       // menus are consumed by the graph, so they are destroyed after use.
       typedef QMenu* (*GraphContextMenuCallback)(Graph*, void*);
@@ -176,15 +173,9 @@ namespace FabricUI
 
     public slots:
 
-      virtual bool pressHotkey(Qt::Key key, Qt::KeyboardModifier modifiers);
-      virtual bool releaseHotkey(Qt::Key key, Qt::KeyboardModifier modifiers);
       void onNodeDoubleClicked(FabricUI::GraphView::Node * node, Qt::MouseButton button, Qt::KeyboardModifiers modifiers);
-      void requestSidePanelInspect(
-        FabricUI::GraphView::SidePanel *sidePanel
-        );
-      void requestMainPanelAction(
-         Qt::KeyboardModifiers modifiers
-        );
+      void requestSidePanelInspect(FabricUI::GraphView::SidePanel *sidePanel);
+      void requestMainPanelAction(Qt::KeyboardModifiers modifiers);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
 
     signals:
@@ -200,35 +191,11 @@ namespace FabricUI
       void sidePanelInspectRequested();
       void connectionAdded(FabricUI::GraphView::Connection * connection);
       void connectionRemoved(FabricUI::GraphView::Connection * connection);
-      void hotkeyPressed(Qt::Key, Qt::KeyboardModifier, QString);
-      void hotkeyReleased(Qt::Key, Qt::KeyboardModifier, QString);
       void bubbleEditRequested(FabricUI::GraphView::Node * node);
       // FE-6926  : Shift + double-clicking in an empty space "Goes up"
       void goUpPressed();
 
     private:
-
-
-      struct Hotkey
-      {
-        Qt::Key key;
-        Qt::KeyboardModifier modifiers;
-
-        Hotkey(Qt::Key key, Qt::KeyboardModifier modifiers)
-        {
-          this->key = key;
-          this->modifiers = modifiers;
-        }
-
-        bool operator < (const Hotkey & other) const
-        {
-          if((int)key < (int)other.key)
-            return true;
-          if((int)key > (int)other.key)
-            return false;
-          return (int)modifiers < (int)other.modifiers;
-        }
-      };
 
       GraphConfig m_config;
       Controller * m_controller;
@@ -239,7 +206,6 @@ namespace FabricUI
       MainPanel * m_mainPanel;
       SidePanel * m_leftPanel;
       SidePanel * m_rightPanel;
-      std::map<Hotkey, QString> m_hotkeys;
       GraphContextMenuCallback m_graphContextMenuCallback;
       NodeContextMenuCallback m_nodeContextMenuCallback;
       PinContextMenuCallback m_pinContextMenuCallback;

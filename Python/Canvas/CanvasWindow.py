@@ -22,30 +22,6 @@ class CanvasWindowEventFilter(QtCore.QObject):
         super(CanvasWindowEventFilter, self).__init__()
         self.window = window
 
-    def eventFilter(self, obj, event):
-        eventType = event.type()
-
-        if eventType == QtCore.QEvent.KeyPress:
-            keyEvent = QtGui.QKeyEvent(event)
-
-            if keyEvent.key() != QtCore.Qt.Key_Tab:
-                self.window.viewport.onKeyPressed(keyEvent)
-                if keyEvent.isAccepted():
-                    return True
-
-                self.window.dfgWidget.onKeyPressed(keyEvent)
-                if keyEvent.isAccepted():
-                    return True
-        elif eventType == QtCore.QEvent.KeyRelease:
-            keyEvent = QtGui.QKeyEvent(event)
-
-            if keyEvent.key() != QtCore.Qt.Key_Tab:
-                self.window.dfgWidget.onKeyReleased(keyEvent)
-                if keyEvent.isAccepted():
-                    return True
-
-        return QtCore.QObject.eventFilter(obj, event)
-
 class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
 

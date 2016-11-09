@@ -1620,22 +1620,6 @@ void DFGWidget::explodeNode( const char *nodeName )
   }
 }
 
-void DFGWidget::onKeyPressed(QKeyEvent * event)
-{
-  if(getUIGraph() && !event->isAutoRepeat() && getUIGraph()->pressHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))
-    event->accept();
-  else
-    keyPressEvent(event);  
-}
-
-void DFGWidget::onKeyReleased(QKeyEvent * event)
-{
-  if(getUIGraph() && !event->isAutoRepeat() && getUIGraph()->releaseHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))
-    event->accept();
-  else
-    keyPressEvent(event);  
-}
-
 void DFGWidget::onBubbleEditRequested(FabricUI::GraphView::Node * node)
 {
   if ( !m_isEditable )

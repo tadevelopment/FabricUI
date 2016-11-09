@@ -142,8 +142,6 @@ namespace DFG {
       void onExecSplitChanged();
       void onGoUpPressed();
       void onNodeEditRequested(FabricUI::GraphView::Node *);
-      void onKeyPressed(QKeyEvent * event);
-      void onKeyReleased(QKeyEvent * event);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
       void onToggleDimConnections();
       void onTogglePortsCentered();

@@ -91,11 +91,6 @@ void GLViewportWidget::clearInlineDrawing()
   }
 }
 
-void GLViewportWidget::onKeyPressed(QKeyEvent * event)
-{
-  ViewportWidget::keyPressEvent(event);  
-}
-
 void GLViewportWidget::initializeGL()
 {
   try

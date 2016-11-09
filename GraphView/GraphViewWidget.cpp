@@ -104,22 +104,6 @@ void GraphViewWidget::mouseMoveEvent(QMouseEvent * event)
   QGraphicsView::mouseMoveEvent(event);
 }
 
-void GraphViewWidget::keyPressEvent(QKeyEvent * event)
-{
-  if(!event->isAutoRepeat() && graph()->pressHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))
-    event->accept();
-  else
-    QGraphicsView::keyPressEvent(event);
-}
-
-void GraphViewWidget::keyReleaseEvent(QKeyEvent * event)
-{
-  if(!event->isAutoRepeat() && graph()->releaseHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))
-    event->accept();
-  else
-    QGraphicsView::keyPressEvent(event);
-}
-
 QPoint GraphViewWidget::lastEventPos() const
 {
   return m_lastEventPos;

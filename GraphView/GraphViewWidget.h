@@ -65,8 +65,6 @@ namespace FabricUI
 
       virtual void resizeEvent(QResizeEvent * event);
       virtual void mouseMoveEvent(QMouseEvent * event);
-      virtual void keyPressEvent(QKeyEvent * event);
-      virtual void keyReleaseEvent(QKeyEvent * event);
       QPoint lastEventPos() const;
 
       QPointF mapToGraph( QPoint const &globalPos ) const;
