@@ -1449,12 +1449,13 @@ namespace DFG {
         DFGWidget *dfgWidget,
         GraphView::Node *node,
         QObject *parent,
+        bool useSetText = true,
         bool enable = true )
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
         , m_node( node )
       {
-        setText( "Set Comment" );
+        setText( useSetText ? "Set comment" : "Edit comment" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -1488,7 +1489,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_node( node )
       {
-        setText( "Remove Comment" );
+        setText( "Remove comment" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );

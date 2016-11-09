@@ -355,7 +355,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   QMenu *result = new QMenu( graph->scene()->views()[0] );
   
-  result->addAction(new GoUpAction                (graphWidget, result) );
+  result->addAction(new GoUpAction(graphWidget, result) );
 
   result->addSeparator();
 
@@ -366,30 +366,30 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  result->addAction(new NewVariableNodeAction     (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewVariableGetNodeAction  (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewVariableSetNodeAction  (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewCacheNodeAction        (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewVariableNodeAction   (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewVariableGetNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewVariableSetNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewCacheNodeAction      (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
 
   result->addSeparator();
 
-  result->addAction(new NewBlockNodeAction        (graphWidget, QCursor::pos(), result, graphWidget->isEditable() && controller->getExec().allowsBlocks()));
+  result->addAction(new NewBlockNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable() && controller->getExec().allowsBlocks()));
 
   result->addSeparator();
 
-  result->addAction(new CopyNodesAction           (graphWidget, result, nodes.size() > 0));
-  result->addAction(new CutNodesAction            (graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
-  result->addAction(new PasteNodesAction          (graphWidget, result, graphWidget->isEditable() && !QApplication::clipboard()->text().isEmpty()));
-  result->addAction(new SelectAllNodesAction      (graphWidget, result, nodes.size() > 0));
+  result->addAction(new CopyNodesAction     (graphWidget, result, nodes.size() > 0));
+  result->addAction(new CutNodesAction      (graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
+  result->addAction(new PasteNodesAction    (graphWidget, result, graphWidget->isEditable() && !QApplication::clipboard()->text().isEmpty()));
+  result->addAction(new SelectAllNodesAction(graphWidget, result, nodes.size() > 0));
 
   result->addSeparator();
 
-  result->addAction(new AutoConnectionsAction     (graphWidget, result, graphWidget->isEditable() && nodes.size() > 1));
-  result->addAction(new RemoveConnectionsAction   (graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
+  result->addAction(new AutoConnectionsAction  (graphWidget, result, graphWidget->isEditable() && nodes.size() > 1));
+  result->addAction(new RemoveConnectionsAction(graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
 
   result->addSeparator();
 
-  result->addAction(new ResetZoomAction           (graphWidget, result));
+  result->addAction(new ResetZoomAction(graphWidget, result));
 
   return result;
 }
@@ -450,12 +450,9 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     result->addSeparator();
 
     result->addAction(new InspectNodeAction(dfgWidget, uiNode, result, uiNodeIsInstOrBlockNode));
-
-    result->addSeparator();
-
-    bool needSeparator = false;
     if ( onlyInstOrBlockNodes )
     {
+      result->addSeparator();
 
       GraphView::Node::EditingTargets editingTargets;
       uiNode->collectEditingTargets( editingTargets );
@@ -494,133 +491,46 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
         lastPriority = priority;
       }
-
-      needSeparator = true;
     }
+    
+    result->addSeparator();
 
-    bool needAnotherSeparator = false;
-
-    if ( nodes.size() == 1
-      && !someVarNodes
-      && !someGetNodes
-      && !someSetNodes )
-    {
-      if (needSeparator)
-      {
-        result->addSeparator();
-        needSeparator = false;
-      }
-
-      QAction *editSelectedPresetPropertiesAction = new EditSelectedNodePropertiesAction(dfgWidget, result);
-      editSelectedPresetPropertiesAction->setEnabled(nodes.size() == 1 && !someVarNodes && !someGetNodes && !someSetNodes);
-      result->addAction(editSelectedPresetPropertiesAction);
-
-      needAnotherSeparator = true;
-    }
-
-    if ( dfgWidget->isEditable() )
-    {
-      if (needSeparator)
-      {
-        result->addSeparator();
-        needSeparator = false;
-      }
-
-      QAction *deleteNodes1Action = new DeleteNodes1Action(dfgWidget, result);
-      result->addAction(deleteNodes1Action);
-
-      needAnotherSeparator = true;
-    }
-
-    if ( needSeparator || needAnotherSeparator )
-      result->addSeparator();
-
-    if (!someVarNodes)
-    {
-      QAction *copyNodesAction = new CopyNodesAction(dfgWidget, result);
-      result->addAction(copyNodesAction);
-
-      QAction *cutNodesAction = new CutNodesAction(dfgWidget, result);
-      cutNodesAction->setEnabled(dfgWidget->isEditable());
-      result->addAction(cutNodesAction);
-    }
-    else
-    {
-      QAction *selectAllNodesAction = new SelectAllNodesAction(dfgWidget, result);
-      result->addAction(selectAllNodesAction);
-
-      QAction *pasteNodesAction = new PasteNodesAction(dfgWidget, result);
-      pasteNodesAction->setEnabled(dfgWidget->isEditable());
-      result->addAction(pasteNodesAction);
-    }
+    result->addAction(new EditSelectedNodePropertiesAction(dfgWidget, result, nodes.size() == 1 && !someVarNodes && !someGetNodes && !someSetNodes));
 
     result->addSeparator();
 
-    QAction *autoConnectionsAction = new AutoConnectionsAction(dfgWidget, result);
-    autoConnectionsAction->setEnabled(nodes.size() && dfgWidget->isEditable());
-    result->addAction(autoConnectionsAction);
-
-    QAction *removeConnectionsAction = new RemoveConnectionsAction(dfgWidget, result);
-    removeConnectionsAction->setEnabled(nodes.size() && dfgWidget->isEditable());
-    result->addAction(removeConnectionsAction);
-
-    QAction *splitFromPresetAction = new SplitFromPresetAction(dfgWidget, uiNode, result);
-    splitFromPresetAction->setEnabled(onlyInstNodes && instNodeCount == 1 && exec.getSubExec(uiNode->name().c_str()).editWouldSplitFromPreset());
-    result->addAction(splitFromPresetAction);
+    result->addAction(new DeleteNodes1Action(dfgWidget, result, dfgWidget->isEditable()));
 
     result->addSeparator();
 
-    QAction *createPresetAction = new CreatePresetAction(dfgWidget, uiNode, result);
-    createPresetAction->setEnabled(onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable());
-    result->addAction(createPresetAction);
+    result->addAction(new CopyNodesAction     (dfgWidget, result, !someVarNodes));
+    result->addAction(new CutNodesAction      (dfgWidget, result, dfgWidget->isEditable() && !someVarNodes));
+    result->addAction(new PasteNodesAction    (dfgWidget, result, dfgWidget->isEditable() && !QApplication::clipboard()->text().isEmpty()));
+    result->addAction(new SelectAllNodesAction(dfgWidget, result));
 
-    QAction *revealPresetInExplorerAction = new RevealPresetInExplorerAction(dfgWidget, uiNode, result);
-    revealPresetInExplorerAction->setEnabled(onlyInstNodes && instNodeCount == 1);
-    result->addAction(revealPresetInExplorerAction);
+    result->addSeparator();
 
-    QAction *exportGraphAction = new ExportGraphAction(dfgWidget, uiNode, result);
-    exportGraphAction->setEnabled(onlyInstNodes && instNodeCount == 1);
-    result->addAction(exportGraphAction);
+    result->addAction(new AutoConnectionsAction  (dfgWidget, result, dfgWidget->isEditable() && nodes.size() > 1));
+    result->addAction(new RemoveConnectionsAction(dfgWidget, result, dfgWidget->isEditable()));
+    result->addAction(new SplitFromPresetAction  (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && exec.getSubExec(uiNode->name().c_str()).editWouldSplitFromPreset()));
 
-    QAction *implodeSelectedNodesAction =
-      new ImplodeSelectedNodesAction( dfgWidget, result );
-    implodeSelectedNodesAction->setEnabled( dfgWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0 );
-    result->addAction( implodeSelectedNodesAction );
+    result->addSeparator();
 
-    if ( onlyInstNodes )
-    {
-      if ( dfgWidget->isEditable() )
-      {
-        if (instNodeCount == 1)
-        {
-          FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
-          if (subExec.getType() == FabricCore::DFGExecType_Graph)
-          {
-            QAction *explodeNodeAction = new ExplodeNodeAction(dfgWidget, uiNode, result);
-            result->addAction(explodeNodeAction);
-          }
+    result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable()));
+    result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
+    result->addAction(new ExportGraphAction           (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
+    result->addAction(new ImplodeSelectedNodesAction  (dfgWidget, result, dfgWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
+    result->addAction(new ExplodeNodeAction           (dfgWidget, uiNode, result, dfgWidget->isEditable() && onlyInstNodes && instNodeCount == 1 && exec.getSubExec(nodeName).getType() == FabricCore::DFGExecType_Graph));
 
-          if (subExec.getExtDepCount() > 0)
-          {
-            result->addSeparator();
+    result->addSeparator();
 
-            QAction *reloadExtensionsAction = new ReloadExtensionsAction(dfgWidget, nodes[0], result);
-            result->addAction(reloadExtensionsAction);
-          }
-        }
-      }
-    }
+    result->addAction(new ReloadExtensionsAction(dfgWidget, uiNode, result, dfgWidget->isEditable() && onlyInstNodes && instNodeCount == 1 && exec.getSubExec(nodeName).getType() == FabricCore::DFGExecType_Graph && exec.getSubExec(nodeName).getExtDepCount() > 0));
 
-    if (nodes.size() == 1 && dfgWidget->isEditable())
-    {
-      result->addSeparator();
+    result->addSeparator();
 
-      QAction *setNodeCommentAction = new SetNodeCommentAction(dfgWidget, nodes[0], result);
-      result->addAction(setNodeCommentAction);
+    result->addAction(new SetNodeCommentAction   (dfgWidget, uiNode, result, uiNode->comment().isEmpty(), dfgWidget->isEditable()));
+    result->addAction(new RemoveNodeCommentAction(dfgWidget, uiNode, result, dfgWidget->isEditable() && !uiNode->comment().isEmpty()));
 
-      QAction *removeNodeCommentAction = new RemoveNodeCommentAction(dfgWidget, nodes[0], result);
-      result->addAction(removeNodeCommentAction);
-    }
     return result;
   }
   catch(FabricCore::Exception e)
