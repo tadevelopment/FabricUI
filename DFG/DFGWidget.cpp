@@ -30,6 +30,7 @@
 #include <QDebug>
 #include <QUrl>
 #include <QApplication>
+#include <QClipboard>
 #include <QColorDialog>
 #include <QCursor>
 #include <QFileDialog>
@@ -333,16 +334,6 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   if ( !controller )
     return NULL;
 
-  QMenu *result = new QMenu( graph->scene()->views()[0] );
-  
-  result->addAction( new GoUpAction(graphWidget, result) );
-
-  result->addSeparator();
-
-  result->addAction(new NewGraphNodeAction   (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewFunctionNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewBackdropNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-
   std::vector<GraphView::Node *> nodes = graph->selectedNodes();
   
   unsigned varNodeCount;
@@ -362,34 +353,43 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     blockNodeCount
     );
 
+  QMenu *result = new QMenu( graph->scene()->views()[0] );
+  
+  result->addAction(new GoUpAction                (graphWidget, result) );
+
+  result->addSeparator();
+
+  result->addAction(new NewGraphNodeAction        (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewFunctionNodeAction     (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewBackdropNodeAction     (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
   result->addAction(new ImplodeSelectedNodesAction(graphWidget, result, graphWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
 
   result->addSeparator();
 
-  result->addAction(new NewVariableNodeAction   (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewVariableGetNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewVariableSetNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewCacheNodeAction      (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewVariableNodeAction     (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewVariableGetNodeAction  (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewVariableSetNodeAction  (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewCacheNodeAction        (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
 
   result->addSeparator();
 
-  result->addAction(new NewBlockNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable() && controller->getExec().allowsBlocks()));
+  result->addAction(new NewBlockNodeAction        (graphWidget, QCursor::pos(), result, graphWidget->isEditable() && controller->getExec().allowsBlocks()));
 
   result->addSeparator();
 
-  result->addAction(new CopyNodesAction     (graphWidget, result, nodes.size() > 0));
-  result->addAction(new CutNodesAction      (graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
-  result->addAction(new PasteNodesAction    (graphWidget, result, graphWidget->isEditable()));
-  result->addAction(new SelectAllNodesAction(graphWidget, result, nodes.size() > 0));
+  result->addAction(new CopyNodesAction           (graphWidget, result, nodes.size() > 0));
+  result->addAction(new CutNodesAction            (graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
+  result->addAction(new PasteNodesAction          (graphWidget, result, graphWidget->isEditable() && !QApplication::clipboard()->text().isEmpty()));
+  result->addAction(new SelectAllNodesAction      (graphWidget, result, nodes.size() > 0));
 
   result->addSeparator();
 
-  result->addAction(new AutoConnectionsAction  (graphWidget, result, graphWidget->isEditable() && nodes.size() > 1));
-  result->addAction(new RemoveConnectionsAction(graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
+  result->addAction(new AutoConnectionsAction     (graphWidget, result, graphWidget->isEditable() && nodes.size() > 1));
+  result->addAction(new RemoveConnectionsAction   (graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
 
   result->addSeparator();
 
-  result->addAction(new ResetZoomAction(graphWidget, result));
+  result->addAction(new ResetZoomAction           (graphWidget, result));
 
   return result;
 }
