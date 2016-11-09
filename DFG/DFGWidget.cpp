@@ -433,8 +433,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     char const *nodeName = uiNode->name().c_str();
 
     bool uiNodeIsInstOrBlockNode = (uiNode->isInstNode() || uiNode->isBlockNode());
-
-    bool uiNodeHasDocUrl = false;
+    bool uiNodeHasDocUrl         = false;
     if (  !exec.isExecBlock(nodeName)
         && exec.getNodeType(nodeName) == FabricCore::DFGNodeType_Inst)
     {
