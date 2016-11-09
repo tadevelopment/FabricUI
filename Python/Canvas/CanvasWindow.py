@@ -1129,7 +1129,7 @@ class CanvasWindow(QtGui.QMainWindow):
                 if self.isCanvas:
                     self.setGridVisibleAction = QtGui.QAction('&Display Grid', None)
                     self.setGridVisibleAction.setShortcut(
-                        QtCore.Qt.CTRL + QtCore.Qt.Key_G)
+                        QtCore.Qt.Key_G)
                     self.setGridVisibleAction.setCheckable(True)
                     self.setGridVisibleAction.setChecked(
                         self.viewport.isGridVisible())
