@@ -941,6 +941,39 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
     };
 
+    class DeselectAllNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      DeselectAllNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Deselect all" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+        setShortcut( QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_A) );
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIGraph()->clearSelection();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
     class SidePanelScrollUpAction : public QAction
     {
       Q_OBJECT

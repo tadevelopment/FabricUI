@@ -140,6 +140,7 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(new TabSearchAction                 (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new GoUpAction                      (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new SelectAllNodesAction            (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new DeselectAllNodesAction          (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new AutoConnectionsAction           (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new RemoveConnectionsAction         (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new CutNodesAction                  (this, m_uiGraphViewWidget));
@@ -377,10 +378,11 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  result->addAction(new CopyNodesAction     (graphWidget, result, nodes.size() > 0));
-  result->addAction(new CutNodesAction      (graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
-  result->addAction(new PasteNodesAction    (graphWidget, result, graphWidget->isEditable() && !QApplication::clipboard()->text().isEmpty()));
-  result->addAction(new SelectAllNodesAction(graphWidget, result, nodes.size() > 0));
+  result->addAction(new CopyNodesAction       (graphWidget, result, nodes.size() > 0));
+  result->addAction(new CutNodesAction        (graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
+  result->addAction(new PasteNodesAction      (graphWidget, result, graphWidget->isEditable() && !QApplication::clipboard()->text().isEmpty()));
+  result->addAction(new SelectAllNodesAction  (graphWidget, result, graph->nodes().size() > 0));
+  result->addAction(new DeselectAllNodesAction(graphWidget, result, nodes.size() > 0));
 
   result->addSeparator();
 
@@ -2029,6 +2031,9 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
 
   QAction * selectAllNodesAction = new SelectAllNodesAction(this, menuBar);
   editMenu->addAction(selectAllNodesAction);
+
+  QAction * deselectAllNodesAction = new DeselectAllNodesAction(this, menuBar);
+  editMenu->addAction(deselectAllNodesAction);
 
   QAction * cutNodesAction = new CutNodesAction(this, menuBar);
   editMenu->addAction(cutNodesAction);
