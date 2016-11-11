@@ -953,7 +953,6 @@ namespace DFG {
         QObject *parent,
         bool enable = true )
         : QAction( parent )
-        , m_dfgWidget( dfgWidget )
         , m_sidePanel( sidePanel )
       {
         setText( "Scroll up" );
@@ -971,7 +970,6 @@ namespace DFG {
 
     private:
 
-      DFGWidget *m_dfgWidget;
       FabricUI::GraphView::SidePanel *m_sidePanel;
     };
 
@@ -987,7 +985,6 @@ namespace DFG {
         QObject *parent,
         bool enable = true )
         : QAction( parent )
-        , m_dfgWidget( dfgWidget )
         , m_sidePanel( sidePanel )
       {
         setText( "Scroll down" );
@@ -1005,7 +1002,6 @@ namespace DFG {
 
     private:
 
-      DFGWidget *m_dfgWidget;
       FabricUI::GraphView::SidePanel *m_sidePanel;
     };
 
