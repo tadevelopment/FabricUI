@@ -9,6 +9,7 @@
 #include <FabricUI/ValueEditor/VETreeWidget.h>
 
 #include <QSettings>
+#include <QUndoStack>
 
 namespace FabricUI {
 namespace Viewports {
@@ -21,11 +22,12 @@ namespace Viewports {
     class ViewportOptionsDictModel;
 
     QSettings m_settings;
+    QUndoStack& m_undoStack;
     ViewportOptionsDictModel* m_model;
     FabricCore::RTVal drawContext;
 
   public:
-    ViewportOptionsEditor( FabricCore::Client& client );
+    ViewportOptionsEditor( FabricCore::Client& client, QUndoStack& undoStack );
     virtual ~ViewportOptionsEditor();
 
   public slots:

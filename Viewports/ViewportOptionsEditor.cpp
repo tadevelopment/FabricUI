@@ -45,7 +45,50 @@ public:
   }
 
   QVariant getValue() {
-    return toVariant(m_val);
+    return toVariant(m_val.clone());
+  }
+
+  struct OptionUndoCommand : QUndoCommand {
+
+    const QVariant m_previous, m_next;
+    ViewportOptionModel& m_model;
+
+    OptionUndoCommand(
+      const QString text,
+      const QVariant previous,
+      const QVariant next,
+      ViewportOptionModel& model
+    ) : QUndoCommand( text ),
+      m_previous( previous ),
+      m_next( next ),
+      m_model( model )
+    {}
+
+    void undo() {
+      m_model.setValue( m_previous );
+    }
+
+    void redo() {
+      m_model.setValue( m_next );
+    }
+  };
+
+  void setValue(
+    QVariant value
+  ) {
+
+    // RTVariant::toRTVal might change the pointer in ioVal,
+    // so we copy it to make sure that m_val will always point to the same place
+    FabricCore::RTVal m_valCopy = m_val.clone();
+    FabricUI::ValueEditor::RTVariant::toRTVal( value, m_valCopy );
+    m_val.assign( m_valCopy );
+
+    // Storing the value in the Settings
+    m_settings->setValue( m_namePath.data(), QString( m_val.getJSON().getStringCString() ));
+
+    // Updating the UI
+    emit m_editor.valueChanged();
+    emitModelValueChanged( getValue() );
   }
 
   void setValue(
@@ -53,22 +96,28 @@ public:
     bool commit,
     QVariant valueAtInteractionBegin
   ) {
-    FabricUI::ValueEditor::RTVariant::toRTVal( value, m_val );
 
-    // Storing the value in the Settings
-    m_settings->setValue( m_namePath.data(), QString( m_val.getJSON().getStringCString() ));
+    // might be invalid when changing a Float with the keyboard (as text), for example
+    QVariant previousValue = valueAtInteractionBegin.isValid() ? valueAtInteractionBegin : getValue();
 
-    // Updating the UI
-    emit m_editor.valueChanged();
-    emit modelValueChanged(value);
+    setValue( value );
+
+    if( commit ) {
+      m_editor.m_undoStack.push(
+        new OptionUndoCommand(
+          QString::fromStdString("Changed the option \"" + m_namePath + "\""),
+          previousValue,
+          value,
+          *this
+        )
+      );
+    }
   }
 
   bool hasDefault() { return true; }
   void resetToDefault() {
 
-    m_val.setJSON( m_originalValue.getJSON() ); // TODO : don't use JSON for assignment
-
-    setValue( getValue(), true, getValue() );
+    setValue( toVariant( m_originalValue ), true, getValue() );
   }
 
   FTL::CStrRef getName() { return m_name; }
@@ -143,8 +192,8 @@ public:
   }
 };
 
-ViewportOptionsEditor::ViewportOptionsEditor( FabricCore::Client& client )
-  : VETreeWidget(), m_settings(), m_model(NULL)
+ViewportOptionsEditor::ViewportOptionsEditor( FabricCore::Client& client, QUndoStack& undoStack )
+  : VETreeWidget(), m_settings(), m_undoStack(undoStack), m_model(NULL)
 {
    try
   {
