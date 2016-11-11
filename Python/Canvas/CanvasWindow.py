@@ -1127,21 +1127,18 @@ class CanvasWindow(QtGui.QMainWindow):
             if prefix:
 
                 if self.isCanvas:
-                    self.setGridVisibleAction = QtGui.QAction('&Display Grid', None)
+                    self.setGridVisibleAction = QtGui.QAction('&Display Grid', self.viewport)
                     self.setGridVisibleAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_G))
+                    self.setGridVisibleAction.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
                     self.setGridVisibleAction.setCheckable(True)
-                    self.setGridVisibleAction.setChecked(
-                        self.viewport.isGridVisible())
-                    self.setGridVisibleAction.toggled.connect(
-                        self.viewport.setGridVisible)
+                    self.setGridVisibleAction.setChecked(self.viewport.isGridVisible())
+                    self.setGridVisibleAction.toggled.connect(self.viewport.setGridVisible)
+                    self.viewport.addAction(self.setGridVisibleAction)
 
-                    self.resetCameraAction = QtGui.QAction('&Reset Camera',
-                                                           self.viewport)
+                    self.resetCameraAction = QtGui.QAction('&Reset Camera', self.viewport)
                     self.resetCameraAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_R))
-                    self.resetCameraAction.setShortcutContext(
-                        QtCore.Qt.WidgetWithChildrenShortcut)
-                    self.resetCameraAction.triggered.connect(
-                        self.viewport.resetCamera)
+                    self.resetCameraAction.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
+                    self.resetCameraAction.triggered.connect(self.viewport.resetCamera)
                     self.viewport.addAction(self.resetCameraAction)
 
                 self.clearLogAction = QtGui.QAction('&Clear Log Messages', None)
