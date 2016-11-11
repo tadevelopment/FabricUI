@@ -958,7 +958,7 @@ namespace DFG {
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
-        setShortcut( QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_A) );
+        setShortcut( QKeySequence(Qt::CTRL + Qt::Key_D) );
         setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
