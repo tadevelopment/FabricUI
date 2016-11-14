@@ -540,6 +540,7 @@ void DFGPEWidget_Elements::onAddElementClicked()
   m_addElementName->selectAll();
   m_tableWidget->selectRow( index );
   emit elementAddedThroughUI( index );
+  m_addElementName->setFocus(); // [FE-7054]
 }
 
 DFGPEWidget_Elements_ControlCell::DFGPEWidget_Elements_ControlCell(
