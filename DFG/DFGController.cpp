@@ -386,6 +386,17 @@ void DFGController::gvcDoAddPort(
     );
 }
 
+void DFGController::gvcDoRenameExecPort(
+  QString oldName,
+  QString desiredPortName
+)
+{
+  cmdRenameExecPort(
+    oldName,
+    desiredPortName
+  );
+}
+
 void DFGController::gvcDoSetNodeCommentExpanded(
   GraphView::Node *node,
   bool expanded

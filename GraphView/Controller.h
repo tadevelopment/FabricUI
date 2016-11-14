@@ -78,6 +78,11 @@ namespace FabricUI
         QString extDep = QString(),
         QString metaData = QString()
         ) = 0;
+
+      virtual void gvcDoRenameExecPort(
+        QString oldName,
+        QString desiredPortName
+      ) = 0;
       
       virtual void gvcDoSetNodeCommentExpanded(
         Node *node,

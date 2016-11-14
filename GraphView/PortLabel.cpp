@@ -28,6 +28,8 @@ PortLabel::PortLabel(
     font
     )
 {
+  Port *port = static_cast<Port *>( parentItem() );
+  setEditable( port->allowEdits() && port->graph()->isEditable() );
 }
 
 void PortLabel::mousePressEvent( QGraphicsSceneMouseEvent *event )
@@ -95,6 +97,16 @@ void PortLabel::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
   }
   
   TextContainer::mouseReleaseEvent( event );  
+}
+
+void PortLabel::submitEditedText(const QString& text)
+{
+  Port *port = static_cast<Port *>( parentItem() );
+  if ( port->allowEdits()
+    && port->graph()->isEditable() )
+  {
+    port->graph()->controller()->gvcDoRenameExecPort( port->nameQString(), text );
+  }
 }
 
 } // namespace GraphView
