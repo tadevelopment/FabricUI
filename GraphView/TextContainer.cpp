@@ -11,19 +11,21 @@ TextContainer::TextContainer(
   QString const &text,
   QColor color,
   QColor hlColor,
-  QFont font
+  QFont font,
+  bool editable
   )
-: QGraphicsWidget(parent)
+: QGraphicsWidget(parent),
+  m_color(color),
+  m_font(font),
+  m_highlightColor(hlColor),
+  m_text(text),
+  m_highlighted(false),
+  m_editable(editable),
+  m_editing(false),
+  m_fixedTextItem(NULL),
+  m_editableTextItem(NULL)
 {
-  m_color = color;
-  m_font = font;
-  m_highlightColor = hlColor;
-  m_highlighted = false;
-  
-  m_textItem = new QGraphicsSimpleTextItem(text, this);
-  m_textItem->setBrush(color);
-  m_textItem->setFont(font);
-  m_textItem->setCacheMode( DeviceCoordinateCache );
+  buildTextItem();
 
   setWindowFrameMargins(0, 0, 0, 0);
   setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
@@ -33,14 +35,16 @@ TextContainer::TextContainer(
 
 void TextContainer::setText(QString const &text)
 {
-  m_textItem->setText(text);
+  m_text = text;
+  if( m_editing ) { m_editableTextItem->setPlainText(text); }
+  else { m_fixedTextItem->setText( text ); }
   refresh();
 }
 
 void TextContainer::refresh()
 {
   QFontMetrics metrics( m_font );
-  QSize size = metrics.size( Qt::TextSingleLine, m_textItem->text() );
+  QSize size = metrics.size( Qt::TextSingleLine, text() );
   prepareGeometryChange();
   setPreferredWidth(size.width());
   setPreferredHeight(size.height());
@@ -60,12 +64,9 @@ void TextContainer::setColor(QColor color, QColor hlColor)
 {
   m_color = color;
   m_highlightColor = hlColor;
-  if(highlighted())
-  {
-    m_textItem->setBrush(hlColor);
-  }
-  else
-    m_textItem->setBrush(color);
+  QColor currentColor = highlighted() ? hlColor : color;
+  if (m_editing) { m_editableTextItem->setDefaultTextColor(currentColor); }
+  else { m_fixedTextItem->setBrush(currentColor); }
 }
 
 bool TextContainer::highlighted() const
@@ -81,28 +82,101 @@ void TextContainer::setHighlighted(bool state)
 
 QFont TextContainer::font() const
 {
-  return m_textItem->font();
+  return m_editing ? m_editableTextItem->font() : m_fixedTextItem->font();
 }
 
 void TextContainer::setFont(QFont font)
 {
-  m_textItem->setFont(font);
+  if (m_editing) { m_editableTextItem->setFont(font); }
+  else { m_fixedTextItem->setFont(font); }
   refresh();
 }
 
 bool TextContainer::italic() const
 {
-  return m_textItem->font().italic();
+  return font().italic();
 }
 
 void TextContainer::setItalic(bool flag)
 {
-  QFont font = m_textItem->font();
+  QFont font = this->font();
   font.setItalic(flag);
   setFont(font);
 }
 
-QGraphicsSimpleTextItem * TextContainer::textItem()
+QString TextContainer::text() const
 {
-  return m_textItem;
+  return m_text;
+}
+
+class TextContainer::EditableTextItem : public QGraphicsTextItem {
+
+  TextContainer* m_container;
+
+public:
+  EditableTextItem(const QString text, TextContainer* container)
+    : QGraphicsTextItem( text, container ),
+    m_container(container)
+  {}
+
+private:
+  void exit(bool submit) {
+    if (submit) { m_container->submitEditedText(this->toPlainText()); }
+    m_container->setEditing(false);
+  }
+
+protected:
+  void focusOutEvent(QFocusEvent *event) {
+    QGraphicsTextItem::focusOutEvent(event);
+    exit(false);
+  }
+  void keyPressEvent(QKeyEvent* event) {
+    switch (event->key()) {
+    case Qt::Key::Key_Escape:
+    case Qt::Key::Key_Tab:
+      exit(false); break;
+    case Qt::Key::Key_Enter:
+    case Qt::Key::Key_Return:
+      exit(true); break;
+    default: QGraphicsTextItem::keyPressEvent(event);
+    }
+  }
+
+};
+
+void TextContainer::buildTextItem()
+{
+  if (m_editing)
+  {
+    m_editableTextItem = new EditableTextItem( m_text, this );
+    m_editableTextItem->setTextInteractionFlags(Qt::TextInteractionFlag::TextEditorInteraction);
+    m_editableTextItem->setCacheMode(DeviceCoordinateCache);
+    m_editableTextItem->setFocus();
+  }
+  else
+  {
+    m_fixedTextItem = new QGraphicsSimpleTextItem( m_text, this );
+    m_fixedTextItem->setCacheMode(DeviceCoordinateCache);
+  }
+  setColor( m_color, m_highlightColor );
+  setFont( m_font );
+}
+
+TextContainer::~TextContainer() {
+  destroyTextItems();
+}
+
+void TextContainer::destroyTextItems()
+{
+  if (m_fixedTextItem != NULL) { delete m_fixedTextItem; m_fixedTextItem = NULL; }
+  if (m_editableTextItem != NULL) { delete m_editableTextItem; m_editableTextItem = NULL; }
+}
+
+void TextContainer::setEditing(bool editing) {
+  
+  if ( m_editing != editing) {
+    m_editing = editing;
+    destroyTextItems();
+    buildTextItem();
+  }
 }
