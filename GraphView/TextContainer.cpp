@@ -44,7 +44,9 @@ void TextContainer::setText(QString const &text)
 void TextContainer::refresh()
 {
   QFontMetrics metrics( m_font );
-  QSize size = metrics.size( Qt::TextSingleLine, text() );
+  QString displayedText = m_editing ?
+    m_editableTextItem->toPlainText() : m_fixedTextItem->text();
+  QSize size = metrics.size( Qt::TextSingleLine, displayedText );
   prepareGeometryChange();
   setPreferredWidth(size.width());
   setPreferredHeight(size.height());
@@ -111,11 +113,6 @@ void TextContainer::setItalic(bool flag)
   setFont(font);
 }
 
-QString TextContainer::text() const
-{
-  return m_text;
-}
-
 class TextContainer::EditableTextItem : public QGraphicsTextItem {
 
   TextContainer* m_container;
@@ -124,7 +121,10 @@ public:
   EditableTextItem(const QString text, TextContainer* container)
     : QGraphicsTextItem( text, container ),
     m_container(container)
-  {}
+  {
+    // disable tabs by default : they are not allowed in most names
+    setTabChangesFocus(true);
+  }
 
 private:
   void exit(bool submit) {
@@ -140,12 +140,13 @@ protected:
   void keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case Qt::Key::Key_Escape:
-    case Qt::Key::Key_Tab:
       exit(false); break;
     case Qt::Key::Key_Enter:
     case Qt::Key::Key_Return:
       exit(true); break;
-    default: QGraphicsTextItem::keyPressEvent(event);
+    default:
+      QGraphicsTextItem::keyPressEvent(event);
+      m_container->refresh();
     }
   }
 
@@ -153,6 +154,7 @@ protected:
 
 void TextContainer::buildTextItem()
 {
+  destroyTextItems();
   if (m_editing)
   {
     m_editableTextItem = new EditableTextItem( m_text, this );
@@ -183,7 +185,6 @@ void TextContainer::setEditing(bool editing) {
   
   if ( m_editing != editing) {
     m_editing = editing;
-    destroyTextItems();
     buildTextItem();
   }
 }

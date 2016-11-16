@@ -28,7 +28,9 @@ namespace FabricUI
         );
       virtual ~TextContainer();
 
-      virtual QString text() const;
+      // might differ from the displayed text while editing
+      virtual QString text() const
+        { return m_text; }
       virtual void setText(QString const &text);
       virtual QColor color() const;
       virtual QColor highlightColor() const;
