@@ -65,8 +65,15 @@ void TextContainer::setColor(QColor color, QColor hlColor)
   m_color = color;
   m_highlightColor = hlColor;
   QColor currentColor = highlighted() ? hlColor : color;
-  if (m_editing) { m_editableTextItem->setDefaultTextColor(currentColor); }
-  else { m_fixedTextItem->setBrush(currentColor); }
+  if ( m_editing )
+  {
+    // the editable item will always be highlighted
+    m_editableTextItem->setDefaultTextColor( hlColor );
+  }
+  else
+  {
+    m_fixedTextItem->setBrush(currentColor);
+  }
 }
 
 bool TextContainer::highlighted() const
