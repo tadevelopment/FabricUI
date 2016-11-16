@@ -34,7 +34,14 @@ NodeHeader::NodeHeader(
   layout->setOrientation(Qt::Horizontal);
   setLayout(layout);
 
-  m_title = new NodeLabel(this, text, graph->config().nodeFontColor, graph->config().nodeFontHighlightColor, graph->config().nodeFont);
+  m_title = new NodeLabel(
+    this,
+    node(),
+    text,
+    graph->config().nodeFontColor,
+    graph->config().nodeFontHighlightColor,
+    graph->config().nodeFont
+  );
 
   m_inCircle = new PinCircle(this, PortType_Input, m_node->color());
   // m_inCircle->setClipping(true);

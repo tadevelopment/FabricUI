@@ -92,8 +92,9 @@ InstBlockPort::InstBlockPort(
     }
   }
 
-  m_label = new TextContainer(
+  m_label = new NodeLabel(
     this,
+    parentNode,
     QSTRING_FROM_STL_UTF8(m_labelCaption),
     config.pinFontColor,
     config.pinFontHighlightColor,

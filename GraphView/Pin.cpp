@@ -91,7 +91,14 @@ Pin::Pin(
 
   if(m_labelCaption.length() > 0)
   {
-    m_label = new TextContainer(this, QSTRING_FROM_STL_UTF8(m_labelCaption), config.pinFontColor, config.pinFontHighlightColor, config.pinFont);
+    m_label = new NodeLabel(
+      this,
+      m_node,
+      QSTRING_FROM_STL_UTF8(m_labelCaption),
+      config.pinFontColor,
+      config.pinFontHighlightColor,
+      config.pinFont
+    );
 
     layout->addItem(m_label);
     layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
