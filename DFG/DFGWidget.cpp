@@ -979,7 +979,7 @@ void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
 
 void DFGWidget::deletePort( FabricUI::GraphView::Port *port )
 {
-  m_uiController->cmdRemovePort( port->nameQString() );
+  m_uiController->cmdRemovePort( QStringList( port->nameQString() ) );
 }
 
 void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
