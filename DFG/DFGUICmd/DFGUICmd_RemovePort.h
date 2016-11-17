@@ -4,6 +4,7 @@
 #define __UI_DFG_DFGUICmd_RemovePort__
 
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_Exec.h>
+#include <FTL/ArrayRef.h>
 
 FABRIC_UI_DFG_NAMESPACE_BEGIN
 

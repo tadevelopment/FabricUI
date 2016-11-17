@@ -488,10 +488,11 @@ class BindingWrapper:
     def removePort(
         self,
         execPath,
-        portNames,
+        packedPortNames,
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
+        portNames = BindingWrapper.splitNames(packedPortNames)
         cmd = DFG.DFGUICmd_RemovePort(
             self.binding,
             execPath,
