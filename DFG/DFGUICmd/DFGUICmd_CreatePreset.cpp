@@ -138,14 +138,14 @@ QString DFGUICmd_CreatePreset::invoke(
     // as with this association the Core will generate a presetGUID.
     subExec.setImportPathname( pathname.toUtf8().constData() );
     ++coreUndoCount;
-
-    subExec.attachPresetFile(
-      presetDirPath.c_str(),
-      presetName.c_str(),
-      true // replaceExisting
-      );
-    ++coreUndoCount;
   }
+
+  subExec.attachPresetFile(
+    presetDirPath.c_str(),
+    presetName.c_str(),
+    true // replaceExisting
+    );
+  ++coreUndoCount;
 
   FabricCore::String presetJSON = subExec.exportJSON();
   FILE *file = fopen( QSTRING_TO_CONST_CHAR_FILE( pathname ), "wb" );
