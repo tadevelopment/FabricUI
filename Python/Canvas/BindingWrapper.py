@@ -488,7 +488,7 @@ class BindingWrapper:
     def removePort(
         self,
         execPath,
-        portName,
+        portNames,
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
@@ -496,7 +496,7 @@ class BindingWrapper:
             self.binding,
             execPath,
             exec_,
-            portName,
+            portNames,
             )
         InvokeCmd(cmd, self.qUndoStack)
 
