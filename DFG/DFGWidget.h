@@ -100,7 +100,7 @@ namespace DFG {
 
       void createPort( FabricUI::GraphView::PortType portType );
       void deletePort( FabricUI::GraphView::Port *port );
-      void deleteAllPorts( bool deleteIn, bool deleteOut, bool deleteIO );
+      void deletePorts( bool deleteIn, bool deleteOut, bool deleteIO );
       void editPort( FTL::CStrRef execPortName, bool duplicatePort );
 
       void movePortsToEnd( bool moveInputs );
@@ -418,15 +418,15 @@ namespace DFG {
 
       void onTriggered()
       {
-        m_dfgWidget->deleteAllPorts( deleteIn, deleteOut, deleteIO );
+        m_dfgWidget->deletePorts( m_deleteIn, m_deleteOut, m_deleteIO );
       }
 
     private:
 
       DFGWidget *m_dfgWidget;
-      bool m_deleteIn,
-      bool m_deleteOut,
-      bool m_deleteIO,
+      bool m_deleteIn;
+      bool m_deleteOut;
+      bool m_deleteIO;
     };
 
     class DuplicatePortAction : public QAction
