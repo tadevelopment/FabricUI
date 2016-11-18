@@ -542,7 +542,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
   return NULL;
 }
 
-QMenu* DFGWidget::portContextMenuCallback(
+QMenu *DFGWidget::portContextMenuCallback(
   FabricUI::GraphView::Port* port,
   void* userData
   )
@@ -551,7 +551,7 @@ QMenu* DFGWidget::portContextMenuCallback(
   GraphView::Graph * graph = graphWidget->m_uiGraph;
   if (!graph->controller())
     return NULL;
-  FabricCore::DFGExec exec = graphWidget->getDFGController()->getExec();
+  FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
 
   bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
 
@@ -601,7 +601,7 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   return menu;
 }
 
-QMenu* DFGWidget::sidePanelContextMenuCallback(
+QMenu *DFGWidget::sidePanelContextMenuCallback(
   FabricUI::GraphView::SidePanel* panel,
   void* userData
   )
@@ -986,9 +986,19 @@ void DFGWidget::deletePort( FabricUI::GraphView::Port *port )
 
 void DFGWidget::deletePorts( bool deleteIn, bool deleteOut, bool deleteIO )
 {
+  FabricCore::DFGExec &exec = m_uiController->getExec();
 
-  // TODO
+  QStringList portNames;
+  for (unsigned int i=0;i<exec.getExecPortCount();i++)
+  {
+    FabricCore::DFGPortType type = exec.getExecPortType(i);
+    if (   (deleteIn  && type == FabricCore::DFGPortType::FEC_DFGPortType_In)
+        || (deleteOut && type == FabricCore::DFGPortType::FEC_DFGPortType_Out)
+        || (deleteIO  && type == FabricCore::DFGPortType::FEC_DFGPortType_IO) )
+      portNames.push_back( exec.getExecPortName(i) );
+  }
 
+  m_uiController->cmdRemovePort( portNames );
 }
 
 void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
