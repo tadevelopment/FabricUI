@@ -9,26 +9,37 @@ FABRIC_UI_DFG_NAMESPACE_BEGIN
 void DFGUICmd_RemovePort::appendDesc( QString &desc )
 {
   desc += "Remove ";
-  appendDesc_PortPath( m_portName, desc );
+  appendDesc_Path( m_portNames.join("|"), desc );
 }
 
 void DFGUICmd_RemovePort::invoke( unsigned &coreUndoCount )
 {
+  QList<QByteArray> portNameBAs;
+  portNameBAs.reserve( m_portNames.size() );
+  foreach ( QString portName, m_portNames )
+    portNameBAs.push_back( portName.toUtf8() );
+
+  std::vector<FTL::CStrRef> portNames;
+  portNames.reserve( m_portNames.size() );
+  foreach ( QByteArray portNameBA, portNameBAs )
+    portNames.push_back( portNameBA.constData() );
+
   invoke(
-    m_portName.toUtf8().constData(),
+    portNames,
     coreUndoCount
     );
 }
 
 void DFGUICmd_RemovePort::invoke(
-  FTL::CStrRef portPath,
+  FTL::ArrayRef<FTL::CStrRef> portPaths,
   unsigned &coreUndoCount
   )
 {
-  FabricCore::DFGExec &exec = getExec();
-
-  exec.removePort( portPath.c_str() );
-  ++coreUndoCount;
+  for ( size_t i = 0; i < portPaths.size(); ++i )
+  {
+    getExec().removePort( portPaths[i].c_str() );
+    ++coreUndoCount;
+  }
 }
 
 FABRIC_UI_DFG_NAMESPACE_END

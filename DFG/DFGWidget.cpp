@@ -542,43 +542,40 @@ QMenu *DFGWidget::nodeContextMenuCallback(
   return NULL;
 }
 
-QMenu* DFGWidget::portContextMenuCallback(
+QMenu *DFGWidget::portContextMenuCallback(
   FabricUI::GraphView::Port* port,
   void* userData
   )
 {
   DFGWidget * graphWidget = (DFGWidget*)userData;
-  if ( !graphWidget->isEditable() )
-    return NULL;
-
   GraphView::Graph * graph = graphWidget->m_uiGraph;
-  if (   !graph->controller()
-      || !graphWidget->getDFGController()->validPresetSplit())
+  if (!graph->controller())
     return NULL;
+  FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
+
+  bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
+
+  int numPortsIn  = 0;
+  int numPortsOut = 0;
+  int numPortsIO  = 0;
+  for (unsigned int i=0;i<exec.getExecPortCount();i++)
+  {
+    FabricCore::DFGPortType type = exec.getExecPortType(i);
+    if      (type == FabricCore::DFGPortType::FEC_DFGPortType_In)    numPortsIn++;
+    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_Out)   numPortsOut++;
+    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_IO)    numPortsIO++;
+  }
 
   QMenu *result = new QMenu( port->scene()->views()[0] );
 
-  QAction *editPortAction = new EditPortAction( graphWidget, port, result );
-  editPortAction->setEnabled( port->allowEdits() );
-  result->addAction( editPortAction );
-
-  QAction *deletePortAction = new DeletePortAction( graphWidget, port, result );
-  deletePortAction->setEnabled( port->allowEdits() );
-  result->addAction( deletePortAction );
-
-  QAction *duplicatePortAction = new DuplicatePortAction( graphWidget, port, result );
-  duplicatePortAction->setEnabled( port->allowEdits() );
-  result->addAction( duplicatePortAction );
+  result->addAction( new EditPortAction     ( graphWidget, port, result, editable && port->allowEdits() ) );
+  result->addAction( new DeletePortAction   ( graphWidget, port, result, editable && port->allowEdits() ) );
+  result->addAction( new DuplicatePortAction( graphWidget, port, result, editable && port->allowEdits() ) );
 
   result->addSeparator();
-    
-  QAction *moveInputPortsToEndAction = new MoveInputPortsToEndAction( graphWidget, result );
-  moveInputPortsToEndAction->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
-  result->addAction( moveInputPortsToEndAction );
 
-  QAction *moveOutputPortsToEndAction = new MoveOutputPortsToEndAction( graphWidget, result );
-  moveOutputPortsToEndAction->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
-  result->addAction( moveOutputPortsToEndAction );
+  result->addAction( new MoveInputPortsToEndAction ( graphWidget, result, editable && exec.getExecPortCount() > 1 && numPortsIn  > 0 ) );
+  result->addAction( new MoveOutputPortsToEndAction( graphWidget, result, editable && exec.getExecPortCount() > 1 && numPortsOut > 0 ) );
   
   return result;
 }
@@ -589,59 +586,64 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   )
 {
   DFGWidget * graphWidget = (DFGWidget*)userData;
-  if ( !graphWidget->isEditable() )
-    return NULL;
-
   GraphView::Graph * graph = graphWidget->m_uiGraph;
   if(graph->controller() == NULL)
     return NULL;
-  if (!graphWidget->getDFGController()->validPresetSplit())
-    return NULL;
+
+  bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
 
   QMenu *menu = new QMenu( fixedPort->scene()->views()[0] );
+
   QAction *dummyAction = new QAction( "Port is locked", menu );
-  dummyAction->setEnabled( false );
+  dummyAction->setEnabled( editable && false );
   menu->addAction( dummyAction );
+
   return menu;
 }
 
-QMenu* DFGWidget::sidePanelContextMenuCallback(
+QMenu *DFGWidget::sidePanelContextMenuCallback(
   FabricUI::GraphView::SidePanel* panel,
   void* userData
   )
 {
   DFGWidget * graphWidget = (DFGWidget*)userData;
-  if ( !graphWidget->isEditable() )
-    return NULL;
-  
   GraphView::Graph * graph = graphWidget->m_uiGraph;
   if (graph->controller() == NULL)
     return NULL;
+  FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
 
-  QMenu* result = new QMenu( panel->scene()->views()[0] );
-
-  if ( graphWidget->getDFGController()->validPresetSplit() )
+  bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
+  FabricUI::GraphView::PortType portType = panel->portType();
+  
+  int numPortsIn  = 0;
+  int numPortsOut = 0;
+  int numPortsIO  = 0;
+  for (unsigned int i=0;i<exec.getExecPortCount();i++)
   {
-    FabricUI::GraphView::PortType portType = panel->portType();
-    QAction *createPortAction =
-      new CreatePortAction( graphWidget, portType, result );
-    if ( portType != FabricUI::GraphView::PortType_Output )
-    {
-      FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
-      if ( exec.isInstBlockExec() )
-        createPortAction->setEnabled( false );
-    }
-    result->addAction( createPortAction );
-    result->addSeparator();
+    FabricCore::DFGPortType type = exec.getExecPortType(i);
+    if      (type == FabricCore::DFGPortType::FEC_DFGPortType_In)    numPortsIn++;
+    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_Out)   numPortsOut++;
+    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_IO)    numPortsIO++;
   }
+  QMenu *result = new QMenu( panel->scene()->views()[0] );
 
-  QAction *sidePanelScrollUpAction = new SidePanelScrollUpAction( graphWidget, panel, result );
-  sidePanelScrollUpAction->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
-  result->addAction( sidePanelScrollUpAction );
+  result->addAction( new CreatePortAction( graphWidget, portType, result, editable && !(portType != FabricUI::GraphView::PortType_Output && exec.isInstBlockExec()) ) );
 
-  QAction *sidePanelScrollDownAction = new SidePanelScrollDownAction( graphWidget, panel, result );
-  sidePanelScrollDownAction->setEnabled( graphWidget->getDFGController()->getExec().getExecPortCount() > 1 );
-  result->addAction( sidePanelScrollDownAction );
+  result->addSeparator();
+  
+  bool canDeleteAllPorts = (    editable
+                            &&  exec.getExecPortCount() > 1
+                            && (   (numPortsIn  > 0 && portType == FabricUI::GraphView::PortType_Output)
+                                || (numPortsOut > 0 && portType == FabricUI::GraphView::PortType_Input) ) );
+  result->addAction( new DeleteAllPortsAction( graphWidget, result, portType == FabricUI::GraphView::PortType_Output, portType == FabricUI::GraphView::PortType_Input, false, canDeleteAllPorts ) );
+
+  result->addSeparator();
+
+  bool canScroll = (    exec.getExecPortCount() > 1
+                    && (   (numPortsIn  > 0 && portType == FabricUI::GraphView::PortType_Output)
+                        || (numPortsOut > 0 && portType == FabricUI::GraphView::PortType_Input) ) );
+  result->addAction( new SidePanelScrollUpAction  ( graphWidget, panel, result, canScroll ) );
+  result->addAction( new SidePanelScrollDownAction( graphWidget, panel, result, canScroll ) );
 
   return result;
 }
@@ -979,7 +981,24 @@ void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
 
 void DFGWidget::deletePort( FabricUI::GraphView::Port *port )
 {
-  m_uiController->cmdRemovePort( port->nameQString() );
+  m_uiController->cmdRemovePort( QStringList( port->nameQString() ) );
+}
+
+void DFGWidget::deletePorts( bool deleteIn, bool deleteOut, bool deleteIO )
+{
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+
+  QStringList portNames;
+  for (unsigned int i=0;i<exec.getExecPortCount();i++)
+  {
+    FabricCore::DFGPortType type = exec.getExecPortType(i);
+    if (   (deleteIn  && type == FabricCore::DFGPortType::FEC_DFGPortType_In)
+        || (deleteOut && type == FabricCore::DFGPortType::FEC_DFGPortType_Out)
+        || (deleteIO  && type == FabricCore::DFGPortType::FEC_DFGPortType_IO) )
+      portNames.push_back( exec.getExecPortName(i) );
+  }
+
+  m_uiController->cmdRemovePort( portNames );
 }
 
 void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)

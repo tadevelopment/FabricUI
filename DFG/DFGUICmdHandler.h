@@ -13,6 +13,7 @@
 #include <QPoint>
 #include <QSize>
 #include <QString>
+#include <QStringList>
 
 FABRIC_UI_DFG_NAMESPACE_BEGIN
 
@@ -181,7 +182,7 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString portPath
+    QStringList portPaths
     ) = 0;
 
   virtual void dfgDoMoveNodes(

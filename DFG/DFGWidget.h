@@ -100,6 +100,7 @@ namespace DFG {
 
       void createPort( FabricUI::GraphView::PortType portType );
       void deletePort( FabricUI::GraphView::Port *port );
+      void deletePorts( bool deleteIn, bool deleteOut, bool deleteIO );
       void editPort( FTL::CStrRef execPortName, bool duplicatePort );
 
       void movePortsToEnd( bool moveInputs );
@@ -371,6 +372,61 @@ namespace DFG {
 
       DFGWidget *m_dfgWidget;
       FabricUI::GraphView::Port *m_port;
+    };
+
+    class DeleteAllPortsAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      DeleteAllPortsAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool deleteIn,
+        bool deleteOut,
+        bool deleteIO,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_deleteIn ( deleteIn )
+        , m_deleteOut( deleteOut )
+        , m_deleteIO ( deleteIO )
+      {
+        if      (  deleteIn &&  deleteOut &&  deleteIO )
+          setText( "Delete all ports" );
+        else if ( !deleteIn &&  deleteOut &&  deleteIO )
+          setText( "Delete all output and IO ports" );
+        else if (  deleteIn && !deleteOut &&  deleteIO )
+          setText( "Delete all input and IO ports" );
+        else if ( !deleteIn && !deleteOut &&  deleteIO )
+          setText( "Delete all IO ports" );
+        else if (  deleteIn &&  deleteOut && !deleteIO )
+          setText( "Delete all input and output ports" );
+        else if ( !deleteIn &&  deleteOut && !deleteIO )
+          setText( "Delete all output ports" );
+        else if (  deleteIn && !deleteOut && !deleteIO )
+          setText( "Delete all input ports" );
+        else
+          setText( "Delete nothing" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->deletePorts( m_deleteIn, m_deleteOut, m_deleteIO );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      bool m_deleteIn;
+      bool m_deleteOut;
+      bool m_deleteIO;
     };
 
     class DuplicatePortAction : public QAction

@@ -1769,7 +1769,7 @@ QString DFGController::cmdEditPort(
 }
 
 void DFGController::cmdRemovePort(
-  QString portName
+  QStringList portNames
   )
 {
   if(!validPresetSplit())
@@ -1779,7 +1779,7 @@ void DFGController::cmdRemovePort(
     getBinding(),
     getExecPath_QS(),
     getExec(),
-    portName
+    portNames
     );
 }
 
