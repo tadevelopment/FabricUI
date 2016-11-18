@@ -551,8 +551,20 @@ QMenu* DFGWidget::portContextMenuCallback(
   GraphView::Graph * graph = graphWidget->m_uiGraph;
   if (!graph->controller())
     return NULL;
+  FabricCore::DFGExec exec = graphWidget->getDFGController()->getExec();
 
   bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
+
+  int numPortsIn  = 0;
+  int numPortsOut = 0;
+  int numPortsIO  = 0;
+  for (unsigned int i=0;i<exec.getExecPortCount();i++)
+  {
+    FabricCore::DFGPortType type = exec.getExecPortType(i);
+    if      (type == FabricCore::DFGPortType::FEC_DFGPortType_In)    numPortsIn++;
+    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_Out)   numPortsOut++;
+    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_IO)    numPortsIO++;
+  }
 
   QMenu *result = new QMenu( port->scene()->views()[0] );
 
@@ -561,9 +573,9 @@ QMenu* DFGWidget::portContextMenuCallback(
   result->addAction( new DuplicatePortAction( graphWidget, port, result, editable && port->allowEdits() ) );
 
   result->addSeparator();
-    
-  result->addAction( new MoveInputPortsToEndAction ( graphWidget, result, editable && graphWidget->getDFGController()->getExec().getExecPortCount() > 1 ) );
-  result->addAction( new MoveOutputPortsToEndAction( graphWidget, result, editable && graphWidget->getDFGController()->getExec().getExecPortCount() > 1 ) );
+
+  result->addAction( new MoveInputPortsToEndAction ( graphWidget, result, editable && exec.getExecPortCount() > 1 && numPortsIn  > 0 ) );
+  result->addAction( new MoveOutputPortsToEndAction( graphWidget, result, editable && exec.getExecPortCount() > 1 && numPortsOut > 0 ) );
   
   return result;
 }
@@ -598,19 +610,40 @@ QMenu* DFGWidget::sidePanelContextMenuCallback(
   GraphView::Graph * graph = graphWidget->m_uiGraph;
   if (graph->controller() == NULL)
     return NULL;
+  FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
 
   bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
   FabricUI::GraphView::PortType portType = panel->portType();
-  FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
   
-  QMenu* result = new QMenu( panel->scene()->views()[0] );
+  int numPortsIn  = 0;
+  int numPortsOut = 0;
+  int numPortsIO  = 0;
+  for (unsigned int i=0;i<exec.getExecPortCount();i++)
+  {
+    FabricCore::DFGPortType type = exec.getExecPortType(i);
+    if      (type == FabricCore::DFGPortType::FEC_DFGPortType_In)    numPortsIn++;
+    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_Out)   numPortsOut++;
+    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_IO)    numPortsIO++;
+  }
+  QMenu *result = new QMenu( panel->scene()->views()[0] );
 
   result->addAction( new CreatePortAction( graphWidget, portType, result, editable && !(portType != FabricUI::GraphView::PortType_Output && exec.isInstBlockExec()) ) );
 
   result->addSeparator();
+  
+  bool canDeleteAllPorts = (    editable
+                            &&  exec.getExecPortCount() > 1
+                            && (   (numPortsIn  > 0 && portType == FabricUI::GraphView::PortType_Output)
+                                || (numPortsOut > 0 && portType == FabricUI::GraphView::PortType_Input) ) );
+  result->addAction( new DeleteAllPortsAction( graphWidget, result, portType == FabricUI::GraphView::PortType_Output, portType == FabricUI::GraphView::PortType_Input, false, canDeleteAllPorts ) );
 
-  result->addAction( new SidePanelScrollUpAction  ( graphWidget, panel, result, graphWidget->getDFGController()->getExec().getExecPortCount() > 1 ) );
-  result->addAction( new SidePanelScrollDownAction( graphWidget, panel, result, graphWidget->getDFGController()->getExec().getExecPortCount() > 1 ) );
+  result->addSeparator();
+
+  bool canScroll = (    exec.getExecPortCount() > 1
+                    && (   (numPortsIn  > 0 && portType == FabricUI::GraphView::PortType_Output)
+                        || (numPortsOut > 0 && portType == FabricUI::GraphView::PortType_Input) ) );
+  result->addAction( new SidePanelScrollUpAction  ( graphWidget, panel, result, canScroll ) );
+  result->addAction( new SidePanelScrollDownAction( graphWidget, panel, result, canScroll ) );
 
   return result;
 }
