@@ -481,7 +481,7 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
             "removePort",
             [
                 UICmdHandler.encodeString(execPath),
-                UICmdHandler.encodeString(portNames),
+                UICmdHandler.encodeStrings(portNames),
                 ]
             )
 
