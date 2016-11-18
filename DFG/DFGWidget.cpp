@@ -561,9 +561,9 @@ QMenu *DFGWidget::portContextMenuCallback(
   for (unsigned int i=0;i<exec.getExecPortCount();i++)
   {
     FabricCore::DFGPortType type = exec.getExecPortType(i);
-    if      (type == FabricCore::DFGPortType::FEC_DFGPortType_In)    numPortsIn++;
-    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_Out)   numPortsOut++;
-    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_IO)    numPortsIO++;
+    if      (type == FabricCore::DFGPortType_In)    numPortsIn++;
+    else if (type == FabricCore::DFGPortType_Out)   numPortsOut++;
+    else if (type == FabricCore::DFGPortType_IO)    numPortsIO++;
   }
 
   QMenu *result = new QMenu( port->scene()->views()[0] );
@@ -621,9 +621,9 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
   for (unsigned int i=0;i<exec.getExecPortCount();i++)
   {
     FabricCore::DFGPortType type = exec.getExecPortType(i);
-    if      (type == FabricCore::DFGPortType::FEC_DFGPortType_In)    numPortsIn++;
-    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_Out)   numPortsOut++;
-    else if (type == FabricCore::DFGPortType::FEC_DFGPortType_IO)    numPortsIO++;
+    if      (type == FabricCore::DFGPortType_In)    numPortsIn++;
+    else if (type == FabricCore::DFGPortType_Out)   numPortsOut++;
+    else if (type == FabricCore::DFGPortType_IO)    numPortsIO++;
   }
   QMenu *result = new QMenu( panel->scene()->views()[0] );
 
@@ -992,9 +992,9 @@ void DFGWidget::deletePorts( bool deleteIn, bool deleteOut, bool deleteIO )
   for (unsigned int i=0;i<exec.getExecPortCount();i++)
   {
     FabricCore::DFGPortType type = exec.getExecPortType(i);
-    if (   (deleteIn  && type == FabricCore::DFGPortType::FEC_DFGPortType_In)
-        || (deleteOut && type == FabricCore::DFGPortType::FEC_DFGPortType_Out)
-        || (deleteIO  && type == FabricCore::DFGPortType::FEC_DFGPortType_IO) )
+    if (   (deleteIn  && type == FabricCore::DFGPortType_In)
+        || (deleteOut && type == FabricCore::DFGPortType_Out)
+        || (deleteIO  && type == FabricCore::DFGPortType_IO) )
       portNames.push_back( exec.getExecPortName(i) );
   }
 
