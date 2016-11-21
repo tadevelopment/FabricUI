@@ -11,6 +11,42 @@
 
 using namespace FabricUI::GraphView;
 
+class NodeHeaderLabel : public NodeLabel
+{
+  NodeHeader * m_header;
+
+public:
+  NodeHeaderLabel(
+    NodeHeader * header,
+    Node* node,
+    QString const &text,
+    QColor color,
+    QColor highlightColor,
+    QFont font
+  ) : NodeLabel(
+    header,
+    node,
+    text,
+    color,
+    highlightColor,
+    font
+  ), m_header(header)
+  {
+    setEditable( node->graph()->isEditable() );
+  }
+
+protected:
+  // override
+  virtual void submitEditedText(const QString& text)
+  {
+    Node* node = m_header->node();
+    node->graph()->controller()->gvcDoRenameNode(
+      node,
+      text
+    );
+  }
+};
+
 NodeHeader::NodeHeader(
   Node * parent,
   QString const &text
@@ -34,7 +70,7 @@ NodeHeader::NodeHeader(
   layout->setOrientation(Qt::Horizontal);
   setLayout(layout);
 
-  m_title = new NodeLabel(
+  m_title = new NodeHeaderLabel(
     this,
     node(),
     text,

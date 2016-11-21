@@ -12,6 +12,44 @@
 
 using namespace FabricUI::GraphView;
 
+class PinLabel : public NodeLabel
+{
+  Pin * m_pin;
+
+public:
+  PinLabel(
+    Pin * pin,
+    Node* node,
+    QString const &text,
+    QColor color,
+    QColor highlightColor,
+    QFont font
+  ) : NodeLabel(
+    pin,
+    node,
+    text,
+    color,
+    highlightColor,
+    font
+  ), m_pin(pin)
+  {
+    setEditable( node->graph()->isEditable() );
+  }
+
+protected:
+  // override
+  virtual void submitEditedText( const QString& text )
+  {
+    FTL::CStrRef pinName = m_pin->name();
+
+    m_pin->node()->graph()->controller()->gvcDoRenameExecPort(
+      QString::fromUtf8( pinName.data(), pinName.size() ),
+      text,
+      m_pin->node()->name_QS()
+    );
+  }
+};
+
 Pin::Pin(
   Node * parent,
   FTL::StrRef name,
@@ -91,7 +129,7 @@ Pin::Pin(
 
   if(m_labelCaption.length() > 0)
   {
-    m_label = new NodeLabel(
+    m_label = new PinLabel(
       this,
       m_node,
       QSTRING_FROM_STL_UTF8(m_labelCaption),

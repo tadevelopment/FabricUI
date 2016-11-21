@@ -388,12 +388,27 @@ void DFGController::gvcDoAddPort(
 
 void DFGController::gvcDoRenameExecPort(
   QString oldName,
-  QString desiredPortName
+  QString desiredPortName,
+  QString execPath
 )
 {
   cmdRenameExecPort(
     oldName,
-    desiredPortName
+    desiredPortName,
+    execPath
+  );
+}
+
+void DFGController::gvcDoRenameNode(
+  GraphView::Node* node,
+  QString newName
+)
+{
+  cmdEditNode(
+    node->name_QS(),
+    newName,
+    "",
+    ""
   );
 }
 
@@ -411,7 +426,8 @@ void DFGController::gvcDoSetNodeCommentExpanded(
 
 QString DFGController::cmdRenameExecPort(
   QString oldName,
-  QString desiredNewName
+  QString desiredNewName,
+  QString execPath
   )
 {
   if(!validPresetSplit())
@@ -420,7 +436,7 @@ QString DFGController::cmdRenameExecPort(
   QString result = m_cmdHandler->dfgDoRenamePort(
     getBinding(),
     getExecPath_QS(),
-    getExec(),
+    getExec().getSubExec( execPath.toStdString().data() ),
     oldName,
     desiredNewName
     );

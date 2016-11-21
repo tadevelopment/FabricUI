@@ -22,8 +22,7 @@ NodeLabel::NodeLabel(
     text,
     color,
     highlightColor,
-    font,
-    true // TODO : remove
+    font
     ),
   m_node(node)
 {

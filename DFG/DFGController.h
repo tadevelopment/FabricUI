@@ -140,7 +140,13 @@ namespace FabricUI
 
       virtual void gvcDoRenameExecPort(
         QString oldName,
-        QString desiredPortName
+        QString desiredPortName,
+        QString execPath
+      );
+
+      virtual void gvcDoRenameNode(
+        GraphView::Node* node,
+        QString newName
       );
 
       virtual void gvcDoSetNodeCommentExpanded(
@@ -291,7 +297,8 @@ namespace FabricUI
 
       QString cmdRenameExecPort(
         QString oldName,
-        QString desiredNewName
+        QString desiredNewName,
+        QString execPath
         );
 
       void cmdCut();

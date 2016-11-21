@@ -81,7 +81,13 @@ namespace FabricUI
 
       virtual void gvcDoRenameExecPort(
         QString oldName,
-        QString desiredPortName
+        QString desiredPortName,
+        QString execPath = "" // Path from the current Exec, to the edited Exec
+      ) = 0;
+
+      virtual void gvcDoRenameNode(
+        Node* node,
+        QString newName
       ) = 0;
       
       virtual void gvcDoSetNodeCommentExpanded(
