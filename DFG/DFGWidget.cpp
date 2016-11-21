@@ -1324,7 +1324,9 @@ void DFGWidget::createPreset( const char *nodeName )
       if(presetName.length() == 0 || presetDirPath.length() == 0)
       {
         QMessageBox msg(QMessageBox::Warning, "Fabric Warning",
-          "You need to provide a valid name and pick a valid location!");
+          "You need to provide a valid name and pick a valid location!",
+          QMessageBox::NoButton,
+          this);
         msg.addButton("Ok", QMessageBox::AcceptRole);
         msg.exec();
         continue;
@@ -1334,7 +1336,9 @@ void DFGWidget::createPreset( const char *nodeName )
         presetDirPath == "Fabric" || presetDirPath == "Variables")
       {
         QMessageBox msg(QMessageBox::Warning, "Fabric Warning",
-          "You can't save a preset into a factory path (below Fabric).");
+          "You can't save a preset into a factory path (below Fabric).",
+          QMessageBox::NoButton,
+          this);
         msg.addButton("Ok", QMessageBox::AcceptRole);
         msg.exec();
         continue;
@@ -1354,8 +1358,9 @@ void DFGWidget::createPreset( const char *nodeName )
           "Fabric Error",
             "The preset directory '"
           + presetDirPath
-          + "' does not have an assocaited path and so the preset cannot be saved."
-          );
+          + "' does not have an assocaited path and so the preset cannot be saved.",
+          QMessageBox::NoButton,
+          this);
         msg.addButton( "Ok", QMessageBox::AcceptRole );
         msg.exec();
         continue;
@@ -1369,8 +1374,9 @@ void DFGWidget::createPreset( const char *nodeName )
             "The file "
           + pathname
           + " already exists.\n"
-          + "Are you sure to overwrite the file?"
-          );
+          + "Are you sure to overwrite the file?",
+          QMessageBox::NoButton,
+          this);
         msg.addButton( "Cancel", QMessageBox::RejectRole );
         msg.addButton( "Ok", QMessageBox::AcceptRole );
         if ( msg.exec() != QDialog::Accepted )
@@ -1390,8 +1396,9 @@ void DFGWidget::createPreset( const char *nodeName )
           "Fabric Warning", 
             "The file "
           + pathname
-          + " cannot be opened for writing."
-          );
+          + " cannot be opened for writing.",
+          QMessageBox::NoButton,
+          this);
         msg.addButton( "Ok", QMessageBox::AcceptRole );
         msg.exec();
         continue;
@@ -1408,8 +1415,9 @@ void DFGWidget::createPreset( const char *nodeName )
     QMessageBox msg(
       QMessageBox::Warning,
       "Fabric Warning", 
-      e.getDesc_cstr()
-      );
+      e.getDesc_cstr(),
+      QMessageBox::NoButton,
+      this);
     msg.addButton("Ok", QMessageBox::AcceptRole);
     msg.exec();
     return;
