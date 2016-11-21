@@ -193,7 +193,7 @@ void DFGPEModel_ExecPorts::removeElements(
       m_binding,
       m_execPathQS,
       m_exec,
-      getElementName( index )
+      QStringList( getElementName( index ) )
       );
   }
 }

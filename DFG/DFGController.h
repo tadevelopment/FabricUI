@@ -248,7 +248,7 @@ namespace FabricUI
         );
 
       void cmdRemovePort(
-        QString portName
+        QStringList portNames
         );
 
       void cmdMoveNodes(

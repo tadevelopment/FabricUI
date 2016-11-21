@@ -220,7 +220,7 @@ void DFGPEModel_ExecBlockPorts::removeElements(
       m_binding,
       m_execPathQS,
       m_exec,
-      portPath
+      QStringList( portPath )
       );
   }
 }

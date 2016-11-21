@@ -57,7 +57,7 @@ namespace FabricUI
             FabricCore::DFGExec exec = m_nodePortModelItem->getExec();
             FTL::CStrRef portPath = m_nodePortModelItem->getPortPath();
             bool isNotInspectable =
-              exec.getPortType( portPath.c_str() ) != FabricCore::DFGPortType_In
+              exec.getPortType( portPath.c_str() ) == FabricCore::DFGPortType_Out
                 || exec.hasSrcPorts( portPath.c_str() );
             return isNotInspectable? FTL_STR("1").c_str(): FTL_STR("").c_str();
           }

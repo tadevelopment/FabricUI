@@ -403,7 +403,7 @@ void DFGUICmdHandler_QUndo::dfgDoRemovePort(
   FabricCore::DFGBinding const &binding,
   QString execPath,
   FabricCore::DFGExec const &exec,
-  QString portName
+  QStringList portNames
   )
 {
   DFGUICmd_RemovePort *cmd =
@@ -411,7 +411,7 @@ void DFGUICmdHandler_QUndo::dfgDoRemovePort(
       binding,
       execPath,
       exec,
-      portName
+      portNames
       );
   m_qUndoStack->push( new WrappedCommand( cmd ) );
 }
