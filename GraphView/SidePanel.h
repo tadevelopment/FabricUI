@@ -79,6 +79,8 @@ namespace FabricUI
       void removePort( Port *port );
       void reorderPorts( QStringList names );
 
+      void setEditable( bool isEditable );
+
       void scroll(float delta);
       void updateItemGroupScroll(float height = 0.0f);
 

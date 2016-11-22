@@ -749,7 +749,7 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
       nodeRole
       );
   exposeNewPortAction->setEnabled(
-      node->canAddPorts()
+      node->canEdit()
     && ( !other || other->isRealPort() )
     );
   menu->addAction( exposeNewPortAction );

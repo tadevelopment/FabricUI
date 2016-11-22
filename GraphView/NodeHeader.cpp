@@ -32,12 +32,11 @@ public:
     font
   ), m_header(header)
   {
-    setEditable( node->graph()->isEditable() );
+    setEditable( node->canEdit() );
   }
 
 protected:
-  // override
-  virtual void submitEditedText(const QString& text)
+  void submitEditedText(const QString& text) FTL_OVERRIDE
   {
     Node* node = m_header->node();
     node->graph()->controller()->gvcDoRenameNode(

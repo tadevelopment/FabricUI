@@ -33,12 +33,11 @@ public:
     font
   ), m_pin(pin)
   {
-    setEditable( node->graph()->isEditable() );
+    setEditable( node->canEdit() );
   }
 
 protected:
-  // override
-  virtual void submitEditedText( const QString& text )
+  void submitEditedText( const QString& text ) FTL_OVERRIDE
   {
     FTL::CStrRef pinName = m_pin->name();
 

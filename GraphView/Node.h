@@ -205,10 +205,9 @@ namespace FabricUI
       QGraphicsWidget * mainWidget();
       QGraphicsWidget * pinsWidget();
 
-      bool canAddPorts() const
-        { return m_canAddPorts; }
-      void setCanAddPorts( bool canAddPorts )
-        { m_canAddPorts = canAddPorts; }
+      bool canEdit() const
+        { return m_canEdit; }
+      void setCanEdit( bool canEdit );
 
       void collectEditingTargets( EditingTargets &editingTargets );
 
@@ -278,7 +277,7 @@ namespace FabricUI
 
       std::vector<InstBlock *> m_instBlocks;
 
-      bool m_canAddPorts;
+      bool m_canEdit;
       bool m_isHighlighted;
     };
 

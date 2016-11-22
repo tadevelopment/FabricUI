@@ -38,7 +38,7 @@ Node::Node(
   , m_bubble( NULL )
   , m_header( NULL )
   , m_mainWidget( NULL )
-  , m_canAddPorts( false )
+  , m_canEdit( false )
   , m_isHighlighted( false )
 {
   m_defaultPen = m_graph->config().nodeDefaultPen;
@@ -811,7 +811,7 @@ void Node::updateHighlighting( QPointF cp )
     }
 
     if ( !someInstBlockHighlighted
-      && !m_canAddPorts
+      && !m_canEdit
       && !m_instBlocks.empty() )
     {
       InstBlock *instBlock = m_instBlocks[0];
@@ -984,17 +984,27 @@ InstBlock *Node::instBlock( FTL::StrRef name )
   return NULL;
 }
 
+void Node::setCanEdit( bool canEdit )
+{
+  m_canEdit = canEdit;
+  for (size_t i = 0; i < m_pins.size(); i++)
+  {
+    m_pins[i]->labelWidget()->setEditable( canEdit );
+  }
+  m_header->labelWidget()->setEditable( canEdit );
+}
+
 void Node::collectEditingTargets( EditingTargets &editingTargets )
 {
   editingTargets.reserve( 1 + m_instBlocks.size() );
 
-  if ( m_canAddPorts )
+  if ( m_canEdit )
     editingTargets.push_back( EditingTarget( this, 0 ) );
 
   for ( size_t i = 0; i < m_instBlocks.size(); ++i )
     editingTargets.push_back( EditingTarget( m_instBlocks[i], 0 ) );
 
-  if ( !m_canAddPorts )
+  if ( !m_canEdit )
     editingTargets.push_back( EditingTarget( this, 1 ) );
 }
 

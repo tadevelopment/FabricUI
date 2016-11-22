@@ -164,6 +164,15 @@ void SidePanel::reorderPorts(QStringList names)
   resetLayout();
 }
 
+void SidePanel::setEditable( bool canEdit )
+{
+  for( size_t i = 0; i < m_ports.size(); i++ )
+  {
+    Port* port = m_ports[i];
+    port->m_label->setEditable( canEdit && port->allowEdits() );
+  }
+}
+
 void SidePanel::reorderFixedPorts(QStringList names)
 {
   std::vector<FixedPort *> fixedPorts;

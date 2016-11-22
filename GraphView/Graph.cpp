@@ -108,6 +108,15 @@ bool Graph::hasSidePanels() const
   return m_leftPanel != NULL;
 }
 
+void Graph::setEditable( bool isEditable )
+{
+  m_isEditable = isEditable;
+  if ( hasSidePanels() ) {
+    m_leftPanel->setEditable(isEditable);
+    m_rightPanel->setEditable(isEditable);
+  }
+}
+
 MainPanel * Graph::mainPanel()
 {
   return m_mainPanel;
