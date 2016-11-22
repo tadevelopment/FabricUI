@@ -426,6 +426,7 @@ namespace FabricUI
       void topoDirty();
       void dirty();
       void execSplitChanged();
+      void bindingExecuted();
 
       void nodeEditRequested(FabricUI::GraphView::Node *);
 

@@ -1186,6 +1186,7 @@ void DFGController::execute()
   try
   {
     m_binding.execute();
+    emit bindingExecuted();
   }
   catch(FabricCore::Exception e)
   {
