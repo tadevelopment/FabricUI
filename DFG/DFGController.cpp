@@ -1,6 +1,5 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <iostream>
 #include <QDebug>
 #include <QRegExp>
 #include <QApplication>
@@ -31,8 +30,6 @@
 #include <FabricUI/DFG/DFGUIUtil.h>
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
-
-#include <sstream>
 
 using namespace FabricServices;
 using namespace FabricUI;
@@ -1014,28 +1011,32 @@ void DFGController::updateNodeErrors()
       int32_t line = error->getSInt32Or( FTL_STR("line"), -1 );
       int32_t column = error->getSInt32Or( FTL_STR("column"), -1 );
 
-      std::stringstream prefixedError;
-      prefixedError << m_execPath;
-      prefixedError << " : ";
+      std::string prefixedError;
+      prefixedError += m_execPath;
+      prefixedError += " : ";
       if ( !execPath.empty() )
-        prefixedError << execPath;
+        prefixedError += execPath;
       if ( !execPath.empty() && !nodeName.empty() )
-        prefixedError << '.';
+        prefixedError += '.';
       if ( !nodeName.empty() )
-        prefixedError << nodeName;
+        prefixedError += nodeName;
       if ( line != -1 )
       {
-        prefixedError << ':';
-        prefixedError << line;
+        prefixedError += ':';
+        char lineString[32];
+        snprintf( lineString, 32, "%d", line );
+        prefixedError += lineString;
         if ( column != -1 )
         {
-          prefixedError << ':';
-          prefixedError << column;
+          prefixedError += ':';
+          char columnString[32];
+          snprintf( columnString, 32, "%d", column );
+          prefixedError += columnString;
         }
       }
-      prefixedError << " : ";
-      prefixedError << desc;
-      logError( prefixedError.str().c_str() );
+      prefixedError += " : ";
+      prefixedError += desc;
+      logError( prefixedError.c_str() );
 
       if ( uiGraph )
       {
