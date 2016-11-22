@@ -55,7 +55,7 @@ MouseGrabber::~MouseGrabber()
 {
 }
 
-MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
+MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortTfype portType)
 {
   switch ( target->targetType() )
   {
@@ -688,7 +688,7 @@ void ExposeInstPortAction::invokeAddPort(
 
 QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other, PortType nodeRole)
 {
-  QMenu *menu = new QMenu(NULL);
+  QMenu *menu = new QMenu(this->parent());
 
   // go through all the node's pins and add
   // those to the menu that can be connected.
@@ -800,7 +800,7 @@ QMenu *MouseGrabber::createInstBlockHeaderMenu(
   PortType nodeRole
   )
 {
-  QMenu *menu = new QMenu(NULL);
+  QMenu *menu = new QMenu(this->parent());
 
   // go through all the node's pins and add
   // those to the menu that can be connected.
