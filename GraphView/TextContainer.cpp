@@ -139,10 +139,10 @@ protected:
   }
   void keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
-    case Qt::Key::Key_Escape:
+    case Qt::Key_Escape:
       exit(false); break;
-    case Qt::Key::Key_Enter:
-    case Qt::Key::Key_Return:
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
       exit(true); break;
     default:
       QGraphicsTextItem::keyPressEvent(event);
@@ -158,7 +158,7 @@ void TextContainer::buildTextItem()
   if (m_editing)
   {
     m_editableTextItem = new EditableTextItem( m_text, this );
-    m_editableTextItem->setTextInteractionFlags(Qt::TextInteractionFlag::TextEditorInteraction);
+    m_editableTextItem->setTextInteractionFlags( Qt::TextEditorInteraction );
     m_editableTextItem->setCacheMode(DeviceCoordinateCache);
     m_editableTextItem->setFocus();
   }
