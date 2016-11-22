@@ -1358,7 +1358,7 @@ void DFGWidget::createPreset( const char *nodeName )
           "Fabric Error",
             "The preset directory '"
           + presetDirPath
-          + "' does not have an assocaited path and so the preset cannot be saved.",
+          + "' does not have an associated path and so the preset cannot be saved.",
           QMessageBox::NoButton,
           this);
         msg.addButton( "Ok", QMessageBox::AcceptRole );
