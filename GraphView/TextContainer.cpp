@@ -135,7 +135,7 @@ private:
 protected:
   void focusOutEvent(QFocusEvent *event) {
     QGraphicsTextItem::focusOutEvent(event);
-    exit(false);
+    exit(true); // submitting when losing focus (as ValueEditor::VELineEdit does)
   }
   void keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
