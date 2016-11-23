@@ -55,9 +55,6 @@ class DFGUICmdHandler;
       /////////////////////////////////////////////////////////////////////////
 
       virtual FabricUI::ValueEditor::ItemMetadata *getMetadata() /*override*/;
-
-      virtual bool hasDefault() /*override*/;
-      virtual void resetToDefault() /*override*/;
     };
   }
 }
