@@ -44,31 +44,6 @@ FabricUI::ValueEditor::ItemMetadata *InstBlockPortModelItem::getMetadata()
   return m_metadata;
 }
 
-QVariant InstBlockPortModelItem::getValue()
-{
-  try
-  {
-    // TODO: Find a way to show values of connected ports
-    if (m_exec.hasSrcPorts( m_portPath.c_str() ))
-      return QVariant();
-
-    // If we have a resolved type, allow getting the default val
-    const char* ctype = m_exec.getPortResolvedType( m_portPath.c_str() );
-    if (ctype != NULL)
-    {
-      FabricCore::RTVal rtVal = 
-        m_exec.getPortResolvedDefaultValue( m_portPath.c_str(), ctype );
-      assert( rtVal.isValid() );
-      return QVariant::fromValue<FabricCore::RTVal>( rtVal.copy() );
-    }
-  }
-  catch (FabricCore::Exception* e)
-  {
-    printf( "[ERROR] %s", e->getDesc_cstr() );
-  }
-  return QVariant();
-}
-
 FTL::CStrRef InstBlockPortModelItem::getName()
 {
   return m_portName;

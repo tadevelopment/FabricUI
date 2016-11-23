@@ -56,8 +56,6 @@ class DFGUICmdHandler;
 
       virtual FabricUI::ValueEditor::ItemMetadata *getMetadata() /*override*/;
 
-      virtual QVariant getValue();
-
       virtual bool hasDefault() /*override*/;
       virtual void resetToDefault() /*override*/;
     };
