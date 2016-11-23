@@ -639,6 +639,11 @@ void VETreeWidget::prepareMenu( const QPoint& pt )
   if (model == NULL)
     return;
 
+  // Currently disabling the menu when the item is incompatible
+  // we should re-enable it when most items will have default values
+  if( !model->hasDefault() )
+    return;
+
   QAction *newAct = new QAction( tr( "Reset to Default" ), this );
   newAct->setStatusTip( tr( "Reset this ports current value to the default" ) );
 
