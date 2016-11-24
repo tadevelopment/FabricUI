@@ -1172,6 +1172,42 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 }
 
 /****************************************************************************
+ * DFGHistoryWidget
+ ***************************************************************************/
+#DFGHistoryWidget
+{
+  border: 0;
+  background-color: #484848;
+}
+
+#DFGHistoryWidget,
+#DFGHistoryWidget::item
+{
+  font: 10pt "Roboto";
+  font-weight: normal;
+}
+
+#DFGHistoryWidget::item
+{
+  color: white;
+  padding: 1px 10px 1px 1px;
+  height: 20px;
+}
+
+#DFGHistoryWidget::item:hover
+{
+  padding: 0;
+  background-color: #596D7A;
+}
+
+#DFGHistoryWidget::item:selected
+{
+  border: 0;
+  padding: 0;
+  background-color: #50626E;
+}
+
+/****************************************************************************
  * ValueEditor
  ***************************************************************************/
 
