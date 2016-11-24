@@ -19,7 +19,7 @@ QMainWindow::separator
 
 QMainWindow::separator:hover
 {
-  background: #4F4F4F;
+  background: #555555;
 }
 
 QMainWindow > QTabWidget::tab-bar
@@ -305,6 +305,71 @@ QDialog QPushButton:focus
   border: 1px solid #555555;
 }
 
+QDialog QTreeView
+{
+  border: 0;
+  border-radius: 3px;
+  background: #333333;
+  color: white;
+  font: 10pt "Roboto";
+  font-weight: normal;  
+}
+
+QDialog QTreeView::item
+{
+  padding: 2px;
+  color: white;
+}
+
+QDialog QTreeView::item:hover
+{
+  padding: 0;
+  background-color: #596D7A;
+}
+
+QDialog QTreeView::item:selected
+{
+  border: 0;
+  padding: 0;
+  background-color: #50626E;
+}
+
+QDialog QTreeView::branch:has-siblings:!adjoins-item
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-vline_light.png);
+  border-image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-vline_light.png);
+}
+
+QDialog QTreeView::branch:has-siblings:adjoins-item
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-more_light.png);
+}
+
+QDialog QTreeView::branch:!has-children:!has-siblings:adjoins-item
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-end_light.png);
+}
+
+QDialog QTreeView::branch:closed:has-children:has-siblings
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-closed_light.png);
+}
+
+QDialog QTreeView::branch:has-children:!has-siblings:closed
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-closed_light.png);
+}
+
+QDialog QTreeView::branch:open:has-children:has-siblings
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-open_light.png);
+}
+
+QDialog QTreeView::branch:open:has-children:!has-siblings
+{
+  image: url(${FABRIC_DIR}/Resources/Icons/treeWidget-branch-open_light.png);
+}
+
 #DFGExecHeaderWidget QLabel,
 #DFGExecHeaderWidget QLineEdit,
 #DFGPEWidget_Elements QLineEdit
@@ -334,6 +399,9 @@ QDialog QPushButton:focus
 QTreeView
 {
   border: 0;
+  background: #484848;
+  font: 10pt "Roboto";
+  font-weight: normal;
 }
 
 QTreeView::branch:has-siblings:!adjoins-item
@@ -1104,6 +1172,42 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 }
 
 /****************************************************************************
+ * DFGHistoryWidget
+ ***************************************************************************/
+#DFGHistoryWidget
+{
+  border: 0;
+  background-color: #484848;
+}
+
+#DFGHistoryWidget,
+#DFGHistoryWidget::item
+{
+  font: 10pt "Roboto";
+  font-weight: normal;
+}
+
+#DFGHistoryWidget::item
+{
+  color: white;
+  padding: 1px 10px 1px 1px;
+  height: 20px;
+}
+
+#DFGHistoryWidget::item:hover
+{
+  padding: 0;
+  background-color: #596D7A;
+}
+
+#DFGHistoryWidget::item:selected
+{
+  border: 0;
+  padding: 0;
+  background-color: #50626E;
+}
+
+/****************************************************************************
  * ValueEditor
  ***************************************************************************/
 
@@ -1414,17 +1518,23 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 /****************************************************************************
  * DFGPresetTreeWidget
  ***************************************************************************/
-
-#DFGPresetTreeWidget QTreeView
-{
-  background: #484848;
-  font: 10pt "Roboto";
-  font-weight: normal;
-}
-
 #DFGPresetTreeWidget QTreeView::item
 {
+  color: white;
   padding: 2px;
+}
+
+#DFGPresetTreeWidget QTreeView::item:hover
+{
+  padding: 0;
+  background-color: #596D7A;
+}
+
+#DFGPresetTreeWidget QTreeView::item:selected
+{
+  border: 0;
+  padding: 0;
+  background-color: #50626E;
 }
 
 /****************************************************************************

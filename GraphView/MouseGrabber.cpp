@@ -688,7 +688,8 @@ void ExposeInstPortAction::invokeAddPort(
 
 QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other, PortType nodeRole)
 {
-  QMenu *menu = new QMenu(NULL);
+  FabricUI::DFG::DFGController * dfgController = static_cast<FabricUI::DFG::DFGController *>(node->graph()->controller());
+  QMenu *menu = new QMenu(dfgController->getDFGWidget());
 
   // go through all the node's pins and add
   // those to the menu that can be connected.
@@ -800,7 +801,8 @@ QMenu *MouseGrabber::createInstBlockHeaderMenu(
   PortType nodeRole
   )
 {
-  QMenu *menu = new QMenu(NULL);
+  FabricUI::DFG::DFGController * dfgController = static_cast<FabricUI::DFG::DFGController *>(instBlock->node()->graph()->controller());
+  QMenu *menu = new QMenu(dfgController->getDFGWidget());
 
   // go through all the node's pins and add
   // those to the menu that can be connected.

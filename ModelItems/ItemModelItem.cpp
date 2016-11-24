@@ -68,8 +68,9 @@ void ItemModelItem::onRenamed(
     it != m_children.end(); ++it )
   {
     ItemPortModelItem *nodePortModelItem =
-      static_cast<ItemPortModelItem *>( *it );
-    nodePortModelItem->onItemRenamed( oldItemPath, newItemPath );
+      dynamic_cast<ItemPortModelItem *>( *it );
+    if(nodePortModelItem)
+      nodePortModelItem->onItemRenamed( oldItemPath, newItemPath );
   }
 }
 
