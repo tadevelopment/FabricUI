@@ -119,7 +119,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.clearLogAction = None
         self.blockCompilationsAction = None
 
-        self.windowTitle = 'Fabric Engine'
+        self.windowTitle = 'Fabric Engine - Canvas'
         self.lastFileName = ''
         self.onFileNameChanged('')
 
