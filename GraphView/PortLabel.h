@@ -9,12 +9,14 @@
 namespace FabricUI {
 namespace GraphView {
 
+class Port;
+
 class PortLabel : public TextContainer
 {
 public:
 
   PortLabel(
-    QGraphicsWidget * parent,
+    Port * parent,
     QString const &text,
     QColor color,
     QColor hlColor,
@@ -31,6 +33,7 @@ protected:
 private:
 
   QPointF m_dragStartPosition;
+  Port* m_port;
 };
 
 } // namespace GraphView

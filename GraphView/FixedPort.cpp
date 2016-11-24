@@ -56,7 +56,7 @@ void FixedPort::init()
     new QGraphicsPixmapLayoutItem(
       FabricUI::LoadPixmap( "fixed-port-lock.png" )
       );
-  m_label = new PortLabel(
+  m_label = new TextContainer(
     this,
     QSTRING_FROM_STL_UTF8(m_labelCaption),
     config.sidePanelFontColor,
