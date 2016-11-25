@@ -39,7 +39,7 @@ public:
     // Fetching the value from the QSettings
     if (m_settings->contains(m_namePath.data())) {
       QString settingsValue = m_settings->value( m_namePath.data() ).value<QString>();
-      m_val.setJSON( settingsValue.toStdString().data() );
+      m_val.setJSON( settingsValue.toUtf8().data() );
       emit m_editor.valueChanged();
     }
   }
@@ -105,7 +105,7 @@ public:
     if( commit ) {
       m_editor.m_undoStack.push(
         new OptionUndoCommand(
-          QString::fromStdString("Changed the option \"" + m_namePath + "\""),
+          "Changed the option \"" + QString::fromUtf8( m_namePath.data(), m_namePath.size() ) + "\"",
           previousValue,
           value,
           *this
