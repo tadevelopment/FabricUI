@@ -433,7 +433,7 @@ QString DFGController::cmdRenameExecPort(
   QString result = m_cmdHandler->dfgDoRenamePort(
     getBinding(),
     getExecPath_QS(),
-    getExec().getSubExec( execPath.toStdString().data() ),
+    getExec().getSubExec( execPath.toUtf8().constData() ),
     oldName,
     desiredNewName
     );
