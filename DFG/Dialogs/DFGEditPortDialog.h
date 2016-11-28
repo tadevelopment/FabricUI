@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QShowEvent>
-
+#include <QKeyEvent>
 #include "DFGBaseDialog.h"
 #include "DFGRegisteredTypeLineEdit.h"
 #include "DFGExtensionLineEdit.h"
@@ -47,6 +47,8 @@ namespace FabricUI
       void setOpaque();
       bool persistValue() const;
       void setPersistValue( bool value );
+      bool isDataTypeReadOnly() const;
+      void setDataTypeReadOnly( bool value );
 
       bool hasSoftRange() const;
       void setHasSoftRange(bool value);
@@ -78,6 +80,12 @@ namespace FabricUI
       void alphaNumicStringOnly();
       /// Filter the QLineEdit text with the setRegexFilter
       void setRegexFilter(QString regex);
+
+    protected:
+      virtual void keyPressEvent(QKeyEvent * event);
+
+    public slots:
+      virtual void done(int r);
 
     private slots:
 

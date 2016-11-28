@@ -3,7 +3,7 @@
 #include <QLayout>
 #include <QDoubleValidator>
 #include <QTimer>
-
+#include <QMessageBox>
 #include "DFGEditPortDialog.h"
 
 using namespace FabricUI;
@@ -139,6 +139,19 @@ void DFGEditPortDialog::setDataType(QString value)
     m_dataTypeEdit->setText( value );
   else
     assert( false );
+}
+
+bool DFGEditPortDialog::isDataTypeReadOnly() const 
+{
+  if(m_dataTypeEdit)
+    return m_dataTypeEdit->isReadOnly();
+  return false;
+}
+
+void DFGEditPortDialog::setDataTypeReadOnly( bool value ) 
+{
+  if(m_dataTypeEdit)
+    return m_dataTypeEdit->setReadOnly(value);
 }
 
 QString DFGEditPortDialog::extension() const
@@ -342,4 +355,38 @@ void DFGEditPortDialog::onComboToggled(int state)
 void DFGEditPortDialog::onFileTypeFilterToggled(int state)
 {
   m_fileTypeFilter->setEnabled(state == Qt::Checked);
+}
+
+void DFGEditPortDialog::done(int r)
+{
+  // Ok (Enter) pressed
+  if(QDialog::Accepted == r)  
+  { 
+    // FE-7691 : Check if the current text is a KL valid type
+    // If not, don't close the dialog
+    if(m_dataTypeEdit->checkIfTypeExist())    
+    {
+      QDialog::done(r);
+      return;
+    }
+    else
+    {
+      m_dataTypeEdit->displayInvalidTypeWarning();
+      return;
+    }
+  }
+  // Cancel, Close, Exc pressed
+  else  
+  {
+    QDialog::done(r);
+    return;
+  }
+}
+
+void DFGEditPortDialog::keyPressEvent(QKeyEvent * event)
+{
+  // FE-7691 : Don't call directly the parent QDialog::keyPressEvent(event);
+  // Otherwise the warning message is displayed twice when the user press enter.
+  // Really weird behaviour, and there is no Qt doc about this.
+  QWidget::keyPressEvent(event);
 }

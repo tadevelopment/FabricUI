@@ -52,6 +52,7 @@ namespace FabricUI
       void goUpPressed();
       void reloadPressed();
       void savePressed();
+      void extensionLoaded();
 
     public slots:
 

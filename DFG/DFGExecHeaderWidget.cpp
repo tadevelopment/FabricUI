@@ -260,6 +260,10 @@ void DFGExecHeaderWidget::reqExtEditingFinished()
   }
 
   m_dfgController->cmdSetExtDeps( nameAndVers );
+
+  // FE-7961
+  // Emit the signal to refresh DFGRegisteredTypeLineEdit
+  emit extensionLoaded();
 }
 
 void DFGExecHeaderWidget::onExecChanged()

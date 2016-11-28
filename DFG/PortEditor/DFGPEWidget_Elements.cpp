@@ -99,6 +99,8 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
       m_addElementTypeSpec->setValidator(
         new QRegExpValidator( m_typeSpecRegExp )
         );
+      connect(m_dfgWidget->getHeaderWidget(), SIGNAL(extensionLoaded()),
+        m_addElementTypeSpec, SLOT(onUpdateRegisteredTypeList()));
     }
     m_addElementButton =
       new QPushButton( m_plusIcon, "Add " + elementDescCapitalized );
@@ -526,6 +528,13 @@ void DFGPEWidget_Elements::onDeleteRowClicked( int row )
 
 void DFGPEWidget_Elements::onAddElementClicked()
 {
+  // FE-7961 : Check that the port dataType is valid
+  if(m_hasTypeSpec && !m_addElementTypeSpec->checkIfTypeExist())
+  {
+    m_addElementTypeSpec->displayInvalidTypeWarning();
+    return;
+  }
+
   int index = m_model->getElementCount();
   m_model->insertElement(
     index,
