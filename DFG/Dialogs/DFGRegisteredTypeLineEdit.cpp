@@ -23,14 +23,21 @@ void DFGRegisteredTypeLineEdit::onUpdateRegisteredTypeList() {
     if(key.find('<') != key.end())
       continue;
     if(key.find('[') != key.end())
-      continue;
+      if(!key.endswith("[]") || key.endswith("][]"))
+        continue;
     m_registerKLTypeList.append(key.c_str());
   }
   setWords(m_registerKLTypeList);
 }
 
 bool DFGRegisteredTypeLineEdit::checkIfTypeExist() {
-  return m_registerKLTypeList.contains(text());
+  QString t = text();
+  int n = -1;
+  if (n < 0)  n = t.indexOf('<');
+  if (n < 0)  n = t.indexOf('[');
+  if (n < 0)  n = t.size();
+  t.truncate(n);
+  return  m_registerKLTypeList.contains(t);
 }
 
 void DFGRegisteredTypeLineEdit::displayInvalidTypeWarning() {
