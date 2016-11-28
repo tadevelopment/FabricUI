@@ -3,6 +3,7 @@
 #include "TextContainer.h"
 #include <QPen>
 #include <QFontMetrics>
+#include <QTextDocument>
 
 using namespace FabricUI::GraphView;
 
@@ -161,6 +162,9 @@ void TextContainer::buildTextItem()
     m_editableTextItem->setTextInteractionFlags( Qt::TextEditorInteraction );
     m_editableTextItem->setCacheMode(DeviceCoordinateCache);
     m_editableTextItem->setFocus();
+
+    // make it look the same as QGraphicsSimpleTextItem
+    m_editableTextItem->document()->setDocumentMargin(0);
   }
   else
   {
