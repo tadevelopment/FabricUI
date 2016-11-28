@@ -11,6 +11,7 @@ DFGRegisteredTypeLineEdit::DFGRegisteredTypeLineEdit(QWidget * parent, FabricCor
 : DFGAutoCompleteLineEdit(parent, text)
 , m_client(client)
 {
+  FabricCore::Variant registeredTypesVar = FabricCore::GetRegisteredTypes_Variant(m_client);
   onUpdateRegisteredTypeList();
 }
 

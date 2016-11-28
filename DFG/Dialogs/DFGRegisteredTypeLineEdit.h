@@ -25,7 +25,6 @@ namespace FabricUI
       /// Diplays a warning pop-up informing that the type is not valid.
       void displayInvalidTypeWarning();
 
-
     public slots:
       /// Update the registerd KL type list (e.g, an extension has been loaded).
       void onUpdateRegisteredTypeList();

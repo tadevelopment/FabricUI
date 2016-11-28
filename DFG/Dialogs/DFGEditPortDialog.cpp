@@ -363,7 +363,7 @@ void DFGEditPortDialog::done(int r)
   if(QDialog::Accepted == r)  
   { 
     // FE-7691 : Check if the current text is a KL valid type
-    // If not, don't close the dialog
+    // If not, don't close and validate the dialog
     if(m_dataTypeEdit->checkIfTypeExist())    
     {
       QDialog::done(r);
