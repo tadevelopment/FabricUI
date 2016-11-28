@@ -48,7 +48,12 @@ if __name__ == "__main__":
     mainWin = AlembicViewerWindow(initDir=initDir)
     mainWin.show()
 
-    alembicViewerGraphPath = os.path.join(os.getcwd(), 'AlembicViewer.canvas')
+    alembicViewerGraphPath = os.path.join(fabricDir,
+                                          'Samples',
+                                          'Python',
+                                          'AlembicViewer',
+                                          'AlembicViewer.canvas')
+    
     mainWin.loadGraph(alembicViewerGraphPath)
 
     app.exec_()
