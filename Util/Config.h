@@ -26,14 +26,31 @@ namespace FabricUI
       template<typename T>
       JSONValue* createValue( const T defaultValue ) const;
 
-      template <typename T> // TODO : remove this function
-      T _getOrCreateValue( const QString key, const T defaultValue = T() );
-
     public:
       ConfigSection& getOrCreateSection( const QString name );
 
       template <typename T>
-      T getOrCreateValue( const QString key, const T defaultValue = T() );
+      T getOrCreateValue( const QString key, const T defaultValue )
+      {
+        if ( !m_json->has( key.toStdString() ) )
+        {
+          m_json->insert( key.toStdString(), createValue<T>( defaultValue ) );
+          return defaultValue;
+        }
+        try
+        {
+          return getValue<T>( m_json->get( key.toStdString() ) );
+        }
+        catch ( FTL::JSONException e )
+        {
+          printf(
+            "Error : malformed entry for key \"%s\" : \"%s\"\n",
+            key.toStdString(),
+            m_json->get( key.toStdString() )->encode().data()
+          );
+          return defaultValue;
+        }
+      }
 
     protected:
       QMap<QString, ConfigSection> m_sections;

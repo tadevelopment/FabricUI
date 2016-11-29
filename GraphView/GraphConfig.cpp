@@ -1,11 +1,57 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include "GraphConfig.h"
+
 #include <FTL/Config.h>
 #include <FabricUI/Util/Config.h>
 
 using namespace FabricUI::GraphView;
 using namespace FabricUI::Util;
+
+// TODO : move it to Config.cpp if it's useful somewhere else
+#include <QPen>
+
+template<>
+JSONValue* ConfigSection::createValue( const QPen v ) const
+{
+  JSONObject* obj = new JSONObject();
+  obj->insert( "color", ConfigSection::createValue( v.color() ) );
+  obj->insert( "width", ConfigSection::createValue( v.widthF() ) );
+  obj->insert( "style", ConfigSection::createValue<int>( v.style() ) );
+  return obj;
+}
+
+template<>
+QPen ConfigSection::getValue( const JSONValue* entry ) const
+{
+  QPen v;
+  const JSONObject* obj = entry->cast<JSONObject>();
+  if ( obj->has( "color" ) ) v.setColor( getValue<QColor>( obj->get( "color" ) ) );
+  if ( obj->has( "width" ) ) v.setWidthF( getValue<double>( obj->get( "width" ) ) );
+  if ( obj->has( "style" ) ) v.setStyle( Qt::PenStyle( getValue<int>( obj->get( "style" ) ) ) );
+  return v;
+}
+
+#include <QPointF>
+
+template<>
+JSONValue* ConfigSection::createValue( const QPointF v ) const
+{
+  JSONObject* obj = new JSONObject();
+  obj->insert( "x", createValue( v.x() ) );
+  obj->insert( "y", createValue( v.y() ) );
+  return obj;
+}
+
+template<>
+QPointF ConfigSection::getValue( const JSONValue* entry ) const
+{
+  const JSONObject* obj = entry->cast<JSONObject>();
+  return QPointF(
+    obj->getFloat64( "x" ),
+    obj->getFloat64( "y" )
+  );
+}
 
 GraphConfig::GraphConfig()
 {

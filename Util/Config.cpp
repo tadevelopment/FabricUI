@@ -55,29 +55,6 @@ Config::~Config()
   delete m_json;
 }
 
-template <typename T>
-T ConfigSection::_getOrCreateValue( const QString key, const T defaultValue )
-{
-  if ( !m_json->has( key.toStdString() ) )
-  {
-    m_json->insert( key.toStdString(), createValue<T>( defaultValue ) );
-    return defaultValue;
-  }
-  try
-  {
-    return getValue<T>( m_json->get( key.toStdString() ) );
-  }
-  catch ( FTL::JSONException e )
-  {
-    printf(
-      "Error : malformed entry for key \"%s\" : \"%s\"\n",
-      key.toStdString(),
-      m_json->get( key.toStdString() )->encode().data()
-    );
-    return defaultValue;
-  }
-}
-
 ConfigSection& ConfigSection::getOrCreateSection( const QString name )
 {
   if ( m_sections.find( name ) == m_sections.end() )
@@ -104,10 +81,6 @@ bool ConfigSection::getValue( const JSONValue* entry ) const
   return entry->getBooleanValue();
 }
 
-template <>
-bool ConfigSection::getOrCreateValue( const QString key, const bool defaultValue )
-{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
-
 // int
 
 template<>
@@ -122,9 +95,19 @@ int ConfigSection::getValue( const JSONValue* entry ) const
   return entry->getSInt32Value();
 }
 
-template <>
-int ConfigSection::getOrCreateValue( const QString key, const int defaultValue )
-{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
+// unsigned int
+
+template<>
+JSONValue* ConfigSection::createValue( const unsigned int v ) const
+{
+  return new JSONSInt32( v );
+}
+
+template<>
+unsigned int ConfigSection::getValue( const JSONValue* entry ) const
+{
+  return entry->getSInt32Value();
+}
 
 // double
 
@@ -140,13 +123,19 @@ double ConfigSection::getValue( const JSONValue* entry ) const
   return entry->getFloat64Value();
 }
 
-template <>
-double ConfigSection::getOrCreateValue( const QString key, const double defaultValue )
-{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
+// float
 
-template <>
-float ConfigSection::getOrCreateValue( const QString key, const float defaultValue )
-{ return ConfigSection::_getOrCreateValue( key, double(defaultValue) ); }
+template<>
+JSONValue* ConfigSection::createValue( const float v ) const
+{
+  return new JSONFloat64( v );
+}
+
+template<>
+float ConfigSection::getValue( const JSONValue* entry ) const
+{
+  return entry->getFloat64Value();
+}
 
 // QString
 
@@ -162,10 +151,6 @@ QString ConfigSection::getValue( const JSONValue* entry ) const
   StrRef v = entry->getStringValue();
   return QString::fromUtf8( v.data(), v.size() );
 }
-
-template <>
-QString ConfigSection::getOrCreateValue( const QString key, const QString defaultValue )
-{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
 
 #include <QColor>
 
@@ -189,10 +174,6 @@ QColor ConfigSection::getValue( const JSONValue* entry ) const
     obj->getSInt32( "b" )
   );
 }
-
-template <>
-QColor ConfigSection::getOrCreateValue( const QString key, const QColor defaultValue )
-{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
 
 #include <QFont>
 
@@ -235,59 +216,3 @@ QFont ConfigSection::getValue( const JSONValue* entry ) const
 
   return result;
 }
-
-template <>
-QFont ConfigSection::getOrCreateValue( const QString key, const QFont defaultValue )
-{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
-
-#include <QPen>
-
-template<>
-JSONValue* ConfigSection::createValue( const QPen v ) const
-{
-  JSONObject* obj = new JSONObject();
-  obj->insert( "color", ConfigSection::createValue( v.color() ) );
-  obj->insert( "width", ConfigSection::createValue( v.widthF() ) );
-  obj->insert( "style", ConfigSection::createValue<int>( v.style() ) );
-  return obj;
-}
-
-template<>
-QPen ConfigSection::getValue( const JSONValue* entry ) const
-{
-  QPen v;
-  const JSONObject* obj = entry->cast<JSONObject>();
-  if ( obj->has( "color" ) ) v.setColor( getValue<QColor>( obj->get( "color" ) ) );
-  if ( obj->has( "width" ) ) v.setWidthF( getValue<double>( obj->get( "width" ) ) );
-  if ( obj->has( "style" ) ) v.setStyle( Qt::PenStyle( getValue<int>( obj->get( "style" ) ) ) );
-  return v;
-}
-
-template <>
-QPen ConfigSection::getOrCreateValue( const QString key, const QPen defaultValue )
-{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
-
-#include <QPointF>
-
-template<>
-JSONValue* ConfigSection::createValue( const QPointF v ) const
-{
-  JSONObject* obj = new JSONObject();
-  obj->insert( "x", createValue( v.x() ) );
-  obj->insert( "y", createValue( v.y() ) );
-  return obj;
-}
-
-template<>
-QPointF ConfigSection::getValue( const JSONValue* entry ) const
-{
-  const JSONObject* obj = entry->cast<JSONObject>();
-  return QPointF(
-    obj->getFloat64( "x" ),
-    obj->getFloat64( "y" )
-  );
-}
-
-template <>
-QPointF ConfigSection::getOrCreateValue( const QString key, const QPointF defaultValue )
-{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
