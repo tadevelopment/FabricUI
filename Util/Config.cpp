@@ -90,6 +90,44 @@ ConfigSection& ConfigSection::getOrCreateSection( const QString name )
   return m_sections[name];
 }
 
+// bool
+
+template<>
+JSONValue* ConfigSection::createValue( const bool v ) const
+{
+  return new JSONBoolean( v );
+}
+
+template<>
+bool ConfigSection::getValue( const JSONValue* entry ) const
+{
+  return entry->getBooleanValue();
+}
+
+template <>
+bool ConfigSection::getOrCreateValue( const QString key, const bool defaultValue )
+{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
+
+// int
+
+template<>
+JSONValue* ConfigSection::createValue( const int v ) const
+{
+  return new JSONSInt32( v );
+}
+
+template<>
+int ConfigSection::getValue( const JSONValue* entry ) const
+{
+  return entry->getSInt32Value();
+}
+
+template <>
+int ConfigSection::getOrCreateValue( const QString key, const int defaultValue )
+{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
+
+// double
+
 template<>
 JSONValue* ConfigSection::createValue( const double v ) const
 {
@@ -104,6 +142,29 @@ double ConfigSection::getValue( const JSONValue* entry ) const
 
 template <>
 double ConfigSection::getOrCreateValue( const QString key, const double defaultValue )
+{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
+
+template <>
+float ConfigSection::getOrCreateValue( const QString key, const float defaultValue )
+{ return ConfigSection::_getOrCreateValue( key, double(defaultValue) ); }
+
+// QString
+
+template<>
+JSONValue* ConfigSection::createValue( const QString v ) const
+{
+  return new JSONString( StrRef( v.toUtf8().data(), v.size() ) );
+}
+
+template<>
+QString ConfigSection::getValue( const JSONValue* entry ) const
+{
+  StrRef v = entry->getStringValue();
+  return QString::fromUtf8( v.data(), v.size() );
+}
+
+template <>
+QString ConfigSection::getOrCreateValue( const QString key, const QString defaultValue )
 { return ConfigSection::_getOrCreateValue( key, defaultValue ); }
 
 #include <QColor>
@@ -139,10 +200,12 @@ template<>
 JSONValue* ConfigSection::createValue( const QFont v ) const
 {
   JSONObject* font = new JSONObject();
-  font->insert( "family", new JSONString( v.family().toStdString() ) );
-  if ( v.pixelSize() > 0 ) font->insert( "pixelSize", new JSONSInt32( v.pixelSize() ) );
-  font->insert( "weight", new JSONSInt32( v.weight() ) );
-  font->insert( "styleHint", new JSONSInt32( v.styleHint() ) );
+  font->insert( "family", createValue( v.family() ) );
+  if ( v.pixelSize() > 0 ) font->insert( "pixelSize", createValue( v.pixelSize() ) );
+  font->insert( "pointSize", createValue( v.pointSizeF() ) );
+  font->insert( "weight", createValue( v.weight() ) );
+  font->insert( "styleHint", createValue<int>( v.styleHint() ) );
+  font->insert( "hintingPreference", createValue<int>( v.hintingPreference() ) );
   return font;
 }
 
@@ -151,13 +214,80 @@ QFont ConfigSection::getValue( const JSONValue* entry ) const
 {
   const JSONObject* obj = entry->cast<JSONObject>();
   QFont result;
-  if ( obj->has( "family" ) ) result.setFamily( QString::fromStdString( obj->getString( "family" ) ) );
-  if ( obj->has( "pixelSize" ) ) result.setPixelSize( obj->getSInt32( "pixelSize" ) );
-  if ( obj->has( "weight" ) ) result.setWeight( obj->getSInt32( "weight" ) );
-  if ( obj->has( "styleHint" ) ) result.setStyleHint( QFont::StyleHint( obj->getSInt32( "styleHint" ) ) );
+
+  if ( obj->has( "family" ) )
+    result.setFamily( QString::fromStdString( obj->getString( "family" ) ) );
+
+  if ( obj->has( "pixelSize" ) )
+    result.setPixelSize( obj->getSInt32( "pixelSize" ) );
+
+  if ( obj->has( "pointSize" ) )
+    result.setPointSizeF( obj->getFloat64( "pointSize" ) );
+
+  if ( obj->has( "weight" ) )
+    result.setWeight( obj->getSInt32( "weight" ) );
+
+  if ( obj->has( "styleHint" ) )
+    result.setStyleHint( QFont::StyleHint( obj->getSInt32( "styleHint" ) ) );
+
+  if( obj->has( "hintingPrefrence" ) )
+    result.setHintingPreference( QFont::HintingPreference( obj->getSInt32(  "hintingPrefrence" ) ) );
+
   return result;
 }
 
 template <>
 QFont ConfigSection::getOrCreateValue( const QString key, const QFont defaultValue )
+{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
+
+#include <QPen>
+
+template<>
+JSONValue* ConfigSection::createValue( const QPen v ) const
+{
+  JSONObject* obj = new JSONObject();
+  obj->insert( "color", ConfigSection::createValue( v.color() ) );
+  obj->insert( "width", ConfigSection::createValue( v.widthF() ) );
+  obj->insert( "style", ConfigSection::createValue<int>( v.style() ) );
+  return obj;
+}
+
+template<>
+QPen ConfigSection::getValue( const JSONValue* entry ) const
+{
+  QPen v;
+  const JSONObject* obj = entry->cast<JSONObject>();
+  if ( obj->has( "color" ) ) v.setColor( getValue<QColor>( obj->get( "color" ) ) );
+  if ( obj->has( "width" ) ) v.setWidthF( getValue<double>( obj->get( "width" ) ) );
+  if ( obj->has( "style" ) ) v.setStyle( Qt::PenStyle( getValue<int>( obj->get( "style" ) ) ) );
+  return v;
+}
+
+template <>
+QPen ConfigSection::getOrCreateValue( const QString key, const QPen defaultValue )
+{ return ConfigSection::_getOrCreateValue( key, defaultValue ); }
+
+#include <QPointF>
+
+template<>
+JSONValue* ConfigSection::createValue( const QPointF v ) const
+{
+  JSONObject* obj = new JSONObject();
+  obj->insert( "x", createValue( v.x() ) );
+  obj->insert( "y", createValue( v.y() ) );
+  return obj;
+}
+
+template<>
+QPointF ConfigSection::getValue( const JSONValue* entry ) const
+{
+  const JSONObject* obj = entry->cast<JSONObject>();
+  return QPointF(
+    obj->getFloat64( "x" ),
+    obj->getFloat64( "y" )
+  );
+}
+
+template <>
+QPointF ConfigSection::getOrCreateValue( const QString key, const QPointF defaultValue )
 { return ConfigSection::_getOrCreateValue( key, defaultValue ); }
