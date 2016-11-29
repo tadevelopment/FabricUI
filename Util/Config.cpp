@@ -7,63 +7,58 @@
 using namespace FabricUI::Util;
 using namespace FTL;
 
-#include <QFile>
-#include <QTextStream>
+#include <fstream>
+#include <sstream>
 
-Config::Config( const QString fileName )
+Config::Config( const std::string fileName )
   : ConfigSection()
   , m_fileName( fileName )
 {
-  QFile file( m_fileName );
-  if ( file.exists() )
+  std::ifstream file( fileName );
+  if ( file.is_open() )
   {
-    file.open( QIODevice::ReadOnly );
-    assert( file.isReadable() );
-
-    QTextStream text( &file );
-    m_content = text.readAll();
-    if ( !m_content.isEmpty() )
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    m_content = buffer.str();
+    if ( !m_content.empty() )
     {
       try
       {
-        m_json = JSONObject::Decode( JSONStrWithLoc( m_content.toStdString().data() ) );
+        m_json = JSONObject::Decode( JSONStrWithLoc( m_content ) );
         return;
       }
       catch ( FTL::JSONException e)
       {
         printf(
           "Error in %s, malformed JSON : %s\n",
-          fileName.toStdString().data(),
+          fileName.data(),
           e.getDescCStr()
         );
       }
     }
   }
   {
-    printf( "Config file \"%s\" does not exist : creating it\n", m_fileName.toStdString().data() );
+    printf( "Config file \"%s\" does not exist : creating it\n", m_fileName.data() );
     m_json = new JSONObject();
   }
 }
 
 Config::~Config()
 {
-  QFile file( m_fileName );
-  file.open( QIODevice::WriteOnly );
-  assert( file.isWritable() );
-  printf( "Exported \"%s\"\n", m_fileName.toStdString().data() );
-  QTextStream text( &file );
-  text << m_json->encode().data();
+  std::ofstream file( m_fileName );
+  file << m_json->encode();
+  printf( "Exported \"%s\"\n", m_fileName.data() );
   delete m_json;
 }
 
-ConfigSection& ConfigSection::getOrCreateSection( const QString name )
+ConfigSection& ConfigSection::getOrCreateSection( const std::string name )
 {
   if ( m_sections.find( name ) == m_sections.end() )
   {
     ConfigSection& newSection = m_sections[name];
-    newSection.m_json = m_json->has( name.toStdString() ) ?
-      m_json->get( name.toStdString() )->cast<JSONObject>() : new JSONObject();
-    m_json->insert( name.toStdString(), newSection.m_json );
+    newSection.m_json = m_json->has( name ) ?
+      m_json->get( name )->cast<JSONObject>() : new JSONObject();
+    m_json->insert( name, newSection.m_json );
   }
   return m_sections[name];
 }
@@ -198,7 +193,7 @@ QFont ConfigSection::getValue( const JSONValue* entry ) const
   QFont result;
 
   if ( obj->has( "family" ) )
-    result.setFamily( QString::fromStdString( obj->getString( "family" ) ) );
+    result.setFamily( getValue<QString>( obj->get( "family" ) ) );
 
   if ( obj->has( "pixelSize" ) )
     result.setPixelSize( obj->getSInt32( "pixelSize" ) );

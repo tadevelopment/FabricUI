@@ -12,7 +12,7 @@
 using namespace FabricUI::Style;
 
 template<>
-QBrush FabricUI::Util::ConfigSection::getOrCreateValue( const QString key, QBrush value )
+QBrush FabricUI::Util::ConfigSection::getOrCreateValue( const std::string key, QBrush value )
 { return QBrush( getOrCreateValue( key, value.color() ) ); }
 
 void FabricStyle::polish(QPalette &palette)

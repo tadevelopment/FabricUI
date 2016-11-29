@@ -8,9 +8,6 @@
 
 #include <FabricUI/Util/FabricResourcePath.h>
 
-#include <QMap>
-#include <QString>
-
 namespace FabricUI
 {
   namespace Util
@@ -25,45 +22,45 @@ namespace FabricUI
       FTL::JSONValue* createValue( const T defaultValue ) const;
 
     public:
-      ConfigSection& getOrCreateSection( const QString name );
+      ConfigSection& getOrCreateSection( const std::string name );
 
       template <typename T>
-      T getOrCreateValue( const QString key, const T defaultValue )
+      T getOrCreateValue( const std::string key, const T defaultValue )
       {
-        if ( !m_json->has( key.toStdString() ) )
+        if ( !m_json->has( key ) )
         {
-          m_json->insert( key.toStdString(), createValue<T>( defaultValue ) );
+          m_json->insert( key, createValue<T>( defaultValue ) );
           return defaultValue;
         }
         try
         {
-          return getValue<T>( m_json->get( key.toStdString() ) );
+          return getValue<T>( m_json->get( key ) );
         }
         catch ( FTL::JSONException e )
         {
           printf(
             "Error : malformed entry for key \"%s\" : \"%s\"\n",
-            key.toStdString(),
-            m_json->get( key.toStdString() )->encode().data()
+            key.data(),
+            m_json->get( key )->encode().data()
           );
           return defaultValue;
         }
       }
 
     protected:
-      QMap<QString, ConfigSection> m_sections;
+      std::map<std::string, ConfigSection> m_sections;
       FTL::JSONObject* m_json;
     };
 
     class Config : public ConfigSection
     {
     public:
-      Config( const QString fileName = FabricResourcePathQS( "config.json" ) );
+      Config( const std::string fileName = FabricResourcePath( "config.json" ) );
       ~Config();
 
     private:
-      QString m_fileName;
-      QString m_content;
+      std::string m_fileName;
+      std::string m_content;
     };
 
   }
