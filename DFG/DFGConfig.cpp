@@ -4,6 +4,7 @@
 
 #include "DFGConfig.h"
 #include <CodeCompletion/KLTypeDesc.h>
+#include <FabricUI/Util/Config.h>
 
 using namespace FabricServices;
 using namespace FabricUI::DFG;
@@ -16,66 +17,89 @@ DFGConfig::DFGConfig()
   , searchResultsFont( QFont("Courier", 11) )
   , searchHelpFont( QFont("Courier", 11, QFont::Bold) )
 {
-  defaultWindowColor = QColor(85, 88, 92);
-  defaultBackgroundColor = QColor(156, 174, 187);
+  Util::Config rootConfig;
+  Util::ConfigSection& cfg = rootConfig.getOrCreateSection( "DFG" );
+
+#define GET_PARAMETER( parameter, defaultValue ) \
+  parameter = cfg.getOrCreateValue( #parameter, defaultValue )
+
   // defaultFont.setBold(true);
-  defaultFontColor = QColor(31, 43, 55, 255);
   fixedFont.setStyleHint( QFont::TypeWriter );
   logFont.setStyleHint( QFont::TypeWriter );
-  searchBackgroundColor = QColor(135, 135, 135);
-  searchHighlightColor = QColor(137, 181, 202);
-  searchCursorColor = QColor(220, 220, 220);
-  searchFontColor = QColor(0, 0, 0);
-  varNodeDefaultColor = QColor(214, 191, 103);
-  varLabelDefaultColor = QColor(188, 129, 83);
 
-  klEditorConfig.codeBackgroundColor = defaultFontColor;
-  klEditorConfig.codeFontColor = defaultBackgroundColor;
+#define GET_FONT( font ) \
+  GET_PARAMETER( font, font )
 
-  registerDataTypeColor("", QColor(40, 40, 40));
-  registerDataTypeColor("Boolean", QColor(240, 78, 35));
-  registerDataTypeColor("Scalar", QColor(128, 195, 66));
-  registerDataTypeColor("Float32", QColor(128, 195, 66));
-  registerDataTypeColor("Float64", QColor(128, 195, 66));
-  registerDataTypeColor("Byte", QColor(0, 153, 100));
-  registerDataTypeColor("Integer", QColor(0, 153, 100));
-  registerDataTypeColor("SInt8", QColor(0, 153, 100));
-  registerDataTypeColor("UInt8", QColor(0, 153, 100));
-  registerDataTypeColor("SInt16", QColor(0, 153, 100));
-  registerDataTypeColor("UInt16", QColor(0, 153, 100));
-  registerDataTypeColor("SInt32", QColor(0, 153, 100));
-  registerDataTypeColor("UInt32", QColor(0, 153, 100));
-  registerDataTypeColor("SInt64", QColor(0, 153, 100));
-  registerDataTypeColor("UInt64", QColor(0, 153, 100));
-  registerDataTypeColor("Index", QColor(0, 153, 100));
-  registerDataTypeColor("Size", QColor(0, 153, 100));
-  registerDataTypeColor("Count", QColor(0, 153, 100));
-  registerDataTypeColor("String", QColor(76, 16, 0));
-  registerDataTypeColor("Execute", QColor("#60D4E7"));
+  GET_FONT( defaultFont );
+  GET_FONT( fixedFont );
+  GET_FONT( logFont );
+  GET_FONT( searchQueryFont );
+  GET_FONT( searchResultsFont );
+
+  GET_PARAMETER( defaultWindowColor, QColor( 85, 88, 92 ) );
+  GET_PARAMETER( defaultBackgroundColor, QColor( 156, 174, 187 ) );
+  GET_PARAMETER( defaultFontColor, QColor( 31, 43, 55, 255 ) );
+  GET_PARAMETER( searchBackgroundColor, QColor( 135, 135, 135 ) );
+  GET_PARAMETER( searchHighlightColor, QColor( 137, 181, 202 ) );
+  GET_PARAMETER( searchCursorColor, QColor( 220, 220, 220 ) );
+  GET_PARAMETER( searchFontColor, QColor( 0, 0, 0 ) );
+  GET_PARAMETER( varNodeDefaultColor, QColor( 214, 191, 103 ) );
+  GET_PARAMETER( varLabelDefaultColor, QColor( 188, 129, 83 ) );
+
+  GET_PARAMETER( klEditorConfig.codeBackgroundColor, defaultFontColor );
+  GET_PARAMETER( klEditorConfig.codeFontColor, defaultBackgroundColor );
+
+  Util::ConfigSection& dataTypes = cfg.getOrCreateSection( "dataTypes" );
+
+
+
+#define REGISTER_DATA_TYPE_COLOR( typeName, defaultColor ) \
+  registerDataTypeColor( typeName, dataTypes.getOrCreateValue( typeName, defaultColor ) )
+
+  REGISTER_DATA_TYPE_COLOR( "", QColor( 40, 40, 40 ) );
+  REGISTER_DATA_TYPE_COLOR( "Boolean", QColor( 240, 78, 35 ) );
+  REGISTER_DATA_TYPE_COLOR( "Scalar", QColor( 128, 195, 66 ) );
+  REGISTER_DATA_TYPE_COLOR( "Float32", QColor( 128, 195, 66 ) );
+  REGISTER_DATA_TYPE_COLOR( "Float64", QColor( 128, 195, 66 ) );
+  REGISTER_DATA_TYPE_COLOR( "Byte", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "Integer", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "SInt8", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "UInt8", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "SInt16", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "UInt16", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "SInt32", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "UInt32", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "SInt64", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "UInt64", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "Index", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "Size", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "Count", QColor( 0, 153, 100 ) );
+  REGISTER_DATA_TYPE_COLOR( "String", QColor( 76, 16, 0 ) );
+  REGISTER_DATA_TYPE_COLOR( "Execute", QColor( "#60D4E7" ) );
 
   // todo: to be removed
-  registerDataTypeColor("Regex", QColor(134, 55, 41));
-  registerDataTypeColor("Vec2", QColor(255, 242, 0));
-  registerDataTypeColor("Vec3", QColor(255, 242, 0));
-  registerDataTypeColor("Vec4", QColor(255, 242, 0));
-  registerDataTypeColor("Mat22", QColor(249, 157, 28));
-  registerDataTypeColor("Mat33", QColor(249, 157, 28));
-  registerDataTypeColor("Mat44", QColor(249, 157, 28));
-  registerDataTypeColor("Xfo", QColor(249, 157, 28));
-  registerDataTypeColor("Quat", QColor(0, 191, 232));
-  registerDataTypeColor("Euler", QColor(0, 191, 232));
-  registerDataTypeColor("RotationOrder", QColor(0, 191, 232));
-  registerDataTypeColor("Color", QColor(255, 0, 0));
-  registerDataTypeColor("RGB", QColor(255, 0, 0));
-  registerDataTypeColor("RGBA", QColor(255, 0, 0));
-  registerDataTypeColor("ARGB", QColor(255, 0, 0));
-  registerDataTypeColor("Complex", QColor("#E30761"));
-  registerDataTypeColor("Geometry", QColor(51, 1, 106));
-  registerDataTypeColor("Lines", QColor(51, 1, 106));
-  registerDataTypeColor("Points", QColor(51, 1, 106));
-  registerDataTypeColor("PolygonMesh", QColor(51, 1, 106));
-  registerDataTypeColor("ImporterObject", QColor(206, 165, 151));
-  registerDataTypeColor("ImporterContext", QColor(206, 165, 151));
+  REGISTER_DATA_TYPE_COLOR( "Regex", QColor( 134, 55, 41 ) );
+  REGISTER_DATA_TYPE_COLOR( "Vec2", QColor( 255, 242, 0 ) );
+  REGISTER_DATA_TYPE_COLOR( "Vec3", QColor( 255, 242, 0 ) );
+  REGISTER_DATA_TYPE_COLOR( "Vec4", QColor( 255, 242, 0 ) );
+  REGISTER_DATA_TYPE_COLOR( "Mat22", QColor( 249, 157, 28 ) );
+  REGISTER_DATA_TYPE_COLOR( "Mat33", QColor( 249, 157, 28 ) );
+  REGISTER_DATA_TYPE_COLOR( "Mat44", QColor( 249, 157, 28 ) );
+  REGISTER_DATA_TYPE_COLOR( "Xfo", QColor( 249, 157, 28 ) );
+  REGISTER_DATA_TYPE_COLOR( "Quat", QColor( 0, 191, 232 ) );
+  REGISTER_DATA_TYPE_COLOR( "Euler", QColor( 0, 191, 232 ) );
+  REGISTER_DATA_TYPE_COLOR( "RotationOrder", QColor( 0, 191, 232 ) );
+  REGISTER_DATA_TYPE_COLOR( "Color", QColor( 255, 0, 0 ) );
+  REGISTER_DATA_TYPE_COLOR( "RGB", QColor( 255, 0, 0 ) );
+  REGISTER_DATA_TYPE_COLOR( "RGBA", QColor( 255, 0, 0 ) );
+  REGISTER_DATA_TYPE_COLOR( "ARGB", QColor( 255, 0, 0 ) );
+  REGISTER_DATA_TYPE_COLOR( "Complex", QColor( "#E30761" ) );
+  REGISTER_DATA_TYPE_COLOR( "Geometry", QColor( 51, 1, 106 ) );
+  REGISTER_DATA_TYPE_COLOR( "Lines", QColor( 51, 1, 106 ) );
+  REGISTER_DATA_TYPE_COLOR( "Points", QColor( 51, 1, 106 ) );
+  REGISTER_DATA_TYPE_COLOR( "PolygonMesh", QColor( 51, 1, 106 ) );
+  REGISTER_DATA_TYPE_COLOR( "ImporterObject", QColor( 206, 165, 151 ) );
+  REGISTER_DATA_TYPE_COLOR( "ImporterContext", QColor( 206, 165, 151 ) );
 }
 
 void DFGConfig::registerDataTypeColor(FTL::StrRef dataType, QColor color)
