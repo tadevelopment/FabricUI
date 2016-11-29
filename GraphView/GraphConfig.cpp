@@ -192,7 +192,6 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( selectionRectPen, QPen(QColor(25, 25, 25), 1.0, Qt::DashLine) );
 
   GET_PARAMETER( mouseGrabberRadius, pinRadius * 1.75 );
-  GET_PARAMETER( mouseWheelZoomRate, 0.0f ); // disable zoom for now 0.0005f;
   GET_PARAMETER( mouseWheelZoomRate, 0.0005f );
 
   GET_PARAMETER( backDropNodeAlpha, 0.45f );
