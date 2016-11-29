@@ -5,6 +5,7 @@
 #include "Config.h"
 
 using namespace FabricUI::Util;
+using namespace FTL;
 
 #include <QFile>
 #include <QTextStream>

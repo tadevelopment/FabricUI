@@ -6,6 +6,7 @@
 
 using namespace FabricUI::KLEditor;
 using namespace FabricUI::Util;
+using namespace FTL;
 
 // TODO : move it to Config.cpp if it's useful somewhere else
 template<>

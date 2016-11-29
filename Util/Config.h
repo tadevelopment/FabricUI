@@ -11,8 +11,6 @@
 #include <QMap>
 #include <QString>
 
-using namespace FTL;
-
 namespace FabricUI
 {
   namespace Util
@@ -21,10 +19,10 @@ namespace FabricUI
     class ConfigSection
     {
       template<typename T>
-      T getValue( const JSONValue* entry ) const;
+      T getValue( const FTL::JSONValue* entry ) const;
 
       template<typename T>
-      JSONValue* createValue( const T defaultValue ) const;
+      FTL::JSONValue* createValue( const T defaultValue ) const;
 
     public:
       ConfigSection& getOrCreateSection( const QString name );
@@ -54,7 +52,7 @@ namespace FabricUI
 
     protected:
       QMap<QString, ConfigSection> m_sections;
-      JSONObject* m_json;
+      FTL::JSONObject* m_json;
     };
 
     class Config : public ConfigSection
