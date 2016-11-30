@@ -120,9 +120,10 @@ const Node * NodeHeader::node() const
   return m_node;
 }
 
-void NodeHeader::setTitle(QString const &title)
+void NodeHeader::setTitle( QString const &title, QString const& suffix )
 {
   m_title->setText(title);
+  m_title->setSuffix( suffix );
 }
 
 bool NodeHeader::highlighted() const

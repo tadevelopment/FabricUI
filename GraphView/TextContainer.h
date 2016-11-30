@@ -32,6 +32,7 @@ namespace FabricUI
       virtual QString text() const
         { return m_text; }
       virtual void setText(QString const &text);
+      void setSuffix(QString const& suffix);
       virtual QColor color() const;
       virtual QColor highlightColor() const;
       virtual void setColor(QColor color, QColor hlColor);
@@ -65,6 +66,8 @@ namespace FabricUI
       QFont m_font;
       QColor m_highlightColor;
       QString m_text;
+      // the suffix won't be displayed while editing
+      QString m_suffix;
       bool m_highlighted;
 
       bool m_editable;

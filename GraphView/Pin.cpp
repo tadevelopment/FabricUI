@@ -310,14 +310,16 @@ void Pin::setDataType(FTL::CStrRef dataType)
       if(m_dataType.substr(m_dataType.length()-2) == "[]" && m_labelSuffix != "[]")
       {
         m_labelSuffix = "[]";
-        m_label->setText(QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix));
+        m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+        m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
         return;
       }
     }
     if(m_labelSuffix.length() > 0)
     {
       m_labelSuffix = "";
-      m_label->setText(QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix));
+      m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+      m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
     }
   }
 }
@@ -470,7 +472,7 @@ void Pin::setName( FTL::StrRef newName )
     m_name = newName;
     if ( labelIsName )
       m_labelCaption = newName;
-    m_label->setText( QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix) );
+    m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
   }
 }
 

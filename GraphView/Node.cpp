@@ -149,8 +149,7 @@ void Node::setTitle( FTL::CStrRef title )
   m_title = title;
   if(m_header)
   {
-    std::string titleToSet = m_title + m_titleSuffix;
-    m_header->setTitle( QSTRING_FROM_FTL_UTF8(titleToSet) );
+    m_header->setTitle( QSTRING_FROM_FTL_UTF8( m_title ), QSTRING_FROM_FTL_UTF8( m_titleSuffix ) );
     m_header->labelWidget()->setItalic(m_titleSuffix.length() > 0);
   }
 }

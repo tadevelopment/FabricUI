@@ -38,8 +38,14 @@ void TextContainer::setText(QString const &text)
 {
   m_text = text;
   if( m_editing ) { m_editableTextItem->setPlainText(text); }
-  else { m_fixedTextItem->setText( text ); }
+  else { m_fixedTextItem->setText( text + m_suffix ); }
   refresh();
+}
+
+void TextContainer::setSuffix( QString const &suffix )
+{
+  m_suffix = suffix;
+  setText( m_text );
 }
 
 void TextContainer::refresh()
@@ -123,8 +129,8 @@ class TextContainer::EditableTextItem : public QGraphicsTextItem {
   TextContainer* m_container;
 
 public:
-  EditableTextItem(const QString text, TextContainer* container)
-    : QGraphicsTextItem( text, container ),
+  EditableTextItem( TextContainer* container )
+    : QGraphicsTextItem( container ),
     m_container(container)
   {
     // disable tabs by default : they are not allowed in most names
@@ -163,7 +169,7 @@ void TextContainer::buildTextItem()
   destroyTextItems();
   if (m_editing)
   {
-    m_editableTextItem = new EditableTextItem( m_text, this );
+    m_editableTextItem = new EditableTextItem( this );
     m_editableTextItem->setTextInteractionFlags( Qt::TextEditorInteraction );
     m_editableTextItem->setCacheMode(DeviceCoordinateCache);
     m_editableTextItem->setFocus();
@@ -173,9 +179,10 @@ void TextContainer::buildTextItem()
   }
   else
   {
-    m_fixedTextItem = new QGraphicsSimpleTextItem( m_text, this );
+    m_fixedTextItem = new QGraphicsSimpleTextItem( this );
     m_fixedTextItem->setCacheMode(DeviceCoordinateCache);
   }
+  setText( m_text );
   setColor( m_color, m_highlightColor );
   setFont( m_font );
 }
