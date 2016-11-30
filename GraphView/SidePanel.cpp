@@ -292,9 +292,7 @@ void SidePanel::paint(QPainter * painter, const QStyleOptionGraphicsItem * optio
 
 void SidePanel::onItemGroupResized()
 {
-  // Reset the layout.
-  // Needed because the content of m_itemGroup may have changed.
-  resetLayout();
+  m_itemGroup->adjustSize();
   setMinimumWidth(m_itemGroup->size().width());
   setMaximumWidth(m_itemGroup->size().width());
 }

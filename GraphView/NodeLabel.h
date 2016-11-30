@@ -4,6 +4,7 @@
 #define __UI_GraphView_NodeLabel__
 
 #include "TextContainer.h"
+#include <FTL/Config.h>
 
 namespace FabricUI
 {
@@ -14,9 +15,7 @@ namespace FabricUI
 
     class NodeLabel : public TextContainer
     {
-      Q_OBJECT
-
-        Node *m_node;
+      Node *m_node;
 
     public:
 
@@ -36,6 +35,7 @@ namespace FabricUI
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
       virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
       virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
+      virtual void displayedTextChanged() FTL_OVERRIDE;
     };
 
   };

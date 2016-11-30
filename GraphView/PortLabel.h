@@ -29,6 +29,7 @@ protected:
   virtual void mouseMoveEvent( QGraphicsSceneMouseEvent *event );
   virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent * event );
   virtual void submitEditedText( const QString& text ); // override
+  virtual void displayedTextChanged() FTL_OVERRIDE;
 
 private:
 

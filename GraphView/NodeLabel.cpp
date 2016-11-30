@@ -28,6 +28,11 @@ NodeLabel::NodeLabel(
 {
 }
 
+void NodeLabel::displayedTextChanged()
+{
+  TextContainer::displayedTextChanged();
+  m_node->adjustSize();
+}
 
 void NodeLabel::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {

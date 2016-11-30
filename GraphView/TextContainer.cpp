@@ -53,6 +53,10 @@ void TextContainer::refresh()
   setPreferredHeight(size.height());
 }
 
+void TextContainer::displayedTextChanged()
+{
+}
+
 QColor TextContainer::color() const
 {
   return m_color;
@@ -148,6 +152,7 @@ protected:
     default:
       QGraphicsTextItem::keyPressEvent(event);
       m_container->refresh();
+      m_container->displayedTextChanged();
     }
   }
 
@@ -190,5 +195,6 @@ void TextContainer::setEditing(bool editing) {
   if ( m_editing != editing) {
     m_editing = editing;
     buildTextItem();
+    displayedTextChanged();
   }
 }

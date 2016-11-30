@@ -53,9 +53,11 @@ namespace FabricUI
         if( m_editable) { setEditing( true ); }
         QGraphicsWidget::mouseDoubleClickEvent(event);
       }
-      virtual void submitEditedText(const QString& text) {
-        // to override
-      }
+      virtual void submitEditedText(const QString& text) {} // to override
+
+      // called when the text displayed changes (even if it's not submitted)
+      // TODO: use signals/slots instead ?
+      virtual void displayedTextChanged();
 
     private:
 

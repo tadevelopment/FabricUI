@@ -78,6 +78,12 @@ void PortLabel::mouseMoveEvent( QGraphicsSceneMouseEvent *event )
   TextContainer::mouseMoveEvent( event );
 }
 
+void PortLabel::displayedTextChanged()
+{
+  TextContainer::displayedTextChanged();
+  emit m_port->contentChanged();
+}
+
 void PortLabel::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
 {
   if ( !!(event->buttons() & Qt::LeftButton) )
