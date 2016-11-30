@@ -102,6 +102,7 @@ namespace FabricUI
     private:
 
       Node * m_node;
+      double m_newMember[42];
       std::string m_name;
       PortType m_portType;
       std::string m_dataType;

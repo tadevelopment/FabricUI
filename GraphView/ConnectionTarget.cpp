@@ -3,6 +3,7 @@
 #include "ConnectionTarget.h"
 #include "Graph.h"
 #include "PinCircle.h"
+#include "InstBlockPort.h"
 
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsSceneMouseEvent>
@@ -114,6 +115,20 @@ PinCircle * ConnectionTarget::findPinCircle(QPointF pos)
       else
       {
         if(target->outCircle())
+          m_lastPinCircle = target->outCircle();
+      }
+    }
+    else if(type() == QGraphicsItemType_InstBlockPort)
+    {
+      InstBlockPort * target = static_cast<InstBlockPort*>(this);
+      if ( pos.x() < size().width() * 0.5 )
+      {
+        if ( target->inCircle() )
+          m_lastPinCircle = target->inCircle();
+      }
+      else
+      {
+        if ( target->outCircle() )
           m_lastPinCircle = target->outCircle();
       }
     }

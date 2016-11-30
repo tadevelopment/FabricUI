@@ -32,7 +32,7 @@ public:
 
   virtual ~InstBlockPort() {}
 
-  virtual int type() const { return QGraphicsItemType_Pin; }
+  virtual int type() const { return QGraphicsItemType_InstBlockPort; }
 
   InstBlock *instBlock()
     { return m_instBlock; }
