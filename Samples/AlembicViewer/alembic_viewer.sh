@@ -10,7 +10,9 @@ echo "Launching Alembic Viewer"
 echo "========================"
 echo ""
 
-source ../../../environment.sh
+BASEDIR=$(dirname "$0")
+FABRIC_DIR=$BASEDIR/../../..
+source $FABRIC_DIR/environment.sh
 
 ALEMBICVIEWERPYPATH=$FABRIC_DIR/Samples/Python
 
