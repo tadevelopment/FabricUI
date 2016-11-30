@@ -40,7 +40,7 @@ namespace FabricUI
       PinCircle const *outCircle() const
         { return m_outCircle; }
 
-      void setTitle(QString const &title);
+      void setTitle( QString const &title, QString const& suffix );
 
       virtual bool highlighted() const;
       virtual void setHighlighted(bool state = true);

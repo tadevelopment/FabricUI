@@ -137,12 +137,7 @@ void NodeHeaderButton::mousePressEvent(QGraphicsSceneMouseEvent * event)
     m_lastMousePos = event->scenePos();
     event->accept();
 
-    m_nodeHeader->node()->onMousePress(
-      event->button(),
-      event->modifiers(),
-      event->scenePos(),
-      event->lastScenePos()
-      );
+    m_nodeHeader->node()->onMousePress( event );
     return;
   }
   QGraphicsWidget::mousePressEvent(event);
@@ -154,12 +149,7 @@ void NodeHeaderButton::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
   // force the event to fall back to the node
   // this is done so that dragging etc works correctly.
-  m_nodeHeader->node()->onMouseMove(
-    event->button(),
-    event->modifiers(),
-    event->scenePos(),
-    event->lastScenePos()
-    );
+  m_nodeHeader->node()->onMouseMove( event );
 }
 
 void NodeHeaderButton::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
@@ -171,12 +161,7 @@ void NodeHeaderButton::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 
   // force the event to fall back to the node
   // this is done so that dragging etc works correctly.
-  m_nodeHeader->node()->onMouseRelease(
-    event->button(),
-    event->modifiers(),
-    event->scenePos(),
-    event->lastScenePos()
-    );
+  m_nodeHeader->node()->onMouseRelease( event );
 }
 
 void NodeHeaderButton::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)

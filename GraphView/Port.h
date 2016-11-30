@@ -32,6 +32,7 @@ namespace FabricUI
       Q_OBJECT
 
       friend class Graph;
+      friend class PortLabel;
       friend class SidePanel;
 
     public:
