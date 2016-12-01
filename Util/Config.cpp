@@ -138,7 +138,7 @@ float ConfigSection::getValue( const JSONValue* entry ) const
 template<>
 JSONValue* ConfigSection::createValue( const QString v ) const
 {
-  return new JSONString( StrRef( v.toUtf8().data(), v.size() ) );
+  return new JSONString( StrRef( v.toUtf8().data(), v.toUtf8().size() ) );
 }
 
 template<>
@@ -177,10 +177,14 @@ template<>
 JSONValue* ConfigSection::createValue( const QFont v ) const
 {
   JSONObject* font = new JSONObject();
+
+  // mandatory parameters (see the constructor in getValue, below)
   font->insert( "family", createValue( v.family() ) );
-  if ( v.pixelSize() > 0 ) font->insert( "pixelSize", createValue( v.pixelSize() ) );
-  font->insert( "pointSize", createValue( v.pointSizeF() ) );
+  font->insert( "pointSize", createValue( v.pointSize() ) );
   font->insert( "weight", createValue( v.weight() ) );
+
+  if ( v.pixelSize() > 0 ) font->insert( "pixelSize", createValue( v.pixelSize() ) );
+  if( v.pointSizeF() > 0 ) font->insert( "pointSizeF", createValue( v.pointSizeF() ) );
   font->insert( "styleHint", createValue<int>( v.styleHint() ) );
   font->insert( "hintingPreference", createValue<int>( v.hintingPreference() ) );
   return font;
@@ -190,19 +194,14 @@ template<>
 QFont ConfigSection::getValue( const JSONValue* entry ) const
 {
   const JSONObject* obj = entry->cast<JSONObject>();
-  QFont result;
-
-  if ( obj->has( "family" ) )
-    result.setFamily( getValue<QString>( obj->get( "family" ) ) );
+  QFont result = QFont(
+    getValue<QString>( obj->get( "family" ) ),
+    obj->getFloat64( "pointSize" ),
+    obj->getSInt32( "weight" )
+  );
 
   if ( obj->has( "pixelSize" ) )
     result.setPixelSize( obj->getSInt32( "pixelSize" ) );
-
-  if ( obj->has( "pointSize" ) )
-    result.setPointSizeF( obj->getFloat64( "pointSize" ) );
-
-  if ( obj->has( "weight" ) )
-    result.setWeight( obj->getSInt32( "weight" ) );
 
   if ( obj->has( "styleHint" ) )
     result.setStyleHint( QFont::StyleHint( obj->getSInt32( "styleHint" ) ) );
