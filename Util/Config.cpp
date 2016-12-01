@@ -7,7 +7,6 @@
 using namespace FTL;
 
 #include <fstream>
-#include <sstream>
 
 #include <QColor>
 #include <QFont>
@@ -29,9 +28,10 @@ void Config::open( const std::string fileName )
   std::ifstream file( fileName.data() );
   if ( file.is_open() )
   {
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    m_content = buffer.str();
+    m_content = std::string(
+      std::istreambuf_iterator<char>( file ),
+      std::istreambuf_iterator<char>()
+    );
     if ( !m_content.empty() )
     {
       try
