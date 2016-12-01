@@ -23,7 +23,8 @@ namespace FabricUI
       QGraphicsItemType_NodeRectangle,
       QGraphicsItemType_ProxyPin,
       QGraphicsItemType_NodeHeaderButton,
-      QGraphicsItemType_InstBlock
+      QGraphicsItemType_InstBlock,
+      QGraphicsItemType_InstBlockPort
     };
 
   };
