@@ -22,6 +22,13 @@ namespace FabricUI
       FTL::JSONValue* createValue( const T defaultValue ) const;
 
     public:
+
+      ConfigSection()
+        : m_json( NULL )
+        , m_previousSection( NULL )
+      {}
+      virtual ~ConfigSection() {};
+
       ConfigSection& getOrCreateSection( const std::string name );
 
       template <typename T>
@@ -29,11 +36,18 @@ namespace FabricUI
       {
         if ( !m_json->has( key ) )
         {
+          // if the key is not there, and there is a previous section, query it
+          if ( m_previousSection != NULL )
+            return m_previousSection->getOrCreateValue( key, defaultValue );
+
+          // else, insert the default value in this section
           m_json->insert( key, createValue<T>( defaultValue ) );
           return defaultValue;
+          ;
         }
         try
         {
+          // if the key is there, try to return it
           return getValue<T>( m_json->get( key ) );
         }
         catch ( FTL::JSONException e )
@@ -43,19 +57,29 @@ namespace FabricUI
             key.data(),
             m_json->get( key )->encode().data()
           );
-          return defaultValue;
+          // if the value is malformed, either query the previous
+          // section or return the default value
+          return m_previousSection != NULL ?
+            m_previousSection->getOrCreateValue( key, defaultValue ) :
+            defaultValue
+          ;
         }
       }
 
     protected:
       std::map<std::string, ConfigSection> m_sections;
       FTL::JSONObject* m_json;
+      // Config to look into if a value is not found here
+      ConfigSection* m_previousSection;
     };
 
     class Config : public ConfigSection
     {
+      void open( const std::string fileName );
+      Config( const std::string fileName );
+
     public:
-      Config( const std::string fileName = FabricResourcePath( "config.json" ) );
+      Config();
       ~Config();
 
     private:

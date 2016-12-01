@@ -12,8 +12,15 @@ using namespace FTL;
 
 Config::Config( const std::string fileName )
   : ConfigSection()
-  , m_fileName( fileName )
 {
+  open( fileName );
+}
+
+void Config::open( const std::string fileName )
+{
+  m_fileName = fileName;
+
+  if ( m_json != NULL ) { delete m_json; }
   std::ifstream file( fileName );
   if ( file.is_open() )
   {
@@ -37,28 +44,43 @@ Config::Config( const std::string fileName )
       }
     }
   }
-  {
-    printf( "Config file \"%s\" does not exist : creating it\n", m_fileName.data() );
-    m_json = new JSONObject();
-  }
+  // If there is no readable JSON, create a new one
+  m_json = new JSONObject();
+}
+
+Config::Config()
+  : ConfigSection()
+{
+  m_previousSection = new Config( FabricResourcePath( "default.config.json" ) );
+  this->open( FabricResourcePath( "user.config.json" ) );
 }
 
 Config::~Config()
 {
   std::ofstream file( m_fileName );
   file << m_json->encode();
-  printf( "Exported \"%s\"\n", m_fileName.data() );
   delete m_json;
+  if( m_previousSection != NULL )
+    delete m_previousSection;
 }
 
 ConfigSection& ConfigSection::getOrCreateSection( const std::string name )
 {
   if ( m_sections.find( name ) == m_sections.end() )
   {
+    // If there is no child section and there is a previous section, return its child section
+    if ( !m_json->has( name ) && m_previousSection != NULL )
+      return m_previousSection->getOrCreateSection( name );
+
+    // Else read it from the JSON or create an empty one
     ConfigSection& newSection = m_sections[name];
     newSection.m_json = m_json->has( name ) ?
       m_json->get( name )->cast<JSONObject>() : new JSONObject();
     m_json->insert( name, newSection.m_json );
+
+    // Link the child section of the previous section to this new child
+    if ( m_previousSection != NULL )
+      m_sections[name].m_previousSection = &m_previousSection->getOrCreateSection( name );
   }
   return m_sections[name];
 }
