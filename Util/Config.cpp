@@ -4,11 +4,16 @@
 
 #include "Config.h"
 
-using namespace FabricUI::Util;
 using namespace FTL;
 
 #include <fstream>
 #include <sstream>
+
+#include <QColor>
+#include <QFont>
+
+namespace FabricUI {
+namespace Util {
 
 Config::Config( const std::string fileName )
   : ConfigSection()
@@ -21,7 +26,7 @@ void Config::open( const std::string fileName )
   m_fileName = fileName;
 
   if ( m_json != NULL ) { delete m_json; }
-  std::ifstream file( fileName );
+  std::ifstream file( fileName.data() );
   if ( file.is_open() )
   {
     std::stringstream buffer;
@@ -31,7 +36,8 @@ void Config::open( const std::string fileName )
     {
       try
       {
-        m_json = JSONObject::Decode( JSONStrWithLoc( m_content ) );
+        JSONStrWithLoc content( m_content );
+        m_json = JSONObject::Decode( content );
         return;
       }
       catch ( FTL::JSONException e)
@@ -57,7 +63,7 @@ Config::Config()
 
 Config::~Config()
 {
-  std::ofstream file( m_fileName );
+  std::ofstream file( m_fileName.data() );
   file << m_json->encode();
   delete m_json;
   if( m_previousSection != NULL )
@@ -170,7 +176,7 @@ QString ConfigSection::getValue( const JSONValue* entry ) const
   return QString::fromUtf8( v.data(), v.size() );
 }
 
-#include <QColor>
+// QColor
 
 template<>
 JSONValue* ConfigSection::createValue( const QColor v ) const
@@ -193,7 +199,7 @@ QColor ConfigSection::getValue( const JSONValue* entry ) const
   );
 }
 
-#include <QFont>
+// QFont
 
 template<>
 JSONValue* ConfigSection::createValue( const QFont v ) const
@@ -218,12 +224,15 @@ QFont ConfigSection::getValue( const JSONValue* entry ) const
   const JSONObject* obj = entry->cast<JSONObject>();
   QFont result = QFont(
     getValue<QString>( obj->get( "family" ) ),
-    obj->getFloat64( "pointSize" ),
+    obj->getSInt32( "pointSize" ),
     obj->getSInt32( "weight" )
   );
 
   if ( obj->has( "pixelSize" ) )
     result.setPixelSize( obj->getSInt32( "pixelSize" ) );
+
+  if( obj->has( "pointSizeF" ) )
+    result.setPointSizeF( obj->getFloat64( "pointSizeF" ) );
 
   if ( obj->has( "styleHint" ) )
     result.setStyleHint( QFont::StyleHint( obj->getSInt32( "styleHint" ) ) );
@@ -233,3 +242,5 @@ QFont ConfigSection::getValue( const JSONValue* entry ) const
 
   return result;
 }
+
+}} // namespace FabricUI::Util

@@ -11,9 +11,14 @@
 
 using namespace FabricUI::Style;
 
+namespace FabricUI {
+namespace Util {
+
 template<>
 QBrush FabricUI::Util::ConfigSection::getOrCreateValue( const std::string key, QBrush value )
 { return QBrush( getOrCreateValue( key, value.color() ) ); }
+
+}} // namespace FabricUI::Util
 
 void FabricStyle::polish(QPalette &palette)
 {

@@ -5,8 +5,10 @@
 #include <FabricUI/Util/Config.h>
 
 using namespace FabricUI::KLEditor;
-using namespace FabricUI::Util;
 using namespace FTL;
+
+namespace FabricUI {
+namespace Util {
 
 // TODO : move it to Config.cpp if it's useful somewhere else
 template<>
@@ -37,6 +39,8 @@ QTextCharFormat ConfigSection::getValue( const JSONValue* entry ) const
     v.setProperty( QTextCharFormat::FullWidthSelection, getValue<bool>( obj->get( "fullWidthSelection" ) ) );
   return v;
 }
+
+}} // namespace FabricUI::Util
 
 EditorConfig::EditorConfig()
 {

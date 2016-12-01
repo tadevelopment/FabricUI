@@ -6,8 +6,10 @@
 #include <FabricUI/Util/Config.h>
 
 using namespace FabricUI::GraphView;
-using namespace FabricUI::Util;
 using namespace FTL;
+
+namespace FabricUI {
+namespace Util {
 
 // TODO : move it to Config.cpp if it's useful somewhere else
 #include <QPen>
@@ -53,6 +55,8 @@ QPointF ConfigSection::getValue( const JSONValue* entry ) const
     obj->getFloat64( "y" )
   );
 }
+
+}} // namespace FabricUI::Util
 
 GraphConfig::GraphConfig()
 {
@@ -174,7 +178,7 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( sidePanelContentMargins, 4.0f );
   GET_PARAMETER( sidePanelSpacing, 10.0f );
 
-  sidePanelFont, QFont("Roboto", 10, QFont::Normal);
+  sidePanelFont = QFont("Roboto", 10, QFont::Normal);
   sidePanelFont.setHintingPreference( QFont::PreferFullHinting );
   GET_FONT( sidePanelFont );
 
