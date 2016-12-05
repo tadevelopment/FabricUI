@@ -130,6 +130,8 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
       FTL::CStrRef portToConnectName = split.second;
       if ( !portToConnectNodeName.empty() )
       {
+        bool setPortAsPersistable = false;  // [FE-7700]
+
         FTL::CStrRef resolvedType =
           exec.getPortResolvedType( portToConnectPath.c_str() );
         if ( !resolvedType.empty() )
@@ -142,13 +144,15 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
           if ( defaultValue.isValid() )
           {
             if ( execPath.empty() )
+            {
               binding.setArgValue( portName.c_str(), defaultValue, true );
+              setPortAsPersistable = true;
+            }
             else
               exec.setPortDefaultValue( portName.c_str(), defaultValue, true );
             ++coreUndoCount;
           }
         }
-
 
         static unsigned const metadatasToCopyCount = 5;
         char const *metadatasToCopy[metadatasToCopyCount] =
@@ -197,6 +201,21 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
               );
             ++coreUndoCount;
           }
+        }
+
+        if (setPortAsPersistable)
+        {
+          // set the port as persistable. This was done in the setArgValue()
+          // call above (see implementation of DFGUICmd_SetArgValue::invoke()),
+          // but copying the metadata afterwards possibly removed or reset
+          // the DFG_METADATA_UIPERSISTVALUE metadata, so we set it again here.
+          exec.setExecPortMetadata(
+            portName.c_str(),
+            DFG_METADATA_UIPERSISTVALUE,
+            "true",
+            true
+            );
+          ++coreUndoCount;
         }
       }
     }
