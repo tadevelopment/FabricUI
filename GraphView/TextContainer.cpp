@@ -4,6 +4,7 @@
 #include <QPen>
 #include <QFontMetrics>
 #include <QTextDocument>
+#include <QTextCursor>
 
 using namespace FabricUI::GraphView;
 
@@ -137,6 +138,13 @@ public:
     setTabChangesFocus(true);
   }
 
+  void selectAllText()
+  {
+    QTextCursor cursor = this->textCursor();
+    cursor.select( QTextCursor::SelectionType::Document );
+    this->setTextCursor( cursor );
+  }
+
 private:
   void exit(bool submit) {
     if (submit) { m_container->submitEditedText(this->toPlainText()); }
@@ -169,10 +177,15 @@ void TextContainer::buildTextItem()
   destroyTextItems();
   if (m_editing)
   {
-    m_editableTextItem = new EditableTextItem( this );
+    EditableTextItem* editableTextItem = new EditableTextItem( this );
+    m_editableTextItem = editableTextItem;
     m_editableTextItem->setTextInteractionFlags( Qt::TextEditorInteraction );
     m_editableTextItem->setCacheMode(DeviceCoordinateCache);
     m_editableTextItem->setFocus();
+    setText( m_text );
+
+    // select all the text when entering edit mode
+    editableTextItem->selectAllText();
 
     // make it look the same as QGraphicsSimpleTextItem
     m_editableTextItem->document()->setDocumentMargin(0);
@@ -181,8 +194,8 @@ void TextContainer::buildTextItem()
   {
     m_fixedTextItem = new QGraphicsSimpleTextItem( this );
     m_fixedTextItem->setCacheMode(DeviceCoordinateCache);
+    setText( m_text );
   }
-  setText( m_text );
   setColor( m_color, m_highlightColor );
   setFont( m_font );
 }
