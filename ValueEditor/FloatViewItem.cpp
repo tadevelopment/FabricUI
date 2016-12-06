@@ -8,6 +8,7 @@
 
 #include <FabricUI/Util/UIRange.h>
 #include <float.h>
+#include <QHBoxLayout>
 
 using namespace FabricUI::ValueEditor;
 
@@ -19,8 +20,18 @@ FloatViewItem::FloatViewItem(
   : BaseViewItem( name, metadata )
 {
   m_spinBox = new VEDoubleSpinBox;
-  m_spinBox->setObjectName( "FloatItem" );
+  m_spinBox->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::MinimumExpanding );
   onModelValueChanged( value );
+
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
+  layout->addWidget( m_spinBox );
+  layout->addStretch();
+
+  m_widget = new QWidget;
+  m_widget->setObjectName( "VEFloatViewItem" );
+  m_widget->setLayout( layout );
 
   connect(
     m_spinBox, SIGNAL(interactionBegin()), 
@@ -44,12 +55,12 @@ FloatViewItem::~FloatViewItem()
 
 QWidget *FloatViewItem::getWidget()
 {
-  return m_spinBox;
+  return m_widget;
 }
 
 void FloatViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_spinBox->setValue( v.value<double>() );
+  m_spinBox->setValue( getQVariantRTValValue<double>(v) );
 }
 
 void FloatViewItem::onSpinBoxValueChanged( double value )
@@ -61,7 +72,7 @@ void FloatViewItem::onSpinBoxValueChanged( double value )
 
 void FloatViewItem::metadataChanged()
 {
-  FTL::StrRef uiRangeString = m_metadata.getString( "uiRange" );
+  FTL::StrRef uiRangeString = m_metadata.getString( "uiHardRange" );
   
   double minValue, maxValue;
   if ( FabricUI::DecodeUIRange( uiRangeString, minValue, maxValue ) )

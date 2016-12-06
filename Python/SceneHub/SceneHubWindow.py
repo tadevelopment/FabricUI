@@ -120,6 +120,12 @@ class SceneHubWindow(CanvasWindow):
         self.shStates.inspectedChanged.connect(self.valueEditor.onInspectChanged)
         self.shStates.activeSceneChanged.connect(self.valueEditor.onSceneChanged)
         self.shStates.sceneChanged.connect(self.valueEditor.onSceneChanged)
+        
+        self._initRenderingOptions()
+
+    def _initRenderingOptions(self):
+
+        self.renderingOptionsWidget = SceneHub.SHOptionsEditor(self.shStates)
   
     def _initGL(self):
         """ Override of Canvas.CanvasWindow.
@@ -166,6 +172,13 @@ class SceneHubWindow(CanvasWindow):
         self.shTreeDock.setWidget(self.shTreesManager)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.shTreeDock, QtCore.Qt.Vertical)
 
+        self.renderingOptionsDockWidget = QtGui.QDockWidget("Rendering Options", self)
+        self.renderingOptionsDockWidget.setObjectName("Rendering Options")
+        self.renderingOptionsDockWidget.setFeatures(self.dockFeatures)
+        self.renderingOptionsDockWidget.setWidget( self.renderingOptionsWidget )
+        self.renderingOptionsDockWidget.hide()
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.renderingOptionsDockWidget, QtCore.Qt.Vertical)
+
     def _initMenus(self):
         """ Final initilization of the app, just before running.
         """
@@ -180,6 +193,9 @@ class SceneHubWindow(CanvasWindow):
                 toggleAction = self.shTreeDock.toggleViewAction()
                 toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
                 menu.addAction(toggleAction)
+                toggleAction = self.renderingOptionsDockWidget.toggleViewAction()
+                toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_9)
+                menu.addAction( toggleAction )
                 menu.addSeparator()
             if menu.title() == "&View":
                 menu.addSeparator()
@@ -293,7 +309,7 @@ class SceneHubWindow(CanvasWindow):
         """ Toggles the playback.
         """
         
-        self.timeLine.play()
+        self.timeLine.onPlayButtonToggled(True)
 
     def _onToggleSharedObjectSelection(self):
         self.viewportsManager.getSHRenderer().enableSharedObjectSelection( self.toggleSharedObjectSelection.isChecked() )

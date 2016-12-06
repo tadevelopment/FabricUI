@@ -3,11 +3,11 @@
  */
 
 #include "SHTreeView.h"
-#include <QtCore/QUrl>
-#include <QtCore/QMimeData>
-#include <QtGui/QDrag>
-#include <QtGui/QTreeWidgetItem>
-#include <QtCore/QAbstractItemModel>
+#include <QUrl>
+#include <QMimeData>
+#include <QDrag>
+#include <QTreeWidgetItem>
+#include <QAbstractItemModel>
 
 using namespace FabricCore;
 using namespace FabricUI;

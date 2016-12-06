@@ -3,8 +3,8 @@
 #ifndef _DFGCOMBINEDWIDGET_H_
 #define _DFGCOMBINEDWIDGET_H_
 
-#include <QtGui/QWidget>
-#include <QtGui/QSplitter>
+#include <QWidget>
+#include <QSplitter>
 
 #include <map>
 
@@ -57,7 +57,6 @@ namespace FabricUI
       virtual DFGWidget * getDfgWidget() { return m_dfgWidget; }
       virtual DFGLogWidget * getDfgLogWidget() { return m_dfgLogWidget; }
       virtual QWidget* getDfgValueEditor();
-      virtual void keyPressEvent(QKeyEvent * event);
 
     public slots:
       void log(const char * message) const;

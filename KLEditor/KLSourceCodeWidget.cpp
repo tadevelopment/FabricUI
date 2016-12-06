@@ -4,16 +4,18 @@
 
 #include <FabricUI/Util/DocUrl.h>
 
-#include <QtGui/QTextEdit>
-#include <QtGui/QPainter>
-#include <QtGui/QPaintEvent>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QScrollBar>
-#include <QtGui/QToolTip>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
-#include <QtCore/QUrl>
+#include <QTextEdit>
+#include <QApplication>
+#include <QClipboard>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QKeyEvent>
+#include <QContextMenuEvent>
+#include <QScrollBar>
+#include <QToolTip>
+#include <QMenu>
+#include <QAction>
+#include <QUrl>
 
 #include <FTL/Config.h>
 
@@ -238,6 +240,44 @@ void KLSourceCodeWidget::keyPressEvent(QKeyEvent * event)
       hidePopup();
   }
 
+  // [FE-6839]
+  if((event->key() == Qt::Key_X || event->key() == Qt::Key_C || event->key() == Qt::Key_V) && !m_popup && event->modifiers().testFlag(Qt::ControlModifier))
+  {
+    QTextCursor cursor = textCursor();
+    // we only do our manual thing if no text is selected.
+    if (cursor.position() == cursor.anchor())
+    {
+      QClipboard *clipboard = QApplication::clipboard();
+      if (event->key() == Qt::Key_X || event->key() == Qt::Key_C)
+      {
+        // manually cut/copy the line at which the cursor is located.
+        cursor.movePosition(QTextCursor::StartOfLine);
+        cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+        clipboard->setText(cursor.selectedText() + QString("\n"));
+        if (event->key() == Qt::Key_X)
+        {
+          cursor.movePosition(QTextCursor::StartOfLine);
+          cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor);
+          cursor.removeSelectedText();
+        }
+        event->accept();
+        return;
+      }
+      else
+      {
+        // if we have a single line in the clipboard then manually
+        // paste it before the line at which the cursor is located.
+        QString clipboardText = clipboard->text();
+        if (clipboardText.count('\n') == 1 && clipboardText.endsWith('\n'))
+        {
+          cursor.movePosition(QTextCursor::StartOfLine);
+          cursor.insertText(clipboard->text());
+          event->accept();
+          return;
+        }
+      }
+    }
+  }
   if(event->key() == Qt::Key_Tab)
   {
     if(!event->modifiers().testFlag(Qt::ShiftModifier))
@@ -782,4 +822,5 @@ bool KLSourceCodeWidget::hidePopup()
 void KLSourceCodeWidget::focusOutEvent(QFocusEvent * event)
 {
   hidePopup();
+  QPlainTextEdit::focusOutEvent( event );
 }

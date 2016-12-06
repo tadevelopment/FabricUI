@@ -1,18 +1,18 @@
 #ifndef __TIMELINEWIDGET_H__
 #define __TIMELINEWIDGET_H__
 
-#include <QtGui/QWidget>
-#include <QtOpenGL/QGLWidget>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QHBoxLayout>
-#include <QtCore/QTimer>
-#include <QtCore/QTime>
+#include <QWidget>
+#include <QGLWidget>
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QHBoxLayout>
+#include <QTimer>
+#include <QTime>
 
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QSlider>
-#include <QtGui/QPushButton>
-#include <QtGui/QComboBox>
+#include <QDoubleSpinBox>
+#include <QSlider>
+#include <QPushButton>
+#include <QComboBox>
 
 #include <map>
 #include <set>
@@ -76,6 +76,31 @@ namespace FabricUI
           event->accept();
         }
         QSlider::mousePressEvent( event );
+      }
+
+      virtual void  resizeEvent(QResizeEvent * event)
+      {
+        QSlider::resizeEvent( event );
+
+        if ( int width = this->width() )
+        {
+          int min = minimum();
+          int max = maximum();
+          int frames = max - min + 1;
+          int tickInterval = 1;
+          double pixelsPerTicks = double( width ) / double( frames );
+          while ( pixelsPerTicks < 6 )
+          {
+            tickInterval *= 2;
+            pixelsPerTicks *= 2;
+            if ( pixelsPerTicks < 6 )
+            {
+              tickInterval *= 5;
+              pixelsPerTicks *= 5;
+            }
+          }
+          setTickInterval( tickInterval );
+        }
       }
     };
 
@@ -166,7 +191,7 @@ namespace FabricUI
         void updateFrameRange();
         
         /// start or stop the playback ( act as a switch on the playing state )
-        void play();
+        void onPlayButtonToggled( bool checked );
         
         /// stop the playback
         void pause();
@@ -185,6 +210,9 @@ namespace FabricUI
 
         /// called each time the timer is triggered ( basicly when playing )
         void timerUpdate();
+
+        /// Called to reload the QSS styles
+        void reloadStyles();
 
       private slots:
 

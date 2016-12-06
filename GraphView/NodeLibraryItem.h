@@ -3,9 +3,9 @@
 #ifndef __UI_GraphView_NodeLibraryItem__
 #define __UI_GraphView_NodeLibraryItem__
 
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QColor>
+#include <QWidget>
+#include <QLabel>
+#include <QColor>
 
 namespace FabricUI
 {

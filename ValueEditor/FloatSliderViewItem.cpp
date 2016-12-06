@@ -13,9 +13,9 @@
 #include <float.h>
 #include <FTL/JSONValue.h>
 #include <FTL/AutoSet.h>
-#include <QtCore/QVariant>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QDoubleValidator>
+#include <QVariant>
+#include <QHBoxLayout>
+#include <QDoubleValidator>
 
 using namespace FabricUI::ValueEditor;
 
@@ -28,11 +28,16 @@ FloatSliderViewItem::FloatSliderViewItem(
   , m_isSettingValue(false)
 {
   m_lineEdit = new VELineEdit;
+  m_lineEdit->setObjectName( "VELeft" );
+  m_lineEdit->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::MinimumExpanding );
+
   m_slider = new DoubleSlider;
+  m_slider->setObjectName( "VERight" );
+  m_slider->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::MinimumExpanding );
 
   metadataChanged();
 
-  double value = variant.value<double>();
+  double value = getQVariantRTValValue<double>(variant);
 
   // correct the softrange
   if(value < m_slider->min())
@@ -44,18 +49,15 @@ FloatSliderViewItem::FloatSliderViewItem(
   m_lineEdit->setText( QString::number( value ) );
   m_slider->setDoubleValue( value );
 
-  m_widget = new QWidget;
-  QHBoxLayout *layout = new QHBoxLayout( m_widget );
-
-  QSizePolicy sp(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
-  sp.setHorizontalStretch(VE_H_STRETCH_SLIDER_LINEEDIT);
-  m_lineEdit->setSizePolicy(sp);
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_lineEdit );
-
-  sp.setHorizontalStretch(VE_H_STRETCH_SLIDER_SLIDER);
-  m_slider->setSizePolicy(sp);
   layout->addWidget( m_slider );
+
+  m_widget = new QWidget;
+  m_widget->setObjectName( "VEFloatSliderViewItem" );
+  m_widget->setLayout( layout );
 
   connect(
     m_lineEdit, SIGNAL( textModified( QString ) ),
@@ -89,7 +91,7 @@ void FloatSliderViewItem::onModelValueChanged( QVariant const &v )
 {
   FTL::AutoSet<bool> settingValue(m_isSettingValue, true);
 
-  double value = v.value<double>();
+  double value = getQVariantRTValValue<double>(v);
 
   // correct the softrange
   if(value < m_slider->min())

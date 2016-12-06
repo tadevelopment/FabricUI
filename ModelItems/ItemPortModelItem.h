@@ -90,6 +90,8 @@ class DFGUICmdHandler;
         QVariant valueAtInteractionBegin
         ) /*override*/;
 
+      bool hasDefault() FTL_OVERRIDE;
+      void resetToDefault() FTL_OVERRIDE;
 
     };
   }

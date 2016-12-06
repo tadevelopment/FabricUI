@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include "DFGVariablePathLineEdit.h"
-#include "../DFGController.h"
+#include "../DFGBindingUtils.h"
 #include <FTL/CStrRef.h>
 #include <FTL/JSONValue.h>
 
@@ -17,6 +17,6 @@ DFGVariablePathLineEdit::DFGVariablePathLineEdit(
   : DFGAutoCompleteLineEdit(parent, text)
 {
   FabricCore::DFGBinding localBinding = binding;
-  QStringList words = DFGController::getVariableWordsFromBinding(localBinding, currentExecPath);
+  QStringList words = DFGBindingUtils::getVariableWordsFromBinding(localBinding, currentExecPath);
   setWords(words);
 }

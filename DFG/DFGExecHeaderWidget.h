@@ -5,10 +5,10 @@
 
 #include <FabricCore.h>
 
-#include <QtGui/QApplication>
-#include <QtGui/QLineEdit>
-#include <QtGui/QPushButton>
-#include <QtGui/QFrame>
+#include <QApplication>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QFrame>
 
 #include <FTL/StrRef.h>
 
@@ -52,6 +52,7 @@ namespace FabricUI
       void goUpPressed();
       void reloadPressed();
       void savePressed();
+      void extensionLoaded();
 
     public slots:
 

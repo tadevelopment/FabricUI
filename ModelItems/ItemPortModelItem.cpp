@@ -7,7 +7,7 @@
 #include <FabricUI/ModelItems/ItemPortItemMetadata.h>
 #include <FabricUI/ModelItems/ItemPortModelItem.h>
 #include <FabricUI/ModelItems/RootModelItem.h>
-#include <QtCore/QStringList>
+#include <QStringList>
 
 namespace FabricUI {
 namespace ModelItems {
@@ -168,6 +168,34 @@ void ItemPortModelItem::onItemRenamed(
   m_itemPath = newItemPath;
 
   updatePortPath();
+}
+
+bool ItemPortModelItem::hasDefault()
+{
+  // Disabled the "resetToDefault" feature, because it currently
+  // doesn't work : DFGExec::getPortDefaultValue returns the same
+  // value that we modify in ItemPortModelItem::setValue
+  // TODO : re-enable
+  return false;
+
+  // If we have a resolved type, allow getting the default val
+  //const char* ctype = m_exec.getPortResolvedType(m_portPath.c_str());
+  //return (ctype != NULL);
+}
+
+void ItemPortModelItem::resetToDefault()
+{
+  //#pragma message("Fix instance values for non-arg ports")
+  //// If we have a resolved type, allow getting the default val
+  const char* ctype = m_exec.getPortResolvedType(m_portPath.c_str());
+  if (ctype != NULL)
+  {
+    // TODO : get the original (value when we opened the graph), instead
+    FabricCore::RTVal val =
+      m_exec.getPortDefaultValue(m_portPath.c_str(), ctype);
+    if (val.isValid())
+      onViewValueChanged(QVariant::fromValue(val));
+  }
 }
 
 } // namespace ModelItems

@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGCollapsableWidget__
 #define __UI_DFG_DFGCollapsableWidget__
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include "DFGCollapsableHeaderWidget.h"
 #include "../DFGConfig.h"
 

@@ -6,7 +6,7 @@
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/DFG/Dialogs/DFGNewVariableDialog.h>
 
-#include <QtGui/QCursor>
+#include <QCursor>
 
 using namespace FabricServices;
 using namespace FabricUI;
@@ -40,10 +40,10 @@ void DFGTabSearchWidget::mousePressEvent(QMouseEvent * event)
   {
     // Get the element index from the click pos
     int index = indexFromPos( event->pos() );
-    if ( index >= 0 )
+    if ( index >= 0 && index < int(m_results.getSize()) )
     {
       // Then add the node to the graph
-      addNodeFromPath( m_results[index]);
+      addNodeForIndex( index );
       m_parent->getGraphViewWidget()->setFocus(Qt::OtherFocusReason);
       event->accept();
       return;
@@ -66,7 +66,13 @@ void DFGTabSearchWidget::mouseMoveEvent( QMouseEvent *event )
 void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
 {
   Qt::Key key = (Qt::Key)event->key();
-  if(key == Qt::Key_Tab || key == Qt::Key_Escape)
+  Qt::KeyboardModifiers modifiers = event->modifiers();
+
+  // Do nothing if control or alt is pressed
+  if(modifiers.testFlag(Qt::ControlModifier) || modifiers.testFlag(Qt::AltModifier))
+    QWidget::keyPressEvent(event);
+ 
+  else if(key == Qt::Key_Tab || key == Qt::Key_Escape)
   {
     hide();
     event->accept();
@@ -101,7 +107,7 @@ void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
   }
   else if(key == Qt::Key_Down)
   {
-    if(m_currentIndex < m_results.length() -1)
+    if ( m_currentIndex < int(m_results.getSize()) - 1 )
     {
       m_currentIndex++;
       update();
@@ -110,9 +116,9 @@ void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
   }
   else if(key == Qt::Key_Enter || key == Qt::Key_Return)
   {
-    if(m_currentIndex > -1 && m_currentIndex < m_results.length())
+    if(m_currentIndex > -1 && m_currentIndex < int(m_results.getSize()))
     {
-      addNodeFromPath(m_results[m_currentIndex]);
+      addNodeForIndex( m_currentIndex );
     }
     hide();
     event->accept();
@@ -128,7 +134,7 @@ char const *DFGTabSearchWidget::getHelpText() const
 {
   if ( m_search.length() == 0 )
     return "Search for preset or variable";
-  else if ( m_results.length() == 0 )
+  else if ( m_results.getSize() == 0 )
     return "No results found";
   else
     return 0;
@@ -150,7 +156,7 @@ void DFGTabSearchWidget::paintEvent(QPaintEvent * event)
     m_config.searchCursorColor
     );
 
-  if(m_currentIndex > -1 && m_currentIndex < m_results.length())
+  if(m_currentIndex > -1 && m_currentIndex < int(m_results.getSize()) )
   {
     int offset = m_resultsMetrics.lineSpacing() * (m_currentIndex + 1) + margin();
     painter.fillRect(margin(), offset, width - 2 * margin(), m_resultsMetrics.lineSpacing(), m_config.searchHighlightColor);
@@ -166,7 +172,7 @@ void DFGTabSearchWidget::paintEvent(QPaintEvent * event)
   offset += m_queryMetrics.lineSpacing();
 
   painter.setFont(m_config.searchResultsFont);
-  for(int i=0;i<m_results.length();i++)
+  for(int i=0;i<int(m_results.getSize());i++)
   {
     painter.drawText(margin(), offset, resultLabel(i));
     offset += m_resultsMetrics.lineSpacing();
@@ -185,6 +191,7 @@ void DFGTabSearchWidget::paintEvent(QPaintEvent * event)
 void DFGTabSearchWidget::hideEvent(QHideEvent * event)
 {
   releaseKeyboard();
+  m_results.clear();
   emit enabled(false);
   QWidget::hideEvent(event);  
 }
@@ -225,16 +232,13 @@ bool DFGTabSearchWidget::focusNextPrevChild(bool next)
 
 void DFGTabSearchWidget::updateSearch()
 {
-  m_results = m_parent->getUIController()->getPresetPathsFromSearch(m_search.toUtf8().constData());
-  if(m_results.size() > 16)
-  {
-    QStringList lessResults;
-    for(unsigned int i=0;i<16;i++)
-      lessResults.push_back(m_results[i]);
-    m_results = lessResults;
-  }
+  m_results =
+    m_parent->getUIController()->getPresetPathsFromSearch(
+      m_search.toUtf8().constData()
+      );
+  m_results.keepFirst( 16 );
 
-  if(m_results.length() == 0)
+  if(m_results.getSize() == 0)
   {
     m_currentIndex = -1;
   }
@@ -242,7 +246,7 @@ void DFGTabSearchWidget::updateSearch()
   {
     m_currentIndex = 0;
   }
-  else if(m_currentIndex >= m_results.length())
+  else if(m_currentIndex >= int(m_results.getSize()))
   {
     m_currentIndex = 0;
   }
@@ -303,16 +307,24 @@ void DFGTabSearchWidget::updateGeometry()
 
 QString DFGTabSearchWidget::resultLabel(unsigned int index) const
 {
-  int periodPos = m_results[index].lastIndexOf('.');
-  if(periodPos > 0)
+  FTL::StrRef desc(
+    static_cast<char const *>( m_results.getUserdata(index) )
+    );
+  FTL::StrRef::Split splitOne = desc.rsplit('.');
+  if ( !splitOne.second.empty() )
   {
-    periodPos = m_results[index].lastIndexOf('.', periodPos-1);
-    if(periodPos > 0)
+    FTL::StrRef::Split splitTwo = splitOne.first.rsplit('.');
+    if ( !splitTwo.first.empty()
+      && !splitTwo.second.empty() )
     {
-      return "..."+m_results[index].right(m_results[index].length() - periodPos - 1);
+      QString result = "...";
+      result += QString::fromUtf8( splitTwo.second.data(), splitTwo.second.size() );
+      result += '.';
+      result += QString::fromUtf8( splitOne.second.data(), splitOne.second.size() );
+      return result;
     }
   }
-  return m_results[index];
+  return QString::fromUtf8( desc.data(), desc.size() );
 }
 
 int DFGTabSearchWidget::indexFromPos(QPoint pos)
@@ -321,7 +333,7 @@ int DFGTabSearchWidget::indexFromPos(QPoint pos)
   y -= margin();
   y -= m_queryMetrics.lineSpacing();
   y /= (int)m_resultsMetrics.lineSpacing();
-  if ( y < 0 || y >= m_results.length() )
+  if ( y < 0 || y >= int(m_results.getSize()) )
     return -1;
   return y;
 }
@@ -334,7 +346,7 @@ int DFGTabSearchWidget::widthFromResults() const
   if(w > width)
     width = w;
 
-  for(int i=0;i<m_results.length();i++)
+  for(int i=0;i<int(m_results.getSize());i++)
   {
     w = m_resultsMetrics.width(resultLabel(i));
     if(w > width)
@@ -354,13 +366,13 @@ int DFGTabSearchWidget::widthFromResults() const
 int DFGTabSearchWidget::heightFromResults() const
 {
   int height = m_queryMetrics.lineSpacing();
-  height += m_results.length() * m_resultsMetrics.lineSpacing();
+  height += m_results.getSize() * m_resultsMetrics.lineSpacing();
   if ( getHelpText() )
     height += m_helpMetrics.lineSpacing();
   return height + 2 * margin();
 }
 
-void DFGTabSearchWidget::addNodeFromPath(QString path)
+void DFGTabSearchWidget::addNodeForIndex( unsigned index )
 {
   DFGController *controller = m_parent->getUIController();
   
@@ -370,8 +382,10 @@ void DFGTabSearchWidget::addNodeFromPath(QString path)
   // init node name.
   QString nodeName;
 
+  FTL::CStrRef desc( static_cast<char const *>( m_results.getUserdata( index ) ) );
+
   // deal with special case
-  if(path == "var")
+  if ( desc == FTL_STR("var") )
   {
     FabricCore::Client client = controller->getClient();
     FabricCore::DFGBinding binding = controller->getBinding();
@@ -400,7 +414,7 @@ void DFGTabSearchWidget::addNodeFromPath(QString path)
       scenePos
       );
   }
-  else if(path == "get")
+  else if( desc == FTL_STR("get") )
   {
     nodeName = controller->cmdAddGet(
       "get",
@@ -408,7 +422,7 @@ void DFGTabSearchWidget::addNodeFromPath(QString path)
       scenePos
       );
   }
-  else if(path == "set")
+  else if( desc == FTL_STR("set") )
   {
     nodeName = controller->cmdAddSet(
       "set",
@@ -416,28 +430,38 @@ void DFGTabSearchWidget::addNodeFromPath(QString path)
       scenePos
       );
   }
-  else if(path.left(4) == "get.")
+  else if( desc.startswith( FTL_STR("get.") ) )
   {
+    FTL::StrRef varName = desc.drop_front( 4 );
     nodeName = controller->cmdAddGet(
       "get",
-      path.mid(4).toUtf8().constData(),
+      QString::fromUtf8( varName.data(), varName.size() ),
       scenePos
       );
   }
-  else if(path.left(4) == "set.")
+  else if( desc.startswith( FTL_STR("set.") ) )
   {
+    FTL::StrRef varName = desc.drop_front( 4 );
     nodeName = controller->cmdAddSet(
       "set",
-      path.mid(4).toUtf8().constData(),
+      QString::fromUtf8( varName.data(), varName.size() ),
+      scenePos
+      );
+  }
+  else if( desc == FTL_STR("backdrop") )
+  {
+    controller->cmdAddBackDrop(
+      "backdrop",
       scenePos
       );
   }
   else
   {
+    m_results.select( index );
     nodeName = controller->cmdAddInstFromPreset(
-      path.toUtf8().constData(),
+      QString::fromUtf8( desc.data(), desc.size() ),
       scenePos
-      ).toUtf8().constData();
+      );
   }
 
   // was a new node created?

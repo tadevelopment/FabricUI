@@ -67,7 +67,7 @@ if buildOS == 'Darwin':
   env.Append(FRAMEWORKS = ['OpenGL', 'Cocoa', 'Foundation'])
 
 
-if buildOS == 'Linux':
+if buildOS == 'Linux' and not env.get('BUILDING_MAYA_2017'):
   env.Replace( CC = '/opt/centos5/usr/bin/gcc' )
   env.Replace( CXX = '/opt/centos5/usr/bin/gcc' )
 
@@ -181,11 +181,23 @@ if uiLibPrefix == 'ui':
       ]
     )
   env.Depends(uiLib, icons)
+  fonts = map(
+    lambda name: 
+      env.Install(
+        stageDir.srcnode().Dir('Resources').Dir('Fonts').Dir(name),
+        [
+          Glob(os.path.join(env.Dir('DFG').Dir('Fonts').Dir(name).srcnode().abspath, '*')),
+          ]
+        ),
+    ['Roboto', 'Roboto_Condensed', 'Roboto_Mono', 'Roboto_Slab', 'FontAwesome']
+    )
+  env.Depends(uiLib, fonts)
   qss = env.Install(
     stageDir.srcnode().Dir('Resources').Dir('QSS'),
     [
       Glob(os.path.join(env.Dir('ValueEditor').srcnode().abspath, '*.qss')),
       Glob(os.path.join(env.Dir('DFG').srcnode().abspath, '*.qss')),
+      Glob(os.path.join(env.Dir('.').srcnode().abspath, '*.qss')),
       ]
     )
   env.Depends(uiLib, qss)
@@ -254,7 +266,10 @@ if uiLibPrefix == 'ui':
 
     if buildOS == 'Windows':
       pysideEnv['CCFLAGS'].remove('/W2')
-      pysideEnv.Append(LINKFLAGS = ['/NODEFAULTLIB:LIBCMT'])
+      if buildType == 'Debug':
+        pysideEnv.Append(LINKFLAGS = ['/NODEFAULTLIB:LIBCMTD'])
+      else:
+        pysideEnv.Append(LINKFLAGS = ['/NODEFAULTLIB:LIBCMT'])
     else:
       pysideEnv.Append(CCFLAGS = ['-Wno-sign-compare', '-Wno-error'])
 

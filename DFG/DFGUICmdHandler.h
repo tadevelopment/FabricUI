@@ -9,10 +9,11 @@
 
 #include <FabricUI/DFG/DFGUINamespace.h>
 
-#include <QtCore/QList>
-#include <QtCore/QPoint>
-#include <QtCore/QSize>
-#include <QtCore/QString>
+#include <QList>
+#include <QPoint>
+#include <QSize>
+#include <QString>
+#include <QStringList>
 
 FABRIC_UI_DFG_NAMESPACE_BEGIN
 
@@ -52,8 +53,8 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString srcPath, 
-    QString dstPath
+    QStringList srcPortPaths, 
+    QStringList dstPortPaths
     ) = 0;
 
   virtual void dfgDoDisconnect(
@@ -181,7 +182,7 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString portPath
+    QStringList portPaths
     ) = 0;
 
   virtual void dfgDoMoveNodes(

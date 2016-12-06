@@ -10,9 +10,9 @@
 #include <FabricUI/GraphView/SidePanel.h>
 #include <FabricUI/Util/LoadPixmap.h>
 
-#include <QtGui/QGraphicsLinearLayout>
-#include <QtGui/QGraphicsProxyWidget>
-#include <QtGui/QLabel>
+#include <QGraphicsLinearLayout>
+#include <QGraphicsProxyWidget>
+#include <QLabel>
 
 using namespace FabricUI::GraphView;
 
@@ -56,7 +56,7 @@ void FixedPort::init()
     new QGraphicsPixmapLayoutItem(
       FabricUI::LoadPixmap( "fixed-port-lock.png" )
       );
-  m_label = new PortLabel(
+  m_label = new TextContainer(
     this,
     QSTRING_FROM_STL_UTF8(m_labelCaption),
     config.sidePanelFontColor,
@@ -245,6 +245,7 @@ void FixedPort::mousePressEvent( QGraphicsSceneMouseEvent *event )
     if ( QMenu *menu = graph()->getFixedPortContextMenu( this ) )
     {
       menu->exec( QCursor::pos() );
+      menu->setParent( NULL );
       menu->deleteLater();
     }
 

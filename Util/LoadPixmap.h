@@ -5,7 +5,7 @@
 #ifndef FABRICUI_UTIL_LOADPIXMAP_H
 #define FABRICUI_UTIL_LOADPIXMAP_H
 
-#include <QtGui/QPixmap>
+#include <QPixmap>
 
 namespace FabricUI {
 

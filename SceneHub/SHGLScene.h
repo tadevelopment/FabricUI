@@ -5,13 +5,13 @@
 #ifndef __UI_SCENEHUB_SCENE_H__
 #define __UI_SCENEHUB_SCENE_H__
 
-#include <QtGui/QDrag>
-#include <QtGui/QColor>
-#include <QtGui/QVector3D>
-#include <QtGui/QMouseEvent>
-#include <QtCore/QPair>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
+#include <QDrag>
+#include <QColor>
+#include <QVector3D>
+#include <QMouseEvent>
+#include <QPair>
+#include <QString>
+#include <QStringList>
 #include <FabricCore.h>
 #include <FTL/JSONEnc.h>
 #include <FTL/OwnedPtr.h>

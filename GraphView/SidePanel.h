@@ -5,8 +5,8 @@
 
 #include <FabricCore.h>
 
-#include <QtGui/QGraphicsWidget>
-#include <QtGui/QGraphicsLinearLayout>
+#include <QGraphicsWidget>
+#include <QGraphicsLinearLayout>
 #include <vector>
 
 #include "FixedPort.h"
@@ -78,6 +78,8 @@ namespace FabricUI
       void addPort( Port *port );
       void removePort( Port *port );
       void reorderPorts( QStringList names );
+
+      void setEditable( bool isEditable );
 
       void scroll(float delta);
       void updateItemGroupScroll(float height = 0.0f);

@@ -5,8 +5,8 @@
 #include "Node.h"
 #include "Graph.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QPainter>
+#include <QGraphicsSceneMouseEvent>
 
 #ifdef FABRICUI_TIMERS
   #include <Util/Timer.h>
@@ -49,7 +49,7 @@ NodeHeaderButton::NodeHeaderButton(NodeHeader * parent, QString name, QStringLis
       while((pos = rx.indexIn(filePath, pos)) != -1)
       {
           QString capture = rx.cap(1);
-          const char * envVar = getenv(capture.toAscii());
+          const char * envVar = getenv(capture.toLatin1().constData());
           if(envVar)
           {
             QString replacement = envVar;
@@ -137,12 +137,7 @@ void NodeHeaderButton::mousePressEvent(QGraphicsSceneMouseEvent * event)
     m_lastMousePos = event->scenePos();
     event->accept();
 
-    m_nodeHeader->node()->onMousePress(
-      event->button(),
-      event->modifiers(),
-      event->scenePos(),
-      event->lastScenePos()
-      );
+    m_nodeHeader->node()->onMousePress( event );
     return;
   }
   QGraphicsWidget::mousePressEvent(event);
@@ -154,12 +149,7 @@ void NodeHeaderButton::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
   // force the event to fall back to the node
   // this is done so that dragging etc works correctly.
-  m_nodeHeader->node()->onMouseMove(
-    event->button(),
-    event->modifiers(),
-    event->scenePos(),
-    event->lastScenePos()
-    );
+  m_nodeHeader->node()->onMouseMove( event );
 }
 
 void NodeHeaderButton::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
@@ -171,12 +161,7 @@ void NodeHeaderButton::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 
   // force the event to fall back to the node
   // this is done so that dragging etc works correctly.
-  m_nodeHeader->node()->onMouseRelease(
-    event->button(),
-    event->modifiers(),
-    event->scenePos(),
-    event->lastScenePos()
-    );
+  m_nodeHeader->node()->onMouseRelease( event );
 }
 
 void NodeHeaderButton::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)

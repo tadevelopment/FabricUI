@@ -4,9 +4,10 @@
 #define __UI_DFG_DFGTabSearchWidget__
 
 #include "DFGConfig.h"
+#include <SplitSearch/SplitSearch.hpp>
 
-#include <QtGui/QWidget>
-#include <QtGui/QFocusEvent>
+#include <QWidget>
+#include <QFocusEvent>
 
 namespace FabricUI
 {
@@ -54,7 +55,7 @@ namespace FabricUI
 
     private:
 
-      void addNodeFromPath(QString path);
+      void addNodeForIndex( unsigned index );
 
       QPoint m_originalLocalPos;
 
@@ -66,7 +67,7 @@ namespace FabricUI
 
       int m_currentIndex;
       QString m_search;
-      QStringList m_results;
+      FabricServices::SplitSearch::Matches m_results;
     };
 
   };

@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGUICmdHandler_QUndo__
 #define __UI_DFG_DFGUICmdHandler_QUndo__
 
-#include <QtGui/QUndoStack>
+#include <QUndoStack>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 
 FABRIC_UI_DFG_NAMESPACE_BEGIN
@@ -33,8 +33,8 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString srcPath, 
-    QString dstPath
+    QStringList srcPaths, 
+    QStringList dstPaths
     );
 
   virtual void dfgDoDisconnect(
@@ -162,7 +162,7 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString portName
+    QStringList portNames
     );
 
   virtual void dfgDoResizeBackDrop(

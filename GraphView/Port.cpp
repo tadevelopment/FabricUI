@@ -8,7 +8,7 @@
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/SidePanel.h>
 
-#include <QtGui/QGraphicsLinearLayout>
+#include <QGraphicsLinearLayout>
 
 using namespace FabricUI::GraphView;
 
@@ -231,7 +231,8 @@ void Port::mousePressEvent( QGraphicsSceneMouseEvent *event )
     QMenu * menu = graph()->getPortContextMenu(this);
     if(menu)
     {
-      menu->exec(QCursor::pos());
+      menu->exec( QCursor::pos() );
+      menu->setParent( NULL );
       menu->deleteLater();
     }
     return;

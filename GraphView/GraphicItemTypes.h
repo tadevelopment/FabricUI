@@ -3,7 +3,7 @@
 #ifndef __UI_GraphView_GraphicItemTypes__
 #define __UI_GraphView_GraphicItemTypes__
 
-#include <QtGui/QGraphicsItem>
+#include <QGraphicsItem>
 
 namespace FabricUI
 {
@@ -23,7 +23,8 @@ namespace FabricUI
       QGraphicsItemType_NodeRectangle,
       QGraphicsItemType_ProxyPin,
       QGraphicsItemType_NodeHeaderButton,
-      QGraphicsItemType_InstBlock
+      QGraphicsItemType_InstBlock,
+      QGraphicsItemType_InstBlockPort
     };
 
   };

@@ -15,12 +15,12 @@
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/Util/LoadPixmap.h>
 
-#include <QtGui/QPainter>
-#include <QtGui/QCursor>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QPainter>
+#include <QCursor>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
+#include <QMenu>
+#include <QAction>
 
 using namespace FabricUI::GraphView;
 
@@ -254,6 +254,8 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void MouseGrabber::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 {
+  bool ungrab = false;
+
   if(m_targetUnderMouse)
   {
     m_targetUnderMouse->setHighlighted(false);
@@ -273,9 +275,64 @@ void MouseGrabber::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
     }
 
     invokeConnect(source, target);
+
+    // [FE-6842]
+    if (event->modifiers().testFlag(Qt::ControlModifier))
+    {
+      bool forceUseOfPinColor = true;
+      if (m_target->targetType() == TargetType_Pin)
+      {
+        Pin  *p    = static_cast<Pin *>( m_target );
+        Node *node = p->node();
+        Pin  *next = p;
+        while (true)
+        {
+          next = node->nextPin(next->name());
+          if (!next || next->portType() == p->portType())
+            break;
+        }
+        if (next)
+        {
+          m_target = next;
+          m_connection->invalidate();
+          graph()->scene()->removeItem(m_connection);
+          m_connection->deleteLater();
+          if (m_otherPortType == PortType_Input)
+            m_connection = new Connection(graph(), m_target, this, forceUseOfPinColor);
+          else
+            m_connection = new Connection(graph(), this, m_target, forceUseOfPinColor);
+        }
+        else
+          ungrab = true;
+      }
+      else if (m_target->targetType() == TargetType_Port)
+      {
+        Port *p    = static_cast<Port *>( m_target );
+        Port *next = p;
+        while (true)
+        {
+          next = graph()->nextPort(next->name());
+          if (!next || next->portType() == p->portType())
+            break;
+        }
+        if (next)
+        {
+          m_target = next;
+          m_connection->invalidate();
+          graph()->scene()->removeItem(m_connection);
+          m_connection->deleteLater();
+          if (m_otherPortType == PortType_Input)
+            m_connection = new Connection(graph(), m_target, this, forceUseOfPinColor);
+          else
+            m_connection = new Connection(graph(), this, m_target, forceUseOfPinColor);
+        }
+        else
+          ungrab = true;
+      }
+    }
   }
 
-  if(!event->modifiers().testFlag(Qt::ShiftModifier))
+  if(ungrab || (!event->modifiers().testFlag(Qt::ShiftModifier) && !event->modifiers().testFlag(Qt::ControlModifier)))
   {
     prepareGeometryChange();
     ungrabMouse();
@@ -389,7 +446,11 @@ void MouseGrabber::invokeConnect(ConnectionTarget * source, ConnectionTarget * t
   }
   else
   {
-    graph()->controller()->gvcDoAddConnection(source, target);
+    std::vector<ConnectionTarget  *> sources;
+    std::vector<ConnectionTarget  *> targets;
+    sources.push_back(source);
+    targets.push_back(target);
+    graph()->controller()->gvcDoAddConnections(sources, targets);
   }
 }
 
@@ -627,7 +688,8 @@ void ExposeInstPortAction::invokeAddPort(
 
 QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other, PortType nodeRole)
 {
-  QMenu *menu = new QMenu(NULL);
+  FabricUI::DFG::DFGController * dfgController = static_cast<FabricUI::DFG::DFGController *>(node->graph()->controller());
+  QMenu *menu = new QMenu(dfgController->getDFGWidget());
 
   // go through all the node's pins and add
   // those to the menu that can be connected.
@@ -688,7 +750,7 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
       nodeRole
       );
   exposeNewPortAction->setEnabled(
-      node->canAddPorts()
+      node->canEdit()
     && ( !other || other->isRealPort() )
     );
   menu->addAction( exposeNewPortAction );
@@ -739,7 +801,8 @@ QMenu *MouseGrabber::createInstBlockHeaderMenu(
   PortType nodeRole
   )
 {
-  QMenu *menu = new QMenu(NULL);
+  FabricUI::DFG::DFGController * dfgController = static_cast<FabricUI::DFG::DFGController *>(instBlock->node()->graph()->controller());
+  QMenu *menu = new QMenu(dfgController->getDFGWidget());
 
   // go through all the node's pins and add
   // those to the menu that can be connected.

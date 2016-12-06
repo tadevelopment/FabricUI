@@ -49,13 +49,13 @@ namespace FabricUI
     public slots:
       virtual void redraw() { ViewportWidget::redraw(); }
 
-      virtual void onKeyPressed(QKeyEvent * event);
       void toggleManipulation() { setManipulationActive(!isManipulationActive()); }
       void setGridVisible( bool gridVisible, bool update = true );
       void resetCamera();
  
     signals:
       void dirty();
+      void initComplete();
       void redrawn();
       void portManipulationRequested(QString portName);
 

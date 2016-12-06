@@ -6,9 +6,9 @@
 #include "ViewItemFactory.h"
 #include "QVariantRTVal.h"
 #include "VEIntSpinBox.h"
-#include <QtGui/QWidget>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QLabel>
+#include <QWidget>
+#include <QBoxLayout>
+#include <QLabel>
 
 using namespace FabricUI::ValueEditor;
 
@@ -35,9 +35,26 @@ ArrayViewItem::ArrayViewItem( QString name,
     // By default don't display more than 100 elements
     m_max = min( arraySize, 100 );
   }
-  m_minIndexEdit = new VEIntSpinBox( );
-  m_maxIndexEdit = new VEIntSpinBox( );
-  m_arraySizeEdit = new VEIntSpinBox( );
+
+  m_minIndexEdit = new VEIntSpinBox;
+  m_minIndexEdit->setObjectName( "VELeft" );
+  m_minIndexEdit->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum ) );
+
+  QLabel *toLabel = new QLabel( "to" );
+  toLabel->setObjectName( "VEMiddle" );
+  toLabel->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
+
+  m_maxIndexEdit = new VEIntSpinBox;
+  m_maxIndexEdit->setObjectName( "VEMiddle" );
+  m_maxIndexEdit->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum ) );
+
+  QLabel *ofLabel = new QLabel( "of" );
+  ofLabel->setObjectName( "VEMiddle" );
+  ofLabel->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
+
+  m_arraySizeEdit = new VEIntSpinBox;
+  m_arraySizeEdit->setObjectName( "VERight" );
+  m_arraySizeEdit->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum ) );
 
   updateWidgets();
 
@@ -55,14 +72,14 @@ ArrayViewItem::ArrayViewItem( QString name,
     );
 
   QHBoxLayout *layout = new QHBoxLayout( m_widget );
-  m_minIndexEdit->setObjectName( "MinIndexEdit" );
-  m_maxIndexEdit->setObjectName( "MaxIndexEdit" );
-  m_arraySizeEdit->setObjectName( "ArraySizeEdit" );
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_minIndexEdit );
-  layout->addWidget( new QLabel( "to" ) );
+  layout->addWidget( toLabel );
   layout->addWidget( m_maxIndexEdit );
-  layout->addWidget( new QLabel( "of" ) );
+  layout->addWidget( ofLabel );
   layout->addWidget( m_arraySizeEdit );
+  layout->addStretch();
 }
 
 ArrayViewItem::~ArrayViewItem()
@@ -159,7 +176,10 @@ void ArrayViewItem::updateWidgets()
 
   m_minIndexEdit->setRange( 0, arraySize );
   m_maxIndexEdit->setRange( 0, arraySize );
-  m_arraySizeEdit->setRange( 0, INT_MAX );
+  bool isVariableArray = m_val.isVariableArray();
+  if (isVariableArray)
+    m_arraySizeEdit->setRange(0, INT_MAX);
+  m_arraySizeEdit->setEnabled(isVariableArray);
   
   m_minIndexEdit->setValue( m_min );
   m_maxIndexEdit->setValue( m_max );
@@ -223,7 +243,8 @@ void ArrayViewItem::onArraySizeChanged( int newSize )
   {
     int oldSize = m_val.getArraySize();
 
-    m_val.setArraySize( newSize );
+    if(m_val.isVariableArray())
+      m_val.setArraySize( newSize );
 
     emit viewValueChanged( toVariant( m_val ) );
 

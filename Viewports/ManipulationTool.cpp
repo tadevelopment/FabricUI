@@ -1,8 +1,8 @@
-#include <QtGui/QApplication>
-#include <QtGui/QWidget>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QWheelEvent>
+#include <QApplication>
+#include <QWidget>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
 
 #include "ManipulationTool.h"
 #include <FabricUI/Viewports/QtToKLEvent.h>
@@ -115,7 +115,7 @@ bool ManipulationTool::onEvent(QEvent *event) {
     return false;
 
   // Now we translate the Qt events to FabricEngine events..
-  FabricCore::RTVal klevent = QtToKLEvent(event, m_view->getClient(), m_view->getViewport());
+  FabricCore::RTVal klevent = QtToKLEvent(event, m_view->getClient(), m_view->getViewport(), "Canvas");
 
   try
   {

@@ -3,8 +3,8 @@
 #ifndef __UI_DFG_PresetTreeWidget__
 #define __UI_DFG_PresetTreeWidget__
 
-#include <QtGui/QWidget>
-#include <QtGui/QLineEdit>
+#include <QWidget>
+#include <QLineEdit>
 #include <FabricUI/TreeView/TreeViewWidget.h>
 #include <FabricUI/TreeView/TreeModel.h>
 #include <FabricUI/TreeView/TreeItem.h>
@@ -38,13 +38,19 @@ namespace FabricUI
 
       TreeView::TreeViewWidget * getTreeView() { return m_treeView; }
       TreeView::TreeModel * getTreeModel() { return m_treeModel; }
+      DFGController* getController() { return m_dfgController; }
 
     public slots:
 
       void refresh();
       void setBinding( FabricCore::DFGBinding const &binding );
       void onCustomContextMenuRequested(QPoint globalPos, FabricUI::TreeView::TreeItem * item);
+      void onRowDoubleClick(const QModelIndex &item);
       void onContextMenuAction(QAction * action);
+
+      /// Expands the tree-View to show the preset and selects it (FE-7300).
+      void onExpandToAndSelectItem(QString presetPath);
+
 
     private:
       

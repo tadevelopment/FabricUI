@@ -4,7 +4,7 @@
 
 #include <FabricUI/GraphView/HighlightEffect.h>
 
-#include <QtGui/QPainter>
+#include <QPainter>
 
 namespace FabricUI {
 

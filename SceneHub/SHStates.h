@@ -5,8 +5,8 @@
 #ifndef __UI_SCENEHUB_STATES_H__
 #define __UI_SCENEHUB_STATES_H__
 
-#include <QtCore/QString>
-#include <QtCore/QStringList>
+#include <QString>
+#include <QStringList>
 #include <FabricCore.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
 
@@ -54,6 +54,12 @@ class SHStates : public QObject {
     /// Returns the SGCanvasOperator associated with the inspected item
     /// Might be valid even if !isInspectingSGCanvasOperator() (eg: generator writing to inspected property)
     FabricCore::RTVal getInspectedSGCanvasOperator();
+
+    /// Returns a Ref to SHStates.options
+    FabricCore::RTVal getOptionsRef();
+
+    /// Updates SceneHub from the values of SHStates.options
+    void updateFromOptions();
 
     /// Returns the active SHBaseScene (which can be driven by the TreeView)
     SHGLScene* getActiveScene();

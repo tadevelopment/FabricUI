@@ -5,7 +5,7 @@
 #ifndef FABRICUI_VALUEEDITOR_VETREEWIDGETITEM_H
 #define FABRICUI_VALUEEDITOR_VETREEWIDGETITEM_H
 
-#include <QtGui/QTreeWidget>
+#include <QTreeWidget>
 
 namespace FabricUI {
 namespace ValueEditor {

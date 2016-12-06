@@ -7,7 +7,7 @@
 #include <FabricUI/ModelItems/InstPortItemMetadata.h>
 #include <FabricUI/ModelItems/InstPortModelItem.h>
 #include <FabricUI/ModelItems/RootModelItem.h>
-#include <QtCore/QStringList>
+#include <QStringList>
 
 namespace FabricUI {
 namespace ModelItems {
@@ -102,27 +102,6 @@ void InstPortModelItem::onRenamed(
   assert( m_portName == oldName );
   m_portName = newName;
   updatePortPath();
-}
-
-bool InstPortModelItem::hasDefault()
-{
-  // If we have a resolved type, allow getting the default val
-  const char* ctype = m_exec.getPortResolvedType( m_portPath.c_str() );
-  return (ctype != NULL);
-}
-
-void InstPortModelItem::resetToDefault()
-{
-//#pragma message("Fix instance values for non-arg ports")
-  //// If we have a resolved type, allow getting the default val
-  const char* ctype = m_exec.getPortResolvedType( m_portPath.c_str() );
-  if (ctype != NULL)
-  {
-    FabricCore::RTVal val =
-      m_exec.getPortDefaultValue( m_portPath.c_str(), ctype );
-    if ( val.isValid() )
-      onViewValueChanged( QVariant::fromValue( val ) );
-  }
 }
 
 } // namespace ModelItems

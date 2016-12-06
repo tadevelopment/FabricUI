@@ -3,10 +3,11 @@
 #ifndef __UI_GraphView_Controller__
 #define __UI_GraphView_Controller__
 
-#include <QtCore/QString>
-#include <QtCore/QPointF>
-#include <QtCore/QSizeF>
-#include <QtGui/QColor>
+#include <QObject>
+#include <QString>
+#include <QPointF>
+#include <QSizeF>
+#include <QColor>
 
 #include <Commands/CommandStack.h>
 #include <Commands/CompoundCommand.h>
@@ -54,9 +55,9 @@ namespace FabricUI
         FTL::ArrayRef<GraphView::Node *> nodes
         ) = 0;
 
-      virtual bool gvcDoAddConnection(
-        ConnectionTarget * src,
-        ConnectionTarget * dst
+      virtual bool gvcDoAddConnections(
+        std::vector<ConnectionTarget  *> const &srcs,
+        std::vector<ConnectionTarget  *> const &dsts
         ) = 0;
 
       virtual bool gvcDoRemoveConnections(
@@ -77,6 +78,17 @@ namespace FabricUI
         QString extDep = QString(),
         QString metaData = QString()
         ) = 0;
+
+      virtual void gvcDoRenameExecPort(
+        QString oldName,
+        QString desiredPortName,
+        QString execPath = "" // Path from the current Exec, to the edited Exec
+      ) = 0;
+
+      virtual void gvcDoRenameNode(
+        Node* node,
+        QString newName
+      ) = 0;
       
       virtual void gvcDoSetNodeCommentExpanded(
         Node *node,

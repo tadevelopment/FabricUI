@@ -118,7 +118,7 @@ void DFGPEModel_ExecPorts::inspectElement(
   DFGWidget *dfgWidget
   )
 {
-  dfgWidget->editExecPort( m_exec.getExecPortName( index ) );
+  dfgWidget->editPort( m_exec.getExecPortName( index ), false /* duplicatePort */ );
 }
 
 void DFGPEModel_ExecPorts::renameElement(
@@ -193,7 +193,7 @@ void DFGPEModel_ExecPorts::removeElements(
       m_binding,
       m_execPathQS,
       m_exec,
-      getElementName( index )
+      QStringList( getElementName( index ) )
       );
   }
 }

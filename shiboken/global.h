@@ -30,6 +30,7 @@
 #include <FabricUI/ValueEditor/NotInspectableViewItem.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 #include <FabricUI/ValueEditor/RTValViewItem.h>
+#include <FabricUI/ValueEditor/WrappedRTValViewItem.h>
 #include <FabricUI/ValueEditor/SIntViewItem.h>
 #include <FabricUI/ValueEditor/StringViewItem.h>
 #include <FabricUI/ValueEditor/UIntViewItem.h>
@@ -75,8 +76,8 @@
 #include <FabricUI/ModelItems/VarPortItemMetadata.h>
 #include <FabricUI/ModelItems/VarPortModelItem.h>
 #include <FabricUI/DFG/DFGConfig.h>
+#include <FabricUI/DFG/DFGBindingUtils.h>
 #include <FabricUI/DFG/DFGController.h>
-#include <FabricUI/DFG/DFGHotkeys.h>
 #include <FabricUI/DFG/DFGLogWidget.h>
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
@@ -138,7 +139,9 @@
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeView.h>
 #include <FabricUI/SceneHub/TreeView/SHBaseTreeViewsManager.h>
 #include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
+#include <FabricUI/SceneHub/ValueEditor/SHOptionsEditor.h>
 #include <FabricUI/Viewports/ManipulationTool.h>
+#include <FabricUI/Viewports/ViewportOptionsEditor.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>
 #include <FabricUI/Util/GetFilenameForFileURL.h>
 #include <FabricUI/Util/QTSignalBlocker.h>

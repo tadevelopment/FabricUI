@@ -5,9 +5,9 @@
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Graph.h>
 
-#include <QtGui/QGraphicsLinearLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QGraphicsProxyWidget>
+#include <QGraphicsLinearLayout>
+#include <QPushButton>
+#include <QGraphicsProxyWidget>
 
 using namespace FabricUI::GraphView;
 
@@ -41,6 +41,7 @@ InstBlockHeader::InstBlockHeader(
 
   m_nodeLabel = new NodeLabel(
     this,
+    node,
     QString::fromUtf8( name.data(), name.size() ),
     graphConfig.nodeFontColor,
     graphConfig.nodeFontHighlightColor,

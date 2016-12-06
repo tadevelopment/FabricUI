@@ -12,11 +12,11 @@
 #include <FabricCore.h>
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 #include <FabricUI/Util/QTSignalBlocker.h>
-#include <QtCore/QDebug>
-#include <QtCore/QFile>
-#include <QtGui/QAction>
-#include <QtGui/QHeaderView>
-#include <QtGui/QMenu>
+#include <QDebug>
+#include <QFile>
+#include <QAction>
+#include <QHeaderView>
+#include <QMenu>
 
 using namespace FabricUI::ValueEditor;
 
@@ -66,7 +66,7 @@ VETreeWidget::~VETreeWidget()
 
 void VETreeWidget::reloadStyles()
 {
-  QString styleSheet = LoadFabricStyleSheet( FTL_STR("ValueEditor.qss") );
+  QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
   if ( !styleSheet.isEmpty() )
     setStyleSheet( styleSheet );
 }
@@ -637,6 +637,11 @@ void VETreeWidget::prepareMenu( const QPoint& pt )
   VETreeWidgetItem* item = static_cast<VETreeWidgetItem*>(itemAt( pt ));
   BaseModelItem* model = GetFirstModelItem( item );
   if (model == NULL)
+    return;
+
+  // Currently disabling the menu when the item is incompatible
+  // we should re-enable it when most items will have default values
+  if( !model->hasDefault() )
     return;
 
   QAction *newAct = new QAction( tr( "Reset to Default" ), this );

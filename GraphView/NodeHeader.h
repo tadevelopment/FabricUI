@@ -3,9 +3,9 @@
 #ifndef __UI_GraphView_NodeHeader__
 #define __UI_GraphView_NodeHeader__
 
-#include <QtGui/QGraphicsWidget>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
+#include <QGraphicsWidget>
+#include <QColor>
+#include <QPen>
 #include "ConnectionTarget.h"
 #include "PinCircle.h"
 #include "NodeHeaderButton.h"
@@ -40,7 +40,7 @@ namespace FabricUI
       PinCircle const *outCircle() const
         { return m_outCircle; }
 
-      void setTitle(QString const &title);
+      void setTitle( QString const &title, QString const& suffix );
 
       virtual bool highlighted() const;
       virtual void setHighlighted(bool state = true);

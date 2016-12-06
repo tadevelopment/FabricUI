@@ -5,7 +5,7 @@
 #include "QVariantRTVal.h"
 
 #include <assert.h>
-#include <QtGui/QtGui>
+#include <QtGui>
 
 using namespace FabricUI::ValueEditor;
 
@@ -15,6 +15,8 @@ const QVariant::Handler* RTVariant::origh = NULL;
 // operations in QVariant
 void RTVariant::injectRTHandler()
 {
+  // [andrew 2016-07-28] FE-7145
+#if QT_VERSION < 0x050000
   origh = handler;
   Handler* h = new Handler;
   *h = *origh;
@@ -23,6 +25,7 @@ void RTVariant::injectRTHandler()
   h->convert = rtConvert;
   h->debugStream = rtStreamDebug;
   handler = h;
+#endif
 }
 
 bool isRTVal( const QVariant::Private *d )
@@ -374,6 +377,109 @@ void RTVariant::rtStreamDebug( QDebug dbg, const QVariant &v )
   else
     origh->debugStream( dbg, v );
 }
+
+#if QT_VERSION >= 0x050000
+
+template<>
+double getQVariantRTValValue(const FabricCore::RTVal& val) {
+  if (val.isFloat32()) { return val.getFloat32(); }
+  else if (val.isFloat64()) { return val.getFloat64(); }
+  else {
+    printf("Cannot get a double from an RTVal of type %s\n", val.getTypeNameCStr());
+    return 0;
+  }
+}
+
+template<typename intType>
+intType getQVariantRTValValueInt(const FabricCore::RTVal& val, const char* intTypeName) {
+  if (val.isUInt8()) { return val.getUInt8(); }
+  else if (val.isUInt16()) { return val.getUInt16(); }
+  else if (val.isUInt32()) { return val.getUInt32(); }
+  else if (val.isUInt64()) { return val.getUInt64(); }
+  else if (val.isSInt8()) { return val.getSInt8(); }
+  else if (val.isSInt16()) { return val.getSInt16(); }
+  else if (val.isSInt32()) { return val.getSInt32(); }
+  else if (val.isSInt64()) { return val.getSInt64(); }
+  else {
+    printf("Cannot get an %s from an RTVal of type %s\n", intTypeName, val.getTypeNameCStr());
+    return 0;
+  }
+}
+
+template<>
+int getQVariantRTValValue(const FabricCore::RTVal& val) {
+  return getQVariantRTValValueInt<int>(val, "int");
+}
+
+template<>
+unsigned getQVariantRTValValue(const FabricCore::RTVal& val) {
+  return getQVariantRTValValueInt<unsigned>(val, "unsigned int");
+}
+
+template<>
+bool getQVariantRTValValue(const FabricCore::RTVal& val) {
+  if (val.isBoolean()) { return val.getBoolean(); }
+  else {
+    printf("Cannot get a boolean from an RTVal of type %s\n", val.getTypeNameCStr());
+    return false;
+  }
+}
+
+template<>
+QString getQVariantRTValValue(const FabricCore::RTVal& val) {
+  if (val.isString()) { return val.getStringCString(); }
+  else {
+    printf("Cannot get a string from an RTVal of type %s\n", val.getTypeNameCStr());
+    return val.getTypeNameCStr();
+  }
+}
+
+template<>
+QVector2D getQVariantRTValValue(const FabricCore::RTVal& val) {
+  if (val.hasType("Vec2") || val.hasType("Vec2_d")) {
+    return QVector2D(
+      getQVariantRTValValue<double>(val.maybeGetMemberRef("x")),
+      getQVariantRTValValue<double>(val.maybeGetMemberRef("y"))
+      );
+  }
+  else {
+    printf("Cannot get a QVector2D from an RTVal of type %s\n", val.getTypeNameCStr());
+    return QVector2D();
+  }
+}
+
+template<>
+QVector3D getQVariantRTValValue(const FabricCore::RTVal& val) {
+  if (val.hasType("Vec3") || val.hasType("Vec3_d")) {
+    return QVector3D(
+      getQVariantRTValValue<double>(val.maybeGetMemberRef("x")),
+      getQVariantRTValValue<double>(val.maybeGetMemberRef("y")),
+      getQVariantRTValValue<double>(val.maybeGetMemberRef("z"))
+      );
+  }
+  else {
+    printf("Cannot get a QVector3D from an RTVal of type %s\n", val.getTypeNameCStr());
+    return QVector3D();
+  }
+}
+
+template<>
+QVector4D getQVariantRTValValue(const FabricCore::RTVal& val) {
+  if (val.hasType("Vec4") || val.hasType("Vec4_d")) {
+    return QVector4D(
+      getQVariantRTValValue<double>(val.maybeGetMemberRef("x")),
+      getQVariantRTValValue<double>(val.maybeGetMemberRef("y")),
+      getQVariantRTValValue<double>(val.maybeGetMemberRef("z")),
+      getQVariantRTValValue<double>(val.maybeGetMemberRef("t"))
+      );
+  }
+  else {
+    printf("Cannot get a QVector4D from an RTVal of type %s\n", val.getTypeNameCStr());
+    return QVector4D();
+  }
+}
+
+#endif
 
 bool RTVariant::toRTVal( const QVariant & var, FabricCore::RTVal & ioVal )
 {

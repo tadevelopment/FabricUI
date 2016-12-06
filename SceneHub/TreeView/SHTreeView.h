@@ -5,9 +5,9 @@
 #ifndef __UI_SCENEHUB_SHTREEVIEW_H__
 #define __UI_SCENEHUB_SHTREEVIEW_H__
 
-#include <QtGui/QMenu>
-#include <QtGui/QTreeView>
-#include <QtGui/QMouseEvent>
+#include <QMenu>
+#include <QTreeView>
+#include <QMouseEvent>
 #include "SHBaseTreeView.h"
 #include <FabricUI/SceneHub/SHStates.h>
 #include <FabricUI/SceneHub/SHGLScene.h>

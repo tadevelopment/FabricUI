@@ -3,11 +3,11 @@
 #ifndef __UI_KLEditor_KLSourceCodeWidget__
 #define __UI_KLEditor_KLSourceCodeWidget__
 
-#include <QtGui/QColor>
-#include <QtGui/QFont>
-#include <QtGui/QFontMetrics>
-#include <QtGui/QWidget>
-#include <QtGui/QPlainTextEdit>
+#include <QColor>
+#include <QFont>
+#include <QFontMetrics>
+#include <QWidget>
+#include <QPlainTextEdit>
 
 #include "EditorConfig.h"
 #include "MetaTypes.h"

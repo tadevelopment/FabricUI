@@ -1,16 +1,16 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include <iostream>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QGridLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QCursor>
-#include <QtGui/QLabel>
-#include <QtCore/QDebug>
-#include <QtGui/QLineEdit>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QCursor>
+#include <QLabel>
+#include <QDebug>
+#include <QLineEdit>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include "DFGBaseDialog.h"
 
@@ -91,19 +91,43 @@ void DFGBaseDialog::showEvent(QShowEvent * event)
   QSize currSize = size();
   pos -= QPoint(int(currSize.width() * 0.5), int(currSize.height() * 0.5));
 
-  QRect desktop = QApplication::desktop()->screenGeometry();
-  if(pos.x() < 5)
-    pos.setX(5);
-  else if(pos.x() + currSize.width() + 5 >= desktop.width())
-    pos.setX(desktop.width() - currSize.width() - 5);
-  if(pos.y() < 5)
-    pos.setY(5);
-  else if(pos.y() + currSize.height() + 5>= desktop.height())
-    pos.setY(desktop.height() - currSize.height() - 5);
+  // get parent rect.
+  QRect parentRect = QApplication::desktop()->screenGeometry();
+  if (getDFGWidget())
+  {
+    parentRect = getDFGWidget()->rect();
+    pos = getDFGWidget()->mapFromGlobal(QCursor().pos());
+    if (getDFGWidget()->topLevelWidget())
+    {
+      parentRect = getDFGWidget()->topLevelWidget()->rect();
+      pos = getDFGWidget()->topLevelWidget()->mapFromGlobal(QCursor().pos());
+    }
+  }
 
+  // ensure widget's position is inside parentRect.
+  const int offset = 5;
+  if (pos.x() + currSize.width() + offset >= parentRect.width())
+    pos.setX(parentRect.width() - currSize.width() - offset);
+  if (pos.x() < offset)
+    pos.setX(offset);
+  if (pos.y() + currSize.height() + offset>= parentRect.height())
+    pos.setY(parentRect.height() - currSize.height() - offset);
+  if (pos.y() < offset)
+    pos.setY(offset);
+
+  // set new position.
+  if (getDFGWidget())
+  {
+    if (getDFGWidget()->topLevelWidget())
+      pos = getDFGWidget()->topLevelWidget()->mapToGlobal(pos);
+    else
+      pos = getDFGWidget()->mapToGlobal(pos);
+  }
   setGeometry(pos.x(), pos.y(), currSize.width(), currSize.height());
+  update();
 
-  if(m_inputs.size() > 0)
+  // set focus on first child widget.
+  if (m_inputs.size() > 0)
     m_inputs[0]->setFocus();
 }
 

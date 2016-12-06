@@ -1,9 +1,9 @@
   // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include <iostream>
-#include <QtGui/QLayout>
-#include <QtGui/QDoubleValidator>
-#include <QtCore/QTimer>
+#include <QLayout>
+#include <QDoubleValidator>
+#include <QTimer>
 
 #include "DFGNodePropertiesDialog.h"
 
@@ -16,19 +16,23 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
   DFGController * controller, 
   const char * nodeName, 
   const DFGConfig & dfgConfig,
-  bool setAlphaNum )
+  bool setAlphaNum,
+  bool isEditable )
 : DFGBaseDialog(parent, true, dfgConfig)
 , m_nodeName(nodeName)
 , m_controller(controller)
 {
   setWindowTitle("Node Properties");
 
-  m_presetNameLabel = 0;
-  m_textEdit = 0;
-  m_nameEdit    = new QLineEdit("", this);
+  m_presetNameLabel = NULL;
+  m_presetImportPathname = NULL;
+  m_textEdit = NULL;
+  m_nameEdit = new QLineEdit("", this);
   m_nameEdit->setMinimumWidth(250);
   m_toolTipEdit = new QPlainTextEdit("", this);
-  m_docUrlEdit  = new QLineEdit("", this);
+  m_toolTipEdit->setReadOnly(!isEditable);
+  m_docUrlEdit = new QLineEdit("", this);
+  m_docUrlEdit->setReadOnly(!isEditable);
 
   m_nodeColorButton = new ColorButton(
     getColorFromExec(
@@ -41,6 +45,7 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
     m_nodeColorButton, SIGNAL(clicked()),
     this, SLOT(onNodeColorButtonClicked())
     );
+  m_nodeColorButton->setDisabled(!isEditable);
 
   m_textColorButton = new ColorButton(
     getColorFromExec(
@@ -53,13 +58,15 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
     m_textColorButton, SIGNAL(clicked()),
     this, SLOT(onTextColorButtonClicked())
     );
+  m_textColorButton->setDisabled(!isEditable);
 
   // [Julien] FE-5246 
   // Header color property management
-  // Create a checbox that creates the header color property when cliked
-  m_headerColorButton = 0;
+  // Create a checkbox that creates the header color property when clicked
+  m_headerColorButton = NULL;
   m_nodeDefaultHeaderColor = dfgConfig.graphConfig.nodeDefaultLabelColor;
   m_allowHeaderColorCheckBox = new QCheckBox("", this);
+  m_allowHeaderColorCheckBox->setDisabled(!isEditable);
   // If the "uiHeaderColor" metadata already exists, diplays the  header color property
   FTL::CStrRef metadata = m_controller->getExec().getNodeMetadata(m_nodeName.c_str(), "uiHeaderColor");
   m_allowHeaderColorCheckBox->setChecked(!metadata.empty());
@@ -78,13 +85,23 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
     {
       subExec = exec.getSubExec( m_nodeName.c_str() );
       if ( subExec.isPreset() )
-        m_presetNameLabel = new QLabel( subExec.getTitle(), this );
+      {
+        m_presetNameLabel = new QLineEdit( subExec.getTitle(), this );
+        m_presetNameLabel->setReadOnly(true);
+
+        QString importPathname = subExec.getImportPathname();
+        if (importPathname.isEmpty())
+          importPathname = "file not found, using embedded version";
+        m_presetImportPathname = new QLineEdit( importPathname, this );
+        m_presetImportPathname->setReadOnly(true);
+      }
     }
     else if ( nodeType == FabricCore::DFGNodeType_User )
     {
       FTL::CStrRef uiTitle =
         exec.getNodeMetadata( m_nodeName.c_str(), "uiTitle" );
       m_textEdit = new QLineEdit( uiTitle.c_str(), this );
+      m_textEdit->setReadOnly(!isEditable);
     }
 
     m_nameEdit->setText( m_nodeName.c_str() );
@@ -108,11 +125,13 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
 
   if ( m_presetNameLabel )
     addInput( m_presetNameLabel, "preset name", "properties" );
+  if ( m_presetImportPathname )
+    addInput( m_presetImportPathname, "preset filepath", "properties" );
   if ( m_textEdit )
     addInput( m_textEdit, "text", "properties" );
   addInput( m_nameEdit, "node name", "properties" );
-  addInput(m_toolTipEdit,       "tooltip",              "properties");
-  addInput(m_docUrlEdit,        "doc url",              "properties");
+  addInput( m_toolTipEdit, "tooltip", "properties" );
+  addInput( m_docUrlEdit, "doc url", "properties" );
   addInput( m_nodeColorButton, "node color", "properties" );
   addInput( m_textColorButton, "text color", "properties" );
   addInput( m_allowHeaderColorCheckBox, "custom header color", "properties" );
@@ -120,8 +139,9 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
   // [Julien] FE-5188, FE-5276
   if(setAlphaNum) alphaNumicStringOnly();
     
-  // Create pr remove the header color property
+  // Create or remove the header color property
   onAllowHeaderColorCheckBoxClicked();
+  if (m_headerColorButton)  m_headerColorButton->setDisabled(!isEditable);
 }
 
 /// Destructor

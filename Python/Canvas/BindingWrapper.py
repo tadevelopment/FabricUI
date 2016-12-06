@@ -340,17 +340,19 @@ class BindingWrapper:
     def connect(
         self,
         execPath,
-        srcPort,
-        dstPort,
+        packedSrcPorts,
+        packedDstPorts,
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
+        srcPorts = BindingWrapper.splitNames(packedSrcPorts)
+        dstPorts = BindingWrapper.splitNames(packedDstPorts)
         cmd = DFG.DFGUICmd_Connect(
             self.binding,
             execPath,
             exec_,
-            srcPort,
-            dstPort
+            srcPorts,
+            dstPorts
             )
         InvokeCmd(cmd, self.qUndoStack)
 
@@ -486,15 +488,16 @@ class BindingWrapper:
     def removePort(
         self,
         execPath,
-        portName,
+        packedPortNames,
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
+        portNames = BindingWrapper.splitNames(packedPortNames)
         cmd = DFG.DFGUICmd_RemovePort(
             self.binding,
             execPath,
             exec_,
-            portName,
+            portNames,
             )
         InvokeCmd(cmd, self.qUndoStack)
 

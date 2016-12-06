@@ -3,7 +3,7 @@
 #ifndef __UI_TreeView_TreeEditorWidget__
 #define __UI_TreeView_TreeEditorWidget__
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace FabricUI
 {

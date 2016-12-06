@@ -1,8 +1,8 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtGui/QGraphicsSceneHoverEvent>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QPainter>
+#include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QPainter>
 
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/FixedPort.h>
@@ -32,11 +32,12 @@ Connection::Connection(
   , m_aboutToBeDeleted( false )
   , m_hasSelectedTarget( false )
 {
-  m_isExposedConnection = 
-    m_src->targetType() == TargetType_ProxyPort ||
-    m_src->targetType() == TargetType_Port ||
-    m_dst->targetType() == TargetType_ProxyPort ||
-    m_dst->targetType() == TargetType_Port;
+  m_isExposedConnection =    m_src->targetType() == TargetType_Port
+                          || m_src->targetType() == TargetType_FixedPort
+                          || m_src->targetType() == TargetType_ProxyPort
+                          || m_dst->targetType() == TargetType_Port
+                          || m_dst->targetType() == TargetType_FixedPort
+                          || m_dst->targetType() == TargetType_ProxyPort;
 
   if(m_isExposedConnection)
   {
@@ -234,7 +235,11 @@ void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
   if(event->button() == Qt::LeftButton)
   {
     m_dragging = true;
-    m_lastDragPoint = mapToScene(event->pos());
+    QPointF pos = mapToScene(event->pos());
+    qreal dInput = (pos - m_src->connectionPos(PortType_Output)).manhattanLength();
+    qreal dOutput = (pos - m_dst->connectionPos(PortType_Input)).manhattanLength();
+    m_draggingInput = dInput < dOutput;
+    m_lastDragPoint = pos;
     event->accept();
   }
   else if(event->button() == Qt::MiddleButton)
@@ -256,6 +261,7 @@ void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
     if(menu)
     {
       menu->exec(QCursor::pos());
+      menu->setParent( NULL );
       menu->deleteLater();
     }
     else
@@ -273,13 +279,14 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     QPointF delta = scenePos - m_lastDragPoint;
 
     // todo: the disconnect threshold maybe should be a graph setting
-    if(delta.x() < 0 || delta.x() > 0)
+    if(delta.manhattanLength() > 0)
     {
       // create local variables
       // since "this" might be deleted after the removeConnections call
       ConnectionTarget * src = m_src;
       ConnectionTarget * dst = m_dst;
       Graph * graph = m_graph;
+      bool draggingInput = m_draggingInput;
 
       graph->controller()->beginInteraction();
 
@@ -287,8 +294,7 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       conns.push_back(this);
       if(graph->controller()->gvcDoRemoveConnections(conns))
       {
-        // todo: review the features for disconnecting input vs output based on gesture
-        if(delta.x() < 0)
+        if(!draggingInput)
         {
           graph->constructMouseGrabber(scenePos, (Pin*)src, PortType_Input);
         }
@@ -309,7 +315,16 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
-  if(m_isExposedConnection && !m_hovered && !m_hasSelectedTarget && m_graph->config().dimConnectionLines)
+  // [FE-6836] connections of IO ports are always dimmed.
+  if (m_src->path() == m_dst->path() && !m_dragging && m_src->isRealPort() && m_dst->isRealPort())
+  {
+    painter->setOpacity(0.15);
+    QGraphicsPathItem::paint(painter, option, widget);
+    painter->setOpacity(1.0);
+  }
+
+  // draw dimmed connection.
+  else if (m_isExposedConnection && !m_hovered && !m_hasSelectedTarget && m_graph->config().dimConnectionLines)
   {
     painter->setOpacity(0.15);
     QGraphicsPathItem::paint(painter, option, widget);
@@ -319,6 +334,8 @@ void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
     painter->setClipping(false);
     painter->setOpacity(1.0);
   }
+
+  // draw regular connection.
   else
   {
     QGraphicsPathItem::paint(painter, option, widget);

@@ -3,7 +3,7 @@
 #ifndef __UI_ValueEditor_ValueEditorEventFilter__
 #define __UI_ValueEditor_ValueEditorEventFilter__
 
-#include <QtCore/QEvent> 
+#include <QEvent> 
 
 #include "ValueEditorWidget.h"
 #include "ValueWidget.h"

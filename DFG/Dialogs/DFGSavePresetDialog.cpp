@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtGui/QLayout>
-#include <QtGui/QMessageBox>
+#include <QLayout>
+#include <QMessageBox>
 #include "DFGSavePresetDialog.h"
 #include "DFGGetStringDialog.h"
 #include <FTL/FS.h>
@@ -93,7 +93,7 @@ void DFGSavePresetDialog::onCustomContextMenuRequested(QPoint globalPos, FabricU
     m_contextPath == "Fabric" || m_contextPath == "Variables")
     return;
 
-  QMenu menu(NULL);
+  QMenu menu(this);
   menu.addAction("Create Folder");
 
   QObject::connect(&menu, SIGNAL(triggered(QAction*)), this, SLOT(onContextMenuAction(QAction*)));

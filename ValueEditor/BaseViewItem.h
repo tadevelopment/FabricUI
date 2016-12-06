@@ -6,8 +6,8 @@
 #define FABRICUI_VALUEEDITOR_BASEVIEWITEM_H
 
 #include "ItemMetadata.h"
-#include <QtCore/QObject>
-#include <QtCore/QVariant>
+#include <QObject>
+#include <QVariant>
 
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -40,6 +40,9 @@ class BaseViewItem : public QObject
   // in the TreeView, and may also be used to identify
   // this ViewItem.
   QString m_name;
+
+  // Tooltip displayed over the name
+  QString m_toolTip;
 
   // A ViewItem may or may not have a ModelItem
   BaseModelItem *m_modelItem;
@@ -74,6 +77,10 @@ public:
   // Get the name of this ViewItem
   QString getName() const
     { return m_name; }
+
+  // Set the tooltip of this ViewItem
+  void setToolTip( const QString& tooltip )
+    { m_toolTip = tooltip; }
 
   // Implement this function to build the widgets to
   // display the value represented by your class

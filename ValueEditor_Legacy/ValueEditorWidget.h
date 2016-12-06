@@ -3,9 +3,9 @@
 #ifndef __UI_ValueEditor_ValueEditorWidget__
 #define __UI_ValueEditor_ValueEditorWidget__
 
-#include <QtGui/QLabel> 
-#include <QtGui/QWidget>
-#include <QtGui/QKeyEvent>
+#include <QLabel> 
+#include <QFrame>
+#include <QKeyEvent>
 
 #include <FabricUI/TreeView/TreeViewWidget.h>
 #include <FabricUI/TreeView/TreeModel.h>
@@ -20,7 +20,7 @@ namespace FabricUI
 {
   namespace ValueEditor_Legacy
   {
-    class ValueEditorWidget : public QWidget
+    class ValueEditorWidget : public QFrame
     {
       Q_OBJECT
 

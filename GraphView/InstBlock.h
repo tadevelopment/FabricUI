@@ -7,7 +7,7 @@
 
 #include <FTL/ArrayRef.h>
 #include <FTL/StrRef.h>
-#include <QtGui/QGraphicsWidget>
+#include <QGraphicsWidget>
 #include <FabricUI/GraphView/GraphicItemTypes.h>
 
 class QGraphicsLinearLayout;

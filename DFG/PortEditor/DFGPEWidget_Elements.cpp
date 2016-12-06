@@ -7,15 +7,15 @@
 #include <FabricUI/DFG/PortEditor/DFGPEModel.h>
 #include <FabricUI/DFG/PortEditor/DFGPEWidget_Elements.h>
 #include <FabricUI/Util/LoadPixmap.h>
-#include <QtCore/QDebug>
-#include <QtGui/QApplication>
-#include <QtGui/QComboBox>
-#include <QtGui/QDropEvent>
-#include <QtGui/QHeaderView>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPushButton>
-#include <QtGui/QTableWidget>
-#include <QtGui/QVBoxLayout>
+#include <QDebug>
+#include <QApplication>
+#include <QComboBox>
+#include <QDropEvent>
+#include <QHeaderView>
+#include <QMouseEvent>
+#include <QPushButton>
+#include <QTableWidget>
+#include <QVBoxLayout>
 
 namespace FabricUI {
 namespace DFG {
@@ -94,11 +94,13 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
     if ( m_hasTypeSpec )
     {
       FabricCore::Client client = m_dfgWidget->getDFGController()->getClient();
-      m_addElementTypeSpec = new DFGRegisteredTypeLineEdit( NULL, client, "" );
+      m_addElementTypeSpec = new DFGRegisteredTypeLineEdit( this, client, "" );
       m_addElementTypeSpec->setEnabled( !m_model->isReadOnly() );
       m_addElementTypeSpec->setValidator(
         new QRegExpValidator( m_typeSpecRegExp )
         );
+      connect(m_dfgWidget->getHeaderWidget(), SIGNAL(extensionLoaded()),
+        m_addElementTypeSpec, SLOT(onUpdateRegisteredTypeList()));
     }
     m_addElementButton =
       new QPushButton( m_plusIcon, "Add " + elementDescCapitalized );
@@ -264,7 +266,7 @@ void DFGPEWidget_Elements::onRemoveSelected()
 
 void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
 {
-  QMenu menu;
+  QMenu menu( this );
 
   QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
   QList<int> selectedIndices;
@@ -526,6 +528,13 @@ void DFGPEWidget_Elements::onDeleteRowClicked( int row )
 
 void DFGPEWidget_Elements::onAddElementClicked()
 {
+  // FE-7961 : Check that the port dataType is valid
+  if(m_hasTypeSpec && !m_addElementTypeSpec->checkIfTypeExist())
+  {
+    m_addElementTypeSpec->displayInvalidTypeWarning();
+    return;
+  }
+
   int index = m_model->getElementCount();
   m_model->insertElement(
     index,
@@ -540,6 +549,7 @@ void DFGPEWidget_Elements::onAddElementClicked()
   m_addElementName->selectAll();
   m_tableWidget->selectRow( index );
   emit elementAddedThroughUI( index );
+  m_addElementName->setFocus(); // [FE-7054]
 }
 
 DFGPEWidget_Elements_ControlCell::DFGPEWidget_Elements_ControlCell(

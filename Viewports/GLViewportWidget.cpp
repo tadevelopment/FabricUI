@@ -18,6 +18,7 @@ GLViewportWidget::GLViewportWidget(
   m_manipTool = new ManipulationTool(this);
   setAutoBufferSwap(false);
 
+  m_gridVisible = true; // default value
   if(m_settings)
   {
     if(m_settings->contains("glviewport/gridVisible"))
@@ -90,11 +91,6 @@ void GLViewportWidget::clearInlineDrawing()
   }
 }
 
-void GLViewportWidget::onKeyPressed(QKeyEvent * event)
-{
-  ViewportWidget::keyPressEvent(event);  
-}
-
 void GLViewportWidget::initializeGL()
 {
   try
@@ -102,6 +98,7 @@ void GLViewportWidget::initializeGL()
     m_viewport.callMethod("", "setup", 1, &m_drawContext);
     m_drawing = m_drawing.callMethod("OGLInlineDrawing", "getInstance", 0, 0);
     setGridVisible(m_gridVisible, false);
+    emit initComplete();
   }
   catch(FabricCore::Exception e)
   {
@@ -275,7 +272,7 @@ bool GLViewportWidget::manipulateCamera(
   try
   {
     // Now we translate the Qt events to FabricEngine events..
-    FabricCore::RTVal klevent = QtToKLEvent(event, m_client, m_viewport);
+    FabricCore::RTVal klevent = QtToKLEvent(event, m_client, m_viewport, "Canvas");
 
     // And then pass the event to the camera manipulator for handling.
     m_cameraManipulator.callMethod("", "onEvent", 1, &klevent);

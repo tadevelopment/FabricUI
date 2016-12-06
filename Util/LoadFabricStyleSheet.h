@@ -6,7 +6,7 @@
 #define FABRICUI_UTIL_LOADFABRICSTYLESHEET_H
 
 #include <FTL/StrRef.h>
-#include <QtCore/QString>
+#include <QString>
 
 QString LoadFabricStyleSheet( FTL::StrRef basename );
 

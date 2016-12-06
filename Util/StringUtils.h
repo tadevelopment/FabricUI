@@ -24,8 +24,8 @@
 # include <CoreFoundation/CFURL.h>
 #endif
 
-#include <QtCore/QString>
-#include <QtCore/QStringList>
+#include <QString>
+#include <QStringList>
 
 namespace FabricUI {
 namespace Util {  

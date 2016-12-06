@@ -1,0 +1,346 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "timeline_timerFps" : "60",
+    "camera_mat44" : "{\n  \"row0\" : {\n    \"x\" : 0.7999998331069946,\n    \"y\" : -0.2228345572948456,\n    \"z\" : 0.5570861101150513,\n    \"t\" : 29.87417602539062\n    },\n  \"row1\" : {\n    \"x\" : 0,\n    \"y\" : 0.9284765720367432,\n    \"z\" : 0.3713908195495605,\n    \"t\" : 19.91611671447754\n    },\n  \"row2\" : {\n    \"x\" : -0.6000002026557922,\n    \"y\" : -0.2971125841140747,\n    \"z\" : 0.7427811026573181,\n    \"t\" : 39.83223342895508\n    },\n  \"row3\" : {\n    \"x\" : 0,\n    \"y\" : 0,\n    \"z\" : 0,\n    \"t\" : 1\n    }\n  }",
+    "timeline_start" : "1",
+    "timeline_loopMode" : "1",
+    "uiGraphZoom" : "{\n  \"value\" : 0.9517877101898193\n  }",
+    "timeline_simMode" : "0",
+    "camera_focalDistance" : "53.62578582763672",
+    "timeline_current" : "198",
+    "timeline_end" : "250",
+    "uiGraphPan" : "{\n  \"x\" : 235.7887573242188,\n  \"y\" : -32.28919219970703\n  }"
+    },
+  "title" : "",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      }
+    ],
+  "extDeps" : {},
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":251.1443786621094,\"y\":-52.94768953323364}"
+        },
+      "name" : "func",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "boolean",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Boolean" : false
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sint32",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "SInt32" : -11
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "uint32",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "UInt32" : 24
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "float32",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : 43
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "string",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "asdf"
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "vec2",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "vec3",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Vec3" : {
+              "x" : -123405896,
+              "y" : 0,
+              "z" : 0
+              }
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "vec4",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mat44",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "quat",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Quat" : {
+              "v" : {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                },
+              "w" : 1.049999952316284
+              }
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "integerCombo",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "color",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Color" : {
+              "r" : 0.2533150315284729,
+              "g" : 0.6509804129600525,
+              "b" : 0.2288548052310944,
+              "a" : 0.5799953937530518
+              }
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "vec3Array",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Vec3[]" : [
+              {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                },
+              {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                },
+              {
+                "x" : 0.300000011920929,
+                "y" : 0,
+                "z" : 0
+                },
+              {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                },
+              {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                }
+              ]
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "filePath",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "FilePath" : "asdfasdfasd"
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "float32Slider",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : 0.6200000047683716
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "integerSlider",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : -5194
+            }
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "boolean",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "sint32",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "SInt32"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "uint32",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "UInt32"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "float32",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Float32"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "string",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "vec2",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec2"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "vec3",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec3"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "vec4",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec4"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mat44",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Mat44"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "quat",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Quat"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiCombo" : "(\"OptionA\", \"OptionB\")"
+              },
+            "name" : "integerCombo",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "color",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Color"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "vec3Array",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec3[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "filePath",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "FilePath"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiRange" : "(0, 1)"
+              },
+            "name" : "float32Slider",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Float32"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiRange" : "(0, 10)"
+              },
+            "name" : "integerSlider",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            }
+          ],
+        "extDeps" : {
+          "Math" : "*"
+          },
+        "code" : "dfgEntry {
+  // result = a + b;
+}
+"
+        }
+      }
+    ],
+  "connections" : {},
+  "args" : []
+  }

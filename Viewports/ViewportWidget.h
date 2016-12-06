@@ -18,12 +18,12 @@
 #include <streambuf>
 #include <memory>
 
-#include <QtCore/QtCore>
-#include <QtCore/QTime>
-#include <QtCore/QSettings>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QImage>
-#include <QtOpenGL/QGLWidget>
+#include <QtCore>
+#include <QTime>
+#include <QSettings>
+#include <QMouseEvent>
+#include <QImage>
+#include <QGLWidget>
 
 #include <FabricCore.h>
 
@@ -81,7 +81,6 @@ namespace FabricUI
 
       public slots:
         virtual void redraw() { update(); }
-        virtual void onKeyPressed(QKeyEvent * event) {}
         virtual void onContextMenu(QPoint &point) {}
         
 

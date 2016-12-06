@@ -3,12 +3,12 @@
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGExecHeaderWidget.h>
 #include <FabricUI/Util/LoadPixmap.h>
-#include <QtGui/QFrame>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QPaintEvent>
-#include <QtGui/QProxyStyle>
+#include <QFrame>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QProxyStyle>
 
 using namespace FabricUI;
 using namespace FabricUI::DFG;
@@ -172,7 +172,7 @@ void DFGExecHeaderWidget::refresh()
     {
       FTL::CStrRef title = exec.getTitle();
       QString presetNameText( "Preset Name: ");
-      presetNameText += QString::fromAscii( title.data(), title.size() );
+      presetNameText += QString::fromUtf8( title.data(), title.size() );
       m_presetNameLabel->setText( presetNameText );
     }
     m_presetPathSep->setVisible( isPreset );
@@ -260,6 +260,10 @@ void DFGExecHeaderWidget::reqExtEditingFinished()
   }
 
   m_dfgController->cmdSetExtDeps( nameAndVers );
+
+  // FE-7961
+  // Emit the signal to refresh DFGRegisteredTypeLineEdit
+  emit extensionLoaded();
 }
 
 void DFGExecHeaderWidget::onExecChanged()

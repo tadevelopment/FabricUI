@@ -2,8 +2,8 @@
 
 #include "TabbedKLEditorWidget.h"
 
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QScrollBar>
+#include <QHBoxLayout>
+#include <QScrollBar>
 
 using namespace FabricServices;
 using namespace FabricUI::KLEditor;

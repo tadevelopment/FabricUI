@@ -3,15 +3,17 @@
 #ifndef __UI_GraphView_Node__
 #define __UI_GraphView_Node__
 
-#include <QtGui/QGraphicsWidget>
-#include <QtGui/QGraphicsLinearLayout>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
+#include <QGraphicsWidget>
+#include <QGraphicsSceneEvent>
+#include <QGraphicsLinearLayout>
+#include <QColor>
+#include <QPen>
 
 #include <FTL/CStrRef.h>
 
 #include <FabricUI/GraphView/NodeRectangle.h>
 #include <FabricUI/GraphView/NodeHeader.h>
+#include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/GraphicItemTypes.h>
 
@@ -38,6 +40,7 @@ namespace FabricUI
       friend class NodeRectangle;
       friend class NodeBubble;
       friend class NodeHeaderButton;
+      friend class NodeLabel;
 
     public:
 
@@ -128,7 +131,6 @@ namespace FabricUI
       CollapseState collapsedState() const
         { return m_collapsedState; }
       virtual void setCollapsedState(CollapseState state);
-      virtual void toggleCollapsedState();
 
       virtual QString error() const;
       virtual bool hasError() const;
@@ -160,6 +162,7 @@ namespace FabricUI
       virtual unsigned int pinCount() const;
       virtual Pin * pin(unsigned int index);
       virtual Pin * pin(FTL::StrRef name);
+      virtual Pin * nextPin(FTL::StrRef name);
 
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
@@ -202,10 +205,9 @@ namespace FabricUI
       QGraphicsWidget * mainWidget();
       QGraphicsWidget * pinsWidget();
 
-      bool canAddPorts() const
-        { return m_canAddPorts; }
-      void setCanAddPorts( bool canAddPorts )
-        { m_canAddPorts = canAddPorts; }
+      bool canEdit() const
+        { return m_canEdit; }
+      void setCanEdit( bool canEdit );
 
       void collectEditingTargets( EditingTargets &editingTargets );
 
@@ -222,7 +224,6 @@ namespace FabricUI
     signals:
 
       void selectionChanged(FabricUI::GraphView::Node *, bool);
-      void collapsedStateChanged(FabricUI::GraphView::Node *, FabricUI::GraphView::Node::CollapseState);
       void positionChanged(FabricUI::GraphView::Node *, QPointF);
       void doubleClicked(FabricUI::GraphView::Node *, Qt::MouseButton, Qt::KeyboardModifiers);
       void bubbleEditRequested(FabricUI::GraphView::Node * nod);
@@ -234,11 +235,11 @@ namespace FabricUI
       void updatePinLayout();
       void updateHighlighting( QPointF cursorPos );
 
-      // used by NodeHeader / NodeHeaderButton
-      bool onMousePress(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
-      bool onMouseMove(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
-      bool onMouseRelease(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
-      bool onMouseDoubleClicked(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
+      // used by NodeHeader / NodeHeaderButton / NodeLabel
+      bool onMousePress( const QGraphicsSceneMouseEvent *event );
+      bool onMouseMove( const QGraphicsSceneMouseEvent *event );
+      bool onMouseRelease( const QGraphicsSceneMouseEvent *event );
+      bool onMouseDoubleClicked( const QGraphicsSceneMouseEvent *event );
 
       Graph * m_graph;
       NodeType m_nodeType;
@@ -276,7 +277,7 @@ namespace FabricUI
 
       std::vector<InstBlock *> m_instBlocks;
 
-      bool m_canAddPorts;
+      bool m_canEdit;
       bool m_isHighlighted;
     };
 

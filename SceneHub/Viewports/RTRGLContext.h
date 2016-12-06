@@ -5,7 +5,7 @@
 #ifndef _UI_SCENEHUB_RTRGLCONTEXT_H__
 #define _UI_SCENEHUB_RTRGLCONTEXT_H__
 
-#include <QtOpenGL/QGLWidget>
+#include <QGLWidget>
 
 namespace FabricUI {
 namespace Viewports {

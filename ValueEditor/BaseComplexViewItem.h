@@ -5,7 +5,7 @@
 #ifndef FABRICUI_VALUEEDITOR_BASECOMPLEXVIEWITEM_H
 #define FABRICUI_VALUEEDITOR_BASECOMPLEXVIEWITEM_H
 
-#include <QtCore/QVector>
+#include <QVector>
 
 #include "BaseViewItem.h"
 

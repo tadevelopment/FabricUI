@@ -7,12 +7,13 @@
 #include "VELineEdit.h"
 #include "VEDialog.h"
 
-#include <QtGui/QPushButton>
-#include <QtGui/QLineEdit>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QDialogButtonBox>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QPlainTextEdit>
+#include <QDialogButtonBox>
+#include <QFrame>
 
 using namespace FabricUI::ValueEditor;
 
@@ -23,16 +24,25 @@ StringViewItem::StringViewItem(
   )
   : BaseViewItem( name, metadata )
 {
-  m_widget = new QWidget;
-  m_widget->setObjectName( "StringItem" );
-  QHBoxLayout *layout = new QHBoxLayout( m_widget );
-  QPushButton* inspectButton = new QPushButton( m_widget );
-  m_edit = new VELineEdit( m_widget );
+  m_edit = new VELineEdit;
+  m_edit->setObjectName( "VELeft" );
+  m_edit->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::MinimumExpanding );
   
+  QPushButton* inspectButton = new QPushButton;
+  inspectButton->setObjectName( "VERight" );
+  inspectButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::MinimumExpanding );
+
   onModelValueChanged( value );
 
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_edit );
   layout->addWidget( inspectButton );
+
+  m_widget = new QFrame;
+  m_widget->setObjectName( "VEStringViewItem" );
+  m_widget->setLayout( layout );
 
   connect(
     m_edit, SIGNAL( textModified( QString ) ),
@@ -55,7 +65,7 @@ QWidget *StringViewItem::getWidget()
 
 void StringViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_edit->setText( v.value<QString>() );
+  m_edit->setText( getQVariantRTValValue<QString>(v) );
 }
 
 void StringViewItem::onTextModified( QString text )
@@ -70,6 +80,7 @@ void StringViewItem::onInspect()
   // Show a multi-line dialog to display 
   // the full string contents
   VEDialog dlg( m_widget, Qt::Window | Qt::Dialog /*| Qt::FramelessWindowHint*/ );
+  dlg.setWindowTitle( getName() );
   dlg.setModal( true );
   // Add text editor
   QVBoxLayout *layout = new QVBoxLayout( &dlg );

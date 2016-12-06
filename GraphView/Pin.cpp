@@ -8,9 +8,46 @@
 #include <FabricUI/GraphView/PinCircle.h>
 #include <FabricUI/GraphView/ProxyPort.h>
 
-#include <QtGui/QGraphicsLinearLayout>
+#include <QGraphicsLinearLayout>
 
 using namespace FabricUI::GraphView;
+
+class PinLabel : public NodeLabel
+{
+  Pin * m_pin;
+
+public:
+  PinLabel(
+    Pin * pin,
+    Node* node,
+    QString const &text,
+    QColor color,
+    QColor highlightColor,
+    QFont font
+  ) : NodeLabel(
+    pin,
+    node,
+    text,
+    color,
+    highlightColor,
+    font
+  ), m_pin(pin)
+  {
+    setEditable( node->canEdit() );
+  }
+
+protected:
+  void submitEditedText( const QString& text ) FTL_OVERRIDE
+  {
+    FTL::CStrRef pinName = m_pin->name();
+
+    m_pin->node()->graph()->controller()->gvcDoRenameExecPort(
+      QString::fromUtf8( pinName.data(), pinName.size() ),
+      text,
+      m_pin->node()->name_QS()
+    );
+  }
+};
 
 Pin::Pin(
   Node * parent,
@@ -91,7 +128,14 @@ Pin::Pin(
 
   if(m_labelCaption.length() > 0)
   {
-    m_label = new TextContainer(this, QSTRING_FROM_STL_UTF8(m_labelCaption), config.pinFontColor, config.pinFontHighlightColor, config.pinFont);
+    m_label = new PinLabel(
+      this,
+      m_node,
+      QSTRING_FROM_STL_UTF8(m_labelCaption),
+      config.pinFontColor,
+      config.pinFontHighlightColor,
+      config.pinFont
+    );
 
     layout->addItem(m_label);
     layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
@@ -266,14 +310,16 @@ void Pin::setDataType(FTL::CStrRef dataType)
       if(m_dataType.substr(m_dataType.length()-2) == "[]" && m_labelSuffix != "[]")
       {
         m_labelSuffix = "[]";
-        m_label->setText(QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix));
+        m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+        m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
         return;
       }
     }
     if(m_labelSuffix.length() > 0)
     {
       m_labelSuffix = "";
-      m_label->setText(QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix));
+      m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+      m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
     }
   }
 }
@@ -426,7 +472,7 @@ void Pin::setName( FTL::StrRef newName )
     m_name = newName;
     if ( labelIsName )
       m_labelCaption = newName;
-    m_label->setText( QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix) );
+    m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
   }
 }
 

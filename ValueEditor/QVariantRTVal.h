@@ -6,7 +6,7 @@
 #define FABRICUI_VALUEEDITOR_QVARIANTRTVAL_H
 
 #include <FabricCore.h>
-#include <QtCore/QVariant>
+#include <QVariant>
 
 // Import RTVal into the QVariant types
 Q_DECLARE_METATYPE(FabricCore::RTVal);
@@ -24,6 +24,20 @@ inline QVariant toVariant(const FabricCore::RTVal& val)
   return QVariant::fromValue<FabricCore::RTVal>(val); 
 }
 
+template<typename T>
+T getQVariantRTValValue(const FabricCore::RTVal& v);
+
+template<typename T>
+T getQVariantRTValValue(const QVariant& v) {
+
+#if QT_VERSION >= 0x050000
+  if (v.userType() == qMetaTypeId<FabricCore::RTVal>()) {
+    const FabricCore::RTVal& val = v.value<FabricCore::RTVal>();
+    return getQVariantRTValValue<T>(val);
+  }
+#endif
+  return v.value<T>();
+}
 
 namespace FabricUI {
 namespace ValueEditor {
@@ -71,6 +85,10 @@ public:
 
   // Helper function provides east conversion to provided RTVal
   static bool toRTVal( const QVariant& var, FabricCore::RTVal& ioVal );
+
+  static const char* getTypeName( const QVariant& var ) {
+    return isRTVal(var) ? var.value<FabricCore::RTVal>().getTypeNameCStr() : var.typeName();
+  }
 
 private:
   // Overrides for built-in functionality

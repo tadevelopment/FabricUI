@@ -4,8 +4,8 @@
 #define __UI_GraphView_ConnectionTarget__
 
 #include <FTL/Config.h>
-#include <QtGui/QGraphicsWidget>
-#include <QtCore/QPointF>
+#include <QGraphicsWidget>
+#include <QPointF>
 #include "PortType.h"
 #include <string>
 
@@ -63,6 +63,7 @@ namespace FabricUI
 
       virtual bool isConnected() const;
       virtual bool isConnectedAsSource() const;
+      virtual bool isConnectedAsTarget() const;
 
       virtual bool selected() const;
 

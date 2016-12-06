@@ -3,11 +3,11 @@
 #ifndef __UI_DFG_DFGEditPortDialog__
 #define __UI_DFG_DFGEditPortDialog__
 
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit>
-#include <QtGui/QCheckBox>
-#include <QtGui/QShowEvent>
-
+#include <QComboBox>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QShowEvent>
+#include <QKeyEvent>
 #include "DFGBaseDialog.h"
 #include "DFGRegisteredTypeLineEdit.h"
 #include "DFGExtensionLineEdit.h"
@@ -47,6 +47,8 @@ namespace FabricUI
       void setOpaque();
       bool persistValue() const;
       void setPersistValue( bool value );
+      bool isDataTypeReadOnly() const;
+      void setDataTypeReadOnly( bool value );
 
       bool hasSoftRange() const;
       void setHasSoftRange(bool value);
@@ -67,6 +69,11 @@ namespace FabricUI
       QStringList comboValues() const;
       void setComboValues(QStringList value);
 
+      bool hasFileTypeFilter() const;
+      void setHasFileTypeFilter(bool value);
+      QString fileTypeFilter() const;
+      void setFileTypeFilter(QString value);
+
       virtual void showEvent(QShowEvent * event);
 
       /// Filter the QLineEdit text with the regexFilter
@@ -74,11 +81,18 @@ namespace FabricUI
       /// Filter the QLineEdit text with the setRegexFilter
       void setRegexFilter(QString regex);
 
+    protected:
+      virtual void keyPressEvent(QKeyEvent * event);
+
+    public slots:
+      virtual void done(int r);
+
     private slots:
 
       void onSoftRangeToggled(int state);
       void onHardRangeToggled(int state);
       void onComboToggled(int state);
+      void onFileTypeFilterToggled(int state);
 
     private:
 
@@ -96,6 +110,8 @@ namespace FabricUI
       QLineEdit * m_hardRangeMax;
       QCheckBox * m_hasCombo;
       QLineEdit * m_combo;
+      QCheckBox * m_hasFileTypeFilter;
+      QLineEdit * m_fileTypeFilter;
 
     };
 

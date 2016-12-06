@@ -4,7 +4,7 @@
 
 #include "VELineEdit.h"
 
-#include <QtGui/QFocusEvent>
+#include <QFocusEvent>
 
 using namespace FabricUI::ValueEditor;
 

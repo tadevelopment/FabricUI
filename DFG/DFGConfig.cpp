@@ -16,7 +16,7 @@ DFGConfig::DFGConfig()
   , searchResultsFont( QFont("Courier", 11) )
   , searchHelpFont( QFont("Courier", 11, QFont::Bold) )
 {
-  defaultWindowColor = QColor(25, 37, 42);
+  defaultWindowColor = QColor(85, 88, 92);
   defaultBackgroundColor = QColor(156, 174, 187);
   // defaultFont.setBold(true);
   defaultFontColor = QColor(31, 43, 55, 255);
@@ -74,6 +74,8 @@ DFGConfig::DFGConfig()
   registerDataTypeColor("Lines", QColor(51, 1, 106));
   registerDataTypeColor("Points", QColor(51, 1, 106));
   registerDataTypeColor("PolygonMesh", QColor(51, 1, 106));
+  registerDataTypeColor("ImporterObject", QColor(206, 165, 151));
+  registerDataTypeColor("ImporterContext", QColor(206, 165, 151));
 }
 
 void DFGConfig::registerDataTypeColor(FTL::StrRef dataType, QColor color)

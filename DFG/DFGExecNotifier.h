@@ -9,7 +9,7 @@
 #include <FabricUI/DFG/DFGNotifier.h>
 #include <FTL/ArrayRef.h>
 #include <FTL/StrRef.h>
-#include <QtCore/QSharedPointer>
+#include <QSharedPointer>
 #if defined(FTL_PLATFORM_WINDOWS)
 # include <unordered_map>
 #else

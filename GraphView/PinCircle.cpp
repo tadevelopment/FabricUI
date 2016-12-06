@@ -6,9 +6,9 @@
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
 
-#include <QtCore/QDebug>
-#include <QtGui/QGraphicsSceneHoverEvent>
-#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QDebug>
+#include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
 
 using namespace FabricUI::GraphView;
 
@@ -66,7 +66,6 @@ const ConnectionTarget * PinCircle::target() const
 {
   return m_target;
 }
-
 
 QColor PinCircle::color() const
 {
@@ -245,6 +244,7 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
       if(menu)
       {
         menu->exec(QCursor::pos());
+        menu->setParent( NULL );
         menu->deleteLater();
       }
     }
@@ -254,6 +254,7 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
       if(menu)
       {
         menu->exec(QCursor::pos());
+        menu->setParent( NULL );
         menu->deleteLater();
       }
     }
@@ -263,6 +264,7 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
       if(menu)
       {
         menu->exec(QCursor::pos());
+        menu->setParent( NULL );
         menu->deleteLater();
       }
     }

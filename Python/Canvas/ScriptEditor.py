@@ -7,11 +7,13 @@ users can see exactly what Canvas is doing, and to assist in reproducing
 issues that were initially triggered through the UI.
 """
 
-import sys, os, traceback
+import sys, os, platform, traceback
 from PySide import QtCore, QtGui
 from FabricEngine.Canvas.BindingWrapper import BindingWrapper
 from FabricEngine.Canvas.LogWidget import LogWidget
+from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.PythonHighlighter import PythonHighlighter
+from FabricEngine.FabricUI import DFG
 
 class LogStd:
 
@@ -85,6 +87,8 @@ class ScriptEditor(QtGui.QWidget):
             def __init__(self, cmdEditor):
                 QtGui.QWidget.__init__(self, cmdEditor)
                 self.__cmdEditor = cmdEditor
+                
+                self.setObjectName("LineNumberArea")
 
             def sizeHint(self):
                 return QtCore.QSize(self.__cmdEditor.lineNumberAreaWidth(), 0)
@@ -104,7 +108,8 @@ class ScriptEditor(QtGui.QWidget):
         def __init__(self, font):
             QtGui.QPlainTextEdit.__init__(self)
 
-            self.setStyleSheet("background-color: #272822;")
+            self.setObjectName("ScriptEditorCmdEditor")
+
             self.__highlighter = PythonHighlighter(self.document())
 
             lineNumberArea = self.LineNumberArea(self)
@@ -208,7 +213,7 @@ class ScriptEditor(QtGui.QWidget):
 
         def keyPressEvent(self, event):
             # print "event.key() = %s" % str(event.key())
-            if event.key() == QtCore.Qt.Key_Return:
+            if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
                 if event.modifiers() == QtCore.Qt.ControlModifier:
                     event.ignore()
                     return
@@ -327,48 +332,7 @@ class ScriptEditor(QtGui.QWidget):
         QtGui.QWidget.__init__(self)
 
         self.setObjectName('ScriptEditorWidget')
-
-        widgetStyleSheet = """
-
-        QWidget#ScriptEditorWidget QToolButton {
-            color: #FFFFFF;
-            border: 1px #222222;
-            border-radius: 3px;
-            border-style: outset;
-            padding: 3px;
-            margin: 2px;
-
-            background-color: #2B2B2B;
-        }
-
-        QWidget#ScriptEditorWidget QToolButton::disabled {
-            background-color: #444;
-            color: #666666;
-        }
-
-        QWidget#ScriptEditorWidget QToolButton::checked {
-            background-color: #335252;
-        }
-
-        QWidget#ScriptEditorWidget QToolButton::checked:hover {
-            background-color: #335959;
-        }
-
-        QWidget#ScriptEditorWidget QToolButton:hover {
-            background-color: #3B3B3B;
-        }
-
-        QWidget#ScriptEditorWidget QToolButton::pressed {
-            border-style: inset;
-            padding-top: 5px;
-            padding-left: 5px;
-
-            background-color: #2B2B2B;
-        }
-
-        """
-
-        self.setStyleSheet(widgetStyleSheet)
+        self.setStyleSheet(LoadFabricStyleSheet("FabricUI.qss"))
 
         self.__undoStackIndex = qUndoStack.index()
         qUndoStack.indexChanged.connect(self.undoStackIndexChanged)
@@ -380,8 +344,9 @@ class ScriptEditor(QtGui.QWidget):
             "newGraph": canvasWindow.onNewGraph,
             "newScript": self.newScript,
             "loadScript": self.loadScript,
+            "bindingUtils": DFG.DFGBindingUtils(),
             }
-
+         
         self.dfgLogWidget = dfgLogWidget
 
         self.settings = settings
@@ -426,7 +391,7 @@ class ScriptEditor(QtGui.QWidget):
         saveAsAction.triggered.connect(self.saveAs)
 
         executeAction = QtGui.QAction("Execute", self)
-        executeAction.setShortcut(QtGui.QKeySequence("Ctrl+Return"))
+        executeAction.setShortcuts([QtGui.QKeySequence("Ctrl+Return"), QtGui.QKeySequence("Ctrl+Enter")])
         executeAction.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
         executeAction.setToolTip("Execute script (%s)" % executeAction.shortcut().toString(QtGui.QKeySequence.NativeText))
         executeAction.triggered.connect(self.execute)
@@ -456,6 +421,12 @@ class ScriptEditor(QtGui.QWidget):
         self.setContentsMargins(0,0,0,0)
         self.setLayout(layout)
 
+    def setTimeLineGlobal(self, timeLine):
+        self.eval_globals["timeLine"] = timeLine
+
+    def setDFGControllerGlobal(self, dfgController):
+        self.eval_globals["controller"] = dfgController
+        
     def onLinesSelected(self, startLineNum, endLineNum):
         startTextBlock = self.cmd.document().findBlockByLineNumber(startLineNum)
         endTextBlock = self.cmd.document().findBlockByLineNumber(endLineNum)
@@ -499,7 +470,8 @@ class ScriptEditor(QtGui.QWidget):
     def checkUnsavedChanges(self):
         textDocument = self.cmd.document()
         if textDocument.isModified() and not textDocument.isEmpty():
-            msgBox = QtGui.QMessageBox()
+            msgBox = QtGui.QMessageBox(self)
+            msgBox.setWindowTitle("Script Editor")
             msgBox.setText("Do you want to save your Python script?")
             msgBox.setInformativeText(
                 "Your changes will be lost if you don't save them.")

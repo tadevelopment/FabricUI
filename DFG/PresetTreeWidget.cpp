@@ -5,17 +5,20 @@
 #include <FabricUI/DFG/PresetTreeItem.h>
 #include <FabricUI/DFG/PresetTreeWidget.h>
 #include <FabricUI/DFG/VariableListTreeItem.h>
+#include <FabricUI/DFG/DFGWidget.h>
+
+#include <FabricUI/Util/LoadFabricStyleSheet.h>
 
 #include <FTL/JSONValue.h>
 #include <FTL/MapCharSingle.h>
 #include <FTL/Str.h>
 #include <FTL/FS.h>
 
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QDesktopServices>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
-#include <QtCore/QUrl>
+#include <QVBoxLayout>
+#include <QDesktopServices>
+#include <QMenu>
+#include <QAction>
+#include <QUrl>
 
 using namespace FabricServices;
 using namespace FabricUI;
@@ -34,6 +37,12 @@ PresetTreeWidget::PresetTreeWidget(
   : m_dfgController( dfgController )
   , m_showsPresets( showsPresets )
 {
+  setObjectName( "DFGPresetTreeWidget" );
+
+  QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
+  if ( !styleSheet.isEmpty() )
+    setStyleSheet( styleSheet );
+
   if(showSearch)
     m_searchEdit = new QLineEdit(this);
   else
@@ -97,7 +106,7 @@ PresetTreeWidget::PresetTreeWidget(
           if (stream)
           {
             fclose(stream);
-            std::remove(filepath.c_str());
+            FTL::FSMaybeDeleteFile(filepath.c_str());
             continue;
           }
           m_treeModel->removeItem(item);
@@ -127,6 +136,8 @@ PresetTreeWidget::PresetTreeWidget(
     QObject::connect(m_treeView, SIGNAL(customContextMenuRequested(QPoint, FabricUI::TreeView::TreeItem *)), 
       this, SLOT(onCustomContextMenuRequested(QPoint, FabricUI::TreeView::TreeItem *)));
   }
+  
+  QObject::connect(m_treeView, SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(onRowDoubleClick(const QModelIndex &)));
 }
 
 PresetTreeWidget::~PresetTreeWidget()
@@ -163,7 +174,7 @@ void PresetTreeWidget::refresh()
   if(search.length() == 0)
   {
     std::map<std::string, std::string> nameSpaceLookup;
-    std::map<std::string, std::string> presetLookup;
+    std::vector<std::string> presetLookup;
 
     FabricCore::DFGStringResult jsonStr = host.getPresetDesc("");
     FabricCore::Variant jsonVar = FabricCore::Variant::CreateFromJSON(jsonStr.getCString());
@@ -177,7 +188,7 @@ void PresetTreeWidget::refresh()
       std::string objectType = objectTypeVar->getStringData();
       if(objectType == "Preset")
       {
-        presetLookup.insert(std::pair<std::string, std::string>(name, name));
+        presetLookup.push_back(name);
       }
       else if(objectType == "NameSpace")
       {
@@ -196,8 +207,8 @@ void PresetTreeWidget::refresh()
       m_treeModel->addItem(item);
     }
 
-    for(std::map<std::string, std::string>::iterator it=presetLookup.begin();it!=presetLookup.end();it++)
-      m_treeModel->addItem(new PresetTreeItem(it->second.c_str(), it->first.c_str()));
+    for(std::vector<std::string>::iterator it=presetLookup.begin();it!=presetLookup.end();it++)
+      m_treeModel->addItem(new PresetTreeItem(it->c_str()));
   }
   else
   {
@@ -277,7 +288,7 @@ void PresetTreeWidget::onCustomContextMenuRequested(QPoint globalPos, FabricUI::
 {
   m_contextPath = item->path();
 
-  QMenu menu(NULL);
+  QMenu menu(this);
   menu.addAction("Refresh");
   if(item->type() == "NameSpace" || item->type() == "Preset")
     menu.addAction("Open Folder");
@@ -320,6 +331,47 @@ void PresetTreeWidget::onContextMenuAction(QAction * action)
     }
     catch(FabricCore::Exception e)
     {
+    }
+  }
+}
+ 
+void PresetTreeWidget::onExpandToAndSelectItem(QString presetPath) {
+
+  // e.g FABRIC.Dir1.Dir2...Preset
+  QStringList split = presetPath.split(".");
+
+  // Get the root (Variables, Fabric, User)
+  QString current = split[0] + ".";
+  FTL::StrRef strRef(current.toUtf8().data());
+
+  FabricUI::TreeView::TreeItem *item = m_treeModel->item(strRef);
+  if(item)
+  { 
+    // Expand the root (create its children if needed)
+    QModelIndex modelIndex = item->modelIndex();
+    m_treeView->expand(modelIndex);
+
+    // Iterate through the path (directory)
+    for(int i=1; i<split.size(); ++i)
+    {
+      current = split[i] + ".";
+      strRef = FTL::StrRef(current.toUtf8().data());
+
+      item = item->child(strRef);
+      if(item)
+      {   
+        // If the item is not a leaf, expand it
+        QModelIndex modelIndex = item->modelIndex();
+        if(i < split.size()-1)
+          m_treeView->expand(modelIndex);
+        // Otherwise, select it.
+        else
+        {
+          QItemSelectionModel* selection = m_treeView->selectionModel();
+          selection->select(modelIndex, QItemSelectionModel::ClearAndSelect);
+          m_treeView->scrollTo(modelIndex);
+        }
+      }
     }
   }
 }
@@ -397,5 +449,37 @@ void PresetTreeWidget::updatePresetPathDB()
   for(size_t i=0;i<m_presetPathDictSTL.size();i++)
   {
     m_presetPathDict.add(m_presetPathDictSTL[i].c_str(), '.', m_presetPathDictSTL[i].c_str());
+  }
+}
+
+void PresetTreeWidget::onRowDoubleClick(const QModelIndex &index)
+{
+  FabricUI::TreeView::TreeItem * item = NULL;
+  if (index.isValid())
+  {
+    item = static_cast<FabricUI::TreeView::TreeItem *>(index.internalPointer());
+  }
+  if (item && item->type() == "Preset")
+  {
+    try
+    {
+      FabricCore::DFGHost host = m_dfgController->getHost();
+      QRectF bound = m_dfgController->getDFGWidget()->getUIGraph()->mainPanel()->boundingRect();
+      GraphView::GraphViewWidget *gvWidget = m_dfgController->getDFGWidget()->getGraphViewWidget();
+      const QPointF pos(bound.width()/2.0f, bound.height()/2.0f);
+      QPointF graphPos = gvWidget->mapToGraph(gvWidget->mapToGlobal(pos.toPoint()));
+      graphPos += QPointF((qrand() % 200) - 100, (qrand() % 200) - 100); // Hardcode a random offset for x and y
+      QString itemString = QString::fromStdString(item->path());
+      QString nodeName = m_dfgController->cmdAddInstFromPreset(itemString, graphPos);
+      if ( !nodeName.isEmpty() )
+      {
+        gvWidget->graph()->clearSelection();
+        if ( GraphView::Node *uiNode = gvWidget->graph()->node( nodeName ) )
+          uiNode->setSelected( true );
+      }
+    }
+    catch(FabricCore::Exception e)
+    {
+    }    
   }
 }

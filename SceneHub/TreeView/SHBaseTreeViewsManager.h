@@ -6,8 +6,8 @@
 #define __UI_SCENEHUB_BASE_TREE_VIEW_MANAGER_H__
 
 #include "SHBaseTreeView.h"
-#include <QtGui/QWidget>
-#include <QtGui/QComboBox>
+#include <QWidget>
+#include <QComboBox>
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/SceneHub/SHStates.h>
 #include <FabricUI/SceneHub/SHGLScene.h>

@@ -1,6 +1,6 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtCore/QMimeData>
+#include <QMimeData>
 
 #include "TreeModel.h"
 #include "WidgetTreeItem.h"
@@ -62,6 +62,7 @@ TreeItem * TreeModel::item(unsigned int index)
 TreeItem * TreeModel::item( FTL::StrRef path )
 {
   FTL::StrRef::Split split = path.split('.');
+
   if ( !split.first.empty() )
   {
     for ( size_t i = 0; i < m_items.size(); ++i )

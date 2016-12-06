@@ -7,12 +7,12 @@
 #include "QVariantRTVal.h"
 #include "VELineEdit.h"
 
-#include <QtCore/QVariant>
-#include <QtGui/QWidget>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QLineEdit>
-#include <QtGui/QFileDialog>
+#include <QVariant>
+#include <QWidget>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QFileDialog>
 
 using namespace FabricUI::ValueEditor;
 
@@ -27,17 +27,25 @@ FilepathViewItem::FilepathViewItem(
   : BaseViewItem( name, metadata )
   , m_val(value.value<FabricCore::RTVal>())
 {
-  m_widget = new QWidget;
-  m_widget->setObjectName( "FilePathItem" );
-  QHBoxLayout *layout = new QHBoxLayout( m_widget );
-  QPushButton* browseButton = new QPushButton( m_widget );
-  browseButton->setText( "..." );
-  m_edit = new VELineEdit( m_widget );
+  m_edit = new VELineEdit;
+  m_edit->setObjectName( "VELeft" );
+  m_edit->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::MinimumExpanding );
+
+  QPushButton* browseButton = new QPushButton;
+  browseButton->setObjectName( "VERight" );
+  browseButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::MinimumExpanding );
 
   onModelValueChanged( value );
 
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_edit );
   layout->addWidget( browseButton );
+
+  m_widget = new QWidget;
+  m_widget->setObjectName( "VEFilepathViewItem" );
+  m_widget->setLayout( layout );
 
   connect(
     m_edit, SIGNAL( textModified( QString ) ),
@@ -61,8 +69,8 @@ QWidget *FilepathViewItem::getWidget()
 
 void FilepathViewItem::metadataChanged()
 {
-  if (m_metadata.has( "filter" ))
-    m_filter = m_metadata.getString( "filter" );
+  if (m_metadata.has( "uiFileTypeFilter" ))
+    m_filter = m_metadata.getString( "uiFileTypeFilter" );
   else
     m_filter = QString();
 }
@@ -112,7 +120,7 @@ FabricCore::RTVal ToFilePath( FabricCore::RTVal& val, const QString& text )
 {
   FabricCore::RTVal asString = FabricCore::RTVal::ConstructString(
     val.getContext(),
-    text.toAscii().data() );
+    text.toUtf8().constData() );
 
   return FabricCore::RTVal::Create(
     val.getContext(),

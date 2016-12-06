@@ -11,10 +11,10 @@
 
 #include <assert.h>
 #include <FTL/JSONValue.h>
-#include <QtCore/QVariant>
-#include <QtGui/QColorDialog>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QPainter>
+#include <QVariant>
+#include <QColorDialog>
+#include <QHBoxLayout>
+#include <QPainter>
 
 using namespace FabricUI::ValueEditor;
 
@@ -73,12 +73,14 @@ ColorViewItem::ColorViewItem(
   , m_childMetadata (metadata)
 {
   m_alphaButton = new AlphaButton;
+  m_alphaButton->setObjectName( "VELeft" );
   connect(
     m_alphaButton, SIGNAL( clicked() ),
     this, SLOT( pickColor() )
     );
 
   m_specCombo = new ComboBox;
+  m_specCombo->setObjectName( "VERight" );
   m_specCombo->addItem( tr( "RGB" ) );
   m_specCombo->addItem( tr( "HSV" ) );
   connect(
@@ -87,11 +89,14 @@ ColorViewItem::ColorViewItem(
     );
 
   QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_alphaButton );
   layout->addWidget( m_specCombo );
+  layout->addStretch();
 
   m_widget = new QWidget;
-  m_widget->setObjectName( "ColorItem" );
+  m_widget->setObjectName( "VEColorViewItem" );
   m_widget->setLayout( layout );
 
   m_childMetadata.setString( "uiRange", "(0.0, 1.0)" );

@@ -1,10 +1,11 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtGui/QApplication>
-#include <QtGui/QGraphicsSceneHoverEvent>
+#include <QApplication>
+#include <QGraphicsSceneHoverEvent>
 
 #include <FabricUI/GraphView/BackDropNode.h>
 #include <FabricUI/GraphView/NodeBubble.h>
+#include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Graph.h>
 
 using namespace FabricUI::GraphView;
@@ -25,12 +26,11 @@ BackDropNode::BackDropNode(
     titleColor
     )
 {
-  m_mainWidget->setMinimumWidth(graph()->config().nodeMinWidth * 2.0f);
+  m_mainWidget->setMinimumWidth(m_mainWidget->boundingRect().width() * 2.0f);
   m_mainWidget->setMinimumHeight(graph()->config().nodeMinHeight * 2.0f);
-  m_mainWidget->setMaximumWidth(graph()->config().nodeMinWidth * 2.0f);
   m_mainWidget->setMaximumHeight(graph()->config().nodeMinHeight * 2.0f);
 
-  m_minSize.setWidth(int(graph()->config().nodeMinWidth * 2.0f));
+  m_minSize.setWidth(int(m_mainWidget->boundingRect().width() * 2.0f));
   m_minSize.setHeight(int(graph()->config().nodeMinHeight * 2.0f));
 
   m_resizeDistance = 32.0;
@@ -47,6 +47,13 @@ void BackDropNode::setSize( QSizeF size )
 {
   m_mainWidget->setMinimumSize( size );
   m_mainWidget->setMaximumSize( size );
+}
+
+QRectF BackDropNode::boundingRect() const
+{
+  // [FE-6865]
+  QRectF rect = QGraphicsWidget::boundingRect().adjusted( 0, -4, 0, 4 );
+  return rect.united( header()->boundingRect() ); // compensate for long header text
 }
 
 void BackDropNode::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)

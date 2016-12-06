@@ -3,9 +3,8 @@
 #ifndef __UI_DFG_DFGKLEditorWidget__
 #define __UI_DFG_DFGKLEditorWidget__
 
-#include <QtGui/QWidget>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QStringListModel>
+#include <QWidget>
+#include <QPlainTextEdit>
 #include <FabricUI/KLEditor/KLEditorWidget.h>
 #include "DFGConfig.h"
 #include "DFGController.h"

@@ -18,6 +18,20 @@ namespace FabricUI
     public:
 
       DFGRegisteredTypeLineEdit(QWidget * parent, FabricCore::Client & client, QString text = "");
+
+      /// Check if the line-edit text represents a valid KL type.
+      bool checkIfTypeExist();
+
+      /// Diplays a warning pop-up informing that the type is not valid.
+      void displayInvalidTypeWarning();
+
+    public slots:
+      /// Update the registerd KL type list (e.g, an extension has been loaded).
+      void onUpdateRegisteredTypeList();
+
+  	private:
+  	  QStringList m_registerKLTypeList;
+      FabricCore::Client m_client;
     };
 
   };

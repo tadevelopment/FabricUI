@@ -7,10 +7,10 @@
 #include <FabricUI/GraphView/PortLabel.h>
 #include <FabricUI/GraphView/SidePanel.h>
 
-#include <QtCore/QDebug>
-#include <QtGui/QPainter>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QGraphicsView>
+#include <QDebug>
+#include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
 
 #include <float.h>
 #include <math.h>
@@ -164,6 +164,15 @@ void SidePanel::reorderPorts(QStringList names)
   resetLayout();
 }
 
+void SidePanel::setEditable( bool canEdit )
+{
+  for( size_t i = 0; i < m_ports.size(); i++ )
+  {
+    Port* port = m_ports[i];
+    port->m_label->setEditable( canEdit && port->allowEdits() );
+  }
+}
+
 void SidePanel::reorderFixedPorts(QStringList names)
 {
   std::vector<FixedPort *> fixedPorts;
@@ -207,6 +216,7 @@ void SidePanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
     if(menu)
     {
       menu->exec(QCursor::pos());
+      menu->setParent( NULL );
       menu->deleteLater();
     }
     event->accept();
@@ -282,9 +292,7 @@ void SidePanel::paint(QPainter * painter, const QStyleOptionGraphicsItem * optio
 
 void SidePanel::onItemGroupResized()
 {
-  // Reset the layout.
-  // Needed because the content of m_itemGroup may have changed.
-  resetLayout();
+  m_itemGroup->adjustSize();
   setMinimumWidth(m_itemGroup->size().width());
   setMaximumWidth(m_itemGroup->size().width());
 }

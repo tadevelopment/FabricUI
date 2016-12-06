@@ -4,6 +4,7 @@
 #define __UI_DFG_DFGUICmd_RemovePort__
 
 #include <FabricUI/DFG/DFGUICmd/DFGUICmd_Exec.h>
+#include <FTL/ArrayRef.h>
 
 FABRIC_UI_DFG_NAMESPACE_BEGIN
 
@@ -16,14 +17,14 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString portName
+    QStringList portNames
     )
     : DFGUICmd_Exec(
       binding,
       execPath,
       exec
       )
-    , m_portName( portName.trimmed() )
+    , m_portNames( portNames )
     {}
 
   static FTL::CStrRef CmdName()
@@ -36,13 +37,13 @@ protected:
   virtual void invoke( unsigned &coreUndoCount );
 
   void invoke(
-    FTL::CStrRef portName,
+    FTL::ArrayRef<FTL::CStrRef> portNames,
     unsigned &coreUndoCount
     );
 
 private:
 
-  QString m_portName;
+  QStringList m_portNames;
 };
 
 FABRIC_UI_DFG_NAMESPACE_END

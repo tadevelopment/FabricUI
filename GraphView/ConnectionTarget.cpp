@@ -3,9 +3,10 @@
 #include "ConnectionTarget.h"
 #include "Graph.h"
 #include "PinCircle.h"
+#include "InstBlockPort.h"
 
-#include <QtGui/QGraphicsSceneHoverEvent>
-#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
 
 #include <math.h>
 
@@ -36,6 +37,11 @@ bool ConnectionTarget::isConnected() const
 bool ConnectionTarget::isConnectedAsSource() const
 {
   return graph()->isConnectedAsSource(this);
+}
+
+bool ConnectionTarget::isConnectedAsTarget() const
+{
+  return graph()->isConnectedAsTarget(this);
 }
 
 void ConnectionTarget::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
@@ -90,16 +96,19 @@ PinCircle * ConnectionTarget::findPinCircle(QPointF pos)
   {
     if(type() == QGraphicsItemType_ProxyPort)
     {
+      assert( dynamic_cast<ProxyPort*>( this ) );
       ProxyPort * target = static_cast<ProxyPort *>(this);
       m_lastPinCircle = target->circle();
     }
     else if(type() == QGraphicsItemType_Port)
     {
+      assert( dynamic_cast<Port*>( this ) );
       Port * target = static_cast<Port *>(this);
       m_lastPinCircle = target->circle();
     }
     else if(type() == QGraphicsItemType_Pin)
     {
+      assert( dynamic_cast<Pin*>( this ) );
       Pin * target = static_cast<Pin *>(this);
       if(pos.x() < size().width() * 0.5)
       {
@@ -109,6 +118,21 @@ PinCircle * ConnectionTarget::findPinCircle(QPointF pos)
       else
       {
         if(target->outCircle())
+          m_lastPinCircle = target->outCircle();
+      }
+    }
+    else if(type() == QGraphicsItemType_InstBlockPort)
+    {
+      assert( dynamic_cast<InstBlockPort*>( this ) );
+      InstBlockPort * target = static_cast<InstBlockPort*>(this);
+      if ( pos.x() < size().width() * 0.5 )
+      {
+        if ( target->inCircle() )
+          m_lastPinCircle = target->inCircle();
+      }
+      else
+      {
+        if ( target->outCircle() )
           m_lastPinCircle = target->outCircle();
       }
     }

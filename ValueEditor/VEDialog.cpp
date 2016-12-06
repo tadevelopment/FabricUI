@@ -4,14 +4,15 @@
 
 #include "VEDialog.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
+#include <QApplication>
+#include <QDesktopWidget>
 
 using namespace FabricUI::ValueEditor;
 
 VEDialog::VEDialog( QWidget * parent, Qt::WindowFlags f )
 : QDialog( parent, f )
 {
+  setWindowTitle("Value Editor");
 }
 
 void VEDialog::showEvent( QShowEvent * event )

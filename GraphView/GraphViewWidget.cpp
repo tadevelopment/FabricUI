@@ -2,9 +2,9 @@
 
 #include "GraphViewWidget.h"
 
-#include <QtCore/QDebug>
-#include <QtGui/QPainter>
-#include <QtOpenGL/QGLWidget>
+#include <QDebug>
+#include <QPainter>
+#include <QGLWidget>
 
 #ifdef FABRICUI_TIMERS
   #include <Util/Timer.h>
@@ -102,22 +102,6 @@ void GraphViewWidget::mouseMoveEvent(QMouseEvent * event)
 {
   m_lastEventPos = event->pos();
   QGraphicsView::mouseMoveEvent(event);
-}
-
-void GraphViewWidget::keyPressEvent(QKeyEvent * event)
-{
-  if(!event->isAutoRepeat() && graph()->pressHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))
-    event->accept();
-  else
-    QGraphicsView::keyPressEvent(event);
-}
-
-void GraphViewWidget::keyReleaseEvent(QKeyEvent * event)
-{
-  if(!event->isAutoRepeat() && graph()->releaseHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))
-    event->accept();
-  else
-    QGraphicsView::keyPressEvent(event);
 }
 
 QPoint GraphViewWidget::lastEventPos() const

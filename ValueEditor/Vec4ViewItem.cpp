@@ -9,10 +9,10 @@
 
 #include <assert.h>
 #include <FabricUI/Util/UIRange.h>
-#include <QtCore/QVariant>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QLineEdit>
-#include <QtGui/QWidget>
+#include <QVariant>
+#include <QBoxLayout>
+#include <QLineEdit>
+#include <QFrame>
 
 using namespace FabricUI::ValueEditor;
 
@@ -22,18 +22,22 @@ Vec4ViewItem::Vec4ViewItem(
   ItemMetadata* metadata
   )
   : BaseComplexViewItem( name, metadata )
-  , m_vec4dValue( value.value<QVector4D>() )
+  , m_vec4dValue( getQVariantRTValValue<QVector4D>( value ) )
 {
-  m_widget = new QWidget;
+  m_widget = new QFrame;
   m_widget->setObjectName( "Vec4Item" );
 
   m_xSpinBox = new VEDoubleSpinBox;
+  m_xSpinBox->setObjectName( "VELeft" );
   m_xSpinBox->setValue( m_vec4dValue.x() );
   m_ySpinBox = new VEDoubleSpinBox;
+  m_ySpinBox->setObjectName( "VEMiddle" );
   m_ySpinBox->setValue( m_vec4dValue.y() );
   m_zSpinBox = new VEDoubleSpinBox;
+  m_zSpinBox->setObjectName( "VEMiddle" );
   m_zSpinBox->setValue( m_vec4dValue.z() );
   m_tSpinBox = new VEDoubleSpinBox;
+  m_tSpinBox->setObjectName( "VERight" );
   m_tSpinBox->setValue( m_vec4dValue.w() );
   
   connect(
@@ -90,11 +94,12 @@ Vec4ViewItem::Vec4ViewItem(
 
   QHBoxLayout *layout = new QHBoxLayout( m_widget );
   layout->setContentsMargins( 0, 0, 0, 0 );
-  layout->setSpacing( 8 );
+  layout->setSpacing( 0 );
   layout->addWidget( m_xSpinBox );
   layout->addWidget( m_ySpinBox );
   layout->addWidget( m_zSpinBox );
   layout->addWidget( m_tSpinBox );
+  layout->addStretch();
 
   metadataChanged();
 }
@@ -110,7 +115,7 @@ QWidget *Vec4ViewItem::getWidget()
 
 void Vec4ViewItem::onModelValueChanged( QVariant const &value )
 {
-  QVector4D newVec4dValue = value.value<QVector4D>();
+  QVector4D newVec4dValue = getQVariantRTValValue<QVector4D>( value );
   if ( newVec4dValue.x() != m_vec4dValue.x() )
   {
     m_xSpinBox->setValue( newVec4dValue.x() );
@@ -207,7 +212,7 @@ void Vec4ViewItem::doAppendChildViewItems(QList<BaseViewItem *>& items)
 
 void Vec4ViewItem::metadataChanged()
 {
-  FTL::StrRef uiRangeString = m_metadata.getString( "uiRange" );
+  FTL::StrRef uiRangeString = m_metadata.getString( "uiHardRange" );
   
   double minValue, maxValue;
   if ( FabricUI::DecodeUIRange( uiRangeString, minValue, maxValue ) )

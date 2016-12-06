@@ -15,8 +15,8 @@
 #include <SplitSearch/SplitSearch.hpp>
 #include <vector>
 #include <ASTWrapper/KLASTManager.h>
-#include <QtCore/QTimer>
-
+#include <QTimer>
+ 
 using namespace FabricUI::ValueEditor_Legacy;
 
 namespace FabricUI
@@ -93,6 +93,8 @@ namespace FabricUI
         );
       void refreshExec();
 
+      void savePrefs();
+
       void focusNode( FTL::StrRef nodeName );
 
       DFGNotificationRouter * getRouter();
@@ -112,9 +114,9 @@ namespace FabricUI
         FTL::ArrayRef<GraphView::Node *> nodes
         );
 
-      virtual bool gvcDoAddConnection(
-        GraphView::ConnectionTarget * src,
-        GraphView::ConnectionTarget * dst
+      virtual bool gvcDoAddConnections(
+        std::vector<GraphView::ConnectionTarget *> const &srcs,
+        std::vector<GraphView::ConnectionTarget *> const &dsts
         );
 
       virtual bool gvcDoRemoveConnections(
@@ -135,6 +137,17 @@ namespace FabricUI
         QString extDep = QString(),
         QString metaData = QString()
         );
+
+      virtual void gvcDoRenameExecPort(
+        QString oldName,
+        QString desiredPortName,
+        QString execPath
+      );
+
+      virtual void gvcDoRenameNode(
+        GraphView::Node* node,
+        QString newName
+      );
 
       virtual void gvcDoSetNodeCommentExpanded(
         GraphView::Node *node,
@@ -166,8 +179,8 @@ namespace FabricUI
         );
 
       void cmdConnect(
-        QString srcPath, 
-        QString dstPath
+        QStringList srcPaths, 
+        QStringList dstPaths
         );
 
       void cmdDisconnect(
@@ -235,7 +248,7 @@ namespace FabricUI
         );
 
       void cmdRemovePort(
-        QString portName
+        QStringList portNames
         );
 
       void cmdMoveNodes(
@@ -284,7 +297,8 @@ namespace FabricUI
 
       QString cmdRenameExecPort(
         QString oldName,
-        QString desiredNewName
+        QString desiredNewName,
+        QString execPath
         );
 
       void cmdCut();
@@ -329,10 +343,14 @@ namespace FabricUI
       virtual bool panCanvas(QPointF pan);
       virtual bool relaxNodes(QStringList paths = QStringList());
       virtual bool setNodeColor(const char * nodeName, const char * key, QColor color);
-      /// Sets the collapse state of the selected node.
-      /// Saves it in the node preferences    
-      virtual void setSelectedNodeCollapseState(int collapseState);
-      
+      /// Sets the collapse state of a node and saves it in its preferences    
+      virtual void setNodeCollapseState(int collapseState, GraphView::Node *node);
+      /// Sets the collapse state of the selected nodes and saves it in their preferences    
+      virtual void setSelectedNodesCollapseState(int collapseState);
+      /// Returns the selected nodes name
+      QStringList getSelectedNodesName();
+      /// Returns the selected nodes path
+      QStringList getSelectedNodesPath();
       virtual std::string copy();
 
       virtual bool reloadExtensionDependencies(char const * path);
@@ -350,19 +368,10 @@ namespace FabricUI
         std::string &failureReason
         ) const;
 
-      virtual QStringList getPresetPathsFromSearch(char const * search, bool includePresets = true, bool includeNameSpaces = false);
+      FabricServices::SplitSearch::Matches
+      getPresetPathsFromSearch( char const * search );
 
       virtual DFGNotificationRouter *createRouter();
-
-      /// Gets the names of all the variables in the graph
-      /// whose type is present in the varTypes list.
-      static QStringList getVariableWordsFromBinding(
-        FabricCore::DFGBinding & binding, 
-        FTL::CStrRef currentExecPath,
-        QStringList varTypes);
-
-      /// Gets the names of all the variables in the graph.
-      static QStringList getVariableWordsFromBinding(FabricCore::DFGBinding & binding, FTL::CStrRef currentExecPath);
 
       void emitVarsChanged()
       {
@@ -409,6 +418,8 @@ namespace FabricUI
 
       void updateNodeErrors();
 
+      void processDelayedEvents();  // [FE-6568]
+
     signals:
 
       void hostChanged();
@@ -427,6 +438,7 @@ namespace FabricUI
       void topoDirty();
       void dirty();
       void execSplitChanged();
+      void bindingExecuted();
 
       void nodeEditRequested(FabricUI::GraphView::Node *);
 
@@ -444,6 +456,11 @@ namespace FabricUI
         if ( !m_notificationTimer->isActive() )
           m_notificationTimer->start( 0 );
       }
+
+      void appendPresetsAtPrefix(
+        std::string &prefixedName,
+        FTL::JSONStr &ds
+        );
 
     protected slots:
 
@@ -470,8 +487,9 @@ namespace FabricUI
       bool const m_overTakeBindingNotifications;
       FabricServices::SplitSearch::Dict m_presetNameSpaceDict;
       FabricServices::SplitSearch::Dict m_presetPathDict;
+      std::string m_tabSearchPrefsJSONFilename;
       std::vector<std::string> m_presetNameSpaceDictSTL;
-      std::vector<std::string> m_presetPathDictSTL;
+      std::vector< std::pair<std::string, unsigned> > m_presetPathDictSTL;
       bool m_presetDictsUpToDate;
 
       uint32_t m_updateSignalBlockCount;

@@ -3,10 +3,10 @@
 #ifndef __UI_GraphView_GraphViewWidget__
 #define __UI_GraphView_GraphViewWidget__
 
-#include <QtCore/QUrl>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QColor>
-#include <QtGui/QPen>
+#include <QUrl>
+#include <QGraphicsView>
+#include <QColor>
+#include <QPen>
 
 #include "GraphConfig.h"
 #include "Graph.h"
@@ -65,8 +65,6 @@ namespace FabricUI
 
       virtual void resizeEvent(QResizeEvent * event);
       virtual void mouseMoveEvent(QMouseEvent * event);
-      virtual void keyPressEvent(QKeyEvent * event);
-      virtual void keyReleaseEvent(QKeyEvent * event);
       QPoint lastEventPos() const;
 
       QPointF mapToGraph( QPoint const &globalPos ) const;
@@ -79,7 +77,7 @@ namespace FabricUI
 
       void sceneChanged();
       void urlDropped( QUrl url, bool bypassUnsavedChanges );
-
+ 
     protected:
 
       virtual bool focusNextPrevChild(bool next);

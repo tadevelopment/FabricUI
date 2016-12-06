@@ -5,9 +5,10 @@
 #include "SIntViewItem.h"
 #include "QVariantRTVal.h"
 
-#include <QtGui/QSpinBox>
+#include <QSpinBox>
 #include <limits.h>
 #include "VEIntSpinBox.h"
+#include <QHBoxLayout>
 
 using namespace FabricUI::ValueEditor;
 
@@ -19,11 +20,21 @@ SIntViewItem::SIntViewItem(
   : BaseViewItem( name, metadata )
 {
   m_spinner = new VEIntSpinBox();
-  m_spinner->setObjectName( "SIntItem" );
+  m_spinner->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::MinimumExpanding );
   m_spinner->setMinimum( INT_MIN );
   m_spinner->setMaximum( INT_MAX );
   m_spinner->setKeyboardTracking( false );
-  
+    
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
+  layout->addWidget( m_spinner );
+  layout->addStretch();
+
+  m_widget = new QWidget;
+  m_widget->setObjectName( "VESIntViewItem" );
+  m_widget->setLayout( layout );
+
   onModelValueChanged( value );
 
   connect(
@@ -48,12 +59,12 @@ SIntViewItem::~SIntViewItem()
 
 QWidget *SIntViewItem::getWidget()
 {
-  return m_spinner;
+  return m_widget;
 }
 
 void SIntViewItem::onModelValueChanged( QVariant const &v )
 {
-  m_spinner->setValue( v.value<int>() );
+  m_spinner->setValue( getQVariantRTValValue<int>(v) );
 }
 
 void SIntViewItem::OnSpinnerChanged( int value )

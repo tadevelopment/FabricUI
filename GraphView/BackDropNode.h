@@ -28,6 +28,8 @@ namespace FabricUI
 
       void setSize( QSizeF size );
 
+      virtual QRectF boundingRect() const;
+
       virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
       virtual void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);

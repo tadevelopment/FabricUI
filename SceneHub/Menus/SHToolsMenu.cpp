@@ -3,7 +3,7 @@
  */
 
 #include "SHToolsMenu.h"
-#include <QtGui/QKeySequence>
+#include <QKeySequence>
 
 using namespace FabricCore;
 using namespace FabricUI;

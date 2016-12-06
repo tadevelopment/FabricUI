@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtGui/QVBoxLayout> 
-#include <QtCore/Qt>
+#include <QVBoxLayout> 
+#include <Qt>
 
 #include "ValueEditorWidget.h"
 #include "ValueWidgetFactory.h"
@@ -17,6 +17,8 @@ ValueEditorWidget::ValueEditorWidget(
   : m_config( config )
   , m_updatingOutputs( false )
 {
+  setObjectName( "ValueEditorWidget" );
+  
   setMinimumHeight(24);
   setBackgroundRole(QPalette::Window);
   setAutoFillBackground(true);

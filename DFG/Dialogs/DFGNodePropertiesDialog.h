@@ -3,12 +3,12 @@
 #ifndef __UI_DFG_DFGNodePropertiesDialog__
 #define __UI_DFG_DFGNodePropertiesDialog__
 
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QCheckBox>
-#include <QtGui/QShowEvent>
-#include <QtGui/QCheckBox>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QCheckBox>
+#include <QShowEvent>
+#include <QCheckBox>
 #include "DFGBaseDialog.h"
 #include "DFGRegisteredTypeLineEdit.h"
 #include "DFGExtensionLineEdit.h"
@@ -29,8 +29,9 @@ namespace FabricUI
         QWidget * parent, 
         DFGController * controller, 
         const char * nodeName, 
-        const DFGConfig & dfgConfig = DFGConfig(),
-        bool setAlphaNum = false
+        const DFGConfig & dfgConfig,
+        bool setAlphaNum,
+        bool isEditable
         );
       /// Destructor
       virtual ~DFGNodePropertiesDialog();
@@ -118,14 +119,15 @@ namespace FabricUI
       DFGController                   *m_controller;
 
       QColor                           m_nodeDefaultHeaderColor;
-      QLabel                          *m_presetNameLabel;
-      QLineEdit *m_textEdit;
+      QLineEdit                       *m_presetNameLabel;
+      QLineEdit                       *m_presetImportPathname;
+      QLineEdit                       *m_textEdit;
       QLineEdit                       *m_nameEdit;
       QPlainTextEdit                  *m_toolTipEdit;
       QLineEdit                       *m_docUrlEdit;
       ColorButton *m_nodeColorButton;
       ColorButton *m_headerColorButton;
-      QCheckBox *m_allowHeaderColorCheckBox;
+      QCheckBox   *m_allowHeaderColorCheckBox;
       ColorButton *m_textColorButton;
     };
 

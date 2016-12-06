@@ -1,15 +1,14 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
 
 #include "DFGCombinedWidget.h"
 #include <FabricUI/Style/FabricStyle.h>
 #include <FabricUI/DFG/Dialogs/DFGNodePropertiesDialog.h>
-#include <FabricUI/DFG/DFGActions.h>
 #include <FabricUI/DFG/DFGVEEditorOwner.h>
 
 using namespace FabricUI::DFG;
@@ -64,7 +63,8 @@ void DFGCombinedWidget::initTreeView() {
   {
     QObject::connect(m_dfgWidget->getUIController(), SIGNAL(varsChanged()), m_treeWidget, SLOT(refresh()) );
     QObject::connect(m_dfgWidget, SIGNAL(newPresetSaved(QString)), m_treeWidget, SLOT(refresh()));
-  }
+    QObject::connect(m_dfgWidget, SIGNAL(revealPresetInExplorer(QString)), m_treeWidget, SLOT(onExpandToAndSelectItem(QString)) );
+}
 }
 
 void DFGCombinedWidget::initValueEditor() {
@@ -185,54 +185,10 @@ QWidget* FabricUI::DFG::DFGCombinedWidget::getDfgValueEditor()
   return m_valueEditor->getWidget();
 }
 
-void DFGCombinedWidget::keyPressEvent(QKeyEvent * event)
-{
-  // [FE-5660] no need to filter out undo/redo,
-  // instead simply pass all keyboard events to
-  // the parent class.
-  QSplitter::keyPressEvent(event);
-
-  /*
-  if(event->modifiers().testFlag(Qt::ControlModifier))
-  {
-    // filter out undo redo
-    if(event->key() == Qt::Key_Z || event->key() == Qt::Key_Y)
-    {
-      return QSplitter::keyPressEvent(event);
-    }
-  }
-  event->accept();
-  */
-}
-
 void DFGCombinedWidget::onGraphSet(FabricUI::GraphView::Graph * graph)
 {
   if(graph != m_setGraph)
   {
-    graph->defineHotkey(Qt::Key_Delete,     Qt::NoModifier,       DFGHotkeys::DELETE_1);
-    graph->defineHotkey(Qt::Key_Backspace,  Qt::NoModifier,       DFGHotkeys::DELETE_2);
-    //                                                            DFGHotkeys::EXECUTE);
-    graph->defineHotkey(Qt::Key_F,          Qt::NoModifier,       DFGHotkeys::FRAME_SELECTED);
-    graph->defineHotkey(Qt::Key_A,          Qt::NoModifier,       DFGHotkeys::FRAME_ALL);
-    graph->defineHotkey(Qt::Key_Tab,        Qt::NoModifier,       DFGHotkeys::TAB_SEARCH);
-    graph->defineHotkey(Qt::Key_A,          Qt::ControlModifier,  DFGHotkeys::SELECT_ALL);
-    graph->defineHotkey(Qt::Key_D,          Qt::NoModifier,       DFGHotkeys::DISCONNECT_ALL_PORTS);
-    graph->defineHotkey(Qt::Key_C,          Qt::ControlModifier,  DFGHotkeys::COPY);
-    graph->defineHotkey(Qt::Key_V,          Qt::ControlModifier,  DFGHotkeys::PASTE);
-    graph->defineHotkey(Qt::Key_X,          Qt::ControlModifier,  DFGHotkeys::CUT);
-    //                                                            DFGHotkeys::NEW_SCENE);
-    //                                                            DFGHotkeys::OPEN_SCENE);
-    //                                                            DFGHotkeys::SAVE_SCENE);
-    graph->defineHotkey(Qt::Key_U,          Qt::NoModifier,       DFGHotkeys::GO_UP);
-    graph->defineHotkey(Qt::Key_I,          Qt::NoModifier,       DFGHotkeys::EDIT_PRESET);
-    graph->defineHotkey(Qt::Key_F2,         Qt::NoModifier,       DFGHotkeys::EDIT_PRESET_PROPERTIES);
-    graph->defineHotkey(Qt::Key_R,          Qt::ControlModifier,  DFGHotkeys::RELAX_NODES);
-    //                                                            DFGHotkeys::TOGGLE_MANIPULATION);
-    graph->defineHotkey(Qt::Key_0,          Qt::ControlModifier,  DFGHotkeys::RESET_ZOOM);
-    graph->defineHotkey(Qt::Key_1,          Qt::NoModifier,       DFGHotkeys::COLLAPSE_LEVEL_1);
-    graph->defineHotkey(Qt::Key_2,          Qt::NoModifier,       DFGHotkeys::COLLAPSE_LEVEL_2);
-    graph->defineHotkey(Qt::Key_3,          Qt::NoModifier,       DFGHotkeys::COLLAPSE_LEVEL_3);
-
     QObject::connect(graph, SIGNAL(nodeEditRequested(FabricUI::GraphView::Node*)),
       this, SLOT(onNodeEditRequested(FabricUI::GraphView::Node*)));
 
@@ -336,11 +292,11 @@ void DFGCombinedWidget::onAdditionalMenuActionsRequested(QString name, QMenu * m
 
       menu->addSeparator();
 
-      QAction *importGraphInDCCAction = menu->addAction("Import Graph");
+      QAction *importGraphInDCCAction = menu->addAction("Load Graph");
       menu->addAction( importGraphInDCCAction );
       QObject::connect(importGraphInDCCAction, SIGNAL(triggered()), this, SLOT(onImportGraphInDCC()));
 
-      QAction *exportGraphInDCCAction = menu->addAction("Export Graph");
+      QAction *exportGraphInDCCAction = menu->addAction("Save Graph");
       menu->addAction( exportGraphInDCCAction );
       QObject::connect(exportGraphInDCCAction, SIGNAL(triggered()), this, SLOT(onExportGraphInDCC()));
     }

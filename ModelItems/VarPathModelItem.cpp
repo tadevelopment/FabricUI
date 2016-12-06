@@ -6,7 +6,7 @@
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/ModelItems/VarPathModelItem.h>
 #include <FabricUI/ModelItems/VarPathItemMetadata.h>
-#include <QtCore/QStringList>
+#include <QStringList>
 
 namespace FabricUI {
 namespace ModelItems {

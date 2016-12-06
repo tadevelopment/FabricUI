@@ -1,21 +1,24 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
-#include <iostream>
-#include <QtCore/QDebug>
-#include <QtCore/QRegExp>
-#include <QtGui/QApplication>
-#include <QtGui/QClipboard>
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QMessageBox>
+#include <QDebug>
+#include <QRegExp>
+#include <QApplication>
+#include <QClipboard>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QMessageBox>
+#include <QTimer>
 
 #include <FTL/JSONEnc.h>
+#include <FTL/JSONDec.h>
 #include <FTL/Str.h>
 #include <FTL/Math.h>
 #include <FTL/MapCharSingle.h>
+#include <FTL/Path.h>
 
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/GraphRelaxer.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
 
@@ -26,8 +29,7 @@
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/DFG/DFGUIUtil.h>
 #include <FabricUI/DFG/DFGWidget.h>
-
-#include <sstream>
+#include <FabricUI/DFG/DFGBindingUtils.h>
 
 using namespace FabricServices;
 using namespace FabricUI;
@@ -58,6 +60,12 @@ DFGController::DFGController(
   , m_topoDirtyPending( false )
   , m_dirtyPending( false )
 {
+  m_tabSearchPrefsJSONFilename = FabricCore::GetFabricPrivateDir();
+  FTL::PathAppendEntry(
+    m_tabSearchPrefsJSONFilename,
+    "TabSearch.prefs.json"
+    );
+
   m_notificationTimer->setSingleShot( true );
   connect(
     m_notificationTimer, SIGNAL(timeout()),
@@ -375,6 +383,32 @@ void DFGController::gvcDoAddPort(
     );
 }
 
+void DFGController::gvcDoRenameExecPort(
+  QString oldName,
+  QString desiredPortName,
+  QString execPath
+)
+{
+  cmdRenameExecPort(
+    oldName,
+    desiredPortName,
+    execPath
+  );
+}
+
+void DFGController::gvcDoRenameNode(
+  GraphView::Node* node,
+  QString newName
+)
+{
+  cmdEditNode(
+    node->name_QS(),
+    newName,
+    "",
+    ""
+  );
+}
+
 void DFGController::gvcDoSetNodeCommentExpanded(
   GraphView::Node *node,
   bool expanded
@@ -389,7 +423,8 @@ void DFGController::gvcDoSetNodeCommentExpanded(
 
 QString DFGController::cmdRenameExecPort(
   QString oldName,
-  QString desiredNewName
+  QString desiredNewName,
+  QString execPath
   )
 {
   if(!validPresetSplit())
@@ -398,7 +433,7 @@ QString DFGController::cmdRenameExecPort(
   QString result = m_cmdHandler->dfgDoRenamePort(
     getBinding(),
     getExecPath_QS(),
-    getExec(),
+    getExec().getSubExec( execPath.toUtf8().constData() ),
     oldName,
     desiredNewName
     );
@@ -409,35 +444,45 @@ QString DFGController::cmdRenameExecPort(
   return result;
 }
 
-bool DFGController::gvcDoAddConnection(
-  GraphView::ConnectionTarget * src,
-  GraphView::ConnectionTarget * dst
+bool DFGController::gvcDoAddConnections(
+  std::vector<GraphView::ConnectionTarget *> const &srcs,
+  std::vector<GraphView::ConnectionTarget *> const &dsts
   )
 {
-  std::string srcPath;
-  if(src->targetType() == GraphView::TargetType_Pin)
-    srcPath = ((GraphView::Pin*)src)->path();
-  else if(src->targetType() == GraphView::TargetType_Port)
-    srcPath = ((GraphView::Port*)src)->path();
-  else if(src->targetType() == GraphView::TargetType_FixedPort)
-    srcPath = ((GraphView::FixedPort*)src)->path();
-  else if(src->targetType() == GraphView::TargetType_InstBlockPort)
-    srcPath = ((GraphView::InstBlockPort*)src)->path();
+  QStringList srcPaths;
+  QStringList dstPaths;
 
-  std::string dstPath;
-  if(dst->targetType() == GraphView::TargetType_Pin)
-    dstPath = ((GraphView::Pin*)dst)->path();
-  else if(dst->targetType() == GraphView::TargetType_Port)
-    dstPath = ((GraphView::Port*)dst)->path();
-  else if(dst->targetType() == GraphView::TargetType_FixedPort)
-    dstPath = ((GraphView::FixedPort*)dst)->path();
-  else if(dst->targetType() == GraphView::TargetType_InstBlockPort)
-    dstPath = ((GraphView::InstBlockPort*)dst)->path();
+  for (size_t i=0;i<srcs.size();i++)
+  {
+    GraphView::ConnectionTarget *src = srcs[i];
+    std::string srcPath;
+    if(src->targetType() == GraphView::TargetType_Pin)
+      srcPath = ((GraphView::Pin*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_Port)
+      srcPath = ((GraphView::Port*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_FixedPort)
+      srcPath = ((GraphView::FixedPort*)src)->path();
+    else if(src->targetType() == GraphView::TargetType_InstBlockPort)
+      srcPath = ((GraphView::InstBlockPort*)src)->path();
+    srcPaths.push_back( QString::fromUtf8( srcPath.data(), srcPath.size() ) );
+  }
 
-  cmdConnect(
-    QString::fromUtf8( srcPath.data(), srcPath.size() ),
-    QString::fromUtf8( dstPath.data(), dstPath.size() )
-    );
+  for (size_t i=0;i<dsts.size();i++)
+  {
+    GraphView::ConnectionTarget *dst = dsts[i];
+    std::string dstPath;
+    if(dst->targetType() == GraphView::TargetType_Pin)
+      dstPath = ((GraphView::Pin*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_Port)
+      dstPath = ((GraphView::Port*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_FixedPort)
+      dstPath = ((GraphView::FixedPort*)dst)->path();
+    else if(dst->targetType() == GraphView::TargetType_InstBlockPort)
+      dstPath = ((GraphView::InstBlockPort*)dst)->path();
+    dstPaths.push_back( QString::fromUtf8( dstPath.data(), dstPath.size() ) );
+  }
+
+  cmdConnect( srcPaths, dstPaths );
   
   return true;
 }
@@ -732,22 +777,48 @@ bool DFGController::setNodeColor(
   return true;
 }
 
-/// Sets the collapse state of the selected node.
-/// Saves it in the node preferences
-void DFGController::setSelectedNodeCollapseState(int collapsedState) {
-  // Call the parent function
-  collapseSelectedNodes(collapsedState);
-  // Now, set the collapse state in the node preferences
-  FabricCore::Variant collapsedStateVar = FabricCore::Variant::CreateSInt32(collapsedState);
+void DFGController::setNodeCollapseState(int collapsedState, GraphView::Node *node) {
+  if (node->type() != GraphView::QGraphicsItemType_Node)
+    return;
+  node->setCollapsedState((GraphView::Node::CollapseState)collapsedState);
   FabricCore::DFGExec &exec = getExec();
+  char const * const collapsedStateMetadataValues[GraphView::Node::CollapseState_NumStates] = { "0", "1", "2" };
+  exec.setNodeMetadata(node->name().c_str(), "uiCollapsedState", collapsedStateMetadataValues[collapsedState], false, false);
+}
+
+void DFGController::setSelectedNodesCollapseState(int collapsedState) {
+  collapseSelectedNodes(collapsedState);
+  FabricCore::DFGExec &exec = getExec();
+  char const * const collapsedStateMetadataValues[GraphView::Node::CollapseState_NumStates] = { "0", "1", "2" };
   const std::vector<GraphView::Node*> & nodes = graph()->selectedNodes();
   for(unsigned int i=0;i<nodes.size();i++)
   {
     if(nodes[i]->type() != GraphView::QGraphicsItemType_Node)
       continue;
-    exec.setNodeMetadata(nodes[i]->name().c_str(), "uiCollapsedState", collapsedStateVar.getJSONEncoding().getStringData(), false, false);
+    exec.setNodeMetadata(nodes[i]->name().c_str(), "uiCollapsedState", collapsedStateMetadataValues[collapsedState], false, false);
   }
-} 
+}
+
+QStringList DFGController::getSelectedNodesName() {
+  QStringList selectedNodes;
+
+  const std::vector<GraphView::Node*> & nodes = graph()->selectedNodes();
+  for(unsigned int i=0;i<nodes.size();i++)
+    selectedNodes.append(nodes[i]->name().c_str());
+  return selectedNodes;
+}
+
+QStringList DFGController::getSelectedNodesPath() {
+  QStringList selectedNodes;
+
+  QString path(getExecPath_QS());
+  if(!path.isEmpty()) path += ".";
+
+  const std::vector<GraphView::Node*> & nodes = graph()->selectedNodes();
+  for(unsigned int i=0;i<nodes.size();i++)
+    selectedNodes.append(path + nodes[i]->name().c_str());
+  return selectedNodes;
+}
 
 std::string DFGController::copy()
 {
@@ -968,28 +1039,32 @@ void DFGController::updateNodeErrors()
       int32_t line = error->getSInt32Or( FTL_STR("line"), -1 );
       int32_t column = error->getSInt32Or( FTL_STR("column"), -1 );
 
-      std::stringstream prefixedError;
-      prefixedError << m_execPath;
-      prefixedError << " : ";
+      std::string prefixedError;
+      prefixedError += m_execPath;
+      prefixedError += " : ";
       if ( !execPath.empty() )
-        prefixedError << execPath;
+        prefixedError += execPath;
       if ( !execPath.empty() && !nodeName.empty() )
-        prefixedError << '.';
+        prefixedError += '.';
       if ( !nodeName.empty() )
-        prefixedError << nodeName;
+        prefixedError += nodeName;
       if ( line != -1 )
       {
-        prefixedError << ':';
-        prefixedError << line;
+        prefixedError += ':';
+        char lineString[32];
+        snprintf( lineString, 32, "%d", line );
+        prefixedError += lineString;
         if ( column != -1 )
         {
-          prefixedError << ':';
-          prefixedError << column;
+          prefixedError += ':';
+          char columnString[32];
+          snprintf( columnString, 32, "%d", column );
+          prefixedError += columnString;
         }
       }
-      prefixedError << " : ";
-      prefixedError << desc;
-      logError( prefixedError.str().c_str() );
+      prefixedError += " : ";
+      prefixedError += desc;
+      logError( prefixedError.c_str() );
 
       if ( uiGraph )
       {
@@ -1103,6 +1178,19 @@ void DFGController::updateNodeErrors()
   }
 }
 
+void DFGController::processDelayedEvents()
+{
+  if ( m_notificationTimer->isActive() )
+  {
+    // stop the timer and call the slot directly.
+    // (note: we call the slot directly, because in Qt
+    //  one cannot directly emit QTimer::timeout from
+    //  outside of the class)
+    m_notificationTimer->stop();
+    onNotificationTimer();
+  }
+}
+
 void DFGController::log(const char * message) const
 {
   DFGLogWidget::log(message);
@@ -1127,6 +1215,7 @@ void DFGController::execute()
   try
   {
     m_binding.execute();
+    emit bindingExecuted();
   }
   catch(FabricCore::Exception e)
   {
@@ -1257,7 +1346,7 @@ void DFGController::onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderB
   GraphView::Node * node = button->header()->node();  
   if(button->name() == "node_collapse")
   {
-    setSelectedNodeCollapseState((int)node->collapsedState());
+    setNodeCollapseState((int)node->collapsedState(), node);
   }
   else if(button->name() == "node_edit")
   {
@@ -1340,15 +1429,14 @@ void DFGController::onBindingVarRemoved(
   emitVarsChanged();
 }
 
-QStringList DFGController::getPresetPathsFromSearch(char const * search, bool includePresets, bool includeNameSpaces)
+FabricServices::SplitSearch::Matches
+DFGController::getPresetPathsFromSearch( char const * search )
 {
   FTL::StrRef searchRef(search);
   if(searchRef.size() == 0)
-    return QStringList();
+    return FabricServices::SplitSearch::Matches();
 
   updatePresetPathDB();
-
-  QStringList results;
 
   // [pzion 20150305] This is a little evil but avoids lots of copying
 
@@ -1365,35 +1453,45 @@ QStringList DFGController::getPresetPathsFromSearch(char const * search, bool in
   for ( size_t i = 0; i < searchSplit.size(); ++i )
     cStrs[i] = searchSplit[i].data();
 
-  if(includePresets)
+  return m_presetPathDict.search( searchSplit.size(), cStrs );
+}
+
+void DFGController::appendPresetsAtPrefix(
+  std::string &prefixedName,
+  FTL::JSONStr &ds
+  )
+{
+  FTL::JSONObjectDec<FTL::JSONStr> jod( ds );
+  FTL::JSONEnt<FTL::JSONStr> jeKey, jeVal;
+  while ( jod.getNext( jeKey, jeVal ) )
   {
-    SplitSearch::Matches matches =
-      m_presetPathDict.search( searchSplit.size(), cStrs );
+    if ( jeKey.stringIs( FTL_STR("objectType") )
+      && jeVal.stringIs( FTL_STR("Preset") ) )
+    {
+      m_presetPathDictSTL.push_back(
+        std::pair<std::string, unsigned>( prefixedName, 0 )
+        );
+    }
+    else if ( jeKey.stringIs( FTL_STR("members") ) )
+    {
+      FTL::JSONStr ds( jeVal.getRawJSONStr() );
+      FTL::JSONObjectDec<FTL::JSONStr> jod( ds );
+      FTL::JSONEnt<FTL::JSONStr> jeKey, jeVal;
+      while ( jod.getNext( jeKey, jeVal ) )
+      {
+        size_t oldPrefixedNameSize = prefixedName.size();
+        if ( !prefixedName.empty() )
+          prefixedName += '.';
+        jeKey.stringAppendTo( prefixedName );
+        m_presetNameSpaceDictSTL.push_back( prefixedName );
 
-    if(matches.getSize() == 0)
-      return results;
-    std::vector<const char *> userDatas;
-    userDatas.resize(matches.getSize());
-    matches.getUserdatas(matches.getSize(), (const void**)&userDatas[0]);
+        FTL::JSONStr ds( jeVal.getRawJSONStr() );
+        appendPresetsAtPrefix( prefixedName, ds );
 
-    for(size_t i=0;i<userDatas.size();i++)
-      results.push_back(userDatas[i]);
+        prefixedName.resize( oldPrefixedNameSize );
+      }
+    }
   }
-  if(includeNameSpaces)
-  {
-    SplitSearch::Matches matches = m_presetNameSpaceDict.search( searchSplit.size(), cStrs );
-
-    if(matches.getSize() == 0)
-      return results;
-    std::vector<const char *> userDatas;
-    userDatas.resize(matches.getSize());
-    matches.getUserdatas(matches.getSize(), (const void**)&userDatas[0]);
-
-    for(size_t i=0;i<userDatas.size();i++)
-      results.push_back(userDatas[i]);
-  }
-
-  return results;
 }
 
 void DFGController::updatePresetPathDB()
@@ -1408,178 +1506,50 @@ void DFGController::updatePresetPathDB()
   m_presetPathDictSTL.clear();
 
   // insert fixed results for special nodes
-  m_presetPathDictSTL.push_back("var");
-  m_presetPathDictSTL.push_back("get");
-  m_presetPathDictSTL.push_back("set");
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "var",      2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "get",      2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "set",      2 ) );
+  m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>( "backdrop", 2 ) );
 
   QStringList variables =
-    getVariableWordsFromBinding(
+    DFGBindingUtils::getVariableWordsFromBinding(
       m_binding,
       m_execPath.c_str()
       );
   for(int i=0;i<variables.length();i++)
   {
-    m_presetPathDictSTL.push_back("get." + std::string(variables[i].toUtf8().constData()));
-    m_presetPathDictSTL.push_back("set." + std::string(variables[i].toUtf8().constData()));
+    m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>(
+      "get." + std::string(variables[i].toUtf8().constData()), 1
+      ) );
+    m_presetPathDictSTL.push_back( std::pair<std::string, unsigned>(
+      "set." + std::string(variables[i].toUtf8().constData()), 1
+      ) );
   }
 
-  std::vector<std::string> paths;
-  paths.push_back("");
-
-  for(size_t i=0;i<paths.size();i++)
-  {
-    std::string prefix = paths[i];
-    if(prefix.length() > 0)
-      prefix += ".";
-
-    try
-    {
-      FabricCore::DFGStringResult jsonStr = m_host.getPresetDesc(paths[i].c_str());
-      FabricCore::Variant jsonVar = FabricCore::Variant::CreateFromJSON(jsonStr.getCString());
-      const FabricCore::Variant * membersVar = jsonVar.getDictValue("members");
-      for(FabricCore::Variant::DictIter memberIter(*membersVar); !memberIter.isDone(); memberIter.next())
-      {
-        std::string name = memberIter.getKey()->getStringData();
-        const FabricCore::Variant * memberVar = memberIter.getValue();
-        const FabricCore::Variant * objectTypeVar = memberVar->getDictValue("objectType");
-        std::string objectType = objectTypeVar->getStringData();
-        if(objectType == "Preset")
-        {
-          m_presetPathDictSTL.push_back(prefix+name);
-        }
-        else if(objectType == "NameSpace")
-        {
-          paths.push_back(prefix+name);
-          m_presetNameSpaceDictSTL.push_back(prefix+name);
-        }
-      }
-    }
-    catch (FabricCore::Exception e)
-    {
-      logError(e.getDesc_cstr());
-    }
-  }
+  FabricCore::String jsonString = m_host.getPresetDesc( "" );
+  char const *jsonStrCStr;
+  uint32_t jsonStrSize;
+  jsonString.getCStrAndSize( jsonStrCStr, jsonStrSize );
+  FTL::JSONStr ds( FTL::StrRef( jsonStrCStr, jsonStrSize ) );
+  std::string prefixedName;
+  appendPresetsAtPrefix( prefixedName, ds );
 
   for(size_t i=0;i<m_presetNameSpaceDictSTL.size();i++)
     m_presetNameSpaceDict.add(m_presetNameSpaceDictSTL[i].c_str(), '.', m_presetNameSpaceDictSTL[i].c_str());
   for(size_t i=0;i<m_presetPathDictSTL.size();i++)
-    m_presetPathDict.add(m_presetPathDictSTL[i].c_str(), '.', m_presetPathDictSTL[i].c_str());
+    m_presetPathDict.add(
+      m_presetPathDictSTL[i].first.c_str(),
+      '.',
+      m_presetPathDictSTL[i].first.c_str(),
+      m_presetPathDictSTL[i].second
+      );
+
+  m_presetPathDict.loadPrefs( m_tabSearchPrefsJSONFilename.c_str() );
 }
 
 DFGNotificationRouter * DFGController::createRouter()
 {
   return new DFGNotificationRouter( this );
-}
-
-QStringList DFGController::getVariableWordsFromBinding(
-  FabricCore::DFGBinding & binding, 
-  FTL::CStrRef currentExecPath,
-  QStringList varTypes)
-{
-  QStringList words;
-
-  FabricCore::DFGStringResult json =  binding.getVars();
-  FTL::JSONStrWithLoc jsonStrWithLoc( json.getCString() );
-  FTL::OwnedPtr<FTL::JSONObject> jsonObject(
-    FTL::JSONValue::Decode( jsonStrWithLoc )->cast<FTL::JSONObject>()
-    );
-
-  std::vector<FTL::CStrRef> execPaths;
-  std::vector<std::string> prefixes;
-  std::vector<FTL::JSONObject const *> objects;
-  execPaths.push_back(currentExecPath);
-  prefixes.push_back("");
-  objects.push_back(jsonObject.get());
-
-  for(size_t i=0;i<objects.size();i++)
-  {
-    FTL::JSONObject const * varsObject = objects[i]->maybeGetObject( FTL_STR("vars") );
-    if(varsObject)
-    {
-      for(FTL::JSONObject::const_iterator it = varsObject->begin();
-        it != varsObject->end(); it++
-        )
-      {
-        FTL::CStrRef key = it->first;
-        std::string path = prefixes[i];
-        if(path.length() > 0)
-          path += ".";
-        path += key.c_str();
-        if(words.contains(path.c_str()))
-          continue;
-
-        /// If varTypes list is empty, we don't check the variable type
-        if(varTypes.size() == 0) 
-          words.append(path.c_str());
-
-        /// Otherwise, check if the type of the current variable
-        /// is listed.
-        else
-        {
-          FTL::JSONObject const *value = it->second->cast<FTL::JSONObject>();
-          for(FTL::JSONObject::const_iterator jt = value->begin(); jt != value->end(); jt++) 
-          {
-            for(int j=0; j<varTypes.size(); ++j)
-            {
-              if(QString(jt->second->getStringValue().c_str()) == varTypes[j])
-                words.append(path.c_str());
-            }
-          }
-        }
-      }
-    }
-
-    FTL::JSONObject const * subsObject = objects[i]->maybeGetObject( FTL_STR("subs") );
-    if(subsObject)
-    {
-      for(FTL::JSONObject::const_iterator it = subsObject->begin();
-        it != subsObject->end(); it++
-        )
-      {
-        FTL::JSONObject const * subGraph = it->second->maybeCast<FTL::JSONObject>();
-        if(subGraph)
-        {
-          std::string path;
-          FTL::CStrRef execPath = execPaths[i];
-          FTL::CStrRef graphName = it->first;
-          if(execPath.size() > 0)
-          {
-            std::string graphNameStr(graphName);
-            std::string execPathStr(execPath);
-            if(graphNameStr == execPathStr || 
-              graphNameStr + "." == execPathStr.substr(0, graphNameStr.length() + 1))
-            {
-              execPath = execPath.substr(graphNameStr.length() + 1).data();
-            }
-            else
-            {
-              path = graphName;
-              execPath = "";
-            }
-          }
-          else
-          {
-            path = prefixes[i];
-            if(path.length() > 0)
-              path += ".";
-            path += std::string(it->first);
-          }
-
-          execPaths.push_back(execPath);
-          prefixes.push_back(path);
-          objects.push_back(subGraph);
-        }
-      }      
-    }
-  }
-
-  return words;
-}
-
-QStringList DFGController::getVariableWordsFromBinding(FabricCore::DFGBinding & binding, FTL::CStrRef currentExecPath)
-{
-  QStringList varTypes;
-  return getVariableWordsFromBinding(binding, currentExecPath, varTypes);
 }
 
 void DFGController::cmdRemoveNodes(
@@ -1598,8 +1568,8 @@ void DFGController::cmdRemoveNodes(
 }
 
 void DFGController::cmdConnect(
-  QString srcPath, 
-  QString dstPath
+  QStringList srcPaths, 
+  QStringList dstPaths
   )
 {
   if(!validPresetSplit())
@@ -1609,8 +1579,8 @@ void DFGController::cmdConnect(
     getBinding(),
     getExecPath_QS(),
     getExec(),
-    srcPath,
-    dstPath
+    srcPaths,
+    dstPaths
     );
 }
 
@@ -1829,7 +1799,7 @@ QString DFGController::cmdEditPort(
 }
 
 void DFGController::cmdRemovePort(
-  QString portName
+  QStringList portNames
   )
 {
   if(!validPresetSplit())
@@ -1839,7 +1809,7 @@ void DFGController::cmdRemovePort(
     getBinding(),
     getExecPath_QS(),
     getExec(),
-    portName
+    portNames
     );
 }
 
@@ -2138,4 +2108,10 @@ void DFGController::gvcDoMoveExecPort(
       QString(), // itemPath
       indices
       );
+}
+
+void DFGController::savePrefs()
+{
+  if ( m_presetDictsUpToDate )
+    m_presetPathDict.savePrefs( m_tabSearchPrefsJSONFilename.c_str() );
 }
