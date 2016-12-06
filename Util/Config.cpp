@@ -11,6 +11,8 @@ using namespace FTL;
 #include <QColor>
 #include <QFont>
 
+#include <FabricCore.h>
+
 namespace FabricUI {
 namespace Util {
 
@@ -57,8 +59,8 @@ void Config::open( const std::string fileName )
 Config::Config()
   : ConfigSection()
 {
-  m_previousSection = new Config( FabricResourcePath( "default.config.json" ) );
-  this->open( FabricResourcePath( "user.config.json" ) );
+  m_previousSection = new Config( FTL::PathJoin( FabricCore::GetFabricUserDir(), "default.config.json" ) );
+  this->open( FTL::PathJoin( FabricCore::GetFabricUserDir(), "user.config.json" ) );
 }
 
 Config::~Config()
