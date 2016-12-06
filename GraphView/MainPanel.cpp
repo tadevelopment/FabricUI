@@ -262,8 +262,6 @@ void MainPanel::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
     scene()->removeItem(m_selectionRect);
     delete(m_selectionRect);
     m_selectionRect = NULL;
-    // if(!m_draggingSelRect)
-    //   m_graph.clearSelection()
     setManipulationMode( ManipulationMode_None );
   }
   else if(manipulationMode() == ManipulationMode_Pan || manipulationMode() == ManipulationMode_Zoom)
