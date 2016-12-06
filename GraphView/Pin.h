@@ -10,7 +10,7 @@
 #include <FTL/CStrRef.h>
 
 #include "PortType.h"
-#include "TextContainer.h"
+#include "NodeLabel.h"
 #include "PinCircle.h"
 #include "ConnectionTarget.h"
 #include "GraphicItemTypes.h"
@@ -110,7 +110,7 @@ namespace FabricUI
       bool m_highlighted;
       QColor m_color;
       int m_index;
-      TextContainer * m_label;
+      NodeLabel * m_label;
       PinCircle * m_inCircle;
       PinCircle * m_outCircle;
       bool m_drawState;

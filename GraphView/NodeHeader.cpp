@@ -11,6 +11,41 @@
 
 using namespace FabricUI::GraphView;
 
+class NodeHeaderLabel : public NodeLabel
+{
+  NodeHeader * m_header;
+
+public:
+  NodeHeaderLabel(
+    NodeHeader * header,
+    Node* node,
+    QString const &text,
+    QColor color,
+    QColor highlightColor,
+    QFont font
+  ) : NodeLabel(
+    header,
+    node,
+    text,
+    color,
+    highlightColor,
+    font
+  ), m_header(header)
+  {
+    setEditable( node->canEdit() );
+  }
+
+protected:
+  void submitEditedText(const QString& text) FTL_OVERRIDE
+  {
+    Node* node = m_header->node();
+    node->graph()->controller()->gvcDoRenameNode(
+      node,
+      text
+    );
+  }
+};
+
 NodeHeader::NodeHeader(
   Node * parent,
   QString const &text
@@ -34,7 +69,14 @@ NodeHeader::NodeHeader(
   layout->setOrientation(Qt::Horizontal);
   setLayout(layout);
 
-  m_title = new NodeLabel(this, text, graph->config().nodeFontColor, graph->config().nodeFontHighlightColor, graph->config().nodeFont);
+  m_title = new NodeHeaderLabel(
+    this,
+    node(),
+    text,
+    graph->config().nodeFontColor,
+    graph->config().nodeFontHighlightColor,
+    graph->config().nodeFont
+  );
 
   m_inCircle = new PinCircle(this, PortType_Input, m_node->color());
   // m_inCircle->setClipping(true);
@@ -78,9 +120,10 @@ const Node * NodeHeader::node() const
   return m_node;
 }
 
-void NodeHeader::setTitle(QString const &title)
+void NodeHeader::setTitle( QString const &title, QString const& suffix )
 {
   m_title->setText(title);
+  m_title->setSuffix( suffix );
 }
 
 bool NodeHeader::highlighted() const

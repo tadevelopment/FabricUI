@@ -64,7 +64,7 @@ namespace FabricUI
         { m_controller = c; }
 
       bool isEditable() const { return m_isEditable; }
-      void setEditable(bool state) { m_isEditable = state; }
+      void setEditable( bool isEditable );
 
       MainPanel * mainPanel();
       const MainPanel * mainPanel() const;

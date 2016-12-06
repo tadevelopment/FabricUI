@@ -38,7 +38,7 @@ Node::Node(
   , m_bubble( NULL )
   , m_header( NULL )
   , m_mainWidget( NULL )
-  , m_canAddPorts( false )
+  , m_canEdit( false )
   , m_isHighlighted( false )
 {
   m_defaultPen = m_graph->config().nodeDefaultPen;
@@ -149,8 +149,7 @@ void Node::setTitle( FTL::CStrRef title )
   m_title = title;
   if(m_header)
   {
-    std::string titleToSet = m_title + m_titleSuffix;
-    m_header->setTitle( QSTRING_FROM_FTL_UTF8(titleToSet) );
+    m_header->setTitle( QSTRING_FROM_FTL_UTF8( m_title ), QSTRING_FROM_FTL_UTF8( m_titleSuffix ) );
     m_header->labelWidget()->setItalic(m_titleSuffix.length() > 0);
   }
 }
@@ -561,7 +560,7 @@ Pin *Node::renamePin( FTL::StrRef oldName, FTL::StrRef newName )
 void Node::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
 
-  if(onMousePress(event->button(), event->modifiers(), event->scenePos(), event->lastScenePos()))
+  if(onMousePress( event ))
   {
     event->accept();
     return;
@@ -571,7 +570,7 @@ void Node::mousePressEvent(QGraphicsSceneMouseEvent * event)
 
 void Node::mouseMoveEvent( QGraphicsSceneMouseEvent *event )
 {
-  if(onMouseMove(event->button(), event->modifiers(), event->scenePos(), event->lastScenePos()))
+  if(onMouseMove( event ))
   {
     event->accept();
     return;
@@ -581,7 +580,7 @@ void Node::mouseMoveEvent( QGraphicsSceneMouseEvent *event )
 
 void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 {
-  if(onMouseRelease(event->button(), event->modifiers(), event->scenePos(), event->lastScenePos()))
+  if(onMouseRelease( event ))
   {
     event->accept();
     return;
@@ -591,7 +590,7 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 
 void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
 {
-  if(onMouseDoubleClicked(event->button(), event->modifiers(), event->scenePos(), event->lastScenePos()))
+  if(onMouseDoubleClicked( event ))
   {
     event->accept();
     return;
@@ -600,17 +599,20 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
   QGraphicsWidget::mouseDoubleClickEvent(event);
 }
 
-bool Node::onMousePress(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos)
+bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 {
-  if(modifiers.testFlag(Qt::AltModifier))
+  Qt::KeyboardModifiers modifiers =  event->modifiers();
+  if( modifiers.testFlag(Qt::AltModifier))
     return false;
+
+  Qt::MouseButton button = event->button();
 
   if ( button == Qt::LeftButton
     || button == Qt::MiddleButton
     || button == Qt::RightButton )
   {
     m_dragButton = button;
-    m_mouseDownPos = scenePos;
+    m_mouseDownPos = event->scenePos();
 
     Node * hitNode = this;
 
@@ -619,7 +621,7 @@ bool Node::onMousePress(Qt::MouseButton button, Qt::KeyboardModifiers modifiers,
     std::vector<Node *> nodes = graph()->nodes();
     for(size_t i=0;i<nodes.size();i++)
     {
-      QPointF pos = nodes[i]->mapFromScene(scenePos);
+      QPointF pos = nodes[i]->mapFromScene( event->scenePos() );
       if(nodes[i]->rect().contains(pos))
       {
         if(nodes[i]->zValue() < hitNode->zValue())
@@ -704,13 +706,13 @@ bool Node::onMousePress(Qt::MouseButton button, Qt::KeyboardModifiers modifiers,
   return false;
 }
 
-bool Node::onMouseMove(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos)
+bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
 {
   if ( m_dragging > 0 )
   {
     m_dragging = 2;
 
-    QPointF delta = scenePos - lastScenePos;
+    QPointF delta = event->scenePos() - event->lastScenePos();
     delta *= 1.0f / graph()->mainPanel()->canvasZoom();
 
     m_graph->controller()->gvcDoMoveNodes(
@@ -725,7 +727,7 @@ bool Node::onMouseMove(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, 
   return false;
 }
 
-bool Node::onMouseRelease(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos)
+bool Node::onMouseRelease( const QGraphicsSceneMouseEvent *event )
 {
   if ( m_dragging == 2 )
   {
@@ -735,7 +737,7 @@ bool Node::onMouseRelease(Qt::MouseButton button, Qt::KeyboardModifiers modifier
     {
       QPointF delta;
 
-      delta = m_mouseDownPos - lastScenePos;
+      delta = m_mouseDownPos - event->lastScenePos();
       delta *= 1.0f / graph()->mainPanel()->canvasZoom();
 
       m_graph->controller()->gvcDoMoveNodes(
@@ -744,7 +746,7 @@ bool Node::onMouseRelease(Qt::MouseButton button, Qt::KeyboardModifiers modifier
         false // allowUndo
         );
 
-      delta = scenePos - m_mouseDownPos;
+      delta = event->scenePos() - m_mouseDownPos;
       delta *= 1.0f / graph()->mainPanel()->canvasZoom();
 
       m_graph->controller()->gvcDoMoveNodes(
@@ -763,11 +765,11 @@ bool Node::onMouseRelease(Qt::MouseButton button, Qt::KeyboardModifiers modifier
   return false;
 }
 
-bool Node::onMouseDoubleClicked(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos)
+bool Node::onMouseDoubleClicked( const QGraphicsSceneMouseEvent *event )
 {
-  if(button == Qt::LeftButton)
+  if(event->button() == Qt::LeftButton)
   {
-    emit doubleClicked(this, button, modifiers);
+    emit doubleClicked( this, event->button(), event->modifiers() );
     return true;
   }
   return false;
@@ -808,7 +810,7 @@ void Node::updateHighlighting( QPointF cp )
     }
 
     if ( !someInstBlockHighlighted
-      && !m_canAddPorts
+      && !m_canEdit
       && !m_instBlocks.empty() )
     {
       InstBlock *instBlock = m_instBlocks[0];
@@ -981,17 +983,27 @@ InstBlock *Node::instBlock( FTL::StrRef name )
   return NULL;
 }
 
+void Node::setCanEdit( bool canEdit )
+{
+  m_canEdit = canEdit;
+  for (size_t i = 0; i < m_pins.size(); i++)
+  {
+    m_pins[i]->labelWidget()->setEditable( canEdit );
+  }
+  m_header->labelWidget()->setEditable( canEdit );
+}
+
 void Node::collectEditingTargets( EditingTargets &editingTargets )
 {
   editingTargets.reserve( 1 + m_instBlocks.size() );
 
-  if ( m_canAddPorts )
+  if ( m_canEdit )
     editingTargets.push_back( EditingTarget( this, 0 ) );
 
   for ( size_t i = 0; i < m_instBlocks.size(); ++i )
     editingTargets.push_back( EditingTarget( m_instBlocks[i], 0 ) );
 
-  if ( !m_canAddPorts )
+  if ( !m_canEdit )
     editingTargets.push_back( EditingTarget( this, 1 ) );
 }
 

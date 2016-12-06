@@ -14,7 +14,7 @@ namespace FabricUI {
 namespace GraphView {
 
 PortLabel::PortLabel(
-  QGraphicsWidget * parent,
+  Port * parent,
   QString const &text,
   QColor color,
   QColor hlColor,
@@ -27,25 +27,22 @@ PortLabel::PortLabel(
     hlColor,
     font
     )
+  , m_port( parent )
 {
+  setEditable( m_port->allowEdits() && m_port->graph()->isEditable() );
 }
 
 void PortLabel::mousePressEvent( QGraphicsSceneMouseEvent *event )
 {
   if ( !!(event->buttons() & Qt::LeftButton) )
   {
-    ConnectionTarget *connectionTarget =
-      static_cast<ConnectionTarget *>( parentItem() );
-    if ( connectionTarget->targetType() == TargetType_Port )
+    Port *port = m_port;
+    if ( port->allowEdits()
+      && port->graph()->isEditable() )
     {
-      Port *port = static_cast<Port *>( connectionTarget );
-      if ( port->allowEdits()
-        && port->graph()->isEditable() )
-      {
-        m_dragStartPosition = event->pos();
-        event->accept();
-        return;
-      }
+      m_dragStartPosition = event->pos();
+      event->accept();
+      return;
     }
   }
   
@@ -59,7 +56,7 @@ void PortLabel::mouseMoveEvent( QGraphicsSceneMouseEvent *event )
     if ( (event->pos() - m_dragStartPosition).manhattanLength()
        >= QApplication::startDragDistance() )
     {
-      Port *port = static_cast<Port *>( parentItem() );
+      Port *port = m_port;
       if ( port->allowEdits()
         && port->graph()->isEditable() )
       {
@@ -81,11 +78,17 @@ void PortLabel::mouseMoveEvent( QGraphicsSceneMouseEvent *event )
   TextContainer::mouseMoveEvent( event );
 }
 
+void PortLabel::displayedTextChanged()
+{
+  TextContainer::displayedTextChanged();
+  emit m_port->contentChanged();
+}
+
 void PortLabel::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
 {
   if ( !!(event->buttons() & Qt::LeftButton) )
   {
-    Port *port = static_cast<Port *>( parentItem() );
+    Port *port = m_port;
     if ( port->allowEdits()
       && port->graph()->isEditable() )
     {
@@ -95,6 +98,16 @@ void PortLabel::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
   }
   
   TextContainer::mouseReleaseEvent( event );  
+}
+
+void PortLabel::submitEditedText(const QString& text)
+{
+  Port *port = m_port;
+  if ( port->allowEdits()
+    && port->graph()->isEditable() )
+  {
+    port->graph()->controller()->gvcDoRenameExecPort( port->nameQString(), text );
+  }
 }
 
 } // namespace GraphView

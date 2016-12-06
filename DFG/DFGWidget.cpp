@@ -526,7 +526,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addSeparator();
 
-    result->addAction(new ReloadExtensionsAction(dfgWidget, uiNode, result, exec.getSubExec(nodeName).getExtDepCount() > 0));
+    result->addAction(new ReloadExtensionsAction(dfgWidget, uiNode, result, onlyInstNodes && exec.getSubExec(nodeName).getExtDepCount() > 0));
 
     result->addSeparator();
 
