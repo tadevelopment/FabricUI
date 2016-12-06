@@ -140,7 +140,7 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
             exec.getPortResolvedDefaultValue(
               portToConnectPath.c_str(),
               resolvedType.c_str()
-              );
+              ).clone();  // [FE-7700]
           if ( defaultValue.isValid() )
           {
             if ( execPath.empty() )
