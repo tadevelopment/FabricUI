@@ -47,6 +47,7 @@ namespace FabricUI
       float mouseWheelZoomRate() const;
       void setMouseWheelZoomRate(float rate);
       ManipulationMode manipulationMode() const;
+      void setManipulationMode(ManipulationMode mode);
 
       virtual QRectF boundingRect() const;
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);

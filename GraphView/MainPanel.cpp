@@ -125,6 +125,25 @@ MainPanel::ManipulationMode MainPanel::manipulationMode() const
   return m_manipulationMode;
 }
 
+void MainPanel::setManipulationMode(ManipulationMode mode)
+{
+  m_manipulationMode = mode;
+  switch (mode)
+  {
+    case ManipulationMode_Select:
+      setCursor(Qt::ArrowCursor);
+      break;
+    case ManipulationMode_Pan:
+    case ManipulationMode_Zoom:
+      setCursor(Qt::OpenHandCursor);
+      break;
+    default:
+      m_manipulationMode = ManipulationMode_None;
+      setCursor(Qt::ArrowCursor);
+      break;
+  }
+}
+
 QRectF MainPanel::boundingRect() const
 {
   return m_boundingRect;
@@ -149,22 +168,20 @@ void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
       m_graph->controller()->clearSelection();
     m_ongoingSelection.clear();
 
-    m_manipulationMode = ManipulationMode_Select;
+    setManipulationMode( ManipulationMode_Select );
   }
   else if(   event->button() == Qt::MiddleButton
          || (event->button() == Qt::LeftButton && m_alwaysPan)
          || (event->button() == Qt::LeftButton && event->modifiers().testFlag(Qt::AltModifier))
     )
   {
-    setCursor(Qt::OpenHandCursor);
-    m_manipulationMode = ManipulationMode_Pan;
+    setManipulationMode( ManipulationMode_Pan );
     m_lastPanPoint = mapFromScene( event->scenePos() );
     event->accept();
   }
   else if(event->button() == Qt::RightButton && event->modifiers().testFlag(Qt::AltModifier))
   {
-    setCursor(Qt::OpenHandCursor);
-    m_manipulationMode = ManipulationMode_Zoom;
+    setManipulationMode( ManipulationMode_Zoom );
     m_lastPanPoint = mapFromScene( event->scenePos() );
     m_mouseAltZoomState = m_mouseWheelZoomState;
   }
@@ -186,7 +203,7 @@ void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
 
 void MainPanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
-  if(m_manipulationMode == ManipulationMode_Select)
+  if(manipulationMode() == ManipulationMode_Select)
   {
     QPointF dragPoint = mapToItem(m_itemGroup, mapFromScene( event->scenePos() ) );
     m_selectionRect->setDragPoint(dragPoint);
@@ -214,7 +231,7 @@ void MainPanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     }
     m_draggingSelRect = true;
   }
-  else if(m_manipulationMode == ManipulationMode_Pan)
+  else if(manipulationMode() == ManipulationMode_Pan)
   {
     // Note: in m_alwaysPan mode, the event might be relative to a sub-widget
     QPointF pos = mapFromScene( event->scenePos() );
@@ -226,7 +243,7 @@ void MainPanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
     m_graph->controller()->panCanvas(delta + canvasPan());
   }
-  else if(m_manipulationMode == ManipulationMode_Zoom)
+  else if(manipulationMode() == ManipulationMode_Zoom)
   {
     QPointF delta = mapFromScene( event->scenePos() ) - m_lastPanPoint;
     float zoomFactor = powf( 1.005f, delta.x() - delta.y() );
@@ -238,7 +255,7 @@ void MainPanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void MainPanel::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 {
-  if(m_manipulationMode == ManipulationMode_Select)
+  if(manipulationMode() == ManipulationMode_Select)
   {
     prepareGeometryChange();
   
@@ -247,12 +264,11 @@ void MainPanel::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
     m_selectionRect = NULL;
     // if(!m_draggingSelRect)
     //   m_graph.clearSelection()
-    m_manipulationMode = ManipulationMode_None;
+    setManipulationMode( ManipulationMode_None );
   }
-  else if(m_manipulationMode == ManipulationMode_Pan || m_manipulationMode == ManipulationMode_Zoom)
+  else if(manipulationMode() == ManipulationMode_Pan || manipulationMode() == ManipulationMode_Zoom)
   {
-    setCursor(Qt::ArrowCursor);
-    m_manipulationMode = ManipulationMode_None;
+    setManipulationMode( ManipulationMode_None );
   }
   else
     QGraphicsWidget::mouseMoveEvent(event);
@@ -286,7 +302,7 @@ void MainPanel::performZoom(
 
 void MainPanel::wheelEvent(QGraphicsSceneWheelEvent * event)
 {
-  if ( m_manipulationMode == ManipulationMode_None )
+  if ( manipulationMode() == ManipulationMode_None )
   {
     float zoomFactor = 1.0f + float(event->delta()) * m_mouseWheelZoomRate;
     m_lastPanPoint = mapFromScene( event->scenePos() );
