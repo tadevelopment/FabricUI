@@ -8,6 +8,10 @@
 
 #include <FabricUI/Util/FabricResourcePath.h>
 
+#include <QColor>
+#include <QFont>
+#include <QString>
+
 namespace FabricUI
 {
   namespace Util
@@ -65,6 +69,22 @@ namespace FabricUI
           ;
         }
       }
+
+      // Used by shiboken
+#define DECLARE_EXPLICIT_GETTER( T, method ) \
+      inline T  method( const std::string key, const T defaultValue ) \
+        { return getOrCreateValue<T>( key, defaultValue ); }
+
+      DECLARE_EXPLICIT_GETTER( bool, getOrCreateBool )
+      DECLARE_EXPLICIT_GETTER( int, getOrCreateInt )
+      DECLARE_EXPLICIT_GETTER( unsigned int, getOrCreateUInt )
+      DECLARE_EXPLICIT_GETTER( double, getOrCreateDouble )
+      DECLARE_EXPLICIT_GETTER( float, getOrCreateFloat )
+      DECLARE_EXPLICIT_GETTER( QString, getOrCreateQString )
+      DECLARE_EXPLICIT_GETTER( QColor, getOrCreateQColor )
+      DECLARE_EXPLICIT_GETTER( QFont, getOrCreateQFont )
+
+#undef DECLARE_EXPLICIT_GETTER
 
     protected:
       std::map<std::string, ConfigSection> m_sections;

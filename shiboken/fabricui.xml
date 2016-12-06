@@ -44,7 +44,7 @@
       </extra-includes>
       <function signature="GetFilenameForFileURL(QUrl)"/>
       <object-type name="QTSignalBlocker"/>
-      <object-type name="StringUtils" copyable="false"/>
+      <load-typesystem name="fabricui_util.xml" generate="yes"/>
     </namespace-type>
   </namespace-type>
 
