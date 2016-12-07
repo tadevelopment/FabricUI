@@ -141,7 +141,7 @@ public:
   void selectAllText()
   {
     QTextCursor cursor = this->textCursor();
-    cursor.select( QTextCursor::SelectionType::Document );
+    cursor.select( QTextCursor::Document );
     this->setTextCursor( cursor );
   }
 
