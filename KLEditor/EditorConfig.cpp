@@ -15,13 +15,25 @@ template<>
 JSONValue* ConfigSection::createValue( const QTextCharFormat v ) const
 {
   JSONObject* obj = new JSONObject();
-  obj->insert( "foreground", createValue( v.foreground().color() ) );
-  obj->insert( "fontUnderline", createValue( v.fontUnderline() ) );
-  obj->insert( "underlineColor", createValue( v.underlineColor() ) );
-  obj->insert( "underlineStyle", createValue( int(v.underlineStyle()) ) );
-  obj->insert( "background", createValue( v.background().color() ) );
+
+  if( v.hasProperty( QTextCharFormat::ForegroundBrush ) )
+    obj->insert( "foreground", createValue( v.foreground().color() ) );
+
+  if( v.hasProperty( QTextCharFormat::FontUnderline ))
+    obj->insert( "fontUnderline", createValue( v.fontUnderline() ) );
+
+  if( v.hasProperty( QTextCharFormat::TextUnderlineColor ) )
+    obj->insert( "underlineColor", createValue( v.underlineColor() ) );
+
+  if( v.hasProperty( QTextCharFormat::TextUnderlineStyle ) )
+    obj->insert( "underlineStyle", createValue( int(v.underlineStyle()) ) );
+
+  if( v.hasProperty( QTextCharFormat::BackgroundBrush ) )
+    obj->insert( "background", createValue( v.background().color() ) );
+
   if( v.hasProperty( QTextFormat::FullWidthSelection ) )
     obj->insert( "fullWidthSelection", createValue( v.property( QTextCharFormat::FullWidthSelection ).value<bool>() ) );
+
   return obj;
 }
 
@@ -30,13 +42,25 @@ QTextCharFormat ConfigSection::getValue( const JSONValue* entry ) const
 {
   const JSONObject* obj = entry->cast<JSONObject>();
   QTextCharFormat v;
-  v.setForeground( getValue<QColor>( obj->get( "foreground" ) ) );
-  v.setFontUnderline( obj->getBoolean( "fontUnderline" ) );
-  v.setUnderlineColor( getValue<QColor>( obj->get( "underlineColor" ) ) );
-  v.setUnderlineStyle( QTextCharFormat::UnderlineStyle( getValue<int>( obj->get( "underlineStyle" ) ) ) );
-  v.setBackground( getValue<QColor>( obj->get( "background" ) ) );
+
+  if( obj->has( "foreground" ) )
+    v.setForeground( getValue<QColor>( obj->get( "foreground" ) ) );
+
+  if( obj->has( "fontUnderline" ))
+    v.setFontUnderline( obj->getBoolean( "fontUnderline" ) );
+
+  if( obj->has( "underlineColor" ) )
+    v.setUnderlineColor( getValue<QColor>( obj->get( "underlineColor" ) ) );
+
+  if( obj->has( "underlineStyle" ) )
+    v.setUnderlineStyle( QTextCharFormat::UnderlineStyle( getValue<int>( obj->get( "underlineStyle" ) ) ) );
+
+  if( obj->has( "background" ))
+    v.setBackground( getValue<QColor>( obj->get( "background" ) ) );
+
   if( obj->has( "fullWidthSelection" ) )
     v.setProperty( QTextCharFormat::FullWidthSelection, getValue<bool>( obj->get( "fullWidthSelection" ) ) );
+
   return v;
 }
 
