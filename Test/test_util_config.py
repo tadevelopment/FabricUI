@@ -8,8 +8,7 @@ def main():
   cfg = rootCfg.getOrCreateSection( "TestSection" )
 
   def assertEqual( a, b ) :
-    if( a != b ) :
-      print( "Error : " + str(a) + " != " + str(b) + " [" + str(type(a)) + "]" )
+    assert a == b
 
   # tests if the value is the same when exported and imported
   def testValues( method, value1, value2 ) :
