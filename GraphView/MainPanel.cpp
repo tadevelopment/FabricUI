@@ -35,7 +35,6 @@ MainPanel::MainPanel(Graph * parent)
   m_itemGroup = new QGraphicsWidget(this);
 
   m_manipulationMode = ManipulationMode_None;
-  m_draggingSelRect = false;
   m_selectionRect = NULL;
 }
 
@@ -142,7 +141,6 @@ void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
   {
     QPointF mouseDownPos = mapToItem(m_itemGroup, mapFromScene( event->scenePos() ) );
     m_selectionRect = new SelectionRect(this, mouseDownPos);
-    m_draggingSelRect = false;
 
     if(!event->modifiers().testFlag(Qt::ControlModifier) && !event->modifiers().testFlag(Qt::ShiftModifier))
       m_graph->controller()->clearSelection();
@@ -210,7 +208,6 @@ void MainPanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
         }
       }
     }
-    m_draggingSelRect = true;
   }
   else if(m_manipulationMode == ManipulationMode_Pan)
   {
@@ -242,8 +239,6 @@ void MainPanel::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
     scene()->removeItem(m_selectionRect);
     delete(m_selectionRect);
     m_selectionRect = NULL;
-    // if(!m_draggingSelRect)
-    //   m_graph.clearSelection()
     m_manipulationMode = ManipulationMode_None;
   }
   else if(m_manipulationMode == ManipulationMode_Pan || m_manipulationMode == ManipulationMode_Zoom)

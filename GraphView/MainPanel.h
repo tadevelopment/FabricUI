@@ -91,7 +91,6 @@ namespace FabricUI
       float m_mouseWheelZoomState;
       ManipulationMode m_manipulationMode;
       QGraphicsWidget * m_itemGroup;
-      bool m_draggingSelRect;
       QPointF m_lastPanPoint;
       SelectionRect * m_selectionRect;
       std::vector<Node*> m_ongoingSelection;
