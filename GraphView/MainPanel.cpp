@@ -37,7 +37,6 @@ MainPanel::MainPanel(Graph * parent)
   m_manipulationMode = ManipulationMode_None;
   m_draggingSelRect = false;
   m_selectionRect = NULL;
-  m_alwaysPan = false;
 }
 
 Graph * MainPanel::graph()
@@ -139,7 +138,7 @@ void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
     delete(m_selectionRect);
     m_selectionRect = NULL;
   }
-  if(event->button() == Qt::LeftButton && !m_alwaysPan && !event->modifiers().testFlag(Qt::AltModifier))
+  if(event->button() == Qt::LeftButton && !event->modifiers().testFlag(Qt::AltModifier))
   {
     QPointF mouseDownPos = mapToItem(m_itemGroup, mapFromScene( event->scenePos() ) );
     m_selectionRect = new SelectionRect(this, mouseDownPos);
@@ -152,7 +151,6 @@ void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
     m_manipulationMode = ManipulationMode_Select;
   }
   else if(   event->button() == Qt::MiddleButton
-         || (event->button() == Qt::LeftButton && m_alwaysPan)
          || (event->button() == Qt::LeftButton && event->modifiers().testFlag(Qt::AltModifier))
     )
   {
@@ -216,7 +214,6 @@ void MainPanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
   }
   else if(m_manipulationMode == ManipulationMode_Pan)
   {
-    // Note: in m_alwaysPan mode, the event might be relative to a sub-widget
     QPointF pos = mapFromScene( event->scenePos() );
 
     QTransform xfo = m_itemGroup->transform().inverted();
@@ -304,9 +301,6 @@ bool MainPanel::grabsEvent( QEvent * e ) {
     || e->type() == QEvent::GraphicsSceneMouseRelease;
 
   if( graphicsMouseEvent ) {
-    if( m_alwaysPan )
-      return true;
-
     QGraphicsSceneMouseEvent * mouseEvent = (QGraphicsSceneMouseEvent*)e;
     if( mouseEvent->modifiers().testFlag(Qt::AltModifier) )
       return true;
