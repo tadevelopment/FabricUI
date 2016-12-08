@@ -608,7 +608,6 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
   Qt::MouseButton button = event->button();
 
   if ( button == Qt::LeftButton
-    || button == Qt::MiddleButton
     || button == Qt::RightButton )
   {
     m_dragButton = button;
@@ -631,15 +630,13 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
     }
 
     bool clearSelection = true;
-    if(button == Qt::MiddleButton)
+    if (
+      button == Qt::LeftButton &&
+      modifiers.testFlag( Qt::ShiftModifier ) &&
+      hitNode->selected()
+    )
     {
       std::vector<Node*> nodes = hitNode->upStreamNodes();
-
-      if(!modifiers.testFlag(Qt::ControlModifier) && !modifiers.testFlag(Qt::ShiftModifier))
-      {
-        m_graph->controller()->clearSelection();
-        clearSelection = false;
-      }
 
       for(size_t i=0;i<nodes.size();i++)
         m_graph->controller()->selectNode(nodes[i], true);
