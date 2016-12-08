@@ -7,7 +7,18 @@
 #include <QStyleOptionButton>
 #include <QStyleOption>
 
+#include <FabricUI/Util/Config.h>
+
 using namespace FabricUI::Style;
+
+namespace FabricUI {
+namespace Util {
+
+template<>
+QBrush FabricUI::Util::ConfigSection::getOrCreateValue( const std::string key, QBrush value )
+{ return QBrush( getOrCreateValue( key, value.color() ) ); }
+
+}} // namespace FabricUI::Util
 
 void FabricStyle::polish(QPalette &palette)
 {
@@ -26,25 +37,31 @@ void FabricStyle::polish(QPalette &palette)
     highlightedTextColor= baseColor.darker(int(spread*2));
   else
     highlightedTextColor= baseColor.lighter(int(spread*2));
+
+  FabricUI::Util::Config rootConfig;
+  FabricUI::Util::ConfigSection& cfg = rootConfig.getOrCreateSection( "FabricStyle" );
+
+#define PALETTE_SET_BRUSH( parameter, defaultValue ) \
+  palette.setBrush( parameter, cfg.getOrCreateValue( #parameter, defaultValue ) )
   
-  palette.setBrush(QPalette::Background, QBrush(baseColor));
-  palette.setBrush(QPalette::Window, QBrush(baseColor));
-  palette.setBrush(QPalette::Foreground, baseColor.lighter(int(spread)));
-  palette.setBrush(QPalette::WindowText, baseColor.lighter(int(spread)));
-  palette.setBrush(QPalette::Base, baseColor);
-  palette.setBrush(QPalette::AlternateBase, baseColor.darker(int(spread)));
-  palette.setBrush(QPalette::ToolTipBase, baseColor);
-  palette.setBrush(QPalette::ToolTipText, baseColor.lighter(int(spread)));
-  palette.setBrush(QPalette::Text, baseColor.lighter(int(spread*1.2)));
-  palette.setBrush(QPalette::Button, baseColor);
-  palette.setBrush(QPalette::ButtonText, baseColor.lighter(int(spread)));
-  palette.setBrush(QPalette::BrightText, QColor(240, 240, 240));
-  palette.setBrush(QPalette::Light, baseColor.lighter(int(spread/2)));
-  palette.setBrush(QPalette::Midlight, baseColor.lighter(int(spread/4)));
-  palette.setBrush(QPalette::Dark, baseColor.darker(int(spread/4)));
-  palette.setBrush(QPalette::Mid, baseColor);
-  palette.setBrush(QPalette::Shadow, baseColor.darker(int(spread/2)));
-  palette.setBrush(QPalette::Highlight, highlightColor);
-  palette.setBrush(QPalette::HighlightedText, highlightedTextColor);
+  PALETTE_SET_BRUSH(QPalette::Background, QBrush(baseColor));
+  PALETTE_SET_BRUSH(QPalette::Window, QBrush(baseColor));
+  PALETTE_SET_BRUSH(QPalette::Foreground, baseColor.lighter(int(spread)));
+  PALETTE_SET_BRUSH(QPalette::WindowText, baseColor.lighter(int(spread)));
+  PALETTE_SET_BRUSH(QPalette::Base, baseColor);
+  PALETTE_SET_BRUSH(QPalette::AlternateBase, baseColor.darker(int(spread)));
+  PALETTE_SET_BRUSH(QPalette::ToolTipBase, baseColor);
+  PALETTE_SET_BRUSH(QPalette::ToolTipText, baseColor.lighter(int(spread)));
+  PALETTE_SET_BRUSH(QPalette::Text, baseColor.lighter(int(spread*1.2)));
+  PALETTE_SET_BRUSH(QPalette::Button, baseColor);
+  PALETTE_SET_BRUSH(QPalette::ButtonText, baseColor.lighter(int(spread)));
+  PALETTE_SET_BRUSH(QPalette::BrightText, QColor(240, 240, 240));
+  PALETTE_SET_BRUSH(QPalette::Light, baseColor.lighter(int(spread/2)));
+  PALETTE_SET_BRUSH(QPalette::Midlight, baseColor.lighter(int(spread/4)));
+  PALETTE_SET_BRUSH(QPalette::Dark, baseColor.darker(int(spread/4)));
+  PALETTE_SET_BRUSH(QPalette::Mid, baseColor);
+  PALETTE_SET_BRUSH(QPalette::Shadow, baseColor.darker(int(spread/2)));
+  PALETTE_SET_BRUSH(QPalette::Highlight, highlightColor);
+  PALETTE_SET_BRUSH(QPalette::HighlightedText, highlightedTextColor);
 }
 

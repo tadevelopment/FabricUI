@@ -117,6 +117,7 @@
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Viewports/TimeLineWidget.h>
 #include <FabricUI/Util/StringUtils.h>
+#include <FabricUI/Util/Config.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>
 #include <FabricUI/SceneHub/SHStates.h>
