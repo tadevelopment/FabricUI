@@ -244,29 +244,3 @@ std::string Port::path() const
 {
   return m_name;
 }
-
-QString const Port::MimeType( "x-fabric-ui/graph-view-port" );
-
-bool Port::MimeData::hasFormat( QString const &mimeType) const
-{
-  if ( mimeType == MimeType )
-    return true;
-  else return Parent::hasFormat( mimeType );
-}
-
-QStringList Port::MimeData::formats() const
-{
-  QStringList result = Parent::formats();
-  result.append( MimeType );
-  return result;
-}
-
-QVariant Port::MimeData::retrieveData(
-  QString const &mimeType,
-  QVariant::Type type
-  ) const
-{
-  if ( mimeType == MimeType )
-    return QVariant::fromValue( static_cast<void *>( m_port ) );
-  else return Parent::retrieveData( mimeType, type );
-}

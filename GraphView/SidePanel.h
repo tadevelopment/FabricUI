@@ -34,6 +34,8 @@ namespace FabricUI
 
       SidePanel(Graph * parent, PortType portType, QColor color = QColor());
 
+      virtual int type() const { return QGraphicsItemType_SidePanel; }
+
       Graph * graph();
       const Graph * graph() const;
       QGraphicsWidget * itemGroup();
@@ -67,9 +69,9 @@ namespace FabricUI
 
       virtual void resizeEvent(QGraphicsSceneResizeEvent * event);
 
-      virtual void dragMoveEvent( QGraphicsSceneDragDropEvent *event );
-      virtual void dragLeaveEvent( QGraphicsSceneDragDropEvent *event );
-      virtual void dropEvent( QGraphicsSceneDragDropEvent *event );
+      void onDraggingPort( const QGraphicsSceneMouseEvent* event, Port* draggedPort );
+      void hoverLeaveEvent( QGraphicsSceneHoverEvent* event ) FTL_OVERRIDE;
+      void onDroppingPort();
 
       void addFixedPort( FixedPort *fixedPort );
       void removeFixedPort( FixedPort *fixedPort );

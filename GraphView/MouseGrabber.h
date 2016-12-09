@@ -24,6 +24,7 @@ namespace FabricUI
     class Graph;
     class InstBlock;
     class Node;
+    class SidePanel;
 
     class ExposePortAction : public QAction
     {
@@ -194,6 +195,7 @@ namespace FabricUI
       float m_radius;
       Connection * m_connection;
       ConnectionTarget * m_targetUnderMouse;
+      SidePanel* m_lastSidePanel;
     };
 
   };

@@ -38,7 +38,7 @@ SidePanel::SidePanel(Graph * parent, PortType portType, QColor color)
   setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding));
   setMinimumWidth(config.sidePanelCollapsedWidth);
   setContentsMargins(0, 0, 0, 0);
-  setAcceptDrops( true );
+  //setAcceptDrops( true );
 
   m_proxyPort = new ProxyPort(this, m_portType);
 
@@ -392,28 +392,22 @@ void SidePanel::updateItemGroupScroll(float height)
   emit scrolled();
 }
 
-void SidePanel::dragMoveEvent( QGraphicsSceneDragDropEvent *event )
+void SidePanel::onDraggingPort( const QGraphicsSceneMouseEvent* event, Port* draggedPort )
 {
   QString oldDragSrcPortName = m_dragSrcPortName;
   QString oldDragDstPortName = m_dragDstPortName;
 
   m_dragSrcPortName = QString();
   m_dragDstPortName = QString();
-  event->ignore();
 
-  QMimeData const *mimeData = event->mimeData();
-  if ( mimeData->hasFormat( Port::MimeType ) )
   {
-    Port::MimeData const *portMimeData =
-      static_cast<Port::MimeData const *>( mimeData );
-    Port *draggedPort = portMimeData->port();
     // Check that we are in the same sidepanel
     if ( draggedPort->sidePanel() == this
       && draggedPort->allowEdits() )
     {
       QString draggedPortName = draggedPort->nameQString();
 
-      qreal eventY = event->pos().y();
+      qreal eventY = event->scenePos().y();
       QString oldDragDstPortName = m_dragDstPortName;
       m_dragDstPortName = QString();
       qreal bestDist = FLT_MAX;
@@ -464,24 +458,15 @@ void SidePanel::dragMoveEvent( QGraphicsSceneDragDropEvent *event )
           m_dragDstY = lastPortBottomY;
         }
       }
-
-      if ( !m_dragSrcPortName.isEmpty() )
-      {
-        event->acceptProposedAction();
-        event->accept();
-      }
     }
   }
 
   if ( m_dragSrcPortName != oldDragSrcPortName
     || m_dragDstPortName != oldDragDstPortName )
     update();
-
-  if ( !event->isAccepted() )
-    QGraphicsWidget::dragMoveEvent( event );
 }
 
-void SidePanel::dragLeaveEvent( QGraphicsSceneDragDropEvent *event )
+void SidePanel::hoverLeaveEvent( QGraphicsSceneHoverEvent* event )
 {
   if ( !m_dragSrcPortName.isEmpty() )
   {
@@ -491,10 +476,10 @@ void SidePanel::dragLeaveEvent( QGraphicsSceneDragDropEvent *event )
     update();
   }
 
-  QGraphicsWidget::dragLeaveEvent( event );
+  QGraphicsWidget::hoverLeaveEvent( event );
 }
 
-void SidePanel::dropEvent( QGraphicsSceneDragDropEvent *event )
+void SidePanel::onDroppingPort()
 {
   if ( !m_dragSrcPortName.isEmpty() )
   {
@@ -507,11 +492,7 @@ void SidePanel::dropEvent( QGraphicsSceneDragDropEvent *event )
     m_dragDstPortName = QString();
     m_dragDstY = 0;
     update();
-
-    return;
   }
-
-  QGraphicsWidget::dropEvent( event );
 }
 
 ConnectionTarget *SidePanel::getConnectionTarget( FTL::StrRef name )
