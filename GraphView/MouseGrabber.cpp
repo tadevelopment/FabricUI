@@ -248,9 +248,12 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       )
     {
       Port* port = (Port*)target();
-      if ( port->allowEdits() ) // can it be re-ordered ?
+      SidePanel* sidePanel = (SidePanel*)items[i];
+      if (
+        port->allowEdits() // can it be re-ordered ?
+        && port->sidePanel() == sidePanel
+      )
       {
-        SidePanel* sidePanel = (SidePanel*)items[i];
         sidePanel->onDraggingPort( event, port );
         isDraggingPortInSidePanel = true;
         m_lastSidePanel = sidePanel;
