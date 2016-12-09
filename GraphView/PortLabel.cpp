@@ -6,7 +6,6 @@
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/PortLabel.h>
 
-#include <QDrag>
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>
 
@@ -30,6 +29,11 @@ PortLabel::PortLabel(
   , m_port( parent )
 {
   setEditable( m_port->allowEdits() && m_port->graph()->isEditable() );
+}
+
+void PortLabel::mousePressEvent( QGraphicsSceneMouseEvent* event )
+{
+  m_port->mousePressEvent( event );
 }
 
 void PortLabel::displayedTextChanged()

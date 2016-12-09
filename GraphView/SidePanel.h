@@ -70,7 +70,7 @@ namespace FabricUI
       virtual void resizeEvent(QGraphicsSceneResizeEvent * event);
 
       void onDraggingPort( const QGraphicsSceneMouseEvent* event, Port* draggedPort );
-      void hoverLeaveEvent( QGraphicsSceneHoverEvent* event ) FTL_OVERRIDE;
+      void onDraggingPortLeave();
       void onDroppingPort();
 
       void addFixedPort( FixedPort *fixedPort );

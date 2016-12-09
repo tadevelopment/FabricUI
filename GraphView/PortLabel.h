@@ -25,6 +25,8 @@ public:
 
 protected:
 
+  void mousePressEvent( QGraphicsSceneMouseEvent* event ) FTL_OVERRIDE;
+
   virtual void submitEditedText( const QString& text ); // override
   virtual void displayedTextChanged() FTL_OVERRIDE;
 

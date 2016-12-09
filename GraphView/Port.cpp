@@ -75,6 +75,12 @@ void Port::init()
   }
 }
 
+void Port::disableEdits()
+{
+  m_allowEdits = false;
+  m_label->setEditable( false );
+}
+
 Graph *Port::graph()
 {
   return sidePanel()->graph();

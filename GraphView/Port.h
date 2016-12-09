@@ -95,8 +95,7 @@ namespace FabricUI
 
       bool allowEdits() const
         { return m_allowEdits; }
-      void disableEdits()
-        { m_allowEdits = false; }
+      void disableEdits();
 
     signals:
 
@@ -109,6 +108,8 @@ namespace FabricUI
       void setIndex(unsigned id) { m_index = id; }
 
       virtual void mousePressEvent( QGraphicsSceneMouseEvent * event );
+
+      PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return circle(); }
 
     private:
 

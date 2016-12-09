@@ -14,6 +14,71 @@
 
 using namespace FabricUI::GraphView;
 
+class InstBlockPortLabel : public NodeLabel
+{
+  InstBlockPort * m_pin;
+
+public:
+  InstBlockPortLabel(
+    InstBlockPort * pin,
+    Node* node,
+    QString const &text,
+    QColor color,
+    QColor highlightColor,
+    QFont font
+  ) : NodeLabel(
+    pin,
+    node,
+    text,
+    color,
+    highlightColor,
+    font
+  ), m_pin( pin )
+  {
+    setEditable( false );
+    setAcceptHoverEvents( true );
+  }
+
+protected:
+
+  PinCircle* pinCircle() const
+  {
+    switch ( m_pin->portType() )
+    {
+    case PortType_Input: return m_pin->inCircle();
+    case PortType_Output: return m_pin->outCircle();
+    }
+    return NULL;
+  }
+
+  void mousePressEvent( QGraphicsSceneMouseEvent* event ) FTL_OVERRIDE
+  {
+    // Creating connections from Labels
+    PinCircle * circle = pinCircle();
+    if ( circle )
+      circle->mousePressEvent( event );
+    NodeLabel::mousePressEvent( event );
+  }
+
+  void hoverEnterEvent( QGraphicsSceneHoverEvent * event ) FTL_OVERRIDE
+  {
+    PinCircle * circle = pinCircle();
+    if ( circle )
+      circle->onHoverEnter();
+    setHighlighted( true );
+    NodeLabel::hoverEnterEvent( event );
+  }
+
+  void hoverLeaveEvent( QGraphicsSceneHoverEvent * event ) FTL_OVERRIDE
+  {
+    PinCircle * circle = pinCircle();
+    if ( circle )
+      circle->onHoverLeave();
+    setHighlighted( false );
+    NodeLabel::hoverLeaveEvent( event );
+  }
+};
+
 InstBlockPort::InstBlockPort(
   InstBlock *instBlock,
   FTL::StrRef name,
@@ -92,7 +157,7 @@ InstBlockPort::InstBlockPort(
     }
   }
 
-  m_label = new NodeLabel(
+  m_label = new InstBlockPortLabel(
     this,
     parentNode,
     QSTRING_FROM_STL_UTF8(m_labelCaption),
@@ -314,6 +379,23 @@ PinCircle * InstBlockPort::outCircle()
 const PinCircle * InstBlockPort::outCircle() const
 {
   return m_outCircle;
+}
+
+PinCircle * InstBlockPort::findPinCircle( QPointF pos )
+{
+  PinCircle * circle = pos.x() < size().width() * 0.5 ? inCircle() : outCircle();
+  if ( circle )
+  {
+    float pinClickableDistance = graph()->config().pinClickableDistance;
+    QPointF center = circle->centerInSceneCoords();
+    QPointF clicked = mapToScene( pos );
+    float x = center.x() - clicked.x();
+    float y = center.y() - clicked.y();
+    float distance = sqrt( x * x + y * y );
+    if ( distance > pinClickableDistance )
+      circle = NULL;
+  }
+  return circle;
 }
 
 bool InstBlockPort::canConnectTo(

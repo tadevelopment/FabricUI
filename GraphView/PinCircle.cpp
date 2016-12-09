@@ -211,15 +211,7 @@ void PinCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 
 void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
-  // with context menus we'll receive more
-  // events, even for clicks outside of our 
-  // bounding rect
-  if(!rect().contains(event->pos()))
-  {
-    QGraphicsWidget::mousePressEvent(event);
-    return;
-  }
-  
+
   if(event->button() == Qt::LeftButton && m_interactiveConnectionsAllowed)
   {
     if(target()->targetType() != TargetType_NodeHeader)
@@ -238,35 +230,19 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
   }
   else if(event->button() == Qt::RightButton)
   {
+    QMenu * menu = NULL;
     if(target()->targetType() == TargetType_Pin)
-    {
-      QMenu * menu = target()->graph()->getPinContextMenu((Pin*)this->target());
-      if(menu)
-      {
-        menu->exec(QCursor::pos());
-        menu->setParent( NULL );
-        menu->deleteLater();
-      }
-    }
+      menu = target()->graph()->getPinContextMenu( ( Pin* )this->target() );
     else if(target()->targetType() == TargetType_Port)
-    {
-      QMenu * menu = target()->graph()->getPortContextMenu((Port*)this->target());
-      if(menu)
-      {
-        menu->exec(QCursor::pos());
-        menu->setParent( NULL );
-        menu->deleteLater();
-      }
-    }
+      menu = target()->graph()->getPortContextMenu( ( Port* )this->target() );
     else if(target()->targetType() == TargetType_FixedPort)
+      menu = target()->graph()->getFixedPortContextMenu((FixedPort*)this->target());
+
+    if(menu)
     {
-      QMenu * menu = target()->graph()->getFixedPortContextMenu((FixedPort*)this->target());
-      if(menu)
-      {
-        menu->exec(QCursor::pos());
-        menu->setParent( NULL );
-        menu->deleteLater();
-      }
+      menu->exec(QCursor::pos());
+      menu->setParent( NULL );
+      menu->deleteLater();
     }
   }
   else

@@ -34,6 +34,7 @@ public:
   ), m_pin(pin)
   {
     setEditable( node->canEdit() );
+    setAcceptHoverEvents( true );
   }
 
 protected:
@@ -46,6 +47,43 @@ protected:
       text,
       m_pin->node()->name_QS()
     );
+  }
+
+  PinCircle* pinCircle() const
+  {
+    switch( m_pin->portType() )
+    {
+      case PortType_Input : return m_pin->inCircle();
+      case PortType_Output : return m_pin->outCircle();
+    }
+    return NULL;
+  }
+
+  void mousePressEvent( QGraphicsSceneMouseEvent* event ) FTL_OVERRIDE
+  {
+    // Creating connections from Labels
+    PinCircle * circle = pinCircle();
+    if( circle )
+      circle->mousePressEvent( event );
+    NodeLabel::mousePressEvent( event );
+  }
+
+  void hoverEnterEvent( QGraphicsSceneHoverEvent * event ) FTL_OVERRIDE
+  {
+    PinCircle * circle = pinCircle();
+    if ( circle )
+      circle->onHoverEnter();
+    setHighlighted( true );
+    NodeLabel::hoverEnterEvent( event );
+  }
+
+  void hoverLeaveEvent( QGraphicsSceneHoverEvent * event ) FTL_OVERRIDE
+  {
+    PinCircle * circle = pinCircle();
+    if ( circle )
+      circle->onHoverLeave();
+    setHighlighted( false );
+    NodeLabel::hoverLeaveEvent( event );
   }
 };
 
@@ -342,6 +380,23 @@ PinCircle * Pin::outCircle()
 const PinCircle * Pin::outCircle() const
 {
   return m_outCircle;
+}
+
+PinCircle * Pin::findPinCircle( QPointF pos )
+{
+  PinCircle * circle = pos.x() < size().width() * 0.5 ? inCircle() : outCircle();
+  if( circle )
+  {
+    float pinClickableDistance = graph()->config().pinClickableDistance;
+    QPointF center = circle->centerInSceneCoords();
+    QPointF clicked = mapToScene( pos );
+    float x = center.x() - clicked.x();
+    float y = center.y() - clicked.y();
+    float distance = sqrt( x * x + y * y );
+    if ( distance > pinClickableDistance )
+      circle = NULL;
+  }
+  return circle;
 }
 
 bool Pin::canConnectTo(

@@ -466,7 +466,7 @@ void SidePanel::onDraggingPort( const QGraphicsSceneMouseEvent* event, Port* dra
     update();
 }
 
-void SidePanel::hoverLeaveEvent( QGraphicsSceneHoverEvent* event )
+void SidePanel::onDraggingPortLeave()
 {
   if ( !m_dragSrcPortName.isEmpty() )
   {
@@ -475,8 +475,6 @@ void SidePanel::hoverLeaveEvent( QGraphicsSceneHoverEvent* event )
     m_dragDstY = 0;
     update();
   }
-
-  QGraphicsWidget::hoverLeaveEvent( event );
 }
 
 void SidePanel::onDroppingPort()
