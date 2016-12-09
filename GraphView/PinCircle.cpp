@@ -211,6 +211,19 @@ void PinCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 
 void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  // with context menus we'll receive more
+  // events, even for clicks outside of our 
+  // bounding rect
+  if (
+    (
+      target()->targetType() == TargetType_NodeHeader ||
+      target()->targetType() == TargetType_InstBlockHeader
+    )
+    &&  !rect().contains( event->pos() ) )
+  {
+    QGraphicsWidget::mousePressEvent( event );
+    return;
+  }
 
   if(event->button() == Qt::LeftButton && m_interactiveConnectionsAllowed)
   {
