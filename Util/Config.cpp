@@ -72,17 +72,6 @@ Config::~Config()
     delete m_previousSection;
 }
 
-ConfigSection::~ConfigSection()
-{
-  for(
-    std::map<std::string,ConfigSection*>::iterator it = m_sections.begin();
-    it != m_sections.end(); it++
-  ) {
-    ConfigSection* section = it->second;
-    delete section;
-  }
-}
-
 ConfigSection& ConfigSection::getOrCreateSection( const std::string name )
 {
   if ( m_sections.find( name ) == m_sections.end() )
