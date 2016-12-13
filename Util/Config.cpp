@@ -72,6 +72,17 @@ Config::~Config()
     delete m_previousSection;
 }
 
+ConfigSection::~ConfigSection()
+{
+  for(
+    std::map<std::string,ConfigSection*>::iterator it = m_sections.begin();
+    it != m_sections.end(); it++
+  ) {
+    ConfigSection* section = it->second;
+    delete section;
+  }
+}
+
 ConfigSection& ConfigSection::getOrCreateSection( const std::string name )
 {
   if ( m_sections.find( name ) == m_sections.end() )
@@ -81,16 +92,17 @@ ConfigSection& ConfigSection::getOrCreateSection( const std::string name )
       return m_previousSection->getOrCreateSection( name );
 
     // Else read it from the JSON or create an empty one
-    ConfigSection& newSection = m_sections[name];
-    newSection.m_json = m_json->has( name ) ?
+    ConfigSection* newSection = new ConfigSection();
+    m_sections[name] = newSection;
+    newSection->m_json = m_json->has( name ) ?
       m_json->get( name )->cast<JSONObject>() : new JSONObject();
-    m_json->insert( name, newSection.m_json );
+    m_json->insert( name, newSection->m_json );
 
     // Link the child section of the previous section to this new child
     if ( m_previousSection != NULL )
-      m_sections[name].m_previousSection = &m_previousSection->getOrCreateSection( name );
+      m_sections[name]->m_previousSection = &m_previousSection->getOrCreateSection( name );
   }
-  return m_sections[name];
+  return *m_sections[name];
 }
 
 // bool

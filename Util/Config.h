@@ -31,7 +31,7 @@ namespace FabricUI
         : m_json( NULL )
         , m_previousSection( NULL )
       {}
-      virtual ~ConfigSection() {};
+      virtual ~ConfigSection();
 
       ConfigSection& getOrCreateSection( const std::string name );
 
@@ -87,7 +87,7 @@ namespace FabricUI
 #undef DECLARE_EXPLICIT_GETTER
 
     protected:
-      std::map<std::string, ConfigSection> m_sections;
+      std::map<std::string, ConfigSection*> m_sections;
       FTL::JSONObject* m_json;
       // Config to look into if a value is not found here
       ConfigSection* m_previousSection;
