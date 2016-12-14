@@ -515,7 +515,7 @@ ExposePortAction::ExposePortAction(
   , m_connectionPortType( connectionPortType )
 {
   setText( "Expose new port" );
-  setIcon( FabricUI::LoadPixmap( "DFGPlus.png" ).scaledToWidth( 20 ) );
+  setIcon( FabricUI::LoadPixmap( "DFGPlus.png" ).scaledToWidth( 20, Qt::SmoothTransformation ) );
   connect(
     this, SIGNAL(triggered()),
     this, SLOT(onTriggered())
