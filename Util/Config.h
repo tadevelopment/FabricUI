@@ -34,10 +34,10 @@ namespace FabricUI
       {}
       virtual ~ConfigSection() {};
 
-      ConfigSection& getOrCreateSection( const std::string name );
+      ConfigSection& getOrCreateSection( const FTL::StrRef name );
 
       template <typename T>
-      T getOrCreateValue( const std::string key, const T defaultValue )
+      T getOrCreateValue( const FTL::StrRef key, const T defaultValue )
       {
         if ( !m_json->has( key ) )
         {
@@ -73,7 +73,7 @@ namespace FabricUI
 
       // Used by shiboken
 #define DECLARE_EXPLICIT_GETTER( T, method ) \
-      inline T  method( const std::string key, const T defaultValue ) \
+      inline T  method( const FTL::StrRef key, const T defaultValue ) \
         { return getOrCreateValue<T>( key, defaultValue ); }
 
       DECLARE_EXPLICIT_GETTER( bool, getOrCreateBool )
@@ -96,8 +96,8 @@ namespace FabricUI
 
     class Config : public ConfigSection
     {
-      void open( const std::string fileName );
-      Config( const std::string fileName );
+      void open( const FTL::StrRef fileName );
+      Config( const FTL::StrRef fileName );
 
     public:
       Config();

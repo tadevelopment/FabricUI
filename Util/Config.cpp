@@ -16,13 +16,13 @@ using namespace FTL;
 namespace FabricUI {
 namespace Util {
 
-Config::Config( const std::string fileName )
+Config::Config( const FTL::StrRef fileName )
   : ConfigSection()
 {
   open( fileName );
 }
 
-void Config::open( const std::string fileName )
+void Config::open( const FTL::StrRef fileName )
 {
   m_fileName = fileName;
 
@@ -72,7 +72,7 @@ Config::~Config()
     delete m_previousSection;
 }
 
-ConfigSection& ConfigSection::getOrCreateSection( const std::string name )
+ConfigSection& ConfigSection::getOrCreateSection( const FTL::StrRef name )
 {
   if ( m_sections.find( name ) == m_sections.end() )
   {

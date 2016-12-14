@@ -15,7 +15,7 @@ namespace FabricUI {
 namespace Util {
 
 template<>
-QBrush FabricUI::Util::ConfigSection::getOrCreateValue( const std::string key, QBrush value )
+QBrush FabricUI::Util::ConfigSection::getOrCreateValue( const FTL::StrRef key, QBrush value )
 { return QBrush( getOrCreateValue( key, value.color() ) ); }
 
 }} // namespace FabricUI::Util
