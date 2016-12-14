@@ -599,6 +599,17 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
   QGraphicsWidget::mouseDoubleClickEvent(event);
 }
 
+void Node::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
+{
+  QMenu * menu = graph()->getNodeContextMenu( this );
+  if ( menu )
+  {
+    menu->exec( QCursor::pos() );
+    menu->setParent( NULL );
+    menu->deleteLater();
+  }
+}
+
 bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 {
   Qt::KeyboardModifiers modifiers =  event->modifiers();
@@ -687,17 +698,6 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
         additionalNodes.begin(),
         additionalNodes.end()
         );
-    }
-
-    if(button == Qt::RightButton)
-    {
-      QMenu * menu = graph()->getNodeContextMenu(hitNode);
-      if(menu)
-      {
-        menu->exec( QCursor::pos() );
-        menu->setParent( NULL );
-        menu->deleteLater();
-      }
     }
 
     return true;

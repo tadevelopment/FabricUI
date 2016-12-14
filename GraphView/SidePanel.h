@@ -60,7 +60,6 @@ namespace FabricUI
 
       ConnectionTarget *getConnectionTarget( FTL::StrRef name );
 
-      virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
@@ -89,6 +88,9 @@ namespace FabricUI
     signals:
       void doubleClicked(FabricUI::GraphView::SidePanel *);
       void scrolled();
+
+    protected:
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent* event ) FTL_OVERRIDE;
 
     private slots:
       void onItemGroupResized();

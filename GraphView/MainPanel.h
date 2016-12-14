@@ -3,6 +3,8 @@
 #ifndef __UI_GraphView_MainPanel__
 #define __UI_GraphView_MainPanel__
 
+#include <FTL/Config.h>
+
 #include <QGraphicsWidget>
 #include <QPen>
 #include <QColor>
@@ -73,6 +75,8 @@ namespace FabricUI
       void doubleClicked(Qt::KeyboardModifiers);
 
     protected:
+
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent * event ) FTL_OVERRIDE;
 
       void performZoom(
         float zoomFactor,

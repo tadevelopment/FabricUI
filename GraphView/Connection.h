@@ -74,6 +74,9 @@ namespace FabricUI
       virtual void dependencyMoved();
       virtual void dependencySelected();
 
+    protected:
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent* event ) FTL_OVERRIDE;
+
     private:
 
       float computeTangentLength() const;

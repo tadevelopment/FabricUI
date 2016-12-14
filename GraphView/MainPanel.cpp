@@ -147,6 +147,17 @@ QRectF MainPanel::boundingRect() const
   return m_boundingRect;
 }
 
+void MainPanel::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
+{
+  QMenu * menu = graph()->getGraphContextMenu();
+  if ( menu )
+  {
+    menu->exec( QCursor::pos() );
+    menu->setParent( NULL );
+    menu->deleteLater();
+  }
+}
+
 void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
   // clean up the scene
@@ -180,18 +191,6 @@ void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
     setManipulationMode( ManipulationMode_Zoom );
     m_lastPanPoint = mapFromScene( event->scenePos() );
     m_mouseAltZoomState = m_mouseWheelZoomState;
-  }
-  else if(event->button() == Qt::RightButton)
-  {
-    QMenu * menu = graph()->getGraphContextMenu();
-    if(menu)
-    {
-      menu->exec(QCursor::pos());
-      menu->setParent( NULL );
-      menu->deleteLater();
-    }
-    else
-      QGraphicsWidget::mousePressEvent(event);
   }
   else
     QGraphicsWidget::mousePressEvent(event);

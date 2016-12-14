@@ -208,28 +208,15 @@ Port *SidePanel::port( FTL::StrRef name )
   return NULL;
 }
 
-void SidePanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
+void SidePanel::contextMenuEvent( QGraphicsSceneContextMenuEvent* event )
 {
-  if(event->button() == Qt::RightButton)
+  QMenu * menu = m_graph->getSidePanelContextMenu(this);
+  if(menu)
   {
-    QMenu * menu = m_graph->getSidePanelContextMenu(this);
-    if(menu)
-    {
-      menu->exec(QCursor::pos());
-      menu->setParent( NULL );
-      menu->deleteLater();
-    }
-    event->accept();
-    return;
+    menu->exec(QCursor::pos());
+    menu->setParent( NULL );
+    menu->deleteLater();
   }
-
-  if(event->button() == Qt::LeftButton)
-  {
-    event->accept();
-    return;
-  }
-
-  QGraphicsWidget::mousePressEvent(event);
 }
 
 void SidePanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)

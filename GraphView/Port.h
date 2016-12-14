@@ -107,7 +107,7 @@ namespace FabricUI
 
       void setIndex(unsigned id) { m_index = id; }
 
-      virtual void mousePressEvent( QGraphicsSceneMouseEvent * event );
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent* event ) FTL_OVERRIDE;
 
       PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return circle(); }
 
