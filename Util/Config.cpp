@@ -16,13 +16,13 @@ using namespace FTL;
 namespace FabricUI {
 namespace Util {
 
-Config::Config( const std::string fileName )
+Config::Config( const FTL::StrRef fileName )
   : ConfigSection()
 {
   open( fileName );
 }
 
-void Config::open( const std::string fileName )
+void Config::open( const FTL::StrRef fileName )
 {
   m_fileName = fileName;
 
@@ -72,7 +72,7 @@ Config::~Config()
     delete m_previousSection;
 }
 
-ConfigSection& ConfigSection::getOrCreateSection( const std::string name )
+ConfigSection& ConfigSection::getOrCreateSection( const FTL::StrRef name )
 {
   if ( m_sections.find( name ) == m_sections.end() )
   {
@@ -81,16 +81,17 @@ ConfigSection& ConfigSection::getOrCreateSection( const std::string name )
       return m_previousSection->getOrCreateSection( name );
 
     // Else read it from the JSON or create an empty one
-    ConfigSection& newSection = m_sections[name];
-    newSection.m_json = m_json->has( name ) ?
+    ConfigSection* newSection = new ConfigSection();
+    m_sections[name] = newSection;
+    newSection->m_json = m_json->has( name ) ?
       m_json->get( name )->cast<JSONObject>() : new JSONObject();
-    m_json->insert( name, newSection.m_json );
+    m_json->insert( name, newSection->m_json );
 
     // Link the child section of the previous section to this new child
     if ( m_previousSection != NULL )
-      m_sections[name].m_previousSection = &m_previousSection->getOrCreateSection( name );
+      m_sections[name]->m_previousSection = &m_previousSection->getOrCreateSection( name );
   }
-  return m_sections[name];
+  return *m_sections[name];
 }
 
 // bool
