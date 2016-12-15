@@ -150,6 +150,7 @@ bool PinCircle::isOutputPortType() const
 void PinCircle::onHoverEnter()
 {
   m_ellipse->setVisible( !m_invisible );
+  setHighlighted( true );
 
   if(target()->targetType() != TargetType_NodeHeader)
     target()->setHighlighted(true);
@@ -157,6 +158,8 @@ void PinCircle::onHoverEnter()
 
 void PinCircle::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
+  onHoverEnter();
+
   QGraphicsItem *gi = parentItem();
   while ( gi )
   {
@@ -188,6 +191,8 @@ void PinCircle::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
 void PinCircle::onHoverLeave()
 {
   m_ellipse->setVisible( !m_invisible && m_shouldBeVisible );
+  setHighlighted( false );
+
   if(target()->targetType() != TargetType_NodeHeader)
     target()->setHighlighted(false);
 }
