@@ -160,6 +160,10 @@ namespace FabricUI
 
       void positionChanged(QPointF);
 
+    protected:
+
+      PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return NULL; }
+
     private:
 
       void showToolTip();

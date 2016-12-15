@@ -73,7 +73,7 @@ namespace FabricUI
       void mousePressEvent(QGraphicsSceneMouseEvent * event) FTL_OVERRIDE;
 
     protected:
-      virtual PinCircle * findPinCircle( QPointF pos ) { return NULL; }
+      virtual PinCircle * findPinCircle( QPointF pos ) = 0;
 
     private:
       PinCircle * m_lastPinCircle;
