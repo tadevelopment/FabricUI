@@ -396,6 +396,7 @@ PinCircle * Pin::findPinCircle( QPointF pos )
     float x = center.x() - clicked.x();
     float y = center.y() - clicked.y();
     float distance = sqrt( x * x + y * y );
+    distance /= graph()->mainPanel()->canvasZoom();
     if ( distance > pinClickableDistance )
       circle = NULL;
   }
