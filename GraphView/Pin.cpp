@@ -10,6 +10,9 @@
 
 #include <QGraphicsLinearLayout>
 
+// sqrt
+#include <math.h>
+
 using namespace FabricUI::GraphView;
 
 class PinLabel : public NodeLabel
@@ -55,8 +58,8 @@ protected:
     {
       case PortType_Input : return m_pin->inCircle();
       case PortType_Output : return m_pin->outCircle();
+      default: return NULL;
     }
-    return NULL;
   }
 
   void mousePressEvent( QGraphicsSceneMouseEvent* event ) FTL_OVERRIDE
