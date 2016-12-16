@@ -47,6 +47,7 @@ namespace FabricUI
       float mouseWheelZoomRate() const;
       void setMouseWheelZoomRate(float rate);
       ManipulationMode manipulationMode() const;
+      void setManipulationMode(ManipulationMode mode);
 
       virtual QRectF boundingRect() const;
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
@@ -63,7 +64,6 @@ namespace FabricUI
       // used by controller
       void setCanvasZoom(float state, bool quiet = false);
       void setCanvasPan(QPointF pos, bool quiet = false);
-      void setAlwaysPan(bool state) {m_alwaysPan = state;}
       bool grabsEvent( QEvent * e ); // When manipulating camera, events must be forwarded here and not to individual widgets (Alt, Space)
 
       void performZoom(
@@ -92,10 +92,8 @@ namespace FabricUI
       float m_mouseWheelZoomState;
       ManipulationMode m_manipulationMode;
       QGraphicsWidget * m_itemGroup;
-      bool m_draggingSelRect;
       QPointF m_lastPanPoint;
       SelectionRect * m_selectionRect;
-      bool m_alwaysPan;
       std::vector<Node*> m_ongoingSelection;
       QRectF m_boundingRect;
     };
