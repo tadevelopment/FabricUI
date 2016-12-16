@@ -1553,7 +1553,7 @@ void DFGWidget::explodeNode( const char *nodeName )
 void DFGWidget::keyPressEvent(QKeyEvent * event)
 {
   // qDebug() << "DFGWidget::keyPressEvent";
-  if ( event->key() == Qt::Key_QuoteLeft
+  if ( event->key() == Qt::Key_Z
     && !event->isAutoRepeat() )
   {
     event->accept();
@@ -1588,7 +1588,7 @@ Ty clamp( Ty const &v, Ty const &lo, Ty const &hi )
 void DFGWidget::keyReleaseEvent(QKeyEvent * event)
 {
   // qDebug() << "DFGWidget::keyReleaseEvent";
-  if ( event->key() == Qt::Key_QuoteLeft
+  if ( event->key() == Qt::Key_Z
     && !event->isAutoRepeat()
     && m_uiGraphZoomBeforeQuickZoom != 0 )
   {
