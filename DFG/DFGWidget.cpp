@@ -1684,7 +1684,7 @@ bool DFGWidget::checkForUnsaved()
   if(m_klEditor->isVisible() && m_klEditor->hasUnsavedChanges())
   {
     QMessageBox msg(QMessageBox::Warning, "Fabric Warning", 
-      "Do you want to save your function node?\n\nYour changes will be lost if you don't save them.",
+      "There are unsaved changes\n\nIf you leave the function editor they will be lost",
       QMessageBox::NoButton,
       this);
 
