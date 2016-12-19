@@ -47,6 +47,7 @@ namespace FabricUI
       float mouseWheelZoomRate() const;
       void setMouseWheelZoomRate(float rate);
       ManipulationMode manipulationMode() const;
+      void setManipulationMode(ManipulationMode mode);
 
       virtual QRectF boundingRect() const;
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
@@ -65,6 +66,11 @@ namespace FabricUI
       void setCanvasPan(QPointF pos, bool quiet = false);
       bool grabsEvent( QEvent * e ); // When manipulating camera, events must be forwarded here and not to individual widgets (Alt, Space)
 
+      void performZoom(
+        float zoomFactor,
+        QPointF zoomCenter
+        );
+
     signals:
 
       void canvasZoomChanged(float zoom);
@@ -72,11 +78,6 @@ namespace FabricUI
       void doubleClicked(Qt::KeyboardModifiers);
 
     protected:
-
-      void performZoom(
-        float zoomFactor,
-        QPointF zoomCenter
-        );
 
     private:
 

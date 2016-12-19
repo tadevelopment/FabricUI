@@ -648,6 +648,7 @@ bool DFGController::panCanvas(QPointF pan)
       }
     }
 
+    // qDebug() << "panCanvas " << json.c_str();
     exec.setMetadata("uiGraphPan", json.c_str(), false, false);
   }
   catch(FabricCore::Exception e)

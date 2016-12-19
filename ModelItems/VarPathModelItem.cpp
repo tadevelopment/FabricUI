@@ -71,11 +71,13 @@ void VarPathModelItem::setValue(
   QVariant valueAtInteractionBegin
   )
 {
-  QString valueQString = value.toString();
-  m_exec.setRefVarPath(
-    m_refName.c_str(),
-    valueQString.toUtf8().constData()
-    );
+  if(commit)
+    m_dfgUICmdHandler->dfgDoSetRefVarPath(
+      m_binding,
+      m_execPath.c_str(),
+      m_exec,
+      m_refName.c_str(),
+      value.toString());
 }
 
 bool VarPathModelItem::hasDefault()
