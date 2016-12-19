@@ -62,6 +62,7 @@ DFGWidget::DFGWidget(
   , m_manager( manager )
   , m_dfgConfig( dfgConfig )
   , m_isEditable( false )
+  , m_uiGraphZoomBeforeQuickZoom( 0 )
 {
   std::string fontsDir = FabricResourcePath( FTL_STR("Fonts") );
   std::vector<std::string> familyNames;
@@ -1549,6 +1550,84 @@ void DFGWidget::explodeNode( const char *nodeName )
   }
 }
 
+void DFGWidget::keyPressEvent(QKeyEvent * event)
+{
+  // qDebug() << "DFGWidget::keyPressEvent";
+  if ( event->key() == Qt::Key_Z
+    && !event->isAutoRepeat() )
+  {
+    event->accept();
+
+    FTL::CStrRef uiGraphZoomStr =
+      m_uiController->getExec().getMetadata( "uiGraphZoom" );
+    FTL::JSONStrWithLoc jsonStrWithLoc( uiGraphZoomStr );
+    FTL::OwnedPtr<FTL::JSONValue const> jsonValue(
+      FTL::JSONValue::Decode( jsonStrWithLoc )
+      );
+    if ( jsonValue )
+    {
+      FTL::JSONObject const *jsonObject = jsonValue->cast<FTL::JSONObject>();
+      m_uiGraphZoomBeforeQuickZoom =
+        jsonObject->getFloat64( FTL_STR("value") );
+    }
+    // qDebug() << "m_uiGraphZoomBeforeQuickZoom " << m_uiGraphZoomBeforeQuickZoom;
+
+    m_uiController->frameAllNodes();
+
+    return;
+  }
+  Parent::keyPressEvent(event);  
+}
+
+template<typename Ty>
+Ty clamp( Ty const &v, Ty const &lo, Ty const &hi )
+{
+  return std::min( std::max( v, lo ), hi );
+}
+
+void DFGWidget::keyReleaseEvent(QKeyEvent * event)
+{
+  // qDebug() << "DFGWidget::keyReleaseEvent";
+  if ( event->key() == Qt::Key_Z
+    && !event->isAutoRepeat()
+    && m_uiGraphZoomBeforeQuickZoom != 0 )
+  {
+    event->accept();
+
+    QPoint globalPos = QCursor::pos();
+    // qDebug() << "globalPos " << globalPos;
+    GraphView::GraphViewWidget *graphViewWidget = getGraphViewWidget();
+    QRect graphViewWidgetRect = graphViewWidget->geometry();
+    QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
+    // [pz 20160724] Constraint point to widget geometry
+    graphViewWidgetPos = QPoint(
+      clamp(
+        graphViewWidgetPos.x(),
+        graphViewWidgetRect.left(),
+        graphViewWidgetRect.right()
+        ),
+      clamp(
+        graphViewWidgetPos.y(),
+        graphViewWidgetRect.top(),
+        graphViewWidgetRect.bottom()
+        )
+      );
+    // qDebug() << "graphViewWidgetPos " << graphViewWidgetPos;
+    QPointF scenePos = graphViewWidget->mapToScene( graphViewWidgetPos );
+    // qDebug() << "scenePos " << scenePos;
+    GraphView::Graph *graph = graphViewWidget->graph();
+    GraphView::MainPanel *mainPanel = graph->mainPanel();
+    QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
+    // qDebug() << "mainPanelPos " << mainPanelPos;
+    mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
+
+    m_uiGraphZoomBeforeQuickZoom = 0;
+
+    return;
+  }
+  Parent::keyReleaseEvent(event);  
+}
+
 void DFGWidget::onBubbleEditRequested(FabricUI::GraphView::Node * node)
 {
   if ( !m_isEditable )
@@ -1684,7 +1763,9 @@ bool DFGWidget::checkForUnsaved()
   if(m_klEditor->isVisible() && m_klEditor->hasUnsavedChanges())
   {
     QMessageBox msg(QMessageBox::Warning, "Fabric Warning", 
-      "You haven't saved the code.\nYou are going to lose the changes.\nSure?");
+      "There are unsaved changes\n\nIf you leave the function editor they will be lost.",
+      QMessageBox::NoButton,
+      this);
 
     msg.addButton("Save Now", QMessageBox::AcceptRole);
     msg.addButton("Ok", QMessageBox::NoRole);

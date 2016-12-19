@@ -51,6 +51,8 @@ namespace DFG {
     {
       Q_OBJECT
 
+      typedef QWidget Parent;
+
     public:
 
       DFGWidget(
@@ -123,6 +125,9 @@ namespace DFG {
       void replaceBinding( FabricCore::DFGBinding &binding );
       bool priorExecStackIsEmpty() const
         { return m_priorExecStack.empty(); }
+
+      virtual void keyPressEvent(QKeyEvent * event) /*override*/;
+      virtual void keyReleaseEvent(QKeyEvent * event) /*override*/;
 
     signals:
 
@@ -202,6 +207,8 @@ namespace DFG {
       std::vector<PriorExecStackEntry> m_priorExecStack;
 
       bool m_isEditable;
+
+      float m_uiGraphZoomBeforeQuickZoom;
 
       static QSettings * g_settings;
     };

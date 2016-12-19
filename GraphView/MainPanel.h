@@ -68,6 +68,11 @@ namespace FabricUI
       void setCanvasPan(QPointF pos, bool quiet = false);
       bool grabsEvent( QEvent * e ); // When manipulating camera, events must be forwarded here and not to individual widgets (Alt, Space)
 
+      void performZoom(
+        float zoomFactor,
+        QPointF zoomCenter
+        );
+
     signals:
 
       void canvasZoomChanged(float zoom);
@@ -77,11 +82,6 @@ namespace FabricUI
     protected:
 
       void contextMenuEvent( QGraphicsSceneContextMenuEvent * event ) FTL_OVERRIDE;
-
-      void performZoom(
-        float zoomFactor,
-        QPointF zoomCenter
-        );
 
     private:
 
