@@ -73,6 +73,10 @@ public:
   virtual void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
   virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
 
+protected:
+
+  PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return NULL; }
+
 private:
 
   InstBlock *m_instBlock;

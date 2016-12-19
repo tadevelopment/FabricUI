@@ -243,6 +243,8 @@ namespace FabricUI
       bool onMouseRelease( const QGraphicsSceneMouseEvent *event );
       bool onMouseDoubleClicked( const QGraphicsSceneMouseEvent *event );
 
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent * event ) FTL_OVERRIDE;
+
       Graph * m_graph;
       NodeType m_nodeType;
       std::string m_name;

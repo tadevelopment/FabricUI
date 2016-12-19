@@ -633,6 +633,17 @@ void Node::updateNodesToMove( bool backdrops )
     );
   }
 }
+    
+void Node::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
+{
+  QMenu * menu = graph()->getNodeContextMenu( this );
+  if ( menu )
+  {
+    menu->exec( QCursor::pos() );
+    menu->setParent( NULL );
+    menu->deleteLater();
+  }
+}
 
 bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 {
@@ -701,17 +712,6 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
     }
 
     updateNodesToMove( !modifiers.testFlag( Qt::ShiftModifier ) );
-
-    if(button == Qt::RightButton)
-    {
-      QMenu * menu = graph()->getNodeContextMenu(hitNode);
-      if(menu)
-      {
-        menu->exec( QCursor::pos() );
-        menu->setParent( NULL );
-        menu->deleteLater();
-      }
-    }
 
     return true;
   }

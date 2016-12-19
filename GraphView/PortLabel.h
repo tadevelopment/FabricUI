@@ -25,15 +25,13 @@ public:
 
 protected:
 
-  virtual void mousePressEvent( QGraphicsSceneMouseEvent * event );
-  virtual void mouseMoveEvent( QGraphicsSceneMouseEvent *event );
-  virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent * event );
+  void mousePressEvent( QGraphicsSceneMouseEvent* event ) FTL_OVERRIDE;
+
   virtual void submitEditedText( const QString& text ); // override
   virtual void displayedTextChanged() FTL_OVERRIDE;
 
 private:
 
-  QPointF m_dragStartPosition;
   Port* m_port;
 };
 

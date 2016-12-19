@@ -24,6 +24,7 @@ namespace FabricUI
     class Graph;
     class InstBlock;
     class Node;
+    class SidePanel;
 
     class ExposePortAction : public QAction
     {
@@ -159,6 +160,10 @@ namespace FabricUI
 
       void positionChanged(QPointF);
 
+    protected:
+
+      PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return NULL; }
+
     private:
 
       void showToolTip();
@@ -194,6 +199,7 @@ namespace FabricUI
       float m_radius;
       Connection * m_connection;
       ConnectionTarget * m_targetUnderMouse;
+      SidePanel* m_lastSidePanel;
     };
 
   };

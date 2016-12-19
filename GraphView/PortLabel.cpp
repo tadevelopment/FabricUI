@@ -6,7 +6,6 @@
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/PortLabel.h>
 
-#include <QDrag>
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>
 
@@ -32,72 +31,15 @@ PortLabel::PortLabel(
   setEditable( m_port->allowEdits() && m_port->graph()->isEditable() );
 }
 
-void PortLabel::mousePressEvent( QGraphicsSceneMouseEvent *event )
+void PortLabel::mousePressEvent( QGraphicsSceneMouseEvent* event )
 {
-  if ( !!(event->buttons() & Qt::LeftButton) )
-  {
-    Port *port = m_port;
-    if ( port->allowEdits()
-      && port->graph()->isEditable() )
-    {
-      m_dragStartPosition = event->pos();
-      event->accept();
-      return;
-    }
-  }
-  
-  TextContainer::mousePressEvent( event );
-}
-
-void PortLabel::mouseMoveEvent( QGraphicsSceneMouseEvent *event )
-{
-  if ( !!(event->buttons() & Qt::LeftButton) )
-  {
-    if ( (event->pos() - m_dragStartPosition).manhattanLength()
-       >= QApplication::startDragDistance() )
-    {
-      Port *port = m_port;
-      if ( port->allowEdits()
-        && port->graph()->isEditable() )
-      {
-        event->accept();
-
-        QDrag *drag = new QDrag( event->widget() );
-
-        Port::MimeData *mimeData = new Port::MimeData( port );
-        drag->setMimeData( mimeData );
-
-        Qt::DropAction dropAction = drag->exec( Qt::MoveAction );
-        (void)dropAction;
-
-        return;
-      }
-    }
-  }
-
-  TextContainer::mouseMoveEvent( event );
+  m_port->mousePressEvent( event );
 }
 
 void PortLabel::displayedTextChanged()
 {
   TextContainer::displayedTextChanged();
   emit m_port->contentChanged();
-}
-
-void PortLabel::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
-{
-  if ( !!(event->buttons() & Qt::LeftButton) )
-  {
-    Port *port = m_port;
-    if ( port->allowEdits()
-      && port->graph()->isEditable() )
-    {
-      event->accept();
-      return;
-    }
-  }
-  
-  TextContainer::mouseReleaseEvent( event );  
 }
 
 void PortLabel::submitEditedText(const QString& text)

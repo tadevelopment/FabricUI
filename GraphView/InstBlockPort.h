@@ -95,6 +95,9 @@ public:
     PortType pType,
     QColor color
     );
+
+  protected:
+    PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE;
   
 signals:
 

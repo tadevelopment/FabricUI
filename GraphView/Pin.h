@@ -90,6 +90,9 @@ namespace FabricUI
         QColor color,
         FTL::StrRef label = FTL::StrRef()
         );
+
+    protected:
+      PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE;
       
     signals:
 
