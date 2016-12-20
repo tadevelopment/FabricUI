@@ -39,9 +39,9 @@ public:
 
       return ItemPortItemMetadata::getString( key );
     }
-    catch (FabricCore::Exception* e)
+    catch ( FabricCore::Exception e )
     {
-      printf( "[ERROR] %s", e->getDesc_cstr() );
+      reportFabricCoreException( e );
       return NULL;
     }
   }

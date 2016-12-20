@@ -255,20 +255,19 @@ void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
     else
       QGraphicsPathItem::mousePressEvent(event);
   }
-  else if(event->button() == Qt::RightButton)
-  {
-    QMenu * menu = graph()->getConnectionContextMenu(this);
-    if(menu)
-    {
-      menu->exec(QCursor::pos());
-      menu->setParent( NULL );
-      menu->deleteLater();
-    }
-    else
-      QGraphicsPathItem::mousePressEvent(event);
-  }
   else
     QGraphicsPathItem::mousePressEvent(event);
+}
+
+void Connection::contextMenuEvent( QGraphicsSceneContextMenuEvent* event )
+{
+  QMenu * menu = graph()->getConnectionContextMenu( this );
+  if ( menu )
+  {
+    menu->exec( QCursor::pos() );
+    menu->setParent( NULL );
+    menu->deleteLater();
+  }
 }
 
 void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)

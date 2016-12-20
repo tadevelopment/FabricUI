@@ -236,23 +236,14 @@ QPointF FixedPort::connectionPos(PortType pType) const
   return m_circle->centerInSceneCoords();
 }
 
-void FixedPort::mousePressEvent( QGraphicsSceneMouseEvent *event )
+void FixedPort::contextMenuEvent( QGraphicsSceneContextMenuEvent* event )
 {
-  if ( event->button() == Qt::RightButton )
+  if ( QMenu *menu = graph()->getFixedPortContextMenu( this ) )
   {
-    event->accept();
-
-    if ( QMenu *menu = graph()->getFixedPortContextMenu( this ) )
-    {
-      menu->exec( QCursor::pos() );
-      menu->setParent( NULL );
-      menu->deleteLater();
-    }
-
-    return;
+    menu->exec( QCursor::pos() );
+    menu->setParent( NULL );
+    menu->deleteLater();
   }
-  
-  ConnectionTarget::mousePressEvent( event );  
 }
 
 std::string FixedPort::path() const

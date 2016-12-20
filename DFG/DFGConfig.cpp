@@ -43,8 +43,8 @@ DFGConfig::DFGConfig()
   GET_PARAMETER( searchHighlightColor, QColor( 137, 181, 202 ) );
   GET_PARAMETER( searchCursorColor, QColor( 220, 220, 220 ) );
   GET_PARAMETER( searchFontColor, QColor( 0, 0, 0 ) );
-  GET_PARAMETER( varNodeDefaultColor, QColor( 214, 191, 103 ) );
-  GET_PARAMETER( varLabelDefaultColor, QColor( 188, 129, 83 ) );
+  GET_PARAMETER( varNodeDefaultColor, QColor( 216, 140, 106 ) );
+  GET_PARAMETER( varLabelDefaultColor, QColor( 190, 93, 90 ) );
 
   GET_PARAMETER( klEditorConfig.codeBackgroundColor, defaultFontColor );
   GET_PARAMETER( klEditorConfig.codeFontColor, defaultBackgroundColor );

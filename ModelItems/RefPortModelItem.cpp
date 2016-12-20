@@ -81,9 +81,9 @@ QVariant RefPortModelItem::getValue()
       return QVariant::fromValue<FabricCore::RTVal>( rtVal.copy() );
     }
   }
-  catch (FabricCore::Exception* e)
+  catch ( FabricCore::Exception e )
   {
-    printf( "[ERROR] %s", e->getDesc_cstr() );
+    reportFabricCoreException( e );
   }
   return QVariant();
 }

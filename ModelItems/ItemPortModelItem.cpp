@@ -75,9 +75,9 @@ QVariant ItemPortModelItem::getValue()
       return QVariant::fromValue<FabricCore::RTVal>( rtVal.copy() );
     }
   }
-  catch (FabricCore::Exception* e)
+  catch ( FabricCore::Exception e )
   {
-    printf( "[ERROR] %s", e->getDesc_cstr() );
+    reportFabricCoreException( e );
   }
   return QVariant();
 }
@@ -152,9 +152,9 @@ void ItemPortModelItem::setValue(
         );
     }
   }
-  catch (FabricCore::Exception* e)
+  catch ( FabricCore::Exception e )
   {
-    printf( "[ERROR] %s", e->getDesc_cstr() );
+    reportFabricCoreException( e );
   }
 }
 
@@ -196,6 +196,11 @@ void ItemPortModelItem::resetToDefault()
     if (val.isValid())
       onViewValueChanged(QVariant::fromValue(val));
   }
+}
+
+void ItemPortModelItem::reportFabricCoreException( FabricCore::Exception const &e )
+{
+  printf( "[ERROR] %s\n", e.getDesc_cstr() );
 }
 
 } // namespace ModelItems

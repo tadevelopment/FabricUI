@@ -234,12 +234,16 @@ namespace FabricUI
       void updateEffect();
       void updatePinLayout();
       void updateHighlighting( QPointF cursorPos );
+      void selectUpStreamNodes();
+      void updateNodesToMove( bool backdrops );
 
       // used by NodeHeader / NodeHeaderButton / NodeLabel
       bool onMousePress( const QGraphicsSceneMouseEvent *event );
       bool onMouseMove( const QGraphicsSceneMouseEvent *event );
       bool onMouseRelease( const QGraphicsSceneMouseEvent *event );
       bool onMouseDoubleClicked( const QGraphicsSceneMouseEvent *event );
+
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent * event ) FTL_OVERRIDE;
 
       Graph * m_graph;
       NodeType m_nodeType;
@@ -266,6 +270,7 @@ namespace FabricUI
       QGraphicsLinearLayout * m_pinsLayout;
       bool m_selected;
       int m_dragging;
+      bool m_mightSelectUpstreamNodesOnDrag;
       Qt::MouseButton m_dragButton;
       QPointF m_mouseDownPos;
       std::vector<Node *> m_nodesToMove;
