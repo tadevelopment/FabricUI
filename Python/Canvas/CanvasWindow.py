@@ -1051,6 +1051,8 @@ class CanvasWindow(QtGui.QMainWindow):
     def openRecentFile(self):
         action = self.sender()
         if action:
+            if not self.checkUnsavedChanges():
+              return
             self.loadGraph(action.data())
 
     def onAdditionalMenuActionsRequested(self, name, menu, prefix):

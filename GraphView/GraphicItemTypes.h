@@ -24,7 +24,8 @@ namespace FabricUI
       QGraphicsItemType_ProxyPin,
       QGraphicsItemType_NodeHeaderButton,
       QGraphicsItemType_InstBlock,
-      QGraphicsItemType_InstBlockPort
+      QGraphicsItemType_InstBlockPort,
+      QGraphicsItemType_SidePanel
     };
 
   };

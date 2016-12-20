@@ -38,6 +38,7 @@ Node::Node(
   , m_bubble( NULL )
   , m_header( NULL )
   , m_mainWidget( NULL )
+  , m_mightSelectUpstreamNodesOnDrag( false )
   , m_canEdit( false )
   , m_isHighlighted( false )
 {
@@ -599,6 +600,51 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
   QGraphicsWidget::mouseDoubleClickEvent(event);
 }
 
+void Node::selectUpStreamNodes()
+{
+  std::vector<Node*> nodes = upStreamNodes();
+
+  for ( size_t i = 0; i<nodes.size(); i++ )
+    m_graph->controller()->selectNode( nodes[i], true );
+}
+
+void Node::updateNodesToMove( bool backdrops )
+{
+  m_nodesToMove = m_graph->selectedNodes();
+  if ( backdrops )
+  {
+    std::vector<Node *> additionalNodes;
+
+    for ( std::vector<Node *>::const_iterator it = m_nodesToMove.begin();
+      it != m_nodesToMove.end(); ++it )
+    {
+      Node *node = *it;
+      if ( node->isBackDropNode() )
+      {
+        BackDropNode *backDropNode = static_cast<BackDropNode *>( node );
+        backDropNode->appendOverlappingNodes( additionalNodes );
+      }
+    }
+
+    m_nodesToMove.insert(
+      m_nodesToMove.end(),
+      additionalNodes.begin(),
+      additionalNodes.end()
+    );
+  }
+}
+    
+void Node::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
+{
+  QMenu * menu = graph()->getNodeContextMenu( this );
+  if ( menu )
+  {
+    menu->exec( QCursor::pos() );
+    menu->setParent( NULL );
+    menu->deleteLater();
+  }
+}
+
 bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 {
   Qt::KeyboardModifiers modifiers =  event->modifiers();
@@ -608,7 +654,6 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
   Qt::MouseButton button = event->button();
 
   if ( button == Qt::LeftButton
-    || button == Qt::MiddleButton
     || button == Qt::RightButton )
   {
     m_dragButton = button;
@@ -631,18 +676,18 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
     }
 
     bool clearSelection = true;
-    if(button == Qt::MiddleButton)
+    if (
+      button == Qt::LeftButton &&
+      modifiers.testFlag( Qt::ShiftModifier )
+    )
     {
-      std::vector<Node*> nodes = hitNode->upStreamNodes();
-
-      if(!modifiers.testFlag(Qt::ControlModifier) && !modifiers.testFlag(Qt::ShiftModifier))
-      {
-        m_graph->controller()->clearSelection();
-        clearSelection = false;
-      }
-
-      for(size_t i=0;i<nodes.size();i++)
-        m_graph->controller()->selectNode(nodes[i], true);
+      // Select upstream nodes if the Node is already selected,
+      // or if dragging with Shift pressed (see Node::onMouseMove)
+      m_mightSelectUpstreamNodesOnDrag = false;
+      if( selected() )
+        hitNode->selectUpStreamNodes();
+      else
+        m_mightSelectUpstreamNodesOnDrag = true;
     }
     else if(button == Qt::RightButton)
     {
@@ -666,39 +711,7 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
       m_graph->controller()->selectNode(hitNode, false);
     }
 
-    m_nodesToMove = m_graph->selectedNodes();
-    if ( !modifiers.testFlag( Qt::ShiftModifier ) )
-    {
-      std::vector<Node *> additionalNodes;
-
-      for ( std::vector<Node *>::const_iterator it = m_nodesToMove.begin();
-        it != m_nodesToMove.end(); ++it )
-      {
-        Node *node = *it;
-        if ( node->isBackDropNode() )
-        {
-          BackDropNode *backDropNode = static_cast<BackDropNode *>( node );
-          backDropNode->appendOverlappingNodes( additionalNodes );
-        }
-      }
-
-      m_nodesToMove.insert(
-        m_nodesToMove.end(),
-        additionalNodes.begin(),
-        additionalNodes.end()
-        );
-    }
-
-    if(button == Qt::RightButton)
-    {
-      QMenu * menu = graph()->getNodeContextMenu(hitNode);
-      if(menu)
-      {
-        menu->exec( QCursor::pos() );
-        menu->setParent( NULL );
-        menu->deleteLater();
-      }
-    }
+    updateNodesToMove( !modifiers.testFlag( Qt::ShiftModifier ) );
 
     return true;
   }
@@ -714,6 +727,17 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
 
     QPointF delta = event->scenePos() - event->lastScenePos();
     delta *= 1.0f / graph()->mainPanel()->canvasZoom();
+
+    // If starting to drag with Shift, select upstream Nodes
+    if( m_mightSelectUpstreamNodesOnDrag )
+    {
+      if( event->modifiers().testFlag( Qt::ShiftModifier ) )
+      {
+        selectUpStreamNodes();
+        updateNodesToMove( false );
+      }
+      m_mightSelectUpstreamNodesOnDrag = false;
+    }
 
     m_graph->controller()->gvcDoMoveNodes(
       m_nodesToMove,

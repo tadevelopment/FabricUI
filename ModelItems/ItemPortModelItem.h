@@ -93,6 +93,7 @@ class DFGUICmdHandler;
       bool hasDefault() FTL_OVERRIDE;
       void resetToDefault() FTL_OVERRIDE;
 
+      void reportFabricCoreException( FabricCore::Exception const &e );
     };
   }
 }

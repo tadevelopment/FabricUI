@@ -67,13 +67,15 @@ namespace FabricUI
 
       virtual bool selected() const;
 
-      virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
-      virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
-      virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
+      void hoverEnterEvent(QGraphicsSceneHoverEvent * event) FTL_OVERRIDE;
+      void hoverMoveEvent( QGraphicsSceneHoverEvent * event ) FTL_OVERRIDE;
+      void hoverLeaveEvent(QGraphicsSceneHoverEvent * event) FTL_OVERRIDE;
+      void mousePressEvent(QGraphicsSceneMouseEvent * event) FTL_OVERRIDE;
+
+    protected:
+      virtual PinCircle * findPinCircle( QPointF pos ) = 0;
 
     private:
-      PinCircle * findPinCircle(QPointF pos);
-
       PinCircle * m_lastPinCircle;
 #if defined(FTL_BUILD_DEBUG)
       bool m_deleted;

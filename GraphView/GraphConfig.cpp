@@ -1,9 +1,62 @@
 // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
 
 #include "GraphConfig.h"
+
 #include <FTL/Config.h>
+#include <FabricUI/Util/Config.h>
 
 using namespace FabricUI::GraphView;
+using namespace FTL;
+
+namespace FabricUI {
+namespace Util {
+
+// TODO : move it to Config.cpp if it's useful somewhere else
+#include <QPen>
+
+template<>
+JSONValue* ConfigSection::createValue( const QPen v ) const
+{
+  JSONObject* obj = new JSONObject();
+  obj->insert( "color", ConfigSection::createValue( v.color() ) );
+  obj->insert( "width", ConfigSection::createValue( v.widthF() ) );
+  obj->insert( "style", ConfigSection::createValue<int>( v.style() ) );
+  return obj;
+}
+
+template<>
+QPen ConfigSection::getValue( const JSONValue* entry ) const
+{
+  QPen v;
+  const JSONObject* obj = entry->cast<JSONObject>();
+  if ( obj->has( "color" ) ) v.setColor( getValue<QColor>( obj->get( "color" ) ) );
+  if ( obj->has( "width" ) ) v.setWidthF( getValue<double>( obj->get( "width" ) ) );
+  if ( obj->has( "style" ) ) v.setStyle( Qt::PenStyle( getValue<int>( obj->get( "style" ) ) ) );
+  return v;
+}
+
+#include <QPointF>
+
+template<>
+JSONValue* ConfigSection::createValue( const QPointF v ) const
+{
+  JSONObject* obj = new JSONObject();
+  obj->insert( "x", createValue( v.x() ) );
+  obj->insert( "y", createValue( v.y() ) );
+  return obj;
+}
+
+template<>
+QPointF ConfigSection::getValue( const JSONValue* entry ) const
+{
+  const JSONObject* obj = entry->cast<JSONObject>();
+  return QPointF(
+    obj->getFloat64( "x" ),
+    obj->getFloat64( "y" )
+  );
+}
+
+}} // namespace FabricUI::Util
 
 GraphConfig::GraphConfig()
 {
@@ -16,125 +69,158 @@ GraphConfig::GraphConfig()
 #else
   useOpenGL = true;
 #endif
+
+  Util::Config rootConfig;
+  Util::ConfigSection& cfg = rootConfig.getOrCreateSection( "GraphView" );
+
+#define GET_PARAMETER( parameter, defaultValue ) \
+  parameter = cfg.getOrCreateValue( #parameter, defaultValue )
+
+#define GET_FONT( font ) \
+  GET_PARAMETER( font, font )
+
+#define GET_PEN( pen ) \
+  GET_PARAMETER( pen, pen )
   
   pathSep = ".";
-  disconnectInputsAutomatically = true;
-  middleClickDeletesConnections = true;
 
-  mainPanelBackgroundColor = QColor(68, 68, 68, 255);
-  mainPanelDrawGrid = false;
-  mainPanelGridSpanS = 30;
-  mainPanelGridSpanL = 300;
-  mainPanelGridPenS = QPen(QColor(44, 44, 44, 255), 0.5);
-  mainPanelGridPenL = QPen(QColor(40, 40, 40, 255), 1.0);
-  mainPanelBackGroundPanFixed = true;
+  GET_PARAMETER( disconnectInputsAutomatically, true );
+  GET_PARAMETER( middleClickDeletesConnections, false );
+
+  GET_PARAMETER( mainPanelBackgroundColor, QColor(68, 68, 68, 255) );
+  GET_PARAMETER( mainPanelDrawGrid, false );
+  GET_PARAMETER( mainPanelGridSpanS, 30 );
+  GET_PARAMETER( mainPanelGridSpanL, 300 );
+
+  GET_PARAMETER( mainPanelGridPenS, QPen(QColor(44, 44, 44, 255), 0.5) );
+  GET_PARAMETER( mainPanelGridPenL, QPen(QColor(40, 40, 40, 255), 1.0) );
+
+  GET_PARAMETER( mainPanelBackGroundPanFixed, true );
   
-  nodeMinWidth = 100.0f;
-  nodeMinHeight = 28.0f;
-  nodeDefaultColor = QColor(121, 134, 143);
-  nodeDefaultLabelColor = QColor(80, 98, 110);
+  GET_PARAMETER( nodeMinWidth, 100.0f );
+  GET_PARAMETER( nodeMinHeight, 28.0f );
+  GET_PARAMETER( nodeDefaultColor, QColor(121, 134, 143) );
+  GET_PARAMETER( nodeDefaultLabelColor, QColor(80, 98, 110) );
+
   nodeFont = QFont("Roboto", 11, QFont::Bold);
   nodeFont.setHintingPreference( QFont::PreferFullHinting );
   nodeFont.setBold(true);
+  GET_FONT( nodeFont );
+
   instBlockHeaderFont = QFont("Roboto", 10, QFont::Bold);
   instBlockHeaderFont.setHintingPreference( QFont::PreferFullHinting );
   instBlockHeaderFont.setBold(true);
-  nodeFontColor = QColor(20, 20, 20, 255);
-  nodeFontHighlightColor = QColor(195, 195, 195, 255);
-  nodeDefaultPen = QPen(nodeFontColor, 1.0);
-  nodeDefaultPenUsesNodeColor = false;
+  GET_FONT( instBlockHeaderFont );
+
+  GET_PARAMETER( nodeFontColor, QColor(20, 20, 20, 255) );
+  GET_PARAMETER( nodeFontHighlightColor, QColor(195, 195, 195, 255) );
+  GET_PARAMETER( nodeDefaultPen, QPen(nodeFontColor, 1.0) );
+  GET_PARAMETER( nodeDefaultPenUsesNodeColor, false );
+
   nodeSelectedPen = QPen(Qt::SolidLine);
   nodeSelectedPen.setColor(nodeFontHighlightColor);
   nodeSelectedPen.setWidth(1);
+  GET_PEN( nodeSelectedPen );
+
   nodeErrorPen = QPen(Qt::SolidLine);
   nodeErrorPen.setColor(QColor(255, 0, 0, 255));
   nodeErrorPen.setWidth(1);
-  nodeContentMargins = 2.0f;
-  nodeWidthReduction = 15.0f;
-  nodeHeaderContentMargins = 4.0f;
-  nodeHeaderSpacing = 5.0f;
-  nodeHeaderAlwaysShowPins = true;
-  nodeCornerRadius = 5.0f;
-  nodeSpaceAbovePorts = 4.0f;
-  nodeSpaceBelowPorts = 4.0f;
-  nodePinSpacing = 7.0f;
-  nodePinStretch = 16.0f;
-  nodeShadowEnabled = true;
-  nodeShadowColor = QColor(0, 0, 0, 75);
-  nodeShadowOffset = QPointF(2.5, 2.5);
-  nodeShadowBlurRadius = 10.0;
+  GET_PEN( nodeErrorPen );
 
-  nodeHeaderButtonSeparator = 2.0f;
-  nodeHeaderButtonIconDir = "${FABRIC_DIR}/Resources/Icons/";
+  GET_PARAMETER( nodeContentMargins, 2.0f );
+  GET_PARAMETER( nodeWidthReduction, 15.0f );
+  GET_PARAMETER( nodeHeaderContentMargins, 4.0f );
+  GET_PARAMETER( nodeHeaderSpacing, 5.0f );
+  GET_PARAMETER( nodeHeaderAlwaysShowPins, true );
+  GET_PARAMETER( nodeCornerRadius, 5.0f );
+  GET_PARAMETER( nodeSpaceAbovePorts, 4.0f );
+  GET_PARAMETER( nodeSpaceBelowPorts, 4.0f );
+  GET_PARAMETER( nodePinSpacing, 7.0f );
+  GET_PARAMETER( nodePinStretch, 16.0f );
+  GET_PARAMETER( nodeShadowEnabled, true );
+  GET_PARAMETER( nodeShadowColor, QColor(0, 0, 0, 75) );
+  GET_PARAMETER( nodeShadowOffset, QPointF(2.5, 2.5) );
+  GET_PARAMETER( nodeShadowBlurRadius, 10.0 );
+
+  GET_PARAMETER( nodeHeaderButtonSeparator, 2.0f );
+  GET_PARAMETER( nodeHeaderButtonIconDir, QString("${FABRIC_DIR}/Resources/Icons/") );
 
   pinFont = QFont("Roboto", 10, QFont::Normal);
   pinFont.setHintingPreference( QFont::PreferFullHinting );
-  pinFontColor = nodeFontColor;
-  pinFontHighlightColor = nodeFontHighlightColor;
-  pinDefaultPen = nodeDefaultPen;
-  pinUsesColorForPen = false;
-  pinHoverPen = QPen(nodeFontHighlightColor, 1.5);
-  pinRadius = 5.5f;
-  pinLabelSpacing = 2.0f;
-  pinInputUsesFullCircle = false;
-  pinOutputUsesFullCircle = true;
-  pinClickableDistance = 30.0f;
+  GET_FONT( pinFont );
 
-  dimConnectionLines = true;
-  connectionUsePinColor = true;
-  connectionNodePortColorRatio = 0.75;
-  connectionColor = QColor(130, 130, 130);
-  connectionDefaultPen = QPen(connectionColor, 1.5);
-  connectionExposePen = QPen(connectionColor, 1.5);
-  connectionExposeRadius = 50.0;
-  connectionHoverPen = QPen(QColor(170, 170, 170), 2.0, Qt::SolidLine);
-  connectionFixedTangentLength = 10.0f;
-  connectionPercentualTangentLength = 45.0f;
-  portsCentered = true;
+  GET_PARAMETER( pinFontColor, nodeFontColor );
+  GET_PARAMETER( pinFontHighlightColor, nodeFontHighlightColor );
+  GET_PARAMETER( pinDefaultPen, nodeDefaultPen );
+  GET_PARAMETER( pinUsesColorForPen, false );
+  GET_PARAMETER( pinHoverPen, QPen(nodeFontHighlightColor, 1.5) );
+  GET_PARAMETER( pinRadius, 5.5f );
+  GET_PARAMETER( pinLabelSpacing, 2.0f );
+  GET_PARAMETER( pinInputUsesFullCircle, false );
+  GET_PARAMETER( pinOutputUsesFullCircle, true );
+  GET_PARAMETER( pinClickableDistance, 30.0f );
 
-  sidePanelBackgroundColor = nodeDefaultColor;
-  sidePanelCollapsedWidth = 24.0f;
-  sidePanelPen = QPen(Qt::NoPen);
-  sidePanelContentMargins = 4.0f;
-  sidePanelSpacing = 10.0f;
+  GET_PARAMETER( dimConnectionLines, true );
+  GET_PARAMETER( connectionUsePinColor, true );
+  GET_PARAMETER( connectionNodePortColorRatio, 0.75 );
+  GET_PARAMETER( connectionColor, QColor(130, 130, 130) );
+  GET_PARAMETER( connectionDefaultPen, QPen(connectionColor, 1.5) );
+  GET_PARAMETER( connectionExposePen, QPen(connectionColor, 1.5) );
+  GET_PARAMETER( connectionExposeRadius, 50.0 );
+  GET_PARAMETER( connectionHoverPen, QPen(QColor(170, 170, 170), 2.0, Qt::SolidLine) );
+  GET_PARAMETER( connectionFixedTangentLength, 10.0f );
+  GET_PARAMETER( connectionPercentualTangentLength, 45.0f );
+  GET_PARAMETER( portsCentered, true );
+
+  GET_PARAMETER( sidePanelBackgroundColor, nodeDefaultColor );
+  GET_PARAMETER( sidePanelCollapsedWidth, 24.0f );
+  GET_PARAMETER( sidePanelPen, QPen(Qt::NoPen) );
+  GET_PARAMETER( sidePanelContentMargins, 4.0f );
+  GET_PARAMETER( sidePanelSpacing, 10.0f );
+
   sidePanelFont = QFont("Roboto", 10, QFont::Normal);
   sidePanelFont.setHintingPreference( QFont::PreferFullHinting );
-  sidePanelFontColor = pinFontColor;
-  sidePanelFontHighlightColor = QColor(255, 255, 255, 255);
-  sidePanelPortLabelSpacing = 4.0f;
-  sidePanelWidthReduction = 10.5f;
+  GET_FONT( sidePanelFont );
 
-  headerMargins = 4;
-  headerBackgroundColor = nodeDefaultLabelColor;
-  headerPen = nodeDefaultPen;
-  headerFont = nodeFont;
-  headerFontColor = nodeFontColor;
+  GET_PARAMETER( sidePanelFontColor, pinFontColor );
+  GET_PARAMETER( sidePanelFontHighlightColor, QColor(255, 255, 255, 255) );
+  GET_PARAMETER( sidePanelPortLabelSpacing, 4.0f );
+  GET_PARAMETER( sidePanelWidthReduction, 10.5f );
 
-  selectionRectColor = QColor(100, 100, 100, 50);
-  selectionRectPen = QPen(QColor(25, 25, 25), 1.0, Qt::DashLine);
+  GET_PARAMETER( headerMargins, 4 );
+  GET_PARAMETER( headerBackgroundColor, nodeDefaultLabelColor );
+  GET_PARAMETER( headerPen, nodeDefaultPen );
+  GET_PARAMETER( headerFont, nodeFont );
+  GET_PARAMETER( headerFontColor, nodeFontColor );
 
-  mouseGrabberRadius = pinRadius * 1.75;
-  mouseWheelZoomRate = 0.0f; // disable zoom for now 0.0005f;
-  mouseWheelZoomRate = 0.0005f;
+  GET_PARAMETER( selectionRectColor, QColor(100, 100, 100, 50) );
+  GET_PARAMETER( selectionRectPen, QPen(QColor(25, 25, 25), 1.0, Qt::DashLine) );
 
-  backDropNodeAlpha = 0.45f;
-  nodeBubbleMinWidth = 30.0;
-  nodeBubbleMinHeight = 13.0;
-  nodeBubbleColor = QColor(255, 247, 155);
+  GET_PARAMETER( mouseGrabberRadius, pinRadius * 1.75 );
+  GET_PARAMETER( mouseWheelZoomRate, 0.0005f );
+
+  GET_PARAMETER( backDropNodeAlpha, 0.45f );
+  GET_PARAMETER( nodeBubbleMinWidth, 30.0 );
+  GET_PARAMETER( nodeBubbleMinHeight, 13.0 );
+  GET_PARAMETER( nodeBubbleColor, QColor(255, 247, 155) );
+
   nodeBubbleFont = nodeFont;
   nodeBubbleFont.setBold(false);
   nodeBubbleFont.setPointSizeF(7.0);
+  GET_FONT( nodeBubbleFont );
 
-  infoOverlayMinWidth = 100.0;
-  infoOverlayMinHeight = 40.0;
-  infoOverlayColor = QColor(178, 224, 253);
+  GET_PARAMETER( infoOverlayMinWidth, 100.0 );
+  GET_PARAMETER( infoOverlayMinHeight, 40.0 );
+  GET_PARAMETER( infoOverlayColor, QColor(178, 224, 253) );
+
   infoOverlayFont = nodeFont;
   infoOverlayFont.setBold(false);
   infoOverlayFont.setPointSizeF(7.0);
+  GET_FONT( infoOverlayFont );
 
-  instBlockMinWidth = 80.0f;
-  instBlockMinHeight = 24.0f;
+  GET_PARAMETER( instBlockMinWidth, 80.0f );
+  GET_PARAMETER( instBlockMinHeight, 24.0f );
 
-  blockNodeDefaultColor = QColor(193, 189, 138);
-  blockLabelDefaultColor = QColor(158, 153, 98);
+  GET_PARAMETER( blockNodeDefaultColor, QColor(193, 189, 138) );
+  GET_PARAMETER( blockLabelDefaultColor, QColor(158, 153, 98) );
 }

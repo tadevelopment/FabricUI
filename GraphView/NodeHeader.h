@@ -77,6 +77,10 @@ namespace FabricUI
 
       void headerButtonTriggered(FabricUI::GraphView::NodeHeaderButton * button);
 
+    protected:
+
+      PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return NULL; }
+
     private slots:
 
       void onHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderButton * button);

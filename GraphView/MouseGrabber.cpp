@@ -26,9 +26,11 @@ using namespace FabricUI::GraphView;
 
 MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
 : ConnectionTarget(parent->itemGroup())
+  , m_lastSidePanel( NULL )
 {
   m_connectionPos = mousePos;
   m_target = target;
+  m_target->setHighlighted( true );
   m_otherPortType = portType;
   m_targetUnderMouse = NULL;
 
@@ -53,6 +55,7 @@ MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * 
 
 MouseGrabber::~MouseGrabber()
 {
+  m_target->setHighlighted( false );
 }
 
 MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
@@ -171,6 +174,11 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
   QList<QGraphicsItem *> items = collidingItems(Qt::IntersectsItemBoundingRect);
 
+  bool isDraggingPortInSidePanel = false;
+  if( m_lastSidePanel != NULL )
+    m_lastSidePanel->onDraggingPortLeave();
+  m_lastSidePanel = NULL;
+
   ConnectionTarget * newTargetUnderMouse = NULL;
   ConnectionTarget * prevTargetUnderMouse = m_targetUnderMouse;
   float distance = 1000000.0f;
@@ -234,7 +242,30 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
         }
       }
     }
+    else if (
+      items[i]->type() == QGraphicsItemType_SidePanel &&
+      target()->targetType() == TargetType_Port
+      )
+    {
+      Port* port = (Port*)target();
+      SidePanel* sidePanel = (SidePanel*)items[i];
+      if (
+        port->allowEdits() // can it be re-ordered ?
+        && port->sidePanel() == sidePanel
+      )
+      {
+        sidePanel->onDraggingPort( event, port );
+        isDraggingPortInSidePanel = true;
+        m_lastSidePanel = sidePanel;
+      }
+    }
   }
+
+  // changing the cursor to "simulate" QDrag
+  if ( isDraggingPortInSidePanel )
+    setCursor( Qt::ClosedHandCursor );
+  else
+    setCursor( Qt::ArrowCursor );
 
   if(newTargetUnderMouse == NULL && prevTargetUnderMouse != NULL)
   {
@@ -255,6 +286,9 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 void MouseGrabber::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 {
   bool ungrab = false;
+
+  if( m_lastSidePanel )
+    m_lastSidePanel->onDroppingPort();
 
   if(m_targetUnderMouse)
   {
@@ -515,7 +549,7 @@ ExposePortAction::ExposePortAction(
   , m_connectionPortType( connectionPortType )
 {
   setText( "Expose new port" );
-  setIcon( FabricUI::LoadPixmap( "DFGPlus.png" ) );
+  setIcon( FabricUI::LoadPixmap( "DFGPlus.png" ).scaledToWidth( 20, Qt::SmoothTransformation ) );
   connect(
     this, SIGNAL(triggered()),
     this, SLOT(onTriggered())

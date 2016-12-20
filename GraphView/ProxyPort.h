@@ -58,6 +58,9 @@ namespace FabricUI
       virtual TargetType targetType() const { return TargetType_ProxyPort; }
       virtual QPointF connectionPos(PortType pType) const;
 
+    protected:
+      PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return circle(); }
+
     private:
 
       SidePanel * m_sidePanel;

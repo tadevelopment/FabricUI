@@ -95,39 +95,7 @@ namespace FabricUI
 
       bool allowEdits() const
         { return m_allowEdits; }
-      void disableEdits()
-        { m_allowEdits = false; }
-
-      static QString const MimeType;
-
-      class MimeData : public QMimeData
-      {
-        typedef QMimeData Parent;
-
-      public:
-
-        MimeData( Port *port )
-          : m_port( port )
-          {}
-
-        virtual bool hasFormat( QString const &mimeType) const;
-
-        virtual QStringList formats() const;
-
-        Port *port() const
-          { return m_port; }
-
-      protected:
-        
-        virtual QVariant retrieveData(
-          QString const &mimeType,
-          QVariant::Type type
-          ) const;
-
-      private:
-
-        Port *m_port;
-      };
+      void disableEdits();
 
     signals:
 
@@ -139,7 +107,9 @@ namespace FabricUI
 
       void setIndex(unsigned id) { m_index = id; }
 
-      virtual void mousePressEvent( QGraphicsSceneMouseEvent * event );
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent* event ) FTL_OVERRIDE;
+
+      PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return circle(); }
 
     private:
 
