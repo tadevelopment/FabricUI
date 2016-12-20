@@ -125,13 +125,31 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
       exec.getPortType( portToConnectPath.c_str() );
     if ( portToConnectNodePortType == FabricCore::DFGPortType_In )
     {
-      // copy the metadata.
-
       FTL::CStrRef::Split split = portToConnectPath.rsplit('.');
       std::string portToConnectNodeName = split.first;
       FTL::CStrRef portToConnectName = split.second;
       if ( !portToConnectNodeName.empty() )
       {
+        FTL::CStrRef resolvedType =
+          exec.getPortResolvedType( portToConnectPath.c_str() );
+        if ( !resolvedType.empty() )
+        {
+          FabricCore::RTVal defaultValue =
+            exec.getPortResolvedDefaultValue(
+              portToConnectPath.c_str(),
+              resolvedType.c_str()
+              ).clone();
+          if ( defaultValue.isValid() )
+          {
+            if ( execPath.empty() )
+              binding.setArgValue( portName.c_str(), defaultValue, true );
+            else
+              exec.setPortDefaultValue( portName.c_str(), defaultValue, true );
+            ++coreUndoCount;
+          }
+        }
+
+
         static unsigned const metadatasToCopyCount = 5;
         char const *metadatasToCopy[metadatasToCopyCount] =
         {
@@ -177,36 +195,6 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
                 ),
               true
               );
-            ++coreUndoCount;
-          }
-        }
-
-        // set the new port's value
-
-        FTL::CStrRef resolvedType =
-          exec.getPortResolvedType( portToConnectPath.c_str() );
-        if ( !resolvedType.empty() )
-        {
-          FabricCore::RTVal defaultValue =
-            exec.getPortResolvedDefaultValue(
-              portToConnectPath.c_str(),
-              resolvedType.c_str()
-              ).clone();
-          if ( defaultValue.isValid() )
-          {
-            if ( execPath.empty() )
-            {
-              binding.setArgValue( portName.c_str(), defaultValue, true );
-              // [FE-7700] automatically set root ports as "persistable".
-              getBinding().getExec().setExecPortMetadata(
-                portName.c_str(),
-                DFG_METADATA_UIPERSISTVALUE,
-                "true",
-                false
-                );
-            }
-            else
-              exec.setPortDefaultValue( portName.c_str(), defaultValue, true );
             ++coreUndoCount;
           }
         }
