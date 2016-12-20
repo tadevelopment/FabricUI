@@ -38,9 +38,9 @@ Node::Node(
   , m_bubble( NULL )
   , m_header( NULL )
   , m_mainWidget( NULL )
+  , m_mightSelectUpstreamNodesOnDrag( false )
   , m_canEdit( false )
   , m_isHighlighted( false )
-  , m_mightSelectUpstreamNodesOnDrag( false )
 {
   m_defaultPen = m_graph->config().nodeDefaultPen;
   m_selectedPen = m_graph->config().nodeSelectedPen;
