@@ -85,7 +85,7 @@ GraphConfig::GraphConfig()
   pathSep = ".";
 
   GET_PARAMETER( disconnectInputsAutomatically, true );
-  GET_PARAMETER( middleClickDeletesConnections, true );
+  GET_PARAMETER( middleClickDeletesConnections, false );
 
   GET_PARAMETER( mainPanelBackgroundColor, QColor(68, 68, 68, 255) );
   GET_PARAMETER( mainPanelDrawGrid, false );
