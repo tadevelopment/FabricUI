@@ -22,6 +22,11 @@ namespace FabricUI
 
       ItemPortModelItem *m_nodePortModelItem;
 
+      void reportFabricCoreException( FabricCore::Exception const &e ) const
+      {
+        printf( "[ERROR] %s\n", e.getDesc_cstr() );
+      }
+
     public:
 
       ItemPortItemMetadata( ItemPortModelItem *nodePortModelItem )
@@ -64,9 +69,9 @@ namespace FabricUI
 
           return exec.getPortMetadata( portPath.c_str(), key );
         }
-        catch (FabricCore::Exception* e)
+        catch ( FabricCore::Exception e )
         {
-          printf( "[ERROR] %s", e->getDesc_cstr() );
+          reportFabricCoreException( e );
           return NULL;
         }
       }
