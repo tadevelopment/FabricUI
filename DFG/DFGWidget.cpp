@@ -1553,8 +1553,12 @@ void DFGWidget::explodeNode( const char *nodeName )
 void DFGWidget::keyPressEvent(QKeyEvent * event)
 {
   // qDebug() << "DFGWidget::keyPressEvent";
+  Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   if ( event->key() == Qt::Key_Z
-    && !event->isAutoRepeat() )
+    && !keyMod.testFlag(Qt::ShiftModifier)
+    && !keyMod.testFlag(Qt::AltModifier)
+    && !keyMod.testFlag(Qt::ControlModifier)
+    && !event->isAutoRepeat())
   {
     event->accept();
 
