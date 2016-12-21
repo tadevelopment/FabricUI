@@ -75,9 +75,8 @@ EditorConfig::EditorConfig()
   parameter = cfg.getOrCreateValue( #parameter, defaultValue )
 
   GET_PARAMETER( codeBackgroundColor, QColor(39, 40, 34) );
-  GET_PARAMETER( codeFontSize, 12 );
-  // codeFont = QFont("DejaVu Sans Mono", codeFontSize);
-  GET_PARAMETER( codeFont, QFont("Courier New", codeFontSize) );
+  GET_PARAMETER( codeFontSize, 10 );
+  GET_PARAMETER( codeFont, QFont("Roboto Mono", codeFontSize) );
   GET_PARAMETER( codeFontColor, QColor(248, 248, 242) );
   GET_PARAMETER( codeTabWidth, 2 );
 

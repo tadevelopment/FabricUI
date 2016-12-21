@@ -53,7 +53,7 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
   int height = event->rect().height();
 
 #ifdef FABRIC_OS_LINUX
-  // [andrew 20150907] Courier New has a leading() value of -1 on Linux which doesn't
+  // [andrew 20150907] Font has a leading() value of -1 on Linux which doesn't
   // line up with the real line spacing seen in the source code widget
   int lineHeight = m_metrics->height();
   int offset = lineHeight;
