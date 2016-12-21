@@ -8,8 +8,10 @@ using namespace FabricServices;
 using namespace FabricUI::KLEditor;
 
 KLEditorWidget::KLEditorWidget(QWidget * parent, FabricServices::ASTWrapper::KLASTManager * manager, const EditorConfig & config)
-: QWidget(parent)
+: QFrame(parent)
 {
+  setObjectName( "KLEditorWidget" );
+
   m_config = config;
 
   setContentsMargins(0, 0, 0, 0);
