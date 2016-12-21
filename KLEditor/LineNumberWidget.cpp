@@ -85,7 +85,7 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
 #endif
     paddingNumber = buffer;
     while(paddingNumber.length() < 4)
-      paddingNumber = "0" + paddingNumber;
+      paddingNumber = " " + paddingNumber;
 
     int lineWidth = m_metrics->width(paddingNumber.c_str());
     painter.drawText(QPoint(width - 2 - lineWidth, offset), paddingNumber.c_str());

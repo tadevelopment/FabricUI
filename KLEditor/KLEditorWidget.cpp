@@ -21,7 +21,7 @@ KLEditorWidget::KLEditorWidget(QWidget * parent, FabricServices::ASTWrapper::KLA
 
   QHBoxLayout * layout = new QHBoxLayout();
   layout->setContentsMargins(0, 0, 0, 0);
-  layout->setSpacing(m_config.editorSpacing);
+  layout->setSpacing(0);
   layout->addWidget(m_lineNumbers);
   layout->addWidget(m_sourceCodeWidget);
   setLayout(layout);

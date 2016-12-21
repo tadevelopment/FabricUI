@@ -130,7 +130,6 @@ EditorConfig::EditorConfig()
 
   GET_PARAMETER( editorAutoRebuildAST, true );
   GET_PARAMETER( editorAlwaysShowCodeCompletion, true );
-  GET_PARAMETER( editorSpacing, 2 );
 
   GET_PARAMETER( docUrlPrefix, QString("http://documentation.fabricengine.com/FabricEngine/latest/HTML/") );
 }
