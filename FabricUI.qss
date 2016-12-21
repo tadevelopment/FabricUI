@@ -19,7 +19,7 @@ QMainWindow::separator
 
 QMainWindow::separator:hover
 {
-  background: #555555;
+  background: #666666;
 }
 
 QMainWindow > QTabWidget::tab-bar
@@ -296,8 +296,9 @@ QDialog QPushButton:hover
 QDialog QPushButton:pressed
 {
   border: 0;
-  margin: 2px 0 0 2px;
-  background: #637987;
+  margin-top: 2px;
+  margin-left: 2px;
+  background: #50626E;
 }
 
 QDialog QPushButton:focus
@@ -1548,19 +1549,17 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ScriptEditorWidget QToolButton
 {
   color: #FFFFFF;
-  border: 1px #222222;
+  border: 0;
   border-radius: 3px;
-  border-style: outset;
-  padding: 3px;
-  margin: 2px;
-
-  background-color: #2B2B2B;
+  padding: 4px;
+  margin: 4px;
+  background-color: #2F2F2F;
 }
 
 #ScriptEditorWidget QToolButton::disabled
 {
   background-color: #444;
-  color: #666666;
+  color: #6D6D6D;
 }
 
 #ScriptEditorWidget QToolButton::checked
@@ -1575,16 +1574,18 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ScriptEditorWidget QToolButton:hover
 {
-  background-color: #3B3B3B;
+  background-color: #50626E;
 }
 
 #ScriptEditorWidget QToolButton::pressed
 {
   border-style: inset;
-  padding-top: 5px;
-  padding-left: 5px;
+  /*padding-top: 5px;
+  padding-left: 5px;*/
+  margin-top: 6px;
+  margin-left: 6px;
 
-  background-color: #2B2B2B;
+  background-color: #50626E;
 }
 
 #ScriptEditorLogWidget
