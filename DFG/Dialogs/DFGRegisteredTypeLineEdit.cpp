@@ -37,7 +37,8 @@ bool DFGRegisteredTypeLineEdit::checkIfTypeExist() {
   if (n < 0)  n = t.indexOf('[');
   if (n < 0)  n = t.size();
   t.truncate(n);
-  return  m_registerKLTypeList.contains(t);
+  return  ( t.startsWith('$') && t.endsWith('$') )
+         || m_registerKLTypeList.contains(t);
 }
 
 void DFGRegisteredTypeLineEdit::displayInvalidTypeWarning() {
