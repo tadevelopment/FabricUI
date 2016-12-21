@@ -28,12 +28,14 @@ DFGKLEditorWidget::DFGKLEditorWidget(
   ASTWrapper::KLASTManager * manager,
   const DFGConfig & config
   )
-  : QWidget( dfgWidget )
+  : QFrame( dfgWidget )
   , m_controller( controller )
   , m_config( config )
   , m_unsavedChanges( false )
   , m_isSettingPorts( false )
 {
+  setObjectName( "DFGKLEditorWidget" );
+
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
   setMinimumSize(QSize(300, 250));
 
