@@ -204,15 +204,29 @@ void DFGErrorsWidget::onErrorsMayHaveChanged()
         location += QString::fromUtf8( blockName.data(), blockName.size() );
       }
       if ( location.isEmpty() )
-        location += "<root>";
-      if ( line != -1 )
       {
-        location += ':';
-        location += QString::number( line );
-        if ( column != -1 )
+        if ( line != -1 )
+        {
+          location += "line ";
+          location += QString::number( line );
+          if ( column != -1 )
+          {
+            location += ", column ";
+            location += QString::number( column );
+          }
+        }
+      }
+      else
+      {
+        if ( line != -1 )
         {
           location += ':';
-          location += QString::number( column );
+          location += QString::number( line );
+          if ( column != -1 )
+          {
+            location += ':';
+            location += QString::number( column );
+          }
         }
       }
       m_tableWidget->setItem( row, 0, new QTableWidgetItem( location ) );
