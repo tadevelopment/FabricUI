@@ -186,6 +186,21 @@ QMenu::item:pressed
   background-color: #637987;
 }
 
+QSplitter::handle:horizontal
+{
+  width: 3px;
+}
+
+QSplitter::handle:vertical
+{
+  height: 3px;
+}
+
+QSplitter::handle:pressed
+{
+  background: #666666;
+}
+
 /* QDialog Widget Formatting */
 QDialog
 {
@@ -681,9 +696,34 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGErrorsWidget QTableWidget
 {
+  background-color: #272822;
   border: none;
   margin: 0px;
   padding: 0px;
+  alternate-background-color: yellow;
+}
+
+#DFGErrorsWidget QTableWidget::item:hover
+{
+  color: #FFFFFF;
+  background-color: #596D7A;
+}
+
+#DFGErrorsWidget QTableWidget::item:selected
+{
+  color: #FFFFFF;
+  background-color: #50626E;
+}
+
+#DFGErrorsWidget QTableWidget QHeaderView::section
+{
+  border-top: 1px solid #484848;
+  border-right: 1px solid #2B2B2B;
+  border-bottom: 1px solid #2B2B2B;
+  border-left: 1px solid #484848;
+  text-align: left;
+  background-color: #363636;
+  padding: 5px;
 }
 
 /****************************************************************************
