@@ -1580,8 +1580,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ScriptEditorWidget QToolButton::pressed
 {
   border-style: inset;
-  /*padding-top: 5px;
-  padding-left: 5px;*/
   margin-top: 6px;
   margin-left: 6px;
 
@@ -1599,8 +1597,15 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ScriptEditorCmdEditor
 {
-  font: 10pt "Roboto Mono";
   background-color: #272822;
+  border-top: 1px solid #2B2B2B;
+  border-right: 1px solid #484848;
+  border-bottom: 1px solid #484848;
+  border-left: 1px solid #2B2B2B;
+}
+
+#DFGKLEditorWidget #KLEditorWidget #KLSourceCodeWidget
+{
   border-top: 1px solid #2B2B2B;
   border-right: 1px solid #484848;
   border-bottom: 1px solid #484848;
