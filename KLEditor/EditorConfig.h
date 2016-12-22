@@ -46,7 +46,6 @@ namespace FabricUI
 
       bool editorAutoRebuildAST;
       bool editorAlwaysShowCodeCompletion;
-      unsigned int editorSpacing;
 
       QTextCharFormat formatForHighlight;
 

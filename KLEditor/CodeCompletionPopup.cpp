@@ -361,9 +361,9 @@ void CodeCompletionPopup::updateSearch()
         QLabel *maxResultsLabel = new QLabel( s_maxResultsLabel );
         maxResultsLabel->setStyleSheet(
           "QLabel { "
-          "  font: Courier New;"
+          "  font-family: \"Roboto Mono\";"
           "  font-weight: bold;"
-          "  font-size: 14px;"
+          "  font-size: 10px;"
           "  color: rgba(0, 0, 0, 180);"
           "  background-color: rgba(207, 222, 242, 180);"
           "}" );

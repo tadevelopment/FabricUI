@@ -3,7 +3,7 @@
 #ifndef __UI_DFG_DFGKLEditorWidget__
 #define __UI_DFG_DFGKLEditorWidget__
 
-#include <QWidget>
+#include <QFrame>
 #include <QPlainTextEdit>
 #include <FabricUI/KLEditor/KLEditorWidget.h>
 #include "DFGConfig.h"
@@ -19,7 +19,7 @@ namespace FabricUI
     class DFGExecHeaderWidget;
     class DFGPEWidget_Exec;
 
-    class DFGKLEditorWidget : public QWidget
+    class DFGKLEditorWidget : public QFrame
     {
       Q_OBJECT
 

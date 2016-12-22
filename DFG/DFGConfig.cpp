@@ -10,12 +10,12 @@ using namespace FabricServices;
 using namespace FabricUI::DFG;
 
 DFGConfig::DFGConfig()
-: defaultFont("Lucida", 10),
-  fixedFont("Courier", 10),
-  logFont("Courier", 10)
-  , searchQueryFont( QFont("Courier", 11, QFont::Bold) )
-  , searchResultsFont( QFont("Courier", 11) )
-  , searchHelpFont( QFont("Courier", 11, QFont::Bold) )
+: defaultFont("Roboto", 10),
+  fixedFont("Roboto Mono", 10),
+  logFont("Roboto Mono", 10)
+  , searchQueryFont( QFont("Roboto Mono", 10, QFont::Bold) )
+  , searchResultsFont( QFont("Roboto Mono", 10) )
+  , searchHelpFont( QFont("Roboto Mono", 10, QFont::Bold) )
 {
   Util::Config rootConfig;
   Util::ConfigSection& cfg = rootConfig.getOrCreateSection( "DFG" );
@@ -35,6 +35,7 @@ DFGConfig::DFGConfig()
   GET_FONT( logFont );
   GET_FONT( searchQueryFont );
   GET_FONT( searchResultsFont );
+  GET_FONT( searchHelpFont );
 
   GET_PARAMETER( defaultWindowColor, QColor( 85, 88, 92 ) );
   GET_PARAMETER( defaultBackgroundColor, QColor( 156, 174, 187 ) );

@@ -17,7 +17,7 @@ LineNumberWidget::LineNumberWidget(QWidget * parent, const EditorConfig & config
   m_metrics = new QFontMetrics(m_config.lineNumberFont);
   m_lineOffset = 0;
 
-  int maxWidth = m_metrics->width("0000") + 4;
+  int maxWidth = m_metrics->width("0000") + 6;
   setMinimumWidth(maxWidth);
   setMaximumWidth(maxWidth);
 
@@ -53,7 +53,7 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
   int height = event->rect().height();
 
 #ifdef FABRIC_OS_LINUX
-  // [andrew 20150907] Courier New has a leading() value of -1 on Linux which doesn't
+  // [andrew 20150907] Font has a leading() value of -1 on Linux which doesn't
   // line up with the real line spacing seen in the source code widget
   int lineHeight = m_metrics->height();
   int offset = lineHeight;
@@ -85,7 +85,7 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
 #endif
     paddingNumber = buffer;
     while(paddingNumber.length() < 4)
-      paddingNumber = "0" + paddingNumber;
+      paddingNumber = " " + paddingNumber;
 
     int lineWidth = m_metrics->width(paddingNumber.c_str());
     painter.drawText(QPoint(width - 2 - lineWidth, offset), paddingNumber.c_str());

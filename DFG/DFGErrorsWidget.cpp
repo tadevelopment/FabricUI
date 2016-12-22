@@ -53,6 +53,7 @@ DFGErrorsWidget::DFGErrorsWidget(
   m_tableWidget->setSelectionBehavior( QAbstractItemView::SelectRows );
   m_tableWidget->setShowGrid( false );
   m_tableWidget->setIconSize( QSize( 20, 20 ) );
+  m_tableWidget->setAlternatingRowColors( true );
 
   connect(
     m_tableWidget, SIGNAL(cellDoubleClicked(int, int)),

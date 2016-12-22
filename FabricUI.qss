@@ -19,7 +19,7 @@ QMainWindow::separator
 
 QMainWindow::separator:hover
 {
-  background: #555555;
+  background: #666666;
 }
 
 QMainWindow > QTabWidget::tab-bar
@@ -186,6 +186,21 @@ QMenu::item:pressed
   background-color: #637987;
 }
 
+QSplitter::handle:horizontal
+{
+  width: 3px;
+}
+
+QSplitter::handle:vertical
+{
+  height: 3px;
+}
+
+QSplitter::handle:pressed
+{
+  background: #666666;
+}
+
 /* QDialog Widget Formatting */
 QDialog
 {
@@ -296,8 +311,9 @@ QDialog QPushButton:hover
 QDialog QPushButton:pressed
 {
   border: 0;
-  margin: 2px 0 0 2px;
-  background: #637987;
+  margin-top: 2px;
+  margin-left: 2px;
+  background: #50626E;
 }
 
 QDialog QPushButton:focus
@@ -680,9 +696,35 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGErrorsWidget QTableWidget
 {
+  background-color: #2B2B2B;
   border: none;
   margin: 0px;
   padding: 0px;
+  alternate-background-color: #333333;
+}
+
+#DFGErrorsWidget QTableWidget::item:hover
+{
+  color: #FFFFFF;
+  background-color: #3E3E3E;
+}
+
+#DFGErrorsWidget QTableWidget::item:selected
+{
+  border: none;
+  color: #FFFFFF;
+  background-color: #3E3E3E;
+}
+
+#DFGErrorsWidget QTableWidget QHeaderView::section
+{
+  border-top: 1px solid #484848;
+  border-right: 1px solid #2B2B2B;
+  border-bottom: 1px solid #2B2B2B;
+  border-left: 1px solid #484848;
+  text-align: left;
+  background-color: #363636;
+  padding: 5px;
 }
 
 /****************************************************************************
@@ -1548,19 +1590,17 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ScriptEditorWidget QToolButton
 {
   color: #FFFFFF;
-  border: 1px #222222;
+  border: 0;
   border-radius: 3px;
-  border-style: outset;
-  padding: 3px;
-  margin: 2px;
-
-  background-color: #2B2B2B;
+  padding: 4px;
+  margin: 4px;
+  background-color: #2F2F2F;
 }
 
 #ScriptEditorWidget QToolButton::disabled
 {
   background-color: #444;
-  color: #666666;
+  color: #6D6D6D;
 }
 
 #ScriptEditorWidget QToolButton::checked
@@ -1575,21 +1615,20 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ScriptEditorWidget QToolButton:hover
 {
-  background-color: #3B3B3B;
+  background-color: #50626E;
 }
 
 #ScriptEditorWidget QToolButton::pressed
 {
   border-style: inset;
-  padding-top: 5px;
-  padding-left: 5px;
+  margin-top: 6px;
+  margin-left: 6px;
 
-  background-color: #2B2B2B;
+  background-color: #50626E;
 }
 
 #ScriptEditorLogWidget
 {
-  font: 10pt "Roboto Mono";
   border-top: 1px solid #2B2B2B;
   border-right: 1px solid #484848;
   border-bottom: 1px solid #484848;
@@ -1598,8 +1637,20 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ScriptEditorCmdEditor
 {
-  font: 10pt "Roboto Mono";
   background-color: #272822;
+  border-top: 1px solid #2B2B2B;
+  border-right: 1px solid #484848;
+  border-bottom: 1px solid #484848;
+  border-left: 1px solid #2B2B2B;
+}
+
+#DFGKLEditorWidget #KLEditorWidget #KLSourceCodeWidget
+{
+  border: none;
+}
+
+#DFGKLEditorWidget #KLEditorWidget
+{
   border-top: 1px solid #2B2B2B;
   border-right: 1px solid #484848;
   border-bottom: 1px solid #484848;

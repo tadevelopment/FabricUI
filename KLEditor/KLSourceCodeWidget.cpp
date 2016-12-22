@@ -32,6 +32,8 @@ KLSourceCodeWidget::KLSourceCodeWidget(QWidget * parent, FabricServices::ASTWrap
 , m_codeAssistant(NULL)
 , m_dfgExec(NULL)
 {
+  setObjectName( "KLSourceCodeWidget" );
+  
   m_config = config;
   m_lineOffset = UINT_MAX;
   m_filePath = "empty.kl";
