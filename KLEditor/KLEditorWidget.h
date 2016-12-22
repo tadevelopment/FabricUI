@@ -19,7 +19,11 @@ namespace FabricUI
     
     public:
     
-      KLEditorWidget(QFrame * parent, FabricServices::ASTWrapper::KLASTManager * manager, const EditorConfig & config = EditorConfig());
+      KLEditorWidget(
+        QWidget * parent,
+        FabricServices::ASTWrapper::KLASTManager * manager,
+        const EditorConfig & config = EditorConfig()
+        );
       virtual ~KLEditorWidget();
 
       KLSourceCodeWidget * sourceCodeWidget();

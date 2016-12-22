@@ -7,8 +7,12 @@
 using namespace FabricServices;
 using namespace FabricUI::KLEditor;
 
-KLEditorWidget::KLEditorWidget(QWidget * parent, FabricServices::ASTWrapper::KLASTManager * manager, const EditorConfig & config)
-: QFrame(parent)
+KLEditorWidget::KLEditorWidget(
+  QWidget * parent,
+  FabricServices::ASTWrapper::KLASTManager * manager,
+  const EditorConfig & config
+  )
+  : QFrame(parent)
 {
   setObjectName( "KLEditorWidget" );
 
