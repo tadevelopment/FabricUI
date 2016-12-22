@@ -56,7 +56,6 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
   unsigned metadataCount = 0;
   char const **metadataKeys = NULL;
   char const **metadataValues = NULL;
-  bool setAsPersistable = false;
 
   if ( !metaData.empty() )
   {
@@ -75,9 +74,6 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
       {
         metadataKeys[index] = it->first.c_str();
         metadataValues[index] = it->second->getStringValue().c_str();
-        if ( !strcmp(metadataKeys[index], DFG_METADATA_UIPERSISTVALUE)
-          && !strcmp(metadataValues[index], "true") )
-          setAsPersistable = true;
         ++index;
       }
     }
@@ -153,7 +149,6 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
           }
         }
 
-
         static unsigned const metadatasToCopyCount = 5;
         char const *metadatasToCopy[metadatasToCopyCount] =
         {
@@ -174,6 +169,9 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
             exec.getSubExec( portToConnectNodeName.c_str() );
           for ( unsigned i = 0; i < metadatasToCopyCount; ++i )
           {
+            const char *currMetadata = exec.getPortMetadata(portName.c_str(), metadatasToCopy[i]);
+            if (currMetadata && strlen(currMetadata))
+              continue; // don't overwrite metadata that has already been set.
             exec.setExecPortMetadata(
               portName.c_str(),
               metadatasToCopy[i],
@@ -190,6 +188,9 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
         {
           for ( unsigned i = 0; i < metadatasToCopyCount; ++i )
           {
+            const char *currMetadata = exec.getPortMetadata(portName.c_str(), metadatasToCopy[i]);
+            if (currMetadata && strlen(currMetadata))
+              continue; // don't overwrite metadata that has already been set.
             exec.setExecPortMetadata(
               portName.c_str(),
               metadatasToCopy[i],
@@ -202,16 +203,6 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
             ++coreUndoCount;
           }
         }
-      }
-      if (setAsPersistable)
-      {
-        exec.setExecPortMetadata(
-          portName.c_str(),
-          DFG_METADATA_UIPERSISTVALUE,
-          "true",
-          true
-          );
-         ++coreUndoCount;
       }
     }
 
