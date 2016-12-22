@@ -113,6 +113,8 @@ namespace FabricUI
         QString dstName
         ) = 0;
 
+      virtual QString gvcGetCurrentExecPath() = 0;
+
       virtual bool selectNode(Node * node, bool state);
       virtual bool clearSelection();
       virtual bool zoomCanvas(float zoom);

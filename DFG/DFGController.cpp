@@ -2110,6 +2110,11 @@ void DFGController::gvcDoMoveExecPort(
       );
 }
 
+QString DFGController::gvcGetCurrentExecPath()
+{
+  return getExecPath_QS();
+}
+
 void DFGController::savePrefs()
 {
   if ( m_presetDictsUpToDate )

@@ -172,6 +172,8 @@ namespace FabricUI
         QString dstName
         );
 
+      virtual QString gvcGetCurrentExecPath();
+      
       // Commands
 
       void cmdRemoveNodes(

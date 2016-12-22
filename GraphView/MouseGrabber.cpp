@@ -400,20 +400,16 @@ void MouseGrabber::invokeConnect(ConnectionTarget * source, ConnectionTarget * t
 {
   if(source->targetType() == TargetType_ProxyPort && target->targetType() == TargetType_Pin)
   {
-printf("1 %s\n", target->path().c_str());
     Pin *pinToConnectWith = static_cast<Pin *>( target );
     FTL::CStrRef pinName = pinToConnectWith->name();
     FTL::CStrRef dataType = pinToConnectWith->dataType();
-printf("1 %s\n", pinName.c_str());
-
     std::string metaData;
-    if (true)
+    if (graph()->controller()->gvcGetCurrentExecPath().isEmpty()) // [FE-7700]
     {
       FTL::JSONEnc<> metaDataEnc( metaData );
       FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
       FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, "true" );
     }
-
     graph()->controller()->gvcDoAddPort(
       QString::fromUtf8( pinName.data(), pinName.size() ),
       PortType_Output,
@@ -425,7 +421,6 @@ printf("1 %s\n", pinName.c_str());
   }
   else if(target->targetType() == TargetType_ProxyPort && source->targetType() == TargetType_Pin)
   {
-printf("2\n");
     Pin *pinToConnectWith = static_cast<Pin *>( source );
     FTL::CStrRef pinName = pinToConnectWith->name();
     FTL::CStrRef dataType = pinToConnectWith->dataType();
@@ -438,20 +433,27 @@ printf("2\n");
   }
   else if(source->targetType() == TargetType_ProxyPort && target->targetType() == TargetType_InstBlockPort)
   {
-printf("3\n");
     InstBlockPort *instBlockPortToConnectWith = static_cast<InstBlockPort *>( target );
     FTL::CStrRef instBlockPortName = instBlockPortToConnectWith->name();
     FTL::CStrRef dataType = instBlockPortToConnectWith->dataType();
+    std::string metaData;
+    if (graph()->controller()->gvcGetCurrentExecPath().isEmpty()) // [FE-7700]
+    {
+      FTL::JSONEnc<> metaDataEnc( metaData );
+      FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, "true" );
+    }
     graph()->controller()->gvcDoAddPort(
       QString::fromUtf8( instBlockPortName.data(), instBlockPortName.size() ),
       PortType_Output,
       QString::fromUtf8( dataType.data(), dataType.size() ),
-      instBlockPortToConnectWith
+      instBlockPortToConnectWith,
+      QString(),
+      QString::fromUtf8( metaData.data(), metaData.size() )
       );
   }
   else if(target->targetType() == TargetType_ProxyPort && source->targetType() == TargetType_InstBlockPort)
   {
-printf("4\n");
     InstBlockPort *instBlockPortToConnectWith = static_cast<InstBlockPort *>( source );
     FTL::CStrRef instBlockPortName = instBlockPortToConnectWith->name();
     FTL::CStrRef dataType = instBlockPortToConnectWith->dataType();
