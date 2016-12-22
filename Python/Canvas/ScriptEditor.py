@@ -151,7 +151,7 @@ class ScriptEditor(QtGui.QWidget):
                 digits = digits + 1
             if digits < 3:
                 digits = 3
-            return 3 + self.fontMetrics().width('9') * digits + 3
+            return 3 + self.fontMetrics().width('9') * digits + 5
 
         def lineNumberAreaMousePressEvent(self, event):
             firstBlock = self.firstVisibleBlock()

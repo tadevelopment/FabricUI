@@ -17,7 +17,7 @@ LineNumberWidget::LineNumberWidget(QWidget * parent, const EditorConfig & config
   m_metrics = new QFontMetrics(m_config.lineNumberFont);
   m_lineOffset = 0;
 
-  int maxWidth = m_metrics->width("0000") + 4;
+  int maxWidth = m_metrics->width("0000") + 6;
   setMinimumWidth(maxWidth);
   setMaximumWidth(maxWidth);
 
