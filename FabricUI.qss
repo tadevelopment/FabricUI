@@ -696,23 +696,24 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGErrorsWidget QTableWidget
 {
-  background-color: #272822;
+  background-color: #2B2B2B;
   border: none;
   margin: 0px;
   padding: 0px;
-  alternate-background-color: yellow;
+  alternate-background-color: #333333;
 }
 
 #DFGErrorsWidget QTableWidget::item:hover
 {
   color: #FFFFFF;
-  background-color: #596D7A;
+  background-color: #3E3E3E;
 }
 
 #DFGErrorsWidget QTableWidget::item:selected
 {
+  border: none;
   color: #FFFFFF;
-  background-color: #50626E;
+  background-color: #3E3E3E;
 }
 
 #DFGErrorsWidget QTableWidget QHeaderView::section
