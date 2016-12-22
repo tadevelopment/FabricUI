@@ -170,18 +170,19 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
           for ( unsigned i = 0; i < metadatasToCopyCount; ++i )
           {
             const char *currMetadata = exec.getPortMetadata(portName.c_str(), metadatasToCopy[i]);
-            if (currMetadata && strlen(currMetadata))
-              continue; // don't overwrite metadata that has already been set.
-            exec.setExecPortMetadata(
-              portName.c_str(),
-              metadatasToCopy[i],
-              portToConnectSubExec.getPortMetadata(
-                portToConnectName.c_str(),
-                metadatasToCopy[i]
-                ),
-              true
-              );
-            ++coreUndoCount;
+            if (currMetadata == NULL || strlen(currMetadata) == 0)
+            {
+              exec.setExecPortMetadata(
+                portName.c_str(),
+                metadatasToCopy[i],
+                portToConnectSubExec.getPortMetadata(
+                  portToConnectName.c_str(),
+                  metadatasToCopy[i]
+                  ),
+                true
+                );
+              ++coreUndoCount;
+            }
           }
         }
         else
@@ -189,18 +190,19 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
           for ( unsigned i = 0; i < metadatasToCopyCount; ++i )
           {
             const char *currMetadata = exec.getPortMetadata(portName.c_str(), metadatasToCopy[i]);
-            if (currMetadata && strlen(currMetadata))
-              continue; // don't overwrite metadata that has already been set.
-            exec.setExecPortMetadata(
-              portName.c_str(),
-              metadatasToCopy[i],
-              exec.getPortMetadata(
-                portToConnectPath.c_str(),
-                metadatasToCopy[i]
-                ),
-              true
-              );
-            ++coreUndoCount;
+            if (currMetadata == NULL || strlen(currMetadata) == 0)
+            {
+              exec.setExecPortMetadata(
+                portName.c_str(),
+                metadatasToCopy[i],
+                exec.getPortMetadata(
+                  portToConnectPath.c_str(),
+                  metadatasToCopy[i]
+                  ),
+                true
+                );
+              ++coreUndoCount;
+            }
           }
         }
       }
