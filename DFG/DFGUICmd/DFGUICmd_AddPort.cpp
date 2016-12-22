@@ -56,6 +56,7 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
   unsigned metadataCount = 0;
   char const **metadataKeys = NULL;
   char const **metadataValues = NULL;
+  bool setAsPersistable = false;
 
   if ( !metaData.empty() )
   {
@@ -74,6 +75,9 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
       {
         metadataKeys[index] = it->first.c_str();
         metadataValues[index] = it->second->getStringValue().c_str();
+        if ( !strcmp(metadataKeys[index], DFG_METADATA_UIPERSISTVALUE)
+          && !strcmp(metadataValues[index], "true") )
+          setAsPersistable = true;
         ++index;
       }
     }
@@ -198,6 +202,16 @@ FTL::CStrRef DFGUICmd_AddPort::invoke(
             ++coreUndoCount;
           }
         }
+      }
+      if (setAsPersistable)
+      {
+        exec.setExecPortMetadata(
+          portName.c_str(),
+          DFG_METADATA_UIPERSISTVALUE,
+          "true",
+          true
+          );
+         ++coreUndoCount;
       }
     }
 
