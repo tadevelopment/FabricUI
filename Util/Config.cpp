@@ -16,9 +16,10 @@ using namespace FTL;
 namespace FabricUI {
 namespace Util {
 
-Config::Config( const FTL::StrRef fileName )
+Config::Config( const FTL::StrRef fileName, Access access )
   : ConfigSection()
 {
+  setAccess( access );
   open( fileName );
 }
 
@@ -26,32 +27,38 @@ void Config::open( const FTL::StrRef fileName )
 {
   m_fileName = fileName;
 
-  if ( m_json != NULL ) { delete m_json; }
-  std::ifstream file( fileName.data() );
-  if ( file.is_open() )
+  if ( m_json != NULL ) { delete m_json; m_json = NULL; }
+
+  // If WriteOnly, don't read the file
+  if( getAccess() != WriteOnly )
   {
-    m_content = std::string(
-      std::istreambuf_iterator<char>( file ),
-      std::istreambuf_iterator<char>()
-    );
-    if ( !m_content.empty() )
+    std::ifstream file( fileName.data() );
+    if ( file.is_open() )
     {
-      try
+      m_content = std::string(
+        std::istreambuf_iterator<char>( file ),
+        std::istreambuf_iterator<char>()
+      );
+      if ( !m_content.empty() )
       {
-        JSONStrWithLoc content( m_content );
-        m_json = JSONObject::Decode( content );
-        return;
-      }
-      catch ( FTL::JSONException e)
-      {
-        printf(
-          "Error in %s, malformed JSON : %s\n",
-          fileName.data(),
-          e.getDescCStr()
-        );
+        try
+        {
+          JSONStrWithLoc content( m_content );
+          m_json = JSONObject::Decode( content );
+          return;
+        }
+        catch ( FTL::JSONException e)
+        {
+          printf(
+            "Error in %s, malformed JSON : %s\n",
+            fileName.data(),
+            e.getDescCStr()
+          );
+        }
       }
     }
   }
+
   // If there is no readable JSON, create a new one
   m_json = new JSONObject();
 }
@@ -59,17 +66,35 @@ void Config::open( const FTL::StrRef fileName )
 Config::Config()
   : ConfigSection()
 {
-  m_previousSection = new Config( FTL::PathJoin( FabricCore::GetFabricUserDir(), "default.config.json" ) );
+  // The default config is only used to show the default values
+  // TODO : We might not have write permissions to this directory
+  Config* defaultCfg = new Config(
+    FTL::PathJoin( FabricResourcesDirPath(), "default.config.json" )
+    , WriteOnly
+  );
+  m_previousSection = defaultCfg;
+
+  // The user config is readonly : we only read the values that the user has defined
+  this->setAccess( ReadOnly );
   this->open( FTL::PathJoin( FabricCore::GetFabricUserDir(), "user.config.json" ) );
 }
 
 Config::~Config()
 {
-  std::ofstream file( m_fileName.data() );
-  file << m_json->encode();
-  delete m_json;
+  // If ReadOnly, don't write the file to the disk
+  if( getAccess() != ReadOnly )
+  {
+    std::ofstream file( m_fileName.data() );
+    file << m_json->encode();
+    delete m_json;
+  }
   if( m_previousSection != NULL )
     delete m_previousSection;
+}
+
+void ConfigSection::setAccess( Access access )
+{
+  m_access = access;
 }
 
 ConfigSection& ConfigSection::getOrCreateSection( const FTL::StrRef name )
