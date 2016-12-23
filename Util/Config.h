@@ -17,12 +17,6 @@ namespace FabricUI
 {
   namespace Util
   {
-    enum Access
-    {
-      ReadOnly,
-      WriteOnly,
-      ReadWrite
-    };
 
     // A ConfigSection contains values and other ConfigSections, each
     // one associated with a String key
@@ -35,6 +29,13 @@ namespace FabricUI
       FTL::JSONValue* createValue( const T defaultValue ) const;
 
     public:
+
+      enum Access
+      {
+        ReadOnly,
+        WriteOnly,
+        ReadWrite
+      };
 
       ConfigSection()
         : m_json( NULL )

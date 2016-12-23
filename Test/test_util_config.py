@@ -6,6 +6,7 @@ def main():
   Config = FabricEngine.FabricUI.Util.Config
   rootCfg = Config()
   cfg = rootCfg.getOrCreateSection( "TestSection" )
+  cfg.setAccess( Config.Access.ReadWrite )
 
   def assertEqual( a, b ) :
     assert a == b
