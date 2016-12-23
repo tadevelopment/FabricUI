@@ -29,8 +29,8 @@ void Config::open( const FTL::StrRef fileName )
 
   if ( m_json != NULL ) { delete m_json; m_json = NULL; }
 
-  // If WriteOnly, don't read the file
-  if( getAccess() != WriteOnly )
+  // If WriteOnly, read the file, but don't use its values (see getOrCreateValue<>)
+  //if( getAccess() != WriteOnly )
   {
     std::ifstream file( fileName.data() );
     if ( file.is_open() )
@@ -81,8 +81,9 @@ Config::Config()
 
 Config::~Config()
 {
-  // If ReadOnly, don't write the file to the disk
-  if( getAccess() != ReadOnly )
+  // If ReadOnly, write the file, but as it was read,
+  // since getOrCreateValue<> shouldn't allow to create values
+  //if( getAccess() != ReadOnly )
   {
     std::ofstream file( m_fileName.data() );
     file << m_json->encode();
@@ -107,6 +108,7 @@ ConfigSection& ConfigSection::getOrCreateSection( const FTL::StrRef name )
 
     // Else read it from the JSON or create an empty one
     ConfigSection* newSection = new ConfigSection();
+    newSection->setAccess( this->getAccess() );
     m_sections[name] = newSection;
     newSection->m_json = m_json->has( name ) ?
       m_json->get( name )->cast<JSONObject>() : new JSONObject();

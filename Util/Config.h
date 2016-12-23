@@ -48,14 +48,15 @@ namespace FabricUI
       template <typename T>
       T getOrCreateValue( const FTL::StrRef key, const T defaultValue )
       {
-        if ( !m_json->has( key ) )
+        if( getAccess() == WriteOnly || !m_json->has( key ) )
         {
           // if the key is not there, and there is a previous section, query it
           if ( m_previousSection != NULL )
             return m_previousSection->getOrCreateValue( key, defaultValue );
 
           // else, insert the default value in this section
-          m_json->insert( key, createValue<T>( defaultValue ) );
+          if( getAccess() != ReadOnly )
+            m_json->insert( key, createValue<T>( defaultValue ) );
           return defaultValue;
           ;
         }
