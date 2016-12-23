@@ -81,9 +81,12 @@ Config::Config()
 
 Config::~Config()
 {
-  // If ReadOnly, write the file, but as it was read,
-  // since getOrCreateValue<> shouldn't allow to create values
-  //if( getAccess() != ReadOnly )
+  // If ReadOnly, don't write the file
+  // TODO : we might want to still write it, in which
+  // case malformed entries will disappear, but well-formed
+  // entries will remain the same if getOrCreateValue<>
+  // doesn't allow modifying them, as expected
+  if( getAccess() != ReadOnly )
   {
     std::ofstream file( m_fileName.data() );
     file << m_json->encode();
