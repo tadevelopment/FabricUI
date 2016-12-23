@@ -11,7 +11,6 @@ DFGRegisteredTypeLineEdit::DFGRegisteredTypeLineEdit(QWidget * parent, FabricCor
 : DFGAutoCompleteLineEdit(parent, text)
 , m_client(client)
 {
-  FabricCore::Variant registeredTypesVar = FabricCore::GetRegisteredTypes_Variant(m_client);
   onUpdateRegisteredTypeList();
 }
 
@@ -27,18 +26,23 @@ void DFGRegisteredTypeLineEdit::onUpdateRegisteredTypeList() {
         continue;
     m_registerKLTypeList.append(key.c_str());
   }
+  // Use for auto-completion
   setWords(m_registerKLTypeList);
 }
 
 bool DFGRegisteredTypeLineEdit::checkIfTypeExist() {
-  QString t = text();
-  int n = -1;
-  if (n < 0)  n = t.indexOf('<');
-  if (n < 0)  n = t.indexOf('[');
-  if (n < 0)  n = t.size();
-  t.truncate(n);
-  return  ( t.startsWith('$') && t.endsWith('$') )
-         || m_registerKLTypeList.contains(t);
+  bool isValid = false;
+  // Throw an exception if the type is malformed (e.g RTVal[string})
+  try
+  {
+    isValid = ( text().startsWith('$') && text().endsWith('$') && text().size() > 2 ) ||
+      m_client.isValidType(text().toUtf8().data());
+  }
+  catch(FabricCore::Exception e)
+  {
+    printf("Exception: %s\n", e.getDesc_cstr());
+  } 
+  return isValid;
 }
 
 void DFGRegisteredTypeLineEdit::displayInvalidTypeWarning() {
