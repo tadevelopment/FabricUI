@@ -216,6 +216,9 @@ void PinCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 
 void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
+
   // with context menus we'll receive more
   // events, even for clicks outside of our 
   // bounding rect

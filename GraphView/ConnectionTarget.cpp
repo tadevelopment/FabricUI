@@ -76,6 +76,9 @@ void ConnectionTarget::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 
 void ConnectionTarget::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
+
   if( event->button() == Qt::LeftButton )
   {
     PinCircle * circle = findPinCircle(event->pos());

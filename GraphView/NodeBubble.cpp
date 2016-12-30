@@ -112,6 +112,9 @@ void NodeBubble::setText( QString t )
 
 void NodeBubble::mousePressEvent( QGraphicsSceneMouseEvent *event )
 {
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
+
   if ( event->button() == Qt::RightButton )
   {
     // toggle the expanded state
@@ -119,9 +122,11 @@ void NodeBubble::mousePressEvent( QGraphicsSceneMouseEvent *event )
       m_node,
       isCollapsed()
       );
+    event->accept();
+    return;
   }
 
-  event->accept();
+  QGraphicsObject::mousePressEvent(event);
 }
 
 void NodeBubble::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event )

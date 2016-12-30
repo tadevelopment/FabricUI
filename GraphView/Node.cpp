@@ -647,9 +647,10 @@ void Node::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
 
 bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 {
-  Qt::KeyboardModifiers modifiers =  event->modifiers();
-  if( modifiers.testFlag(Qt::AltModifier))
+  if( MainPanel::filterMousePressEvent( event ) )
     return false;
+
+  Qt::KeyboardModifiers modifiers =  event->modifiers();
 
   Qt::MouseButton button = event->button();
 
