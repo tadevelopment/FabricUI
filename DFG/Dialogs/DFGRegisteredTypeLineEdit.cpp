@@ -19,12 +19,11 @@ void DFGRegisteredTypeLineEdit::onUpdateRegisteredTypeList() {
   for(FabricCore::Variant::DictIter keyIter(registeredTypesVar); !keyIter.isDone(); keyIter.next())
   {
     FTL::CStrRef key = keyIter.getKey()->getStringData();
-    if(key.find('<') != key.end())
+    if (   key.find('<') != key.end()
+        || key.find('[') != key.end() )
       continue;
-    if(key.find('[') != key.end())
-      if(!key.endswith("[]") || key.endswith("][]"))
-        continue;
-    m_registerKLTypeList.append(key.c_str());
+    m_registerKLTypeList.append( QString(key.c_str()) );
+    m_registerKLTypeList.append( QString(key.c_str()) + "[]");
   }
   // Use for auto-completion
   setWords(m_registerKLTypeList);
