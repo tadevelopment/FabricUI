@@ -36,6 +36,9 @@ void NodeLabel::displayedTextChanged()
 
 void NodeLabel::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
+
   if( event->button() == Qt::LeftButton )
     m_node->onMousePress( event ); // we get the focus here, by accepting the event
   else

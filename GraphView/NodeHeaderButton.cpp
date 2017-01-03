@@ -132,6 +132,9 @@ void NodeHeaderButton::setHighlighted(bool value)
 
 void NodeHeaderButton::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
+
   if(event->button() == Qt::LeftButton)
   {
     m_lastMousePos = event->scenePos();

@@ -158,6 +158,11 @@ void MainPanel::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
   }
 }
 
+bool MainPanel::filterMousePressEvent( const QGraphicsSceneMouseEvent * event )
+{
+  return event->modifiers().testFlag( Qt::AltModifier );
+}
+
 void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
   // clean up the scene
@@ -299,23 +304,6 @@ void MainPanel::wheelEvent(QGraphicsSceneWheelEvent * event)
     m_lastPanPoint = mapFromScene( event->scenePos() );
     performZoom( m_mouseWheelZoomState * zoomFactor, m_lastPanPoint );
   }
-}
-
-// Return true if we should gather mouse events for camera movements, instead of having
-// these forwarded to individual widgets.
-bool MainPanel::grabsEvent( QEvent * e ) {
-  // Try to be conservative; only graph the events we really need to
-  bool graphicsMouseEvent = 
-       e->type() == QEvent::GraphicsSceneMouseMove 
-    || e->type() == QEvent::GraphicsSceneMousePress 
-    || e->type() == QEvent::GraphicsSceneMouseRelease;
-
-  if( graphicsMouseEvent ) {
-    QGraphicsSceneMouseEvent * mouseEvent = (QGraphicsSceneMouseEvent*)e;
-    if( mouseEvent->modifiers().testFlag(Qt::AltModifier) )
-      return true;
-  }
-  return false;
 }
 
 void MainPanel::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)

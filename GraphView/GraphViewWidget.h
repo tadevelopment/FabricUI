@@ -37,8 +37,6 @@ namespace FabricUI
 
     protected:
 
-      virtual bool event(QEvent * e);
-
       virtual void dragEnterEvent( QGraphicsSceneDragDropEvent *event );
       virtual void dropEvent( QGraphicsSceneDragDropEvent *event );
 

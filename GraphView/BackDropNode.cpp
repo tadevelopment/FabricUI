@@ -94,6 +94,9 @@ void BackDropNode::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
 
 void BackDropNode::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
+
   int corner = getCorner(event->pos());
   if(corner != -1)
   {

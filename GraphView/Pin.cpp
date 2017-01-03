@@ -64,6 +64,9 @@ protected:
 
   void mousePressEvent( QGraphicsSceneMouseEvent* event ) FTL_OVERRIDE
   {
+    if( MainPanel::filterMousePressEvent( event ) )
+      return event->ignore();
+
     // Creating connections from Labels
     PinCircle * circle = pinCircle();
     if( circle )
