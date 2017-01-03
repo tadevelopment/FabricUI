@@ -298,7 +298,7 @@ QDialog QPushButton
   border-radius: 3px;
   padding: 4px;
   background: #2F2F2F;
-  width: 75px;
+  min-width: 75px;
   height: 20px;
 }
 
@@ -1058,7 +1058,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-radius: 3px;
   padding: 4px;
   background: #2F2F2F;
-  width: 75px;
+  min-width: 75px;
   height: 20px;
   font: 11px "Roboto";
   font-weight: normal;
