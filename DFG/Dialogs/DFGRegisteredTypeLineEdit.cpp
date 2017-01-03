@@ -17,6 +17,7 @@ DFGRegisteredTypeLineEdit::DFGRegisteredTypeLineEdit(QWidget * parent, FabricCor
 
 void DFGRegisteredTypeLineEdit::onUpdateRegisteredTypeList() {
   FabricCore::Variant registeredTypesVar = FabricCore::GetRegisteredTypes_Variant(m_client);
+  m_registerKLTypeList.clear();
   for(FabricCore::Variant::DictIter keyIter(registeredTypesVar); !keyIter.isDone(); keyIter.next())
   {
     FTL::CStrRef key = keyIter.getKey()->getStringData();
