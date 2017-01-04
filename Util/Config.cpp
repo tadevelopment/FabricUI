@@ -218,6 +218,7 @@ JSONValue* ConfigSection::createValue( const QColor v ) const
   color->insert( "r", new JSONSInt32( v.red() ) );
   color->insert( "g", new JSONSInt32( v.green() ) );
   color->insert( "b", new JSONSInt32( v.blue() ) );
+  color->insert( "a", new JSONSInt32( v.alpha() ) );
   return color;
 }
 
@@ -228,7 +229,8 @@ QColor ConfigSection::getValue( const JSONValue* entry ) const
   return QColor(
     obj->getSInt32( "r" ),
     obj->getSInt32( "g" ),
-    obj->getSInt32( "b" )
+    obj->getSInt32( "b" ),
+    obj->has( "a" ) ? obj->getSInt32( "a" ) : 255
   );
 }
 
