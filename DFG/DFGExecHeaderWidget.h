@@ -69,6 +69,7 @@ namespace FabricUI
     protected slots:
 
       void reqExtEditingFinished();
+      void reqExtResizeToContent();
       void onSplitFromPresetClicked();
 
     private:

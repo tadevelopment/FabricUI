@@ -77,6 +77,11 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
     m_reqExtLineEdit, SIGNAL(editingFinished()),
     this, SLOT(reqExtEditingFinished())
     );
+  QObject::connect(
+    m_reqExtLineEdit, SIGNAL(textChanged(QString)),
+    this, SLOT(reqExtResizeToContent())
+    );
+  reqExtResizeToContent();
 
   layout->addWidget( m_presetNameLabel );
   layout->addWidget( m_presetPathSep );
@@ -254,6 +259,20 @@ void DFGExecHeaderWidget::reqExtEditingFinished()
   // FE-7961
   // Emit the signal to refresh DFGRegisteredTypeLineEdit
   emit extensionLoaded();
+}
+
+void DFGExecHeaderWidget::reqExtResizeToContent()
+{
+  QFontMetrics fontMetrics(m_reqExtLineEdit->font());
+
+  QString textMin = " InlineDrawing:* ";
+  QString textMax = " Math:*,Util:*,Singleton:*,Geometry:*,InlineDrawing:* ";
+
+  int minPixels = fontMetrics.width(textMin);
+  int maxPixels = fontMetrics.width(textMax);
+  int txtPixels = fontMetrics.width(" " + m_reqExtLineEdit->text() + " ");
+
+  m_reqExtLineEdit->setFixedWidth(std::max(minPixels, std::min(maxPixels, txtPixels)));
 }
 
 void DFGExecHeaderWidget::onExecChanged()
