@@ -66,7 +66,11 @@ namespace FabricUI
       // used by controller
       void setCanvasZoom(float state, bool quiet = false);
       void setCanvasPan(QPointF pos, bool quiet = false);
-      bool grabsEvent( QEvent * e ); // When manipulating camera, events must be forwarded here and not to individual widgets (Alt, Space)
+
+      // returns true if the children of the MainPanel should ignore the event
+      // because the MainPanel will use it (to pan, for example)
+      // TODO : refactor so that the children QGraphicsItems don't have to call this function
+      static bool filterMousePressEvent( const QGraphicsSceneMouseEvent * event );
 
       void performZoom(
         float zoomFactor,

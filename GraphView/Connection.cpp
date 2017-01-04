@@ -226,10 +226,10 @@ void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 
 void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
-  if(!graph()->isEditable())
-    return QGraphicsPathItem::mousePressEvent(event);
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
 
-  if(event->modifiers().testFlag(Qt::AltModifier))
+  if(!graph()->isEditable())
     return QGraphicsPathItem::mousePressEvent(event);
 
   if(event->button() == Qt::LeftButton)

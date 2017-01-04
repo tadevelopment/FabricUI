@@ -115,7 +115,11 @@ BaseViewItem * WrappedRTValViewItem::CreateItem(
     return NULL;
 
   FabricCore::RTVal rtVal = value.value<FabricCore::RTVal>();
-  if( rtVal.isValid() && rtVal.isWrappedRTVal() )
+  if(
+    rtVal.isValid()
+    && rtVal.isWrappedRTVal()
+    && rtVal.getUnwrappedRTVal().isValid()
+    )
   {
     WrappedRTValViewItem* pViewItem = new WrappedRTValViewItem( QString(name), rtVal, metaData );
     return pViewItem;

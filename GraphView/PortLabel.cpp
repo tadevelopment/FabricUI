@@ -33,6 +33,9 @@ PortLabel::PortLabel(
 
 void PortLabel::mousePressEvent( QGraphicsSceneMouseEvent* event )
 {
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
+
   m_port->mousePressEvent( event );
 }
 

@@ -147,16 +147,6 @@ GraphViewScene::GraphViewScene( Graph * graph ) {
   m_graph = graph;
 }
 
-// Enable the MainPanel to grab specific events
-// (eg: panning with Space or Alt) before these
-// are redirected to sub-widgets.
-bool GraphViewScene::event( QEvent * e ) {
-  if( m_graph && m_graph->mainPanel()->grabsEvent( e ) ) {
-    return sendEvent( m_graph->mainPanel(), e );
-  } else
-    return QGraphicsScene::event( e );
-}
-
 void GraphViewScene::dragEnterEvent( QGraphicsSceneDragDropEvent *event )
 {
   QMimeData const *mimeData = event->mimeData();
