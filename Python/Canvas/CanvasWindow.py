@@ -125,7 +125,8 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self.fpsLabel = QtGui.QLabel()
         self.fpsLabel.setObjectName("FPSLabel")
-        self.fpsLabel.setFixedWidth(60)
+        fpsLabelFM = QtGui.QFontMetrics(self.fpsLabel.font())
+        self.fpsLabel.setFixedWidth(fpsLabelFM.width("9900 fps"))
         self.fpsLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
 
         self.fpsTimer = QtCore.QTimer()
@@ -342,6 +343,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timelineFrameLayout.setContentsMargins(0, 0, 0, 0)
         self.timelineFrameLayout.setSpacing(0)
         self.timelineFrameLayout.addWidget(self.timeLine)
+        self.timelineFrameLayout.addSpacing(4)
         self.timelineFrameLayout.addWidget(self.fpsLabel)
         
         self.timelineFrame.setLayout(self.timelineFrameLayout)
@@ -759,14 +761,43 @@ class CanvasWindow(QtGui.QMainWindow):
         except Exception as e:
             self.dfgWidget.getDFGController().logError(str(e))
 
+    @staticmethod
+    def formatFPS(fps):
+        if fps >= 9950.0:
+            caption = '-- fps'
+        elif fps >= 995.0:
+            caption = '{0:d}00 fps'.format(int(round(fps/100.0)))
+        elif fps >= 99.5:
+            caption = '{0:d}0 fps'.format(int(round(fps/10.0)))
+        elif fps >= 9.95:
+            caption = '{0:d} fps'.format(int(round(fps)))
+        elif fps >= 0.995:
+            caption = '{0:d}.{1:d} fps'.format(int(round(fps*10.0))/10, int(round(fps*10.0))%10)
+        elif fps >= 0.095:
+            caption = '0.{0:d} fps'.format(int(round(fps*100.0)))
+        elif fps >= 0.0095:
+            caption = '0.0{0:d} fps'.format(int(round(fps*100.0)))
+        else:
+            caption = '-- fps'
+        return caption
+
     def updateFPS(self):
         """Method for updating the FPS label in the status bar."""
 
         if not self.viewport:
             return
 
-        caption = str(round(self.viewport.fps(), 2)) + " FPS"
-        self.fpsLabel.setText(caption)
+        # for fps in [
+        #     0.0094, 0.0095,
+        #     0.094, 0.095,
+        #     0.994, 0.995,
+        #     9.94, 9.95,
+        #     99.4, 99.5,
+        #     994.0, 995.0,
+        #     9940.0, 9950.0,
+        #     ]:
+        #     print "formatFPS(%f) = %s" % (fps, self.formatFPS(fps))
+        self.fpsLabel.setText(self.formatFPS(self.viewport.fps()))
 
     def autosave(self):
         """Saves the scene when the auto-save timer triggers."""
