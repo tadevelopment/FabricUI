@@ -29,8 +29,11 @@ namespace FabricUI
       /// Update the registerd KL type list (e.g, an extension has been loaded).
       void onUpdateRegisteredTypeList();
 
-  	private:
-  	  QStringList m_registerKLTypeList;
+    private:
+      /// \internal
+      /// Stores the available KL types for auto-completion
+      QStringList m_registerKLTypeList;
+      /// \internal
       FabricCore::Client m_client;
     };
 
