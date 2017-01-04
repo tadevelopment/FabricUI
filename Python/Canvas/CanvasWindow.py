@@ -766,17 +766,17 @@ class CanvasWindow(QtGui.QMainWindow):
         if fps >= 9950.0:
             caption = '-- fps'
         elif fps >= 995.0:
-            caption = '{0:d}00 fps'.format(int(round(fps/100)))
+            caption = '{0:d}00 fps'.format(int(round(fps/100.0)))
         elif fps >= 99.5:
-            caption = '{0:d}0 fps'.format(int(round(fps/10)))
+            caption = '{0:d}0 fps'.format(int(round(fps/10.0)))
         elif fps >= 9.95:
             caption = '{0:d} fps'.format(int(round(fps)))
         elif fps >= 0.995:
-            caption = '{0:d}.{1:d} fps'.format(int(round(fps*10)/10), int(round(fps*10))%10)
+            caption = '{0:d}.{1:d} fps'.format(int(round(fps*10.0))/10, int(round(fps*10.0))%10)
         elif fps >= 0.095:
-            caption = '0.{0:d} fps'.format(int(round(fps*100)))
+            caption = '0.{0:d} fps'.format(int(round(fps*100.0)))
         elif fps >= 0.0095:
-            caption = '0.0{0:d} fps'.format(int(round(fps*100)))
+            caption = '0.0{0:d} fps'.format(int(round(fps*100.0)))
         else:
             caption = '-- fps'
         return caption
