@@ -72,10 +72,16 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
   m_reqExtLabel->setObjectName( "DFGRequiredExtensionsLabel" );
   m_reqExtLineEdit = new QLineEdit;
   m_reqExtLineEdit->setObjectName( "DFGRequiredExtensionsLineEdit" );
+  m_reqExtLineEdit->setFocusPolicy( Qt::ClickFocus ); // [FE-5446]
   QObject::connect(
     m_reqExtLineEdit, SIGNAL(editingFinished()),
     this, SLOT(reqExtEditingFinished())
     );
+  QObject::connect(
+    m_reqExtLineEdit, SIGNAL(textChanged(QString)),
+    this, SLOT(reqExtResizeToContent())
+    );
+  reqExtResizeToContent();
 
   layout->addWidget( m_presetNameLabel );
   layout->addWidget( m_presetPathSep );
@@ -187,22 +193,11 @@ void DFGExecHeaderWidget::refresh()
     FabricCore::String extDepsDesc = exec.getExtDeps();
     FTL::CStrRef extDepsDescCStr =
       extDepsDesc.getCStr()? extDepsDesc.getCStr() : "";
-    QString reqExtLabelText( "Required Extensions:" );
-    m_reqExtLineEdit->setVisible(
-      execBlockName.empty() && !wouldSplitFromPreset
-      );
-    if ( wouldSplitFromPreset )
-    {
-      reqExtLabelText += ' ';
-      QString reqExts = QString::fromUtf8( extDepsDescCStr.data(), extDepsDescCStr.size() );
-      if ( !reqExts.isEmpty() )
-        reqExtLabelText += reqExts;
-      else
-        reqExtLabelText += "(none)";
-    }
-    else m_reqExtLineEdit->setText( extDepsDescCStr.c_str() );
     m_reqExtLabel->setVisible( execBlockName.empty() );
-    m_reqExtLabel->setText( reqExtLabelText );
+    m_reqExtLabel->setText( "Required Extensions:" );
+    m_reqExtLineEdit->setVisible( execBlockName.empty() );
+    m_reqExtLineEdit->setReadOnly( wouldSplitFromPreset );
+    m_reqExtLineEdit->setText( extDepsDescCStr.c_str() );
 
     update();
   }
@@ -264,6 +259,20 @@ void DFGExecHeaderWidget::reqExtEditingFinished()
   // FE-7961
   // Emit the signal to refresh DFGRegisteredTypeLineEdit
   emit extensionLoaded();
+}
+
+void DFGExecHeaderWidget::reqExtResizeToContent()
+{
+  QFontMetrics fontMetrics(m_reqExtLineEdit->font());
+
+  QString textMin = " InlineDrawing:* ";
+  QString textMax = " Math:*,Util:*,Singleton:*,Geometry:*,InlineDrawing:* ";
+
+  int minPixels = fontMetrics.width(textMin);
+  int maxPixels = fontMetrics.width(textMax);
+  int txtPixels = fontMetrics.width(" " + m_reqExtLineEdit->text() + " ");
+
+  m_reqExtLineEdit->setFixedWidth(std::max(minPixels, std::min(maxPixels, txtPixels)));
 }
 
 void DFGExecHeaderWidget::onExecChanged()
