@@ -18,6 +18,8 @@ namespace FabricUI
   namespace Util
   {
 
+    // A ConfigSection contains values and other ConfigSections, each
+    // one associated with a String key
     class ConfigSection : public FTL::Shareable
     {
       template<typename T>
@@ -28,9 +30,17 @@ namespace FabricUI
 
     public:
 
+      enum Access
+      {
+        ReadOnly,
+        WriteOnly,
+        ReadWrite
+      };
+
       ConfigSection()
         : m_json( NULL )
         , m_previousSection( NULL )
+        , m_access( ReadWrite )
       {}
       virtual ~ConfigSection() {};
 
@@ -39,14 +49,15 @@ namespace FabricUI
       template <typename T>
       T getOrCreateValue( const FTL::StrRef key, const T defaultValue )
       {
-        if ( !m_json->has( key ) )
+        if( getAccess() == WriteOnly || !m_json->has( key ) )
         {
           // if the key is not there, and there is a previous section, query it
           if ( m_previousSection != NULL )
             return m_previousSection->getOrCreateValue( key, defaultValue );
 
           // else, insert the default value in this section
-          m_json->insert( key, createValue<T>( defaultValue ) );
+          if( getAccess() != ReadOnly )
+            m_json->insert( key, createValue<T>( defaultValue ) );
           return defaultValue;
           ;
         }
@@ -87,17 +98,22 @@ namespace FabricUI
 
 #undef DECLARE_EXPLICIT_GETTER
 
+      void setAccess( const Access access );
+      Access getAccess() const { return m_access; }
+
     protected:
       std::map<std::string, FTL::SharedPtr<ConfigSection> > m_sections;
       FTL::JSONObject* m_json;
       // Config to look into if a value is not found here
       ConfigSection* m_previousSection;
+      Access m_access;
     };
 
+    // A Config is a root ConfigSection, associated with a file on the disk
     class Config : public ConfigSection
     {
       void open( const FTL::StrRef fileName );
-      Config( const FTL::StrRef fileName );
+      Config( const FTL::StrRef fileName, Access access = ReadWrite );
 
     public:
       Config();

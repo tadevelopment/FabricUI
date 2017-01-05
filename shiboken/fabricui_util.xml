@@ -3,7 +3,9 @@
   <namespace-type name="FabricUI" generate="no">
     <namespace-type name="Util" generate="yes">
       <object-type name="StringUtils" copyable="false"/>
-      <object-type name="ConfigSection" />
+      <object-type name="ConfigSection" >
+	<enum-type name="Access" />
+      </object-type>
       <object-type name="Config" />
     </namespace-type>
   </namespace-type>
