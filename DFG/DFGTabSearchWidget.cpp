@@ -70,7 +70,7 @@ void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
 
   // Do nothing if control or alt is pressed
   if(modifiers.testFlag(Qt::ControlModifier) || modifiers.testFlag(Qt::AltModifier))
-    QWidget::keyPressEvent(event);
+    event->accept();
  
   else if(key == Qt::Key_Tab || key == Qt::Key_Escape)
   {
