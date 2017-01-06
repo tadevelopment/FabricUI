@@ -35,7 +35,6 @@ namespace FabricUI
         );
       virtual ~DFGExecHeaderWidget();
       
-      void refreshTitle( FTL::CStrRef title );
       void refreshExtDeps( FTL::CStrRef extDeps );
 
       // return true if the req. exts QLineEdit

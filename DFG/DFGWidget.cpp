@@ -2091,9 +2091,9 @@ void DFGWidget::setSettings(QSettings * settings)
   g_settings = settings;
 }
 
-void DFGWidget::refreshTitle( FTL::CStrRef title )
+void DFGWidget::onExecPathOrTitleChanged()
 {
-  m_uiHeader->refreshTitle( title );
+  m_uiHeader->refresh();
 }
 
 void DFGWidget::refreshExtDeps( FTL::CStrRef extDeps )

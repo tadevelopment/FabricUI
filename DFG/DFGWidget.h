@@ -87,7 +87,7 @@ namespace DFG {
       static QSettings * getSettings();
       static void setSettings(QSettings * settings);
       
-      void refreshTitle( FTL::CStrRef title );
+      void onExecPathOrTitleChanged();
       void refreshExtDeps( FTL::CStrRef extDeps );
 
       void populateMenuBar(QMenuBar * menuBar, bool addFileMenu = true, bool addDCCMenu = false);
