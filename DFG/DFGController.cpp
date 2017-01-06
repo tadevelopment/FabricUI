@@ -1004,80 +1004,90 @@ void DFGController::updateNodeErrors()
 
   try
   {
-    GraphView::Graph *uiGraph = 0;
     if ( m_exec.getType() == FabricCore::DFGExecType_Graph )
-      uiGraph = graph();
-    if ( uiGraph )
     {
+      GraphView::Graph *uiGraph = graph();
+
       unsigned nodeCount = m_exec.getNodeCount();
       for(size_t j=0;j<nodeCount;j++)
       {
         char const *nodeName = m_exec.getNodeName(j);
-
         GraphView::Node *uiNode = uiGraph->nodeFromPath( nodeName );
         if ( !uiNode )
           continue;
 
-        uiNode->clearError();
-      }
-    }
-
-    FabricCore::String errorsJSON = m_exec.getErrors( true );
-    FTL::CStrRef errorsJSONStr( errorsJSON.getCStr(), errorsJSON.getSize() );
-    FTL::JSONStrWithLoc strWithLoc( errorsJSONStr );
-    FTL::OwnedPtr<FTL::JSONArray> errorsJSONArray(
-      FTL::JSONValue::Decode( strWithLoc )->cast<FTL::JSONArray>()
-      );
-    unsigned errorCount = errorsJSONArray->size();
-    for(unsigned i=0;i<errorCount;i++)
-    {
-      FTL::JSONObject const *error = errorsJSONArray->getObject( i );
-
-      FTL::CStrRef execPath = error->getString( FTL_STR("execPath") );
-      FTL::CStrRef nodeName = error->getStringOrEmpty( FTL_STR("nodeName") );
-      FTL::CStrRef desc = error->getString( FTL_STR("desc") );
-      int32_t line = error->getSInt32Or( FTL_STR("line"), -1 );
-      int32_t column = error->getSInt32Or( FTL_STR("column"), -1 );
-
-      std::string prefixedError;
-      prefixedError += m_execPath;
-      prefixedError += " : ";
-      if ( !execPath.empty() )
-        prefixedError += execPath;
-      if ( !execPath.empty() && !nodeName.empty() )
-        prefixedError += '.';
-      if ( !nodeName.empty() )
-        prefixedError += nodeName;
-      if ( line != -1 )
-      {
-        prefixedError += ':';
-        char lineString[32];
-        snprintf( lineString, 32, "%d", line );
-        prefixedError += lineString;
-        if ( column != -1 )
-        {
-          prefixedError += ':';
-          char columnString[32];
-          snprintf( columnString, 32, "%d", column );
-          prefixedError += columnString;
-        }
-      }
-      prefixedError += " : ";
-      prefixedError += desc;
-      logError( prefixedError.c_str() );
-
-      if ( uiGraph )
-      {
-        FTL::StrRef rootNodeName;
-        if ( !execPath.empty() )
-          rootNodeName = execPath.split('.').first;
+        FabricCore::String errorsJSON =
+          m_exec.getNodeErrors(
+            nodeName,
+            true, // recursive
+            true  // connectedOnly
+            );
+        FTL::CStrRef errorsJSONStr( errorsJSON.getCStr(), errorsJSON.getSize() );
+        FTL::JSONStrWithLoc strWithLoc( errorsJSONStr );
+        FTL::OwnedPtr<FTL::JSONArray> errorsJSONArray(
+          FTL::JSONValue::Decode( strWithLoc )->cast<FTL::JSONArray>()
+          );
+        unsigned errorCount = errorsJSONArray->size();
+        if ( errorCount == 0 )
+          uiNode->clearError();
         else
-          rootNodeName = nodeName;
-        if ( rootNodeName.empty() )
-          continue;
+        {
+          QString fullDesc;
+          for(unsigned i=0;i<errorCount;i++)
+          {
+            if ( i == 3 )
+            {
+              fullDesc += "\n...";
+              break;
+            }
 
-        if ( GraphView::Node *uiNode = uiGraph->nodeFromPath( rootNodeName ) )
-          uiNode->setError( QString::fromUtf8( desc.data(), desc.size() ) );
+            FTL::JSONObject const *error = errorsJSONArray->getObject( i );
+
+            FTL::CStrRef execPath = error->getString( FTL_STR("execPath") );
+            FTL::CStrRef nodeName = error->getStringOrEmpty( FTL_STR("nodeName") );
+            FTL::CStrRef blockName = error->getStringOrEmpty( FTL_STR("blockName") );
+            int32_t line = error->getSInt32Or( FTL_STR("line"), -1 );
+            int32_t column = error->getSInt32Or( FTL_STR("column"), -1 );
+            FTL::CStrRef desc = error->getString( FTL_STR("desc") );
+
+            QString localDesc;
+            if ( !execPath.empty() )
+              localDesc += execPath.c_str();
+            if ( !nodeName.empty() )
+            {
+              if ( !localDesc.isEmpty() )
+                localDesc += '.';
+              localDesc += nodeName.c_str();
+            }
+            if ( !blockName.empty() )
+            {
+              if ( !localDesc.isEmpty() )
+                localDesc += '.';
+              localDesc += blockName.c_str();
+            }
+            if ( line >= 0 )
+            {
+              if ( !localDesc.isEmpty() )
+                localDesc += ' ';
+              localDesc += "(line ";
+              localDesc += QString::number( line );
+              if ( column >= 0 )
+              {
+                localDesc += ", column ";
+                localDesc += QString::number( column );
+              }
+              localDesc += ')';
+            }
+            if ( !localDesc.isEmpty() )
+              localDesc += ": ";
+            localDesc += desc.c_str();
+
+            if ( !fullDesc.isEmpty() )
+              fullDesc += '\n';
+            fullDesc += localDesc;
+          }
+          uiNode->setError( fullDesc );
+        }
       }
     }
   }
