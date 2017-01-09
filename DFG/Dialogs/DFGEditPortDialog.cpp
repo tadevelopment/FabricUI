@@ -4,6 +4,8 @@
 #include <QDoubleValidator>
 #include <QTimer>
 #include <QMessageBox>
+#include <QStandardItem>
+#include <QStandardItemModel>
 #include "DFGEditPortDialog.h"
 
 using namespace FabricUI;
@@ -151,7 +153,7 @@ bool DFGEditPortDialog::isDataTypeReadOnly() const
 void DFGEditPortDialog::setDataTypeReadOnly( bool value ) 
 {
   if(m_dataTypeEdit)
-    return m_dataTypeEdit->setReadOnly(value);
+    m_dataTypeEdit->setReadOnly(value);
 }
 
 QString DFGEditPortDialog::extension() const
@@ -175,6 +177,27 @@ bool DFGEditPortDialog::hidden() const
 void DFGEditPortDialog::setHidden()
 {
   m_visibilityCombo->setCurrentIndex(2);
+}
+
+void DFGEditPortDialog::setVisibilityReadOnly( bool value ) 
+{
+  if(m_visibilityCombo)
+  {
+    QStandardItemModel *model = (QStandardItemModel *)(m_visibilityCombo->model());
+    for(int i=0; i<3; ++i)
+    {
+      QStandardItem *item = model->item(i,0);
+      Qt::ItemFlags itemFlags = item->flags();
+      if(value)
+      {
+        itemFlags &= ~Qt::ItemIsSelectable;
+        itemFlags &= ~Qt::ItemIsEnabled;
+      }
+      else 
+        itemFlags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+      item->setFlags(itemFlags);
+    }
+  }
 }
 
 bool DFGEditPortDialog::opaque() const
@@ -227,6 +250,18 @@ void DFGEditPortDialog::setSoftRangeMax(float value)
   m_softRangeMax->setText(QString::number(value));
 }
 
+void DFGEditPortDialog::setSoftRangeReadOnly( bool value ) 
+{
+  if(m_softRangeMin)
+    m_softRangeMin->setReadOnly(value);
+
+  if(m_softRangeMax)
+    m_softRangeMax->setReadOnly(value);
+
+  if(m_hasSoftRange)
+    m_hasSoftRange->setEnabled( !value );
+}
+
 bool DFGEditPortDialog::hasHardRange() const
 {
   return m_hasHardRange->checkState() == Qt::Checked;
@@ -255,6 +290,18 @@ float DFGEditPortDialog::hardRangeMax() const
 void DFGEditPortDialog::setHardRangeMax(float value)
 {
   m_hardRangeMax->setText(QString::number(value));
+}
+
+void DFGEditPortDialog::setHardRangeReadOnly( bool value ) 
+{
+  if(m_hardRangeMin)
+    m_hardRangeMin->setReadOnly(value);
+
+  if(m_hardRangeMax)
+    m_hardRangeMax->setReadOnly(value);
+
+   if(m_hasHardRange)
+    m_hasHardRange->setEnabled( !value );
 }
 
 bool DFGEditPortDialog::hasCombo() const
@@ -291,7 +338,12 @@ void DFGEditPortDialog::setComboValues(QStringList value)
     flat += value[i];
   }
   m_combo->setText(flat);
+}
 
+void DFGEditPortDialog::setComboReadOnly( bool value ) 
+{
+  if(m_hasCombo)
+    m_hasCombo->setEnabled( !value );
 }
 
 bool DFGEditPortDialog::hasFileTypeFilter() const
