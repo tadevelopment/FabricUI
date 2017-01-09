@@ -184,7 +184,7 @@ void DFGEditPortDialog::setVisibilityReadOnly( bool value )
   if(m_visibilityCombo)
   {
     QStandardItemModel *model = (QStandardItemModel *)(m_visibilityCombo->model());
-    for(int i=0; i<3; ++i)
+    for(int i=0; i<m_visibilityCombo->count(); ++i)
     {
       QStandardItem *item = model->item(i,0);
       Qt::ItemFlags itemFlags = item->flags();
