@@ -43,19 +43,22 @@ namespace FabricUI
       void setExtension(QString value);
       bool hidden() const;
       void setHidden();
+      void setVisibilityReadOnly( bool value );
+
       bool opaque() const;
       void setOpaque();
       bool persistValue() const;
       void setPersistValue( bool value );
       bool isDataTypeReadOnly() const;
       void setDataTypeReadOnly( bool value );
-
+     
       bool hasSoftRange() const;
       void setHasSoftRange(bool value);
       float softRangeMin() const;
       void setSoftRangeMin(float value);
       float softRangeMax() const;
       void setSoftRangeMax(float value);
+      void setSoftRangeReadOnly( bool value );
 
       bool hasHardRange() const;
       void setHasHardRange(bool value);
@@ -63,11 +66,13 @@ namespace FabricUI
       void setHardRangeMin(float value);
       float hardRangeMax() const;
       void setHardRangeMax(float value);
+      void setHardRangeReadOnly( bool value );
 
       bool hasCombo() const;
       void setHasCombo(bool value);
       QStringList comboValues() const;
       void setComboValues(QStringList value);
+      void setComboReadOnly( bool value );
 
       bool hasFileTypeFilter() const;
       void setHasFileTypeFilter(bool value);
