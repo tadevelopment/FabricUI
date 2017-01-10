@@ -89,3 +89,8 @@ void VEEditorOwner::reloadStyles()
 {
   m_valueEditor->reloadStyles();
 }
+
+void VEEditorOwner::emitReplaceModelRoot(FabricUI::ValueEditor::BaseModelItem* model)
+{
+  emit replaceModelRoot(model);
+}
