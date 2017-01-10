@@ -203,11 +203,6 @@ void DFGExecHeaderWidget::refresh()
   }
 }
 
-void DFGExecHeaderWidget::refreshTitle( FTL::CStrRef title )
-{
-  refresh();
-}
-
 void DFGExecHeaderWidget::refreshExtDeps( FTL::CStrRef extDeps )
 {
   refresh();

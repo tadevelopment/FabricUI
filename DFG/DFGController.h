@@ -6,6 +6,7 @@
 #define __UI_DFG_DFGController__
 
 #include <FabricUI/DFG/DFGBindingNotifier.h>
+#include <FabricUI/DFG/DFGExecNotifier.h>
 #include <FabricUI/GraphView/Controller.h>
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/Pin.h>
@@ -479,6 +480,7 @@ namespace FabricUI
       FabricCore::DFGHost m_host;
       FabricCore::DFGBinding m_binding;
       QSharedPointer<DFGBindingNotifier> m_bindingNotifier;
+      QList< QSharedPointer<DFGExecNotifier> > m_ancestorExecNotifiers;
       std::string m_execPath;
       FabricCore::DFGExec m_exec;
       std::string m_execBlockName;
@@ -545,6 +547,11 @@ namespace FabricUI
       void onBindingVarRemoved(
         FTL::CStrRef varName,
         FTL::CStrRef varPath
+        );
+
+      void onParentExecNodeRenamed(
+        FTL::CStrRef oldNodeName,
+        FTL::CStrRef newNodeName
         );
     };
 

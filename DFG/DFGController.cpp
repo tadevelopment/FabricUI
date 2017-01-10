@@ -109,7 +109,7 @@ void DFGController::setBindingExec(
   assert( m_dfgWidget->priorExecStackIsEmpty() );
 
   if ( m_binding.isValid() )
-  m_bindingNotifier.clear();
+    m_bindingNotifier.clear();
 
   m_binding = binding;
 
@@ -187,11 +187,42 @@ void DFGController::setExec(
   FTL::StrRef execBlockName
   )
 {
+  if ( m_exec.isValid() )
+    m_ancestorExecNotifiers.clear();
+
   m_execPath = execPath;
   m_exec = exec;
   m_execBlockName = execBlockName;
 
   m_presetDictsUpToDate = false;
+
+  if ( m_binding.isValid()
+    && m_exec.isValid()
+    && !m_execPath.empty() )
+  {
+    FabricCore::DFGExec ancestorExec = m_binding.getExec();
+    FTL::StrRef::Split split = FTL::StrRef( m_execPath ).split('.');
+    for (;;)
+    {
+      QSharedPointer<DFGExecNotifier> ancestorExecNotifier =
+        DFGExecNotifier::Create( ancestorExec );
+
+      connect(
+        ancestorExecNotifier.data(),
+        SIGNAL(nodeRenamed(FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onParentExecNodeRenamed(FTL::CStrRef, FTL::CStrRef))
+        );
+
+      m_ancestorExecNotifiers.append( ancestorExecNotifier );
+
+      if ( split.second.empty() )
+        break;
+      ancestorExec =
+        ancestorExec.getSubExec( std::string( split.first ).c_str() );
+      split = split.second.split('.');
+    }
+  }
 
   emit execChanged();
 }
@@ -2130,3 +2161,13 @@ void DFGController::savePrefs()
   if ( m_presetDictsUpToDate )
     m_presetPathDict.savePrefs( m_tabSearchPrefsJSONFilename.c_str() );
 }
+
+void DFGController::onParentExecNodeRenamed(
+  FTL::CStrRef oldNodeName,
+  FTL::CStrRef newNodeName
+  )
+{
+  m_execPath = m_exec.getExecPath().getCString();
+  m_dfgWidget->onExecPathOrTitleChanged();
+}
+

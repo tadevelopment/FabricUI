@@ -2167,7 +2167,7 @@ void DFGNotificationRouter::onExecTitleChanged(
   )
 {
   DFGWidget *dfgWidget = m_dfgController->getDFGWidget();
-  dfgWidget->refreshTitle( title );
+  dfgWidget->onExecPathOrTitleChanged();
 }
 
 void DFGNotificationRouter::onExecExtDepsChanged(
