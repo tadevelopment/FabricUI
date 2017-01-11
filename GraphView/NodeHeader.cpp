@@ -32,7 +32,6 @@ public:
     font
   ), m_header(header)
   {
-    setEditable( node->canEdit() );
   }
 
 protected:
@@ -77,6 +76,7 @@ NodeHeader::NodeHeader(
     graph->config().nodeFontHighlightColor,
     graph->config().nodeFont
   );
+  setEditable( node()->canEdit() );
 
   m_inCircle = new PinCircle(this, PortType_Input, m_node->color());
   // m_inCircle->setClipping(true);
@@ -113,6 +113,11 @@ NodeHeader::NodeHeader(
 Node * NodeHeader::node()
 {
   return m_node;
+}
+
+void NodeHeader::setEditable( bool canEdit )
+{
+  labelWidget()->setEditable( canEdit );
 }
 
 const Node * NodeHeader::node() const

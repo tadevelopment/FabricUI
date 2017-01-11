@@ -42,6 +42,8 @@ namespace FabricUI
 
       void setTitle( QString const &title, QString const& suffix );
 
+      void setEditable( bool canEdit );
+
       virtual bool highlighted() const;
       virtual void setHighlighted(bool state = true);
 
