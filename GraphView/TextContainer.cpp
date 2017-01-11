@@ -1,6 +1,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "TextContainer.h"
+#include <QAbstractTextDocumentLayout>
 #include <QPen>
 #include <QFontMetrics>
 #include <QTextDocument>
@@ -127,6 +128,8 @@ void TextContainer::setItalic(bool flag)
 
 class TextContainer::EditableTextItem : public QGraphicsTextItem {
 
+  typedef QGraphicsTextItem Parent;
+
   TextContainer* m_container;
 
 public:
@@ -170,6 +173,30 @@ protected:
     }
   }
 
+  virtual void paint(
+    QPainter * painter,
+    const QStyleOptionGraphicsItem * option,
+    QWidget * widget
+    )
+  {
+    // QTextCursor oldCursor = textCursor();
+    // QTextCursor newCursor = oldCursor;
+    // newCursor.clearSelection();
+    // setTextCursor( newCursor );
+
+    // Parent::paint( painter, option, widget );
+
+    // setTextCursor( oldCursor );
+
+    QTextCursor cursor = this->textCursor();
+    QTextDocument *document = this->document();
+    QAbstractTextDocumentLayout *layout = document->documentLayout();
+    QAbstractTextDocumentLayout::PaintContext context;
+    QAbstractTextDocumentLayout::Selection selection;
+    selection.cursor = cursor;
+    context.selections.append( selection );
+    layout->draw( painter, context );
+  }
 };
 
 void TextContainer::buildTextItem()
@@ -181,14 +208,16 @@ void TextContainer::buildTextItem()
     m_editableTextItem = editableTextItem;
     m_editableTextItem->setTextInteractionFlags( Qt::TextEditorInteraction );
     m_editableTextItem->setCacheMode(DeviceCoordinateCache);
+
+    // make it look the same as QGraphicsSimpleTextItem
+    QTextDocument *document = m_editableTextItem->document();
+    document->setDocumentMargin(0);
+
     m_editableTextItem->setFocus();
     setText( m_text );
 
     // select all the text when entering edit mode
     editableTextItem->selectAllText();
-
-    // make it look the same as QGraphicsSimpleTextItem
-    m_editableTextItem->document()->setDocumentMargin(0);
   }
   else
   {
