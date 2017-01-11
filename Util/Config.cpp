@@ -68,15 +68,36 @@ Config::Config()
 {
   // The default config is only used to show the default values
   // TODO : We might not have write permissions to this directory
+  std::string defaultConfigPath = FTL::PathJoin( FabricResourcesDirPath(), "default.config.json" );
   Config* defaultCfg = new Config(
-    FTL::PathJoin( FabricResourcesDirPath(), "default.config.json" )
+    defaultConfigPath
     , WriteOnly
   );
   m_previousSection = defaultCfg;
 
   // The user config is readonly : we only read the values that the user has defined
   this->setAccess( ReadOnly );
-  this->open( FTL::PathJoin( FabricCore::GetFabricUserDir(), "user.config.json" ) );
+  std::string userConfigPath = FTL::PathJoin( FabricCore::GetFabricUserDir(), "user.config.json" );
+
+  // [FE-7891] Creating a sample file if none exists
+  if ( !std::ifstream( userConfigPath.data() ).is_open() )
+  {
+    std::ofstream file( userConfigPath.data() );
+    // TODO : instead of writing the sample file like this, we could read it
+    // from the disk (see how it's done in Config::open above)
+    file << "// This file will override the default settings that are located in " << defaultConfigPath << std::endl;
+    file << "{" << std::endl;
+    file << "  \"FabricStyle\" : {" << std::endl;
+    file << "    \"QPalette::Background\" : {" << std::endl;
+    file << "      \"r\" : 60," << std::endl;
+    file << "      \"g\" : 60," << std::endl;
+    file << "      \"b\" : 60," << std::endl;
+    file << "      \"a\" : 255" << std::endl;
+    file << "    }" << std::endl;
+    file << "  }" << std::endl;
+    file << "}" << std::endl;
+  }
+  this->open( userConfigPath );
 }
 
 Config::~Config()
