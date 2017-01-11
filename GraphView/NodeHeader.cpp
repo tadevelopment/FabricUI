@@ -117,7 +117,10 @@ Node * NodeHeader::node()
 
 void NodeHeader::setEditable( bool canEdit )
 {
-  labelWidget()->setEditable( canEdit );
+  // [FE-7833] Disabled the ability to rename the Node's header label
+  // since double-clicking is also used to focus the Value Editor on the Node
+  labelWidget()->setEditable( false );
+  //labelWidget()->setEditable( canEdit );
 }
 
 const Node * NodeHeader::node() const
