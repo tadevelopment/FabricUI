@@ -87,11 +87,11 @@ Config::Config()
     // from the disk (see how it's done in Config::open above)
     file << "// This file will override the default settings that are located in " << defaultConfigPath << std::endl;
     file << "{" << std::endl;
-    file << "  \"FabricStyle\" : {" << std::endl;
-    file << "    \"QPalette::Background\" : {" << std::endl;
-    file << "      \"r\" : 60," << std::endl;
-    file << "      \"g\" : 60," << std::endl;
-    file << "      \"b\" : 60," << std::endl;
+    file << "  \"GraphView\" : {" << std::endl;
+    file << "    \"mainPanelBackgroundColor\" : {" << std::endl;
+    file << "      \"r\" : 68," << std::endl;
+    file << "      \"g\" : 68," << std::endl;
+    file << "      \"b\" : 68," << std::endl;
     file << "      \"a\" : 255" << std::endl;
     file << "    }" << std::endl;
     file << "  }" << std::endl;
