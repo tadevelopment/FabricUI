@@ -87,7 +87,10 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( disconnectInputsAutomatically, true );
   GET_PARAMETER( middleClickDeletesConnections, false );
 
+  // warning : this value might also be defined as an example in ~/Fabric/user.config.json
+  // If the default value is changed, it should also be updated there (see FabricUI/Util/Config.cpp)
   GET_PARAMETER( mainPanelBackgroundColor, QColor(68, 68, 68, 255) );
+
   GET_PARAMETER( mainPanelDrawGrid, false );
   GET_PARAMETER( mainPanelGridSpanS, 30 );
   GET_PARAMETER( mainPanelGridSpanL, 300 );
