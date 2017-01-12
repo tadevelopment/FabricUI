@@ -32,7 +32,6 @@ public:
     font
   ), m_header(header)
   {
-    setEditable( node->canEdit() );
   }
 
 protected:
@@ -77,6 +76,7 @@ NodeHeader::NodeHeader(
     graph->config().nodeFontHighlightColor,
     graph->config().nodeFont
   );
+  setEditable( node()->canEdit() );
 
   m_inCircle = new PinCircle(this, PortType_Input, m_node->color());
   // m_inCircle->setClipping(true);
@@ -113,6 +113,14 @@ NodeHeader::NodeHeader(
 Node * NodeHeader::node()
 {
   return m_node;
+}
+
+void NodeHeader::setEditable( bool canEdit )
+{
+  // [FE-7833] Disabled the ability to rename the Node's header label
+  // since double-clicking is also used to focus the Value Editor on the Node
+  labelWidget()->setEditable( false );
+  //labelWidget()->setEditable( canEdit );
 }
 
 const Node * NodeHeader::node() const

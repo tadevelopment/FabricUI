@@ -1015,7 +1015,7 @@ void Node::setCanEdit( bool canEdit )
   {
     m_pins[i]->labelWidget()->setEditable( canEdit );
   }
-  m_header->labelWidget()->setEditable( canEdit );
+  m_header->setEditable( canEdit );
 }
 
 void Node::collectEditingTargets( EditingTargets &editingTargets )
