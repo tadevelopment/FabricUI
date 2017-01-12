@@ -2,10 +2,13 @@
 
 #include "TextContainer.h"
 #include <QAbstractTextDocumentLayout>
+#include <QPainter>
+#include <QPalette>
 #include <QPen>
 #include <QFontMetrics>
 #include <QTextDocument>
 #include <QTextCursor>
+#include <QTimer>
 
 using namespace FabricUI::GraphView;
 
@@ -126,85 +129,102 @@ void TextContainer::setItalic(bool flag)
   setFont(font);
 }
 
-class TextContainer::EditableTextItem : public QGraphicsTextItem {
+TextContainer_EditableTextItem::TextContainer_EditableTextItem( TextContainer* container )
+  : QGraphicsTextItem( container )
+  , m_container(container)
+  , m_displayCursor( true )
+{
+  // disable tabs by default : they are not allowed in most names
+  setTabChangesFocus(true);
 
-  typedef QGraphicsTextItem Parent;
+  m_timer = new QTimer( this );
+  connect(
+    m_timer, SIGNAL(timeout()),
+    this, SLOT(cursorFlash())
+    );
+  m_timer->start( 500 );
+}
 
-  TextContainer* m_container;
+void TextContainer_EditableTextItem::selectAllText()
+{
+  QTextCursor cursor = this->textCursor();
+  cursor.select( QTextCursor::Document );
+  this->setTextCursor( cursor );
+}
 
-public:
-  EditableTextItem( TextContainer* container )
-    : QGraphicsTextItem( container ),
-    m_container(container)
+void TextContainer_EditableTextItem::exit(bool submit) {
+  if (submit) { m_container->submitEditedText(this->toPlainText()); }
+  m_container->setEditing(false);
+}
+
+void TextContainer_EditableTextItem::focusOutEvent(QFocusEvent *event) {
+  QGraphicsTextItem::focusOutEvent(event);
+  exit(true); // submitting when losing focus (as ValueEditor::VELineEdit does)
+}
+void TextContainer_EditableTextItem::keyPressEvent(QKeyEvent* event) {
+  switch (event->key()) {
+  case Qt::Key_Escape:
+    exit(false); break;
+  case Qt::Key_Enter:
+  case Qt::Key_Return:
+    exit(true); break;
+  default:
+    m_displayCursor = true;
+    update();
+    m_timer->start();
+    QGraphicsTextItem::keyPressEvent(event);
+    m_container->refresh();
+    m_container->displayedTextChanged();
+  }
+}
+
+void TextContainer_EditableTextItem::paint(
+  QPainter * painter,
+  const QStyleOptionGraphicsItem * option,
+  QWidget * widget
+  )
+{
+  QTextCursor cursor = this->textCursor();
+  QTextDocument *document = this->document();
+  QAbstractTextDocumentLayout *layout = document->documentLayout();
+
+  QRectF rect = layout->frameBoundingRect( document->rootFrame() );
+
+  // Fill background
+  painter->fillRect( rect, Qt::white );
+
+  // Draw text with selection and cursor
+  QAbstractTextDocumentLayout::PaintContext context;
+  context.palette.setColor( QPalette::Text, Qt::black );
+  if ( cursor.hasSelection() )
   {
-    // disable tabs by default : they are not allowed in most names
-    setTabChangesFocus(true);
-  }
-
-  void selectAllText()
-  {
-    QTextCursor cursor = this->textCursor();
-    cursor.select( QTextCursor::Document );
-    this->setTextCursor( cursor );
-  }
-
-private:
-  void exit(bool submit) {
-    if (submit) { m_container->submitEditedText(this->toPlainText()); }
-    m_container->setEditing(false);
-  }
-
-protected:
-  void focusOutEvent(QFocusEvent *event) {
-    QGraphicsTextItem::focusOutEvent(event);
-    exit(true); // submitting when losing focus (as ValueEditor::VELineEdit does)
-  }
-  void keyPressEvent(QKeyEvent* event) {
-    switch (event->key()) {
-    case Qt::Key_Escape:
-      exit(false); break;
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-      exit(true); break;
-    default:
-      QGraphicsTextItem::keyPressEvent(event);
-      m_container->refresh();
-      m_container->displayedTextChanged();
-    }
-  }
-
-  virtual void paint(
-    QPainter * painter,
-    const QStyleOptionGraphicsItem * option,
-    QWidget * widget
-    )
-  {
-    // QTextCursor oldCursor = textCursor();
-    // QTextCursor newCursor = oldCursor;
-    // newCursor.clearSelection();
-    // setTextCursor( newCursor );
-
-    // Parent::paint( painter, option, widget );
-
-    // setTextCursor( oldCursor );
-
-    QTextCursor cursor = this->textCursor();
-    QTextDocument *document = this->document();
-    QAbstractTextDocumentLayout *layout = document->documentLayout();
-    QAbstractTextDocumentLayout::PaintContext context;
     QAbstractTextDocumentLayout::Selection selection;
     selection.cursor = cursor;
+    selection.format.setForeground( Qt::white );
+    selection.format.setBackground( Qt::darkBlue );
     context.selections.append( selection );
-    layout->draw( painter, context );
   }
-};
+  else if ( m_displayCursor )
+    context.cursorPosition = cursor.position();
+  layout->draw( painter, context );
+
+  // Draw black frame
+  painter->setPen( Qt::black );
+  painter->drawRect( rect );
+}
+
+void TextContainer_EditableTextItem::cursorFlash()
+{
+  m_displayCursor = !m_displayCursor;
+  update();
+}
 
 void TextContainer::buildTextItem()
 {
   destroyTextItems();
   if (m_editing)
   {
-    EditableTextItem* editableTextItem = new EditableTextItem( this );
+    TextContainer_EditableTextItem* editableTextItem = new TextContainer_EditableTextItem( this );
     m_editableTextItem = editableTextItem;
     m_editableTextItem->setTextInteractionFlags( Qt::TextEditorInteraction );
     m_editableTextItem->setCacheMode(DeviceCoordinateCache);

@@ -7,15 +7,19 @@
 #include <QGraphicsTextItem>
 #include <QColor>
 #include <QFont>
+#include <QTimer>
 
 namespace FabricUI
 {
 
   namespace GraphView
   {
+    class TextContainer_EditableTextItem;
 
     class TextContainer : public QGraphicsWidget
     {
+      friend class TextContainer_EditableTextItem;
+
     public:
 
       TextContainer(
@@ -80,6 +84,46 @@ namespace FabricUI
       void setEditing(bool editable);
       void buildTextItem();
       void destroyTextItems();
+    };
+
+
+    class TextContainer_EditableTextItem
+      : public QGraphicsTextItem
+    {
+
+      Q_OBJECT
+
+      typedef QGraphicsTextItem Parent;
+
+      TextContainer* m_container;
+      QTimer *m_timer;
+      bool m_displayCursor;
+
+    public:
+
+      TextContainer_EditableTextItem( TextContainer* container );
+
+      void selectAllText();
+
+    private:
+
+      void exit(bool submit);
+
+    protected:
+
+      void focusOutEvent(QFocusEvent *event);
+
+      void keyPressEvent(QKeyEvent* event);
+
+      virtual void paint(
+        QPainter * painter,
+        const QStyleOptionGraphicsItem * option,
+        QWidget * widget
+        );
+
+    public slots:
+
+      void cursorFlash();
     };
 
   };
