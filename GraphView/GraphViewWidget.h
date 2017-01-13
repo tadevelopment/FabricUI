@@ -62,7 +62,9 @@ namespace FabricUI
       virtual void setGraph(Graph * graph);
 
       virtual void resizeEvent(QResizeEvent * event);
+      virtual void mousePressEvent(QMouseEvent * event);
       virtual void mouseMoveEvent(QMouseEvent * event);
+      virtual void contextMenuEvent(QContextMenuEvent * event);
       QPoint lastEventPos() const;
 
       QPointF mapToGraph( QPoint const &globalPos ) const;
@@ -85,6 +87,7 @@ namespace FabricUI
       QPoint m_lastEventPos;
       GraphViewScene * m_scene;
       Graph * m_graph;
+      bool m_altWasHeldAtLastMousePress;
     };
 
   };

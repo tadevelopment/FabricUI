@@ -20,6 +20,7 @@ GraphViewWidget::GraphViewWidget(
   Graph * graph
   )
   : QGraphicsView(parent)
+  , m_altWasHeldAtLastMousePress( false )
 {
   setRenderHint(QPainter::Antialiasing);
   // setRenderHint(QPainter::HighQualityAntialiasing);
@@ -98,10 +99,32 @@ void GraphViewWidget::resizeEvent(QResizeEvent * event)
   }
 }
 
+void GraphViewWidget::mousePressEvent(QMouseEvent * event)
+{
+  m_altWasHeldAtLastMousePress =
+    event->modifiers().testFlag( Qt::AltModifier );
+
+  QGraphicsView::mousePressEvent(event);
+}
+
 void GraphViewWidget::mouseMoveEvent(QMouseEvent * event)
 {
   m_lastEventPos = event->pos();
   QGraphicsView::mouseMoveEvent(event);
+}
+
+void GraphViewWidget::contextMenuEvent(QContextMenuEvent * event)
+{
+  if ( m_altWasHeldAtLastMousePress )
+  {
+    // [pz 20170113] FE-7941: we don't pop up a context menu if Alt was
+    // held when the right mouse button was pressed
+
+    event->accept();
+    return;
+  }
+
+  QGraphicsView::contextMenuEvent(event);
 }
 
 QPoint GraphViewWidget::lastEventPos() const
