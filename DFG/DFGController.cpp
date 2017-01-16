@@ -218,9 +218,23 @@ void DFGController::setExec(
 
       if ( split.second.empty() )
         break;
-      ancestorExec =
-        ancestorExec.getSubExec( std::string( split.first ).c_str() );
+      FTL::StrRef instName = split.first;
       split = split.second.split('.');
+      FTL::StrRef maybeInstBlockName = split.first;
+
+      std::string subPath = instName;
+      subPath += '.';
+      subPath += maybeInstBlockName;
+      if ( ancestorExec.isInstBlock( subPath.c_str() ) )
+      {
+        ancestorExec = ancestorExec.getSubExec( subPath.c_str() );
+        split = split.second.split('.');
+      }
+      else
+      {
+        subPath[instName.size()] = '\0';
+        ancestorExec = ancestorExec.getSubExec( subPath.c_str() );
+      }
     }
   }
 
