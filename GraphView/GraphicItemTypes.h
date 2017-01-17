@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_GraphicItemTypes__
 #define __UI_GraphView_GraphicItemTypes__
@@ -23,7 +23,9 @@ namespace FabricUI
       QGraphicsItemType_NodeRectangle,
       QGraphicsItemType_ProxyPin,
       QGraphicsItemType_NodeHeaderButton,
-      QGraphicsItemType_InstBlock
+      QGraphicsItemType_InstBlock,
+      QGraphicsItemType_InstBlockPort,
+      QGraphicsItemType_SidePanel
     };
 
   };

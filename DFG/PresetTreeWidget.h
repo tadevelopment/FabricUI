@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_DFG_PresetTreeWidget__
 #define __UI_DFG_PresetTreeWidget__
@@ -38,6 +38,7 @@ namespace FabricUI
 
       TreeView::TreeViewWidget * getTreeView() { return m_treeView; }
       TreeView::TreeModel * getTreeModel() { return m_treeModel; }
+      DFGController* getController() { return m_dfgController; }
 
     public slots:
 
@@ -46,6 +47,10 @@ namespace FabricUI
       void onCustomContextMenuRequested(QPoint globalPos, FabricUI::TreeView::TreeItem * item);
       void onRowDoubleClick(const QModelIndex &item);
       void onContextMenuAction(QAction * action);
+
+      /// Expands the tree-View to show the preset and selects it (FE-7300).
+      void onExpandToAndSelectItem(QString presetPath);
+
 
     private:
       

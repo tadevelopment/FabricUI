@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "DFGLogWidget.h"
 #include <QHBoxLayout>
@@ -169,16 +169,16 @@ void DFGLogWidget::callback(
         {
           if (!messageIsKeyword)
           {
-            textColor.setRed  ((textColor.red()   + 3 * 255) / 4);
-            textColor.setGreen((textColor.green() + 3 *  20) / 4);
-            textColor.setBlue ((textColor.blue()  + 3 *  10) / 4);
+            textColor.setRed  (255);
+            textColor.setGreen( 20);
+            textColor.setBlue ( 10);
           }
         }
         else if (messageContainsWarnings)
         {
-          textColor.setRed  ((textColor.red()   + 230) / 2);
-          textColor.setGreen((textColor.green() + 230) / 2);
-          textColor.setBlue ((textColor.blue()  +  10) / 2);
+          textColor.setRed  (230);
+          textColor.setGreen(230);
+          textColor.setBlue ( 10);
         }
         if (j == 0)
           t.appendPlainText("");

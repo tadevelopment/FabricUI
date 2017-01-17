@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
+ *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
 #ifndef __FABRICUI_VIEWPORT_H__
@@ -81,7 +81,6 @@ namespace FabricUI
 
       public slots:
         virtual void redraw() { update(); }
-        virtual void onKeyPressed(QKeyEvent * event) {}
         virtual void onContextMenu(QPoint &point) {}
         
 

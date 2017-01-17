@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #ifndef FABRICUI_VALUEEDITOR_VEEDITOROWNER_H
@@ -54,6 +54,7 @@ namespace FabricUI {
     
       virtual void onOutputsChanged() {} // Call after each evaluation
       void reloadStyles();
+      void emitReplaceModelRoot(FabricUI::ValueEditor::BaseModelItem* model);
 
     protected slots:
       virtual void onFrameChanged(int frame) {}

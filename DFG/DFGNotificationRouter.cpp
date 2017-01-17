@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include <FabricUI/GraphView/BackDropNode.h>
@@ -799,7 +799,7 @@ void DFGNotificationRouter::onNodeInserted(
     }
 
     FabricCore::DFGExec subExec = exec.getSubExec( nodeName.c_str() );
-    uiNode->setCanAddPorts( !subExec.editWouldSplitFromPreset() );
+    uiNode->setCanEdit( !subExec.editWouldSplitFromPreset() );
   }
   else if(nodeType == FabricCore::DFGNodeType_Var)
   {
@@ -899,7 +899,7 @@ void DFGNotificationRouter::onExecBlockInserted(
   GraphView::Node *uiNode = uiGraph->addBlockNode( blockName, blockName );
   if ( !uiNode )
     return;
-  uiNode->setCanAddPorts( true );
+  uiNode->setCanEdit( true );
 
   uiNode->setColor( m_config.graphConfig.blockNodeDefaultColor );
   uiNode->setTitleColor( m_config.graphConfig.blockLabelDefaultColor );
@@ -2167,7 +2167,7 @@ void DFGNotificationRouter::onExecTitleChanged(
   )
 {
   DFGWidget *dfgWidget = m_dfgController->getDFGWidget();
-  dfgWidget->refreshTitle( title );
+  dfgWidget->onExecPathOrTitleChanged();
 }
 
 void DFGNotificationRouter::onExecExtDepsChanged(
@@ -2462,13 +2462,13 @@ void DFGNotificationRouter::onInstExecEditWouldSplitFromPresetMayHaveChanged(
   {
     uiNode->setTitle( instName );
     uiNode->setTitleSuffixAsterisk();
-    uiNode->setCanAddPorts( true );
+    uiNode->setCanEdit( true );
   }
   else
   {
     uiNode->setTitle( subExec.getTitle() );
     uiNode->removeTitleSuffix();
-    uiNode->setCanAddPorts( false );
+    uiNode->setCanEdit( false );
   }
 }
 

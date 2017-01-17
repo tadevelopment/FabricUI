@@ -1,6 +1,5 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include <iostream>
 #include <QDebug>
 #include <QRegExp>
 #include <QApplication>
@@ -8,6 +7,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QMessageBox>
+#include <QTimer>
 
 #include <FTL/JSONEnc.h>
 #include <FTL/JSONDec.h>
@@ -30,8 +30,6 @@
 #include <FabricUI/DFG/DFGUIUtil.h>
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
-
-#include <sstream>
 
 using namespace FabricServices;
 using namespace FabricUI;
@@ -111,7 +109,7 @@ void DFGController::setBindingExec(
   assert( m_dfgWidget->priorExecStackIsEmpty() );
 
   if ( m_binding.isValid() )
-  m_bindingNotifier.clear();
+    m_bindingNotifier.clear();
 
   m_binding = binding;
 
@@ -189,11 +187,42 @@ void DFGController::setExec(
   FTL::StrRef execBlockName
   )
 {
+  if ( m_exec.isValid() )
+    m_ancestorExecNotifiers.clear();
+
   m_execPath = execPath;
   m_exec = exec;
   m_execBlockName = execBlockName;
 
   m_presetDictsUpToDate = false;
+
+  if ( m_binding.isValid()
+    && m_exec.isValid()
+    && !m_execPath.empty() )
+  {
+    FabricCore::DFGExec ancestorExec = m_binding.getExec();
+    FTL::StrRef::Split split = FTL::StrRef( m_execPath ).split('.');
+    for (;;)
+    {
+      QSharedPointer<DFGExecNotifier> ancestorExecNotifier =
+        DFGExecNotifier::Create( ancestorExec );
+
+      connect(
+        ancestorExecNotifier.data(),
+        SIGNAL(nodeRenamed(FTL::CStrRef, FTL::CStrRef)),
+        this,
+        SLOT(onParentExecNodeRenamed(FTL::CStrRef, FTL::CStrRef))
+        );
+
+      m_ancestorExecNotifiers.append( ancestorExecNotifier );
+
+      if ( split.second.empty() )
+        break;
+      ancestorExec =
+        ancestorExec.getSubExec( std::string( split.first ).c_str() );
+      split = split.second.split('.');
+    }
+  }
 
   emit execChanged();
 }
@@ -385,6 +414,32 @@ void DFGController::gvcDoAddPort(
     );
 }
 
+void DFGController::gvcDoRenameExecPort(
+  QString oldName,
+  QString desiredPortName,
+  QString execPath
+)
+{
+  cmdRenameExecPort(
+    oldName,
+    desiredPortName,
+    execPath
+  );
+}
+
+void DFGController::gvcDoRenameNode(
+  GraphView::Node* node,
+  QString newName
+)
+{
+  cmdEditNode(
+    node->name_QS(),
+    newName,
+    "",
+    ""
+  );
+}
+
 void DFGController::gvcDoSetNodeCommentExpanded(
   GraphView::Node *node,
   bool expanded
@@ -399,7 +454,8 @@ void DFGController::gvcDoSetNodeCommentExpanded(
 
 QString DFGController::cmdRenameExecPort(
   QString oldName,
-  QString desiredNewName
+  QString desiredNewName,
+  QString execPath
   )
 {
   if(!validPresetSplit())
@@ -408,7 +464,7 @@ QString DFGController::cmdRenameExecPort(
   QString result = m_cmdHandler->dfgDoRenamePort(
     getBinding(),
     getExecPath_QS(),
-    getExec(),
+    getExec().getSubExec( execPath.toUtf8().constData() ),
     oldName,
     desiredNewName
     );
@@ -623,6 +679,7 @@ bool DFGController::panCanvas(QPointF pan)
       }
     }
 
+    // qDebug() << "panCanvas " << json.c_str();
     exec.setMetadata("uiGraphPan", json.c_str(), false, false);
   }
   catch(FabricCore::Exception e)
@@ -771,6 +828,27 @@ void DFGController::setSelectedNodesCollapseState(int collapsedState) {
       continue;
     exec.setNodeMetadata(nodes[i]->name().c_str(), "uiCollapsedState", collapsedStateMetadataValues[collapsedState], false, false);
   }
+}
+
+QStringList DFGController::getSelectedNodesName() {
+  QStringList selectedNodes;
+
+  const std::vector<GraphView::Node*> & nodes = graph()->selectedNodes();
+  for(unsigned int i=0;i<nodes.size();i++)
+    selectedNodes.append(nodes[i]->name().c_str());
+  return selectedNodes;
+}
+
+QStringList DFGController::getSelectedNodesPath() {
+  QStringList selectedNodes;
+
+  QString path(getExecPath_QS());
+  if(!path.isEmpty()) path += ".";
+
+  const std::vector<GraphView::Node*> & nodes = graph()->selectedNodes();
+  for(unsigned int i=0;i<nodes.size();i++)
+    selectedNodes.append(path + nodes[i]->name().c_str());
+  return selectedNodes;
 }
 
 std::string DFGController::copy()
@@ -957,76 +1035,90 @@ void DFGController::updateNodeErrors()
 
   try
   {
-    GraphView::Graph *uiGraph = 0;
     if ( m_exec.getType() == FabricCore::DFGExecType_Graph )
-      uiGraph = graph();
-    if ( uiGraph )
     {
+      GraphView::Graph *uiGraph = graph();
+
       unsigned nodeCount = m_exec.getNodeCount();
       for(size_t j=0;j<nodeCount;j++)
       {
         char const *nodeName = m_exec.getNodeName(j);
-
         GraphView::Node *uiNode = uiGraph->nodeFromPath( nodeName );
         if ( !uiNode )
           continue;
 
-        uiNode->clearError();
-      }
-    }
-
-    FabricCore::String errorsJSON = m_exec.getErrors( true );
-    FTL::CStrRef errorsJSONStr( errorsJSON.getCStr(), errorsJSON.getSize() );
-    FTL::JSONStrWithLoc strWithLoc( errorsJSONStr );
-    FTL::OwnedPtr<FTL::JSONArray> errorsJSONArray(
-      FTL::JSONValue::Decode( strWithLoc )->cast<FTL::JSONArray>()
-      );
-    unsigned errorCount = errorsJSONArray->size();
-    for(unsigned i=0;i<errorCount;i++)
-    {
-      FTL::JSONObject const *error = errorsJSONArray->getObject( i );
-
-      FTL::CStrRef execPath = error->getString( FTL_STR("execPath") );
-      FTL::CStrRef nodeName = error->getStringOrEmpty( FTL_STR("nodeName") );
-      FTL::CStrRef desc = error->getString( FTL_STR("desc") );
-      int32_t line = error->getSInt32Or( FTL_STR("line"), -1 );
-      int32_t column = error->getSInt32Or( FTL_STR("column"), -1 );
-
-      std::stringstream prefixedError;
-      prefixedError << m_execPath;
-      prefixedError << " : ";
-      if ( !execPath.empty() )
-        prefixedError << execPath;
-      if ( !execPath.empty() && !nodeName.empty() )
-        prefixedError << '.';
-      if ( !nodeName.empty() )
-        prefixedError << nodeName;
-      if ( line != -1 )
-      {
-        prefixedError << ':';
-        prefixedError << line;
-        if ( column != -1 )
-        {
-          prefixedError << ':';
-          prefixedError << column;
-        }
-      }
-      prefixedError << " : ";
-      prefixedError << desc;
-      logError( prefixedError.str().c_str() );
-
-      if ( uiGraph )
-      {
-        FTL::StrRef rootNodeName;
-        if ( !execPath.empty() )
-          rootNodeName = execPath.split('.').first;
+        FabricCore::String errorsJSON =
+          m_exec.getNodeErrors(
+            nodeName,
+            true, // recursive
+            true  // connectedOnly
+            );
+        FTL::CStrRef errorsJSONStr( errorsJSON.getCStr(), errorsJSON.getSize() );
+        FTL::JSONStrWithLoc strWithLoc( errorsJSONStr );
+        FTL::OwnedPtr<FTL::JSONArray> errorsJSONArray(
+          FTL::JSONValue::Decode( strWithLoc )->cast<FTL::JSONArray>()
+          );
+        unsigned errorCount = errorsJSONArray->size();
+        if ( errorCount == 0 )
+          uiNode->clearError();
         else
-          rootNodeName = nodeName;
-        if ( rootNodeName.empty() )
-          continue;
+        {
+          QString fullDesc;
+          for(unsigned i=0;i<errorCount;i++)
+          {
+            if ( i == 3 )
+            {
+              fullDesc += "\n...";
+              break;
+            }
 
-        if ( GraphView::Node *uiNode = uiGraph->nodeFromPath( rootNodeName ) )
-          uiNode->setError( QString::fromUtf8( desc.data(), desc.size() ) );
+            FTL::JSONObject const *error = errorsJSONArray->getObject( i );
+
+            FTL::CStrRef execPath = error->getString( FTL_STR("execPath") );
+            FTL::CStrRef nodeName = error->getStringOrEmpty( FTL_STR("nodeName") );
+            FTL::CStrRef blockName = error->getStringOrEmpty( FTL_STR("blockName") );
+            int32_t line = error->getSInt32Or( FTL_STR("line"), -1 );
+            int32_t column = error->getSInt32Or( FTL_STR("column"), -1 );
+            FTL::CStrRef desc = error->getString( FTL_STR("desc") );
+
+            QString localDesc;
+            if ( !execPath.empty() )
+              localDesc += execPath.c_str();
+            if ( !nodeName.empty() )
+            {
+              if ( !localDesc.isEmpty() )
+                localDesc += '.';
+              localDesc += nodeName.c_str();
+            }
+            if ( !blockName.empty() )
+            {
+              if ( !localDesc.isEmpty() )
+                localDesc += '.';
+              localDesc += blockName.c_str();
+            }
+            if ( line >= 0 )
+            {
+              if ( !localDesc.isEmpty() )
+                localDesc += ' ';
+              localDesc += "(line ";
+              localDesc += QString::number( line );
+              if ( column >= 0 )
+              {
+                localDesc += ", column ";
+                localDesc += QString::number( column );
+              }
+              localDesc += ')';
+            }
+            if ( !localDesc.isEmpty() )
+              localDesc += ": ";
+            localDesc += desc.c_str();
+
+            if ( !fullDesc.isEmpty() )
+              fullDesc += '\n';
+            fullDesc += localDesc;
+          }
+          uiNode->setError( fullDesc );
+        }
       }
     }
   }
@@ -1127,6 +1219,19 @@ void DFGController::updateNodeErrors()
   }
 }
 
+void DFGController::processDelayedEvents()
+{
+  if ( m_notificationTimer->isActive() )
+  {
+    // stop the timer and call the slot directly.
+    // (note: we call the slot directly, because in Qt
+    //  one cannot directly emit QTimer::timeout from
+    //  outside of the class)
+    m_notificationTimer->stop();
+    onNotificationTimer();
+  }
+}
+
 void DFGController::log(const char * message) const
 {
   DFGLogWidget::log(message);
@@ -1151,6 +1256,7 @@ void DFGController::execute()
   try
   {
     m_binding.execute();
+    emit bindingExecuted();
   }
   catch(FabricCore::Exception e)
   {
@@ -1734,7 +1840,7 @@ QString DFGController::cmdEditPort(
 }
 
 void DFGController::cmdRemovePort(
-  QString portName
+  QStringList portNames
   )
 {
   if(!validPresetSplit())
@@ -1744,7 +1850,7 @@ void DFGController::cmdRemovePort(
     getBinding(),
     getExecPath_QS(),
     getExec(),
-    portName
+    portNames
     );
 }
 
@@ -2045,8 +2151,23 @@ void DFGController::gvcDoMoveExecPort(
       );
 }
 
+QString DFGController::gvcGetCurrentExecPath()
+{
+  return getExecPath_QS();
+}
+
 void DFGController::savePrefs()
 {
   if ( m_presetDictsUpToDate )
     m_presetPathDict.savePrefs( m_tabSearchPrefsJSONFilename.c_str() );
 }
+
+void DFGController::onParentExecNodeRenamed(
+  FTL::CStrRef oldNodeName,
+  FTL::CStrRef newNodeName
+  )
+{
+  m_execPath = m_exec.getExecPath().getCString();
+  m_dfgWidget->onExecPathOrTitleChanged();
+}
+

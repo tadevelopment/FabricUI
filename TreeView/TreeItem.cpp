@@ -1,13 +1,12 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "TreeItem.h"
-
+#include <iostream>
 using namespace FabricUI::TreeView;
 
 TreeItem::TreeItem(
   FTL::StrRef name,
-  FTL::StrRef label
-  )
+  FTL::StrRef label )
   : m_name( name )
   , m_label( !label.empty()? label: name )
 {

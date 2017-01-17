@@ -78,7 +78,6 @@
 #include <FabricUI/DFG/DFGConfig.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
 #include <FabricUI/DFG/DFGController.h>
-#include <FabricUI/DFG/DFGHotkeys.h>
 #include <FabricUI/DFG/DFGLogWidget.h>
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
@@ -118,6 +117,7 @@
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Viewports/TimeLineWidget.h>
 #include <FabricUI/Util/StringUtils.h>
+#include <FabricUI/Util/Config.h>
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>
 #include <FabricUI/SceneHub/SHStates.h>

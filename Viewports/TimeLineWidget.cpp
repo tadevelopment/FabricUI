@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
+ *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
 #include <iostream>
@@ -497,7 +497,7 @@ void TimeLineWidget::frameRateChanged(int index)
   {
     bool ok;
     double userFps = QInputDialog::getDouble(
-      this, tr("TimeLineWidget::getCustomFpS"), tr("Custom FPS"),
+      this, tr("Custom FPS"), tr(""),
       24.0, 1.0, 1000.0, 2, &ok );
     if(ok)
     {

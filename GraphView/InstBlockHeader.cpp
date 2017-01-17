@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <FabricUI/GraphView/InstBlockHeader.h>
 #include <FabricUI/GraphView/InstBlock.h>
@@ -41,6 +41,7 @@ InstBlockHeader::InstBlockHeader(
 
   m_nodeLabel = new NodeLabel(
     this,
+    node,
     QString::fromUtf8( name.data(), name.size() ),
     graphConfig.nodeFontColor,
     graphConfig.nodeFontHighlightColor,

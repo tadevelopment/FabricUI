@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include <FabricUI/GraphView/InstBlockPort.h>
@@ -12,7 +12,78 @@
 
 #include <QGraphicsLinearLayout>
 
+// sqrt
+#include <math.h>
+
 using namespace FabricUI::GraphView;
+
+class InstBlockPortLabel : public NodeLabel
+{
+  InstBlockPort * m_pin;
+
+public:
+  InstBlockPortLabel(
+    InstBlockPort * pin,
+    Node* node,
+    QString const &text,
+    QColor color,
+    QColor highlightColor,
+    QFont font
+  ) : NodeLabel(
+    pin,
+    node,
+    text,
+    color,
+    highlightColor,
+    font
+  ), m_pin( pin )
+  {
+    setEditable( false );
+    setAcceptHoverEvents( true );
+  }
+
+protected:
+
+  PinCircle* pinCircle() const
+  {
+    switch ( m_pin->portType() )
+    {
+    case PortType_Input: return m_pin->inCircle();
+    case PortType_Output: return m_pin->outCircle();
+    default: return NULL;
+    }
+  }
+
+  void mousePressEvent( QGraphicsSceneMouseEvent* event ) FTL_OVERRIDE
+  {
+    if( MainPanel::filterMousePressEvent( event ) )
+      return event->ignore();
+
+    // Creating connections from Labels
+    PinCircle * circle = pinCircle();
+    if ( circle )
+      circle->mousePressEvent( event );
+    NodeLabel::mousePressEvent( event );
+  }
+
+  void hoverEnterEvent( QGraphicsSceneHoverEvent * event ) FTL_OVERRIDE
+  {
+    PinCircle * circle = pinCircle();
+    if ( circle )
+      circle->onHoverEnter();
+    setHighlighted( true );
+    NodeLabel::hoverEnterEvent( event );
+  }
+
+  void hoverLeaveEvent( QGraphicsSceneHoverEvent * event ) FTL_OVERRIDE
+  {
+    PinCircle * circle = pinCircle();
+    if ( circle )
+      circle->onHoverLeave();
+    setHighlighted( false );
+    NodeLabel::hoverLeaveEvent( event );
+  }
+};
 
 InstBlockPort::InstBlockPort(
   InstBlock *instBlock,
@@ -92,8 +163,9 @@ InstBlockPort::InstBlockPort(
     }
   }
 
-  m_label = new TextContainer(
+  m_label = new InstBlockPortLabel(
     this,
+    parentNode,
     QSTRING_FROM_STL_UTF8(m_labelCaption),
     config.pinFontColor,
     config.pinFontHighlightColor,
@@ -281,14 +353,16 @@ void InstBlockPort::setDataType(FTL::CStrRef dataType)
       if(m_dataType.substr(m_dataType.length()-2) == "[]" && m_labelSuffix != "[]")
       {
         m_labelSuffix = "[]";
-        m_label->setText(QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix));
+        m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+        m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
         return;
       }
     }
     if(m_labelSuffix.length() > 0)
     {
       m_labelSuffix = "";
-      m_label->setText(QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix));
+      m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+      m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
     }
   }
 }
@@ -311,6 +385,24 @@ PinCircle * InstBlockPort::outCircle()
 const PinCircle * InstBlockPort::outCircle() const
 {
   return m_outCircle;
+}
+
+PinCircle * InstBlockPort::findPinCircle( QPointF pos )
+{
+  PinCircle * circle = pos.x() < size().width() * 0.5 ? inCircle() : outCircle();
+  if ( circle )
+  {
+    float pinClickableDistance = graph()->config().pinClickableDistance;
+    QPointF center = circle->centerInSceneCoords();
+    QPointF clicked = mapToScene( pos );
+    float x = center.x() - clicked.x();
+    float y = center.y() - clicked.y();
+    float distance = sqrt( x * x + y * y );
+    distance /= graph()->mainPanel()->canvasZoom();
+    if ( distance > pinClickableDistance )
+      circle = NULL;
+  }
+  return circle;
 }
 
 bool InstBlockPort::canConnectTo(
@@ -433,7 +525,7 @@ void InstBlockPort::setName( FTL::StrRef newName )
     m_name = newName;
     if ( labelIsName )
       m_labelCaption = newName;
-    m_label->setText( QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix) );
+    m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
   }
 }
 

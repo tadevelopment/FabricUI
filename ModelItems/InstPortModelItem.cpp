@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include <assert.h>
@@ -62,9 +62,9 @@ QVariant InstPortModelItem::getValue()
       return QVariant::fromValue<FabricCore::RTVal>( rtVal.copy() );
     }
   }
-  catch (FabricCore::Exception* e)
+  catch ( FabricCore::Exception e )
   {
-    printf( "[ERROR] %s", e->getDesc_cstr() );
+    reportFabricCoreException( e );
   }
   return QVariant();
 }
@@ -102,27 +102,6 @@ void InstPortModelItem::onRenamed(
   assert( m_portName == oldName );
   m_portName = newName;
   updatePortPath();
-}
-
-bool InstPortModelItem::hasDefault()
-{
-  // If we have a resolved type, allow getting the default val
-  const char* ctype = m_exec.getPortResolvedType( m_portPath.c_str() );
-  return (ctype != NULL);
-}
-
-void InstPortModelItem::resetToDefault()
-{
-//#pragma message("Fix instance values for non-arg ports")
-  //// If we have a resolved type, allow getting the default val
-  const char* ctype = m_exec.getPortResolvedType( m_portPath.c_str() );
-  if (ctype != NULL)
-  {
-    FabricCore::RTVal val =
-      m_exec.getPortDefaultValue( m_portPath.c_str(), ctype );
-    if ( val.isValid() )
-      onViewValueChanged( QVariant::fromValue( val ) );
-  }
 }
 
 } // namespace ModelItems

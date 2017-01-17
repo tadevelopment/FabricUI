@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #ifndef FABRICUI_MODELITEMS_INSTPORTMODELITEM_H
@@ -57,9 +57,6 @@ class DFGUICmdHandler;
       virtual FabricUI::ValueEditor::ItemMetadata *getMetadata() /*override*/;
 
       virtual QVariant getValue();
-
-      virtual bool hasDefault() /*override*/;
-      virtual void resetToDefault() /*override*/;
     };
   }
 }

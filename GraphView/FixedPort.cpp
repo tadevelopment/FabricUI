@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
@@ -56,7 +56,7 @@ void FixedPort::init()
     new QGraphicsPixmapLayoutItem(
       FabricUI::LoadPixmap( "fixed-port-lock.png" )
       );
-  m_label = new PortLabel(
+  m_label = new TextContainer(
     this,
     QSTRING_FROM_STL_UTF8(m_labelCaption),
     config.sidePanelFontColor,
@@ -236,23 +236,14 @@ QPointF FixedPort::connectionPos(PortType pType) const
   return m_circle->centerInSceneCoords();
 }
 
-void FixedPort::mousePressEvent( QGraphicsSceneMouseEvent *event )
+void FixedPort::contextMenuEvent( QGraphicsSceneContextMenuEvent* event )
 {
-  if ( event->button() == Qt::RightButton )
+  if ( QMenu *menu = graph()->getFixedPortContextMenu( this ) )
   {
-    event->accept();
-
-    if ( QMenu *menu = graph()->getFixedPortContextMenu( this ) )
-    {
-      menu->exec( QCursor::pos() );
-      menu->setParent( NULL );
-      menu->deleteLater();
-    }
-
-    return;
+    menu->exec( QCursor::pos() );
+    menu->setParent( NULL );
+    menu->deleteLater();
   }
-  
-  ConnectionTarget::mousePressEvent( event );  
 }
 
 std::string FixedPort::path() const

@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_SidePanel__
 #define __UI_GraphView_SidePanel__
@@ -34,6 +34,8 @@ namespace FabricUI
 
       SidePanel(Graph * parent, PortType portType, QColor color = QColor());
 
+      virtual int type() const { return QGraphicsItemType_SidePanel; }
+
       Graph * graph();
       const Graph * graph() const;
       QGraphicsWidget * itemGroup();
@@ -58,7 +60,6 @@ namespace FabricUI
 
       ConnectionTarget *getConnectionTarget( FTL::StrRef name );
 
-      virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
@@ -67,9 +68,9 @@ namespace FabricUI
 
       virtual void resizeEvent(QGraphicsSceneResizeEvent * event);
 
-      virtual void dragMoveEvent( QGraphicsSceneDragDropEvent *event );
-      virtual void dragLeaveEvent( QGraphicsSceneDragDropEvent *event );
-      virtual void dropEvent( QGraphicsSceneDragDropEvent *event );
+      void onDraggingPort( const QGraphicsSceneMouseEvent* event, Port* draggedPort );
+      void onDraggingPortLeave();
+      void onDroppingPort();
 
       void addFixedPort( FixedPort *fixedPort );
       void removeFixedPort( FixedPort *fixedPort );
@@ -79,12 +80,17 @@ namespace FabricUI
       void removePort( Port *port );
       void reorderPorts( QStringList names );
 
+      void setEditable( bool isEditable );
+
       void scroll(float delta);
       void updateItemGroupScroll(float height = 0.0f);
 
     signals:
       void doubleClicked(FabricUI::GraphView::SidePanel *);
       void scrolled();
+
+    protected:
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent* event ) FTL_OVERRIDE;
 
     private slots:
       void onItemGroupResized();

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include "VETreeWidget.h"
@@ -637,6 +637,11 @@ void VETreeWidget::prepareMenu( const QPoint& pt )
   VETreeWidgetItem* item = static_cast<VETreeWidgetItem*>(itemAt( pt ));
   BaseModelItem* model = GetFirstModelItem( item );
   if (model == NULL)
+    return;
+
+  // Currently disabling the menu when the item is incompatible
+  // we should re-enable it when most items will have default values
+  if( !model->hasDefault() )
     return;
 
   QAction *newAct = new QAction( tr( "Reset to Default" ), this );

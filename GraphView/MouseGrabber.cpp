@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <FabricServices/Persistence/RTValToJSONEncoder.hpp>
 #include <FabricUI/DFG/DFGController.h>
@@ -26,9 +26,11 @@ using namespace FabricUI::GraphView;
 
 MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
 : ConnectionTarget(parent->itemGroup())
+  , m_lastSidePanel( NULL )
 {
   m_connectionPos = mousePos;
   m_target = target;
+  m_target->setHighlighted( true );
   m_otherPortType = portType;
   m_targetUnderMouse = NULL;
 
@@ -53,6 +55,7 @@ MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * 
 
 MouseGrabber::~MouseGrabber()
 {
+  m_target->setHighlighted( false );
 }
 
 MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
@@ -171,6 +174,11 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
   QList<QGraphicsItem *> items = collidingItems(Qt::IntersectsItemBoundingRect);
 
+  bool isDraggingPortInSidePanel = false;
+  if( m_lastSidePanel != NULL )
+    m_lastSidePanel->onDraggingPortLeave();
+  m_lastSidePanel = NULL;
+
   ConnectionTarget * newTargetUnderMouse = NULL;
   ConnectionTarget * prevTargetUnderMouse = m_targetUnderMouse;
   float distance = 1000000.0f;
@@ -234,7 +242,30 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
         }
       }
     }
+    else if (
+      items[i]->type() == QGraphicsItemType_SidePanel &&
+      target()->targetType() == TargetType_Port
+      )
+    {
+      Port* port = (Port*)target();
+      SidePanel* sidePanel = (SidePanel*)items[i];
+      if (
+        port->allowEdits() // can it be re-ordered ?
+        && port->sidePanel() == sidePanel
+      )
+      {
+        sidePanel->onDraggingPort( event, port );
+        isDraggingPortInSidePanel = true;
+        m_lastSidePanel = sidePanel;
+      }
+    }
   }
+
+  // changing the cursor to "simulate" QDrag
+  if ( isDraggingPortInSidePanel )
+    setCursor( Qt::ClosedHandCursor );
+  else
+    setCursor( Qt::ArrowCursor );
 
   if(newTargetUnderMouse == NULL && prevTargetUnderMouse != NULL)
   {
@@ -255,6 +286,9 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 void MouseGrabber::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 {
   bool ungrab = false;
+
+  if( m_lastSidePanel )
+    m_lastSidePanel->onDroppingPort();
 
   if(m_targetUnderMouse)
   {
@@ -369,11 +403,20 @@ void MouseGrabber::invokeConnect(ConnectionTarget * source, ConnectionTarget * t
     Pin *pinToConnectWith = static_cast<Pin *>( target );
     FTL::CStrRef pinName = pinToConnectWith->name();
     FTL::CStrRef dataType = pinToConnectWith->dataType();
+    std::string metaData;
+    if (graph()->controller()->gvcGetCurrentExecPath().isEmpty()) // [FE-7700]
+    {
+      FTL::JSONEnc<> metaDataEnc( metaData );
+      FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, "true" );
+    }
     graph()->controller()->gvcDoAddPort(
       QString::fromUtf8( pinName.data(), pinName.size() ),
       PortType_Output,
       QString::fromUtf8( dataType.data(), dataType.size() ),
-      pinToConnectWith
+      pinToConnectWith,
+      QString(),
+      QString::fromUtf8( metaData.data(), metaData.size() )
       );
   }
   else if(target->targetType() == TargetType_ProxyPort && source->targetType() == TargetType_Pin)
@@ -393,11 +436,20 @@ void MouseGrabber::invokeConnect(ConnectionTarget * source, ConnectionTarget * t
     InstBlockPort *instBlockPortToConnectWith = static_cast<InstBlockPort *>( target );
     FTL::CStrRef instBlockPortName = instBlockPortToConnectWith->name();
     FTL::CStrRef dataType = instBlockPortToConnectWith->dataType();
+    std::string metaData;
+    if (graph()->controller()->gvcGetCurrentExecPath().isEmpty()) // [FE-7700]
+    {
+      FTL::JSONEnc<> metaDataEnc( metaData );
+      FTL::JSONObjectEnc<> metaDataObjectEnc( metaDataEnc );
+      FabricUI::DFG::DFGAddMetaDataPair( metaDataObjectEnc, DFG_METADATA_UIPERSISTVALUE, "true" );
+    }
     graph()->controller()->gvcDoAddPort(
       QString::fromUtf8( instBlockPortName.data(), instBlockPortName.size() ),
       PortType_Output,
       QString::fromUtf8( dataType.data(), dataType.size() ),
-      instBlockPortToConnectWith
+      instBlockPortToConnectWith,
+      QString(),
+      QString::fromUtf8( metaData.data(), metaData.size() )
       );
   }
   else if(target->targetType() == TargetType_ProxyPort && source->targetType() == TargetType_InstBlockPort)
@@ -515,7 +567,7 @@ ExposePortAction::ExposePortAction(
   , m_connectionPortType( connectionPortType )
 {
   setText( "Expose new port" );
-  setIcon( FabricUI::LoadPixmap( "DFGPlus.png" ) );
+  setIcon( FabricUI::LoadPixmap( "DFGPlus.png" ).scaledToWidth( 20, Qt::SmoothTransformation ) );
   connect(
     this, SIGNAL(triggered()),
     this, SLOT(onTriggered())
@@ -688,7 +740,8 @@ void ExposeInstPortAction::invokeAddPort(
 
 QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other, PortType nodeRole)
 {
-  QMenu *menu = new QMenu(NULL);
+  FabricUI::DFG::DFGController * dfgController = static_cast<FabricUI::DFG::DFGController *>(node->graph()->controller());
+  QMenu *menu = new QMenu(dfgController->getDFGWidget());
 
   // go through all the node's pins and add
   // those to the menu that can be connected.
@@ -749,7 +802,7 @@ QMenu * MouseGrabber::createNodeHeaderMenu(Node * node, ConnectionTarget * other
       nodeRole
       );
   exposeNewPortAction->setEnabled(
-      node->canAddPorts()
+      node->canEdit()
     && ( !other || other->isRealPort() )
     );
   menu->addAction( exposeNewPortAction );
@@ -800,7 +853,8 @@ QMenu *MouseGrabber::createInstBlockHeaderMenu(
   PortType nodeRole
   )
 {
-  QMenu *menu = new QMenu(NULL);
+  FabricUI::DFG::DFGController * dfgController = static_cast<FabricUI::DFG::DFGController *>(instBlock->node()->graph()->controller());
+  QMenu *menu = new QMenu(dfgController->getDFGWidget());
 
   // go through all the node's pins and add
   // those to the menu that can be connected.

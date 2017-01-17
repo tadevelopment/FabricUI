@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "GraphViewWidget.h"
 
@@ -104,22 +104,6 @@ void GraphViewWidget::mouseMoveEvent(QMouseEvent * event)
   QGraphicsView::mouseMoveEvent(event);
 }
 
-void GraphViewWidget::keyPressEvent(QKeyEvent * event)
-{
-  if(!event->isAutoRepeat() && graph()->pressHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))
-    event->accept();
-  else
-    QGraphicsView::keyPressEvent(event);
-}
-
-void GraphViewWidget::keyReleaseEvent(QKeyEvent * event)
-{
-  if(!event->isAutoRepeat() && graph()->releaseHotkey((Qt::Key)event->key(), (Qt::KeyboardModifier)(int)event->modifiers()))
-    event->accept();
-  else
-    QGraphicsView::keyPressEvent(event);
-}
-
 QPoint GraphViewWidget::lastEventPos() const
 {
   return m_lastEventPos;
@@ -161,16 +145,6 @@ bool GraphViewWidget::focusNextPrevChild(bool next)
 
 GraphViewScene::GraphViewScene( Graph * graph ) {
   m_graph = graph;
-}
-
-// Enable the MainPanel to grab specific events
-// (eg: panning with Space or Alt) before these
-// are redirected to sub-widgets.
-bool GraphViewScene::event( QEvent * e ) {
-  if( m_graph && m_graph->mainPanel()->grabsEvent( e ) ) {
-    return sendEvent( m_graph->mainPanel(), e );
-  } else
-    return QGraphicsScene::event( e );
 }
 
 void GraphViewScene::dragEnterEvent( QGraphicsSceneDragDropEvent *event )

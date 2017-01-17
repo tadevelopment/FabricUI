@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_KLEditor_EditorConfig__
 #define __UI_KLEditor_EditorConfig__
@@ -46,7 +46,6 @@ namespace FabricUI
 
       bool editorAutoRebuildAST;
       bool editorAlwaysShowCodeCompletion;
-      unsigned int editorSpacing;
 
       QTextCharFormat formatForHighlight;
 

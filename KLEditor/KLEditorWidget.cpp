@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "KLEditorWidget.h"
 
@@ -7,9 +7,15 @@
 using namespace FabricServices;
 using namespace FabricUI::KLEditor;
 
-KLEditorWidget::KLEditorWidget(QWidget * parent, FabricServices::ASTWrapper::KLASTManager * manager, const EditorConfig & config)
-: QWidget(parent)
+KLEditorWidget::KLEditorWidget(
+  QWidget * parent,
+  FabricServices::ASTWrapper::KLASTManager * manager,
+  const EditorConfig & config
+  )
+  : QFrame(parent)
 {
+  setObjectName( "KLEditorWidget" );
+
   m_config = config;
 
   setContentsMargins(0, 0, 0, 0);
@@ -21,7 +27,7 @@ KLEditorWidget::KLEditorWidget(QWidget * parent, FabricServices::ASTWrapper::KLA
 
   QHBoxLayout * layout = new QHBoxLayout();
   layout->setContentsMargins(0, 0, 0, 0);
-  layout->setSpacing(m_config.editorSpacing);
+  layout->setSpacing(0);
   layout->addWidget(m_lineNumbers);
   layout->addWidget(m_sourceCodeWidget);
   setLayout(layout);

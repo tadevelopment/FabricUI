@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_ProxyPort__
 #define __UI_GraphView_ProxyPort__
@@ -57,6 +57,9 @@ namespace FabricUI
 
       virtual TargetType targetType() const { return TargetType_ProxyPort; }
       virtual QPointF connectionPos(PortType pType) const;
+
+    protected:
+      PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return circle(); }
 
     private:
 

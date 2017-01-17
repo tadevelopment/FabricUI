@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "VariableTreeItem.h"
 
@@ -6,10 +6,9 @@ using namespace FabricUI;
 using namespace FabricUI::DFG;
 
 VariableTreeItem::VariableTreeItem(char const * name, char const * path)
-: TreeView::TreeItem(name)
+: TreeView::TreeItem(name),
+  m_path(path)
 {
-  m_name = name;
-  m_path = path;
 }
 
 Qt::ItemFlags VariableTreeItem::flags()
@@ -21,5 +20,10 @@ Qt::ItemFlags VariableTreeItem::flags()
 
 QString VariableTreeItem::mimeDataAsText()
 {
-  return ("{\"type\": \"DFGVariable\", \"name\": \""+m_name+"\", \"path\": \""+m_path+"\"}").c_str();
+	QString res = "{\"type\": \"DFGVariable\", \"name\": \"";
+	res += QString(name().c_str());
+	res +="\", \"path\": \"";
+	res += QString(path().c_str());
+	res +="\"}";
+	return res;
 }

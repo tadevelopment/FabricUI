@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsSceneMouseEvent>
@@ -226,16 +226,20 @@ void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 
 void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
-  if(!graph()->isEditable())
-    return QGraphicsPathItem::mousePressEvent(event);
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
 
-  if(event->modifiers().testFlag(Qt::AltModifier))
+  if(!graph()->isEditable())
     return QGraphicsPathItem::mousePressEvent(event);
 
   if(event->button() == Qt::LeftButton)
   {
     m_dragging = true;
-    m_lastDragPoint = mapToScene(event->pos());
+    QPointF pos = mapToScene(event->pos());
+    qreal dInput = (pos - m_src->connectionPos(PortType_Output)).manhattanLength();
+    qreal dOutput = (pos - m_dst->connectionPos(PortType_Input)).manhattanLength();
+    m_draggingInput = dInput < dOutput;
+    m_lastDragPoint = pos;
     event->accept();
   }
   else if(event->button() == Qt::MiddleButton)
@@ -251,20 +255,19 @@ void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
     else
       QGraphicsPathItem::mousePressEvent(event);
   }
-  else if(event->button() == Qt::RightButton)
-  {
-    QMenu * menu = graph()->getConnectionContextMenu(this);
-    if(menu)
-    {
-      menu->exec(QCursor::pos());
-      menu->setParent( NULL );
-      menu->deleteLater();
-    }
-    else
-      QGraphicsPathItem::mousePressEvent(event);
-  }
   else
     QGraphicsPathItem::mousePressEvent(event);
+}
+
+void Connection::contextMenuEvent( QGraphicsSceneContextMenuEvent* event )
+{
+  QMenu * menu = graph()->getConnectionContextMenu( this );
+  if ( menu )
+  {
+    menu->exec( QCursor::pos() );
+    menu->setParent( NULL );
+    menu->deleteLater();
+  }
 }
 
 void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
@@ -275,13 +278,14 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     QPointF delta = scenePos - m_lastDragPoint;
 
     // todo: the disconnect threshold maybe should be a graph setting
-    if(delta.x() < 0 || delta.x() > 0)
+    if(delta.manhattanLength() > 0)
     {
       // create local variables
       // since "this" might be deleted after the removeConnections call
       ConnectionTarget * src = m_src;
       ConnectionTarget * dst = m_dst;
       Graph * graph = m_graph;
+      bool draggingInput = m_draggingInput;
 
       graph->controller()->beginInteraction();
 
@@ -289,8 +293,7 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       conns.push_back(this);
       if(graph->controller()->gvcDoRemoveConnections(conns))
       {
-        // todo: review the features for disconnecting input vs output based on gesture
-        if(delta.x() < 0)
+        if(!draggingInput)
         {
           graph->constructMouseGrabber(scenePos, (Pin*)src, PortType_Input);
         }

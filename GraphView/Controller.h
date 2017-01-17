@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_Controller__
 #define __UI_GraphView_Controller__
@@ -78,6 +78,17 @@ namespace FabricUI
         QString extDep = QString(),
         QString metaData = QString()
         ) = 0;
+
+      virtual void gvcDoRenameExecPort(
+        QString oldName,
+        QString desiredPortName,
+        QString execPath = "" // Path from the current Exec, to the edited Exec
+      ) = 0;
+
+      virtual void gvcDoRenameNode(
+        Node* node,
+        QString newName
+      ) = 0;
       
       virtual void gvcDoSetNodeCommentExpanded(
         Node *node,
@@ -101,6 +112,8 @@ namespace FabricUI
         QString srcName,
         QString dstName
         ) = 0;
+
+      virtual QString gvcGetCurrentExecPath() = 0;
 
       virtual bool selectNode(Node * node, bool state);
       virtual bool clearSelection();

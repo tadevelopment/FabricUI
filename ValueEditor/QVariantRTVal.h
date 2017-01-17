@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #ifndef FABRICUI_VALUEEDITOR_QVARIANTRTVAL_H
@@ -85,6 +85,10 @@ public:
 
   // Helper function provides east conversion to provided RTVal
   static bool toRTVal( const QVariant& var, FabricCore::RTVal& ioVal );
+
+  static const char* getTypeName( const QVariant& var ) {
+    return isRTVal(var) ? var.value<FabricCore::RTVal>().getTypeNameCStr() : var.typeName();
+  }
 
 private:
   // Overrides for built-in functionality

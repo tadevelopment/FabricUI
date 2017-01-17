@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_DFG_DFGExecHeaderWidget__
 #define __UI_DFG_DFGExecHeaderWidget__
@@ -35,7 +35,6 @@ namespace FabricUI
         );
       virtual ~DFGExecHeaderWidget();
       
-      void refreshTitle( FTL::CStrRef title );
       void refreshExtDeps( FTL::CStrRef extDeps );
 
       // return true if the req. exts QLineEdit
@@ -52,6 +51,7 @@ namespace FabricUI
       void goUpPressed();
       void reloadPressed();
       void savePressed();
+      void extensionLoaded();
 
     public slots:
 
@@ -68,6 +68,7 @@ namespace FabricUI
     protected slots:
 
       void reqExtEditingFinished();
+      void reqExtResizeToContent();
       void onSplitFromPresetClicked();
 
     private:

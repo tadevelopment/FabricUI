@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include "StringViewItem.h"
@@ -80,6 +80,7 @@ void StringViewItem::onInspect()
   // Show a multi-line dialog to display 
   // the full string contents
   VEDialog dlg( m_widget, Qt::Window | Qt::Dialog /*| Qt::FramelessWindowHint*/ );
+  dlg.setWindowTitle( getName() );
   dlg.setModal( true );
   // Add text editor
   QVBoxLayout *layout = new QVBoxLayout( &dlg );

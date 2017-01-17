@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <QApplication>
 #include <QGraphicsSceneHoverEvent>
@@ -94,6 +94,9 @@ void BackDropNode::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
 
 void BackDropNode::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
+
   int corner = getCorner(event->pos());
   if(corner != -1)
   {

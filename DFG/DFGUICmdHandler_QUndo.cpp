@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+ *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
 #include <FabricUI/DFG/DFGUICmd/DFGUICmds.h>
@@ -403,7 +403,7 @@ void DFGUICmdHandler_QUndo::dfgDoRemovePort(
   FabricCore::DFGBinding const &binding,
   QString execPath,
   FabricCore::DFGExec const &exec,
-  QString portName
+  QStringList portNames
   )
 {
   DFGUICmd_RemovePort *cmd =
@@ -411,7 +411,7 @@ void DFGUICmdHandler_QUndo::dfgDoRemovePort(
       binding,
       execPath,
       exec,
-      portName
+      portNames
       );
   m_qUndoStack->push( new WrappedCommand( cmd ) );
 }

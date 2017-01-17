@@ -1,11 +1,12 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #ifndef __UI_DFG_DFGController__
 #define __UI_DFG_DFGController__
 
 #include <FabricUI/DFG/DFGBindingNotifier.h>
+#include <FabricUI/DFG/DFGExecNotifier.h>
 #include <FabricUI/GraphView/Controller.h>
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/Pin.h>
@@ -16,7 +17,7 @@
 #include <vector>
 #include <ASTWrapper/KLASTManager.h>
 #include <QTimer>
-
+ 
 using namespace FabricUI::ValueEditor_Legacy;
 
 namespace FabricUI
@@ -138,6 +139,17 @@ namespace FabricUI
         QString metaData = QString()
         );
 
+      virtual void gvcDoRenameExecPort(
+        QString oldName,
+        QString desiredPortName,
+        QString execPath
+      );
+
+      virtual void gvcDoRenameNode(
+        GraphView::Node* node,
+        QString newName
+      );
+
       virtual void gvcDoSetNodeCommentExpanded(
         GraphView::Node *node,
         bool expanded
@@ -161,6 +173,8 @@ namespace FabricUI
         QString dstName
         );
 
+      virtual QString gvcGetCurrentExecPath();
+      
       // Commands
 
       void cmdRemoveNodes(
@@ -237,7 +251,7 @@ namespace FabricUI
         );
 
       void cmdRemovePort(
-        QString portName
+        QStringList portNames
         );
 
       void cmdMoveNodes(
@@ -286,7 +300,8 @@ namespace FabricUI
 
       QString cmdRenameExecPort(
         QString oldName,
-        QString desiredNewName
+        QString desiredNewName,
+        QString execPath
         );
 
       void cmdCut();
@@ -335,7 +350,10 @@ namespace FabricUI
       virtual void setNodeCollapseState(int collapseState, GraphView::Node *node);
       /// Sets the collapse state of the selected nodes and saves it in their preferences    
       virtual void setSelectedNodesCollapseState(int collapseState);
-      
+      /// Returns the selected nodes name
+      QStringList getSelectedNodesName();
+      /// Returns the selected nodes path
+      QStringList getSelectedNodesPath();
       virtual std::string copy();
 
       virtual bool reloadExtensionDependencies(char const * path);
@@ -403,6 +421,8 @@ namespace FabricUI
 
       void updateNodeErrors();
 
+      void processDelayedEvents();  // [FE-6568]
+
     signals:
 
       void hostChanged();
@@ -421,6 +441,7 @@ namespace FabricUI
       void topoDirty();
       void dirty();
       void execSplitChanged();
+      void bindingExecuted();
 
       void nodeEditRequested(FabricUI::GraphView::Node *);
 
@@ -459,6 +480,7 @@ namespace FabricUI
       FabricCore::DFGHost m_host;
       FabricCore::DFGBinding m_binding;
       QSharedPointer<DFGBindingNotifier> m_bindingNotifier;
+      QList< QSharedPointer<DFGExecNotifier> > m_ancestorExecNotifiers;
       std::string m_execPath;
       FabricCore::DFGExec m_exec;
       std::string m_execBlockName;
@@ -525,6 +547,11 @@ namespace FabricUI
       void onBindingVarRemoved(
         FTL::CStrRef varName,
         FTL::CStrRef varPath
+        );
+
+      void onParentExecNodeRenamed(
+        FTL::CStrRef oldNodeName,
+        FTL::CStrRef newNodeName
         );
     };
 

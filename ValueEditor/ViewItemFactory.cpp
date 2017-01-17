@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include "BaseModelItem.h"
@@ -117,6 +117,7 @@ BaseViewItem *ViewItemFactory::createViewItem(
     if ( BaseViewItem* viewItem = itr->createItemFn( name, value, metaData ) )
     {
       viewItem->setBaseModelItem( modelItem );
+      viewItem->setToolTip( RTVariant::getTypeName( value ) );
       return viewItem;
     }
   }

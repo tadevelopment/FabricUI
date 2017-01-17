@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_DFG_DFGUICmdHandler_QUndo__
 #define __UI_DFG_DFGUICmdHandler_QUndo__
@@ -162,7 +162,7 @@ public:
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString portName
+    QStringList portNames
     );
 
   virtual void dfgDoResizeBackDrop(

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include <FabricUI/DFG/DFGUICmdHandler.h>
@@ -220,7 +220,7 @@ void DFGPEModel_ExecBlockPorts::removeElements(
       m_binding,
       m_execPathQS,
       m_exec,
-      portPath
+      QStringList( portPath )
       );
   }
 }

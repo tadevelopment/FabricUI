@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+# Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 #
 
 import os, subprocess
@@ -266,7 +266,10 @@ if uiLibPrefix == 'ui':
 
     if buildOS == 'Windows':
       pysideEnv['CCFLAGS'].remove('/W2')
-      pysideEnv.Append(LINKFLAGS = ['/NODEFAULTLIB:LIBCMT'])
+      if buildType == 'Debug':
+        pysideEnv.Append(LINKFLAGS = ['/NODEFAULTLIB:LIBCMTD'])
+      else:
+        pysideEnv.Append(LINKFLAGS = ['/NODEFAULTLIB:LIBCMT'])
     else:
       pysideEnv.Append(CCFLAGS = ['-Wno-sign-compare', '-Wno-error'])
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef _DFGCOMBINEDWIDGET_H_
 #define _DFGCOMBINEDWIDGET_H_
@@ -57,7 +57,6 @@ namespace FabricUI
       virtual DFGWidget * getDfgWidget() { return m_dfgWidget; }
       virtual DFGLogWidget * getDfgLogWidget() { return m_dfgLogWidget; }
       virtual QWidget* getDfgValueEditor();
-      virtual void keyPressEvent(QKeyEvent * event);
 
     public slots:
       void log(const char * message) const;

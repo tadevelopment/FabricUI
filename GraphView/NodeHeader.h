@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_NodeHeader__
 #define __UI_GraphView_NodeHeader__
@@ -40,7 +40,9 @@ namespace FabricUI
       PinCircle const *outCircle() const
         { return m_outCircle; }
 
-      void setTitle(QString const &title);
+      void setTitle( QString const &title, QString const& suffix );
+
+      void setEditable( bool canEdit );
 
       virtual bool highlighted() const;
       virtual void setHighlighted(bool state = true);
@@ -76,6 +78,10 @@ namespace FabricUI
     signals:
 
       void headerButtonTriggered(FabricUI::GraphView::NodeHeaderButton * button);
+
+    protected:
+
+      PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return NULL; }
 
     private slots:
 

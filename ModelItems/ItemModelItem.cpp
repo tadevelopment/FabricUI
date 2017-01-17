@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include <assert.h>
@@ -68,8 +68,9 @@ void ItemModelItem::onRenamed(
     it != m_children.end(); ++it )
   {
     ItemPortModelItem *nodePortModelItem =
-      static_cast<ItemPortModelItem *>( *it );
-    nodePortModelItem->onItemRenamed( oldItemPath, newItemPath );
+      dynamic_cast<ItemPortModelItem *>( *it );
+    if(nodePortModelItem)
+      nodePortModelItem->onItemRenamed( oldItemPath, newItemPath );
   }
 }
 

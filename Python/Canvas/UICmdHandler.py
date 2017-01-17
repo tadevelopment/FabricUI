@@ -475,13 +475,13 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         binding,
         execPath,
         exec_,
-        portName,
+        portNames,
         ):
         return self.evalCmdWithArgs(
             "removePort",
             [
                 UICmdHandler.encodeString(execPath),
-                UICmdHandler.encodeString(portName),
+                UICmdHandler.encodeStrings(portNames),
                 ]
             )
 
@@ -568,7 +568,7 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         return self.evalCmdWithArgs(
             "renamePort",
             [
-                UICmdHandler.encodeString(execPath),
+                UICmdHandler.encodeString(exec_.getExecPath()),
                 UICmdHandler.encodeString(portPath),
                 UICmdHandler.encodeString(desiredNewPortName),
                 ]

@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
@@ -73,6 +73,12 @@ void Port::init()
     layout->addItem(m_circle);
     layout->setAlignment(m_circle, Qt::AlignHCenter | Qt::AlignVCenter);
   }
+}
+
+void Port::disableEdits()
+{
+  m_allowEdits = false;
+  m_label->setEditable( false );
 }
 
 Graph *Port::graph()
@@ -222,51 +228,18 @@ QPointF Port::connectionPos(PortType pType) const
   return m_circle->centerInSceneCoords();
 }
 
-void Port::mousePressEvent( QGraphicsSceneMouseEvent *event )
+void Port::contextMenuEvent( QGraphicsSceneContextMenuEvent* event )
 {
-  if(event->button() == Qt::RightButton)
+  QMenu * menu = graph()->getPortContextMenu( this );
+  if ( menu )
   {
-    event->accept();
-
-    QMenu * menu = graph()->getPortContextMenu(this);
-    if(menu)
-    {
-      menu->exec( QCursor::pos() );
-      menu->setParent( NULL );
-      menu->deleteLater();
-    }
-    return;
+    menu->exec( QCursor::pos() );
+    menu->setParent( NULL );
+    menu->deleteLater();
   }
-  ConnectionTarget::mousePressEvent(event);  
 }
 
 std::string Port::path() const
 {
   return m_name;
-}
-
-QString const Port::MimeType( "x-fabric-ui/graph-view-port" );
-
-bool Port::MimeData::hasFormat( QString const &mimeType) const
-{
-  if ( mimeType == MimeType )
-    return true;
-  else return Parent::hasFormat( mimeType );
-}
-
-QStringList Port::MimeData::formats() const
-{
-  QStringList result = Parent::formats();
-  result.append( MimeType );
-  return result;
-}
-
-QVariant Port::MimeData::retrieveData(
-  QString const &mimeType,
-  QVariant::Type type
-  ) const
-{
-  if ( mimeType == MimeType )
-    return QVariant::fromValue( static_cast<void *>( m_port ) );
-  else return Parent::retrieveData( mimeType, type );
 }

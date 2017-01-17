@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include <FabricUI/DFG/DFGUICmdHandler.h>
@@ -118,7 +118,7 @@ void DFGPEModel_ExecPorts::inspectElement(
   DFGWidget *dfgWidget
   )
 {
-  dfgWidget->editExecPort( m_exec.getExecPortName( index ), false /* duplicatePort */ );
+  dfgWidget->editPort( m_exec.getExecPortName( index ), false /* duplicatePort */ );
 }
 
 void DFGPEModel_ExecPorts::renameElement(
@@ -193,7 +193,7 @@ void DFGPEModel_ExecPorts::removeElements(
       m_binding,
       m_execPathQS,
       m_exec,
-      getElementName( index )
+      QStringList( getElementName( index ) )
       );
   }
 }

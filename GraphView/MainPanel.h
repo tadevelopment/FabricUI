@@ -1,7 +1,9 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_MainPanel__
 #define __UI_GraphView_MainPanel__
+
+#include <FTL/Config.h>
 
 #include <QGraphicsWidget>
 #include <QPen>
@@ -47,11 +49,13 @@ namespace FabricUI
       float mouseWheelZoomRate() const;
       void setMouseWheelZoomRate(float rate);
       ManipulationMode manipulationMode() const;
+      void setManipulationMode(ManipulationMode mode);
 
       virtual QRectF boundingRect() const;
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * event);
+      virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
       virtual void wheelEvent(QGraphicsSceneWheelEvent * event);
       virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
       virtual void resizeEvent(QGraphicsSceneResizeEvent * event);
@@ -62,21 +66,26 @@ namespace FabricUI
       // used by controller
       void setCanvasZoom(float state, bool quiet = false);
       void setCanvasPan(QPointF pos, bool quiet = false);
-      void setAlwaysPan(bool state) {m_alwaysPan = state;}
-      bool grabsEvent( QEvent * e ); // When manipulating camera, events must be forwarded here and not to individual widgets (Alt, Space)
 
-    signals:
-
-      void canvasZoomChanged(float zoom);
-      void canvasPanChanged(QPointF pos);
-      void geometryChanged();
-      
-    protected:
+      // returns true if the children of the MainPanel should ignore the event
+      // because the MainPanel will use it (to pan, for example)
+      // TODO : refactor so that the children QGraphicsItems don't have to call this function
+      static bool filterMousePressEvent( const QGraphicsSceneMouseEvent * event );
 
       void performZoom(
         float zoomFactor,
         QPointF zoomCenter
         );
+
+    signals:
+
+      void canvasZoomChanged(float zoom);
+      void canvasPanChanged(QPointF pos);
+      void doubleClicked(Qt::KeyboardModifiers);
+
+    protected:
+
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent * event ) FTL_OVERRIDE;
 
     private:
 
@@ -91,10 +100,8 @@ namespace FabricUI
       float m_mouseWheelZoomState;
       ManipulationMode m_manipulationMode;
       QGraphicsWidget * m_itemGroup;
-      bool m_draggingSelRect;
       QPointF m_lastPanPoint;
       SelectionRect * m_selectionRect;
-      bool m_alwaysPan;
       std::vector<Node*> m_ongoingSelection;
       QRectF m_boundingRect;
     };

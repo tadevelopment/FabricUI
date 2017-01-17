@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 #include <QGraphicsView>
 
 #include <FabricUI/GraphView/BackDropNode.h>
@@ -58,9 +58,22 @@ void Graph::requestSidePanelInspect(
   emit sidePanelInspectRequested();
 }
 
+void Graph::requestMainPanelAction(
+  Qt::KeyboardModifiers modifiers
+  )
+{
+  // FE-6926  : Shift + double-clicking in an empty space "Goes up"
+  if(modifiers.testFlag(Qt::ShiftModifier))
+    emit goUpPressed();
+}
+
 void Graph::initialize()
 {
   m_mainPanel = new MainPanel(this);
+  QObject::connect(
+    m_mainPanel, SIGNAL(doubleClicked(Qt::KeyboardModifiers)), 
+    this, SLOT(requestMainPanelAction(Qt::KeyboardModifiers))
+    );
 
   m_leftPanel = new SidePanel(this, PortType_Output);
   QObject::connect(
@@ -73,6 +86,7 @@ void Graph::initialize()
     m_rightPanel, SIGNAL(doubleClicked(FabricUI::GraphView::SidePanel*)), 
     this, SLOT(requestSidePanelInspect(FabricUI::GraphView::SidePanel*))
     );
+
 
   QGraphicsLinearLayout * layout = new QGraphicsLinearLayout();
   layout->setSpacing(0);
@@ -92,6 +106,15 @@ QGraphicsWidget * Graph::itemGroup()
 bool Graph::hasSidePanels() const
 {
   return m_leftPanel != NULL;
+}
+
+void Graph::setEditable( bool isEditable )
+{
+  m_isEditable = isEditable;
+  if ( hasSidePanels() ) {
+    m_leftPanel->setEditable(isEditable);
+    m_rightPanel->setEditable(isEditable);
+  }
 }
 
 MainPanel * Graph::mainPanel()
@@ -894,39 +917,6 @@ void Graph::setCentralOverlayText(QString text)
   }
  
   updateOverlays(rect().width(), height);
-}
-
-void Graph::defineHotkey(Qt::Key key, Qt::KeyboardModifier modifiers, QString name)
-{
-  Hotkey hotkey(key, modifiers);
-  std::map<Hotkey, QString>::iterator it = m_hotkeys.find(hotkey);
-  if(it == m_hotkeys.end())
-    m_hotkeys.insert(std::pair<Hotkey, QString>(hotkey, name));
-  else
-    it->second = name;
-}
-
-bool Graph::pressHotkey(Qt::Key key, Qt::KeyboardModifier modifiers)
-{
-  if(m_mouseGrabber != NULL)
-    return false;
-  
-  Hotkey hotkey(key, modifiers);
-  std::map<Hotkey, QString>::iterator it = m_hotkeys.find(hotkey);
-  if(it == m_hotkeys.end())
-    return false;
-  emit hotkeyPressed(it->first.key, it->first.modifiers, it->second);
-  return true;
-}
-
-bool Graph::releaseHotkey(Qt::Key key, Qt::KeyboardModifier modifiers)
-{
-  Hotkey hotkey(key, modifiers);
-  std::map<Hotkey, QString>::iterator it = m_hotkeys.find(hotkey);
-  if(it == m_hotkeys.end())
-    return false;
-  emit hotkeyReleased(it->first.key, it->first.modifiers, it->second);
-  return true;
 }
 
 void Graph::onNodeDoubleClicked(FabricUI::GraphView::Node * node, Qt::MouseButton button, Qt::KeyboardModifiers modifiers)

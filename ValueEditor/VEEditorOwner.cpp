@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include "VEEditorOwner.h"
@@ -88,4 +88,9 @@ void VEEditorOwner::onModelValueChanged( QVariant const &newValue )
 void VEEditorOwner::reloadStyles()
 {
   m_valueEditor->reloadStyles();
+}
+
+void VEEditorOwner::emitReplaceModelRoot(FabricUI::ValueEditor::BaseModelItem* model)
+{
+  emit replaceModelRoot(model);
 }

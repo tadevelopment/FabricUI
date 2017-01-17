@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_FixedPort__
 #define __UI_GraphView_FixedPort__
@@ -138,7 +138,9 @@ namespace FabricUI
 
       void setIndex(unsigned id) { m_index = id; }
 
-      virtual void mousePressEvent( QGraphicsSceneMouseEvent * event );
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent* event ) FTL_OVERRIDE;
+
+      PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return circle(); }
 
     private:
 

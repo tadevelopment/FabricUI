@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #ifndef FABRICUI_VALUEEDITOR_BASEVIEWITEM_H
@@ -41,6 +41,9 @@ class BaseViewItem : public QObject
   // this ViewItem.
   QString m_name;
 
+  // Tooltip displayed over the name
+  QString m_toolTip;
+
   // A ViewItem may or may not have a ModelItem
   BaseModelItem *m_modelItem;
 
@@ -74,6 +77,10 @@ public:
   // Get the name of this ViewItem
   QString getName() const
     { return m_name; }
+
+  // Set the tooltip of this ViewItem
+  void setToolTip( const QString& tooltip )
+    { m_toolTip = tooltip; }
 
   // Implement this function to build the widgets to
   // display the value represented by your class

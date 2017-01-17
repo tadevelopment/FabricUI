@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_InstBlockHeader__
 #define __UI_GraphView_InstBlockHeader__
@@ -72,6 +72,10 @@ public:
   virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
   virtual void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
   virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
+
+protected:
+
+  PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return NULL; }
 
 private:
 

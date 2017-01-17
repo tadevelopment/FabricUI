@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #ifndef FABRICUI_VALUEEDITOR_VIEWPORTOPTIONSEDITOR_H
@@ -7,8 +7,9 @@
 
 #include <FabricCore.h>
 #include <FabricUI/ValueEditor/VETreeWidget.h>
-#include <FabricUI/ValueEditor/BaseModelItem.h>
-#include <FabricUI/ValueEditor/QVariantRTVal.h>
+
+#include <QSettings>
+#include <QUndoStack>
 
 namespace FabricUI {
 namespace Viewports {
@@ -17,33 +18,24 @@ namespace Viewports {
   {
     Q_OBJECT
 
-    class OptionsModel : public FabricUI::ValueEditor::BaseModelItem {
+    class ViewportOptionModel;
+    class ViewportOptionsDictModel;
 
-      /// DrawContext owning the Viewport Options
-      FabricCore::RTVal drawContext;
-
-      /// Reference used to update the editor Widget
-      ViewportOptionsEditor& editor;
-
-    public:
-      OptionsModel(FabricCore::RTVal drawContext, ViewportOptionsEditor& editor);
-
-      virtual QVariant getValue();
-
-      virtual void setValue(
-        QVariant value,
-        bool commit,
-        QVariant valueAtInteractionBegin
-      );
-    };
+    QSettings m_settings;
+    QUndoStack& m_undoStack;
+    ViewportOptionsDictModel* m_model;
+    FabricCore::RTVal drawContext;
 
   public:
-    ViewportOptionsEditor( FabricCore::Client& client );
+    ViewportOptionsEditor( FabricCore::Client& client, QUndoStack& undoStack );
     virtual ~ViewportOptionsEditor();
+
+  public slots:
+    void updateOptions();
 
   signals:
     /// When the value of one option has changed
-    void valueChanged();
+    void valueChanged() const;
   };
 }
 }

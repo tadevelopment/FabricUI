@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include <assert.h>
@@ -62,9 +62,9 @@ QVariant ExecBlockPortModelItem::getValue()
       return QVariant::fromValue<FabricCore::RTVal>( rtVal.copy() );
     }
   }
-  catch (FabricCore::Exception* e)
+  catch ( FabricCore::Exception e )
   {
-    printf( "[ERROR] %s", e->getDesc_cstr() );
+    reportFabricCoreException( e );
   }
   return QVariant();
 }

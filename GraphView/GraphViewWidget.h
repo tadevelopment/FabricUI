@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_GraphViewWidget__
 #define __UI_GraphView_GraphViewWidget__
@@ -37,8 +37,6 @@ namespace FabricUI
 
     protected:
 
-      virtual bool event(QEvent * e);
-
       virtual void dragEnterEvent( QGraphicsSceneDragDropEvent *event );
       virtual void dropEvent( QGraphicsSceneDragDropEvent *event );
 
@@ -65,8 +63,6 @@ namespace FabricUI
 
       virtual void resizeEvent(QResizeEvent * event);
       virtual void mouseMoveEvent(QMouseEvent * event);
-      virtual void keyPressEvent(QKeyEvent * event);
-      virtual void keyReleaseEvent(QKeyEvent * event);
       QPoint lastEventPos() const;
 
       QPointF mapToGraph( QPoint const &globalPos ) const;
@@ -79,7 +75,7 @@ namespace FabricUI
 
       void sceneChanged();
       void urlDropped( QUrl url, bool bypassUnsavedChanges );
-
+ 
     protected:
 
       virtual bool focusNextPrevChild(bool next);

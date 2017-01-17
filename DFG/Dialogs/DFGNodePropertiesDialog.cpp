@@ -1,4 +1,4 @@
-  // Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+  // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <iostream>
 #include <QLayout>
@@ -105,6 +105,7 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
     }
 
     m_nameEdit->setText( m_nodeName.c_str() );
+    m_nameEdit->selectAll();    
 
     FTL::CStrRef uiTooltip = exec.getNodeMetadata(m_nodeName.c_str(), "uiTooltip");
     if(uiTooltip.empty() && subExec.isValid())

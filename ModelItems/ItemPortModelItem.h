@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #ifndef FABRICUI_MODELITEMS_ITEMPORTMODELITEM_H
@@ -90,7 +90,10 @@ class DFGUICmdHandler;
         QVariant valueAtInteractionBegin
         ) /*override*/;
 
+      bool hasDefault() FTL_OVERRIDE;
+      void resetToDefault() FTL_OVERRIDE;
 
+      void reportFabricCoreException( FabricCore::Exception const &e );
     };
   }
 }

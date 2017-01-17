@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #ifndef _FabricUI_GraphView_InstBlockPort_h
@@ -12,7 +12,7 @@
 #include <FTL/CStrRef.h>
 
 #include "PortType.h"
-#include "TextContainer.h"
+#include "NodeLabel.h"
 #include "PinCircle.h"
 #include "ConnectionTarget.h"
 #include "GraphicItemTypes.h"
@@ -32,7 +32,7 @@ public:
 
   virtual ~InstBlockPort() {}
 
-  virtual int type() const { return QGraphicsItemType_Pin; }
+  virtual int type() const { return QGraphicsItemType_InstBlockPort; }
 
   InstBlock *instBlock()
     { return m_instBlock; }
@@ -95,6 +95,9 @@ public:
     PortType pType,
     QColor color
     );
+
+  protected:
+    PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE;
   
 signals:
 
@@ -114,7 +117,7 @@ private:
   bool m_highlighted;
   QColor m_color;
   int m_index;
-  TextContainer * m_label;
+  NodeLabel * m_label;
   PinCircle * m_inCircle;
   PinCircle * m_outCircle;
   bool m_drawState;

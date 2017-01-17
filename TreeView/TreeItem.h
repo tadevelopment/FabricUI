@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_TreeView_TreeItem__
 #define __UI_TreeView_TreeItem__
@@ -38,7 +38,7 @@ namespace FabricUI
       TreeItem(
         FTL::StrRef name,
         FTL::StrRef label = FTL::StrRef()
-        );
+      );
       virtual ~TreeItem();
 
       virtual FTL::CStrRef type() const { return FTL_STR("item"); }
@@ -47,7 +47,7 @@ namespace FabricUI
         { return m_name; }
       FTL::CStrRef label() const
         { return m_label; }
-      std::string path() const;
+      virtual std::string path() const;
 
       virtual TreeItemType itemType() const;
       virtual bool editable() const;
@@ -97,6 +97,7 @@ namespace FabricUI
 
       std::string m_name;
       std::string m_label;
+
       QColor m_backgroundColor;
       QColor m_foregroundColor;
       QPixmap m_pixmap;

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #pragma once
@@ -9,12 +9,14 @@
 namespace FabricUI {
 namespace GraphView {
 
+class Port;
+
 class PortLabel : public TextContainer
 {
 public:
 
   PortLabel(
-    QGraphicsWidget * parent,
+    Port * parent,
     QString const &text,
     QColor color,
     QColor hlColor,
@@ -23,13 +25,14 @@ public:
 
 protected:
 
-  virtual void mousePressEvent( QGraphicsSceneMouseEvent * event );
-  virtual void mouseMoveEvent( QGraphicsSceneMouseEvent *event );
-  virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent * event );
+  void mousePressEvent( QGraphicsSceneMouseEvent* event ) FTL_OVERRIDE;
+
+  virtual void submitEditedText( const QString& text ); // override
+  virtual void displayedTextChanged() FTL_OVERRIDE;
 
 private:
 
-  QPointF m_dragStartPosition;
+  Port* m_port;
 };
 
 } // namespace GraphView

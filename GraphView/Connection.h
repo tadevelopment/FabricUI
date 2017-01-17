@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_Connection__
 #define __UI_GraphView_Connection__
@@ -74,6 +74,9 @@ namespace FabricUI
       virtual void dependencyMoved();
       virtual void dependencySelected();
 
+    protected:
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent* event ) FTL_OVERRIDE;
+
     private:
 
       float computeTangentLength() const;
@@ -88,6 +91,7 @@ namespace FabricUI
       bool m_hovered;
 
       bool m_dragging;
+      bool m_draggingInput; // or Output
       QPointF m_lastDragPoint;
       bool m_aboutToBeDeleted;
       bool m_isExposedConnection;

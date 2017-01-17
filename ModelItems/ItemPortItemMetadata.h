@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #ifndef FABRICUI_MODELITEMS_ITEMPORTITEMMETADATA_H
@@ -21,6 +21,11 @@ namespace FabricUI
     protected:
 
       ItemPortModelItem *m_nodePortModelItem;
+
+      void reportFabricCoreException( FabricCore::Exception const &e ) const
+      {
+        printf( "[ERROR] %s\n", e.getDesc_cstr() );
+      }
 
     public:
 
@@ -57,16 +62,16 @@ namespace FabricUI
             FabricCore::DFGExec exec = m_nodePortModelItem->getExec();
             FTL::CStrRef portPath = m_nodePortModelItem->getPortPath();
             bool isNotInspectable =
-              exec.getPortType( portPath.c_str() ) != FabricCore::DFGPortType_In
+              exec.getPortType( portPath.c_str() ) == FabricCore::DFGPortType_Out
                 || exec.hasSrcPorts( portPath.c_str() );
             return isNotInspectable? FTL_STR("1").c_str(): FTL_STR("").c_str();
           }
 
           return exec.getPortMetadata( portPath.c_str(), key );
         }
-        catch (FabricCore::Exception* e)
+        catch ( FabricCore::Exception e )
         {
-          printf( "[ERROR] %s", e->getDesc_cstr() );
+          reportFabricCoreException( e );
           return NULL;
         }
       }

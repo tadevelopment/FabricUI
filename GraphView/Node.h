@@ -1,9 +1,10 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_GraphView_Node__
 #define __UI_GraphView_Node__
 
 #include <QGraphicsWidget>
+#include <QGraphicsSceneEvent>
 #include <QGraphicsLinearLayout>
 #include <QColor>
 #include <QPen>
@@ -12,6 +13,7 @@
 
 #include <FabricUI/GraphView/NodeRectangle.h>
 #include <FabricUI/GraphView/NodeHeader.h>
+#include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/GraphicItemTypes.h>
 
@@ -38,6 +40,7 @@ namespace FabricUI
       friend class NodeRectangle;
       friend class NodeBubble;
       friend class NodeHeaderButton;
+      friend class NodeLabel;
 
     public:
 
@@ -202,10 +205,9 @@ namespace FabricUI
       QGraphicsWidget * mainWidget();
       QGraphicsWidget * pinsWidget();
 
-      bool canAddPorts() const
-        { return m_canAddPorts; }
-      void setCanAddPorts( bool canAddPorts )
-        { m_canAddPorts = canAddPorts; }
+      bool canEdit() const
+        { return m_canEdit; }
+      void setCanEdit( bool canEdit );
 
       void collectEditingTargets( EditingTargets &editingTargets );
 
@@ -232,12 +234,16 @@ namespace FabricUI
       void updateEffect();
       void updatePinLayout();
       void updateHighlighting( QPointF cursorPos );
+      void selectUpStreamNodes();
+      void updateNodesToMove( bool backdrops );
 
-      // used by NodeHeader / NodeHeaderButton
-      bool onMousePress(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
-      bool onMouseMove(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
-      bool onMouseRelease(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
-      bool onMouseDoubleClicked(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPointF scenePos, QPointF lastScenePos);
+      // used by NodeHeader / NodeHeaderButton / NodeLabel
+      bool onMousePress( const QGraphicsSceneMouseEvent *event );
+      bool onMouseMove( const QGraphicsSceneMouseEvent *event );
+      bool onMouseRelease( const QGraphicsSceneMouseEvent *event );
+      bool onMouseDoubleClicked( const QGraphicsSceneMouseEvent *event );
+
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent * event ) FTL_OVERRIDE;
 
       Graph * m_graph;
       NodeType m_nodeType;
@@ -264,6 +270,7 @@ namespace FabricUI
       QGraphicsLinearLayout * m_pinsLayout;
       bool m_selected;
       int m_dragging;
+      bool m_mightSelectUpstreamNodesOnDrag;
       Qt::MouseButton m_dragButton;
       QPointF m_mouseDownPos;
       std::vector<Node *> m_nodesToMove;
@@ -275,7 +282,7 @@ namespace FabricUI
 
       std::vector<InstBlock *> m_instBlocks;
 
-      bool m_canAddPorts;
+      bool m_canEdit;
       bool m_isHighlighted;
     };
 

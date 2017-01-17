@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include <FabricUI/DFG/DFGWidget.h>
@@ -94,11 +94,13 @@ void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
     if ( m_hasTypeSpec )
     {
       FabricCore::Client client = m_dfgWidget->getDFGController()->getClient();
-      m_addElementTypeSpec = new DFGRegisteredTypeLineEdit( NULL, client, "" );
+      m_addElementTypeSpec = new DFGRegisteredTypeLineEdit( this, client, "" );
       m_addElementTypeSpec->setEnabled( !m_model->isReadOnly() );
       m_addElementTypeSpec->setValidator(
         new QRegExpValidator( m_typeSpecRegExp )
         );
+      connect(m_dfgWidget->getHeaderWidget(), SIGNAL(extensionLoaded()),
+        m_addElementTypeSpec, SLOT(onUpdateRegisteredTypeList()));
     }
     m_addElementButton =
       new QPushButton( m_plusIcon, "Add " + elementDescCapitalized );
@@ -264,7 +266,7 @@ void DFGPEWidget_Elements::onRemoveSelected()
 
 void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
 {
-  QMenu menu;
+  QMenu menu( this );
 
   QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
   QList<int> selectedIndices;
@@ -526,6 +528,13 @@ void DFGPEWidget_Elements::onDeleteRowClicked( int row )
 
 void DFGPEWidget_Elements::onAddElementClicked()
 {
+  // FE-7961 : Check that the port dataType is valid
+  if(m_hasTypeSpec && !m_addElementTypeSpec->checkIfTypeExist())
+  {
+    m_addElementTypeSpec->displayInvalidTypeWarning();
+    return;
+  }
+
   int index = m_model->getElementCount();
   m_model->insertElement(
     index,
@@ -540,6 +549,7 @@ void DFGPEWidget_Elements::onAddElementClicked()
   m_addElementName->selectAll();
   m_tableWidget->selectRow( index );
   emit elementAddedThroughUI( index );
+  m_addElementName->setFocus(); // [FE-7054]
 }
 
 DFGPEWidget_Elements_ControlCell::DFGPEWidget_Elements_ControlCell(

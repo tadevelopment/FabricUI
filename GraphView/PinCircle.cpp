@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <FabricUI/GraphView/PinCircle.h>
 #include <FabricUI/GraphView/Pin.h>
@@ -150,6 +150,7 @@ bool PinCircle::isOutputPortType() const
 void PinCircle::onHoverEnter()
 {
   m_ellipse->setVisible( !m_invisible );
+  setHighlighted( true );
 
   if(target()->targetType() != TargetType_NodeHeader)
     target()->setHighlighted(true);
@@ -157,6 +158,8 @@ void PinCircle::onHoverEnter()
 
 void PinCircle::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
+  onHoverEnter();
+
   QGraphicsItem *gi = parentItem();
   while ( gi )
   {
@@ -188,6 +191,8 @@ void PinCircle::hoverMoveEvent(QGraphicsSceneHoverEvent * event)
 void PinCircle::onHoverLeave()
 {
   m_ellipse->setVisible( !m_invisible && m_shouldBeVisible );
+  setHighlighted( false );
+
   if(target()->targetType() != TargetType_NodeHeader)
     target()->setHighlighted(false);
 }
@@ -211,15 +216,23 @@ void PinCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 
 void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  if( MainPanel::filterMousePressEvent( event ) )
+    return event->ignore();
+
   // with context menus we'll receive more
   // events, even for clicks outside of our 
   // bounding rect
-  if(!rect().contains(event->pos()))
+  if (
+    (
+      target()->targetType() == TargetType_NodeHeader ||
+      target()->targetType() == TargetType_InstBlockHeader
+    )
+    &&  !rect().contains( event->pos() ) )
   {
-    QGraphicsWidget::mousePressEvent(event);
+    QGraphicsWidget::mousePressEvent( event );
     return;
   }
-  
+
   if(event->button() == Qt::LeftButton && m_interactiveConnectionsAllowed)
   {
     if(target()->targetType() != TargetType_NodeHeader)
@@ -238,35 +251,19 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
   }
   else if(event->button() == Qt::RightButton)
   {
+    QMenu * menu = NULL;
     if(target()->targetType() == TargetType_Pin)
-    {
-      QMenu * menu = target()->graph()->getPinContextMenu((Pin*)this->target());
-      if(menu)
-      {
-        menu->exec(QCursor::pos());
-        menu->setParent( NULL );
-        menu->deleteLater();
-      }
-    }
+      menu = target()->graph()->getPinContextMenu( ( Pin* )this->target() );
     else if(target()->targetType() == TargetType_Port)
-    {
-      QMenu * menu = target()->graph()->getPortContextMenu((Port*)this->target());
-      if(menu)
-      {
-        menu->exec(QCursor::pos());
-        menu->setParent( NULL );
-        menu->deleteLater();
-      }
-    }
+      menu = target()->graph()->getPortContextMenu( ( Port* )this->target() );
     else if(target()->targetType() == TargetType_FixedPort)
+      menu = target()->graph()->getFixedPortContextMenu((FixedPort*)this->target());
+
+    if(menu)
     {
-      QMenu * menu = target()->graph()->getFixedPortContextMenu((FixedPort*)this->target());
-      if(menu)
-      {
-        menu->exec(QCursor::pos());
-        menu->setParent( NULL );
-        menu->deleteLater();
-      }
+      menu->exec(QCursor::pos());
+      menu->setParent( NULL );
+      menu->deleteLater();
     }
   }
   else

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #ifndef FABRICUI_MODELITEMS_SETPORTITEMMETADATA_H
@@ -39,9 +39,9 @@ public:
 
       return ItemPortItemMetadata::getString( key );
     }
-    catch (FabricCore::Exception* e)
+    catch ( FabricCore::Exception e )
     {
-      printf( "[ERROR] %s", e->getDesc_cstr() );
+      reportFabricCoreException( e );
       return NULL;
     }
   }

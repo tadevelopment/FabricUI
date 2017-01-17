@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "KLSourceCodeWidget.h"
 
@@ -32,6 +32,8 @@ KLSourceCodeWidget::KLSourceCodeWidget(QWidget * parent, FabricServices::ASTWrap
 , m_codeAssistant(NULL)
 , m_dfgExec(NULL)
 {
+  setObjectName( "KLSourceCodeWidget" );
+  
   m_config = config;
   m_lineOffset = UINT_MAX;
   m_filePath = "empty.kl";

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010-2016 Fabric Software Inc. All rights reserved.
+ *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
 #ifndef __FABRICUI_GLVIEWPORT_H__
@@ -49,13 +49,13 @@ namespace FabricUI
     public slots:
       virtual void redraw() { ViewportWidget::redraw(); }
 
-      virtual void onKeyPressed(QKeyEvent * event);
       void toggleManipulation() { setManipulationActive(!isManipulationActive()); }
       void setGridVisible( bool gridVisible, bool update = true );
       void resetCamera();
  
     signals:
       void dirty();
+      void initComplete();
       void redrawn();
       void portManipulationRequested(QString portName);
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
@@ -10,7 +10,88 @@
 
 #include <QGraphicsLinearLayout>
 
+// sqrt
+#include <math.h>
+
 using namespace FabricUI::GraphView;
+
+class PinLabel : public NodeLabel
+{
+  Pin * m_pin;
+
+public:
+  PinLabel(
+    Pin * pin,
+    Node* node,
+    QString const &text,
+    QColor color,
+    QColor highlightColor,
+    QFont font
+  ) : NodeLabel(
+    pin,
+    node,
+    text,
+    color,
+    highlightColor,
+    font
+  ), m_pin(pin)
+  {
+    setEditable( node->canEdit() );
+    setAcceptHoverEvents( true );
+  }
+
+protected:
+  void submitEditedText( const QString& text ) FTL_OVERRIDE
+  {
+    FTL::CStrRef pinName = m_pin->name();
+
+    m_pin->node()->graph()->controller()->gvcDoRenameExecPort(
+      QString::fromUtf8( pinName.data(), pinName.size() ),
+      text,
+      m_pin->node()->name_QS()
+    );
+  }
+
+  PinCircle* pinCircle() const
+  {
+    switch( m_pin->portType() )
+    {
+      case PortType_Input : return m_pin->inCircle();
+      case PortType_Output : return m_pin->outCircle();
+      default: return NULL;
+    }
+  }
+
+  void mousePressEvent( QGraphicsSceneMouseEvent* event ) FTL_OVERRIDE
+  {
+    if( MainPanel::filterMousePressEvent( event ) )
+      return event->ignore();
+
+    // Creating connections from Labels
+    PinCircle * circle = pinCircle();
+    if( circle )
+      circle->mousePressEvent( event );
+    NodeLabel::mousePressEvent( event );
+  }
+
+  void hoverEnterEvent( QGraphicsSceneHoverEvent * event ) FTL_OVERRIDE
+  {
+    PinCircle * circle = pinCircle();
+    if ( circle )
+      circle->onHoverEnter();
+    setHighlighted( true );
+    NodeLabel::hoverEnterEvent( event );
+  }
+
+  void hoverLeaveEvent( QGraphicsSceneHoverEvent * event ) FTL_OVERRIDE
+  {
+    PinCircle * circle = pinCircle();
+    if ( circle )
+      circle->onHoverLeave();
+    setHighlighted( false );
+    NodeLabel::hoverLeaveEvent( event );
+  }
+};
 
 Pin::Pin(
   Node * parent,
@@ -91,7 +172,14 @@ Pin::Pin(
 
   if(m_labelCaption.length() > 0)
   {
-    m_label = new TextContainer(this, QSTRING_FROM_STL_UTF8(m_labelCaption), config.pinFontColor, config.pinFontHighlightColor, config.pinFont);
+    m_label = new PinLabel(
+      this,
+      m_node,
+      QSTRING_FROM_STL_UTF8(m_labelCaption),
+      config.pinFontColor,
+      config.pinFontHighlightColor,
+      config.pinFont
+    );
 
     layout->addItem(m_label);
     layout->setAlignment(m_label, Qt::AlignHCenter | Qt::AlignVCenter);
@@ -266,14 +354,16 @@ void Pin::setDataType(FTL::CStrRef dataType)
       if(m_dataType.substr(m_dataType.length()-2) == "[]" && m_labelSuffix != "[]")
       {
         m_labelSuffix = "[]";
-        m_label->setText(QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix));
+        m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+        m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
         return;
       }
     }
     if(m_labelSuffix.length() > 0)
     {
       m_labelSuffix = "";
-      m_label->setText(QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix));
+      m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+      m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
     }
   }
 }
@@ -296,6 +386,24 @@ PinCircle * Pin::outCircle()
 const PinCircle * Pin::outCircle() const
 {
   return m_outCircle;
+}
+
+PinCircle * Pin::findPinCircle( QPointF pos )
+{
+  PinCircle * circle = pos.x() < size().width() * 0.5 ? inCircle() : outCircle();
+  if( circle )
+  {
+    float pinClickableDistance = graph()->config().pinClickableDistance;
+    QPointF center = circle->centerInSceneCoords();
+    QPointF clicked = mapToScene( pos );
+    float x = center.x() - clicked.x();
+    float y = center.y() - clicked.y();
+    float distance = sqrt( x * x + y * y );
+    distance /= graph()->mainPanel()->canvasZoom();
+    if ( distance > pinClickableDistance )
+      circle = NULL;
+  }
+  return circle;
 }
 
 bool Pin::canConnectTo(
@@ -426,7 +534,7 @@ void Pin::setName( FTL::StrRef newName )
     m_name = newName;
     if ( labelIsName )
       m_labelCaption = newName;
-    m_label->setText( QSTRING_FROM_STL_UTF8(m_labelCaption + m_labelSuffix) );
+    m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
   }
 }
 

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include "VEDialog.h"
@@ -12,6 +12,7 @@ using namespace FabricUI::ValueEditor;
 VEDialog::VEDialog( QWidget * parent, Qt::WindowFlags f )
 : QDialog( parent, f )
 {
+  setWindowTitle("Value Editor");
 }
 
 void VEDialog::showEvent( QShowEvent * event )

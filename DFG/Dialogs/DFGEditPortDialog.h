@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #ifndef __UI_DFG_DFGEditPortDialog__
 #define __UI_DFG_DFGEditPortDialog__
@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QShowEvent>
-
+#include <QKeyEvent>
 #include "DFGBaseDialog.h"
 #include "DFGRegisteredTypeLineEdit.h"
 #include "DFGExtensionLineEdit.h"
@@ -43,17 +43,22 @@ namespace FabricUI
       void setExtension(QString value);
       bool hidden() const;
       void setHidden();
+      void setVisibilityReadOnly( bool value );
+
       bool opaque() const;
       void setOpaque();
       bool persistValue() const;
       void setPersistValue( bool value );
-
+      bool isDataTypeReadOnly() const;
+      void setDataTypeReadOnly( bool value );
+     
       bool hasSoftRange() const;
       void setHasSoftRange(bool value);
       float softRangeMin() const;
       void setSoftRangeMin(float value);
       float softRangeMax() const;
       void setSoftRangeMax(float value);
+      void setSoftRangeReadOnly( bool value );
 
       bool hasHardRange() const;
       void setHasHardRange(bool value);
@@ -61,11 +66,18 @@ namespace FabricUI
       void setHardRangeMin(float value);
       float hardRangeMax() const;
       void setHardRangeMax(float value);
+      void setHardRangeReadOnly( bool value );
 
       bool hasCombo() const;
       void setHasCombo(bool value);
       QStringList comboValues() const;
       void setComboValues(QStringList value);
+      void setComboReadOnly( bool value );
+
+      bool hasFileTypeFilter() const;
+      void setHasFileTypeFilter(bool value);
+      QString fileTypeFilter() const;
+      void setFileTypeFilter(QString value);
 
       virtual void showEvent(QShowEvent * event);
 
@@ -74,11 +86,18 @@ namespace FabricUI
       /// Filter the QLineEdit text with the setRegexFilter
       void setRegexFilter(QString regex);
 
+    protected:
+      virtual void keyPressEvent(QKeyEvent * event);
+
+    public slots:
+      virtual void done(int r);
+
     private slots:
 
       void onSoftRangeToggled(int state);
       void onHardRangeToggled(int state);
       void onComboToggled(int state);
+      void onFileTypeFilterToggled(int state);
 
     private:
 
@@ -96,6 +115,8 @@ namespace FabricUI
       QLineEdit * m_hardRangeMax;
       QCheckBox * m_hasCombo;
       QLineEdit * m_combo;
+      QCheckBox * m_hasFileTypeFilter;
+      QLineEdit * m_fileTypeFilter;
 
     };
 

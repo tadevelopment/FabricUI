@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
 #include <FabricUI/DFG/DFGController.h>
@@ -53,6 +53,7 @@ DFGErrorsWidget::DFGErrorsWidget(
   m_tableWidget->setSelectionBehavior( QAbstractItemView::SelectRows );
   m_tableWidget->setShowGrid( false );
   m_tableWidget->setIconSize( QSize( 20, 20 ) );
+  m_tableWidget->setAlternatingRowColors( true );
 
   connect(
     m_tableWidget, SIGNAL(cellDoubleClicked(int, int)),
@@ -204,15 +205,29 @@ void DFGErrorsWidget::onErrorsMayHaveChanged()
         location += QString::fromUtf8( blockName.data(), blockName.size() );
       }
       if ( location.isEmpty() )
-        location += "<root>";
-      if ( line != -1 )
       {
-        location += ':';
-        location += QString::number( line );
-        if ( column != -1 )
+        if ( line != -1 )
+        {
+          location += "line ";
+          location += QString::number( line );
+          if ( column != -1 )
+          {
+            location += ", column ";
+            location += QString::number( column );
+          }
+        }
+      }
+      else
+      {
+        if ( line != -1 )
         {
           location += ':';
-          location += QString::number( column );
+          location += QString::number( line );
+          if ( column != -1 )
+          {
+            location += ':';
+            location += QString::number( column );
+          }
         }
       }
       m_tableWidget->setItem( row, 0, new QTableWidgetItem( location ) );

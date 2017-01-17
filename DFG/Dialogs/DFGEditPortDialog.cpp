@@ -1,9 +1,11 @@
-// Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <QLayout>
 #include <QDoubleValidator>
 #include <QTimer>
-
+#include <QMessageBox>
+#include <QStandardItem>
+#include <QStandardItemModel>
 #include "DFGEditPortDialog.h"
 
 using namespace FabricUI;
@@ -52,6 +54,8 @@ DFGEditPortDialog::DFGEditPortDialog(
   m_hardRangeMax = new QLineEdit("1.0", this);
   m_hasCombo = new QCheckBox(this);
   m_combo = new QLineEdit("OptionA, OptionB", this);
+  m_hasFileTypeFilter = new QCheckBox(this);
+  m_fileTypeFilter = new QLineEdit("*.*", this);
 
   m_softRangeMin->setEnabled(false);
   m_softRangeMax->setEnabled(false);
@@ -80,6 +84,8 @@ DFGEditPortDialog::DFGEditPortDialog(
   addInput(m_hardRangeMax, "hard max", "metadata");
   addInput(m_hasCombo, "use combo", "metadata");
   addInput(m_combo, "combo", "metadata");
+  addInput(m_hasFileTypeFilter, "use file filter", "metadata");
+  addInput(m_fileTypeFilter, "file filter", "metadata");
 
   // [Julien] FE-5188, FE-5276
   if(setAlphaNum) alphaNumicStringOnly();
@@ -88,6 +94,7 @@ DFGEditPortDialog::DFGEditPortDialog(
   QObject::connect(m_hasSoftRange, SIGNAL(stateChanged(int)), this, SLOT(onSoftRangeToggled(int)));
   QObject::connect(m_hasHardRange, SIGNAL(stateChanged(int)), this, SLOT(onHardRangeToggled(int)));
   QObject::connect(m_hasCombo, SIGNAL(stateChanged(int)), this, SLOT(onComboToggled(int)));
+  QObject::connect(m_hasFileTypeFilter, SIGNAL(stateChanged(int)), this, SLOT(onFileTypeFilterToggled(int)));
 }
 
 DFGEditPortDialog::~DFGEditPortDialog()
@@ -136,6 +143,19 @@ void DFGEditPortDialog::setDataType(QString value)
     assert( false );
 }
 
+bool DFGEditPortDialog::isDataTypeReadOnly() const 
+{
+  if(m_dataTypeEdit)
+    return m_dataTypeEdit->isReadOnly();
+  return false;
+}
+
+void DFGEditPortDialog::setDataTypeReadOnly( bool value ) 
+{
+  if(m_dataTypeEdit)
+    m_dataTypeEdit->setReadOnly(value);
+}
+
 QString DFGEditPortDialog::extension() const
 {
   return m_extensionEdit ? m_extensionEdit->text() : QString();
@@ -157,6 +177,27 @@ bool DFGEditPortDialog::hidden() const
 void DFGEditPortDialog::setHidden()
 {
   m_visibilityCombo->setCurrentIndex(2);
+}
+
+void DFGEditPortDialog::setVisibilityReadOnly( bool value ) 
+{
+  if(m_visibilityCombo)
+  {
+    QStandardItemModel *model = (QStandardItemModel *)(m_visibilityCombo->model());
+    for(int i=0; i<m_visibilityCombo->count(); ++i)
+    {
+      QStandardItem *item = model->item(i,0);
+      Qt::ItemFlags itemFlags = item->flags();
+      if(value)
+      {
+        itemFlags &= ~Qt::ItemIsSelectable;
+        itemFlags &= ~Qt::ItemIsEnabled;
+      }
+      else 
+        itemFlags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+      item->setFlags(itemFlags);
+    }
+  }
 }
 
 bool DFGEditPortDialog::opaque() const
@@ -209,6 +250,18 @@ void DFGEditPortDialog::setSoftRangeMax(float value)
   m_softRangeMax->setText(QString::number(value));
 }
 
+void DFGEditPortDialog::setSoftRangeReadOnly( bool value ) 
+{
+  if(m_softRangeMin)
+    m_softRangeMin->setReadOnly(value);
+
+  if(m_softRangeMax)
+    m_softRangeMax->setReadOnly(value);
+
+  if(m_hasSoftRange)
+    m_hasSoftRange->setEnabled( !value );
+}
+
 bool DFGEditPortDialog::hasHardRange() const
 {
   return m_hasHardRange->checkState() == Qt::Checked;
@@ -237,6 +290,18 @@ float DFGEditPortDialog::hardRangeMax() const
 void DFGEditPortDialog::setHardRangeMax(float value)
 {
   m_hardRangeMax->setText(QString::number(value));
+}
+
+void DFGEditPortDialog::setHardRangeReadOnly( bool value ) 
+{
+  if(m_hardRangeMin)
+    m_hardRangeMin->setReadOnly(value);
+
+  if(m_hardRangeMax)
+    m_hardRangeMax->setReadOnly(value);
+
+   if(m_hasHardRange)
+    m_hasHardRange->setEnabled( !value );
 }
 
 bool DFGEditPortDialog::hasCombo() const
@@ -273,7 +338,32 @@ void DFGEditPortDialog::setComboValues(QStringList value)
     flat += value[i];
   }
   m_combo->setText(flat);
+}
 
+void DFGEditPortDialog::setComboReadOnly( bool value ) 
+{
+  if(m_hasCombo)
+    m_hasCombo->setEnabled( !value );
+}
+
+bool DFGEditPortDialog::hasFileTypeFilter() const
+{
+  return m_hasFileTypeFilter->checkState() == Qt::Checked;
+}
+
+void DFGEditPortDialog::setHasFileTypeFilter(bool value)
+{
+  m_hasFileTypeFilter->setCheckState(value ? Qt::Checked : Qt::Unchecked);
+}
+
+QString DFGEditPortDialog::fileTypeFilter() const
+{
+  return m_fileTypeFilter->text();
+}
+
+void DFGEditPortDialog::setFileTypeFilter(QString value)
+{
+  m_fileTypeFilter->setText(value);
 }
 
 void DFGEditPortDialog::showEvent(QShowEvent * event)
@@ -312,4 +402,43 @@ void DFGEditPortDialog::onHardRangeToggled(int state)
 void DFGEditPortDialog::onComboToggled(int state)
 {
   m_combo->setEnabled(state == Qt::Checked);
+}
+
+void DFGEditPortDialog::onFileTypeFilterToggled(int state)
+{
+  m_fileTypeFilter->setEnabled(state == Qt::Checked);
+}
+
+void DFGEditPortDialog::done(int r)
+{
+  // Ok (Enter) pressed
+  if(QDialog::Accepted == r)  
+  { 
+    // FE-7691 : Check if the current text is a KL valid type
+    // If not, don't close and validate the dialog
+    if(m_dataTypeEdit->checkIfTypeExist())    
+    {
+      QDialog::done(r);
+      return;
+    }
+    else
+    {
+      m_dataTypeEdit->displayInvalidTypeWarning();
+      return;
+    }
+  }
+  // Cancel, Close, Exc pressed
+  else  
+  {
+    QDialog::done(r);
+    return;
+  }
+}
+
+void DFGEditPortDialog::keyPressEvent(QKeyEvent * event)
+{
+  // FE-7691 : Don't call directly the parent QDialog::keyPressEvent(event);
+  // Otherwise the warning message is displayed twice when the user press enter.
+  // Really weird behaviour, and there is no Qt doc about this.
+  QWidget::keyPressEvent(event);
 }
