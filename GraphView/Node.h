@@ -216,6 +216,8 @@ namespace FabricUI
 
       void updateHighlightingFromChild( QGraphicsItem *child, QPointF cursorPos );
 
+      void appendConnectionTargets( QList<ConnectionTarget *> &cts ) const;
+
     public slots:
 
       void onConnectionsChanged();

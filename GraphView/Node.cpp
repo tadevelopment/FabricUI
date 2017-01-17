@@ -1032,3 +1032,14 @@ void Node::collectEditingTargets( EditingTargets &editingTargets )
     editingTargets.push_back( EditingTarget( this, 1 ) );
 }
 
+void Node::appendConnectionTargets( QList<ConnectionTarget *> &cts ) const
+{
+  if ( m_header )
+    cts.append( m_header );
+
+  for (size_t i = 0; i < m_pins.size(); i++)
+    cts.append( m_pins[i] );
+
+  for ( size_t i = 0; i < m_instBlocks.size(); ++i )
+    m_instBlocks[i]->appendConnectionTargets( cts );
+}

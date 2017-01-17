@@ -132,6 +132,8 @@ namespace FabricUI
       float diameter() const;
       ConnectionTarget * target();
       const ConnectionTarget * target() const;
+      ConnectionTarget *targetUnderMouse() const
+        { return m_targetUnderMouse; }
       Graph * graph();
       const Graph * graph() const;
       virtual QColor color() const;
@@ -155,6 +157,8 @@ namespace FabricUI
       // these don't do anything in this case
       virtual bool highlighted() const { return false; }
       virtual void setHighlighted(bool state = true) {}
+
+      void performUngrab( ConnectionTarget *fromCT );
 
     signals:
 

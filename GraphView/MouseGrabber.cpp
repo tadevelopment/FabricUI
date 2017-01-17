@@ -55,7 +55,8 @@ MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * 
 
 MouseGrabber::~MouseGrabber()
 {
-  m_target->setHighlighted( false );
+  if ( m_target )
+    m_target->setHighlighted( false );
 }
 
 MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
@@ -367,24 +368,31 @@ void MouseGrabber::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
   }
 
   if(ungrab || (!event->modifiers().testFlag(Qt::ShiftModifier) && !event->modifiers().testFlag(Qt::ControlModifier)))
-  {
-    prepareGeometryChange();
-    ungrabMouse();
-    QGraphicsScene * scene = graph()->scene();
-    graph()->resetMouseGrabber();
-    m_connection->invalidate();
-    scene->removeItem(m_connection);
-    m_connection->deleteLater();
-    // m_connection->setParent(this);
-    scene->removeItem(this);
-    this->deleteLater();
-  }
+    performUngrab( 0 );
 
   if(!event->modifiers().testFlag(Qt::ShiftModifier))
   {
     // begin interaction is issued by connection +/ PinCircle
     graph()->controller()->endInteraction();
   }
+}
+
+void MouseGrabber::performUngrab( ConnectionTarget *fromCT )
+{
+  prepareGeometryChange();
+  ungrabMouse();
+  QGraphicsScene * scene = graph()->scene();
+  graph()->resetMouseGrabber();
+  m_connection->invalidate();
+  scene->removeItem(m_connection);
+  m_connection->deleteLater();
+  // m_connection->setParent(this);
+  scene->removeItem(this);
+  if ( m_target == fromCT )
+    m_target = 0;
+  if ( m_targetUnderMouse == fromCT )
+    m_targetUnderMouse = 0;
+  this->deleteLater();
 }
 
 void MouseGrabber::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)

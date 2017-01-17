@@ -212,5 +212,11 @@ void InstBlock::setFontColor( QColor color )
   }
 }
 
+void InstBlock::appendConnectionTargets( QList<ConnectionTarget *> &cts ) const
+{
+  for ( size_t i = 0; i < m_instBlockPorts.size(); ++i )
+    cts.append( m_instBlockPorts[i] );
+}
+
 } // namespace GraphView
 } // namespace FabricUI

@@ -15,6 +15,7 @@ class QGraphicsLinearLayout;
 namespace FabricUI {
 namespace GraphView {
 
+class ConnectionTarget;
 class InstBlockHeader;
 class InstBlockPort;
 class Node;
@@ -78,6 +79,8 @@ public:
     { return m_isHighlighted; }
 
   void setFontColor( QColor col );
+
+  void appendConnectionTargets( QList<ConnectionTarget *> &cts ) const;
 
 protected:
 

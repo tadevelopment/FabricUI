@@ -258,6 +258,23 @@ bool Graph::removeNode(Node * node, bool quiet)
   if(it == m_nodeMap.end())
     return false;
 
+  if ( m_mouseGrabber )
+  {
+    QList<ConnectionTarget *> cts;
+    node->appendConnectionTargets( cts );
+    for ( int i = 0; i < cts.size(); ++i )
+    {
+      ConnectionTarget *ct = cts[i];
+      if ( m_mouseGrabber->target() == ct
+        || m_mouseGrabber->targetUnderMouse() == ct )
+      {
+        m_mouseGrabber->performUngrab( ct );
+        assert( !m_mouseGrabber );
+        break;
+      }
+    }
+  }
+
   for ( int i = int( node->instBlockCount() ); i--; )
     node->removeInstBlockAtIndex( i );
 
