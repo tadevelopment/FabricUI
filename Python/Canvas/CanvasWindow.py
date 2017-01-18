@@ -1182,6 +1182,8 @@ class CanvasWindow(QtGui.QMainWindow):
                     'Disable graph compilations', None)
                 self.blockCompilationsAction.setCheckable(True)
                 self.blockCompilationsAction.setChecked(False)
+                self.blockCompilationsAction.setShortcut(QtCore.Qt.SHIFT  + QtCore.Qt.CTRL + QtCore.Qt.Key_Return );
+
                 self.blockCompilationsAction.toggled.connect(
                     self.setBlockCompilations)
 
