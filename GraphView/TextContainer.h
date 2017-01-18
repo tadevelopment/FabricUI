@@ -46,7 +46,7 @@ namespace FabricUI
       virtual void setFont(QFont font);
       virtual bool italic() const;
       virtual void setItalic(bool flag);
-      void setEditable(bool editable) {
+      virtual void setEditable(bool editable) {
         m_editable = editable;
         if( !editable ) { setEditing( false ); }
       }
