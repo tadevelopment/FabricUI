@@ -10,6 +10,7 @@ if sys.version_info < (2, 7):
 
 from PySide import QtGui
 
+from FabricEngine import Core
 from FabricEngine.FabricUI import Application
 from FabricEngine.Canvas.FabricParser import FabricParser
 
