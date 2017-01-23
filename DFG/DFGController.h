@@ -196,6 +196,12 @@ namespace FabricUI
         QPointF pos
         );
 
+      QString cmdAddInstFromJSON(
+        QString nodeName,
+        QString filePath,
+        QPointF pos
+        );
+
       QString cmdAddInstWithEmptyFunc(
         QString title,
         QString initialCode,
@@ -354,6 +360,9 @@ namespace FabricUI
       QStringList getSelectedNodesName();
       /// Returns the selected nodes path
       QStringList getSelectedNodesPath();
+      /// Selects the nodes in the list 
+      void selectNodes(QList<QString> nodeNames);
+
       virtual std::string copy();
 
       virtual bool reloadExtensionDependencies(char const * path);

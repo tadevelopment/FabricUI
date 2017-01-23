@@ -963,6 +963,15 @@ void DFGController::cmdCut()
   }
 }
 
+void DFGController::selectNodes(QList<QString> nodeNames) {
+  graph()->clearSelection();
+  for ( int i = 0; i < nodeNames.size(); ++i )
+  {
+    if ( FabricUI::GraphView::Node *node = graph()->node( nodeNames[i] ) )
+      node->setSelected( true );
+  }
+}
+
 void DFGController::cmdPaste()
 {
   if(!validPresetSplit())
@@ -987,12 +996,7 @@ void DFGController::cmdPaste()
           pos
           );
 
-      graph()->clearSelection();
-      for ( int i = 0; i < pastedNodes.size(); ++i )
-      {
-        if ( FabricUI::GraphView::Node *node = graph()->node( pastedNodes[i] ) )
-          node->setSelected( true );
-      }
+      selectNodes(pastedNodes);
     }
   }
   catch(FabricCore::Exception e)
@@ -1669,6 +1673,25 @@ QString DFGController::cmdAddInstWithEmptyGraph(
     getExecPath_QS(),
     getExec(),
     title,
+    pos
+    );
+}
+
+QString DFGController::cmdAddInstFromJSON(
+  QString nodeName,
+  QString filePath,
+  QPointF pos
+  )
+{
+  if(!validPresetSplit())
+    return "";
+
+  return m_cmdHandler->dfgDoImportNodeFromJSON(
+    getBinding(),
+    getExecPath_QS(),
+    getExec(),
+    nodeName,
+    filePath,
     pos
     );
 }

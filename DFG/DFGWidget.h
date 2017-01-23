@@ -114,6 +114,7 @@ namespace DFG {
       void explodeNode( const char *nodeName );
 
       void createNewGraphNode( QPoint const &globalPos );
+      void createNewNodeFromJSON( QPoint const &globalPos );
       void createNewFunctionNode( QPoint const &globalPos );
       void createNewBackdropNode( QPoint const &globalPos );
       void createNewBlockNode( QPoint const &globalPos );
@@ -1778,6 +1779,41 @@ namespace DFG {
       QPoint m_pos;
     };
 
+    class NewNodeFromJSONAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      NewNodeFromJSONAction(
+        DFGWidget *dfgWidget,
+        QPoint const &pos,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_pos( pos )
+      {
+        setText( "Import node" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      virtual void onTriggered()
+      {
+        m_dfgWidget->createNewNodeFromJSON( m_pos );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      QPoint m_pos;
+    };
+
+ 
     class NewFunctionNodeAction : public QAction
     {
       Q_OBJECT
