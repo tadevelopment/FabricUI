@@ -250,6 +250,28 @@ void DFGPEWidget_Elements::onInspectSelected()
   m_model->inspectElement( selectedIndices[0], m_dfgWidget );
 }
 
+void DFGPEWidget_Elements::onDuplicateSelected()
+{
+  QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
+  QList<int> selectedIndices;
+  for ( int i = 0; i < selectedItems.size(); ++i )
+    if ( selectedItems[i]->column() == 0 )
+      selectedIndices << selectedItems[0]->row();
+  assert( selectedIndices.size() == 1 );
+  int selectedIndex = selectedIndices[0];
+  int index = m_model->getElementCount();
+  m_model->insertElement(
+    index,
+    m_model->getElementName(selectedIndex),
+    m_model->getElementPortType(selectedIndex),
+    m_model->getElementTypeSpec(selectedIndex)
+    );
+  m_addElementName->selectAll();
+  m_tableWidget->selectRow( index );
+  emit elementAddedThroughUI( index );
+  m_addElementName->setFocus();
+}
+
 void DFGPEWidget_Elements::onRemoveSelected()
 {
   QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
@@ -286,23 +308,32 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
     bool canEdit = (    selectedIndices.size() == 1
                     && !m_model->isElementReadOnly( selectedIndices[0] ) );
     inspectAction->setEnabled( canEdit );
-  }
 
-  QAction *removeAction =
-    new QAction( m_minusIcon, "Delete Selected", &menu );
-  connect(
-    removeAction, SIGNAL(triggered()),
-    this, SLOT(onRemoveSelected())
-    );
-  menu.addAction( removeAction );
-  bool canRemoveAtLeastOne = false;
-  for ( int i = 0; i < selectedIndices.size(); ++i )
-    if ( !m_model->isElementReadOnly( selectedIndices[i] ) )
-    {
-      canRemoveAtLeastOne = true;
-      break;
-    }
-  removeAction->setEnabled( canRemoveAtLeastOne );
+    QAction *removeAction =
+      new QAction( m_minusIcon, "Delete Selected", &menu );
+    connect(
+      removeAction, SIGNAL(triggered()),
+      this, SLOT(onRemoveSelected())
+      );
+    menu.addAction( removeAction );
+    bool canRemoveAtLeastOne = false;
+    for ( int i = 0; i < selectedIndices.size(); ++i )
+      if ( !m_model->isElementReadOnly( selectedIndices[i] ) )
+      {
+        canRemoveAtLeastOne = true;
+        break;
+      }
+    removeAction->setEnabled( canRemoveAtLeastOne );
+
+    QAction *duplicateAction =
+      new QAction( m_editIcon, "Duplicate Selected", &menu );
+    connect(
+      duplicateAction, SIGNAL(triggered()),
+      this, SLOT(onDuplicateSelected())
+      );
+    menu.addAction( duplicateAction );
+    duplicateAction->setEnabled( !m_model->isReadOnly() );
+  }
 
   menu.exec( m_tableWidget->mapToGlobal( pos ) );
 }

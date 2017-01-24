@@ -115,6 +115,8 @@ protected slots:
 
   void onInspectSelected();
 
+  void onDuplicateSelected();
+
   void onRemoveSelected();
 
   void onCustomContextMenuRequested( QPoint const &pos );
