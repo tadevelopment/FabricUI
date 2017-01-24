@@ -134,8 +134,8 @@ DFGWidget::DFGWidget(
 
   m_uiGraphViewWidget = new DFGGraphViewWidget(this, dfgConfig.graphConfig, NULL);
   QObject::connect(
-    m_uiGraphViewWidget, SIGNAL(urlDropped(QUrl, bool)),
-    this, SIGNAL(urlDropped(QUrl, bool))
+    m_uiGraphViewWidget, SIGNAL(urlDropped(QUrl, bool, bool, QPointF)),
+    this, SIGNAL(urlDropped(QUrl, bool, bool, QPointF))
     );
 
   m_uiGraphViewWidget->addAction(new TabSearchAction                 (this, m_uiGraphViewWidget));
@@ -754,16 +754,15 @@ void DFGWidget::createNewNodeFromJSON( QPoint const &globalPos )
     fileInfo.dir().cdUp();
     getSettings()->setValue( "mainWindow/lastPresetFolder", fileInfo.dir().path() );
  
-    QString nodeName = 
-      m_uiController->cmdAddInstFromJSON(
-        fileInfo.baseName(), 
-        fileInfo.filePath(), 
-        m_uiGraphViewWidget->mapToGraph( globalPos ) 
-        );
+    QString nodeName = m_uiController->cmdAddInstFromJSON(
+      fileInfo.baseName(), 
+      fileInfo.filePath(), 
+      m_uiGraphViewWidget->mapToGraph( globalPos ) 
+      );
 
-    QStringList selectNodes;
-    selectNodes.append(nodeName);
-    m_uiController->selectNodes(selectNodes);
+    QStringList selectedNodes;
+    selectedNodes.append(nodeName);
+    m_uiController->selectNodes(selectedNodes);
   }
 }
 

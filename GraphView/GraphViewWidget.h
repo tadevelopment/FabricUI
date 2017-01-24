@@ -33,7 +33,7 @@ namespace FabricUI
 
     signals:
 
-      void urlDropped( QUrl url, bool bypassUnsavedChanges );
+      void urlDropped( QUrl url, bool ctrlPressed, bool shiftPressed, QPointF pos  );
 
     protected:
 
@@ -76,7 +76,7 @@ namespace FabricUI
     signals:
 
       void sceneChanged();
-      void urlDropped( QUrl url, bool bypassUnsavedChanges );
+      void urlDropped( QUrl url, bool ctrlPressed, bool shiftPressed, QPointF pos );
  
     protected:
 

@@ -139,7 +139,7 @@ namespace DFG {
       void portEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog);
       void portEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData);
       void nodeInspectRequested(FabricUI::GraphView::Node *);
-      void urlDropped( QUrl url, bool bypassUnsavedChanges );
+      void urlDropped( QUrl url, bool ctrlPressed, bool shiftPressed, QPointF pos );
       void stylesReloaded();
       void revealPresetInExplorer(QString);
 

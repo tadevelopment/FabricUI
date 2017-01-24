@@ -76,8 +76,8 @@ void GraphViewWidget::setGraph(Graph * graph)
 
   QObject::connect(m_scene, SIGNAL(changed(const QList<QRectF> &)), this, SLOT(onSceneChanged()));
   QObject::connect(
-    m_scene, SIGNAL(urlDropped(QUrl, bool)),
-    this, SIGNAL(urlDropped(QUrl, bool))
+    m_scene, SIGNAL(urlDropped(QUrl, bool, bool, QPointF)),
+    this, SIGNAL(urlDropped(QUrl, bool, bool, QPointF))
     );
 
   m_graph = graph;
@@ -197,11 +197,9 @@ void GraphViewScene::dropEvent( QGraphicsSceneDragDropEvent *event )
     if ( urls.count() == 1 )
     {
       QUrl url = urls.front();
-
-      bool bypassUnsavedChanges =
-        event->modifiers().testFlag( Qt::ControlModifier );
-
-      emit urlDropped( url, bypassUnsavedChanges );
+      bool ctrlPressed = event->modifiers().testFlag( Qt::ControlModifier );
+      bool shiftPressed = event->modifiers().testFlag( Qt::AltModifier );
+      emit urlDropped( url, ctrlPressed, shiftPressed, event->pos() );
     }
   }
 }
