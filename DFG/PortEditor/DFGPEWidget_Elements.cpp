@@ -289,7 +289,7 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
   }
 
   QAction *removeAction =
-    new QAction( m_minusIcon, "Remove Selected", &menu );
+    new QAction( m_minusIcon, "Delete Selected", &menu );
   connect(
     removeAction, SIGNAL(triggered()),
     this, SLOT(onRemoveSelected())
