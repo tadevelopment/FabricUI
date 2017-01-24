@@ -259,7 +259,7 @@ namespace DFG {
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
       {
-        setText( "Go up" );
+        setText( "Back" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
