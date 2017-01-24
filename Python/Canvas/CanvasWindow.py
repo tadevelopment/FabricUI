@@ -1230,16 +1230,29 @@ class CanvasWindow(QtGui.QMainWindow):
         event.acceptProposedAction()
 
         bypassUnsavedChanges = event.keyboardModifiers() & QtCore.Qt.ControlModifier
-        self.onUrlDropped(url, bypassUnsavedChanges)
+        self.onUrlDropped(url, bypassUnsavedChanges, True, event.pos() )
 
-    def onUrlDropped(self, url, bypassUnsavedChanges):
-        filename = FabricUI.Util.GetFilenameForFileURL(url)
-        if not filename:
+    def onUrlDropped(self, url, bypassUnsavedChanges, loadGraph, pos):
+        fileInfo = QtCore.QFileInfo(FabricUI.Util.GetFilenameForFileURL(url))
+        if not fileInfo.exists():
             return
 
-        self.timeLine.pause()
+        if loadGraph:
+            self.timeLine.pause()
 
-        if not (bypassUnsavedChanges or self.checkUnsavedChanges()):
-            return
+            if not (bypassUnsavedChanges or self.checkUnsavedChanges()):
+                return
 
-        self.loadGraph(filename)
+            self.loadGraph(fileInfo.filePath())
+
+        else :  
+            ret = QtGui.QMessageBox.information(self, "CreateNewNodeFromJSON",
+                "Do you want to expode the node?",
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
+                QtGui.QMessageBox.No);
+
+            # explodeGraph = bypassUnsavedChanges
+            explodeGraph = ret == QtGui.QMessageBox.Yes
+
+            self.dfgWidget.createNewNodeFromJSON(fileInfo, pos, explodeGraph)
+

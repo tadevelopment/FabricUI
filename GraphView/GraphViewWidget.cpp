@@ -198,8 +198,8 @@ void GraphViewScene::dropEvent( QGraphicsSceneDragDropEvent *event )
     {
       QUrl url = urls.front();
       bool ctrlPressed = event->modifiers().testFlag( Qt::ControlModifier );
-      bool shiftPressed = event->modifiers().testFlag( Qt::AltModifier );
-      emit urlDropped( url, ctrlPressed, shiftPressed, event->pos() );
+      bool altPressed = event->modifiers().testFlag( Qt::AltModifier );
+      emit urlDropped( url, ctrlPressed, altPressed, event->pos() );
     }
   }
 }

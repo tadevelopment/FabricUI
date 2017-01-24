@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QWidget>
 #include <QMenuBar>
+#include <QFileInfo>
 #include <QProxyStyle>
 #include <Commands/CommandStack.h>
 #include <FabricUI/GraphView/InstBlock.h>
@@ -114,7 +115,8 @@ namespace DFG {
       void explodeNode( const char *nodeName );
 
       void createNewGraphNode( QPoint const &globalPos );
-      void createNewNodeFromJSON( QPoint const &globalPos );
+      void createNewNodeFromJSON( QPoint const &globalPos, bool explode = false );
+      void createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const &pos, bool explode = false );
       void createNewFunctionNode( QPoint const &globalPos );
       void createNewBackdropNode( QPoint const &globalPos );
       void createNewBlockNode( QPoint const &globalPos );
@@ -139,7 +141,7 @@ namespace DFG {
       void portEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog);
       void portEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData);
       void nodeInspectRequested(FabricUI::GraphView::Node *);
-      void urlDropped( QUrl url, bool ctrlPressed, bool shiftPressed, QPointF pos );
+      void urlDropped( QUrl url, bool ctrlPressed, bool altPressed, QPointF pos );
       void stylesReloaded();
       void revealPresetInExplorer(QString);
 
@@ -1800,17 +1802,41 @@ namespace DFG {
         setEnabled( enable );
       }
 
-    private slots:
+    protected slots:
 
       virtual void onTriggered()
       {
         m_dfgWidget->createNewNodeFromJSON( m_pos );
       }
 
-    private:
+    protected:
 
       DFGWidget *m_dfgWidget;
       QPoint m_pos;
+    };
+
+    class NewNodeFromJSONAndExplodeAction : public NewNodeFromJSONAction
+    {
+      Q_OBJECT
+
+    public:
+
+      NewNodeFromJSONAndExplodeAction(
+        DFGWidget *dfgWidget,
+        QPoint const &pos,
+        QObject *parent,
+        bool enable = true )
+        : NewNodeFromJSONAction( dfgWidget, pos, parent, enable )
+      {
+        setText( "Import and explode node" );
+      }
+
+    protected slots:
+
+      virtual void onTriggered()
+      {
+        m_dfgWidget->createNewNodeFromJSON( m_pos, true );
+      }
     };
 
  

@@ -58,7 +58,7 @@ public:
     QString execPath,
     FabricCore::DFGExec const &exec,
     QString nodeName,
-    QString graphPath,
+    QString filePath,
     QPointF pos
     );
 

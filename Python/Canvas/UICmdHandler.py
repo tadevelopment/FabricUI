@@ -144,6 +144,26 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
                 ]
             )
 
+    def dfgDoImportNodeFromJSON(
+        self,
+        binding,
+        execPath,
+        exec_,
+        nodeName,
+        graphPath,
+        pos
+        ):
+        return self.evalCmdWithArgs(
+            "importNodeFromJSON",
+            [
+                UICmdHandler.encodeString(execPath),
+                UICmdHandler.encodeString(nodeName),
+                UICmdHandler.encodeString(graphPath),
+                UICmdHandler.encodeFloat(pos.x()),
+                UICmdHandler.encodeFloat(pos.y()),
+                ]
+            )
+
     def dfgDoAddFunc(
         self,
         binding,
