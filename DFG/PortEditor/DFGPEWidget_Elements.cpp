@@ -283,7 +283,9 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
       this, SLOT(onInspectSelected())
       );
     menu.addAction( inspectAction );
-    inspectAction->setEnabled( selectedIndices.size() == 1 );
+    bool canEdit = (    selectedIndices.size() == 1
+                    && !m_model->isElementReadOnly( selectedIndices[0] ) );
+    inspectAction->setEnabled( canEdit );
   }
 
   QAction *removeAction =
