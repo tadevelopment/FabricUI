@@ -326,7 +326,7 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
     removeAction->setEnabled( canRemoveAtLeastOne );
 
     QAction *duplicateAction =
-      new QAction( m_editIcon, "Duplicate Selected", &menu );
+      new QAction( m_plusIcon, "Duplicate Selected", &menu );
     connect(
       duplicateAction, SIGNAL(triggered()),
       this, SLOT(onDuplicateSelected())
@@ -387,7 +387,7 @@ void DFGPEWidget_Elements::onPortInserted(
   QWidget *controlCellWidget;
   if ( m_canInspectElements )
     controlCellWidget =
-      new DFGPEWidget_Elements_ControlCell( index, m_minusIcon, m_editIcon );
+      new DFGPEWidget_Elements_ControlCell( index, m_minusIcon, m_editIcon, m_plusIcon );
   else
     controlCellWidget =
       new DFGPEWidget_Elements_ControlCell( index, m_minusIcon );
@@ -399,6 +399,10 @@ void DFGPEWidget_Elements::onPortInserted(
   connect(
     controlCellWidget, SIGNAL(twoClicked(int)),
     this, SLOT(onInspectRowClicked(int))
+    );
+  connect(
+    controlCellWidget, SIGNAL(threeClicked(int)),
+    this, SLOT(onDuplicateRowClicked(int))
     );
   if ( index == 0 )
     m_tableWidget->setColumnWidth(
@@ -559,6 +563,12 @@ void DFGPEWidget_Elements::onDeleteRowClicked( int row )
   m_model->removeElements( indices );
 }
 
+void DFGPEWidget_Elements::onDuplicateRowClicked( int row )
+{
+  m_tableWidget->selectRow( row );
+  onDuplicateSelected();
+}
+
 void DFGPEWidget_Elements::onAddElementClicked()
 {
   // FE-7961 : Check that the port dataType is valid
@@ -589,6 +599,7 @@ DFGPEWidget_Elements_ControlCell::DFGPEWidget_Elements_ControlCell(
   int row,
   QIcon iconOne,
   QIcon iconTwo,
+  QIcon iconThree,
   QWidget *parent
   )
   : QFrame( parent )
@@ -616,11 +627,25 @@ DFGPEWidget_Elements_ControlCell::DFGPEWidget_Elements_ControlCell(
   }
   else pushButtonTwo = NULL;
 
+  QPushButton *pushButtonThree;
+  if ( !iconThree.isNull() )
+  {
+    pushButtonThree = new QPushButton( iconThree, "" );
+    pushButtonThree->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
+    connect(
+      pushButtonThree, SIGNAL(clicked()),
+      this, SLOT(onThreeClicked())
+      );
+  }
+  else pushButtonThree = NULL;
+
   QHBoxLayout *layout = new QHBoxLayout;
   layout->setContentsMargins( 0, 0, 0, 0 );
   layout->addWidget( pushButtonOne );
   if ( pushButtonTwo )
     layout->addWidget( pushButtonTwo );
+  if ( pushButtonThree )
+    layout->addWidget( pushButtonThree );
 
   setLayout( layout );
 }
@@ -633,6 +658,11 @@ void DFGPEWidget_Elements_ControlCell::onOneClicked()
 void DFGPEWidget_Elements_ControlCell::onTwoClicked()
 {
   emit twoClicked( m_row );
+}
+
+void DFGPEWidget_Elements_ControlCell::onThreeClicked()
+{
+  emit threeClicked( m_row );
 }
 
 DFGPEWidget_Elements_TableWidget::DFGPEWidget_Elements_TableWidget(
