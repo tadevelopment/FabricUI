@@ -40,6 +40,12 @@ public:
     setAcceptHoverEvents( true );
   }
 
+  void setEditable( bool editable ) FTL_OVERRIDE
+  {
+    // FE-7989: Temporarily disabled direct renaming of Block ports (because of a Core crash)
+    NodeLabel::setEditable( editable && !m_pin->node()->isBlockNode() );
+  }
+
 protected:
   void submitEditedText( const QString& text ) FTL_OVERRIDE
   {

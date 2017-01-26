@@ -11,17 +11,17 @@ echo "========================"
 echo ""
 
 BASEDIR=$(dirname "$0")
-FABRIC_DIR=$BASEDIR/../../..
-source $FABRIC_DIR/environment.sh
+FABRIC_DIR="$BASEDIR/../../.."
+source "$FABRIC_DIR/environment.sh"
 
-ALEMBICVIEWERPYPATH=$FABRIC_DIR/Samples/Python
+ALEMBICVIEWERPYPATH="$FABRIC_DIR/Samples/Python"
 
 FABRIC_OS=$(uname -s)
 if [[ "$FABRIC_OS" == *W32* ]] || [[ "$FABRIC_OS" == *W64* ]]; then
   PYTHONPATH="$(unix_to_windows_path $ALEMBICVIEWERPYPATH);$PYTHONPATH"
 else
-  PYTHONPATH=$ALEMBICVIEWERPYPATH:$PYTHONPATH
+  PYTHONPATH="$ALEMBICVIEWERPYPATH:$PYTHONPATH"
 fi
 export PYTHONPATH
 
-python $FABRIC_DIR/Samples/Python/AlembicViewer/alembic_viewer.py
+python "$FABRIC_DIR/Samples/Python/AlembicViewer/alembic_viewer.py"

@@ -631,6 +631,14 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
   result->addAction( new CreatePortAction( graphWidget, portType, result, editable && !(portType != FabricUI::GraphView::PortType_Output && exec.isInstBlockExec()) ) );
 
   result->addSeparator();
+
+  bool canAddTimelinePort = (   editable
+                             && portType == FabricUI::GraphView::PortType_Output
+                             && exec.getExecPath().getLength() == 0
+                             && graph->ports("timeline").size() == 0 );
+  result->addAction( new CreateTimelinePortAction( graphWidget, result, canAddTimelinePort ) );
+
+  result->addSeparator();
   
   bool canDeleteAllPorts = (    editable
                             &&  exec.getExecPortCount() > 1
