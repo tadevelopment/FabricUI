@@ -46,6 +46,15 @@ DFGPEWidget_Elements::DFGPEWidget_Elements(
   m_portTypeLabels << "In" << "IO" << "Out";
   setLayout( m_layout );
   setModel( model );
+
+  QAction *duplicateAction =
+    new QAction( parent );
+  connect(
+    duplicateAction, SIGNAL(triggered()),
+    this, SLOT(onDuplicateSelected())
+    );
+  duplicateAction->setShortcut( Qt::CTRL + Qt::Key_D );
+  this->addAction( duplicateAction );
 }
 
 void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
@@ -252,11 +261,14 @@ void DFGPEWidget_Elements::onInspectSelected()
 
 void DFGPEWidget_Elements::onDuplicateSelected()
 {
+  if ( m_model->isReadOnly() )
+    return;
   QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
   QList<int> selectedIndices;
   for ( int i = 0; i < selectedItems.size(); ++i )
     if ( selectedItems[i]->column() == 0 )
       selectedIndices << selectedItems[0]->row();
+  m_tableWidget->clearSelection();
   for ( int i = 0; i < selectedIndices.size(); ++i )
   {
     int selectedIndex = selectedIndices[i];
@@ -270,7 +282,6 @@ void DFGPEWidget_Elements::onDuplicateSelected()
     m_addElementName->selectAll();
     m_tableWidget->selectRow( index );
     emit elementAddedThroughUI( index );
-    m_addElementName->setFocus();
   }
 }
 
@@ -333,6 +344,7 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
       duplicateAction, SIGNAL(triggered()),
       this, SLOT(onDuplicateSelected())
       );
+    duplicateAction->setShortcut( Qt::CTRL + Qt::Key_D );
     menu.addAction( duplicateAction );
     duplicateAction->setEnabled( !m_model->isReadOnly() );
   }
