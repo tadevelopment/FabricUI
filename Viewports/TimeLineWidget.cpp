@@ -92,23 +92,28 @@ TimeLineWidget::TimeLineWidget()
 
   m_goToStartFrameButton = new QPushButton(this);
   m_goToStartFrameButton->setObjectName( "DFGTimelineGoToStartFrame" );
+  m_goToStartFrameButton->setToolTip("Go to start frame");
   layout()->addWidget(m_goToStartFrameButton);
 
   m_goToPreviousFrameButton = new QPushButton(this);
   m_goToPreviousFrameButton->setObjectName( "DFGTimelineGoToPreviousFrame" );
+  m_goToPreviousFrameButton->setToolTip("Go to previous frame");
   layout()->addWidget(m_goToPreviousFrameButton);
 
   m_playButton = new QPushButton(this);
   m_playButton->setObjectName( "DFGTimelinePlay" );
   m_playButton->setCheckable( true );
+  m_playButton->setToolTip("Play / Pause");
   layout()->addWidget(m_playButton);
 
   m_goToNextFrameButton = new QPushButton(this);
   m_goToNextFrameButton->setObjectName( "DFGTimelineGoToNextFrame" );
+  m_goToNextFrameButton->setToolTip("Go to next frame");
   layout()->addWidget(m_goToNextFrameButton);
 
   m_goToEndFrameButton = new QPushButton(this);
   m_goToEndFrameButton->setObjectName( "DFGTimelineGoToEndFrame" );
+  m_goToEndFrameButton->setToolTip("Go to end frame");
   layout()->addWidget(m_goToEndFrameButton);
 
   m_frameRateComboBox = new QComboBox(this);
