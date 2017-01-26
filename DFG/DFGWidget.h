@@ -507,6 +507,44 @@ namespace DFG {
       FabricUI::GraphView::Port *m_port;
     };
 
+    class CreateTimelinePortAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CreateTimelinePortAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Create timeline port" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIController()->cmdAddPort(
+          "timeline",
+          FabricCore::DFGPortType_In,
+          "Scalar",
+          QString(), // portToConnect
+          QString(), // extDep
+          QString()  // uiMetadata
+          );
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
     class NewVariableNodeAction : public QAction
     {
       Q_OBJECT
