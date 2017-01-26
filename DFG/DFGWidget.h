@@ -115,8 +115,8 @@ namespace DFG {
       void explodeNode( const char *nodeName );
 
       void createNewGraphNode( QPoint const &globalPos );
-      void createNewNodeFromJSON( QPoint const &globalPos, bool explode = false );
-      void createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const &pos, bool explode = false );
+      void createNewNodeFromJSON( QPoint const &globalPos );
+      void createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const &pos );
       void createNewFunctionNode( QPoint const &globalPos );
       void createNewBackdropNode( QPoint const &globalPos );
       void createNewBlockNode( QPoint const &globalPos );
@@ -1796,7 +1796,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_pos( pos )
       {
-        setText( "Import node" );
+        setText( "Import graph as node" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -1814,31 +1814,6 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
       QPoint m_pos;
     };
-
-    class NewNodeFromJSONAndExplodeAction : public NewNodeFromJSONAction
-    {
-      Q_OBJECT
-
-    public:
-
-      NewNodeFromJSONAndExplodeAction(
-        DFGWidget *dfgWidget,
-        QPoint const &pos,
-        QObject *parent,
-        bool enable = true )
-        : NewNodeFromJSONAction( dfgWidget, pos, parent, enable )
-      {
-        setText( "Import and explode node" );
-      }
-
-    protected slots:
-
-      virtual void onTriggered()
-      {
-        m_dfgWidget->createNewNodeFromJSON( m_pos, true );
-      }
-    };
-
  
     class NewFunctionNodeAction : public QAction
     {
