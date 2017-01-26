@@ -257,19 +257,21 @@ void DFGPEWidget_Elements::onDuplicateSelected()
   for ( int i = 0; i < selectedItems.size(); ++i )
     if ( selectedItems[i]->column() == 0 )
       selectedIndices << selectedItems[0]->row();
-  assert( selectedIndices.size() == 1 );
-  int selectedIndex = selectedIndices[0];
-  int index = m_model->getElementCount();
-  m_model->insertElement(
-    index,
-    m_model->getElementName(selectedIndex),
-    m_model->getElementPortType(selectedIndex),
-    m_model->getElementTypeSpec(selectedIndex)
-    );
-  m_addElementName->selectAll();
-  m_tableWidget->selectRow( index );
-  emit elementAddedThroughUI( index );
-  m_addElementName->setFocus();
+  for ( int i = 0; i < selectedIndices.size(); ++i )
+  {
+    int selectedIndex = selectedIndices[i];
+    int index = m_model->getElementCount();
+    m_model->insertElement(
+      index,
+      m_model->getElementName(selectedIndex),
+      m_model->getElementPortType(selectedIndex),
+      m_model->getElementTypeSpec(selectedIndex)
+      );
+    m_addElementName->selectAll();
+    m_tableWidget->selectRow( index );
+    emit elementAddedThroughUI( index );
+    m_addElementName->setFocus();
+  }
 }
 
 void DFGPEWidget_Elements::onRemoveSelected()
