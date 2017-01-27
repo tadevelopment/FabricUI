@@ -21,6 +21,7 @@
       <object-type name="DFGUICmd_AddFunc" />
       <object-type name="DFGUICmd_AddGet" />
       <object-type name="DFGUICmd_AddGraph" />
+      <object-type name="DFGUICmd_ImportNodeFromJSON" />
       <object-type name="DFGUICmd_AddInstBlockPort" />
       <object-type name="DFGUICmd_AddInstPort" />
       <object-type name="DFGUICmd_AddNode" />

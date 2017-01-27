@@ -134,8 +134,8 @@ DFGWidget::DFGWidget(
 
   m_uiGraphViewWidget = new DFGGraphViewWidget(this, dfgConfig.graphConfig, NULL);
   QObject::connect(
-    m_uiGraphViewWidget, SIGNAL(urlDropped(QUrl, bool)),
-    this, SIGNAL(urlDropped(QUrl, bool))
+    m_uiGraphViewWidget, SIGNAL(urlDropped(QUrl, bool, bool, QPointF)),
+    this, SIGNAL(urlDropped(QUrl, bool, bool, QPointF))
     );
 
   m_uiGraphViewWidget->addAction(new TabSearchAction                 (this, m_uiGraphViewWidget));
@@ -361,10 +361,10 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  result->addAction(new NewGraphNodeAction        (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewFunctionNodeAction     (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewBackdropNodeAction     (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new ImplodeSelectedNodesAction(graphWidget, result, graphWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
+  result->addAction(new NewGraphNodeAction              (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewFunctionNodeAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewBackdropNodeAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new ImplodeSelectedNodesAction      (graphWidget, result, graphWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
 
   result->addSeparator();
 
@@ -750,6 +750,31 @@ void DFGWidget::createNewGraphNode( QPoint const &globalPos )
   m_uiGraph->clearSelection();
   if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
     uiNode->setSelected( true );
+}
+
+void DFGWidget::createNewNodeFromJSON( QPoint const &globalPos )
+{
+  QString lastPresetFolder = getSettings()->value("mainWindow/lastPresetFolder").toString();
+  QFileInfo fileInfo(QFileDialog::getOpenFileName(this, "Import graph", lastPresetFolder, "*.canvas"));
+  if ( fileInfo.exists() )
+  {
+    fileInfo.dir().cdUp();
+    getSettings()->setValue( "mainWindow/lastPresetFolder", fileInfo.dir().path() );
+    createNewNodeFromJSON(fileInfo, m_uiGraphViewWidget->mapToGraph( globalPos ) );
+  }
+}
+
+void DFGWidget::createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const &pos )
+{
+  QString nodeName = m_uiController->cmdAddInstFromJSON(
+    fileInfo.baseName(), 
+    fileInfo.filePath(), 
+    pos 
+    );
+
+  QStringList selectedNodes;
+  selectedNodes.append( nodeName );
+  m_uiController->selectNodes( selectedNodes );
 }
 
 void DFGWidget::createNewFunctionNode( QPoint const &globalPos )

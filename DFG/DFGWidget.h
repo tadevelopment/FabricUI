@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QWidget>
 #include <QMenuBar>
+#include <QFileInfo>
 #include <QProxyStyle>
 #include <Commands/CommandStack.h>
 #include <FabricUI/GraphView/InstBlock.h>
@@ -114,6 +115,8 @@ namespace DFG {
       void explodeNode( const char *nodeName );
 
       void createNewGraphNode( QPoint const &globalPos );
+      void createNewNodeFromJSON( QPoint const &globalPos );
+      void createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const &pos );
       void createNewFunctionNode( QPoint const &globalPos );
       void createNewBackdropNode( QPoint const &globalPos );
       void createNewBlockNode( QPoint const &globalPos );
@@ -138,7 +141,7 @@ namespace DFG {
       void portEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog);
       void portEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog, FTL::JSONObjectEnc<> * additionalMetaData);
       void nodeInspectRequested(FabricUI::GraphView::Node *);
-      void urlDropped( QUrl url, bool bypassUnsavedChanges );
+      void urlDropped( QUrl url, bool ctrlPressed, bool altPressed, QPointF pos );
       void stylesReloaded();
       void revealPresetInExplorer(QString);
 
@@ -1815,7 +1818,7 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
       QPoint m_pos;
     };
-
+ 
     class NewFunctionNodeAction : public QAction
     {
       Q_OBJECT

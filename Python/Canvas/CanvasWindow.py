@@ -109,6 +109,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.redoAction = None
         self.newGraphAction = None
         self.loadGraphAction = None
+        self.importGraphAsNodeAction = None
         self.saveGraphAction = None
         self.saveGraphAsAction = None
         self.recentFilesAction = []
@@ -895,6 +896,23 @@ class CanvasWindow(QtGui.QMainWindow):
                                    str(folder.path()))
             self.loadGraph(filePath)
 
+    def onImportGraphAsNode(self):
+        """Callback for when users wish to import a graph as a node from the UI.
+
+        A file dialog is opened and users can select the file to import. The last
+        directory the user saved or opened a graph from is used.
+        """
+
+        lastPresetFolder = self.settings.value("mainWindow/lastPresetFolder")
+        fileInfo = QtCore.QFileInfo(str(QtGui.QFileDialog.getOpenFileName(self, "Import graph as node", lastPresetFolder, "*.canvas")[0]))
+        
+        if fileInfo.exists() :
+            point = self.dfgWidget.rect().center() 
+            self.dfgWidget.createNewNodeFromJSON(fileInfo, point)
+            
+            fileInfo.dir().cdUp()
+            self.settings.setValue( "mainWindow/lastPresetFolder", fileInfo.dir().path() )
+
     def performSave(self, binding, filePath):
         """Writes the current graph to disk.
 
@@ -1037,6 +1055,8 @@ class CanvasWindow(QtGui.QMainWindow):
             self.newGraphAction.blockSignals(enabled)
         if self.loadGraphAction:
             self.loadGraphAction.blockSignals(enabled)
+        if self.importGraphAsNodeAction:
+            self.importGraphAsNodeAction.blockSignals(enabled)
         if self.saveGraphAction:
             self.saveGraphAction.blockSignals(enabled)
         if self.saveGraphAsAction:
@@ -1077,6 +1097,8 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.newGraphAction.setShortcut(QtGui.QKeySequence.New)
                 self.loadGraphAction = QtGui.QAction('Load Graph...', menu)
                 self.loadGraphAction.setShortcut(QtGui.QKeySequence.Open)
+                self.importGraphAsNodeAction = QtGui.QAction('Import Graph...', menu)
+                self.importGraphAsNodeAction.setShortcut(QtGui.QKeySequence('Ctrl+I'))
                 self.saveGraphAction = QtGui.QAction('Save Graph', menu)
                 self.saveGraphAction.setShortcut(QtGui.QKeySequence.Save)
                 self.saveGraphAsAction = QtGui.QAction('Save Graph As...', menu)
@@ -1089,6 +1111,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
                 menu.addAction(self.newGraphAction)
                 menu.addAction(self.loadGraphAction)
+                menu.addAction(self.importGraphAsNodeAction)
                 menu.addAction(self.saveGraphAction)
                 menu.addAction(self.saveGraphAsAction)
                 self.separator = menu.addSeparator()
@@ -1100,6 +1123,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
                 self.newGraphAction.triggered.connect(self.execNewGraph)
                 self.loadGraphAction.triggered.connect(self.onLoadGraph)
+                self.importGraphAsNodeAction.triggered.connect(self.onImportGraphAsNode)
                 self.saveGraphAction.triggered.connect(self.onSaveGraph)
                 self.saveGraphAsAction.triggered.connect(self.onSaveGraphAs)
             else:
@@ -1205,16 +1229,29 @@ class CanvasWindow(QtGui.QMainWindow):
         event.acceptProposedAction()
 
         bypassUnsavedChanges = event.keyboardModifiers() & QtCore.Qt.ControlModifier
-        self.onUrlDropped(url, bypassUnsavedChanges)
+        self.onUrlDropped(url, bypassUnsavedChanges, False, event.pos() )
 
-    def onUrlDropped(self, url, bypassUnsavedChanges):
-        filename = FabricUI.Util.GetFilenameForFileURL(url)
-        if not filename:
+    def onUrlDropped(self, url, bypassUnsavedChanges, importAsNode, pos):
+        """Callback when an item (.canvas file) is dropped on the graphview.
+
+        Args:
+            url: The path of the graph to load or import.
+            bypassUnsavedChanges: It the graph is loaded (importAsNode == False), check if the graph needs to be saved
+            importAsNode: If true, import the file as a node, load it as the current graph otherwise.
+            pos: The drop position.
+        """
+
+        fileInfo = QtCore.QFileInfo(FabricUI.Util.GetFilenameForFileURL(url))
+        if not fileInfo.exists():
             return
 
-        self.timeLine.pause()
+        if importAsNode:
+            self.dfgWidget.createNewNodeFromJSON(fileInfo, pos)
+        else:
+            self.timeLine.pause()
 
-        if not (bypassUnsavedChanges or self.checkUnsavedChanges()):
-            return
+            if not (bypassUnsavedChanges or self.checkUnsavedChanges()):
+                return
+        
+            self.loadGraph(fileInfo.filePath())
 
-        self.loadGraph(filename)

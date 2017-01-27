@@ -137,6 +137,27 @@ class BindingWrapper:
         InvokeCmd(cmd, self.qUndoStack)
         return cmd.getActualNodeName()
 
+    def importNodeFromJSON(
+        self,
+        execPath,
+        nodeName,
+        filePath,
+        posX,
+        posY
+        ):
+        rootExec = self.binding.getExec()
+        exec_ = rootExec.getSubExec(execPath)
+        cmd = DFG.DFGUICmd_ImportNodeFromJSON(
+            self.binding,
+            execPath,
+            exec_,
+            nodeName,
+            filePath,
+            QtCore.QPointF(posX, posY)
+            )
+        InvokeCmd(cmd, self.qUndoStack)
+        return cmd.getActualNodeName()
+
     def addFunc(
         self,
         execPath,
