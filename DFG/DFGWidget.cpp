@@ -362,8 +362,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   result->addSeparator();
 
   result->addAction(new NewNodeFromJSONAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewNodeFromJSONAndExplodeAction (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  
+   
   result->addSeparator();
 
   result->addAction(new NewGraphNodeAction              (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
@@ -757,7 +756,7 @@ void DFGWidget::createNewGraphNode( QPoint const &globalPos )
     uiNode->setSelected( true );
 }
 
-void DFGWidget::createNewNodeFromJSON( QPoint const &globalPos, bool explode )
+void DFGWidget::createNewNodeFromJSON( QPoint const &globalPos )
 {
   QString lastPresetFolder = getSettings()->value("mainWindow/lastPresetFolder").toString();
   QFileInfo fileInfo(QFileDialog::getOpenFileName(this, "Import node", lastPresetFolder, "*.canvas"));
@@ -765,11 +764,11 @@ void DFGWidget::createNewNodeFromJSON( QPoint const &globalPos, bool explode )
   {
     fileInfo.dir().cdUp();
     getSettings()->setValue( "mainWindow/lastPresetFolder", fileInfo.dir().path() );
-    createNewNodeFromJSON(fileInfo, m_uiGraphViewWidget->mapToGraph( globalPos ), explode);
+    createNewNodeFromJSON(fileInfo, m_uiGraphViewWidget->mapToGraph( globalPos ) );
   }
 }
 
-void DFGWidget::createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const &pos, bool explode )
+void DFGWidget::createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const &pos )
 {
   QString nodeName = m_uiController->cmdAddInstFromJSON(
     fileInfo.baseName(), 
@@ -777,30 +776,9 @@ void DFGWidget::createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const 
     pos 
     );
 
-  if(!explode)
-  {
-    QStringList selectedNodes;
-    selectedNodes.append( nodeName );
-    m_uiController->selectNodes( selectedNodes );
-  }
-
-  else
-  {
-    FabricCore::DFGExec &exec = m_uiController->getExec();
-    bool isFunction = FabricCore::DFGExecType_Func == exec.getSubExec( nodeName.toUtf8().constData() ).getType();
-    if(isFunction)
-    {
-      m_uiController->beginInteraction();
-
-      if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
-        maybeEditNode( uiNode );
-
-      m_uiController->endInteraction();
-    }
-
-    else
-      explodeNode( nodeName.toUtf8().constData() );
-  }
+  QStringList selectedNodes;
+  selectedNodes.append( nodeName );
+  m_uiController->selectNodes( selectedNodes );
 }
 
 void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
