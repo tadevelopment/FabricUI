@@ -175,6 +175,10 @@ namespace FabricUI
 
         /// this is emitted whenever playback changes
         void playbackChanged(bool isPlaying);
+
+        void rangeChanged( int start, int end );
+
+        void targetFrameRateChanged( float frameRate );
       
       public slots:
 
@@ -217,7 +221,7 @@ namespace FabricUI
       private slots:
 
         /// called when the frameRate is changed ( only few fixed option at moment )
-        void frameRateChanged(int index);
+        void updateTargetFrameRate(int index);
 
         /// called when the looping scheme changed
         void loopModeChanged(int index);

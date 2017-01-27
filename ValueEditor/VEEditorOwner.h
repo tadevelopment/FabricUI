@@ -57,7 +57,6 @@ namespace FabricUI {
       void emitReplaceModelRoot(FabricUI::ValueEditor::BaseModelItem* model);
 
     protected slots:
-      virtual void onFrameChanged(int frame) {}
       virtual void onModelItemInserted( FabricUI::ValueEditor::BaseModelItem* parent, int index, const char* childName );
       virtual void onModelValueChanged( QVariant const &newValue );
 
