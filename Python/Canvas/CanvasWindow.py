@@ -323,14 +323,16 @@ class CanvasWindow(QtGui.QMainWindow):
         with the Value Editor's onFrameChanged method too.
         """
 
-        self.timeLinePortIndex = -1
-        self.timeLinePortPath = None
         self.timeLine = TimeLine.TimeLineWidget()
+        controller = self.dfgWidget.getDFGController()
+        self.timeLine.frameChanged.connect( controller.onFrameChanged )
+        self.timeLine.targetFrameRateChanged.connect( controller.onTimelineTargetFramerateChanged )
+        controller.onTimelineTargetFramerateChanged( self.timeLine.framerate() )
+        self.timeLine.rangeChanged.connect( controller.onTimelineRangeChanged )
         self.timeLine.setTimeRange(CanvasWindow.defaultFrameIn, CanvasWindow.defaultFrameOut)
         self.timeLine.updateTime(1)
         self.dfgWidget.stylesReloaded.connect(self.timeLine.reloadStyles)
         self.timeLine.frameChanged.connect(self.onFrameChanged)
-        self.timeLine.frameChanged.connect(self.valueEditor.onFrameChanged)
         self.scriptEditor.setTimeLineGlobal(self.timeLine)
 
         self.timelineFrame = QtGui.QFrame()
@@ -555,7 +557,6 @@ class CanvasWindow(QtGui.QMainWindow):
         """
 
         self.timeLine.pause()
-        self.timeLinePortPath = None
 
         try:
             dfgController = self.dfgWidget.getDFGController()
@@ -737,31 +738,6 @@ class CanvasWindow(QtGui.QMainWindow):
         except Exception as e:
             self.dfgWidget.getDFGController().logError(str(e))
 
-        if not self.timeLinePortPath:
-            return
-
-        try:
-            binding = self.dfgWidget.getDFGController().getBinding()
-            dfgExec = binding.getExec()
-            if dfgExec.isExecPortResolvedType(self.timeLinePortIndex,
-                                              "SInt32"):
-                binding.setArgValue(self.timeLinePortPath,
-                                    self.client.RT.types.SInt32(frame), False)
-            elif dfgExec.isExecPortResolvedType(self.timeLinePortIndex,
-                                                "UInt32"):
-                binding.setArgValue(self.timeLinePortPath,
-                                    self.client.RT.types.UInt32(frame), False)
-            elif dfgExec.isExecPortResolvedType(self.timeLinePortIndex,
-                                                "Float32"):
-                binding.setArgValue(self.timeLinePortPath,
-                                    self.client.RT.types.Float32(frame), False)
-            elif dfgExec.isExecPortResolvedType(self.timeLinePortIndex,
-                                                "Float64"):
-                binding.setArgValue(self.timeLinePortPath,
-                                    self.client.RT.types.Float64(frame), False)
-        except Exception as e:
-            self.dfgWidget.getDFGController().logError(str(e))
-
     @staticmethod
     def formatFPS(fps):
         if fps >= 9950.0:
@@ -876,7 +852,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
             binding = self.host.createBindingToNewGraph()
             self.lastSavedBindingVersion = binding.getVersion()
-            self.timeLinePortPath = None
 
             self.dfgWidget.replaceBinding(binding)
             self.scriptEditor.updateBinding(binding)

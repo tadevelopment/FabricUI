@@ -1,0 +1,3 @@
+Skipping on OSX, since the graph doesn't seem to be executed (QtCore.QCoreApplication.processEvents() might not
+be enough to either process the signals or execute the graph)
+

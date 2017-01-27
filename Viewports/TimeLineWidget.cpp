@@ -172,7 +172,7 @@ TimeLineWidget::TimeLineWidget()
 
   connect( m_timer , SIGNAL(timeout()) , this , SLOT(timerUpdate()) );
 
-  connect( m_frameRateComboBox , SIGNAL(activated(int)) , this , SLOT( frameRateChanged(int))  );
+  connect( m_frameRateComboBox , SIGNAL(activated(int)) , this , SLOT( updateTargetFrameRate(int))  );
   connect( m_loopModeComBox , SIGNAL(activated(int)) , this , SLOT( loopModeChanged(int))  );
   connect( m_simModeComBox , SIGNAL(activated(int)) , this , SLOT( simModeChanged(int))  );
 
@@ -293,8 +293,8 @@ void TimeLineWidget::setFrameRate(float framesPerSecond) {
     index = 7; // 48 fps
   else if( framesPerSecond <= 70 )
     index = 8; // 60 fps
-  frameRateChanged( index );
   m_frameRateComboBox->setCurrentIndex( index );
+  updateTargetFrameRate( index );
 }
 
 void TimeLineWidget::setLoopMode(int mode)
@@ -360,6 +360,8 @@ void TimeLineWidget::updateFrameRange()
 
   m_frameSlider->setMinimum( min );
   m_frameSlider->setMaximum( max );
+
+  emit rangeChanged( getRangeStart(), getRangeEnd() );
 }
 
 void TimeLineWidget::onPlayButtonToggled( bool checked )
@@ -488,7 +490,7 @@ void TimeLineWidget::timerUpdate()
   }
 }
 
-void TimeLineWidget::frameRateChanged(int index)
+void TimeLineWidget::updateTargetFrameRate(int index)
 {
   m_fps = m_frameRateComboBox->itemData(index).toDouble();
   if(m_fps == 0.0) // max fps
@@ -506,6 +508,7 @@ void TimeLineWidget::frameRateChanged(int index)
         "custom " + QString::number(m_fps) );
     }
   }
+  emit targetFrameRateChanged( framerate() );
 }
 
 void TimeLineWidget::loopModeChanged(int index)

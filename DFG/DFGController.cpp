@@ -60,6 +60,8 @@ DFGController::DFGController(
   , m_topoDirtyPending( false )
   , m_dirtyPending( false )
 {
+  resetTimelinePortIndices();
+
   m_tabSearchPrefsJSONFilename = FabricCore::GetFabricPrivateDir();
   FTL::PathAppendEntry(
     m_tabSearchPrefsJSONFilename,
@@ -179,6 +181,8 @@ void DFGController::setBindingExec(
 
   emit bindingChanged( m_binding );
   emitTopoDirty();
+  this->resetTimelinePortIndices();
+  this->updateTimelinePortIndices();
 }
 
 void DFGController::setExec(
@@ -1039,6 +1043,8 @@ void DFGController::onTopoDirty()
 {
   updateErrors();
   updateNodeErrors();
+  updateTimelinePortIndices();
+  setTimelineValuesToGraph();
 }
 
 void DFGController::updateErrors()
@@ -2208,3 +2214,121 @@ void DFGController::onParentExecNodeRenamed(
   m_dfgWidget->onExecPathOrTitleChanged();
 }
 
+int DFGController::getTimelinePortIndex( const std::string& name )
+{
+  int index = -1;
+  try
+  {
+    FabricCore::DFGExec graph = getExec();
+    unsigned portCount = graph.getExecPortCount();
+    for( unsigned i = 0; i < portCount; i++ )
+    {
+      if( graph.getExecPortType( i ) == FabricCore::DFGPortType_Out )
+        continue;
+      FTL::CStrRef portName = graph.getExecPortName( i );
+      if( portName != name )
+        continue;
+      if( !graph.isExecPortResolvedType( i, "SInt32" )
+        && !graph.isExecPortResolvedType( i, "UInt32" )
+        && !graph.isExecPortResolvedType( i, "Float32" )
+        && !graph.isExecPortResolvedType( i, "Float64" ) )
+        continue;
+      index = int( i );
+      break;
+    }
+  }
+  catch( FabricCore::Exception e )
+  {
+    log( e.getDesc_cstr() );
+  }
+  return index;
+}
+
+void DFGController::setTimelinePortValue( int portIndex, float value )
+{
+  if( portIndex == -1 )
+    return;
+
+  try
+  {
+    FabricCore::DFGBinding binding = this->getBinding();
+    FabricCore::DFGExec exec = binding.getExec();
+    FabricCore::Context ctxt = binding.getHost().getContext();
+
+    if( exec.isExecPortResolvedType( portIndex, "SInt32" ) )
+      binding.setArgValue(
+        portIndex,
+        FabricCore::RTVal::ConstructSInt32( ctxt, int(value) ),
+        false
+      );
+    else if( exec.isExecPortResolvedType( portIndex, "UInt32" ) )
+      binding.setArgValue(
+        portIndex,
+        FabricCore::RTVal::ConstructUInt32( ctxt, int(value) ),
+        false
+      );
+    else if( exec.isExecPortResolvedType( portIndex, "Float32" ) )
+      binding.setArgValue(
+        portIndex,
+        FabricCore::RTVal::ConstructFloat32( ctxt, value ),
+        false
+      );
+    else if( exec.isExecPortResolvedType( portIndex, "Float64" ) )
+      binding.setArgValue(
+        portIndex,
+        FabricCore::RTVal::ConstructFloat64( ctxt, value ),
+        false
+      );
+  }
+  catch( FabricCore::Exception e )
+  {
+    log( e.getDesc_cstr() );
+  }
+}
+
+void DFGController::resetTimelinePortIndices()
+{
+  m_timelinePortIndex = -1;
+  m_timelineStartPortIndex = -1;
+  m_timelineEndPortIndex = -1;
+  m_timelineFrameratePortIndex = -1;
+}
+
+void DFGController::updateTimelinePortIndices()
+{
+  if( this->isViewingRootGraph() )
+  {
+    m_timelinePortIndex = getTimelinePortIndex( "timeline" );
+    m_timelineStartPortIndex = getTimelinePortIndex( "timelineStart" );
+    m_timelineEndPortIndex = getTimelinePortIndex( "timelineEnd" );
+    m_timelineFrameratePortIndex = getTimelinePortIndex( "timelineFramerate" );
+  }
+}
+
+void DFGController::onFrameChanged( int frame )
+{
+  m_timelineFrame = frame;
+  this->setTimelinePortValue( m_timelinePortIndex, m_timelineFrame );
+}
+
+void DFGController::onTimelineRangeChanged( int start, int end )
+{
+  m_timelineStart = start;
+  m_timelineEnd = end;
+  this->setTimelinePortValue( m_timelineStartPortIndex, m_timelineStart );
+  this->setTimelinePortValue( m_timelineEndPortIndex, m_timelineEnd );
+}
+
+void DFGController::onTimelineTargetFramerateChanged( float frameRate )
+{
+  m_timelineFramerate = frameRate;
+  this->setTimelinePortValue( m_timelineFrameratePortIndex, m_timelineFramerate );
+}
+
+void DFGController::setTimelineValuesToGraph()
+{
+  this->setTimelinePortValue( m_timelinePortIndex, m_timelineFrame );
+  this->setTimelinePortValue( m_timelineStartPortIndex, m_timelineStart );
+  this->setTimelinePortValue( m_timelineEndPortIndex, m_timelineEnd );
+  this->setTimelinePortValue( m_timelineFrameratePortIndex, m_timelineFramerate );
+}
