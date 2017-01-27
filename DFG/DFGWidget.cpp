@@ -361,10 +361,6 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  result->addAction(new NewNodeFromJSONAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-   
-  result->addSeparator();
-
   result->addAction(new NewGraphNodeAction              (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
   result->addAction(new NewFunctionNodeAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
   result->addAction(new NewBackdropNodeAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
@@ -759,7 +755,7 @@ void DFGWidget::createNewGraphNode( QPoint const &globalPos )
 void DFGWidget::createNewNodeFromJSON( QPoint const &globalPos )
 {
   QString lastPresetFolder = getSettings()->value("mainWindow/lastPresetFolder").toString();
-  QFileInfo fileInfo(QFileDialog::getOpenFileName(this, "Import node", lastPresetFolder, "*.canvas"));
+  QFileInfo fileInfo(QFileDialog::getOpenFileName(this, "Import graph", lastPresetFolder, "*.canvas"));
   if ( fileInfo.exists() )
   {
     fileInfo.dir().cdUp();

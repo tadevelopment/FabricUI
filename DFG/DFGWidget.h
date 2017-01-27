@@ -1818,40 +1818,6 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
       QPoint m_pos;
     };
-
-    class NewNodeFromJSONAction : public QAction
-    {
-      Q_OBJECT
-
-    public:
-
-      NewNodeFromJSONAction(
-        DFGWidget *dfgWidget,
-        QPoint const &pos,
-        QObject *parent,
-        bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
-        , m_pos( pos )
-      {
-        setText( "Import graph as node" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-      }
-
-    protected slots:
-
-      virtual void onTriggered()
-      {
-        m_dfgWidget->createNewNodeFromJSON( m_pos );
-      }
-
-    protected:
-
-      DFGWidget *m_dfgWidget;
-      QPoint m_pos;
-    };
  
     class NewFunctionNodeAction : public QAction
     {
