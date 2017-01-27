@@ -29,8 +29,8 @@ DFGPEWidget_Elements::DFGPEWidget_Elements(
   , m_dfgWidget( dfgWidget )
   , m_model( NULL )
   , m_ignoreCellChanged( false )
-  , m_plusPixmap( LoadPixmap( "DFGPlus.png" ) )
-  , m_editPixmap( LoadPixmap( "DFGEdit.png" ) )
+  , m_plusPixmap( LoadPixmap( "DFGPlus_small.png" ) )
+  , m_editPixmap( LoadPixmap( "DFGEdit_small.png" ) )
   , m_minusPixmap( LoadPixmap( "DFGMinus.png" ) )
   , m_plusIcon( m_plusPixmap )
   , m_editIcon( m_editPixmap )
@@ -46,6 +46,15 @@ DFGPEWidget_Elements::DFGPEWidget_Elements(
   m_portTypeLabels << "In" << "IO" << "Out";
   setLayout( m_layout );
   setModel( model );
+
+  QAction *duplicateAction =
+    new QAction( parent );
+  connect(
+    duplicateAction, SIGNAL(triggered()),
+    this, SLOT(onDuplicateSelected())
+    );
+  duplicateAction->setShortcut( Qt::CTRL + Qt::Key_D );
+  this->addAction( duplicateAction );
 }
 
 void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
@@ -250,6 +259,32 @@ void DFGPEWidget_Elements::onInspectSelected()
   m_model->inspectElement( selectedIndices[0], m_dfgWidget );
 }
 
+void DFGPEWidget_Elements::onDuplicateSelected()
+{
+  if ( m_model->isReadOnly() )
+    return;
+  QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
+  QList<int> selectedIndices;
+  for ( int i = 0; i < selectedItems.size(); ++i )
+    if ( selectedItems[i]->column() == 0 )
+      selectedIndices << selectedItems[0]->row();
+  m_tableWidget->clearSelection();
+  for ( int i = 0; i < selectedIndices.size(); ++i )
+  {
+    int selectedIndex = selectedIndices[i];
+    int index = m_model->getElementCount();
+    m_model->insertElement(
+      index,
+      m_model->getElementName(selectedIndex),
+      m_model->getElementPortType(selectedIndex),
+      m_model->getElementTypeSpec(selectedIndex)
+      );
+    m_addElementName->selectAll();
+    m_tableWidget->selectRow( index );
+    emit elementAddedThroughUI( index );
+  }
+}
+
 void DFGPEWidget_Elements::onRemoveSelected()
 {
   QList<QTableWidgetItem *> selectedItems = m_tableWidget->selectedItems();
@@ -283,24 +318,36 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
       this, SLOT(onInspectSelected())
       );
     menu.addAction( inspectAction );
-    inspectAction->setEnabled( selectedIndices.size() == 1 );
-  }
+    bool canEdit = (    selectedIndices.size() == 1
+                    && !m_model->isElementReadOnly( selectedIndices[0] ) );
+    inspectAction->setEnabled( canEdit );
 
-  QAction *removeAction =
-    new QAction( m_minusIcon, "Remove Selected", &menu );
-  connect(
-    removeAction, SIGNAL(triggered()),
-    this, SLOT(onRemoveSelected())
-    );
-  menu.addAction( removeAction );
-  bool canRemoveAtLeastOne = false;
-  for ( int i = 0; i < selectedIndices.size(); ++i )
-    if ( !m_model->isElementReadOnly( selectedIndices[i] ) )
-    {
-      canRemoveAtLeastOne = true;
-      break;
-    }
-  removeAction->setEnabled( canRemoveAtLeastOne );
+    QAction *removeAction =
+      new QAction( m_minusIcon, "Delete Selected", &menu );
+    connect(
+      removeAction, SIGNAL(triggered()),
+      this, SLOT(onRemoveSelected())
+      );
+    menu.addAction( removeAction );
+    bool canRemoveAtLeastOne = false;
+    for ( int i = 0; i < selectedIndices.size(); ++i )
+      if ( !m_model->isElementReadOnly( selectedIndices[i] ) )
+      {
+        canRemoveAtLeastOne = true;
+        break;
+      }
+    removeAction->setEnabled( canRemoveAtLeastOne );
+
+    QAction *duplicateAction =
+      new QAction( m_plusIcon, "Duplicate Selected", &menu );
+    connect(
+      duplicateAction, SIGNAL(triggered()),
+      this, SLOT(onDuplicateSelected())
+      );
+    duplicateAction->setShortcut( Qt::CTRL + Qt::Key_D );
+    menu.addAction( duplicateAction );
+    duplicateAction->setEnabled( !m_model->isReadOnly() );
+  }
 
   menu.exec( m_tableWidget->mapToGlobal( pos ) );
 }
@@ -354,7 +401,7 @@ void DFGPEWidget_Elements::onPortInserted(
   QWidget *controlCellWidget;
   if ( m_canInspectElements )
     controlCellWidget =
-      new DFGPEWidget_Elements_ControlCell( index, m_minusIcon, m_editIcon );
+      new DFGPEWidget_Elements_ControlCell( index, m_minusIcon, m_editIcon, m_plusIcon );
   else
     controlCellWidget =
       new DFGPEWidget_Elements_ControlCell( index, m_minusIcon );
@@ -366,6 +413,10 @@ void DFGPEWidget_Elements::onPortInserted(
   connect(
     controlCellWidget, SIGNAL(twoClicked(int)),
     this, SLOT(onInspectRowClicked(int))
+    );
+  connect(
+    controlCellWidget, SIGNAL(threeClicked(int)),
+    this, SLOT(onDuplicateRowClicked(int))
     );
   if ( index == 0 )
     m_tableWidget->setColumnWidth(
@@ -526,6 +577,12 @@ void DFGPEWidget_Elements::onDeleteRowClicked( int row )
   m_model->removeElements( indices );
 }
 
+void DFGPEWidget_Elements::onDuplicateRowClicked( int row )
+{
+  m_tableWidget->selectRow( row );
+  onDuplicateSelected();
+}
+
 void DFGPEWidget_Elements::onAddElementClicked()
 {
   // FE-7961 : Check that the port dataType is valid
@@ -556,6 +613,7 @@ DFGPEWidget_Elements_ControlCell::DFGPEWidget_Elements_ControlCell(
   int row,
   QIcon iconOne,
   QIcon iconTwo,
+  QIcon iconThree,
   QWidget *parent
   )
   : QFrame( parent )
@@ -583,11 +641,25 @@ DFGPEWidget_Elements_ControlCell::DFGPEWidget_Elements_ControlCell(
   }
   else pushButtonTwo = NULL;
 
+  QPushButton *pushButtonThree;
+  if ( !iconThree.isNull() )
+  {
+    pushButtonThree = new QPushButton( iconThree, "" );
+    pushButtonThree->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
+    connect(
+      pushButtonThree, SIGNAL(clicked()),
+      this, SLOT(onThreeClicked())
+      );
+  }
+  else pushButtonThree = NULL;
+
   QHBoxLayout *layout = new QHBoxLayout;
   layout->setContentsMargins( 0, 0, 0, 0 );
   layout->addWidget( pushButtonOne );
   if ( pushButtonTwo )
     layout->addWidget( pushButtonTwo );
+  if ( pushButtonThree )
+    layout->addWidget( pushButtonThree );
 
   setLayout( layout );
 }
@@ -600,6 +672,11 @@ void DFGPEWidget_Elements_ControlCell::onOneClicked()
 void DFGPEWidget_Elements_ControlCell::onTwoClicked()
 {
   emit twoClicked( m_row );
+}
+
+void DFGPEWidget_Elements_ControlCell::onThreeClicked()
+{
+  emit threeClicked( m_row );
 }
 
 DFGPEWidget_Elements_TableWidget::DFGPEWidget_Elements_TableWidget(
