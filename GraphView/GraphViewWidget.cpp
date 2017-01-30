@@ -21,6 +21,7 @@ GraphViewWidget::GraphViewWidget(
   )
   : QGraphicsView(parent)
   , m_altWasHeldAtLastMousePress( false )
+  , m_graphConfig( config )
 {
   setRenderHint(QPainter::Antialiasing);
   // setRenderHint(QPainter::HighQualityAntialiasing);
@@ -34,14 +35,14 @@ GraphViewWidget::GraphViewWidget(
 
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-  setBackgroundBrush(config.mainPanelBackgroundColor);
+  setBackgroundBrush(m_graphConfig.mainPanelBackgroundColor);
 
   setViewportUpdateMode(SmartViewportUpdate);
 
   setAcceptDrops( true );
 
   // use opengl for rendering with multi sampling
-  if(config.useOpenGL)
+  if(m_graphConfig.useOpenGL)
   {
     char const *useCanvasOpenGL = ::getenv( "FABRIC_USE_CANVAS_OPENGL" );
     if ( !!useCanvasOpenGL && !!useCanvasOpenGL[0] )
@@ -164,6 +165,10 @@ bool GraphViewWidget::focusNextPrevChild(bool next)
 {
   // avoid focus switching
   return false;
+}
+
+void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &rect)
+{
 }
 
 GraphViewScene::GraphViewScene( Graph * graph ) {
