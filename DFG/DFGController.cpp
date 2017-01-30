@@ -303,6 +303,16 @@ bool DFGController::validPresetSplit() const
   return false;
 }
 
+std::string DFGController::gvcDoCopy()
+{
+  return copy();
+}
+
+void DFGController::gvcDoPaste()
+{
+  cmdPaste();
+}
+
 bool DFGController::gvcDoRemoveNodes(
   FTL::ArrayRef<GraphView::Node *> nodes
   )

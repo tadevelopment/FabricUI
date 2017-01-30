@@ -51,6 +51,12 @@ namespace FabricUI
       virtual bool beginInteraction();
       virtual bool endInteraction();
 
+      virtual std::string gvcDoCopy(
+        ) = 0;
+
+      virtual void gvcDoPaste(
+        ) = 0;
+
       virtual bool gvcDoRemoveNodes(
         FTL::ArrayRef<GraphView::Node *> nodes
         ) = 0;

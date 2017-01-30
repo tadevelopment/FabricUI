@@ -111,6 +111,12 @@ namespace FabricUI
 
       // Parent virtual functions
 
+      virtual std::string gvcDoCopy(
+        );
+
+      virtual void gvcDoPaste(
+        );
+
       virtual bool gvcDoRemoveNodes(
         FTL::ArrayRef<GraphView::Node *> nodes
         );

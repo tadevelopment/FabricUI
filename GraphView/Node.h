@@ -273,6 +273,7 @@ namespace FabricUI
       bool m_selected;
       int m_dragging;
       bool m_mightSelectUpstreamNodesOnDrag;
+      bool m_duplicateNodesOnDrag;
       Qt::MouseButton m_dragButton;
       QPointF m_mouseDownPos;
       std::vector<Node *> m_nodesToMove;
