@@ -308,9 +308,11 @@ std::string DFGController::gvcDoCopy()
   return copy();
 }
 
-void DFGController::gvcDoPaste()
+void DFGController::gvcDoPaste(
+  bool mapToGraph
+  )
 {
-  cmdPaste();
+  cmdPaste( mapToGraph );
 }
 
 bool DFGController::gvcDoRemoveNodes(
@@ -986,7 +988,7 @@ void DFGController::selectNodes(QList<QString> nodeNames) {
   }
 }
 
-void DFGController::cmdPaste()
+void DFGController::cmdPaste(bool mapToGraph)
 {
   if(!validPresetSplit())
     return;
@@ -997,8 +999,23 @@ void DFGController::cmdPaste()
     QString textToPaste = clipboard->text();
     if ( !textToPaste.isEmpty() )
     {
-      QPointF pos =
-        m_dfgWidget->getGraphViewWidget()->mapToGraph( QCursor::pos() );
+      QPointF pos(0, 0);
+      if ( mapToGraph )
+      {
+        // use mouse position as pos.
+        pos = m_dfgWidget->getGraphViewWidget()->mapToGraph( QCursor::pos() );
+      }
+      else
+      {
+        // use average top left node positions as pos.
+        std::vector<FabricUI::GraphView::Node *> nodes = m_dfgWidget->getGraphViewWidget()->graph()->selectedNodes();
+        if ( nodes.size() > 0 )
+        {
+          for (int i=0;i<nodes.size();i++)
+            pos += nodes[i]->topLeftGraphPos();
+          pos /= (float)nodes.size();
+        }
+      }
 
       // paste.
       QList<QString> pastedNodes =

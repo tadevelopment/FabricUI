@@ -746,7 +746,7 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
     else if ( m_duplicateNodesOnDrag )
     {
       m_graph->controller()->gvcDoCopy();
-      m_graph->controller()->gvcDoPaste();
+      m_graph->controller()->gvcDoPaste( false /* mapToGraph */ );
       updateNodesToMove( false );
       m_duplicateNodesOnDrag = false;
     }

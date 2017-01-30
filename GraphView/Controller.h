@@ -55,6 +55,7 @@ namespace FabricUI
         ) = 0;
 
       virtual void gvcDoPaste(
+        bool mapToGraph = true
         ) = 0;
 
       virtual bool gvcDoRemoveNodes(

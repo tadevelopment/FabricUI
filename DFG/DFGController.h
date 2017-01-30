@@ -115,6 +115,7 @@ namespace FabricUI
         );
 
       virtual void gvcDoPaste(
+        bool mapToGraph = true
         );
 
       virtual bool gvcDoRemoveNodes(
@@ -318,7 +319,7 @@ namespace FabricUI
 
       void cmdCut();
 
-      void cmdPaste();
+      void cmdPaste(bool mapToGraph = true);
 
       void cmdSetArgValue(
         QString argName,
