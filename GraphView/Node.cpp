@@ -679,7 +679,7 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 
     m_mightSelectUpstreamNodesOnDrag = false;
     m_duplicateNodesOnDrag = false;
-    bool clearSelection = false;
+    bool clearSelection = true;
     if (   button == Qt::LeftButton
         && modifiers.testFlag( Qt::ShiftModifier))
     {
