@@ -1010,7 +1010,7 @@ void DFGController::cmdPaste(bool mapPositionToMouseCursor)
         std::vector<FabricUI::GraphView::Node *> nodes = m_dfgWidget->getGraphViewWidget()->graph()->selectedNodes();
         if ( nodes.size() > 0 )
         {
-          for (int i=0;i<nodes.size();i++)
+          for (size_t i=0;i<nodes.size();i++)
             pos += nodes[i]->topLeftGraphPos();
           pos /= (float)nodes.size();
         }
