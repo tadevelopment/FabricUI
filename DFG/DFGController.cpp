@@ -309,10 +309,10 @@ std::string DFGController::gvcDoCopy()
 }
 
 void DFGController::gvcDoPaste(
-  bool mapToGraph
+  bool mapPositionToMouseCursor
   )
 {
-  cmdPaste( mapToGraph );
+  cmdPaste( mapPositionToMouseCursor );
 }
 
 bool DFGController::gvcDoRemoveNodes(
@@ -988,7 +988,7 @@ void DFGController::selectNodes(QList<QString> nodeNames) {
   }
 }
 
-void DFGController::cmdPaste(bool mapToGraph)
+void DFGController::cmdPaste(bool mapPositionToMouseCursor)
 {
   if(!validPresetSplit())
     return;
@@ -1000,9 +1000,8 @@ void DFGController::cmdPaste(bool mapToGraph)
     if ( !textToPaste.isEmpty() )
     {
       QPointF pos(0, 0);
-      if ( mapToGraph )
+      if ( mapPositionToMouseCursor )
       {
-        // use mouse position as pos.
         pos = m_dfgWidget->getGraphViewWidget()->mapToGraph( QCursor::pos() );
       }
       else
