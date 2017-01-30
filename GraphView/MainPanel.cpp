@@ -184,14 +184,20 @@ void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
     setManipulationMode( ManipulationMode_Select );
   }
   else if(   event->button() == Qt::MiddleButton
-         || (event->button() == Qt::LeftButton && event->modifiers().testFlag(Qt::AltModifier))
-    )
+         || (event->button() == Qt::LeftButton &&  event->modifiers().testFlag(Qt::AltModifier)
+                                               && !event->modifiers().testFlag(Qt::ControlModifier)
+                                               && !event->modifiers().testFlag(Qt::ShiftModifier)
+            )
+         )
   {
     setManipulationMode( ManipulationMode_Pan );
     m_lastPanPoint = mapFromScene( event->scenePos() );
     event->accept();
   }
-  else if(event->button() == Qt::RightButton && event->modifiers().testFlag(Qt::AltModifier))
+  else if(event->button() == Qt::RightButton &&  event->modifiers().testFlag(Qt::AltModifier)
+                                             && !event->modifiers().testFlag(Qt::ControlModifier)
+                                             && !event->modifiers().testFlag(Qt::ShiftModifier)
+         )
   {
     setManipulationMode( ManipulationMode_Zoom );
     m_lastPanPoint = mapFromScene( event->scenePos() );
