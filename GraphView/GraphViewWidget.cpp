@@ -164,76 +164,50 @@ bool GraphViewWidget::focusNextPrevChild(bool next)
   return false;
 }
 
-void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &crect)
+void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRect)
 {
+  // prepare.
   painter->save();
+  QRectF rect(rect());
+  GraphView::MainPanel   *mainPanel = graph()->mainPanel();
+  GraphView::GraphConfig &config    = graph()->config();
+  std::vector<QLineF>    &lines     = m_lines;
 
-  painter->fillRect(crect, m_graph->config().mainPanelBackgroundColor);
+  // fill the background.
+  painter->fillRect(rect, config.mainPanelBackgroundColor);
 
+  // draw the grid.
+  if (config.mainPanelDrawGrid)
   {
-    QPointF pan  = m_graph->mainPanel()->canvasPan();
-    qreal   zoom = m_graph->mainPanel()->canvasZoom();
+    // get the view's pan and zoom.
+    QPointF pan  = mainPanel->canvasPan();
+    qreal   zoom = mainPanel->canvasZoom();
 
-    QTransform transform;
-    transform.translate(pan.rx(), pan.ry());
-    transform.scale(zoom, zoom);
-
-    QRectF rect = transform.inverted().mapRect(crect);
-
-    int gridSize = m_graph->config().mainPanelGridSpanS;
-    int left = int(rect.left()) - (int(rect.left()) % gridSize);
-    int top  = int(rect.top())  - (int(rect.top())  % gridSize);
-
-    // todo: allocate this first, the count is fixed
-    std::vector<QLineF> gridLines;
-
-    // Draw horizontal fine lines
-    gridLines.clear();
-    painter->setPen(m_graph->config().mainPanelGridPenS);
-    float y = float(top);
-    while(y < float(rect.bottom()))
+    // draw the grid lines.
+    qreal gridStepMin = config.mainPanelGridSpanS / 3;
+    qreal gridStepMax = config.mainPanelGridSpanS;
+    for (int pass=0;pass<2;pass++)
     {
-      gridLines.push_back(QLineF( rect.left(), y, rect.right(), y ));
-      y += float(gridSize);
-    }
-    painter->drawLines(&gridLines[0], gridLines.size());
+      qreal gridStep = zoom * (pass == 0 ? config.mainPanelGridSpanS : config.mainPanelGridSpanL);
+      if (gridStep > gridStepMin)
+      {
+        lines.clear();
+        qreal x = rect.left() + fmod(pan.rx(), gridStep);
+        qreal y = rect.top()  + fmod(pan.ry(), gridStep);
+        for (;x<rect.right(); x+=gridStep)  lines.push_back(QLineF(x, rect.top(), x, rect.bottom()));
+        for (;y<rect.bottom();y+=gridStep)  lines.push_back(QLineF(rect.left(), y, rect.right(), y));
 
-    // Draw vertical fine lines
-    gridLines.clear();
-    float x = float(left);
-    while(x < float(rect.right()))
-    {
-      gridLines.push_back(QLineF( x, rect.top(), x, rect.bottom() ));
-      x += float(gridSize);
+        // draw lines.
+        QPen pen = (pass == 0 ? config.mainPanelGridPenS : config.mainPanelGridPenL);
+        if (gridStep < gridStepMax)
+          pen.setWidthF(pen.widthF() * (gridStep - gridStepMin) / (gridStepMax - gridStepMin));
+        painter->setPen(pen);
+        painter->drawLines(lines.data(), lines.size());
+      }
     }
-    painter->drawLines(&gridLines[0], gridLines.size());
-
-    gridSize = m_graph->config().mainPanelGridSpanL;
-    left = int(rect.left()) - (int(rect.left()) % gridSize);
-    top =  int(rect.top())  - (int(rect.top())  % gridSize);
-
-    // Draw horizontal thick lines
-    gridLines.clear();
-    painter->setPen(m_graph->config().mainPanelGridPenL);
-    y = float(top);
-    while(y < float(rect.bottom()))
-    {
-      gridLines.push_back(QLineF( rect.left(), y, rect.right(), y ));
-      y += float(gridSize);
-    }
-    painter->drawLines(&gridLines[0], gridLines.size());
-
-    // Draw vertical thick lines
-    gridLines.clear();
-    x = float(left);
-    while(x < float(rect.right()))
-    {
-      gridLines.push_back(QLineF( x, rect.top(), x, rect.bottom() ));
-      x += float(gridSize);
-    }
-    painter->drawLines(&gridLines[0], gridLines.size());
   }
 
+  // clean up.
   painter->restore();
 }
 

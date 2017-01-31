@@ -82,7 +82,7 @@ namespace FabricUI
 
       virtual bool focusNextPrevChild(bool next);
       
-      virtual void drawBackground(QPainter *painter, const QRectF &crect);
+      virtual void drawBackground(QPainter *painter, const QRectF &exposedRect);
 
     private:
 
@@ -90,6 +90,7 @@ namespace FabricUI
       GraphViewScene * m_scene;
       Graph * m_graph;
       bool m_altWasHeldAtLastMousePress;
+      std::vector<QLineF> m_lines;
     };
 
   };
