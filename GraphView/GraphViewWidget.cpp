@@ -21,7 +21,6 @@ GraphViewWidget::GraphViewWidget(
   )
   : QGraphicsView(parent)
   , m_altWasHeldAtLastMousePress( false )
-  , m_graphConfig( config )
 {
   setRenderHint(QPainter::Antialiasing);
   // setRenderHint(QPainter::HighQualityAntialiasing);
@@ -35,14 +34,12 @@ GraphViewWidget::GraphViewWidget(
 
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-  setBackgroundBrush(m_graphConfig.mainPanelBackgroundColor);
-
   setViewportUpdateMode(SmartViewportUpdate);
 
   setAcceptDrops( true );
 
   // use opengl for rendering with multi sampling
-  if(m_graphConfig.useOpenGL)
+  if(config.useOpenGL)
   {
     char const *useCanvasOpenGL = ::getenv( "FABRIC_USE_CANVAS_OPENGL" );
     if ( !!useCanvasOpenGL && !!useCanvasOpenGL[0] )
@@ -167,8 +164,77 @@ bool GraphViewWidget::focusNextPrevChild(bool next)
   return false;
 }
 
-void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &rect)
+void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &crect)
 {
+  painter->save();
+
+  painter->fillRect(crect, m_graph->config().mainPanelBackgroundColor);
+
+  {
+    QPointF pan  = m_graph->mainPanel()->canvasPan();
+    qreal   zoom = m_graph->mainPanel()->canvasZoom();
+
+    QTransform transform;
+    transform.translate(pan.rx(), pan.ry());
+    transform.scale(zoom, zoom);
+
+    QRectF rect = transform.inverted().mapRect(crect);
+
+    int gridSize = m_graph->config().mainPanelGridSpanS;
+    int left = int(rect.left()) - (int(rect.left()) % gridSize);
+    int top  = int(rect.top())  - (int(rect.top())  % gridSize);
+
+    // todo: allocate this first, the count is fixed
+    std::vector<QLineF> gridLines;
+
+    // Draw horizontal fine lines
+    gridLines.clear();
+    painter->setPen(m_graph->config().mainPanelGridPenS);
+    float y = float(top);
+    while(y < float(rect.bottom()))
+    {
+      gridLines.push_back(QLineF( rect.left(), y, rect.right(), y ));
+      y += float(gridSize);
+    }
+    painter->drawLines(&gridLines[0], gridLines.size());
+
+    // Draw vertical fine lines
+    gridLines.clear();
+    float x = float(left);
+    while(x < float(rect.right()))
+    {
+      gridLines.push_back(QLineF( x, rect.top(), x, rect.bottom() ));
+      x += float(gridSize);
+    }
+    painter->drawLines(&gridLines[0], gridLines.size());
+
+    gridSize = m_graph->config().mainPanelGridSpanL;
+    left = int(rect.left()) - (int(rect.left()) % gridSize);
+    top =  int(rect.top())  - (int(rect.top())  % gridSize);
+
+    // Draw horizontal thick lines
+    gridLines.clear();
+    painter->setPen(m_graph->config().mainPanelGridPenL);
+    y = float(top);
+    while(y < float(rect.bottom()))
+    {
+      gridLines.push_back(QLineF( rect.left(), y, rect.right(), y ));
+      y += float(gridSize);
+    }
+    painter->drawLines(&gridLines[0], gridLines.size());
+
+    // Draw vertical thick lines
+    gridLines.clear();
+    x = float(left);
+    while(x < float(rect.right()))
+    {
+      gridLines.push_back(QLineF( x, rect.top(), x, rect.bottom() ));
+      x += float(gridSize);
+    }
+    painter->drawLines(&gridLines[0], gridLines.size());
+  }
+
+  painter->restore();
 }
 
 GraphViewScene::GraphViewScene( Graph * graph ) {
