@@ -198,12 +198,16 @@ void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRec
         for (;x<rect.right(); x+=gridStep)  lines.push_back(QLineF(x, rect.top(), x, rect.bottom()));
         for (;y<rect.bottom();y+=gridStep)  lines.push_back(QLineF(rect.left(), y, rect.right(), y));
 
-        // draw lines.
+        // calculate the pen width for the lines
+        // based on the grid step: the smaller
+        // the grid step the thinner the width.
         qreal penWidth = config.mainPanelGridPen.widthF();
         if (gridStep < gridStepMax)
           penWidth *= 0.5 * (gridStep - gridStepMin) / (gridStepMax - gridStepMin);
         else if (gridStep < 10 * gridStepMax)
           penWidth *= 0.5 + 0.5 * (gridStep - gridStepMax) / (10 * gridStepMax - gridStepMax);
+
+        // draw lines.
         painter->setPen(QPen(config.mainPanelGridPen.color(), penWidth));
         painter->drawLines(lines.data(), lines.size());
       }
