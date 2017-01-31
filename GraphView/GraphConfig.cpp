@@ -92,11 +92,8 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( mainPanelBackgroundColor, QColor(68, 68, 68, 255) );
 
   GET_PARAMETER( mainPanelDrawGrid, true );
-  GET_PARAMETER( mainPanelGridSpanS, 30 );
-  GET_PARAMETER( mainPanelGridSpanL, 300 );
-
-  GET_PARAMETER( mainPanelGridPenS, QPen(QColor(55, 55, 55, 255), 0.5) );
-  GET_PARAMETER( mainPanelGridPenL, QPen(QColor(55, 55, 55, 255), 1.0) );
+  GET_PARAMETER( mainPanelGridSpan, 30 );
+  GET_PARAMETER( mainPanelGridPen, QPen(QColor(55, 55, 55, 255), 1.0) );
 
   GET_PARAMETER( mainPanelBackGroundPanFixed, true );
   

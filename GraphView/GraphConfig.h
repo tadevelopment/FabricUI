@@ -29,10 +29,8 @@ namespace FabricUI
 
       QColor mainPanelBackgroundColor;
       bool mainPanelDrawGrid;
-      int mainPanelGridSpanS;
-      int mainPanelGridSpanL;
-      QPen mainPanelGridPenS;
-      QPen mainPanelGridPenL;
+      int mainPanelGridSpan;
+      QPen mainPanelGridPen;
       bool mainPanelBackGroundPanFixed;
 
       QColor sidePanelBackgroundColor;

@@ -168,10 +168,11 @@ void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRec
 {
   // prepare.
   painter->save();
-  QRectF rect(rect());
   GraphView::MainPanel   *mainPanel = graph()->mainPanel();
   GraphView::GraphConfig &config    = graph()->config();
   std::vector<QLineF>    &lines     = m_lines;
+  QRectF rect(rect());
+  rect.setLeft(graph()->sidePanel(GraphView::PortType_Output)->rect().right());
 
   // fill the background.
   painter->fillRect(rect, config.mainPanelBackgroundColor);
@@ -184,11 +185,11 @@ void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRec
     qreal   zoom = mainPanel->canvasZoom();
 
     // draw the grid lines.
-    qreal gridStepMin = config.mainPanelGridSpanS / 3;
-    qreal gridStepMax = config.mainPanelGridSpanS;
+    qreal gridStepMin = config.mainPanelGridSpan / 4;
+    qreal gridStepMax = config.mainPanelGridSpan;
     for (int pass=0;pass<2;pass++)
     {
-      qreal gridStep = zoom * (pass == 0 ? config.mainPanelGridSpanS : config.mainPanelGridSpanL);
+      qreal gridStep = zoom * (pass == 0 ? 1 : 10) * config.mainPanelGridSpan;
       if (gridStep > gridStepMin)
       {
         lines.clear();
@@ -198,10 +199,12 @@ void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRec
         for (;y<rect.bottom();y+=gridStep)  lines.push_back(QLineF(rect.left(), y, rect.right(), y));
 
         // draw lines.
-        QPen pen = (pass == 0 ? config.mainPanelGridPenS : config.mainPanelGridPenL);
+        qreal penWidth = config.mainPanelGridPen.widthF();
         if (gridStep < gridStepMax)
-          pen.setWidthF(pen.widthF() * (gridStep - gridStepMin) / (gridStepMax - gridStepMin));
-        painter->setPen(pen);
+          penWidth *= 0.5 * (gridStep - gridStepMin) / (gridStepMax - gridStepMin);
+        else if (gridStep < 10 * gridStepMax)
+          penWidth *= 0.5 + 0.5 * (gridStep - gridStepMax) / (10 * gridStepMax - gridStepMax);
+        painter->setPen(QPen(config.mainPanelGridPen.color(), penWidth));
         painter->drawLines(lines.data(), lines.size());
       }
     }
