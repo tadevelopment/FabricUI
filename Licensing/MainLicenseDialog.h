@@ -35,8 +35,6 @@ public:
 
     setLayout( new QVBoxLayout() );
 
-    setLayout( new QVBoxLayout() );
-
     QTextBrowser *info = new QTextBrowser( this );
     info->setReadOnly( true );
     info->setFrameStyle( QFrame::NoFrame );
