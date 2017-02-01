@@ -277,6 +277,7 @@ namespace FabricUI
       Qt::MouseButton m_dragButton;
       QPointF m_mouseDownPos;
       std::vector<Node *> m_nodesToMove;
+      std::vector<QPointF> m_nodesToMoveOriginalPos;
 
       std::vector<Pin*> m_pins;
       int m_row;

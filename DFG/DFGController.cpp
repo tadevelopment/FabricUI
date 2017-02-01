@@ -1987,36 +1987,43 @@ QList<QString> DFGController::cmdExplodeNode(
 
 void DFGController::gvcDoMoveNodes(
   std::vector<GraphView::Node *> const &nodes,
+  std::vector<QPointF> const &nodesOriginalPos,
   QPointF delta,
   bool allowUndo
   )
 {
+  if (   nodes.size() == 0
+      || nodes.size() != nodesOriginalPos.size() )
+    return;
+
   if ( allowUndo )
   {
     QStringList nodeNames;
     QList<QPointF> newTopLeftPoss;
     nodeNames.reserve( nodes.size() );
     newTopLeftPoss.reserve( nodes.size() );
+    int i = 0;
     for ( std::vector<GraphView::Node *>::const_iterator it = nodes.begin();
-      it != nodes.end(); ++it )
+      it != nodes.end(); ++it, ++i )
     {
       GraphView::Node *node = *it;
       FTL::CStrRef nodeName = node->name();
       nodeNames.append( QString::fromUtf8( nodeName.data(), nodeName.size() ) );
-      newTopLeftPoss.append( node->topLeftGraphPos() + delta );
+      newTopLeftPoss.append( nodesOriginalPos[i] + delta );
     }
 
     cmdMoveNodes( nodeNames, newTopLeftPoss );
   }
   else
   {
+    int i = 0;
     for ( std::vector<GraphView::Node *>::const_iterator it = nodes.begin();
-      it != nodes.end(); ++it )
+      it != nodes.end(); ++it, ++i )
     {
       GraphView::Node *node = *it;
       FTL::CStrRef nodeName = node->name();
 
-      QPointF newPos = node->topLeftGraphPos() + delta;
+      QPointF newPos = nodesOriginalPos[i] + delta;
 
       std::string newPosJSON;
       {

@@ -739,10 +739,13 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
 {
   if ( m_dragging > 0 )
   {
-    m_dragging = 2;
-
-    QPointF delta = event->scenePos() - event->lastScenePos();
-    delta *= 1.0f / graph()->mainPanel()->canvasZoom();
+    if (m_dragging == 1)
+    {
+      m_nodesToMoveOriginalPos.resize(m_nodesToMove.size());
+      for (size_t i=0;i<m_nodesToMove.size();i++)
+        m_nodesToMoveOriginalPos[i] = m_nodesToMove[i]->topLeftGraphPos();
+      m_dragging = 2;
+    }
 
     if ( m_mightSelectUpstreamNodesOnDrag )
     {
@@ -758,8 +761,11 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
       m_duplicateNodesOnDrag = false;
     }
 
+    QPointF delta = event->scenePos() - m_mouseDownPos;
+    delta *= 1.0f / graph()->mainPanel()->canvasZoom();
     m_graph->controller()->gvcDoMoveNodes(
       m_nodesToMove,
+      m_nodesToMoveOriginalPos,
       delta,
       false // allowUndo
       );
@@ -778,22 +784,22 @@ bool Node::onMouseRelease( const QGraphicsSceneMouseEvent *event )
       emit positionChanged(this, graphPos());
     else
     {
-      QPointF delta;
+      QPointF delta(0, 0);
 
-      delta = m_mouseDownPos - event->lastScenePos();
-      delta *= 1.0f / graph()->mainPanel()->canvasZoom();
-
+      // move nodes to their original positions.
       m_graph->controller()->gvcDoMoveNodes(
         m_nodesToMove,
+        m_nodesToMoveOriginalPos,
         delta,
         false // allowUndo
         );
 
+      // move nodes to their final positions.
       delta = event->scenePos() - m_mouseDownPos;
       delta *= 1.0f / graph()->mainPanel()->canvasZoom();
-
       m_graph->controller()->gvcDoMoveNodes(
         m_nodesToMove,
+        m_nodesToMoveOriginalPos,
         delta,
         true // allowUndo
         );
@@ -801,6 +807,7 @@ bool Node::onMouseRelease( const QGraphicsSceneMouseEvent *event )
 
     m_dragging = 0;
     m_nodesToMove.clear();
+    m_nodesToMoveOriginalPos.clear();
 
     return true;
   }

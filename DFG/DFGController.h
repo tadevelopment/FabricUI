@@ -164,6 +164,7 @@ namespace FabricUI
 
       virtual void gvcDoMoveNodes(
         std::vector<GraphView::Node *> const &nodes,
+        std::vector<QPointF> const &nodesOriginalPos,
         QPointF delta,
         bool allowUndo
         );
