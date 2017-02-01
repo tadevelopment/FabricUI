@@ -764,11 +764,12 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
 
     QPointF delta = event->scenePos() - m_mouseDownPos;
     delta *= 1.0f / graph()->mainPanel()->canvasZoom();
+    float gridSnapSize = (graph()->config().mainPanelGridSnap ? graph()->config().mainPanelGridSnapSize : 0);
     graph()->controller()->gvcDoMoveNodes(
       m_nodesToMove,
       m_nodesToMoveOriginalPos,
       delta,
-      graph()->config().mainPanelGridSnapSize,
+      gridSnapSize,
       false // allowUndo
       );
 
@@ -800,11 +801,12 @@ bool Node::onMouseRelease( const QGraphicsSceneMouseEvent *event )
       // move nodes to their final positions.
       delta = event->scenePos() - m_mouseDownPos;
       delta *= 1.0f / graph()->mainPanel()->canvasZoom();
+      float gridSnapSize = (graph()->config().mainPanelGridSnap ? graph()->config().mainPanelGridSnapSize : 0);
       graph()->controller()->gvcDoMoveNodes(
         m_nodesToMove,
         m_nodesToMoveOriginalPos,
         delta,
-        graph()->config().mainPanelGridSnapSize,
+        gridSnapSize,
         true // allowUndo
         );
     }

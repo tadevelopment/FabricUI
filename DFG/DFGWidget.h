@@ -154,6 +154,8 @@ namespace DFG {
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
       void onToggleDimConnections();
       void onTogglePortsCentered();
+      void onToggleDrawGrid();
+      void onToggleSnapToGrid();
       void onEditSelectedNode();
       void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);

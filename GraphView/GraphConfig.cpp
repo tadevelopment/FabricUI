@@ -93,6 +93,7 @@ GraphConfig::GraphConfig()
 
   GET_PARAMETER( mainPanelDrawGrid, true );
   GET_PARAMETER( mainPanelGridSpan, 30 );
+  GET_PARAMETER( mainPanelGridSnap, false );
   GET_PARAMETER( mainPanelGridSnapSize, 10 );
   GET_PARAMETER( mainPanelGridPen, QPen(QColor(55, 55, 55, 255), 1.0) );
 

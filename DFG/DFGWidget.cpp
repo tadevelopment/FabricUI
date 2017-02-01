@@ -1738,6 +1738,17 @@ void DFGWidget::onTogglePortsCentered()
   if(getSettings()) getSettings()->setValue( "DFGWidget/portsCentered", m_uiGraph->config().portsCentered );
 }
 
+void DFGWidget::onToggleDrawGrid()
+{
+  m_uiGraph->config().mainPanelDrawGrid = !m_uiGraph->config().mainPanelDrawGrid;
+  m_uiGraph->update();
+}
+
+void DFGWidget::onToggleSnapToGrid()
+{
+  m_uiGraph->config().mainPanelGridSnap = !m_uiGraph->config().mainPanelGridSnap;
+}
+
 bool DFGWidget::maybeEditNode(
   FabricUI::GraphView::Node * node
   )
@@ -2189,15 +2200,25 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
   QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
   editMenu->addAction(pasteNodesAction);
 
-  // view menu
-  QAction * dimLinesAction = viewMenu->addAction("Dim Connections");
+  // view -> view graph menu
+  QMenu *graphViewMenu = viewMenu->addMenu(tr("View Graph"));
+  QAction * dimLinesAction = graphViewMenu->addAction("Dim Connections");
   dimLinesAction->setCheckable(true);
   dimLinesAction->setChecked(m_uiGraph->config().dimConnectionLines);
   QObject::connect(dimLinesAction, SIGNAL(triggered()), this, SLOT(onToggleDimConnections()));
-  QAction * portsCenteredAction = viewMenu->addAction("Side Ports Centered");
+  QAction * portsCenteredAction = graphViewMenu->addAction("Side Ports Centered");
   portsCenteredAction->setCheckable(true);
   portsCenteredAction->setChecked(m_uiGraph->config().portsCentered);
   QObject::connect(portsCenteredAction, SIGNAL(triggered()), this, SLOT(onTogglePortsCentered()));
+  graphViewMenu->addSeparator();
+  QAction * displayGrid = graphViewMenu->addAction("Display Grid");
+  displayGrid->setCheckable(true);
+  displayGrid->setChecked(m_uiGraph->config().mainPanelDrawGrid);
+  QObject::connect(displayGrid, SIGNAL(triggered()), this, SLOT(onToggleDrawGrid()));
+  QAction * snapToGrid = graphViewMenu->addAction("Snap to Grid");
+  snapToGrid->setCheckable(true);
+  snapToGrid->setChecked(m_uiGraph->config().mainPanelGridSnap);
+  QObject::connect(snapToGrid, SIGNAL(triggered()), this, SLOT(onToggleSnapToGrid()));
 
   // emit the suffix menu entry requests
   emit additionalMenuActionsRequested("Edit", editMenu, false);
