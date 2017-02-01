@@ -12,6 +12,8 @@
 #include <QTextBrowser>
 #include <QVBoxLayout>
 
+#include <FabricUI/Util/LoadFabricStyleSheet.h>
+
 class LastWarningDialog : public QDialog
 {
   Q_OBJECT
@@ -24,6 +26,10 @@ public:
     setWindowModality( Qt::ApplicationModal );
     setWindowTitle( "Fabric Licensing" );
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
+    if ( !styleSheet.isEmpty() )
+      setStyleSheet( styleSheet );
 
     setLayout( new QVBoxLayout() );
 
