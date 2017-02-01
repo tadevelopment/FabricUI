@@ -679,29 +679,36 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 
     m_mightSelectUpstreamNodesOnDrag = false;
     m_duplicateNodesOnDrag = false;
-    bool clearSelection = true;
-    if (   button == Qt::LeftButton
-        && modifiers.testFlag( Qt::ShiftModifier))
+    bool clearSelection = false;
+    if (button == Qt::LeftButton)
     {
-      if (modifiers.testFlag( Qt::ControlModifier))
+      if (   modifiers.testFlag( Qt::ShiftModifier)
+          && modifiers.testFlag( Qt::ControlModifier))
       {
-        m_duplicateNodesOnDrag = true;
-        clearSelection = !hitNode->selected();
+          m_duplicateNodesOnDrag = true;
+          clearSelection = !hitNode->selected();
       }
-      else
+      else if (modifiers.testFlag( Qt::ShiftModifier))
       {
         if ( selected() )
           hitNode->selectUpStreamNodes();
         else
           m_mightSelectUpstreamNodesOnDrag = true;
       }
+      else if (modifiers.testFlag( Qt::ControlModifier))
+      {
+      }
+      else
+      {
+        clearSelection = true;
+      }
     }
-    else if(button == Qt::RightButton)
+    else if (button == Qt::RightButton)
     {
       clearSelection = !hitNode->selected();
     }
 
-    m_dragging = button == Qt::RightButton ? 0 : 1;
+    m_dragging = (button == Qt::RightButton ? 0 : 1);
 
     if (!hitNode->selected())
     {
