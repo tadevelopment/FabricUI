@@ -1742,11 +1742,13 @@ void DFGWidget::onToggleDrawGrid()
 {
   m_uiGraph->config().mainPanelDrawGrid = !m_uiGraph->config().mainPanelDrawGrid;
   m_uiGraph->update();
+  if(getSettings()) getSettings()->setValue( "DFGWidget/mainPanelDrawGrid", m_uiGraph->config().mainPanelDrawGrid );
 }
 
 void DFGWidget::onToggleSnapToGrid()
 {
   m_uiGraph->config().mainPanelGridSnap = !m_uiGraph->config().mainPanelGridSnap;
+  if(getSettings()) getSettings()->setValue( "DFGWidget/mainPanelGridSnap", m_uiGraph->config().mainPanelGridSnap );
 }
 
 bool DFGWidget::maybeEditNode(
@@ -2262,6 +2264,8 @@ void DFGWidget::onExecChanged()
     {
       m_uiGraph->config().dimConnectionLines = getSettings()->value( "DFGWidget/dimConnectionLines").toBool();
       m_uiGraph->config().portsCentered = getSettings()->value( "DFGWidget/portsCentered").toBool();
+      m_uiGraph->config().mainPanelDrawGrid = getSettings()->value( "DFGWidget/mainPanelDrawGrid").toBool();
+      m_uiGraph->config().mainPanelGridSnap = getSettings()->value( "DFGWidget/mainPanelGridSnap").toBool();
     }
     m_uiGraph->initialize();
 
