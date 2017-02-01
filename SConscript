@@ -4,19 +4,25 @@
 
 import os, subprocess
 Import(
-  'buildOS',
+  'allServicesLibFiles',
   'buildArch',
+  'buildOS',
   'buildType',
-  'parentEnv',
-  'fabricFlags',
-  'qtFlags',
-  'qtMOC',
-  'uiLibPrefix',
-  'qtDir',
-  'stageDir',
-  'pythonConfigs',
+  'capiSharedFiles',
   'capiSharedLibFlags',
   'corePythonModuleFiles',
+  'dfgSamples',
+  'extraDFGPresets',
+  'fabricFlags',
+  'parentEnv',
+  'pythonConfigs',
+  'qtDir',
+  'qtFlags',
+  'qtInstalledLibs',
+  'qtMOC',
+  'splitSearchFiles',
+  'stageDir',
+  'uiLibPrefix',
   )
 
 if buildOS == 'Windows' and buildType == 'Debug':
@@ -529,6 +535,14 @@ if uiLibPrefix == 'ui':
       
   pysideEnv.Alias('pysideGen', pysideGens)
   pysideEnv.Alias('pyside', installedPySideLibs)
-  pysideEnv.Alias('canvas.py', installedPySideLibs)
+  pysideEnv.Alias('canvas.py', [
+    installedPySideLibs,
+    capiSharedFiles,
+    extraDFGPresets,
+    splitSearchFiles,
+    dfgSamples,
+    qtInstalledLibs,
+    allServicesLibFiles,
+    ])
 
 Return('uiFiles')
