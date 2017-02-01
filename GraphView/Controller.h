@@ -106,6 +106,7 @@ namespace FabricUI
         std::vector<Node *> const &nodes,
         std::vector<QPointF> const &nodesOriginalPos,
         QPointF delta,
+        float gridSnapSize,
         bool allowUndo
         ) = 0;
 

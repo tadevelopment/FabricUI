@@ -3,6 +3,7 @@
 #include <FabricUI/GraphView/BackDropNode.h>
 #include <FabricUI/GraphView/BlockRectangle.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/GraphConfig.h>
 #include <FabricUI/GraphView/HighlightEffect.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/Node.h>
@@ -767,6 +768,7 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
       m_nodesToMove,
       m_nodesToMoveOriginalPos,
       delta,
+      graph()->config().mainPanelGridSnapSize,
       false // allowUndo
       );
 
@@ -791,6 +793,7 @@ bool Node::onMouseRelease( const QGraphicsSceneMouseEvent *event )
         m_nodesToMove,
         m_nodesToMoveOriginalPos,
         delta,
+        0 /* no grid snapping here */,
         false // allowUndo
         );
 
@@ -801,6 +804,7 @@ bool Node::onMouseRelease( const QGraphicsSceneMouseEvent *event )
         m_nodesToMove,
         m_nodesToMoveOriginalPos,
         delta,
+        graph()->config().mainPanelGridSnapSize,
         true // allowUndo
         );
     }

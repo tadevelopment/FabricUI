@@ -166,6 +166,7 @@ namespace FabricUI
         std::vector<GraphView::Node *> const &nodes,
         std::vector<QPointF> const &nodesOriginalPos,
         QPointF delta,
+        float gridSnapSize,
         bool allowUndo
         );
 

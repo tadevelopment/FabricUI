@@ -1989,12 +1989,24 @@ void DFGController::gvcDoMoveNodes(
   std::vector<GraphView::Node *> const &nodes,
   std::vector<QPointF> const &nodesOriginalPos,
   QPointF delta,
+  float gridSnapSize,
   bool allowUndo
   )
 {
   if (   nodes.size() == 0
       || nodes.size() != nodesOriginalPos.size() )
     return;
+
+  if (nodes.size() > 1 && gridSnapSize > 0)
+  {
+    // if two or more nodes are being moved
+    // then we apply the grid snapping to the
+    // delta instead of applying it to each
+    // node.
+    delta.setX( gridSnapSize * round(delta.rx() / gridSnapSize) );
+    delta.setY( gridSnapSize * round(delta.ry() / gridSnapSize) );
+    gridSnapSize = 0;
+  }
 
   if ( allowUndo )
   {
@@ -2009,9 +2021,15 @@ void DFGController::gvcDoMoveNodes(
       GraphView::Node *node = *it;
       FTL::CStrRef nodeName = node->name();
       nodeNames.append( QString::fromUtf8( nodeName.data(), nodeName.size() ) );
-      newTopLeftPoss.append( nodesOriginalPos[i] + delta );
+      QPointF newPos = nodesOriginalPos[i] + delta;
+      if (gridSnapSize > 0)
+      {
+        newPos.setX( gridSnapSize * round(newPos.rx() / gridSnapSize) );
+        newPos.setY( gridSnapSize * round(newPos.ry() / gridSnapSize) );
+      }
+      newTopLeftPoss.append( newPos );
     }
-
+    
     cmdMoveNodes( nodeNames, newTopLeftPoss );
   }
   else
@@ -2022,9 +2040,12 @@ void DFGController::gvcDoMoveNodes(
     {
       GraphView::Node *node = *it;
       FTL::CStrRef nodeName = node->name();
-
       QPointF newPos = nodesOriginalPos[i] + delta;
-
+      if (gridSnapSize > 0)
+      {
+        newPos.setX( gridSnapSize * round(newPos.rx() / gridSnapSize) );
+        newPos.setY( gridSnapSize * round(newPos.ry() / gridSnapSize) );
+      }
       std::string newPosJSON;
       {
         FTL::JSONEnc<> enc( newPosJSON );
