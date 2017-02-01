@@ -39,6 +39,7 @@ Node::Node(
   , m_header( NULL )
   , m_mainWidget( NULL )
   , m_mightSelectUpstreamNodesOnDrag( false )
+  , m_duplicateNodesOnDrag( false )
   , m_canEdit( false )
   , m_isHighlighted( false )
 {
@@ -654,8 +655,8 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 
   Qt::MouseButton button = event->button();
 
-  if ( button == Qt::LeftButton
-    || button == Qt::RightButton )
+  if (   button == Qt::LeftButton
+      || button == Qt::RightButton )
   {
     m_dragButton = button;
     m_mouseDownPos = event->scenePos();
@@ -676,19 +677,24 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
       }
     }
 
+    m_mightSelectUpstreamNodesOnDrag = false;
+    m_duplicateNodesOnDrag = false;
     bool clearSelection = true;
-    if (
-      button == Qt::LeftButton &&
-      modifiers.testFlag( Qt::ShiftModifier )
-    )
+    if (   button == Qt::LeftButton
+        && modifiers.testFlag( Qt::ShiftModifier))
     {
-      // Select upstream nodes if the Node is already selected,
-      // or if dragging with Shift pressed (see Node::onMouseMove)
-      m_mightSelectUpstreamNodesOnDrag = false;
-      if( selected() )
-        hitNode->selectUpStreamNodes();
+      if (modifiers.testFlag( Qt::ControlModifier))
+      {
+        m_duplicateNodesOnDrag = true;
+        clearSelection = !hitNode->selected();
+      }
       else
-        m_mightSelectUpstreamNodesOnDrag = true;
+      {
+        if ( selected() )
+          hitNode->selectUpStreamNodes();
+        else
+          m_mightSelectUpstreamNodesOnDrag = true;
+      }
     }
     else if(button == Qt::RightButton)
     {
@@ -697,17 +703,19 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 
     m_dragging = button == Qt::RightButton ? 0 : 1;
 
-    if(!hitNode->selected())
+    if (!hitNode->selected())
     {
       m_graph->controller()->beginInteraction();
 
-      if(clearSelection && !modifiers.testFlag(Qt::ControlModifier) && !modifiers.testFlag(Qt::ShiftModifier))
+      if(clearSelection)
         m_graph->controller()->clearSelection();
       m_graph->controller()->selectNode(hitNode, true);
 
       m_graph->controller()->endInteraction();
     }
-    else if(modifiers.testFlag(Qt::ControlModifier))
+    else if (    modifiers.testFlag(Qt::ControlModifier)
+             && !modifiers.testFlag(Qt::ShiftModifier)
+            )
     {
       m_graph->controller()->selectNode(hitNode, false);
     }
@@ -729,15 +737,18 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
     QPointF delta = event->scenePos() - event->lastScenePos();
     delta *= 1.0f / graph()->mainPanel()->canvasZoom();
 
-    // If starting to drag with Shift, select upstream Nodes
-    if( m_mightSelectUpstreamNodesOnDrag )
+    if ( m_mightSelectUpstreamNodesOnDrag )
     {
-      if( event->modifiers().testFlag( Qt::ShiftModifier ) )
-      {
-        selectUpStreamNodes();
-        updateNodesToMove( false );
-      }
+      selectUpStreamNodes();
+      updateNodesToMove( false );
       m_mightSelectUpstreamNodesOnDrag = false;
+    }
+    else if ( m_duplicateNodesOnDrag )
+    {
+      m_graph->controller()->gvcDoCopy();
+      m_graph->controller()->gvcDoPaste( false /* mapToGraph */ );
+      updateNodesToMove( false );
+      m_duplicateNodesOnDrag = false;
     }
 
     m_graph->controller()->gvcDoMoveNodes(

@@ -111,6 +111,13 @@ namespace FabricUI
 
       // Parent virtual functions
 
+      virtual std::string gvcDoCopy(
+        );
+
+      virtual void gvcDoPaste(
+        bool mapPositionToMouseCursor = true
+        );
+
       virtual bool gvcDoRemoveNodes(
         FTL::ArrayRef<GraphView::Node *> nodes
         );
@@ -312,7 +319,7 @@ namespace FabricUI
 
       void cmdCut();
 
-      void cmdPaste();
+      void cmdPaste(bool mapPositionToMouseCursor = true);
 
       void cmdSetArgValue(
         QString argName,
