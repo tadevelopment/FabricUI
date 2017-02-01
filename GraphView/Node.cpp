@@ -44,11 +44,11 @@ Node::Node(
   , m_canEdit( false )
   , m_isHighlighted( false )
 {
-  m_defaultPen = m_graph->config().nodeDefaultPen;
-  m_selectedPen = m_graph->config().nodeSelectedPen;
-  m_errorPen = m_graph->config().nodeErrorPen;
-  m_cornerRadius = m_graph->config().nodeCornerRadius;
-  m_pinRadius = m_graph->config().pinRadius;
+  m_defaultPen = graph()->config().nodeDefaultPen;
+  m_selectedPen = graph()->config().nodeSelectedPen;
+  m_errorPen = graph()->config().nodeErrorPen;
+  m_cornerRadius = graph()->config().nodeCornerRadius;
+  m_pinRadius = graph()->config().pinRadius;
   m_collapsedState = CollapseState_Expanded;
   m_col = 0;
   m_alwaysShowDaisyChainPorts = false;
@@ -56,13 +56,13 @@ Node::Node(
   if(color.isValid())
     setColor(color);
   else
-    setColor(m_graph->config().nodeDefaultColor);
+    setColor(graph()->config().nodeDefaultColor);
   if(titleColor.isValid())
     setTitleColor(titleColor);
   else
-    setTitleColor(m_graph->config().nodeDefaultLabelColor);
+    setTitleColor(graph()->config().nodeDefaultLabelColor);
 
-  float contentMargins = m_graph->config().nodeContentMargins;
+  float contentMargins = graph()->config().nodeContentMargins;
 
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
@@ -70,8 +70,8 @@ Node::Node(
     m_mainWidget = new BlockRectangle( this );
   else
     m_mainWidget = new NodeRectangle( this );
-  m_mainWidget->setMinimumWidth(m_graph->config().nodeMinWidth);
-  m_mainWidget->setMinimumHeight(m_graph->config().nodeMinHeight);
+  m_mainWidget->setMinimumWidth(graph()->config().nodeMinWidth);
+  m_mainWidget->setMinimumHeight(graph()->config().nodeMinHeight);
   m_mainWidget->setSizePolicy(
     QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding)
     );
@@ -96,7 +96,7 @@ Node::Node(
   if ( !isBackDropNode() )
   {
     QObject::connect(m_header, SIGNAL(headerButtonTriggered(FabricUI::GraphView::NodeHeaderButton*)), 
-      m_graph->controller(), SLOT(onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderButton*)));
+      graph()->controller(), SLOT(onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderButton*)));
   }
 
   m_pinsWidget = new QGraphicsWidget(m_mainWidget);
@@ -105,8 +105,8 @@ Node::Node(
 
   m_pinsLayout = new QGraphicsLinearLayout();
   m_pinsLayout->setOrientation(Qt::Vertical);
-  m_pinsLayout->setContentsMargins(0, m_graph->config().nodeSpaceAbovePorts, 0, m_graph->config().nodeSpaceBelowPorts);
-  m_pinsLayout->setSpacing(m_graph->config().nodePinSpacing);
+  m_pinsLayout->setContentsMargins(0, graph()->config().nodeSpaceAbovePorts, 0, graph()->config().nodeSpaceBelowPorts);
+  m_pinsLayout->setSpacing(graph()->config().nodePinSpacing);
   m_pinsWidget->setLayout(m_pinsLayout);
 
   m_selected = false;
@@ -177,7 +177,7 @@ void Node::setColorAsGradient(QColor a, QColor b)
 {
   m_colorA = a;
   m_colorB = b;
-  if ( m_graph->config().nodeDefaultPenUsesNodeColor )
+  if ( graph()->config().nodeDefaultPenUsesNodeColor )
     m_defaultPen.setBrush(m_colorB.darker());
   if ( m_mainWidget )
     m_mainWidget->update();
@@ -227,7 +227,7 @@ void Node::setCollapsedState(Node::CollapseState state)
   if(m_collapsedState == state)
     return;
   m_collapsedState = state;
-  if(!m_graph->config().nodeHeaderAlwaysShowPins)
+  if(!graph()->config().nodeHeaderAlwaysShowPins)
     m_header->setCirclesVisible(state != CollapseState_Expanded);
   m_header->setHeaderButtonState("node_collapse", (int)m_collapsedState);
   updatePinLayout();
@@ -247,9 +247,9 @@ void Node::setSelected(bool state, bool quiet)
   {
     emit selectionChanged(this, m_selected);
     if(m_selected)
-      emit m_graph->nodeSelected(this);
+      emit graph()->nodeSelected(this);
     else
-      emit m_graph->nodeDeselected(this);
+      emit graph()->nodeDeselected(this);
   }
   updateEffect();
   update();
@@ -288,7 +288,7 @@ void Node::setTopLeftGraphPos(QPointF pos, bool quiet)
   if ( !quiet )
   {
     emit positionChanged( this, graphPos() );
-    emit m_graph->nodeMoved( this, graphPos() );
+    emit graph()->nodeMoved( this, graphPos() );
   }
 }
 
@@ -607,12 +607,12 @@ void Node::selectUpStreamNodes()
   std::vector<Node*> nodes = upStreamNodes();
 
   for ( size_t i = 0; i<nodes.size(); i++ )
-    m_graph->controller()->selectNode( nodes[i], true );
+    graph()->controller()->selectNode( nodes[i], true );
 }
 
 void Node::updateNodesToMove( bool backdrops )
 {
-  m_nodesToMove = m_graph->selectedNodes();
+  m_nodesToMove = graph()->selectedNodes();
   if ( backdrops )
   {
     std::vector<Node *> additionalNodes;
@@ -713,19 +713,19 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 
     if (!hitNode->selected())
     {
-      m_graph->controller()->beginInteraction();
+      graph()->controller()->beginInteraction();
 
       if(clearSelection)
-        m_graph->controller()->clearSelection();
-      m_graph->controller()->selectNode(hitNode, true);
+        graph()->controller()->clearSelection();
+      graph()->controller()->selectNode(hitNode, true);
 
-      m_graph->controller()->endInteraction();
+      graph()->controller()->endInteraction();
     }
     else if (    modifiers.testFlag(Qt::ControlModifier)
              && !modifiers.testFlag(Qt::ShiftModifier)
             )
     {
-      m_graph->controller()->selectNode(hitNode, false);
+      graph()->controller()->selectNode(hitNode, false);
     }
 
     updateNodesToMove( !modifiers.testFlag( Qt::ShiftModifier ) );
@@ -756,15 +756,15 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
     }
     else if ( m_duplicateNodesOnDrag )
     {
-      m_graph->controller()->gvcDoCopy();
-      m_graph->controller()->gvcDoPaste( false /* mapToGraph */ );
+      graph()->controller()->gvcDoCopy();
+      graph()->controller()->gvcDoPaste( false /* mapToGraph */ );
       updateNodesToMove( false );
       m_duplicateNodesOnDrag = false;
     }
 
     QPointF delta = event->scenePos() - m_mouseDownPos;
     delta *= 1.0f / graph()->mainPanel()->canvasZoom();
-    m_graph->controller()->gvcDoMoveNodes(
+    graph()->controller()->gvcDoMoveNodes(
       m_nodesToMove,
       m_nodesToMoveOriginalPos,
       delta,
@@ -789,7 +789,7 @@ bool Node::onMouseRelease( const QGraphicsSceneMouseEvent *event )
       QPointF delta(0, 0);
 
       // move nodes to their original positions.
-      m_graph->controller()->gvcDoMoveNodes(
+      graph()->controller()->gvcDoMoveNodes(
         m_nodesToMove,
         m_nodesToMoveOriginalPos,
         delta,
@@ -800,7 +800,7 @@ bool Node::onMouseRelease( const QGraphicsSceneMouseEvent *event )
       // move nodes to their final positions.
       delta = event->scenePos() - m_mouseDownPos;
       delta *= 1.0f / graph()->mainPanel()->canvasZoom();
-      m_graph->controller()->gvcDoMoveNodes(
+      graph()->controller()->gvcDoMoveNodes(
         m_nodesToMove,
         m_nodesToMoveOriginalPos,
         delta,
