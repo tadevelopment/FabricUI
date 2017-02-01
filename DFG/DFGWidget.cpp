@@ -2202,8 +2202,8 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
   QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
   editMenu->addAction(pasteNodesAction);
 
-  // view -> view graph menu
-  QMenu *graphViewMenu = viewMenu->addMenu(tr("View Graph"));
+  // view -> graph view menu
+  QMenu *graphViewMenu = viewMenu->addMenu(tr("Graph View"));
   QAction * dimLinesAction = graphViewMenu->addAction("Dim Connections");
   dimLinesAction->setCheckable(true);
   dimLinesAction->setChecked(m_uiGraph->config().dimConnectionLines);
