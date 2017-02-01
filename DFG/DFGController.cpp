@@ -31,6 +31,8 @@
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
 
+#include <math.h>
+
 using namespace FabricServices;
 using namespace FabricUI;
 using namespace FabricUI::DFG;
