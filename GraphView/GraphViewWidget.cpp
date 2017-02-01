@@ -11,6 +11,7 @@
 #endif
 
 #include <stdlib.h>
+#include <math.h>
 
 using namespace FabricUI::GraphView;
 
@@ -171,7 +172,7 @@ void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRec
   GraphView::MainPanel   *mainPanel = graph()->mainPanel();
   GraphView::GraphConfig &config    = graph()->config();
   std::vector<QLineF>    &lines     = m_lines;
-  QRectF rect(rect());
+  QRectF rect = this->rect();
   rect.setLeft(graph()->sidePanel(GraphView::PortType_Output)->rect().right());
 
   // fill the background.
