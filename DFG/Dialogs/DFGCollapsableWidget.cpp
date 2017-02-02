@@ -16,6 +16,8 @@ DFGCollapsableWidget::DFGCollapsableWidget(QWidget * parent, QString title, bool
 , m_dfgConfig(dfgConfig)
 , m_usesGridLayout(useGridLayout)
 {
+  setObjectName( "DFGCollapsableWidget" );
+  
   QVBoxLayout * layout = new QVBoxLayout();
   setLayout(layout);
 
@@ -39,7 +41,7 @@ DFGCollapsableWidget::DFGCollapsableWidget(QWidget * parent, QString title, bool
     m_content->setLayout(new QVBoxLayout());
 
   m_content->layout()->setContentsMargins(0, 0, 0, 0);
-  m_content->layout()->setSpacing(1);
+  m_content->layout()->setSpacing(4);
 
   QObject::connect(m_header, SIGNAL(toggled()), this, SLOT(onToggled()));
 }

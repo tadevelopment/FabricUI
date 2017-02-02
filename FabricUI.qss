@@ -1657,7 +1657,14 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-left: 1px solid #2B2B2B;
 }
 
-#DFGEditPortDialog #DFGCollapsableHeaderWidget
+#DFGEditPortDialog #DFGCollapsableHeaderWidget,
+#DFGBlockPropertiesDialog #DFGCollapsableHeaderWidget,
+#DFGGetStringDialog #DFGCollapsableHeaderWidget,
+#DFGGetTextDialog #DFGCollapsableHeaderWidget,
+#DFGNewVariableDialog #DFGCollapsableHeaderWidget,
+#DFGNodePropertiesDialog #DFGCollapsableHeaderWidget,
+#DFGPickVariableDialog #DFGCollapsableHeaderWidget,
+#DFGSavePresetDialog #DFGCollapsableHeaderWidget
 {
   border-radius: 3px;
   background-color: #2F2F2F;
@@ -1666,7 +1673,14 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   color: #FFFFFF;
 }
 
-#DFGEditPortDialog QLabel
+#DFGEditPortDialog QLabel,
+#DFGBlockPropertiesDialog QLabel,
+#DFGGetStringDialog QLabel,
+#DFGGetTextDialog QLabel,
+#DFGNewVariableDialog QLabel,
+#DFGNodePropertiesDialog QLabel,
+#DFGPickVariableDialog QLabel,
+#DFGSavePresetDialog QLabel
 {
   padding-left: 4px;
   color: #FFFFFF;

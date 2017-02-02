@@ -22,6 +22,7 @@ DFGBlockPropertiesDialog::DFGBlockPropertiesDialog(
 , m_controller(controller)
 {
   setWindowTitle("Block Properties");
+  setObjectName( "DFGBlockPropertiesDialog" );
 
   m_textEdit = 0;
   m_nameEdit    = new QLineEdit("", this);

@@ -22,6 +22,7 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
 , m_nodeName(nodeName)
 , m_controller(controller)
 {
+  setObjectName( "DFGNodePropertiesDialog" );
   setWindowTitle("Node Properties");
 
   m_presetNameLabel = NULL;

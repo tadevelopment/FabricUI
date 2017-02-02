@@ -20,6 +20,7 @@ DFGNewVariableDialog::DFGNewVariableDialog(
   )
 : DFGBaseDialog(parent, true, dfgConfig)
 {
+  setObjectName( "DFGNewVariableDialog" );
   setWindowTitle("New Variable");
 
   m_nameEdit = new DFGVariablePathLineEdit(this, binding, currentExecPath, name);

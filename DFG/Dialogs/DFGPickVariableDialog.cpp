@@ -18,6 +18,7 @@ DFGPickVariableDialog::DFGPickVariableDialog(
   )
 : DFGBaseDialog(parent, true, dfgConfig)
 {
+  setObjectName( "DFGPickVariableDialog" );
   setWindowTitle("Pick Variable");
   m_nameCombo = new DFGVariablePathComboBox(this, binding, currentExecPath, name);
   addInput(m_nameCombo, "Name");
