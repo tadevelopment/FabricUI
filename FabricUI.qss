@@ -1656,3 +1656,18 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-bottom: 1px solid #484848;
   border-left: 1px solid #2B2B2B;
 }
+
+#DFGEditPortDialog #DFGCollapsableHeaderWidget
+{
+  border-radius: 3px;
+  background-color: #2F2F2F;
+  min-height: 15px;
+  padding: 4px;
+  color: #FFFFFF;
+}
+
+#DFGEditPortDialog QLabel
+{
+  padding-left: 4px;
+  color: #FFFFFF;
+}

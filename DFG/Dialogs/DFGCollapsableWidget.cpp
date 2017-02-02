@@ -66,7 +66,7 @@ void DFGCollapsableWidget::addWidget(QWidget * widget, QString label)
     {
       QLabel * l = new QLabel(label, m_content);
       ((QGridLayout*)layout)->addWidget(l, row, 0);
-      layout->setAlignment(l, Qt::AlignRight | Qt::AlignVCenter);
+      layout->setAlignment(l, Qt::AlignLeft | Qt::AlignVCenter);
     }
     ((QGridLayout*)layout)->addWidget(widget, row, 1);
     // layout->setAlignment(widget, Qt::AlignLeft | Qt::AlignVCenter);

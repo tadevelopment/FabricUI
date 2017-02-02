@@ -9,12 +9,7 @@ DFGCollapsableHeaderWidget::DFGCollapsableHeaderWidget(QWidget * parent, QString
 : QLabel(title, parent)
 , m_dfgConfig(dfgConfig)
 {
-  QPalette pal(palette());
- 
-  pal.setColor(QPalette::Window, pal.color(QPalette::Window).darker());
-  pal.setColor(QPalette::WindowText, pal.color(QPalette::WindowText).darker());
-  setAutoFillBackground(true);
-  setPalette(pal);
+  setObjectName( "DFGCollapsableHeaderWidget" );
 }
 
 DFGCollapsableHeaderWidget::~DFGCollapsableHeaderWidget()

@@ -21,6 +21,7 @@ DFGEditPortDialog::DFGEditPortDialog(
 : DFGBaseDialog(parent, true, dfgConfig)
 {
   setWindowTitle("Edit Port");
+  setObjectName( "DFGEditPortDialog" );
 
   if(showPortType)
   {
