@@ -29,7 +29,9 @@ DFGBaseDialog::DFGBaseDialog(QWidget * parent, bool useGridLayout, const DFGConf
   setFont(dfgConfig.defaultFont);
 
   setContentsMargins(0, 0, 0, 0);
-  setLayout(new QVBoxLayout());
+  QVBoxLayout* m_layout = new QVBoxLayout();
+  this->setLayout( m_layout );
+  // setLayout(new QVBoxLayout());
   layout()->setContentsMargins(0, 0, 0, 0);
   layout()->setSpacing(0);
 
@@ -63,8 +65,10 @@ DFGBaseDialog::DFGBaseDialog(QWidget * parent, bool useGridLayout, const DFGConf
   QObject::connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
   buttonsLayout->addStretch(2);
-  buttonsLayout->addWidget(cancelButton);
   buttonsLayout->addWidget(okButton);
+  buttonsLayout->addWidget(cancelButton);
+
+  m_layout->addStretch(2);
 }
 
 DFGBaseDialog::~DFGBaseDialog()
