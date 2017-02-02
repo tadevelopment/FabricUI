@@ -68,24 +68,24 @@ DFGEditPortDialog::DFGEditPortDialog(
   m_hardRangeMax->setValidator(new QDoubleValidator(m_hardRangeMax));
 
   if(m_portTypeCombo)
-    addInput(m_portTypeCombo, "type", "required");
-  addInput(m_titleEdit, "title", "required");
+    addInput(m_portTypeCombo, "Type", "Required");
+  addInput(m_titleEdit, "Title", "Required");
   if( topGraphPort ) {
-    addInput( m_dataTypeEdit, "data type", "required" );
-    addInput( m_extensionEdit, "extension", "advanced" );
+    addInput( m_dataTypeEdit, "Data Type", "Required" );
+    addInput( m_extensionEdit, "Extension", "Advanced" );
   }
-  addInput(m_visibilityCombo, "visibility", "metadata");
-  addInput(m_persistValue, "persist value", "metadata");
-  addInput(m_hasSoftRange, "soft range", "metadata");
-  addInput(m_softRangeMin, "soft min", "metadata");
-  addInput(m_softRangeMax, "soft max", "metadata");
-  addInput(m_hasHardRange, "hard range", "metadata");
-  addInput(m_hardRangeMin, "hard min", "metadata");
-  addInput(m_hardRangeMax, "hard max", "metadata");
-  addInput(m_hasCombo, "use combo", "metadata");
-  addInput(m_combo, "combo", "metadata");
-  addInput(m_hasFileTypeFilter, "use file filter", "metadata");
-  addInput(m_fileTypeFilter, "file filter", "metadata");
+  addInput(m_visibilityCombo, "Visibility", "Metadata");
+  addInput(m_persistValue, "Persist Value", "Metadata");
+  addInput(m_hasSoftRange, "Soft Range", "Metadata");
+  addInput(m_softRangeMin, "Soft Min", "Metadata");
+  addInput(m_softRangeMax, "Soft Max", "Metadata");
+  addInput(m_hasHardRange, "Hard Range", "Metadata");
+  addInput(m_hardRangeMin, "Hard Min", "Metadata");
+  addInput(m_hardRangeMax, "Hard Max", "Metadata");
+  addInput(m_hasCombo, "Use Combo", "Metadata");
+  addInput(m_combo, "Combo", "Metadata");
+  addInput(m_hasFileTypeFilter, "Use File Filter", "Metadata");
+  addInput(m_fileTypeFilter, "File Filter", "Metadata");
 
   // [Julien] FE-5188, FE-5276
   if(setAlphaNum) alphaNumicStringOnly();

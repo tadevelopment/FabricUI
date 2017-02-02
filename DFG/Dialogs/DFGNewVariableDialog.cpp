@@ -23,11 +23,11 @@ DFGNewVariableDialog::DFGNewVariableDialog(
   setWindowTitle("New Variable");
 
   m_nameEdit = new DFGVariablePathLineEdit(this, binding, currentExecPath, name);
-  addInput(m_nameEdit, "name");
+  addInput(m_nameEdit, "Name");
   m_dataTypeEdit = new DFGRegisteredTypeLineEdit(this, client, dataType);
-  addInput(m_dataTypeEdit, "type");
+  addInput(m_dataTypeEdit, "Type");
   m_extensionEdit = new DFGExtensionLineEdit(this, client, dataType);
-  addInput(m_extensionEdit, "extension");
+  addInput(m_extensionEdit, "Extension");
   m_nameEdit->selectAll();
 
   // [Julien] Allows only alpha-numeric text only 

@@ -77,10 +77,10 @@ DFGBlockPropertiesDialog::DFGBlockPropertiesDialog(
     m_controller->logError(e.getDesc_cstr());
   }
 
-  addInput( m_nameEdit, "block name", "properties" );
-  addInput( m_nodeColorButton, "block color", "properties" );
-  addInput( m_textColorButton, "text color", "properties" );
-  addInput( m_allowHeaderColorCheckBox, "custom header color", "properties" );
+  addInput( m_nameEdit, "Block Name", "Properties" );
+  addInput( m_nodeColorButton, "Block Color", "Properties" );
+  addInput( m_textColorButton, "Text Color", "Properties" );
+  addInput( m_allowHeaderColorCheckBox, "Custom Header Color", "Properties" );
     
   // [Julien] FE-5188, FE-5276
   if(setAlphaNum) alphaNumicStringOnly();
@@ -174,7 +174,7 @@ void DFGBlockPropertiesDialog::onAllowHeaderColorCheckBoxClicked()
         m_headerColorButton, SIGNAL(clicked()),
         this, SLOT(onHeaderColorButtonClicked())
         );
-      addInput(m_headerColorButton, "header color", "properties");
+      addInput(m_headerColorButton, "Header Color", "properties");
     }
     else if ( !!m_headerColorButton
       && !m_allowHeaderColorCheckBox->isChecked() )

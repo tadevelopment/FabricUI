@@ -31,7 +31,6 @@ DFGBaseDialog::DFGBaseDialog(QWidget * parent, bool useGridLayout, const DFGConf
   setContentsMargins(0, 0, 0, 0);
   QVBoxLayout* m_layout = new QVBoxLayout();
   this->setLayout( m_layout );
-  // setLayout(new QVBoxLayout());
   layout()->setContentsMargins(0, 0, 0, 0);
   layout()->setSpacing(0);
 
