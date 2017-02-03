@@ -14,6 +14,7 @@ Import(
   'dfgSamples',
   'extraDFGPresets',
   'fabricFlags',
+  'feLogoPNG',
   'parentEnv',
   'pythonConfigs',
   'qtDir',
@@ -543,6 +544,7 @@ if uiLibPrefix == 'ui':
     dfgSamples,
     qtInstalledLibs,
     allServicesLibFiles,
+    feLogoPNG,
     ])
 
 Return('uiFiles')
