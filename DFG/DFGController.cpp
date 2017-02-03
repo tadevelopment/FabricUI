@@ -31,8 +31,6 @@
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
 
-#include <math.h>
-
 using namespace FabricServices;
 using namespace FabricUI;
 using namespace FabricUI::DFG;
@@ -2005,8 +2003,8 @@ void DFGController::gvcDoMoveNodes(
     // then we apply the grid snapping to the
     // delta instead of applying it to each
     // node.
-    delta.setX( gridSnapSize * round(delta.rx() / gridSnapSize) );
-    delta.setY( gridSnapSize * round(delta.ry() / gridSnapSize) );
+    delta.setX( gridSnapSize * qRound(delta.rx() / gridSnapSize) );
+    delta.setY( gridSnapSize * qRound(delta.ry() / gridSnapSize) );
     gridSnapSize = 0;
   }
 
@@ -2026,8 +2024,8 @@ void DFGController::gvcDoMoveNodes(
       QPointF newPos = nodesOriginalPos[i] + delta;
       if (gridSnapSize > 0)
       {
-        newPos.setX( gridSnapSize * round(newPos.rx() / gridSnapSize) );
-        newPos.setY( gridSnapSize * round(newPos.ry() / gridSnapSize) );
+        newPos.setX( gridSnapSize * qRound(newPos.rx() / gridSnapSize) );
+        newPos.setY( gridSnapSize * qRound(newPos.ry() / gridSnapSize) );
       }
       newTopLeftPoss.append( newPos );
     }
@@ -2045,8 +2043,8 @@ void DFGController::gvcDoMoveNodes(
       QPointF newPos = nodesOriginalPos[i] + delta;
       if (gridSnapSize > 0)
       {
-        newPos.setX( gridSnapSize * round(newPos.rx() / gridSnapSize) );
-        newPos.setY( gridSnapSize * round(newPos.ry() / gridSnapSize) );
+        newPos.setX( gridSnapSize * qRound(newPos.rx() / gridSnapSize) );
+        newPos.setY( gridSnapSize * qRound(newPos.ry() / gridSnapSize) );
       }
       std::string newPosJSON;
       {
