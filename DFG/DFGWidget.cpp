@@ -693,7 +693,7 @@ void DFGWidget::createNewBlockNode( QPoint const &globalPos )
 
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag( Qt::ControlModifier );
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New block", text, m_dfgConfig, true); 
     if(dialog.exec() != QDialog::Accepted)
@@ -729,7 +729,7 @@ void DFGWidget::createNewGraphNode( QPoint const &globalPos )
   QString text = "graph";
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New Empty Graph", text, m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
@@ -783,7 +783,7 @@ void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
 
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New Empty Function", text, m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
@@ -795,8 +795,6 @@ void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
       return; }
   }
 
-  m_uiController->beginInteraction();
-
   static const FTL::CStrRef initialCode = FTL_STR("\
 dfgEntry {\n\
   // result = a + b;\n\
@@ -807,11 +805,6 @@ dfgEntry {\n\
       QString::fromUtf8( initialCode.c_str() ),
       m_uiGraphViewWidget->mapToGraph( globalPos )
       );
-  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
-  {
-    maybeEditNode( uiNode );
-  }
-  m_uiController->endInteraction();
 }
 
 void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
@@ -820,7 +813,7 @@ void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
 
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New Backdrop", text, m_dfgConfig, false);
     if(dialog.exec() != QDialog::Accepted)
@@ -1269,7 +1262,7 @@ void DFGWidget::movePortsToEnd( bool moveInputs )
 
 void DFGWidget::implodeSelectedNodes( bool displayDialog )
 {
-  QString text = "graph";
+  QString text = "imploded_nodes";
 
   if (displayDialog)
   {

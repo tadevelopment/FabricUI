@@ -736,7 +736,7 @@ namespace DFG {
       {
         Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
         bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-        m_dfgWidget->implodeSelectedNodes(!isCTRL);
+        m_dfgWidget->implodeSelectedNodes(isCTRL);
       }
 
     private:
