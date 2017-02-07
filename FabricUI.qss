@@ -1511,13 +1511,15 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ValueEditor #VEStringViewItem > QPushButton
 {
   font: 11px "FontAwesome";
-  qproperty-text: ""; /* FontAwesome magnifying glass */
+  qproperty-text: ""; /* FontAwesome magnifying glass */
+  min-width: 20px;
 }
 
 #ValueEditor #VEFilepathViewItem > QPushButton
 {
   font: 11px "FontAwesome";
   qproperty-text: ""; /* FontAwesome open folder */
+  min-width: 20px;
 }
 
 #ValueEditor QSlider::handle:horizontal
