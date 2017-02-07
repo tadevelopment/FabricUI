@@ -617,7 +617,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
 
   result->addSeparator();
   
-  result->addAction(new ConnectionRemoveAction(dfgWidget, connection, result));
+  result->addAction(new ConnectionRemoveAction(dfgWidget, connection, result, dfgWidget->isEditable()));
 
   return result;
 }
