@@ -10,6 +10,7 @@
 #include <QProxyStyle>
 #include <Commands/CommandStack.h>
 #include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/DFG/DFGConfig.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGExecHeaderWidget.h>
@@ -1961,8 +1962,6 @@ namespace DFG {
       GraphView::InstBlock *m_instBlock;
     };
 
-
-
     class ConnectionSelectSourceAndTargetAction : public QAction
     {
       Q_OBJECT
@@ -1973,23 +1972,25 @@ namespace DFG {
         DFGWidget *dfgWidget,
         GraphView::Connection *connection,
         QObject *parent,
+        bool clearCurrentSelection,
         bool selectSource,
-        bool selectTargets,
-        bool frameSelected,
+        bool selectTarget,
         bool enable = true )
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
         , m_connection( connection )
+        , m_clearCurrentSelection( clearCurrentSelection )
         , m_selectSource( selectSource )
-        , m_selectTargets( selectTargets )
-        , m_frameSelected( frameSelected )
+        , m_selectTarget( selectTarget )
       {
         QString text = "null";
-        if      ( selectSource &&  selectTargets)   text = "Select source and target(s)";
-        else if (!selectSource &&  selectTargets)   text = "Select target(s)";
-        else if ( selectSource && !selectTargets)   text = "Select source";
-        if ( frameSelected && (selectSource || selectTargets) )
-          text += " and frame selected";
+        if (selectSource || selectTarget)
+        {
+          text = "Select ";
+          if      (!selectTarget)   text += "source";
+          else if (!selectSource)   text += "target";
+          else                      text += "source and target";
+        }
         setText( text );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
@@ -2000,18 +2001,85 @@ namespace DFG {
 
       void onTriggered()
       {
-        // todo
+        if (m_clearCurrentSelection)
+          m_dfgWidget->getUIGraph()->clearSelection();
+
+        if (m_selectSource)
+        {
+          if (m_connection->src()->targetType() == GraphView::TargetType_Pin)
+          {
+            GraphView::Pin  *pin  = (GraphView::Pin *)m_connection->src();
+            GraphView::Node *node = pin->node();
+            node->setSelected(true);
+          }
+          else if (m_connection->src()->targetType() == GraphView::TargetType_InstBlockPort)
+          {
+            GraphView::InstBlockPort *instBlockPort = (GraphView::InstBlockPort *)m_connection->src();
+            GraphView::Node *node = instBlockPort->instBlock()->node();
+            node->setSelected(true);
+          }
+        }
+
+        if (m_selectTarget)
+        {
+          if (m_connection->dst()->targetType() == GraphView::TargetType_Pin)
+          {
+            GraphView::Pin  *pin  = (GraphView::Pin *)m_connection->dst();
+            GraphView::Node *node = pin->node();
+            node->setSelected(true);
+          }
+          else if (m_connection->dst()->targetType() == GraphView::TargetType_InstBlockPort)
+          {
+            GraphView::InstBlockPort *instBlockPort = (GraphView::InstBlockPort *)m_connection->dst();
+            GraphView::Node *node = instBlockPort->instBlock()->node();
+            node->setSelected(true);
+          }
+        }
       }
 
     private:
 
       DFGWidget *m_dfgWidget;
       GraphView::Connection *m_connection;
+      bool m_clearCurrentSelection;
       bool m_selectSource;
-      bool m_selectTargets;
-      bool m_frameSelected;
+      bool m_selectTarget;
     };
 
+    class ConnectionRemoveAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ConnectionRemoveAction(
+        DFGWidget *dfgWidget,
+        GraphView::Connection *connection,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_connection( connection )
+      {
+        setText( "Remove" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setShortcut( Qt::Key_D );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->getUIGraph()->removeConnection(m_connection);
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Connection *m_connection;
+    };
 
 
 } // namespace DFG
