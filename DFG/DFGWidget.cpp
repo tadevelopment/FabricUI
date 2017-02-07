@@ -611,7 +611,12 @@ QMenu *DFGWidget::connectionContextMenuCallback(
 
   QMenu *result = new QMenu(connection->scene()->views()[0]);
 
-  result->addAction(new FrameSelectedNodesAction(dfgWidget, result));
+  result->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, result, true,  false, false));
+  result->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, result, false, true,  false));
+  result->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, result, true,  false, true));
+  result->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, result, false, true,  true));
+
+  result->addSeparator();
 
   return result;
 }

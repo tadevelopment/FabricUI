@@ -1960,6 +1960,60 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
       GraphView::InstBlock *m_instBlock;
     };
+
+
+
+    class ConnectionSelectSourceAndTargetAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ConnectionSelectSourceAndTargetAction(
+        DFGWidget *dfgWidget,
+        GraphView::Connection *connection,
+        QObject *parent,
+        bool selectSource,
+        bool selectTargets,
+        bool frameSelected,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_connection( connection )
+        , m_selectSource( selectSource )
+        , m_selectTargets( selectTargets )
+        , m_frameSelected( frameSelected )
+      {
+        QString text = "null";
+        if      ( selectSource &&  selectTargets)   text = "Select source and target(s)";
+        else if (!selectSource &&  selectTargets)   text = "Select target(s)";
+        else if ( selectSource && !selectTargets)   text = "Select source";
+        if ( frameSelected && (selectSource || selectTargets) )
+          text += " and frame selected";
+        setText( text );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable && text != "null" );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        // todo
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Connection *m_connection;
+      bool m_selectSource;
+      bool m_selectTargets;
+      bool m_frameSelected;
+    };
+
+
+
 } // namespace DFG
 } // namespace FabricUI
 
