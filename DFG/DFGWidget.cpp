@@ -1038,6 +1038,9 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
     FabricCore::Client &client = m_uiController->getClient();
     FabricCore::DFGExec &exec = m_uiController->getExec();
 
+    Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
+    bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
+
     DFGEditPortDialog dialog(
       this,
       client,
@@ -1114,10 +1117,13 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
 
     dialog.setSectionCollapsed("metadata", !expandMetadataSection);
 
-    emit portEditDialogCreated(&dialog);
+    if (!duplicatePort || isCTRL)
+    {
+      emit portEditDialogCreated(&dialog);
 
-    if(dialog.exec() != QDialog::Accepted)
-      return;
+      if(dialog.exec() != QDialog::Accepted)
+        return;
+    }
 
     emit portEditDialogInvoked(&dialog, NULL);
 
