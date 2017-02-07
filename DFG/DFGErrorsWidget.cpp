@@ -328,7 +328,7 @@ void DFGErrorsWidget::onDismissSelected()
 
 void DFGErrorsWidget::onCustomContextMenuRequested( QPoint const &pos )
 {
-  QMenu menu;
+  QMenu menu( this );
 
   QAction *dismissAction = new QAction( "Dismiss Selected", &menu );
   connect(
