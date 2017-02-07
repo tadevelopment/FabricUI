@@ -602,6 +602,20 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   return menu;
 }
 
+QMenu *DFGWidget::connectionContextMenuCallback(
+  FabricUI::GraphView::Connection *connection,
+  void *userData
+  )
+{
+  DFGWidget * dfgWidget = (DFGWidget*)userData;
+
+  QMenu *result = new QMenu(connection->scene()->views()[0]);
+
+  result->addAction(new FrameSelectedNodesAction(dfgWidget, result));
+
+  return result;
+}
+
 QMenu *DFGWidget::sidePanelContextMenuCallback(
   FabricUI::GraphView::SidePanel* panel,
   void* userData
@@ -2277,6 +2291,7 @@ void DFGWidget::onExecChanged()
     m_uiGraph->setNodeContextMenuCallback( &nodeContextMenuCallback, this );
     m_uiGraph->setPortContextMenuCallback( &portContextMenuCallback, this );
     m_uiGraph->setFixedPortContextMenuCallback( &fixedPortContextMenuCallback, this );
+    m_uiGraph->setConnectionContextMenuCallback( &connectionContextMenuCallback, this );
     m_uiGraph->setSidePanelContextMenuCallback( &sidePanelContextMenuCallback, this );
 
     if ( !m_uiController->getExecBlockName().empty() )

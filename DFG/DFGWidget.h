@@ -185,6 +185,7 @@ namespace DFG {
       static QMenu* nodeContextMenuCallback(FabricUI::GraphView::Node* node, void* userData);
       static QMenu* portContextMenuCallback(FabricUI::GraphView::Port* port, void* userData);
       static QMenu* fixedPortContextMenuCallback(FabricUI::GraphView::FixedPort* fixedPort, void* userData);
+      static QMenu* connectionContextMenuCallback(FabricUI::GraphView::Connection* connection, void* userData);
       static QMenu* sidePanelContextMenuCallback(FabricUI::GraphView::SidePanel* panel, void* userData);
 
       bool maybePushExec(
