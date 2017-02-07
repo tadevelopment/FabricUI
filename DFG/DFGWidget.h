@@ -2061,7 +2061,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_connection( connection )
       {
-        setText( "Remove" );
+        setText( "Remove connection" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setShortcut( Qt::Key_D );
@@ -2081,6 +2081,71 @@ namespace DFG {
       GraphView::Connection *m_connection;
     };
 
+    class ConnectionInsertPresetAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ConnectionInsertPresetAction(
+        DFGWidget *dfgWidget,
+        GraphView::Connection *connection,
+        QObject *parent,
+        QString presetPath,
+        QString presetPortIn,
+        QString presetPortOut,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_connection( connection )
+        , m_presetPath( presetPath )
+        , m_presetPortIn( presetPortIn )
+        , m_presetPortOut( presetPortOut )
+      {
+        QString presetName = getPresetNameFromPath(m_presetPath);
+        setText( "Insert '" + presetName + "' node");
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+      QString getPresetNameFromPath(QString presetPath)
+      {
+        QStringList path = presetPath.split(".");
+        return (path.size() > 0 ? path[path.size() - 1] : "");
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        QString nodeName = m_dfgWidget->getUIController()->cmdAddInstFromPreset(m_presetPath, QPointF());
+        GraphView::Node *node = m_dfgWidget->getUIGraph()->node(nodeName);
+        if (node)
+        {
+          GraphView::Pin *pinIn  = node->pin(m_presetPortIn .toUtf8().data());
+          GraphView::Pin *pinOut = node->pin(m_presetPortOut.toUtf8().data());
+          if (pinIn && pinOut)
+          {
+            std::vector<GraphView::ConnectionTarget *> srcs;
+            std::vector<GraphView::ConnectionTarget *> dsts;
+            srcs.push_back( m_connection->src() );
+            dsts.push_back( pinIn );
+            srcs.push_back( pinOut );
+            dsts.push_back( m_connection->dst() );
+            m_dfgWidget->getUIController()->gvcDoAddConnections(srcs, dsts);
+          }
+        }
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Connection *m_connection;
+      QString m_presetPath;
+      QString m_presetPortIn;
+      QString m_presetPortOut;
+    };
 
 } // namespace DFG
 } // namespace FabricUI

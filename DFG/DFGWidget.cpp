@@ -619,6 +619,40 @@ QMenu *DFGWidget::connectionContextMenuCallback(
   
   result->addAction(new ConnectionRemoveAction(dfgWidget, connection, result, dfgWidget->isEditable()));
 
+  result->addSeparator();
+  
+  result->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
+                                                     "Fabric.Core.Func.Report",
+                                                     "value",
+                                                     "value",
+                                                     dfgWidget->isEditable()));
+  result->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
+                                                     "Fabric.Compounds.Debug.LabeledReport",
+                                                     "value",
+                                                     "value",
+                                                     dfgWidget->isEditable()));
+
+  result->addSeparator();
+  
+  result->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
+                                                     "Fabric.Core.Data.Cache",
+                                                     "value",
+                                                     "value",
+                                                     dfgWidget->isEditable()));
+
+  result->addSeparator();
+  
+  result->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
+                                                     "Fabric.Compounds.Data.PassIn",
+                                                     "value",
+                                                     "value",
+                                                     dfgWidget->isEditable()));
+  result->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
+                                                     "Fabric.Compounds.Data.PassIO",
+                                                     "value",
+                                                     "value",
+                                                     dfgWidget->isEditable()));
+
   return result;
 }
 
