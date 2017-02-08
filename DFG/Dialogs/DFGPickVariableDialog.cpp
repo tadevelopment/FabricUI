@@ -18,9 +18,10 @@ DFGPickVariableDialog::DFGPickVariableDialog(
   )
 : DFGBaseDialog(parent, true, dfgConfig)
 {
+  setObjectName( "DFGPickVariableDialog" );
   setWindowTitle("Pick Variable");
   m_nameCombo = new DFGVariablePathComboBox(this, binding, currentExecPath, name);
-  addInput(m_nameCombo, "name");
+  addInput(m_nameCombo, "Name");
   // [Julien] Allows only alpha-numeric text only 
   // We do this because the nodes's name must be alpha-numerical only
   // and not contains "-, +, ?,"
