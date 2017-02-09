@@ -172,6 +172,7 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( connectionHoverPen, QPen(QColor(170, 170, 170), 2.0, Qt::SolidLine) );
   GET_PARAMETER( connectionFixedTangentLength, 10.0f );
   GET_PARAMETER( connectionPercentualTangentLength, 45.0f );
+  GET_PARAMETER( connectionClickableDistance, 10.0f );
   GET_PARAMETER( portsCentered, true );
 
   GET_PARAMETER( sidePanelBackgroundColor, nodeDefaultColor );

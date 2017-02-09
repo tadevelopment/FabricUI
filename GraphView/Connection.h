@@ -88,6 +88,7 @@ namespace FabricUI
 
       QColor m_color;
       QPen m_defaultPen;
+      float m_shapePathWidth;
       QPen m_hoverPen;
       bool m_hovered;
 
