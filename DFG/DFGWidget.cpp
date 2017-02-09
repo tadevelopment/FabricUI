@@ -611,9 +611,10 @@ QMenu *DFGWidget::connectionContextMenuCallback(
 
   QMenu *result = new QMenu(connection->scene()->views()[0]);
 
-  result->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, result, true, true,  false));
-  result->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, result, true, false, true));
-  result->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, result, true, true,  true));
+  QMenu *selectMenu = result->addMenu(tr("Select"));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, true,  false));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, false, true));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, true,  true));
 
   result->addSeparator();
   
@@ -621,37 +622,38 @@ QMenu *DFGWidget::connectionContextMenuCallback(
 
   result->addSeparator();
   
-  result->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
-                                                     "Fabric.Core.Func.Report",
-                                                     "value",
-                                                     "value",
-                                                     dfgWidget->isEditable()));
-  result->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
-                                                     "Fabric.Compounds.Debug.LabeledReport",
-                                                     "value",
-                                                     "value",
-                                                     dfgWidget->isEditable()));
+  QMenu *insertPresetMenu = result->addMenu(tr("Insert preset"));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, insertPresetMenu,
+                                                               "Fabric.Core.Func.Report",
+                                                               "value",
+                                                               "value",
+                                                               dfgWidget->isEditable()));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
+                                                               "Fabric.Compounds.Debug.LabeledReport",
+                                                               "value",
+                                                               "value",
+                                                               dfgWidget->isEditable()));
 
-  result->addSeparator();
+  insertPresetMenu->addSeparator();
   
-  result->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
-                                                     "Fabric.Core.Data.Cache",
-                                                     "value",
-                                                     "value",
-                                                     dfgWidget->isEditable()));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, insertPresetMenu,
+                                                               "Fabric.Core.Data.Cache",
+                                                               "value",
+                                                               "value",
+                                                               dfgWidget->isEditable()));
 
-  result->addSeparator();
+  insertPresetMenu->addSeparator();
   
-  result->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
-                                                     "Fabric.Compounds.Data.PassIn",
-                                                     "value",
-                                                     "value",
-                                                     dfgWidget->isEditable()));
-  result->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
-                                                     "Fabric.Compounds.Data.PassIO",
-                                                     "value",
-                                                     "value",
-                                                     dfgWidget->isEditable()));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, insertPresetMenu,
+                                                               "Fabric.Compounds.Data.PassIn",
+                                                               "value",
+                                                               "value",
+                                                               dfgWidget->isEditable()));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, insertPresetMenu,
+                                                               "Fabric.Compounds.Data.PassIO",
+                                                               "value",
+                                                               "value",
+                                                               dfgWidget->isEditable()));
 
   return result;
 }

@@ -2103,7 +2103,7 @@ namespace DFG {
         , m_presetPortOut( presetPortOut )
       {
         QString presetName = getPresetNameFromPath(m_presetPath);
-        setText( "Insert '" + presetName + "' node");
+        setText( "Insert '" + presetName + "' preset");
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
