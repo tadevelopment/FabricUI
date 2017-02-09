@@ -32,7 +32,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QColorDialog>
-#include <QCursor>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSplitter>
@@ -158,6 +157,13 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(new DeleteNodes2Action              (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodeAction          (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodePropertiesAction(this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new ConnectionInsertPresetAction    (this, m_uiGraphViewWidget,
+                                                                      NULL,
+                                                                      "Fabric.Compounds.Debug.LabeledReport",
+                                                                      "value",
+                                                                      "value",
+                                                                      QCursor::pos(),
+                                                                      QKeySequence(Qt::Key_R)));
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -611,48 +617,58 @@ QMenu *DFGWidget::connectionContextMenuCallback(
 
   QMenu *result = new QMenu(connection->scene()->views()[0]);
 
+  result->addAction(new ConnectionRemoveAction(dfgWidget, connection, result, dfgWidget->isEditable()));
+
+  result->addSeparator();
+
   QMenu *selectMenu = result->addMenu(tr("Select"));
   selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, true,  false));
   selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, false, true));
   selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, true,  true));
 
   result->addSeparator();
-  
-  result->addAction(new ConnectionRemoveAction(dfgWidget, connection, result, dfgWidget->isEditable()));
 
-  result->addSeparator();
-  
   QMenu *insertPresetMenu = result->addMenu(tr("Insert preset"));
-  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, insertPresetMenu,
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection, 
                                                                "Fabric.Core.Func.Report",
                                                                "value",
                                                                "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
                                                                dfgWidget->isEditable()));
-  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, result,
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, result, connection,
                                                                "Fabric.Compounds.Debug.LabeledReport",
                                                                "value",
                                                                "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(Qt::Key_R),
                                                                dfgWidget->isEditable()));
 
   insertPresetMenu->addSeparator();
-  
-  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, insertPresetMenu,
+
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
                                                                "Fabric.Core.Data.Cache",
                                                                "value",
                                                                "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
                                                                dfgWidget->isEditable()));
 
   insertPresetMenu->addSeparator();
-  
-  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, insertPresetMenu,
+
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
                                                                "Fabric.Compounds.Data.PassIn",
                                                                "value",
                                                                "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
                                                                dfgWidget->isEditable()));
-  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, connection, insertPresetMenu,
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
                                                                "Fabric.Compounds.Data.PassIO",
                                                                "value",
                                                                "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
                                                                dfgWidget->isEditable()));
 
   return result;

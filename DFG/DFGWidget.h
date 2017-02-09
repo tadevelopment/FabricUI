@@ -5,6 +5,7 @@
 
 #include <QSettings>
 #include <QWidget>
+#include <QCursor>
 #include <QMenuBar>
 #include <QFileInfo>
 #include <QProxyStyle>
@@ -2089,11 +2090,13 @@ namespace DFG {
 
       ConnectionInsertPresetAction(
         DFGWidget *dfgWidget,
-        GraphView::Connection *connection,
         QObject *parent,
+        GraphView::Connection *connection,
         QString presetPath,
         QString presetPortIn,
         QString presetPortOut,
+        QPoint  presetGlobalPos,
+        QKeySequence shortcut = QKeySequence(),
         bool enable = true )
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
@@ -2101,9 +2104,12 @@ namespace DFG {
         , m_presetPath( presetPath )
         , m_presetPortIn( presetPortIn )
         , m_presetPortOut( presetPortOut )
+        , m_presetGlobalPos( presetGlobalPos )
       {
         QString presetName = getPresetNameFromPath(m_presetPath);
         setText( "Insert '" + presetName + "' preset");
+        if (!shortcut.isEmpty())
+          setShortcut( shortcut );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -2119,21 +2125,39 @@ namespace DFG {
 
       void onTriggered()
       {
-        QString nodeName = m_dfgWidget->getUIController()->cmdAddInstFromPreset(m_presetPath, QPointF());
-        GraphView::Node *node = m_dfgWidget->getUIGraph()->node(nodeName);
-        if (node)
+        if (m_dfgWidget->isEditable())
         {
-          GraphView::Pin *pinIn  = node->pin(m_presetPortIn .toUtf8().data());
-          GraphView::Pin *pinOut = node->pin(m_presetPortOut.toUtf8().data());
-          if (pinIn && pinOut)
+          if (!m_connection)
           {
-            std::vector<GraphView::ConnectionTarget *> srcs;
-            std::vector<GraphView::ConnectionTarget *> dsts;
-            srcs.push_back( m_connection->src() );
-            dsts.push_back( pinIn );
-            srcs.push_back( pinOut );
-            dsts.push_back( m_connection->dst() );
-            m_dfgWidget->getUIController()->gvcDoAddConnections(srcs, dsts);
+            std::vector<GraphView::Connection *> connections = m_dfgWidget->getUIGraph()->connections();
+            for(int i=0;i<(int)connections.size();i++)
+              if (connections[i]->isHovered())
+              {
+                m_presetGlobalPos = QCursor::pos();
+                m_connection = connections[i];
+                break;
+              }
+          }
+          if (m_connection)
+          {
+            QString nodeName = m_dfgWidget->getUIController()->cmdAddInstFromPreset(m_presetPath, m_dfgWidget->getGraphViewWidget()->mapToGraph(m_presetGlobalPos));
+            GraphView::Node *node = m_dfgWidget->getUIGraph()->node(nodeName);
+            if (node)
+            {
+              GraphView::Pin *pinIn  = node->pin(m_presetPortIn .toUtf8().data());
+              GraphView::Pin *pinOut = node->pin(m_presetPortOut.toUtf8().data());
+              if (pinIn && pinOut)
+              {
+                std::vector<GraphView::ConnectionTarget *> srcs;
+                std::vector<GraphView::ConnectionTarget *> dsts;
+                srcs.push_back( m_connection->src() );
+                dsts.push_back( pinIn );
+                srcs.push_back( pinOut );
+                dsts.push_back( m_connection->dst() );
+                m_dfgWidget->getUIController()->gvcDoAddConnections(srcs, dsts);
+              }
+            }
+            m_connection = NULL;
           }
         }
       }
@@ -2145,6 +2169,7 @@ namespace DFG {
       QString m_presetPath;
       QString m_presetPortIn;
       QString m_presetPortOut;
+      QPoint  m_presetGlobalPos;
     };
 
 } // namespace DFG
