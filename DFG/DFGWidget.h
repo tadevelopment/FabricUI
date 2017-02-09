@@ -2073,7 +2073,11 @@ namespace DFG {
 
       void onTriggered()
       {
-        m_dfgWidget->getUIGraph()->removeConnection(m_connection);
+        std::vector<GraphView::ConnectionTarget *> srcs;
+        std::vector<GraphView::ConnectionTarget *> dsts;
+        srcs.push_back( m_connection->src() );
+        dsts.push_back( m_connection->dst() );
+        m_dfgWidget->getUIController()->gvcDoRemoveConnections(srcs, dsts);
       }
 
     private:
