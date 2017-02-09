@@ -163,7 +163,8 @@ DFGWidget::DFGWidget(
                                                                       "value",
                                                                       "value",
                                                                       QCursor::pos(),
-                                                                      QKeySequence(Qt::Key_R)));
+                                                                      QKeySequence(Qt::Key_R),
+                                                                      "label"));
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -635,6 +636,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "value",
                                                                QCursor::pos(),
                                                                QKeySequence(),
+                                                               "",
                                                                dfgWidget->isEditable()));
   insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, result, connection,
                                                                "Fabric.Compounds.Debug.LabeledReport",
@@ -642,6 +644,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "value",
                                                                QCursor::pos(),
                                                                QKeySequence(Qt::Key_R),
+                                                               "label",
                                                                dfgWidget->isEditable()));
 
   insertPresetMenu->addSeparator();
@@ -652,6 +655,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "value",
                                                                QCursor::pos(),
                                                                QKeySequence(),
+                                                               "",
                                                                dfgWidget->isEditable()));
 
   insertPresetMenu->addSeparator();
@@ -662,6 +666,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "value",
                                                                QCursor::pos(),
                                                                QKeySequence(),
+                                                               "",
                                                                dfgWidget->isEditable()));
   insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
                                                                "Fabric.Compounds.Data.PassIO",
@@ -669,6 +674,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "value",
                                                                QCursor::pos(),
                                                                QKeySequence(),
+                                                               "",
                                                                dfgWidget->isEditable()));
 
   return result;

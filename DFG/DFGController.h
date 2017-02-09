@@ -328,6 +328,11 @@ namespace FabricUI
         FabricCore::RTVal const &value
         );
 
+      void cmdSetPortDefaultValue(
+        QString portPath,
+        FabricCore::RTVal const &value
+        );
+
       void cmdSetRefVarPath(
         FabricCore::DFGBinding &binding,
         QString execPath,

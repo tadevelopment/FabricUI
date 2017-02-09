@@ -2097,6 +2097,7 @@ namespace DFG {
         QString presetPortOut,
         QPoint  presetGlobalPos,
         QKeySequence shortcut = QKeySequence(),
+        QString presetPortSetFromSrcName = "",
         bool enable = true )
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
@@ -2105,6 +2106,7 @@ namespace DFG {
         , m_presetPortIn( presetPortIn )
         , m_presetPortOut( presetPortOut )
         , m_presetGlobalPos( presetGlobalPos )
+        , m_presetPortSetFromSrcName( presetPortSetFromSrcName )
       {
         QString presetName = getPresetNameFromPath(m_presetPath);
         setText( "Insert '" + presetName + "' preset");
@@ -2127,6 +2129,8 @@ namespace DFG {
       {
         if (m_dfgWidget->isEditable())
         {
+          // if m_connection is NULL then look for
+          // a connection that the mouse is hovering.
           if (!m_connection)
           {
             std::vector<GraphView::Connection *> connections = m_dfgWidget->getUIGraph()->connections();
@@ -2148,6 +2152,18 @@ namespace DFG {
               GraphView::Pin *pinOut = node->pin(m_presetPortOut.toUtf8().data());
               if (pinIn && pinOut)
               {
+                if (!m_presetPortSetFromSrcName.isEmpty())
+                {
+                  // set the port m_presetPortSetFromSrcName equal the connection's source name.
+                  GraphView::Pin *pin = node->pin(m_presetPortSetFromSrcName.toUtf8().data());
+                  if (pin && pin->dataType() == "String")
+                  {
+                    QString value = m_connection->src()->path_QS();
+                    FabricCore::RTVal rtval = FabricCore::RTVal::ConstructString(m_dfgWidget->getUIController()->getClient(), value.toUtf8().data());
+                    QString portPath = QString(node->name().c_str()) + "." + m_presetPortSetFromSrcName;
+                    m_dfgWidget->getUIController()->cmdSetPortDefaultValue(portPath, rtval);
+                  }
+                }
                 std::vector<GraphView::ConnectionTarget *> srcs;
                 std::vector<GraphView::ConnectionTarget *> dsts;
                 srcs.push_back( m_connection->src() );
@@ -2170,6 +2186,7 @@ namespace DFG {
       QString m_presetPortIn;
       QString m_presetPortOut;
       QPoint  m_presetGlobalPos;
+      QString m_presetPortSetFromSrcName;
     };
 
 } // namespace DFG
