@@ -3,6 +3,7 @@
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
+#include <QPainterPathStroker>
 
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/FixedPort.h>
@@ -341,6 +342,11 @@ void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
   }
 }
 
+QPainterPath Connection::shape() const
+{
+  return m_shapePath;
+}
+
 void Connection::dependencyMoved()
 {
   QPointF currSrcPoint = srcPoint();
@@ -370,6 +376,10 @@ void Connection::dependencyMoved()
   );
 
   setPath(path);
+
+  QPainterPathStroker stroker;
+  stroker.setWidth(10);
+  m_shapePath = (stroker.createStroke(path) + path).simplified();
 
   if(m_isExposedConnection)
   {
