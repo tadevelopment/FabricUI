@@ -670,6 +670,14 @@ void VETreeWidget::resetItem()
   }
 }
 
+void VETreeWidget::keyPressEvent(QKeyEvent *event)
+{
+  if (event->key() == Qt::Key_A && event->modifiers() == Qt::ControlModifier)
+    event->ignore();  // [FE-7365]
+  else
+    QTreeWidget::keyPressEvent(event);
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 BaseModelItem* GetFirstModelItem( VETreeWidgetItem* item )

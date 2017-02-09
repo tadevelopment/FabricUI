@@ -1511,13 +1511,15 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ValueEditor #VEStringViewItem > QPushButton
 {
   font: 11px "FontAwesome";
-  qproperty-text: ""; /* FontAwesome magnifying glass */
+  qproperty-text: ""; /* FontAwesome magnifying glass */
+  min-width: 20px;
 }
 
 #ValueEditor #VEFilepathViewItem > QPushButton
 {
   font: 11px "FontAwesome";
   qproperty-text: ""; /* FontAwesome open folder */
+  min-width: 20px;
 }
 
 #ValueEditor QSlider::handle:horizontal
@@ -1655,4 +1657,33 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-right: 1px solid #484848;
   border-bottom: 1px solid #484848;
   border-left: 1px solid #2B2B2B;
+}
+
+#DFGEditPortDialog #DFGCollapsableHeaderWidget,
+#DFGBlockPropertiesDialog #DFGCollapsableHeaderWidget,
+#DFGGetStringDialog #DFGCollapsableHeaderWidget,
+#DFGGetTextDialog #DFGCollapsableHeaderWidget,
+#DFGNewVariableDialog #DFGCollapsableHeaderWidget,
+#DFGNodePropertiesDialog #DFGCollapsableHeaderWidget,
+#DFGPickVariableDialog #DFGCollapsableHeaderWidget,
+#DFGSavePresetDialog #DFGCollapsableHeaderWidget
+{
+  border-radius: 3px;
+  background-color: #2F2F2F;
+  min-height: 15px;
+  padding: 4px;
+  color: #FFFFFF;
+}
+
+#DFGEditPortDialog QLabel,
+#DFGBlockPropertiesDialog QLabel,
+#DFGGetStringDialog QLabel,
+#DFGGetTextDialog QLabel,
+#DFGNewVariableDialog QLabel,
+#DFGNodePropertiesDialog QLabel,
+#DFGPickVariableDialog QLabel,
+#DFGSavePresetDialog QLabel
+{
+  padding-left: 4px;
+  color: #FFFFFF;
 }

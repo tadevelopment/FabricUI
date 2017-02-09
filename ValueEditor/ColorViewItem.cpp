@@ -333,7 +333,7 @@ void ColorViewItem::metadataChanged()
 void ColorViewItem::pickColor()
 {
   QColor color = toQColor();
-  QColorDialog qcd( color, NULL );
+  QColorDialog qcd( color, this->m_widget->parentWidget() );
   qcd.setOption(
     QColorDialog::ShowAlphaChannel,
     !m_colorRTVal.hasType( "RGB" )

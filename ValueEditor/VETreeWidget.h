@@ -6,6 +6,7 @@
 #define FABRICUI_VALUEEDITOR_VETREEWIDGET_H
 
 #include <QTreeWidget>
+#include <QKeyEvent>
 
 namespace FabricUI {
 namespace ValueEditor {
@@ -52,6 +53,8 @@ public slots:
 
   // This slot is triggered when an item is edited in the view
   void onItemEdited( QTreeWidgetItem* item, int column );
+
+  virtual void keyPressEvent(QKeyEvent *event) /*override*/;
 
 protected slots:
 

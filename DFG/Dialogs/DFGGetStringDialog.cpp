@@ -10,6 +10,8 @@ using namespace FabricUI::DFG;
 DFGGetStringDialog::DFGGetStringDialog(QWidget * parent, QString title, QString text, const DFGConfig & dfgConfig, bool setAlphaNum)
 : DFGBaseDialog(parent, true, dfgConfig)
 {
+  setObjectName( "DFGGetStringDialog" );
+  
   this->setWindowTitle(title);
   m_lineEdit = new QLineEdit(text);
   m_lineEdit->selectAll();
