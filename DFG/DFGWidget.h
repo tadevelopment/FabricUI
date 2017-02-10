@@ -1988,9 +1988,9 @@ namespace DFG {
         if (selectSource || selectTarget)
         {
           text = "Select ";
-          if      (!selectTarget)   text += "source";
-          else if (!selectSource)   text += "target";
-          else                      text += "source and target";
+          if      (!selectTarget)   text += "Source";
+          else if (!selectSource)   text += "Target";
+          else                      text += "Source and Target";
         }
         setText( text );
         connect( this, SIGNAL(triggered()),
@@ -2062,7 +2062,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_connection( connection )
       {
-        setText( "Remove connection" );
+        setText( "Remove Connection" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setShortcut( Qt::Key_D );
@@ -2113,7 +2113,7 @@ namespace DFG {
         , m_presetPortSetFromSrcName( presetPortSetFromSrcName )
       {
         QString presetName = getPresetNameFromPath(m_presetPath);
-        setText( "Insert '" + presetName + "' preset");
+        setText( "Insert '" + presetName + "' Preset");
         if (!shortcut.isEmpty())
           setShortcut( shortcut );
         connect( this, SIGNAL(triggered()),
