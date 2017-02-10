@@ -2152,6 +2152,16 @@ namespace DFG {
             GraphView::Node *node = m_dfgWidget->getUIGraph()->node(nodeName);
             if (node)
             {
+              // center the node.
+              QList<QPointF> centeredPos;
+              centeredPos.push_back(node->topLeftGraphPos());
+              centeredPos[0].rx() -= 0.5 * node->minimumWidth();
+              centeredPos[0].ry() -= 0.5 * node->minimumHeight();
+              QStringList nodeName;
+              nodeName.push_back(node->name_QS());
+              m_dfgWidget->getUIController()->cmdMoveNodes(nodeName, centeredPos);
+
+              // create the connections.
               GraphView::Pin *pinIn  = node->pin(m_presetPortIn .toUtf8().data());
               GraphView::Pin *pinOut = node->pin(m_presetPortOut.toUtf8().data());
               if (pinIn && pinOut)
