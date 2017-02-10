@@ -145,6 +145,8 @@ Connection::Connection(
           instBlockPort, SIGNAL(inCircleScenePositionChanged()),
           this, SLOT(dependencyMoved())
           );
+      Node * node = instBlockPort->instBlock()->node();
+      QObject::connect(node, SIGNAL(selectionChanged(FabricUI::GraphView::Node *, bool)), this, SLOT(dependencySelected()));
     }
     else if(target->targetType() == TargetType_MouseGrabber)
     {
@@ -318,11 +320,6 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
-  printf("---\n");
-  printf("m_isExposedConnection = %d\n", (int)m_isExposedConnection);
-  printf("            m_hovered = %d\n", (int)m_hovered);
-  printf("  m_hasSelectedTarget = %d\n", (int)m_hasSelectedTarget`);
-
   // [FE-6836] connections of IO ports are always dimmed.
   if (m_src->path() == m_dst->path() && !m_dragging && m_src->isRealPort() && m_dst->isRealPort())
   {
@@ -401,7 +398,6 @@ void Connection::dependencySelected()
 {
   bool oldHasSelectedTarget = m_hasSelectedTarget;
   m_hasSelectedTarget = false;
-
   if (m_src->targetType() == TargetType_Pin)
   {
     Node *node = ((Pin *)m_src)->node();
