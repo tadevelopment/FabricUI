@@ -3,6 +3,7 @@
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
+#include <QPainterPathStroker>
 
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/FixedPort.h>
@@ -51,6 +52,8 @@ Connection::Connection(
   m_hoverPen = m_graph->config().connectionHoverPen;
 
   m_clipRadius = m_graph->config().connectionExposeRadius;
+
+  m_shapePathWidth = 2.0f * qMax((float)m_defaultPen.widthF(), m_graph->config().connectionClickableDistance);
 
   QColor color = m_graph->config().connectionColor;
   if(m_graph->config().connectionUsePinColor || forceUseOfPinColor)
@@ -347,6 +350,11 @@ void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
   }
 }
 
+QPainterPath Connection::shape() const
+{
+  return m_shapePath;
+}
+
 void Connection::dependencyMoved()
 {
   QPointF currSrcPoint = srcPoint();
@@ -376,6 +384,10 @@ void Connection::dependencyMoved()
   );
 
   setPath(path);
+
+  QPainterPathStroker stroker;
+  stroker.setWidth(m_shapePathWidth);
+  m_shapePath = (stroker.createStroke(path) + path).simplified();
 
   if(m_isExposedConnection)
   {
