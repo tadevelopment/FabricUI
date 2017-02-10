@@ -52,7 +52,7 @@ Connection::Connection(
 
   m_clipRadius = m_graph->config().connectionExposeRadius;
 
-  m_shapePathWidth = 2.0f * qMax(1.0f, m_graph->config().connectionClickableDistance);
+  m_shapePathWidth = 2.0f * qMax((float)m_defaultPen.widthF(), m_graph->config().connectionClickableDistance);
 
   QColor color = m_graph->config().connectionColor;
   if(m_graph->config().connectionUsePinColor || forceUseOfPinColor)
