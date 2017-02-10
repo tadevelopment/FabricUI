@@ -629,7 +629,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
 
   result->addSeparator();
 
-  QMenu *insertPresetMenu = result->addMenu(tr("Insert preset"));
+  QMenu *insertPresetMenu = result->addMenu(tr("Insert Preset"));
   insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection, 
                                                                "Fabric.Core.Func.Report",
                                                                "value",
