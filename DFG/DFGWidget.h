@@ -5,11 +5,13 @@
 
 #include <QSettings>
 #include <QWidget>
+#include <QCursor>
 #include <QMenuBar>
 #include <QFileInfo>
 #include <QProxyStyle>
 #include <Commands/CommandStack.h>
 #include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/DFG/DFGConfig.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGExecHeaderWidget.h>
@@ -185,6 +187,7 @@ namespace DFG {
       static QMenu* nodeContextMenuCallback(FabricUI::GraphView::Node* node, void* userData);
       static QMenu* portContextMenuCallback(FabricUI::GraphView::Port* port, void* userData);
       static QMenu* fixedPortContextMenuCallback(FabricUI::GraphView::FixedPort* fixedPort, void* userData);
+      static QMenu* connectionContextMenuCallback(FabricUI::GraphView::Connection* connection, void* userData);
       static QMenu* sidePanelContextMenuCallback(FabricUI::GraphView::SidePanel* panel, void* userData);
 
       bool maybePushExec(
@@ -1959,6 +1962,247 @@ namespace DFG {
       DFGWidget *m_dfgWidget;
       GraphView::InstBlock *m_instBlock;
     };
+
+    class ConnectionSelectSourceAndTargetAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ConnectionSelectSourceAndTargetAction(
+        DFGWidget *dfgWidget,
+        GraphView::Connection *connection,
+        QObject *parent,
+        bool clearCurrentSelection,
+        bool selectSource,
+        bool selectTarget,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_connection( connection )
+        , m_clearCurrentSelection( clearCurrentSelection )
+        , m_selectSource( selectSource )
+        , m_selectTarget( selectTarget )
+      {
+        QString text = "null";
+        if (selectSource || selectTarget)
+        {
+          text = "Select ";
+          if      (!selectTarget)   text += "Source";
+          else if (!selectSource)   text += "Target";
+          else                      text += "Source and Target";
+        }
+        setText( text );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable && text != "null" );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        if (m_clearCurrentSelection)
+          m_dfgWidget->getUIGraph()->clearSelection();
+
+        if (m_selectSource)
+        {
+          if (m_connection->src()->targetType() == GraphView::TargetType_Pin)
+          {
+            GraphView::Pin  *pin  = (GraphView::Pin *)m_connection->src();
+            GraphView::Node *node = pin->node();
+            node->setSelected(true);
+          }
+          else if (m_connection->src()->targetType() == GraphView::TargetType_InstBlockPort)
+          {
+            GraphView::InstBlockPort *instBlockPort = (GraphView::InstBlockPort *)m_connection->src();
+            GraphView::Node *node = instBlockPort->instBlock()->node();
+            node->setSelected(true);
+          }
+        }
+
+        if (m_selectTarget)
+        {
+          if (m_connection->dst()->targetType() == GraphView::TargetType_Pin)
+          {
+            GraphView::Pin  *pin  = (GraphView::Pin *)m_connection->dst();
+            GraphView::Node *node = pin->node();
+            node->setSelected(true);
+          }
+          else if (m_connection->dst()->targetType() == GraphView::TargetType_InstBlockPort)
+          {
+            GraphView::InstBlockPort *instBlockPort = (GraphView::InstBlockPort *)m_connection->dst();
+            GraphView::Node *node = instBlockPort->instBlock()->node();
+            node->setSelected(true);
+          }
+        }
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Connection *m_connection;
+      bool m_clearCurrentSelection;
+      bool m_selectSource;
+      bool m_selectTarget;
+    };
+
+    class ConnectionRemoveAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ConnectionRemoveAction(
+        DFGWidget *dfgWidget,
+        GraphView::Connection *connection,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_connection( connection )
+      {
+        setText( "Remove Connection" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setShortcut( Qt::Key_D );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        std::vector<GraphView::ConnectionTarget *> srcs;
+        std::vector<GraphView::ConnectionTarget *> dsts;
+        srcs.push_back( m_connection->src() );
+        dsts.push_back( m_connection->dst() );
+        m_dfgWidget->getUIController()->gvcDoRemoveConnections(srcs, dsts);
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Connection *m_connection;
+    };
+
+    class ConnectionInsertPresetAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ConnectionInsertPresetAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        GraphView::Connection *connection,
+        QString presetPath,
+        QString presetPortIn,
+        QString presetPortOut,
+        QPoint  presetGlobalPos,
+        QKeySequence shortcut = QKeySequence(),
+        QString presetPortSetFromSrcName = "",
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_connection( connection )
+        , m_presetPath( presetPath )
+        , m_presetPortIn( presetPortIn )
+        , m_presetPortOut( presetPortOut )
+        , m_presetGlobalPos( presetGlobalPos )
+        , m_presetPortSetFromSrcName( presetPortSetFromSrcName )
+      {
+        QString presetName = getPresetNameFromPath(m_presetPath);
+        setText( "Insert '" + presetName + "' Preset");
+        if (!shortcut.isEmpty())
+          setShortcut( shortcut );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+      QString getPresetNameFromPath(QString presetPath)
+      {
+        QStringList path = presetPath.split(".");
+        return (path.size() > 0 ? path[path.size() - 1] : "");
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        if (m_dfgWidget->isEditable())
+        {
+          // if m_connection is NULL then look for
+          // a connection that the mouse is hovering.
+          if (!m_connection)
+          {
+            std::vector<GraphView::Connection *> connections = m_dfgWidget->getUIGraph()->connections();
+            for(int i=0;i<(int)connections.size();i++)
+              if (connections[i]->isHovered())
+              {
+                m_presetGlobalPos = QCursor::pos();
+                m_connection = connections[i];
+                break;
+              }
+          }
+          if (m_connection)
+          {
+            QString nodeName = m_dfgWidget->getUIController()->cmdAddInstFromPreset(m_presetPath, m_dfgWidget->getGraphViewWidget()->mapToGraph(m_presetGlobalPos));
+            GraphView::Node *node = m_dfgWidget->getUIGraph()->node(nodeName);
+            if (node)
+            {
+              // center the node.
+              QList<QPointF> centeredPos;
+              centeredPos.push_back(node->topLeftGraphPos());
+              centeredPos[0].rx() -= 0.5 * node->minimumWidth();
+              centeredPos[0].ry() -= 0.5 * node->minimumHeight();
+              QStringList nodeName;
+              nodeName.push_back(node->name_QS());
+              m_dfgWidget->getUIController()->cmdMoveNodes(nodeName, centeredPos);
+
+              // create the connections.
+              GraphView::Pin *pinIn  = node->pin(m_presetPortIn .toUtf8().data());
+              GraphView::Pin *pinOut = node->pin(m_presetPortOut.toUtf8().data());
+              if (pinIn && pinOut)
+              {
+                if (!m_presetPortSetFromSrcName.isEmpty())
+                {
+                  // set the port m_presetPortSetFromSrcName equal the connection's source name.
+                  GraphView::Pin *pin = node->pin(m_presetPortSetFromSrcName.toUtf8().data());
+                  if (pin && pin->dataType() == "String")
+                  {
+                    QString value = m_connection->src()->path_QS();
+                    FabricCore::RTVal rtval = FabricCore::RTVal::ConstructString(m_dfgWidget->getUIController()->getClient(), value.toUtf8().data());
+                    QString portPath = QString(node->name().c_str()) + "." + m_presetPortSetFromSrcName;
+                    m_dfgWidget->getUIController()->cmdSetPortDefaultValue(portPath, rtval);
+                  }
+                }
+                std::vector<GraphView::ConnectionTarget *> srcs;
+                std::vector<GraphView::ConnectionTarget *> dsts;
+                srcs.push_back( m_connection->src() );
+                dsts.push_back( pinIn );
+                srcs.push_back( pinOut );
+                dsts.push_back( m_connection->dst() );
+                m_dfgWidget->getUIController()->gvcDoAddConnections(srcs, dsts);
+              }
+            }
+            m_connection = NULL;
+          }
+        }
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Connection *m_connection;
+      QString m_presetPath;
+      QString m_presetPortIn;
+      QString m_presetPortOut;
+      QPoint  m_presetGlobalPos;
+      QString m_presetPortSetFromSrcName;
+    };
+
 } // namespace DFG
 } // namespace FabricUI
 

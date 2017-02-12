@@ -66,6 +66,7 @@ namespace FabricUI
       virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
       virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
+      virtual QPainterPath shape() const;
 
       bool isHovered()  { return m_hovered; }
 
@@ -87,6 +88,7 @@ namespace FabricUI
 
       QColor m_color;
       QPen m_defaultPen;
+      float m_shapePathWidth;
       QPen m_hoverPen;
       bool m_hovered;
 
@@ -98,6 +100,7 @@ namespace FabricUI
       bool m_hasSelectedTarget;
       float m_clipRadius;
       QPainterPath m_clipPath;
+      QPainterPath m_shapePath;
     };
 
   };
