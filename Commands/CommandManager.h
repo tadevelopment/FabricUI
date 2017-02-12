@@ -24,7 +24,7 @@ class CommandManager : public BaseCommandManager
     /// Implementation of BaseCommandManager
     BaseCommand* createCommand(
       const QString &cmdName, 
-      const QMap<QString, QString> &args = QMap<QString, QString>(), 
+      const QMap<QString, QString> &args = QMapString(), 
       bool doCmd = true);
 };
 

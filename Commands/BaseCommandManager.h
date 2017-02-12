@@ -7,7 +7,13 @@
 
 #include <QMap>
 #include <QList>
+#include <QString>
 #include "BaseCommand.h"
+
+
+// Need to use a typedef because gcc doesn't support
+// templated default arguments: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=39426 
+typedef QMap<QString, QString> QMapString;
 
 namespace FabricUI {
 namespace Commands {
@@ -37,7 +43,7 @@ class BaseCommandManager
     /// To overwrite depending of the registration mechanism.
     virtual BaseCommand* createCommand(
       const QString &cmdName, 
-      const QMap<QString, QString> &args = QMap<QString, QString>(), 
+      const QMap<QString, QString> &args = QMapString(), 
       bool doCmd = true
       );
 
@@ -91,7 +97,7 @@ class BaseCommandManager
       ) const;
       
     /// \internal
-    /// Called when a command (top or low) has been pushed \
+    /// Called when a command (top or low) has been pushed 
     /// to the undo stack (used by the python wrapping).
     /// To override.
     virtual void commandPushedCallback(

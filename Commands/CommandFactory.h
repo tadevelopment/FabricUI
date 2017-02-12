@@ -69,7 +69,7 @@ class BaseCommandFactory
     /// To override.
   	virtual BaseCommand *createCommand();
 
-    /// The user data. It is stored by the factory \
+    /// The user data. It is stored by the factory 
     /// so it can be given to the command when it's created.
   	void *m_userData;
 };
