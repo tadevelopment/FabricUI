@@ -226,14 +226,14 @@ void MainPanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     std::vector<Node*> nodes = m_graph->nodes();
     for(size_t i=0;i<nodes.size();i++)
     {
-      bool hit = nodes[i]->collidesWithItem(m_selectionRect, Qt::IntersectsItemShape);
+      bool hit = nodes[i]->collidesWithItem(m_selectionRect, Qt::IntersectsItemBoundingRect);
 
       if (hit && nodes[i]->isBackDropNode())
       {
         // backdrop nodes are only hit when the selection
         // rectangle intersects with the backdrop's border
         // or if it contains the entire backdrop.
-        hit = !m_selectionRect->collidesWithItem(nodes[i], Qt::ContainsItemShape);
+        hit = !m_selectionRect->collidesWithItem(nodes[i], Qt::ContainsItemBoundingRect);
       }
 
       if (hit && !nodes[i]->selected())
