@@ -33,25 +33,61 @@ Connection::Connection(
   , m_aboutToBeDeleted( false )
   , m_hasSelectedTarget( false )
 {
-  m_isExposedConnection =    m_src->targetType() == TargetType_Port
-                          || m_src->targetType() == TargetType_FixedPort
-                          || m_src->targetType() == TargetType_ProxyPort
-                          || m_dst->targetType() == TargetType_Port
-                          || m_dst->targetType() == TargetType_FixedPort
-                          || m_dst->targetType() == TargetType_ProxyPort;
+  bool isExposedConnectionSrc = (   m_src->targetType() == TargetType_Port
+                                 || m_src->targetType() == TargetType_FixedPort
+                                 || m_src->targetType() == TargetType_ProxyPort );
+  bool isExposedConnectionDst = (   m_dst->targetType() == TargetType_Port
+                                 || m_dst->targetType() == TargetType_FixedPort
+                                 || m_dst->targetType() == TargetType_ProxyPort );
 
-  if(m_isExposedConnection)
+  m_isExposedConnection = (   isExposedConnectionSrc
+                           || isExposedConnectionDst );
+
+  QString strTooltip = "Connection between";
   {
-    m_defaultPen = m_graph->config().connectionExposePen;
+    FTL::CStrRef srcPortName     = "<unknown / undefined>";
+    FTL::CStrRef srcPortDataType = "<unknown / undefined>";
+    FTL::CStrRef dstPortName     = "<unknown / undefined>";
+    FTL::CStrRef dstPortDataType = "<unknown / undefined>";
+    for (int i=0;i<2;i++)
+    {
+      ConnectionTarget *target       = (i == 0 ? src             : dst);
+      FTL::CStrRef     &portName     = (i == 0 ? srcPortName     : dstPortName);
+      FTL::CStrRef     &portDataType = (i == 0 ? srcPortDataType : dstPortDataType);
+      switch (target->targetType())
+      {
+        case TargetType_Pin:
+        {
+          Pin &t = *(Pin *)target;
+          if (!t.dataType().empty())  portDataType = t.dataType();
+          if (!t.name()    .empty())  portName     = t.name();
+        } break;
+        case TargetType_Port:
+        {
+          Port &t = *(Port *)target;
+          if (!t.dataType().empty())  portDataType = t.dataType();
+          if (!t.name()    .empty())  portName     = t.name();
+        } break;
+        case TargetType_InstBlockPort:
+        {
+          InstBlockPort &t = *(InstBlockPort *)target;
+          if (!t.dataType().empty())  portDataType = t.dataType();
+          if (!t.name()    .empty())  portName     = t.name();
+        } break;
+        default:
+          break;
+      };
+    }
+    strTooltip += QString("\n  ") + "\"" + srcPortName.c_str() + "\" (data type: \"" + srcPortDataType.c_str() + "\"";
+    strTooltip += QString("\nand");
+    strTooltip += QString("\n  ") + "\"" + dstPortName.c_str() + "\" (data type: \"" + dstPortDataType.c_str() + "\"";
   }
-  else
-  {
-    m_defaultPen = m_graph->config().connectionDefaultPen;
-  }
-  m_hoverPen = m_graph->config().connectionHoverPen;
+  setToolTip(strTooltip);
 
-  m_clipRadius = m_graph->config().connectionExposeRadius;
-
+  if(m_isExposedConnection)   m_defaultPen = m_graph->config().connectionExposePen;
+  else                        m_defaultPen = m_graph->config().connectionDefaultPen;
+  m_hoverPen       = m_graph->config().connectionHoverPen;
+  m_clipRadius     = m_graph->config().connectionExposeRadius;
   m_shapePathWidth = 2.0f * qMax((float)m_defaultPen.widthF(), m_graph->config().connectionClickableDistance);
 
   QColor color = m_graph->config().connectionColor;
@@ -59,9 +95,7 @@ Connection::Connection(
   {
     for(int i=0;i<2;i++)
     {
-      ConnectionTarget * target = src;
-      if(i>0)
-        target = dst;
+      ConnectionTarget *target = (i == 0 ? src : dst);
 
       if(target->targetType() == TargetType_Pin)
       {
@@ -358,32 +392,47 @@ void Connection::dependencyMoved()
   // painter->setRenderHint(QPainter::Antialiasing,true);
   // painter->setRenderHint(QPainter::HighQualityAntialiasing,true);
 
+  // create and set the path.
+  // (note: we draw the curve forward and then backward
+  //  to ensure that the polygon is closed in the top left.
+  //  not doing this results in an open polygon, which 
+  //  make the hover area for the curve very big.)
   QPainterPath path;
   path.moveTo(currSrcPoint);
+  if (   m_graph->config().connectionDrawAsCurves
+      || m_isExposedConnection )
+  {
+    path.cubicTo(
+        currSrcPoint + QPointF(tangentLength, 0), 
+        currDstPoint - QPointF(tangentLength, 0), 
+        currDstPoint
+    );
 
-  path.cubicTo(
-      currSrcPoint + QPointF(tangentLength, 0), 
-      currDstPoint - QPointF(tangentLength, 0), 
-      currDstPoint
-  );
+    path.cubicTo(
+        currDstPoint - QPointF(tangentLength, 0), 
+        currSrcPoint + QPointF(tangentLength, 0), 
+        currSrcPoint
+    );
+  }
+  else
+  {
+    QPointF x(0.5 * (currDstPoint.x() - currSrcPoint.x()) , 0);
 
-  // we draw the curve the other way as well to
-  // ensure that the polygon is closed in the top left.
-  // not doing this results in an open polygon, which 
-  // make the hover area for the curve very big.
-  path.cubicTo(
-      currDstPoint - QPointF(tangentLength, 0), 
-      currSrcPoint + QPointF(tangentLength, 0), 
-      currSrcPoint
-  );
+    path.lineTo( currSrcPoint + x );
+    path.lineTo( currDstPoint - x );
+    path.lineTo( currDstPoint );
 
+    path.lineTo( currDstPoint - x );
+    path.lineTo( currSrcPoint + x );
+    path.lineTo( currSrcPoint );
+  }
   setPath(path);
 
   QPainterPathStroker stroker;
   stroker.setWidth(m_shapePathWidth);
   m_shapePath = (stroker.createStroke(path) + path).simplified();
 
-  if(m_isExposedConnection)
+  if (m_isExposedConnection)
   {
     m_clipPath = QPainterPath();
     m_clipPath.addEllipse(currSrcPoint, m_clipRadius, m_clipRadius);
