@@ -116,6 +116,7 @@ env.MergeFlags(qtFlags)
 dirs = [
   'Util',
   'Style',
+  'Commands',
   'Viewports',
   'KLEditor',
   'Menus',
@@ -299,6 +300,7 @@ if uiLibPrefix == 'ui':
         shibokenDir.File('fabricui_dfg.xml'),
         shibokenDir.File('fabricui_viewports.xml'),
         shibokenDir.File('fabricui_util.xml'),
+        shibokenDir.File('fabricui_commands.xml'),
         shibokenDir.File('fabricui_scenehub.xml'),
         ],
       [
@@ -334,6 +336,7 @@ if uiLibPrefix == 'ui':
 
     pysideEnv.Append(CPPPATH = [
         pysideEnv.Dir('Util').srcnode(),
+        pysideEnv.Dir('Commands').srcnode(),
         pysideEnv.Dir('Menus').srcnode(),
         pysideEnv.Dir('DFG').srcnode(),
         pysideEnv.Dir('DFG/DFGUICmd').srcnode(),
