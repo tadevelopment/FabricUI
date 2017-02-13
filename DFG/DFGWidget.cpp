@@ -1802,8 +1802,16 @@ void DFGWidget::onToggleDimConnections()
   std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
   for(size_t i=0;i<connections.size();i++)
     connections[i]->update();
-  // [Julien] FE-5264 Sets the dimConnectionLines property to the settings
   if(getSettings()) getSettings()->setValue( "DFGWidget/dimConnectionLines", m_uiGraph->config().dimConnectionLines );
+}
+
+void DFGWidget::onToggleConnectionDrawAsCurves()
+{
+  m_uiGraph->config().connectionDrawAsCurves = !m_uiGraph->config().connectionDrawAsCurves;
+  std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
+  for(size_t i=0;i<connections.size();i++)
+    connections[i]->dependencyMoved();
+  if(getSettings()) getSettings()->setValue( "DFGWidget/connectionDrawAsCurves", m_uiGraph->config().connectionDrawAsCurves );
 }
 
 void DFGWidget::onTogglePortsCentered()
@@ -1811,7 +1819,6 @@ void DFGWidget::onTogglePortsCentered()
   m_uiGraph->config().portsCentered = !m_uiGraph->config().portsCentered;
   m_uiGraph->sidePanel(GraphView::PortType_Input)->updateItemGroupScroll();  
   m_uiGraph->sidePanel(GraphView::PortType_Output)->updateItemGroupScroll();  
-  // [Julien] FE-5264 Sets the onTogglePortsCentered property to the settings
   if(getSettings()) getSettings()->setValue( "DFGWidget/portsCentered", m_uiGraph->config().portsCentered );
 }
 
@@ -2280,20 +2287,31 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
   editMenu->addAction(pasteNodesAction);
 
   // view -> graph view menu
+
   QMenu *graphViewMenu = viewMenu->addMenu(tr("Graph View"));
+
   QAction * dimLinesAction = graphViewMenu->addAction("Dim Connections");
   dimLinesAction->setCheckable(true);
   dimLinesAction->setChecked(m_uiGraph->config().dimConnectionLines);
   QObject::connect(dimLinesAction, SIGNAL(triggered()), this, SLOT(onToggleDimConnections()));
+
+  QAction * connectionDrawAsCurvesAction = graphViewMenu->addAction("Display Connections as Curves");
+  connectionDrawAsCurvesAction->setCheckable(true);
+  connectionDrawAsCurvesAction->setChecked(m_uiGraph->config().connectionDrawAsCurves);
+  QObject::connect(connectionDrawAsCurvesAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionDrawAsCurves()));
+
   QAction * portsCenteredAction = graphViewMenu->addAction("Side Ports Centered");
   portsCenteredAction->setCheckable(true);
   portsCenteredAction->setChecked(m_uiGraph->config().portsCentered);
   QObject::connect(portsCenteredAction, SIGNAL(triggered()), this, SLOT(onTogglePortsCentered()));
+
   graphViewMenu->addSeparator();
+
   QAction * displayGrid = graphViewMenu->addAction("Display Grid");
   displayGrid->setCheckable(true);
   displayGrid->setChecked(m_uiGraph->config().mainPanelDrawGrid);
   QObject::connect(displayGrid, SIGNAL(triggered()), this, SLOT(onToggleDrawGrid()));
+
   QAction * snapToGrid = graphViewMenu->addAction("Snap to Grid");
   snapToGrid->setCheckable(true);
   snapToGrid->setChecked(m_uiGraph->config().mainPanelGridSnap);
