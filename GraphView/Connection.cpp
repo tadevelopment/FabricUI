@@ -9,6 +9,7 @@
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
+#include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Port.h>
 
@@ -43,44 +44,54 @@ Connection::Connection(
   m_isExposedConnection = (   isExposedConnectionSrc
                            || isExposedConnectionDst );
 
-  QString strTooltip = "Connection between";
+  QString strTooltip = "<p style='white-space:pre'>Connection between";
   {
-    FTL::CStrRef srcPortName     = "<unknown / undefined>";
-    FTL::CStrRef srcPortDataType = "<unknown / undefined>";
-    FTL::CStrRef dstPortName     = "<unknown / undefined>";
-    FTL::CStrRef dstPortDataType = "<unknown / undefined>";
+    QString srcPortName;
+    QString srcPortParent;
+    QString srcPortDataType;
+    QString dstPortName;
+    QString dstPortParent;
+    QString dstPortDataType;
     for (int i=0;i<2;i++)
     {
       ConnectionTarget *target       = (i == 0 ? src             : dst);
-      FTL::CStrRef     &portName     = (i == 0 ? srcPortName     : dstPortName);
-      FTL::CStrRef     &portDataType = (i == 0 ? srcPortDataType : dstPortDataType);
+      QString          &portName     = (i == 0 ? srcPortName     : dstPortName);
+      QString          &portParent   = (i == 0 ? srcPortParent   : dstPortParent);
+      QString          &portDataType = (i == 0 ? srcPortDataType : dstPortDataType);
       switch (target->targetType())
       {
         case TargetType_Pin:
         {
           Pin &t = *(Pin *)target;
-          if (!t.dataType().empty())  portDataType = t.dataType();
-          if (!t.name()    .empty())  portName     = t.name();
+          if (!t.name()    .empty())  portName     = t.name().c_str();
+          if (!t.dataType().empty())  portDataType = t.dataType().c_str();
+          portParent = t.node()->name_QS() + QString(".");
         } break;
         case TargetType_Port:
         {
           Port &t = *(Port *)target;
-          if (!t.dataType().empty())  portDataType = t.dataType();
-          if (!t.name()    .empty())  portName     = t.name();
+          if (!t.name()    .empty())  portName     = t.name().c_str();
+          if (!t.dataType().empty())  portDataType = t.dataType().c_str();
         } break;
         case TargetType_InstBlockPort:
         {
           InstBlockPort &t = *(InstBlockPort *)target;
-          if (!t.dataType().empty())  portDataType = t.dataType();
-          if (!t.name()    .empty())  portName     = t.name();
+          if (!t.name()    .empty())  portName     = t.name().c_str();
+          if (!t.dataType().empty())  portDataType = t.dataType().c_str();
+          portParent = t.instBlock()->node()->name_QS() + QString(".") + t.instBlock()->name_QS() + QString(".");
         } break;
         default:
           break;
       };
     }
-    strTooltip += QString("\n  ") + "\"" + srcPortName.c_str() + "\" (data type: \"" + srcPortDataType.c_str() + "\"";
-    strTooltip += QString("\nand");
-    strTooltip += QString("\n  ") + "\"" + dstPortName.c_str() + "\" (data type: \"" + dstPortDataType.c_str() + "\"";
+    if (srcPortName    .isEmpty())  srcPortName     = "unknown";
+    if (srcPortDataType.isEmpty())  srcPortDataType = "unknown";
+    if (dstPortName    .isEmpty())  dstPortName     = "unknown";
+    if (dstPortDataType.isEmpty())  dstPortDataType = "unknown";
+    strTooltip += QString("<br/>") + "<big><b>&nbsp;&nbsp;&nbsp;&nbsp;- <font color=#0000aa>" + srcPortParent + srcPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + srcPortDataType + "</font></b>)" + "&nbsp;&nbsp;&nbsp;&nbsp;";
+    strTooltip += QString("<br/>and");
+    strTooltip += QString("<br/>") + "<big><b>&nbsp;&nbsp;&nbsp;&nbsp;- <font color=#0000aa>" + dstPortParent + dstPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + dstPortDataType + "</font></b>)" + "&nbsp;&nbsp;&nbsp;&nbsp;";
+    strTooltip += QString("<p/>");
   }
   setToolTip(strTooltip);
 
@@ -392,47 +403,32 @@ void Connection::dependencyMoved()
   // painter->setRenderHint(QPainter::Antialiasing,true);
   // painter->setRenderHint(QPainter::HighQualityAntialiasing,true);
 
-  // create and set the path.
-  // (note: we draw the curve forward and then backward
-  //  to ensure that the polygon is closed in the top left.
-  //  not doing this results in an open polygon, which 
-  //  make the hover area for the curve very big.)
   QPainterPath path;
   path.moveTo(currSrcPoint);
-  if (   m_graph->config().connectionDrawAsCurves
-      || m_isExposedConnection )
-  {
-    path.cubicTo(
-        currSrcPoint + QPointF(tangentLength, 0), 
-        currDstPoint - QPointF(tangentLength, 0), 
-        currDstPoint
-    );
 
-    path.cubicTo(
-        currDstPoint - QPointF(tangentLength, 0), 
-        currSrcPoint + QPointF(tangentLength, 0), 
-        currSrcPoint
-    );
-  }
-  else
-  {
-    QPointF x(0.5 * (currDstPoint.x() - currSrcPoint.x()) , 0);
+  path.cubicTo(
+      currSrcPoint + QPointF(tangentLength, 0), 
+      currDstPoint - QPointF(tangentLength, 0), 
+      currDstPoint
+  );
 
-    path.lineTo( currSrcPoint + x );
-    path.lineTo( currDstPoint - x );
-    path.lineTo( currDstPoint );
+  // we draw the curve the other way as well to
+  // ensure that the polygon is closed in the top left.
+  // not doing this results in an open polygon, which 
+  // make the hover area for the curve very big.
+  path.cubicTo(
+      currDstPoint - QPointF(tangentLength, 0), 
+      currSrcPoint + QPointF(tangentLength, 0), 
+      currSrcPoint
+  );
 
-    path.lineTo( currDstPoint - x );
-    path.lineTo( currSrcPoint + x );
-    path.lineTo( currSrcPoint );
-  }
   setPath(path);
 
   QPainterPathStroker stroker;
   stroker.setWidth(m_shapePathWidth);
   m_shapePath = (stroker.createStroke(path) + path).simplified();
 
-  if (m_isExposedConnection)
+  if(m_isExposedConnection)
   {
     m_clipPath = QPainterPath();
     m_clipPath.addEllipse(currSrcPoint, m_clipRadius, m_clipRadius);
