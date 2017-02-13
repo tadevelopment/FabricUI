@@ -212,6 +212,20 @@ Connection::Connection(
 
 Connection::~Connection()
 {
+  for (int i=0;i<2;i++)
+  {
+    ConnectionTarget *target = (i == 0 ? m_src : m_dst);
+    if (target->targetType() == TargetType_Pin)
+    {
+      Pin &t = *(Pin *)target;
+      t.node()->setConnectionHighlighted(false);
+    }
+    if (target->targetType() == QGraphicsItemType_InstBlockPort)
+    {
+      InstBlockPort &t = *(InstBlockPort *)target;
+      t.instBlock()->node()->setConnectionHighlighted(false);
+    }
+  }
 }
 
 void Connection::setColor(QColor color)
@@ -262,14 +276,50 @@ void Connection::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
   m_hovered = true;
   setPen(m_hoverPen);
+
+  for (int i=0;i<2;i++)
+  {
+    ConnectionTarget *target = (i == 0 ? m_src : m_dst);
+    if (target->targetType() == TargetType_Pin)
+    {
+      Pin &t = *(Pin *)target;
+      t.node()->setConnectionHighlighted(m_hovered);
+    }
+    if (target->targetType() == QGraphicsItemType_InstBlockPort)
+    {
+      InstBlockPort &t = *(InstBlockPort *)target;
+      t.instBlock()->node()->setConnectionHighlighted(m_hovered);
+    }
+  }
+
   QGraphicsPathItem::hoverEnterEvent(event);
+
+  graph()->update();
 }
 
 void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
   m_hovered = false;
   setPen(m_defaultPen);
+
+  for (int i=0;i<2;i++)
+  {
+    ConnectionTarget *target = (i == 0 ? m_src : m_dst);
+    if (target->targetType() == TargetType_Pin)
+    {
+      Pin &t = *(Pin *)target;
+      t.node()->setConnectionHighlighted(m_hovered);
+    }
+    if (target->targetType() == QGraphicsItemType_InstBlockPort)
+    {
+      InstBlockPort &t = *(InstBlockPort *)target;
+      t.instBlock()->node()->setConnectionHighlighted(m_hovered);
+    }
+  }
+
   QGraphicsPathItem::hoverLeaveEvent(event);
+
+  graph()->update();
 }
 
 void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
