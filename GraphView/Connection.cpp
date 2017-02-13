@@ -220,7 +220,7 @@ Connection::~Connection()
       Pin &t = *(Pin *)target;
       t.node()->setConnectionHighlighted(false);
     }
-    if (target->targetType() == QGraphicsItemType_InstBlockPort)
+    if (target->targetType() == TargetType_InstBlockPort)
     {
       InstBlockPort &t = *(InstBlockPort *)target;
       t.instBlock()->node()->setConnectionHighlighted(false);
@@ -287,10 +287,9 @@ void Connection::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
         Pin &t = *(Pin *)target;
         t.node()->setConnectionHighlighted(m_hovered);
       }
-      if (target->targetType() == QGraphicsItemType_InstBlockPort)
+      if (target->targetType() == TargetType_InstBlockPort)
       {
         InstBlockPort &t = *(InstBlockPort *)target;
-        t.node()->setConnectionHighlighted(m_hovered);
         t.instBlock()->node()->setConnectionHighlighted(m_hovered);
       }
     }
@@ -317,10 +316,9 @@ void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
         Pin &t = *(Pin *)target;
         t.node()->setConnectionHighlighted(m_hovered);
       }
-      if (target->targetType() == QGraphicsItemType_InstBlockPort)
+      if (target->targetType() == TargetType_InstBlockPort)
       {
         InstBlockPort &t = *(InstBlockPort *)target;
-        t.node()->setConnectionHighlighted(m_hovered);
         t.instBlock()->node()->setConnectionHighlighted(m_hovered);
       }
     }
