@@ -2304,6 +2304,10 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
   connectionShowTooltipAction->setCheckable(true);
   connectionShowTooltipAction->setChecked(m_uiGraph->config().connectionShowTooltip);
   QObject::connect(connectionShowTooltipAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionShowTooltip()));
+  QAction * highlightConnectionTargetsAction = graphViewMenu->addAction("Highlight Connection Targets");
+  highlightConnectionTargetsAction->setCheckable(true);
+  highlightConnectionTargetsAction->setChecked(m_uiGraph->config().highlightConnectionTargets);
+  QObject::connect(highlightConnectionTargetsAction, SIGNAL(triggered()), this, SLOT(onToggleHighlightConnectionTargets()));
   QAction * portsCenteredAction = graphViewMenu->addAction("Side Ports Centered");
   portsCenteredAction->setCheckable(true);
   portsCenteredAction->setChecked(m_uiGraph->config().portsCentered);
