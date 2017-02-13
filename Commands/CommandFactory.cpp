@@ -4,6 +4,7 @@
 
 #include <string>
 #include "CommandFactory.h"
+#include <typeinfo>
 
 using namespace FabricUI;
 using namespace Commands;
@@ -16,7 +17,7 @@ CommandFactoryRegistry::CommandFactoryRegistry()
 }
 
 void CommandFactoryRegistry::RegisterFactory(
-  QString cmdName, 
+  const QString &cmdName, 
   BaseCommandFactory *factory) 
 {
   if (!IsCommandRegistered(cmdName))
@@ -24,13 +25,16 @@ void CommandFactoryRegistry::RegisterFactory(
 }
 
 bool CommandFactoryRegistry::IsCommandRegistered(
-  QString cmdName) 
+  const QString &cmdName,
+  QString &factoryType) 
 {
-  return s_registeredCmds.count(cmdName) != 0;
+  bool isRegistered = s_registeredCmds.count(cmdName) != 0;
+  factoryType = isRegistered ? typeid(*s_registeredCmds[cmdName]).name() : "";
+  return isRegistered;
 }
 
 BaseCommand* CommandFactoryRegistry::CreateCommand(
-  QString cmdName) 
+  const QString &cmdName) 
 {
   if (!IsCommandRegistered(cmdName))
     throw( 

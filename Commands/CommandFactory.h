@@ -31,19 +31,21 @@ class CommandFactoryRegistry
   	/// \internal
     /// Called from the factory
   	static void RegisterFactory(
-      QString cmdName, 
+      const QString &cmdName, 
       BaseCommandFactory *factory
       );
 
     /// Checks if a command has been registered under the name "cmdName".
+    /// provide the name of the factory that creates the command: factoryType.
   	static bool IsCommandRegistered(
-      QString cmdName
+      const QString &cmdName,
+      QString &factoryType = QString()
       );
 
     /// Creates a registered command named "cmdName".
     /// Throws an error if the command cannot be created (has to be registered first).
     static BaseCommand* CreateCommand(
-      QString cmdName
+      const QString &cmdName
       );
 
   private:
@@ -95,7 +97,7 @@ class CommandFactory : public BaseCommandFactory
 
     /// Registers the command <T> under the name "cmdName".
     static void RegisterCommand(
-      QString cmdName,
+      const QString &cmdName,
       void *userData = 0) 
     {
 	    CommandFactoryRegistry::RegisterFactory(
