@@ -290,6 +290,7 @@ void Connection::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
       if (target->targetType() == QGraphicsItemType_InstBlockPort)
       {
         InstBlockPort &t = *(InstBlockPort *)target;
+        t.node()->setConnectionHighlighted(m_hovered);
         t.instBlock()->node()->setConnectionHighlighted(m_hovered);
       }
     }
@@ -319,6 +320,7 @@ void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
       if (target->targetType() == QGraphicsItemType_InstBlockPort)
       {
         InstBlockPort &t = *(InstBlockPort *)target;
+        t.node()->setConnectionHighlighted(m_hovered);
         t.instBlock()->node()->setConnectionHighlighted(m_hovered);
       }
     }
