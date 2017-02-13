@@ -22,7 +22,7 @@ class CommandFactoryRegistry
 
     To register a command: CommandFactory<cmdType>::RegisterCommand(cmdName, userData);
     To create a command: BaseCommand *cmd = CommandFactoryRegistry::CreateCommand(cmdName);
-    To check that a command is registered: CommandFactoryRegistry::IsCommandRegistered(cmdName);
+    To check that a command is registered: CommandFactoryRegistry::IsCommandRegistered(cmdName, factoryType);
   */
 
   public:
@@ -39,7 +39,7 @@ class CommandFactoryRegistry
     /// provide the name of the factory that creates the command: factoryType.
   	static bool IsCommandRegistered(
       const QString &cmdName,
-      QString &factoryType = QString()
+      QString &factoryType
       );
 
     /// Creates a registered command named "cmdName".

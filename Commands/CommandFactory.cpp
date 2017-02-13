@@ -20,7 +20,8 @@ void CommandFactoryRegistry::RegisterFactory(
   const QString &cmdName, 
   BaseCommandFactory *factory) 
 {
-  if (!IsCommandRegistered(cmdName))
+  QString factoryType;
+  if (!IsCommandRegistered(cmdName, factoryType))
     s_registeredCmds[cmdName] = factory;
 }
 
@@ -36,7 +37,8 @@ bool CommandFactoryRegistry::IsCommandRegistered(
 BaseCommand* CommandFactoryRegistry::CreateCommand(
   const QString &cmdName) 
 {
-  if (!IsCommandRegistered(cmdName))
+  QString factoryType;
+  if (!IsCommandRegistered(cmdName, factoryType))
     throw( 
       std::string(
         QString("Cannot create command, '" + cmdName + "' is not registered").toUtf8().constData() 
