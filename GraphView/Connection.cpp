@@ -88,9 +88,9 @@ Connection::Connection(
     if (srcPortDataType.isEmpty())  srcPortDataType = "unknown";
     if (dstPortName    .isEmpty())  dstPortName     = "unknown";
     if (dstPortDataType.isEmpty())  dstPortDataType = "unknown";
-    strTooltip += QString("<br/>") + "<big><b>&nbsp;&nbsp;&nbsp;&nbsp;- <font color=#0000aa>" + srcPortParent + srcPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + srcPortDataType + "</font></b>)" + "&nbsp;&nbsp;&nbsp;&nbsp;";
+    strTooltip += QString("<br/>") + "<big><b>    - " + srcPortParent + "<font color=#0000aa>" + srcPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + srcPortDataType + "</font></b>)" + "    ";
     strTooltip += QString("<br/>and");
-    strTooltip += QString("<br/>") + "<big><b>&nbsp;&nbsp;&nbsp;&nbsp;- <font color=#0000aa>" + dstPortParent + dstPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + dstPortDataType + "</font></b>)" + "&nbsp;&nbsp;&nbsp;&nbsp;";
+    strTooltip += QString("<br/>") + "<big><b>    - " + dstPortParent + "<font color=#0000aa>" + dstPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + dstPortDataType + "</font></b>)" + "    ";
     strTooltip += QString("<p/>");
   }
   setToolTip(strTooltip);
