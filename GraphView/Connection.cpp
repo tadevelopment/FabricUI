@@ -44,7 +44,7 @@ Connection::Connection(
   m_isExposedConnection = (   isExposedConnectionSrc
                            || isExposedConnectionDst );
 
-  QString strTooltip = "<p style='white-space:pre'>Connection between";
+  m_tooltip = "<p style='white-space:pre'>Connection between";
   {
     QString srcPortName;
     QString srcPortParent;
@@ -88,12 +88,12 @@ Connection::Connection(
     if (srcPortDataType.isEmpty())  srcPortDataType = "unknown";
     if (dstPortName    .isEmpty())  dstPortName     = "unknown";
     if (dstPortDataType.isEmpty())  dstPortDataType = "unknown";
-    strTooltip += QString("<br/>") + "<big><b>    - " + srcPortParent + "<font color=#0000aa>" + srcPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + srcPortDataType + "</font></b>)" + "    ";
-    strTooltip += QString("<br/>and");
-    strTooltip += QString("<br/>") + "<big><b>    - " + dstPortParent + "<font color=#0000aa>" + dstPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + dstPortDataType + "</font></b>)" + "    ";
-    strTooltip += QString("<p/>");
+    m_tooltip += QString("<br/>") + "<big><b>    - " + srcPortParent + "<font color=#0000aa>" + srcPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + srcPortDataType + "</font></b>)" + "    ";
+    m_tooltip += QString("<br/>and");
+    m_tooltip += QString("<br/>") + "<big><b>    - " + dstPortParent + "<font color=#0000aa>" + dstPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + dstPortDataType + "</font></b>)" + "    ";
+    m_tooltip += QString("<p/>");
   }
-  setToolTip(strTooltip);
+  enableToolTip(m_graph->config().connectionShowTooltip);
 
   if(m_isExposedConnection)   m_defaultPen = m_graph->config().connectionExposePen;
   else                        m_defaultPen = m_graph->config().connectionDefaultPen;
@@ -277,24 +277,28 @@ void Connection::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
   m_hovered = true;
   setPen(m_hoverPen);
 
-  for (int i=0;i<2;i++)
+  if (graph()->config().highlightConnectionTargets)
   {
-    ConnectionTarget *target = (i == 0 ? m_src : m_dst);
-    if (target->targetType() == TargetType_Pin)
+    for (int i=0;i<2;i++)
     {
-      Pin &t = *(Pin *)target;
-      t.node()->setConnectionHighlighted(m_hovered);
-    }
-    if (target->targetType() == QGraphicsItemType_InstBlockPort)
-    {
-      InstBlockPort &t = *(InstBlockPort *)target;
-      t.instBlock()->node()->setConnectionHighlighted(m_hovered);
+      ConnectionTarget *target = (i == 0 ? m_src : m_dst);
+      if (target->targetType() == TargetType_Pin)
+      {
+        Pin &t = *(Pin *)target;
+        t.node()->setConnectionHighlighted(m_hovered);
+      }
+      if (target->targetType() == QGraphicsItemType_InstBlockPort)
+      {
+        InstBlockPort &t = *(InstBlockPort *)target;
+        t.instBlock()->node()->setConnectionHighlighted(m_hovered);
+      }
     }
   }
 
   QGraphicsPathItem::hoverEnterEvent(event);
 
-  graph()->update();
+  if (graph()->config().highlightConnectionTargets)
+    graph()->update();
 }
 
 void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
@@ -302,24 +306,28 @@ void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
   m_hovered = false;
   setPen(m_defaultPen);
 
-  for (int i=0;i<2;i++)
+  if (graph()->config().highlightConnectionTargets)
   {
-    ConnectionTarget *target = (i == 0 ? m_src : m_dst);
-    if (target->targetType() == TargetType_Pin)
+    for (int i=0;i<2;i++)
     {
-      Pin &t = *(Pin *)target;
-      t.node()->setConnectionHighlighted(m_hovered);
-    }
-    if (target->targetType() == QGraphicsItemType_InstBlockPort)
-    {
-      InstBlockPort &t = *(InstBlockPort *)target;
-      t.instBlock()->node()->setConnectionHighlighted(m_hovered);
+      ConnectionTarget *target = (i == 0 ? m_src : m_dst);
+      if (target->targetType() == TargetType_Pin)
+      {
+        Pin &t = *(Pin *)target;
+        t.node()->setConnectionHighlighted(m_hovered);
+      }
+      if (target->targetType() == QGraphicsItemType_InstBlockPort)
+      {
+        InstBlockPort &t = *(InstBlockPort *)target;
+        t.instBlock()->node()->setConnectionHighlighted(m_hovered);
+      }
     }
   }
 
   QGraphicsPathItem::hoverLeaveEvent(event);
 
-  graph()->update();
+  if (graph()->config().highlightConnectionTargets)
+    graph()->update();
 }
 
 void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)

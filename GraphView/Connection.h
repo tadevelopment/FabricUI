@@ -70,6 +70,9 @@ namespace FabricUI
 
       bool isHovered()  { return m_hovered; }
 
+      void enableToolTip(bool state)
+        { setToolTip(state ? m_tooltip : QString()); }
+
     public slots:
 
       virtual void dependencyMoved();
@@ -101,6 +104,8 @@ namespace FabricUI
       float m_clipRadius;
       QPainterPath m_clipPath;
       QPainterPath m_shapePath;
+
+      QString m_tooltip;
     };
 
   };
