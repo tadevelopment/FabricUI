@@ -96,8 +96,6 @@ namespace FabricUI
       QPen connectionExposePen;
       float connectionExposeRadius;
       QPen connectionHoverPen;
-      float connectionFixedTangentLength;
-      float connectionPercentualTangentLength;
       QColor connectionColor;
       bool connectionUsePinColor;
       bool connectionShowTooltip;

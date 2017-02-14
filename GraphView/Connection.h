@@ -83,8 +83,6 @@ namespace FabricUI
 
     private:
 
-      float computeTangentLength() const;
-
       Graph * const m_graph;
       ConnectionTarget * const m_src;
       ConnectionTarget * const m_dst;

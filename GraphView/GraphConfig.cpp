@@ -172,9 +172,7 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( connectionExposePen, QPen(connectionColor, 1.5) );
   GET_PARAMETER( connectionExposeRadius, 50.0 );
   GET_PARAMETER( connectionHoverPen, QPen(QColor(170, 170, 170), 2.0, Qt::SolidLine) );
-  GET_PARAMETER( connectionFixedTangentLength, 10.0f );
-  GET_PARAMETER( connectionPercentualTangentLength, 45.0f );
-  GET_PARAMETER( connectionClickableDistance, 5.0f );
+  GET_PARAMETER( connectionClickableDistance, 4.0f );
   GET_PARAMETER( connectionDrawAsCurves, true );
   GET_PARAMETER( portsCentered, true );
 
