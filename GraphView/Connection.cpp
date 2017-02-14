@@ -44,7 +44,7 @@ Connection::Connection(
   m_isExposedConnection = (   isExposedConnectionSrc
                            || isExposedConnectionDst );
 
-  m_tooltip = "<p style='white-space:pre'>Connection between";
+  m_tooltip = "<p style='white-space:pre'>";
   {
     QString srcPortName;
     QString srcPortParent;
@@ -88,10 +88,10 @@ Connection::Connection(
     if (srcPortDataType.isEmpty())  srcPortDataType = "unknown";
     if (dstPortName    .isEmpty())  dstPortName     = "unknown";
     if (dstPortDataType.isEmpty())  dstPortDataType = "unknown";
-    m_tooltip += QString("<br/>") + "<big><b>    - " + srcPortParent + "<font color=#0000aa>" + srcPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + srcPortDataType + "</font></b>)" + "    ";
-    m_tooltip += QString("<br/>and");
-    m_tooltip += QString("<br/>") + "<big><b>    - " + dstPortParent + "<font color=#0000aa>" + dstPortName + "</font>    </b></big> (data type: <b><font color=#003300>" + dstPortDataType + "</font></b>)" + "    ";
-    m_tooltip += QString("<p/>");
+    m_tooltip += " " + srcPortParent + "<font color=#0000aa>" + srcPortName + "</font> (<font color=#003300>" + srcPortDataType + "</font>)";
+    m_tooltip += "  >  ";
+    m_tooltip += dstPortParent + "<font color=#0000aa>" + dstPortName + "</font> (<font color=#003300>" + dstPortDataType + "</font>)" + " ";
+    m_tooltip += "<p/>";
   }
   enableToolTip(m_graph->config().connectionShowTooltip);
 
