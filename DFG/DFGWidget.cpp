@@ -643,7 +643,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "value",
                                                                "value",
                                                                QCursor::pos(),
-                                                               QKeySequence(Qt::Key_L),
+                                                               QKeySequence(Qt::Key_R),
                                                                "label",
                                                                dfgWidget->isEditable()));
 
