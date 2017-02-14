@@ -1335,6 +1335,23 @@ void DFGController::cmdSetArgValue(
   }
 }
 
+void DFGController::cmdSetPortDefaultValue(
+  QString portPath,
+  FabricCore::RTVal const &value
+  )
+{
+  if(!validPresetSplit())
+    return;
+
+  m_cmdHandler->dfgDoSetPortDefaultValue(
+    getBinding(),
+    getExecPath_QS(),
+    getExec(),
+    portPath,
+    value.copy()
+    );
+}
+
 void DFGController::cmdSetRefVarPath(
   FabricCore::DFGBinding &binding,
   QString execPath,

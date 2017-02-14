@@ -32,7 +32,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QColorDialog>
-#include <QCursor>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSplitter>
@@ -158,6 +157,14 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(new DeleteNodes2Action              (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodeAction          (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodePropertiesAction(this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new ConnectionInsertPresetAction    (this, m_uiGraphViewWidget,
+                                                                      NULL,
+                                                                      "Fabric.Compounds.Debug.LabeledReport",
+                                                                      "value",
+                                                                      "value",
+                                                                      QCursor::pos(),
+                                                                      QKeySequence(Qt::Key_R),
+                                                                      "label"));
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -600,6 +607,77 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   menu->addAction( dummyAction );
 
   return menu;
+}
+
+QMenu *DFGWidget::connectionContextMenuCallback(
+  FabricUI::GraphView::Connection *connection,
+  void *userData
+  )
+{
+  DFGWidget * dfgWidget = (DFGWidget*)userData;
+
+  QMenu *result = new QMenu(connection->scene()->views()[0]);
+
+  result->addAction(new ConnectionRemoveAction(dfgWidget, connection, result, dfgWidget->isEditable()));
+
+  result->addSeparator();
+
+  QMenu *selectMenu = result->addMenu(tr("Select"));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, true,  false));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, false, true));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, true,  true));
+
+  result->addSeparator();
+
+  QMenu *insertPresetMenu = result->addMenu(tr("Insert Preset"));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection, 
+                                                               "Fabric.Core.Func.Report",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, result, connection,
+                                                               "Fabric.Compounds.Debug.LabeledReport",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(Qt::Key_R),
+                                                               "label",
+                                                               dfgWidget->isEditable()));
+
+  insertPresetMenu->addSeparator();
+
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
+                                                               "Fabric.Core.Data.Cache",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+
+  insertPresetMenu->addSeparator();
+
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
+                                                               "Fabric.Compounds.Data.PassIn",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
+                                                               "Fabric.Compounds.Data.PassIO",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+
+  return result;
 }
 
 QMenu *DFGWidget::sidePanelContextMenuCallback(
@@ -1724,8 +1802,16 @@ void DFGWidget::onToggleDimConnections()
   std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
   for(size_t i=0;i<connections.size();i++)
     connections[i]->update();
-  // [Julien] FE-5264 Sets the dimConnectionLines property to the settings
   if(getSettings()) getSettings()->setValue( "DFGWidget/dimConnectionLines", m_uiGraph->config().dimConnectionLines );
+}
+
+void DFGWidget::onToggleConnectionDrawAsCurves()
+{
+  m_uiGraph->config().connectionDrawAsCurves = !m_uiGraph->config().connectionDrawAsCurves;
+  std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
+  for(size_t i=0;i<connections.size();i++)
+    connections[i]->dependencyMoved();
+  if(getSettings()) getSettings()->setValue( "DFGWidget/connectionDrawAsCurves", m_uiGraph->config().connectionDrawAsCurves );
 }
 
 void DFGWidget::onTogglePortsCentered()
@@ -1733,7 +1819,6 @@ void DFGWidget::onTogglePortsCentered()
   m_uiGraph->config().portsCentered = !m_uiGraph->config().portsCentered;
   m_uiGraph->sidePanel(GraphView::PortType_Input)->updateItemGroupScroll();  
   m_uiGraph->sidePanel(GraphView::PortType_Output)->updateItemGroupScroll();  
-  // [Julien] FE-5264 Sets the onTogglePortsCentered property to the settings
   if(getSettings()) getSettings()->setValue( "DFGWidget/portsCentered", m_uiGraph->config().portsCentered );
 }
 
@@ -2202,20 +2287,31 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
   editMenu->addAction(pasteNodesAction);
 
   // view -> graph view menu
+
   QMenu *graphViewMenu = viewMenu->addMenu(tr("Graph View"));
+
   QAction * dimLinesAction = graphViewMenu->addAction("Dim Connections");
   dimLinesAction->setCheckable(true);
   dimLinesAction->setChecked(m_uiGraph->config().dimConnectionLines);
   QObject::connect(dimLinesAction, SIGNAL(triggered()), this, SLOT(onToggleDimConnections()));
+
+  QAction * connectionDrawAsCurvesAction = graphViewMenu->addAction("Display Connections as Curves");
+  connectionDrawAsCurvesAction->setCheckable(true);
+  connectionDrawAsCurvesAction->setChecked(m_uiGraph->config().connectionDrawAsCurves);
+  QObject::connect(connectionDrawAsCurvesAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionDrawAsCurves()));
+
   QAction * portsCenteredAction = graphViewMenu->addAction("Side Ports Centered");
   portsCenteredAction->setCheckable(true);
   portsCenteredAction->setChecked(m_uiGraph->config().portsCentered);
   QObject::connect(portsCenteredAction, SIGNAL(triggered()), this, SLOT(onTogglePortsCentered()));
+
   graphViewMenu->addSeparator();
+
   QAction * displayGrid = graphViewMenu->addAction("Display Grid");
   displayGrid->setCheckable(true);
   displayGrid->setChecked(m_uiGraph->config().mainPanelDrawGrid);
   QObject::connect(displayGrid, SIGNAL(triggered()), this, SLOT(onToggleDrawGrid()));
+
   QAction * snapToGrid = graphViewMenu->addAction("Snap to Grid");
   snapToGrid->setCheckable(true);
   snapToGrid->setChecked(m_uiGraph->config().mainPanelGridSnap);
@@ -2276,6 +2372,7 @@ void DFGWidget::onExecChanged()
     m_uiGraph->setNodeContextMenuCallback( &nodeContextMenuCallback, this );
     m_uiGraph->setPortContextMenuCallback( &portContextMenuCallback, this );
     m_uiGraph->setFixedPortContextMenuCallback( &fixedPortContextMenuCallback, this );
+    m_uiGraph->setConnectionContextMenuCallback( &connectionContextMenuCallback, this );
     m_uiGraph->setSidePanelContextMenuCallback( &sidePanelContextMenuCallback, this );
 
     if ( !m_uiController->getExecBlockName().empty() )
