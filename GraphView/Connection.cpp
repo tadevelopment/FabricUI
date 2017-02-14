@@ -8,6 +8,7 @@
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Port.h>
@@ -144,6 +145,8 @@ Connection::Connection(
           instBlockPort, SIGNAL(inCircleScenePositionChanged()),
           this, SLOT(dependencyMoved())
           );
+      Node * node = instBlockPort->instBlock()->node();
+      QObject::connect(node, SIGNAL(selectionChanged(FabricUI::GraphView::Node *, bool)), this, SLOT(dependencySelected()));
     }
     else if(target->targetType() == TargetType_MouseGrabber)
     {
@@ -410,18 +413,26 @@ void Connection::dependencySelected()
 {
   bool oldHasSelectedTarget = m_hasSelectedTarget;
   m_hasSelectedTarget = false;
-
-  if(m_src->targetType() == TargetType_Pin)
+  if (m_src->targetType() == TargetType_Pin)
   {
-    Node * node = ((Pin*)m_src)->node();
+    Node *node = ((Pin *)m_src)->node();
     m_hasSelectedTarget = m_hasSelectedTarget || node->selected();
   }
-  if(m_dst->targetType() == TargetType_Pin)
+  if (m_src->targetType() == TargetType_InstBlockPort)
   {
-    Node * node = ((Pin*)m_dst)->node();
+    Node *node = ((InstBlockPort *)m_src)->instBlock()->node();
     m_hasSelectedTarget = m_hasSelectedTarget || node->selected();
   }
-
+  if (m_dst->targetType() == TargetType_Pin)
+  {
+    Node *node = ((Pin *)m_dst)->node();
+    m_hasSelectedTarget = m_hasSelectedTarget || node->selected();
+  }
+  if (m_dst->targetType() == TargetType_InstBlockPort)
+  {
+    Node *node = ((InstBlockPort *)m_dst)->instBlock()->node();
+    m_hasSelectedTarget = m_hasSelectedTarget || node->selected();
+  }
   if ( m_hasSelectedTarget != oldHasSelectedTarget )
     update();
 }
