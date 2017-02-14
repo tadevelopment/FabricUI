@@ -58,6 +58,8 @@ class BaseCommandFactory
 {
   /**
     BaseCommandFactory is the base class of all the CommandFactory.
+    Each CommandFactory is associated to one type of command only, 
+    and, the factories are registered in CommandFactoryRegistry. 
   */
 
   public:

@@ -105,7 +105,7 @@ QString BaseScriptableCommand::getArgsDescription() const
     argSpecsIt.next();
     ScriptableCommandArgSpec spec = argSpecsIt.value();
 
-    res += "\n" + argsIt.key() 
+    res += argsIt.key() 
       + " -optional: " + QString::number(spec.optional)
       + " -value: " + argsIt.value()
       + " -defaultValue: " + spec.defaultValue;

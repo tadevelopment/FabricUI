@@ -81,6 +81,13 @@ void BaseCommandManager::undoCommand()
     {
       BaseCommand *low = stackedCmd.lowLevelCmds[i];
       if(!low->undoIt())
+      {
+        for(int j = i+1; j<lowLevelCmdsCount; ++j)
+        {
+          BaseCommand *low_ = stackedCmd.lowLevelCmds[i];
+          low_->redoIt();
+        }
+
         throw(
           std::string(
             QString(
@@ -88,6 +95,7 @@ void BaseCommandManager::undoCommand()
             ).toUtf8().constData() 
          )
        );
+      }
     }
   }
   
@@ -116,6 +124,13 @@ void BaseCommandManager::redoCommand()
     {
       BaseCommand *low = stackedCmd.lowLevelCmds[i]; 
       if(!low->redoIt())
+      {
+        for(int j = i; j--;)
+        {
+          BaseCommand *low_ = stackedCmd.lowLevelCmds[i];
+          low_->undoIt();
+        }
+
         throw(
           std::string(
             QString(
@@ -123,8 +138,10 @@ void BaseCommandManager::redoCommand()
             ).toUtf8().constData()
           )
         );
+      }
     }
   }
+
   else if(!top->redoIt())
     throw(
       std::string(
@@ -238,7 +255,7 @@ QString BaseCommandManager::getStackContent(
 {
   QString res;
 
-  int offset = stackName == "Undo" ? m_undoStack.size() : 0;
+  int offset = stackName == "Redo" ? m_undoStack.size() : 0;
 
   for (int i = 0; i < stack.size(); ++i)
   {

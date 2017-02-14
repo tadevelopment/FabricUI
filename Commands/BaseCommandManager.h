@@ -24,7 +24,7 @@ class BaseCommandManager
     BaseCommandManager contains and manages the command undo-redo stack.
     It's in charge of creating the commands, executing and undo-redoing them.
 
-    It is specilazed depending on the command registration system (C++ vs Phyton).
+    It is specialized depending on the command registration system (C++ vs Phyton).
     See CommandManager.h(cpp) for the C++ implementation, BaseCommandManager_Python.h(cpp)
     Python/Canvas/CommandManager.py for the Python one.
     
