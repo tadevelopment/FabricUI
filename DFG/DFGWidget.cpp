@@ -163,7 +163,7 @@ DFGWidget::DFGWidget(
                                                                       "value",
                                                                       "value",
                                                                       QCursor::pos(),
-                                                                      QKeySequence(Qt::Key_R),
+                                                                      QKeySequence(Qt::Key_L),
                                                                       "label"));
 
   m_klEditor =
@@ -643,7 +643,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "value",
                                                                "value",
                                                                QCursor::pos(),
-                                                               QKeySequence(Qt::Key_R),
+                                                               QKeySequence(Qt::Key_L),
                                                                "label",
                                                                dfgWidget->isEditable()));
 
