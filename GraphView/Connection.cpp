@@ -461,32 +461,47 @@ void Connection::dependencyMoved()
   // painter->setRenderHint(QPainter::Antialiasing,true);
   // painter->setRenderHint(QPainter::HighQualityAntialiasing,true);
 
+  // create and set the path.
+  // (note: we draw the curve forward and then backward
+  //  to ensure that the polygon is closed in the top left.
+  //  not doing this results in an open polygon, which 
+  //  make the hover area for the curve very big.)
   QPainterPath path;
   path.moveTo(currSrcPoint);
+  if (   m_graph->config().connectionDrawAsCurves
+      || m_isExposedConnection )
+  {
+    path.cubicTo(
+        currSrcPoint + QPointF(tangentLength, 0), 
+        currDstPoint - QPointF(tangentLength, 0), 
+        currDstPoint
+    );
 
-  path.cubicTo(
-      currSrcPoint + QPointF(tangentLength, 0), 
-      currDstPoint - QPointF(tangentLength, 0), 
-      currDstPoint
-  );
+    path.cubicTo(
+        currDstPoint - QPointF(tangentLength, 0), 
+        currSrcPoint + QPointF(tangentLength, 0), 
+        currSrcPoint
+    );
+  }
+  else
+  {
+    QPointF x(0.5 * (currDstPoint.x() - currSrcPoint.x()) , 0);
 
-  // we draw the curve the other way as well to
-  // ensure that the polygon is closed in the top left.
-  // not doing this results in an open polygon, which 
-  // make the hover area for the curve very big.
-  path.cubicTo(
-      currDstPoint - QPointF(tangentLength, 0), 
-      currSrcPoint + QPointF(tangentLength, 0), 
-      currSrcPoint
-  );
+    path.lineTo( currSrcPoint + x );
+    path.lineTo( currDstPoint - x );
+    path.lineTo( currDstPoint );
 
+    path.lineTo( currDstPoint - x );
+    path.lineTo( currSrcPoint + x );
+    path.lineTo( currSrcPoint );
+  }
   setPath(path);
 
   QPainterPathStroker stroker;
   stroker.setWidth(m_shapePathWidth);
   m_shapePath = (stroker.createStroke(path) + path).simplified();
 
-  if(m_isExposedConnection)
+  if (m_isExposedConnection)
   {
     m_clipPath = QPainterPath();
     m_clipPath.addEllipse(currSrcPoint, m_clipRadius, m_clipRadius);

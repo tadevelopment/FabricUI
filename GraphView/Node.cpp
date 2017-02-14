@@ -563,7 +563,6 @@ Pin *Node::renamePin( FTL::StrRef oldName, FTL::StrRef newName )
 
 void Node::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
-
   if(onMousePress( event ))
   {
     event->accept();
@@ -652,6 +651,13 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 {
   if( MainPanel::filterMousePressEvent( event ) )
     return false;
+
+  // backdrops may only respond to clicks in the header.
+  if (isBackDropNode())
+  {
+    if (!header()->rect().contains(mapFromScene(event->scenePos())))
+      return false;
+  }
 
   Qt::KeyboardModifiers modifiers =  event->modifiers();
 

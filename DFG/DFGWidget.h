@@ -157,6 +157,7 @@ namespace DFG {
       void onToggleDimConnections();
       void onToggleConnectionShowTooltip();
       void onToggleHighlightConnectionTargets();
+      void onToggleConnectionDrawAsCurves();
       void onTogglePortsCentered();
       void onToggleDrawGrid();
       void onToggleSnapToGrid();

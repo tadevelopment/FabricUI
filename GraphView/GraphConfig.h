@@ -104,6 +104,7 @@ namespace FabricUI
       bool highlightConnectionTargets;
       float connectionNodePortColorRatio;
       float connectionClickableDistance;
+      bool connectionDrawAsCurves;
       bool portsCentered;
 
       QColor selectionRectColor;

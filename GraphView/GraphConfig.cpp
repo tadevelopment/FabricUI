@@ -175,6 +175,7 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( connectionFixedTangentLength, 10.0f );
   GET_PARAMETER( connectionPercentualTangentLength, 45.0f );
   GET_PARAMETER( connectionClickableDistance, 5.0f );
+  GET_PARAMETER( connectionDrawAsCurves, true );
   GET_PARAMETER( portsCentered, true );
 
   GET_PARAMETER( sidePanelBackgroundColor, nodeDefaultColor );
