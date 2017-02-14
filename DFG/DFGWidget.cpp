@@ -163,7 +163,7 @@ DFGWidget::DFGWidget(
                                                                       "value",
                                                                       "value",
                                                                       QCursor::pos(),
-                                                                      QKeySequence(Qt::Key_L),
+                                                                      QKeySequence(Qt::Key_R),
                                                                       "label"));
 
   m_klEditor =

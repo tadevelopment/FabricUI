@@ -2116,7 +2116,10 @@ namespace DFG {
         QString presetName = getPresetNameFromPath(m_presetPath);
         setText( "Insert '" + presetName + "' Preset");
         if (!shortcut.isEmpty())
+        {
           setShortcut( shortcut );
+          setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        }
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
