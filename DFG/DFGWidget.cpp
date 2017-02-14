@@ -1805,6 +1805,21 @@ void DFGWidget::onToggleDimConnections()
   if(getSettings()) getSettings()->setValue( "DFGWidget/dimConnectionLines", m_uiGraph->config().dimConnectionLines );
 }
 
+void DFGWidget::onToggleConnectionShowTooltip()
+{
+  m_uiGraph->config().connectionShowTooltip = !m_uiGraph->config().connectionShowTooltip;
+  std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
+  for(size_t i=0;i<connections.size();i++)
+    connections[i]->enableToolTip(m_uiGraph->config().connectionShowTooltip);
+  if(getSettings()) getSettings()->setValue( "DFGWidget/connectionShowTooltip", m_uiGraph->config().connectionShowTooltip );
+}
+
+void DFGWidget::onToggleHighlightConnectionTargets()
+{
+  m_uiGraph->config().highlightConnectionTargets = !m_uiGraph->config().highlightConnectionTargets;
+  if(getSettings()) getSettings()->setValue( "DFGWidget/highlightConnectionTargets", m_uiGraph->config().highlightConnectionTargets );
+}
+
 void DFGWidget::onToggleConnectionDrawAsCurves()
 {
   m_uiGraph->config().connectionDrawAsCurves = !m_uiGraph->config().connectionDrawAsCurves;
@@ -2294,6 +2309,16 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
   dimLinesAction->setCheckable(true);
   dimLinesAction->setChecked(m_uiGraph->config().dimConnectionLines);
   QObject::connect(dimLinesAction, SIGNAL(triggered()), this, SLOT(onToggleDimConnections()));
+
+  QAction * connectionShowTooltipAction = graphViewMenu->addAction("Show Connection Tooltips");
+  connectionShowTooltipAction->setCheckable(true);
+  connectionShowTooltipAction->setChecked(m_uiGraph->config().connectionShowTooltip);
+  QObject::connect(connectionShowTooltipAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionShowTooltip()));
+
+  QAction * highlightConnectionTargetsAction = graphViewMenu->addAction("Highlight Connection Targets");
+  highlightConnectionTargetsAction->setCheckable(true);
+  highlightConnectionTargetsAction->setChecked(m_uiGraph->config().highlightConnectionTargets);
+  QObject::connect(highlightConnectionTargetsAction, SIGNAL(triggered()), this, SLOT(onToggleHighlightConnectionTargets()));
 
   QAction * connectionDrawAsCurvesAction = graphViewMenu->addAction("Display Connections as Curves");
   connectionDrawAsCurvesAction->setCheckable(true);

@@ -100,6 +100,8 @@ namespace FabricUI
       float connectionPercentualTangentLength;
       QColor connectionColor;
       bool connectionUsePinColor;
+      bool connectionShowTooltip;
+      bool highlightConnectionTargets;
       float connectionNodePortColorRatio;
       float connectionClickableDistance;
       bool connectionDrawAsCurves;

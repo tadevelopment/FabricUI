@@ -164,6 +164,8 @@ GraphConfig::GraphConfig()
 
   GET_PARAMETER( dimConnectionLines, true );
   GET_PARAMETER( connectionUsePinColor, true );
+  GET_PARAMETER( connectionShowTooltip, true );
+  GET_PARAMETER( highlightConnectionTargets, true );
   GET_PARAMETER( connectionNodePortColorRatio, 0.75 );
   GET_PARAMETER( connectionColor, QColor(130, 130, 130) );
   GET_PARAMETER( connectionDefaultPen, QPen(connectionColor, 1.5) );

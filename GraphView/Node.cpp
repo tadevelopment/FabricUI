@@ -43,6 +43,7 @@ Node::Node(
   , m_duplicateNodesOnDrag( false )
   , m_canEdit( false )
   , m_isHighlighted( false )
+  , m_isConnectionHighlighted( false )
 {
   m_defaultPen = graph()->config().nodeDefaultPen;
   m_selectedPen = graph()->config().nodeSelectedPen;
@@ -1019,6 +1020,21 @@ void Node::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QW
     rect.adjust( -4, -4, 4, 4 );
     painter->drawRoundedRect( rect, 6, 6 );
   }
+
+  if ( m_isConnectionHighlighted )
+  {
+    QRectF rect = QRectF(
+      QPointF( 0, 0 ),
+      m_mainWidget->size()
+      );
+    rect.adjust( 7, 0, -7, 0 ); // compensate for ports
+
+    painter->setPen( Qt::NoPen );
+    painter->setBrush( QColor( 255, 255, 255, 128 ) );
+    rect.adjust( -2, -2, 2, 2 );
+    painter->drawRoundedRect( rect, 6, 6 );
+  }
+
   // [pzion 20160225] Disable shadow for now
   // else
   // {

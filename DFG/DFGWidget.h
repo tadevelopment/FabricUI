@@ -155,6 +155,8 @@ namespace DFG {
       void onNodeEditRequested(FabricUI::GraphView::Node *);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
       void onToggleDimConnections();
+      void onToggleConnectionShowTooltip();
+      void onToggleHighlightConnectionTargets();
       void onToggleConnectionDrawAsCurves();
       void onTogglePortsCentered();
       void onToggleDrawGrid();

@@ -211,6 +211,9 @@ namespace FabricUI
 
       void collectEditingTargets( EditingTargets &editingTargets );
 
+      void setConnectionHighlighted(bool state)
+        {  m_isConnectionHighlighted = state; }
+
       bool isHighlighted() const
         { return m_isHighlighted; }
 
@@ -288,6 +291,7 @@ namespace FabricUI
 
       bool m_canEdit;
       bool m_isHighlighted;
+      bool m_isConnectionHighlighted;
     };
 
 
