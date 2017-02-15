@@ -528,6 +528,10 @@ class CanvasWindow(QtGui.QMainWindow):
 
         # Insert the entry first in the list
         files.insert(0, filePath)
+
+        # Only keep files that still exist
+        files = [ f for f in files if os.path.exists( f ) ]
+
         # Update the list and crop it to maxRecentFiles
         self.settings.setValue('mainWindow/recentFiles', files[:self.maxRecentFiles])
 
