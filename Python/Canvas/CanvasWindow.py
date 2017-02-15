@@ -520,6 +520,10 @@ class CanvasWindow(QtGui.QMainWindow):
         if type(files) is not list:
           files = [files]           
 
+        # Convert paths to abspath, to make sure that they collide
+        filePath = os.path.abspath( filePath )
+        files = [ os.path.abspath( file ) for file in files ]       
+
         # Try to remove the entry if it is already in the list
         try:
             files.remove(filePath)
