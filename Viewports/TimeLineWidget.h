@@ -2,20 +2,17 @@
 #define __TIMELINEWIDGET_H__
 
 #include <QWidget>
-#include <QGLWidget>
-#include <QContextMenuEvent>
-#include <QMenu>
-#include <QHBoxLayout>
+#include <QMouseEvent>
 #include <QTimer>
 #include <QTime>
+#include <QShortcut>
+#include <QList>
 
 #include <QDoubleSpinBox>
 #include <QSlider>
 #include <QPushButton>
 #include <QComboBox>
 
-#include <map>
-#include <set>
 #include <ctime>
 
 namespace FabricUI
@@ -168,6 +165,17 @@ namespace FabricUI
         /// returns the framerate. 1000 = max.
         bool isPlaying() const { return m_timer->isActive(); }
 
+        /// Sets the shortcuts for the playback controls.
+        /// Toggle playback      : shortCutList[0]
+        /// Play                 : shortCutList[1]
+        /// Pause                : shortCutList[2]
+        /// Go to next frame     : shortCutList[3]
+        /// Go to previous frame : shortCutList[4]
+        /// Go to end frame      : shortCutList[5]
+        /// Go to start frame    : shortCutList[6]
+        /// Throws an error if the number of shortCuts is inferior to 5.
+        void setPlayBackControlShortcuts(QList<QKeySequence> shortCutList);
+
       signals :
         /// this signal is emited when ever the time on the widget changed
         /// client would connect this slight to any slots that need to know about the time
@@ -197,8 +205,14 @@ namespace FabricUI
         /// start or stop the playback ( act as a switch on the playing state )
         void onPlayButtonToggled( bool checked );
         
+        /// start the playback
+        void play();
+
         /// stop the playback
         void pause();
+
+        /// toogle the playback
+        void togglePlayback();
 
         /// set the frame to the start of the current time slider range
         void goToStartFrame();
@@ -269,6 +283,15 @@ namespace FabricUI
         QComboBox * m_loopModeComBox;
         QComboBox * m_simModeComBox;
 
+        /// Controls shortcuts (FE-5724)
+        // Should use commands instead
+        QShortcut *m_togglePlaybackShortCut;
+        QShortcut *m_playShortCut;
+        QShortcut *m_pauseShortCut;
+        QShortcut *m_goToNextFrameShortCut;
+        QShortcut *m_goToPreviousFrameShortCut;
+        QShortcut *m_goToEndFrameShortCut;
+        QShortcut *m_goToStartFrameShortCut;
     };
   };
   
