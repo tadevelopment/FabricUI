@@ -375,6 +375,7 @@ void TimeLineWidget::onPlayButtonToggled( bool checked )
   {
     m_playButton->setText( QString::fromUtf8( "\xEF\x81\x8B" ) ); /* FontAwesome > */
     m_timer->stop();
+    m_playButton->setChecked( false );
     emit playbackChanged(false);
   }
   else if ( checked && !m_timer->isActive() )
@@ -390,12 +391,7 @@ void TimeLineWidget::onPlayButtonToggled( bool checked )
 
 void TimeLineWidget::pause()
 {
-  if ( m_timer->isActive() )
-  {
-    m_timer->stop();
-    m_playButton->setChecked( false );
-    emit playbackChanged(false);
-  }
+  onPlayButtonToggled(false);
 }
 
 void TimeLineWidget::goToStartFrame()
