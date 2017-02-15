@@ -5,7 +5,7 @@
 #include <string>
 #include "BaseCommandManager.h"
 #include "BaseScriptableCommand.h"
-#include "CommandFactory.h"
+#include "CommandRegistry.h"
 
 using namespace FabricUI;
 using namespace Commands;
@@ -24,7 +24,7 @@ BaseCommand* BaseCommandManager::createCommand(
   const QMap<QString, QString> &args, 
   bool doCmd)
 {
-  return CommandFactoryRegistry::CreateCommand(cmdName); 
+  return CommandRegistry::CreateCommand(cmdName); 
 }
 
 void BaseCommandManager::doCommand(

@@ -4,7 +4,7 @@
 
 from FabricEngine.FabricUI import Commands
 
-class CommandRegistry():
+class CommandRegistry(Commands.CommandRegistry):
 
     """ CommandRegistry registers commands used in the Canvas application.
        
@@ -19,18 +19,21 @@ class CommandRegistry():
 
     # \internal
     # Dictionaries of registered commands {cmdName, cmdType} and user Data {cmdName, userData}
-    registeredCmdMap = {}
+    registeredCmds = {}
     registeredCmdUserDataList = {}
  
     @staticmethod
     def IsCommandRegistered(cmdName):
         """ Checks if a command has been registered under the name "cmdName".
         """           
-        cmdType = CommandRegistry.registeredCmdMap.get(cmdName)
+        cmdType = CommandRegistry.registeredCmds.get(cmdName)
         if cmdType is not None:
-            return [True, cmdType]
+            return [True, cmdType, "Python"]
         else:
-            return [False, None]
+            if Commands.CommandRegistry.IsCommandRegistered(cmdName, cmdType) is True:
+                return [True, cmdType, "C++"]
+            else:
+                return [False, None, None]
 
     @staticmethod
     def RegisterCommand(cmdName, cmdType, userData = None):
@@ -45,10 +48,11 @@ class CommandRegistry():
         if not issubclass(cmdType, Commands.BaseCommand):
             raise Exception("Error CommandRegistry.RegisterCommand: command '" + str(cmdName) + "': type '" + str(cmdType) + "' is not a Command")
 
-        [isRegistered, existingCmdType] = CommandRegistry.IsCommandRegistered(cmdName)
+        [isRegistered, existingCmdType, From] = CommandRegistry.IsCommandRegistered(cmdName)
         if isRegistered is False:
-            CommandRegistry.registeredCmdMap[cmdName] = cmdType
+            CommandRegistry.registeredCmds[cmdName] = cmdType
             CommandRegistry.registeredCmdUserDataList[cmdName] = userData
+            Commands.CommandRegistry.s_cmdRegistry.commandIsRegistered(cmdName)
 
         elif cmdType != existingCmdType:
             error = "Error CommandRegistry.RegisterCommand: command '" + str(cmdName) + "': type '" + str(cmdType) + "' overriding previous type '" + str(existingCmdType) + "'"
@@ -60,14 +64,24 @@ class CommandRegistry():
             Creates a registered command named "cmdName".
             Raises an exception if the command cannot be created (has to be registered first) 
         """
-        if CommandRegistry.IsCommandRegistered(cmdName)[0] is True:
-            cmd = CommandRegistry.registeredCmdMap[cmdName]()
 
+        cmd = None
+        [isRegistred, cmdType, From] = CommandRegistry.IsCommandRegistered(cmdName)
+        
+        if isRegistred is True:
+            if From == "Python":
+                cmd = CommandRegistry.registeredCmds[cmdName]()
+            elif From == "C++":
+                cmd = Commands.CommandRegistry.CreateCommand(cmdName)
+
+        if cmd is not None:
             userData = CommandRegistry.registeredCmdUserDataList[cmdName]
             cmd.registrationCallBack(cmdName, userData)
-
             return cmd
 
         else:
             raise Exception( "Cannot create command, '" + cmdName + "' is not registered") 
+
+    def commandIsRegistered(self, cmdName):
+        print str(cmdName)
  

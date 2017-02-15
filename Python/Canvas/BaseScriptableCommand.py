@@ -2,7 +2,6 @@
 # Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 #
 
-from FabricEngine import FabricUI
 from FabricEngine.FabricUI import Commands
   
 class BaseScriptableCommand(Commands.BaseScriptableCommand_Python):
