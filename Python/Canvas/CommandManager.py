@@ -4,14 +4,14 @@
 
 from FabricEngine import FabricUI
 from FabricEngine.FabricUI import Commands
-from FabricEngine.Canvas.CommandRegistery import CommandRegistery
+from FabricEngine.Canvas.CommandRegistry import CommandRegistry
  
 class CommandManager(Commands.BaseCommandManager_Python):
     
     """ CommandManager specializes BaseCommandManager.
         See Commands/BaseCommandManager.h(cpp) and Commands/BaseCommandManager_Python.h(cpp).
         
-        To register a command: CommandRegistery.RegisterCommand(cmdName, userData)
+        To register a command: CommandRegistry.RegisterCommand(cmdName, userData)
         To create a command: cmd = cmdManager.createCommand(cmdName)
     """
 
@@ -28,7 +28,7 @@ class CommandManager(Commands.BaseCommandManager_Python):
             Raises an exception if an error occurs. 
         """
         try:
-            cmd = CommandRegistery.CreateCommand(cmdName)
+            cmd = CommandRegistry.CreateCommand(cmdName)
             
             # In case the command has been registered in C++ but
             # is created from Python, ask the C++ command registery to do it.

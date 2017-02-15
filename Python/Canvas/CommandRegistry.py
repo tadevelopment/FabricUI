@@ -4,13 +4,13 @@
 
 from FabricEngine.FabricUI import Commands
 
-class CommandRegistery():
+class CommandRegistry():
 
-    """ CommandRegistery registers commands used in the Canvas application.
+    """ CommandRegistry registers commands used in the Canvas application.
        
-        To register a command: CommandRegistery.RegisterCommand(cmdName, cmdType, userData)
-        To create a command: cmd = CommandRegistery.CreateCommand(cmdName)
-        To check that a command is registered: CommandRegistery.IsCommandRegistered(cmdName)
+        To register a command: CommandRegistry.RegisterCommand(cmdName, cmdType, userData)
+        To create a command: cmd = CommandRegistry.CreateCommand(cmdName)
+        To check that a command is registered: CommandRegistry.IsCommandRegistered(cmdName)
 
         The userData argument is used to pass optional custom data to the command (C++ void *).
         The data is referenced by the registery, and given to the command throught 
@@ -26,7 +26,7 @@ class CommandRegistery():
     def IsCommandRegistered(cmdName):
         """ Checks if a command has been registered under the name "cmdName".
         """           
-        cmdType = CommandRegistery.registeredCmdMap.get(cmdName)
+        cmdType = CommandRegistry.registeredCmdMap.get(cmdName)
         if cmdType is not None:
             return [True, cmdType]
         else:
@@ -40,18 +40,18 @@ class CommandRegistery():
             or if the command has already been registered under another type.
         """
         if not cmdName:
-            raise Exception("Error CommandRegistery.RegisterCommand: cmdName is empty") 
+            raise Exception("Error CommandRegistry.RegisterCommand: cmdName is empty") 
 
         if not issubclass(cmdType, Commands.BaseCommand):
-            raise Exception("Error CommandRegistery.RegisterCommand: command '" + str(cmdName) + "': type '" + str(cmdType) + "' is not a Command")
+            raise Exception("Error CommandRegistry.RegisterCommand: command '" + str(cmdName) + "': type '" + str(cmdType) + "' is not a Command")
 
-        [isRegistered, existingCmdType] = CommandRegistery.IsCommandRegistered(cmdName)
+        [isRegistered, existingCmdType] = CommandRegistry.IsCommandRegistered(cmdName)
         if isRegistered is False:
-            CommandRegistery.registeredCmdMap[cmdName] = cmdType
-            CommandRegistery.registeredCmdUserDataList[cmdName] = userData
+            CommandRegistry.registeredCmdMap[cmdName] = cmdType
+            CommandRegistry.registeredCmdUserDataList[cmdName] = userData
 
         elif cmdType != existingCmdType:
-            error = "Error CommandRegistery.RegisterCommand: command '" + str(cmdName) + "': type '" + str(cmdType) + "' overriding previous type '" + str(existingCmdType) + "'"
+            error = "Error CommandRegistry.RegisterCommand: command '" + str(cmdName) + "': type '" + str(cmdType) + "' overriding previous type '" + str(existingCmdType) + "'"
             raise Exception(error)
    
     @staticmethod
@@ -60,10 +60,10 @@ class CommandRegistery():
             Creates a registered command named "cmdName".
             Raises an exception if the command cannot be created (has to be registered first) 
         """
-        if CommandRegistery.IsCommandRegistered(cmdName)[0] is True:
-            cmd = CommandRegistery.registeredCmdMap[cmdName]()
+        if CommandRegistry.IsCommandRegistered(cmdName)[0] is True:
+            cmd = CommandRegistry.registeredCmdMap[cmdName]()
 
-            userData = CommandRegistery.registeredCmdUserDataList[cmdName]
+            userData = CommandRegistry.registeredCmdUserDataList[cmdName]
             cmd.registrationCallBack(cmdName, userData)
 
             return cmd

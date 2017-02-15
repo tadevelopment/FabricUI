@@ -1,7 +1,7 @@
 __all__ = [
     'BindingWrapper',
   	'CommandManager',
-    'CommandRegistery',
+    'CommandRegistry',
     'BaseScriptableCommand',
     'CanvasWindow',
     'FabricParser',
