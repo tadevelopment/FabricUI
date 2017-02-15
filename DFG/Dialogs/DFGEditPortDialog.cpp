@@ -418,22 +418,13 @@ void DFGEditPortDialog::done(int r)
     // FE-7691 : Check if the current text is a KL valid type
     // If not, don't close and validate the dialog
     if(m_dataTypeEdit->checkIfTypeExist())    
-    {
       QDialog::done(r);
-      return;
-    }
     else
-    {
       m_dataTypeEdit->displayInvalidTypeWarning();
-      return;
-    }
   }
   // Cancel, Close, Exc pressed
   else  
-  {
     QDialog::done(r);
-    return;
-  }
 }
 
 void DFGEditPortDialog::keyPressEvent(QKeyEvent * event)
@@ -441,5 +432,9 @@ void DFGEditPortDialog::keyPressEvent(QKeyEvent * event)
   // FE-7691 : Don't call directly the parent QDialog::keyPressEvent(event);
   // Otherwise the warning message is displayed twice when the user press enter.
   // Really weird behaviour, and there is no Qt doc about this.
-  QWidget::keyPressEvent(event);
+  if( event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return )
+    QWidget::keyPressEvent(event);
+  // FE-7878
+  else
+    QDialog::keyPressEvent(event);
 }
