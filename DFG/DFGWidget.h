@@ -137,6 +137,7 @@ namespace DFG {
     signals:
 
       void additionalMenuActionsRequested(QString, QMenu*, bool);
+      void fileMenuAboutToShow(); // used to filter the recent files
       void execChanged();
       void newPresetSaved(QString presetFilePath);
       void onGraphSet(FabricUI::GraphView::Graph* graph);

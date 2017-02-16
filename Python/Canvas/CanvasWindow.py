@@ -250,6 +250,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
                                        self.mainBinding, '', graph, self.astManager,
                                        self.dfguiCommandHandler, self.config)
+        self.dfgWidget.fileMenuAboutToShow.connect(self.updateRecentFileActions)
         self.scriptEditor.setDFGControllerGlobal(self.dfgWidget.getDFGController())
 
         tabSearchWidget = self.dfgWidget.getTabSearchWidget()
