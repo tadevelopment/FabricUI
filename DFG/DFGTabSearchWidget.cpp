@@ -282,7 +282,7 @@ void DFGTabSearchWidget::updateSearch()
 
   std::vector<std::string> tagsStr;
   unsigned int start = 0;
-  for( int end = 0; end < searchStr.size(); end++ )
+  for( unsigned int end = 0; end < searchStr.size(); end++ )
   {
     const char c = searchStr[end];
     if( c == '.' || c == ' ' ) // delimiters
@@ -298,11 +298,11 @@ void DFGTabSearchWidget::updateSearch()
   std::vector<char const*> tags( tagsStr.size() );
 
   // Debug : TODO remove
-  for( int i = 0; i < tagsStr.size(); i++ )
+  for( unsigned int i = 0; i < tagsStr.size(); i++ )
     std::cout << "\"" << tagsStr[i] << "\" ";
   std::cout << std::endl;
 
-  for( int i = 0; i < tagsStr.size(); i++ )
+  for( unsigned int i = 0; i < tagsStr.size(); i++ )
     tags[i] = tagsStr[i].data();
 
   // Querying the DataBase of presets
@@ -319,7 +319,7 @@ void DFGTabSearchWidget::updateSearch()
   const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
   const FTL::JSONArray* results = root->getArray("results");
   m_results.resize( results->size() );
-  for( int i = 0; i < results->size(); i++ )
+  for( unsigned int i = 0; i < results->size(); i++ )
     m_results[i] = results->getArray( i )->getString( 0 );
 
   DFGBaseTabSearchWidget::updateSearch();
@@ -465,7 +465,7 @@ void DFGBaseTabSearchWidget::addNodeForIndex( unsigned index )
   // init node name.
   QString nodeName;
 
-  FTL::CStrRef desc = getName( index );
+  FTL::StrRef desc = getName( index );
 
   // deal with special case
   if ( desc == FTL_STR("var") )
