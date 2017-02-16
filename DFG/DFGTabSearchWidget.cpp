@@ -230,14 +230,8 @@ bool DFGBaseTabSearchWidget::focusNextPrevChild(bool next)
   return false;
 }
 
-void DFGLegacyTabSearchWidget::updateSearch()
+void DFGBaseTabSearchWidget::updateSearch()
 {
-  m_results =
-    m_parent->getUIController()->getPresetPathsFromSearch(
-      m_search.toUtf8().constData()
-      );
-  m_results.keepFirst( 16 );
-
   if( resultsSize() == 0)
   {
     m_currentIndex = -1;
@@ -254,10 +248,86 @@ void DFGLegacyTabSearchWidget::updateSearch()
   updateGeometry();
 }
 
+
+void DFGLegacyTabSearchWidget::updateSearch()
+{
+  m_results =
+    m_parent->getUIController()->getPresetPathsFromSearch(
+      m_search.toUtf8().constData()
+    );
+  m_results.keepFirst( 16 );
+
+  DFGBaseTabSearchWidget::updateSearch();
+}
+
 FTL::StrRef DFGLegacyTabSearchWidget::getName( unsigned int index ) const
 {
   return static_cast<char const *>( m_results.getUserdata( index ) );
 }
+
+void DFGTabSearchWidget::updateSearch()
+{
+  // Splitting the search string into a char**
+  const std::string searchStr = m_search.toUtf8().constData();
+
+  std::vector<std::string> tagsStr;
+  unsigned int start = 0;
+  for( int end = 0; end < searchStr.size(); end++ )
+  {
+    const char c = searchStr[end];
+    if( c == '.' || c == ' ' ) // delimiters
+    {
+      if( end - start > 0 )
+        tagsStr.push_back( searchStr.substr( start, end - start ) );
+      start = end+1;
+    }
+  }
+  if( start < searchStr.size() )
+    tagsStr.push_back( searchStr.substr( start, searchStr.size() - start ) );
+
+  std::vector<char const*> tags( tagsStr.size() );
+
+  // Debug : TODO remove
+  for( int i = 0; i < tagsStr.size(); i++ )
+    std::cout << "\"" << tagsStr[i] << "\" ";
+  std::cout << std::endl;
+
+  for( int i = 0; i < tagsStr.size(); i++ )
+    tags[i] = tagsStr[i].data();
+
+  // Querying the DataBase of presets
+  FabricCore::DFGHost& host = m_parent->getUIController()->getHost();
+  FEC_StringRef jsonStr = FEC_DFGHostSearchPresets(
+    host.getFECDFGHostRef(),
+    tags.size(),
+    tags.data(),
+    0,
+    16
+  );
+  FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
+  const FTL::JSONValue* json = FTL::JSONValue::Decode( jsonStrR );
+  const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
+  const FTL::JSONArray* results = root->getArray("results");
+  m_results.resize( results->size() );
+  for( int i = 0; i < results->size(); i++ )
+    m_results[i] = results->getArray( i )->getString( 0 );
+
+  DFGBaseTabSearchWidget::updateSearch();
+}
+
+DFGTabSearchWidget::DFGTabSearchWidget( DFGWidget * parent, const DFGConfig & config )
+  : DFGBaseTabSearchWidget( parent, config )
+{
+  // HACK : give a different look to this widget
+  m_config.searchBackgroundColor = QColor( 180, 190, 210 );
+  m_config.searchHighlightColor = QColor( 255, 225, 200 );
+}
+
+FTL::StrRef DFGTabSearchWidget::getName( unsigned int index ) const
+{
+  return m_results[index];
+}
+
 
 int DFGBaseTabSearchWidget::margin() const
 {

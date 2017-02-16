@@ -42,7 +42,7 @@ namespace FabricUI
 
       virtual void focusOutEvent(QFocusEvent * event);
       virtual bool focusNextPrevChild(bool next);
-      virtual void updateSearch() = 0;
+      virtual void updateSearch();
       virtual int margin() const;
 
       QString resultLabel(unsigned int index) const;
@@ -88,11 +88,23 @@ namespace FabricUI
       void select( unsigned int index ) FTL_OVERRIDE { m_results.select( index ); }
 
     private:
-
       FabricServices::SplitSearch::Matches m_results;
     };
 
-    typedef DFGLegacyTabSearchWidget DFGTabSearchWidget;
+    class DFGTabSearchWidget : public DFGBaseTabSearchWidget
+    {
+    public:
+      DFGTabSearchWidget( DFGWidget * parent, const DFGConfig & config );
+
+      unsigned int resultsSize() const FTL_OVERRIDE { return m_results.size(); }
+      FTL::StrRef getName( unsigned int index ) const FTL_OVERRIDE;
+      void clear() FTL_OVERRIDE { m_results.clear(); }
+      void updateSearch() FTL_OVERRIDE;
+      void select( unsigned int index ) FTL_OVERRIDE {}
+
+    private:
+      std::vector<std::string> m_results;
+    };
 
   };
 
