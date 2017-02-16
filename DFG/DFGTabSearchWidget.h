@@ -57,6 +57,7 @@ namespace FabricUI
       virtual FTL::StrRef getName( unsigned int index ) const = 0;
       virtual void clear() = 0;
       virtual void select( unsigned int index ) = 0;
+      virtual bool acceptKey( const Qt::Key key ) const;
 
       void addNodeForIndex( unsigned index );
 
@@ -101,6 +102,7 @@ namespace FabricUI
       void clear() FTL_OVERRIDE { m_results.clear(); }
       void updateSearch() FTL_OVERRIDE;
       void select( unsigned int index ) FTL_OVERRIDE {}
+      bool acceptKey( const Qt::Key key ) const FTL_OVERRIDE;
 
     private:
       std::vector<std::string> m_results;

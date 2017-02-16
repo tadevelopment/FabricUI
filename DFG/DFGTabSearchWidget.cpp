@@ -79,9 +79,7 @@ void DFGBaseTabSearchWidget::keyPressEvent(QKeyEvent * event)
     m_parent->getGraphViewWidget()->setFocus(Qt::OtherFocusReason);
   }
   // alphanumeric or period
-  else if((int(key) >= int(Qt::Key_0) && int(key) <= int(Qt::Key_9)) ||
-    (int(key) >= int(Qt::Key_A) && int(key) <= int(Qt::Key_Z)) ||
-    key == Qt::Key_Period || key == Qt::Key_Underscore)
+  else if( acceptKey( key ) )
   {
     m_search += event->text();
     updateSearch();
@@ -248,6 +246,12 @@ void DFGBaseTabSearchWidget::updateSearch()
   updateGeometry();
 }
 
+bool DFGBaseTabSearchWidget::acceptKey( const Qt::Key key ) const
+{
+  return ( int( key ) >= int( Qt::Key_0 ) && int( key ) <= int( Qt::Key_9 ) ) ||
+    ( int( key ) >= int( Qt::Key_A ) && int( key ) <= int( Qt::Key_Z ) ) ||
+    key == Qt::Key_Period || key == Qt::Key_Underscore;
+}
 
 void DFGLegacyTabSearchWidget::updateSearch()
 {
@@ -263,6 +267,12 @@ void DFGLegacyTabSearchWidget::updateSearch()
 FTL::StrRef DFGLegacyTabSearchWidget::getName( unsigned int index ) const
 {
   return static_cast<char const *>( m_results.getUserdata( index ) );
+}
+
+bool DFGTabSearchWidget::acceptKey( const Qt::Key key ) const
+{
+  return DFGBaseTabSearchWidget::acceptKey( key )
+    || key == Qt::Key_Space;
 }
 
 void DFGTabSearchWidget::updateSearch()
