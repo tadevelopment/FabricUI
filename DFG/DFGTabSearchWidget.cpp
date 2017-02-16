@@ -12,7 +12,7 @@ using namespace FabricServices;
 using namespace FabricUI;
 using namespace FabricUI::DFG;
 
-DFGTabSearchWidget::DFGTabSearchWidget(
+DFGBaseTabSearchWidget::DFGBaseTabSearchWidget(
   DFGWidget * parent,
   const DFGConfig & config
   )
@@ -28,19 +28,19 @@ DFGTabSearchWidget::DFGTabSearchWidget(
   setMouseTracking(true);
 }
 
-DFGTabSearchWidget::~DFGTabSearchWidget()
+DFGBaseTabSearchWidget::~DFGBaseTabSearchWidget()
 {
   releaseKeyboard();
 }
 
-void DFGTabSearchWidget::mousePressEvent(QMouseEvent * event)
+void DFGBaseTabSearchWidget::mousePressEvent(QMouseEvent * event)
 {
   // If we get a left click
   if(event->button() == Qt::LeftButton)
   {
     // Get the element index from the click pos
     int index = indexFromPos( event->pos() );
-    if ( index >= 0 && index < int(m_results.getSize()) )
+    if ( index >= 0 && index < int( resultsSize() ) )
     {
       // Then add the node to the graph
       addNodeForIndex( index );
@@ -52,7 +52,7 @@ void DFGTabSearchWidget::mousePressEvent(QMouseEvent * event)
   QWidget::mousePressEvent(event);
 }
 
-void DFGTabSearchWidget::mouseMoveEvent( QMouseEvent *event )
+void DFGBaseTabSearchWidget::mouseMoveEvent( QMouseEvent *event )
 {
   int index = indexFromPos( event->pos() );
   if ( m_currentIndex != index )
@@ -63,7 +63,7 @@ void DFGTabSearchWidget::mouseMoveEvent( QMouseEvent *event )
   event->accept();
 }
 
-void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
+void DFGBaseTabSearchWidget::keyPressEvent(QKeyEvent * event)
 {
   Qt::Key key = (Qt::Key)event->key();
   Qt::KeyboardModifiers modifiers = event->modifiers();
@@ -107,7 +107,7 @@ void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
   }
   else if(key == Qt::Key_Down)
   {
-    if ( m_currentIndex < int(m_results.getSize()) - 1 )
+    if ( m_currentIndex < int( resultsSize() ) - 1 )
     {
       m_currentIndex++;
       update();
@@ -116,7 +116,7 @@ void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
   }
   else if(key == Qt::Key_Enter || key == Qt::Key_Return)
   {
-    if(m_currentIndex > -1 && m_currentIndex < int(m_results.getSize()))
+    if(m_currentIndex > -1 && m_currentIndex < int( resultsSize() ))
     {
       addNodeForIndex( m_currentIndex );
     }
@@ -130,17 +130,17 @@ void DFGTabSearchWidget::keyPressEvent(QKeyEvent * event)
   }
 }
 
-char const *DFGTabSearchWidget::getHelpText() const
+char const *DFGBaseTabSearchWidget::getHelpText() const
 {
   if ( m_search.length() == 0 )
     return "Search for preset or variable";
-  else if ( m_results.getSize() == 0 )
+  else if ( resultsSize() == 0 )
     return "No results found";
   else
     return 0;
 }
 
-void DFGTabSearchWidget::paintEvent(QPaintEvent * event)
+void DFGBaseTabSearchWidget::paintEvent(QPaintEvent * event)
 {
   QPainter painter(this);
 
@@ -156,7 +156,7 @@ void DFGTabSearchWidget::paintEvent(QPaintEvent * event)
     m_config.searchCursorColor
     );
 
-  if(m_currentIndex > -1 && m_currentIndex < int(m_results.getSize()) )
+  if(m_currentIndex > -1 && m_currentIndex < int( resultsSize() ) )
   {
     int offset = m_resultsMetrics.lineSpacing() * (m_currentIndex + 1) + margin();
     painter.fillRect(margin(), offset, width - 2 * margin(), m_resultsMetrics.lineSpacing(), m_config.searchHighlightColor);
@@ -172,7 +172,7 @@ void DFGTabSearchWidget::paintEvent(QPaintEvent * event)
   offset += m_queryMetrics.lineSpacing();
 
   painter.setFont(m_config.searchResultsFont);
-  for(int i=0;i<int(m_results.getSize());i++)
+  for(int i=0;i<int( resultsSize() );i++)
   {
     painter.drawText(margin(), offset, resultLabel(i));
     offset += m_resultsMetrics.lineSpacing();
@@ -188,17 +188,17 @@ void DFGTabSearchWidget::paintEvent(QPaintEvent * event)
   QWidget::paintEvent(event);  
 }
 
-void DFGTabSearchWidget::hideEvent(QHideEvent * event)
+void DFGBaseTabSearchWidget::hideEvent(QHideEvent * event)
 {
   releaseKeyboard();
-  m_results.clear();
+  clear();
   emit enabled(false);
   QWidget::hideEvent(event);  
 }
 
-void DFGTabSearchWidget::showForSearch( QPoint globalPos )
+void DFGBaseTabSearchWidget::showForSearch( QPoint globalPos )
 {
-  m_results.clear();
+  clear();
   m_search.clear();
   m_currentIndex = -1;
   setFocus(Qt::TabFocusReason);
@@ -214,23 +214,23 @@ void DFGTabSearchWidget::showForSearch( QPoint globalPos )
   grabKeyboard();
 }
 
-void DFGTabSearchWidget::showForSearch()
+void DFGBaseTabSearchWidget::showForSearch()
 {
   showForSearch(QCursor::pos());
 }
 
-void DFGTabSearchWidget::focusOutEvent(QFocusEvent * event)
+void DFGBaseTabSearchWidget::focusOutEvent(QFocusEvent * event)
 {
   hide();
 }
 
-bool DFGTabSearchWidget::focusNextPrevChild(bool next)
+bool DFGBaseTabSearchWidget::focusNextPrevChild(bool next)
 {
   // avoid focus switching
   return false;
 }
 
-void DFGTabSearchWidget::updateSearch()
+void DFGLegacyTabSearchWidget::updateSearch()
 {
   m_results =
     m_parent->getUIController()->getPresetPathsFromSearch(
@@ -238,7 +238,7 @@ void DFGTabSearchWidget::updateSearch()
       );
   m_results.keepFirst( 16 );
 
-  if(m_results.getSize() == 0)
+  if( resultsSize() == 0)
   {
     m_currentIndex = -1;
   }
@@ -246,7 +246,7 @@ void DFGTabSearchWidget::updateSearch()
   {
     m_currentIndex = 0;
   }
-  else if(m_currentIndex >= int(m_results.getSize()))
+  else if(m_currentIndex >= int( resultsSize() ))
   {
     m_currentIndex = 0;
   }
@@ -254,12 +254,17 @@ void DFGTabSearchWidget::updateSearch()
   updateGeometry();
 }
 
-int DFGTabSearchWidget::margin() const
+FTL::StrRef DFGLegacyTabSearchWidget::getName( unsigned int index ) const
+{
+  return static_cast<char const *>( m_results.getUserdata( index ) );
+}
+
+int DFGBaseTabSearchWidget::margin() const
 {
   return 2;
 }
 
-void DFGTabSearchWidget::updateGeometry()
+void DFGBaseTabSearchWidget::updateGeometry()
 {
   QRect rect = geometry();
   int width = widthFromResults();
@@ -305,11 +310,9 @@ void DFGTabSearchWidget::updateGeometry()
   update();
 }
 
-QString DFGTabSearchWidget::resultLabel(unsigned int index) const
+QString DFGBaseTabSearchWidget::resultLabel(unsigned int index) const
 {
-  FTL::StrRef desc(
-    static_cast<char const *>( m_results.getUserdata(index) )
-    );
+  FTL::StrRef desc = getName( index );
   FTL::StrRef::Split splitOne = desc.rsplit('.');
   if ( !splitOne.second.empty() )
   {
@@ -327,18 +330,18 @@ QString DFGTabSearchWidget::resultLabel(unsigned int index) const
   return QString::fromUtf8( desc.data(), desc.size() );
 }
 
-int DFGTabSearchWidget::indexFromPos(QPoint pos)
+int DFGBaseTabSearchWidget::indexFromPos(QPoint pos)
 {
   int y = pos.y();
   y -= margin();
   y -= m_queryMetrics.lineSpacing();
   y /= (int)m_resultsMetrics.lineSpacing();
-  if ( y < 0 || y >= int(m_results.getSize()) )
+  if ( y < 0 || y >= int( resultsSize() ) )
     return -1;
   return y;
 }
 
-int DFGTabSearchWidget::widthFromResults() const
+int DFGBaseTabSearchWidget::widthFromResults() const
 {
   int width = 80;
 
@@ -346,7 +349,7 @@ int DFGTabSearchWidget::widthFromResults() const
   if(w > width)
     width = w;
 
-  for(int i=0;i<int(m_results.getSize());i++)
+  for(int i=0;i<int( resultsSize() );i++)
   {
     w = m_resultsMetrics.width(resultLabel(i));
     if(w > width)
@@ -363,16 +366,16 @@ int DFGTabSearchWidget::widthFromResults() const
   return width + 2 * margin();
 }
 
-int DFGTabSearchWidget::heightFromResults() const
+int DFGBaseTabSearchWidget::heightFromResults() const
 {
   int height = m_queryMetrics.lineSpacing();
-  height += m_results.getSize() * m_resultsMetrics.lineSpacing();
+  height += resultsSize() * m_resultsMetrics.lineSpacing();
   if ( getHelpText() )
     height += m_helpMetrics.lineSpacing();
   return height + 2 * margin();
 }
 
-void DFGTabSearchWidget::addNodeForIndex( unsigned index )
+void DFGBaseTabSearchWidget::addNodeForIndex( unsigned index )
 {
   DFGController *controller = m_parent->getUIController();
   
@@ -382,7 +385,7 @@ void DFGTabSearchWidget::addNodeForIndex( unsigned index )
   // init node name.
   QString nodeName;
 
-  FTL::CStrRef desc( static_cast<char const *>( m_results.getUserdata( index ) ) );
+  FTL::CStrRef desc = getName( index );
 
   // deal with special case
   if ( desc == FTL_STR("var") )
@@ -457,7 +460,7 @@ void DFGTabSearchWidget::addNodeForIndex( unsigned index )
   }
   else
   {
-    m_results.select( index );
+    select( index );
     nodeName = controller->cmdAddInstFromPreset(
       QString::fromUtf8( desc.data(), desc.size() ),
       scenePos

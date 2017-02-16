@@ -16,14 +16,14 @@ namespace FabricUI
   {
     class DFGWidget;
 
-    class DFGTabSearchWidget : public QWidget 
+    class DFGBaseTabSearchWidget : public QWidget 
     {
       Q_OBJECT
 
     public:
 
-      DFGTabSearchWidget(DFGWidget * parent, const DFGConfig & config);
-      virtual ~DFGTabSearchWidget();
+      DFGBaseTabSearchWidget(DFGWidget * parent, const DFGConfig & config);
+      virtual ~DFGBaseTabSearchWidget();
 
       void showForSearch( QPoint globalPos );
       void showForSearch();
@@ -42,7 +42,7 @@ namespace FabricUI
 
       virtual void focusOutEvent(QFocusEvent * event);
       virtual bool focusNextPrevChild(bool next);
-      virtual void updateSearch();
+      virtual void updateSearch() = 0;
       virtual int margin() const;
 
       QString resultLabel(unsigned int index) const;
@@ -53,7 +53,10 @@ namespace FabricUI
 
       char const *getHelpText() const;
 
-    private:
+      virtual unsigned int resultsSize() const = 0;
+      virtual FTL::StrRef getName( unsigned int index ) const = 0;
+      virtual void clear() = 0;
+      virtual void select( unsigned int index ) = 0;
 
       void addNodeForIndex( unsigned index );
 
@@ -67,8 +70,29 @@ namespace FabricUI
 
       int m_currentIndex;
       QString m_search;
+    };
+
+    class DFGLegacyTabSearchWidget : public DFGBaseTabSearchWidget
+    {
+    public:
+      DFGLegacyTabSearchWidget( DFGWidget * parent, const DFGConfig & config )
+        : DFGBaseTabSearchWidget( parent, config )
+      {}
+
+    protected:
+
+      unsigned int resultsSize() const FTL_OVERRIDE { return m_results.getSize(); }
+      FTL::StrRef getName( unsigned int index ) const FTL_OVERRIDE;
+      void clear() FTL_OVERRIDE { m_results.clear(); }
+      void updateSearch() FTL_OVERRIDE;
+      void select( unsigned int index ) FTL_OVERRIDE { m_results.select( index ); }
+
+    private:
+
       FabricServices::SplitSearch::Matches m_results;
     };
+
+    typedef DFGLegacyTabSearchWidget DFGTabSearchWidget;
 
   };
 
