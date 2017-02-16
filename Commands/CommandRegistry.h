@@ -17,12 +17,18 @@ class BaseCommandFactory;
 class CommandRegistry
 {
   /**
-    CommandRegistry registers all the command-factories and
-    allows to create commands from them.
+    CommandRegistry registers the command-factories and can create commands from them. 
+    It is a singleton and should not be created directly.
+    - Get the registry: CommandRegistry *cmdRegistry = CommandRegistry::GetCommandRegistry()
+    
+    The registery is shared between the C++ and Python, so commands defined in Python 
+    can be called from C++ code too, and vice versa.
 
-    To register a command: CommandFactory<cmdType>::RegisterCommand(cmdName, userData);
-    To create a command: BaseCommand *cmd = CommandRegistry::CreateCommand(cmdName);
-    To check that a command is registered: CommandRegistry::IsCommandRegistered(cmdName, factoryType);
+    - Register a C++ command: CommandFactory<cmdType>::RegisterCommand(cmdName, userData);
+    
+    - Check a command is registered (Python/C++): cmdRegistry.isCommandRegistered(cmdName, factoryType);
+    
+    - Create a command (Python/C++): BaseCommand *cmd = cmdRegistry.createCommand(cmdName);
   */
 
   public:
@@ -30,34 +36,55 @@ class CommandRegistry
 
     virtual ~CommandRegistry();
 
+    /// Gets the reference to the registry singleton.
+    /// Creates it if needed (if not created in Python)
+    static CommandRegistry* GetCommandRegistry();
+
   	/// \internal
-    /// Called from the factory
-  	static void RegisterFactory(
+    /// Called from the factory.
+  	void registerFactory(
       const QString &cmdName, 
       BaseCommandFactory *factory
       );
 
     /// Checks if a command has been registered under the name "cmdName".
-    /// provide the name of the factory that creates the command: factoryType.
-  	static bool IsCommandRegistered(
+    /// Provides the name of the factory that creates the command: factoryType.
+    /// Can be overwridden
+    bool isCommandRegistered(
       const QString &cmdName,
       QString &factoryType
       );
 
     /// Creates a registered command named "cmdName".
     /// Throws an error if the command cannot be created (has to be registered first).
-    static BaseCommand* CreateCommand(
+    /// Can be overwridden
+    BaseCommand* createCommand(
       const QString &cmdName
       );
 
   protected:
-    virtual void commandIsRegistered(const QString &cmdName);
+    /// \internal
+    /// Sets the reference to the registery singeton.
+    /// Used in the Python implementation.
+    static void SetCommandRegistrySingleton(
+      CommandRegistry *instance
+      );
+
+    /// \internal
+    /// Called when a command is regitered.
+    /// Used in the Python implementation.
+    /// To overwride
+    virtual void commandIsRegistered(
+      const QString &cmdName,
+      const QString &cmdType
+    );
 
   private:
     /// \internal
+    static bool s_instanceFlag;
+    static CommandRegistry *s_cmdRegistry;
     /// Maps each command factory with a name.
     QMap<QString, BaseCommandFactory*> m_registeredCmds;
-    static CommandRegistry s_cmdRegistry;
 };
 
 

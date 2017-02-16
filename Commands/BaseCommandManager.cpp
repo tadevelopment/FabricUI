@@ -5,10 +5,12 @@
 #include <string>
 #include "BaseCommandManager.h"
 #include "BaseScriptableCommand.h"
-#include "CommandRegistry.h"
 
 using namespace FabricUI;
 using namespace Commands;
+
+bool BaseCommandManager::s_instanceFlag = false;
+BaseCommandManager* BaseCommandManager::s_cmdManager = 0;
 
 BaseCommandManager::BaseCommandManager() 
 {
@@ -16,7 +18,23 @@ BaseCommandManager::BaseCommandManager()
 
 BaseCommandManager::~BaseCommandManager() 
 {
+  s_instanceFlag = false;
   clear();
+}
+
+void BaseCommandManager::SetCommandManagerSingleton(
+  BaseCommandManager* registery)
+{
+  if(!s_instanceFlag)
+  {
+    s_cmdManager = registery;
+    s_instanceFlag = true;
+  }
+}
+
+BaseCommandManager* BaseCommandManager::GetCommandManager()
+{
+  return s_cmdManager;
 }
  
 BaseCommand* BaseCommandManager::createCommand(
@@ -24,7 +42,10 @@ BaseCommand* BaseCommandManager::createCommand(
   const QMap<QString, QString> &args, 
   bool doCmd)
 {
-  return CommandRegistry::CreateCommand(cmdName); 
+  throw(
+    std::string("BaseCommandManager::createCommand, to override")
+  );
+  return 0;
 }
 
 void BaseCommandManager::doCommand(

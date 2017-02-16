@@ -19,8 +19,8 @@ class BaseScriptableCommand : public BaseCommand
     Any scriptable command must inherites from this class.
 
     Because the arguments have to be set from any app/DCCs, they are passed
-    as string only. However, we provide helpers methods to convert strings
-    to/from commom types.
+    as string only. Helpers methods to convert strings to/from commom types
+    are provided.
   */
 
   public:
@@ -47,6 +47,7 @@ class BaseScriptableCommand : public BaseCommand
 
     /// Sets the value of an argument.
     /// Throws an error if the key is empty or hasn't been declared.
+    /// Called from the CommandManager.
     virtual void setArg(
       const QString &key, 
       const QString &value
@@ -54,6 +55,7 @@ class BaseScriptableCommand : public BaseCommand
 
     /// Validates that all the argments have been correctly set.
     /// Throws an error if not.
+    /// Called from the CommandManager.
     virtual void validateSetArgs() const;
 
     /// Gets a decription of the arguments.
@@ -62,7 +64,7 @@ class BaseScriptableCommand : public BaseCommand
     /// Implementation of Command, returns true.
     virtual bool canUndo() const;
 
-    /// Gets the command help.
+    /// Gets the command help (description)
     /// To override.
     virtual QString getHelp() const;
 
@@ -75,8 +77,8 @@ class BaseScriptableCommand : public BaseCommand
     };
 
     /// \internal
-    QMap<QString, ScriptableCommandArgSpec> m_argSpecs;
     QMap<QString, QString> m_args;
+    QMap<QString, ScriptableCommandArgSpec> m_argSpecs;
 };
 
 } // namespace Commands

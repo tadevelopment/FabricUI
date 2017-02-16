@@ -3,15 +3,15 @@
 //
 
 #include <string>
-#include <iostream>
+#include <typeinfo>
 #include "CommandFactory.h"
 #include "CommandRegistry.h"
 
 using namespace FabricUI;
 using namespace Commands;
 
-//QMap<QString, BaseCommandFactory*> CommandRegistry::s_registeredCmds;
-CommandRegistry CommandRegistry::s_cmdRegistry;
+bool CommandRegistry::s_instanceFlag = false;
+CommandRegistry* CommandRegistry::s_cmdRegistry = 0;
 
 CommandRegistry::CommandRegistry() 
 {
@@ -19,34 +19,59 @@ CommandRegistry::CommandRegistry()
 
 CommandRegistry::~CommandRegistry() 
 {
+  s_instanceFlag = false;
 }
 
-void CommandRegistry::RegisterFactory(
+void CommandRegistry::SetCommandRegistrySingleton(
+  CommandRegistry* registery)
+{
+  if(!s_instanceFlag)
+  {
+    s_cmdRegistry = registery;
+    s_instanceFlag = true;
+  }
+}
+
+CommandRegistry* CommandRegistry::GetCommandRegistry()
+{
+  if(!s_instanceFlag)
+  {
+    s_cmdRegistry = new CommandRegistry();
+    s_instanceFlag = true;
+  }
+  
+  return s_cmdRegistry;
+}
+
+void CommandRegistry::registerFactory(
   const QString &cmdName, 
   BaseCommandFactory *factory) 
 {
   QString factoryType;
-  if (!IsCommandRegistered(cmdName, factoryType))
+  if (!isCommandRegistered(cmdName, factoryType))
   {
-    s_cmdRegistry.m_registeredCmds[cmdName] = factory;
-    s_cmdRegistry.commandIsRegistered(cmdName);
+
+    m_registeredCmds[cmdName] = factory;
+    commandIsRegistered(
+      cmdName,
+      QString(typeid(*factory).name()));
   }
 }
 
-bool CommandRegistry::IsCommandRegistered(
+bool CommandRegistry::isCommandRegistered(
   const QString &cmdName,
   QString &factoryType) 
 {
-  bool isRegistered = s_cmdRegistry.m_registeredCmds.count(cmdName) != 0;
-  factoryType = isRegistered ? typeid(*s_cmdRegistry.m_registeredCmds[cmdName]).name() : "";
+  bool isRegistered = m_registeredCmds.count(cmdName) != 0;
+  factoryType = isRegistered ? typeid(*m_registeredCmds[cmdName]).name() : "";
   return isRegistered;
 }
 
-BaseCommand* CommandRegistry::CreateCommand(
+BaseCommand* CommandRegistry::createCommand(
   const QString &cmdName) 
 {
   QString factoryType;
-  if (!IsCommandRegistered(cmdName, factoryType))
+  if (!isCommandRegistered(cmdName, factoryType))
     throw( 
       std::string(
         QString(
@@ -55,16 +80,17 @@ BaseCommand* CommandRegistry::CreateCommand(
       )
     );
   
-  BaseCommand *cmd = s_cmdRegistry.m_registeredCmds[cmdName]->createCommand();
+  BaseCommand *cmd = m_registeredCmds[cmdName]->createCommand();
 
   cmd->registrationCallBack(
     cmdName,
-    s_cmdRegistry.m_registeredCmds[cmdName]->m_userData);
+    m_registeredCmds[cmdName]->m_userData);
           
   return cmd;
 }
 
-void CommandRegistry::commandIsRegistered(const QString &cmdName) {
-  std::cout << " CommandRegistry::commandIsRegistered " << cmdName.toUtf8().constData() << std::endl;
+void CommandRegistry::commandIsRegistered(
+  const QString &cmdName,
+  const QString &cmdType) 
+{
 }
- 

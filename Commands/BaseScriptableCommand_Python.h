@@ -14,8 +14,8 @@ class BaseScriptableCommand_Python : protected BaseScriptableCommand
 {
   /**
     Pyside/shiboken doesn't propagate C++ exceptions to Python, cf. https://bugreports.qt.io/browse/PYSIDE-62.
-    BaseScriptableCommand_Python "wraps" the methods of BaseScriptableCommand that throws C++ exceptions.
-    The exceptions are catched and returned as strings ao they can be raised in Python.
+    BaseScriptableCommand_Python "wraps" methods of BaseScriptableCommand throwing C++ exceptions and called 
+    from Python. The exceptions are catched and returned as strings ao they can be raised in Python.
   */
 
   public:
@@ -29,17 +29,7 @@ class BaseScriptableCommand_Python : protected BaseScriptableCommand
       const QString &key, 
       bool optional = true, 
       const QString &defaultValue = QString()
-      );
-
-    /// Wraps BaseScriptableCommand method.
-    QString setArg_Python(
-      const QString &key, 
-      const QString &value
-      );
-
-    /// Wraps BaseScriptableCommand method.
-    QString validateSetArgs_Python() const;
- 
+      ); 
 };
 
 } // namespace Commands

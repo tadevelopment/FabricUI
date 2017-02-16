@@ -14,8 +14,8 @@ class BaseCommandManager_Python : protected BaseCommandManager
 {
   /**
     Pyside/shiboken doesn't propagate C++ exceptions to Python, cf. https://bugreports.qt.io/browse/PYSIDE-62.
-    BaseCommandManager_Python "wraps" the methods of BaseCommandManager that throws C++ exceptions.
-    The exceptions are catched and returned as strings ao they can be raised in Python.
+    BaseCommandManager_Python "wraps" methods of BaseCommandManager throwing C++ exceptions called
+    from Python. The exceptions are catched and returned as strings ao they can be raised in Python.
   */
 
  	public:

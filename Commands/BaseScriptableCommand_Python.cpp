@@ -33,33 +33,3 @@ QString BaseScriptableCommand_Python::declareArg_Python(
   }
   return error;
 }
-
-QString BaseScriptableCommand_Python::setArg_Python(
-  const QString &key, 
-  const QString &value) 
-{
-  QString error;
-  try 
-  { 
-    BaseScriptableCommand::setArg(key, value);
-  }  
-  catch (std::string &e) 
-  {
-    error = e.c_str(); 
-  }
-  return error;
-}
-
-QString BaseScriptableCommand_Python::validateSetArgs_Python() const
-{
-  QString error;
-  try 
-  { 
-    BaseScriptableCommand::validateSetArgs();
-  }  
-  catch (std::string &e) 
-  {
-    error = e.c_str(); 
-  }
-  return error;
-}

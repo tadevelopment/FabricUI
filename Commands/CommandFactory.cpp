@@ -19,5 +19,8 @@ BaseCommandFactory::~BaseCommandFactory()
 
 BaseCommand *BaseCommandFactory::createCommand() 
 { 
+ 	throw(
+    std::string("BaseCommandFactory::createCommand, to override")
+  );
   return 0; 
 }

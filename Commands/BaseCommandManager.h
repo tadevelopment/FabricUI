@@ -11,8 +11,8 @@
 #include "BaseCommand.h"
 
 
-// Need to use a typedef because gcc doesn't support
-// templated default arguments: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=39426 
+// Need to use a typedef because gcc doesn't support templated default arguments:
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=39426 
 typedef QMap<QString, QString> QMapString;
 
 namespace FabricUI {
@@ -27,16 +27,21 @@ class BaseCommandManager
     It is specialized depending on the command registration system (C++ vs Phyton).
     See CommandManager.h(cpp) for the C++ implementation, BaseCommandManager_Python.h(cpp)
     Python/Canvas/CommandManager.py for the Python one.
-    
-    To Register a command: CommandFactory<cmdType>::RegisterCommand(cmdName, userData);
-    To Create a command: BaseCommand *cmd = cmdManager.createCommand(cmdName);
+  
+    The manager is shared between the C++ and Python, so commands defined in Python 
+    can be created from C++ code too, and vice versa.
+
+    The manager can only create commands (C++/Python) registered in CommandRegistry
+    Commands registered in C++ (CommandFactory<cmdType>::RegisterCommand(cmdName)),
+    are owned by the manager undo-redo stacks. Commands registered in Python are 
+    owns by Python, and are only referenced by the stacks.
   */
 
   public:
     BaseCommandManager();
 
     virtual ~BaseCommandManager();
-    
+ 
     /// Creates and executes a command (if doCmd == true).
     /// If executed, the command is added to manager stack.
     /// Throws an exception if an error occurs.
@@ -75,6 +80,17 @@ class BaseCommandManager
     virtual QString getContent() const;
 
   protected:
+    /// \internal
+    /// Gets the reference to the manager singleton.
+    static BaseCommandManager* GetCommandManager();
+   
+    /// \internal
+    /// Sets the reference to the manager singleton.
+    /// Used in the Python implementation.
+    static void SetCommandManagerSingleton(
+      BaseCommandManager *instance
+      );
+
     /// \internal
     struct StackedCommand 
     {
@@ -121,6 +137,11 @@ class BaseCommandManager
     /// \internal
     QList<StackedCommand> m_undoStack;
     QList<StackedCommand> m_redoStack;
+
+  private:
+    /// \internal
+    static bool s_instanceFlag;
+    static BaseCommandManager *s_cmdManager;
 };
  
 } // namespace Commands

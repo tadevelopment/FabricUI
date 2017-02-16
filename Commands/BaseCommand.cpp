@@ -23,12 +23,6 @@ void BaseCommand::registrationCallBack(
   m_name = name;
 }
 
-void BaseCommand::creationCallback(
-	BaseCommandManager *cmdManager) 
-{
-  m_cmdManager = cmdManager;
-}
-
 const QString & BaseCommand::getName() const 
 {
   return m_name;
@@ -52,9 +46,4 @@ bool BaseCommand::undoIt()
 bool BaseCommand::redoIt() 
 {
   return false;
-}
- 
-BaseCommandManager * BaseCommand::getManager() const 
-{
-  return m_cmdManager;
 }

@@ -10,8 +10,6 @@
 namespace FabricUI {
 namespace Commands {
 
-class BaseCommandManager;
-
 class BaseCommand
 {
   /**
@@ -24,20 +22,18 @@ class BaseCommand
 
     virtual ~BaseCommand();
 
-    /// Called when the command is registered.
+    /// Called when the command is created.
+    /// The userData argument is used to pass optional custom data.
+    /// The data is referenced by the registery, and given to 
+    /// the command with this callback.
     /// To override.
     virtual void registrationCallBack(
       const QString &name, 
       void *userData
       );
 
-    /// Called when the command is created in the manager.
-    void creationCallback(
-      BaseCommandManager *manager
-      );
-
     /// Gets the command name.
-    const QString & getName() const;
+    const QString &getName() const;
 
     /// Checks if the command is undoable (false by default).
     /// To override
@@ -59,12 +55,6 @@ class BaseCommand
     virtual bool redoIt();
 
   protected:
-    /// Gets a reference to the command manager.
-    /// Used to add children commands to a command.
-    BaseCommandManager* getManager() const;
-
-    /// \internal
-    BaseCommandManager *m_cmdManager;
     /// \internal
     QString m_name;
 };

@@ -16,8 +16,13 @@ class BaseCommandFactory
 {
   /**
     BaseCommandFactory is the base class of all the CommandFactory.
+
     Each CommandFactory is associated to one type of command only, 
-    and, the factories are registered in CommandRegistry. 
+    and, the factories are registered in the CommandRegistry. 
+
+    The userData argument is void pointer used to pass optional custom data to the command.
+    The data is referenced by the factory, and its passed to the command throught
+    the BaseCommand::registrationCallBack callback.
   */
 
   public:
@@ -31,8 +36,8 @@ class BaseCommandFactory
     /// To override.
   	virtual BaseCommand *createCommand();
 
-    /// The user data. It is stored by the factory 
-    /// so it can be given to the command when it's created.
+    /// The user data. Stored by the factory and
+    /// passed to the command when it's created.
   	void *m_userData;
 };
  
@@ -42,10 +47,6 @@ class CommandFactory : public BaseCommandFactory
   /**
     CommandFactory is used to register commands in the CommandRegistry.
     To register a command: CommandFactory<cmdType>::RegisterCommand(cmdName, userData);
-
-    The userData argument is void pointer used to pass optional custom data to the command.
-    The data is referenced by the factory, and its passed to the command throught
-    the BaseCommand::registrationCallBack callback.
   */
 
   public:
@@ -60,7 +61,7 @@ class CommandFactory : public BaseCommandFactory
       const QString &cmdName,
       void *userData = 0) 
     {
-	    CommandRegistry::RegisterFactory(
+	    CommandRegistry::GetCommandRegistry()->registerFactory(
         cmdName, 
         new CommandFactory(userData)
         );

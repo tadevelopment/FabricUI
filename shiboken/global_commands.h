@@ -8,3 +8,4 @@
 #include <FabricUI/Commands/BaseCommandManager.h>
 #include <FabricUI/Commands/BaseCommandManager_Python.h>
 #include <FabricUI/Commands/CommandRegistry.h>
+#include <FabricUI/Commands/CppTestCommand.h>

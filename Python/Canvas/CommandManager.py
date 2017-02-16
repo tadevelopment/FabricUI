@@ -3,39 +3,44 @@
 #
 
 from FabricEngine.FabricUI import Commands
-from FabricEngine.Canvas.CommandRegistry import CommandRegistry
+from FabricEngine.Canvas.CommandRegistry import *
  
+
 class CommandManager(Commands.BaseCommandManager_Python):
     
-    """ CommandManager specializes BaseCommandManager.
+    """ CommandManager specializes BaseCommandManager (C++). 
         See Commands/BaseCommandManager.h(cpp) and Commands/BaseCommandManager_Python.h(cpp).
         
-        To register a command: CommandRegistry.RegisterCommand(cmdName, userData)
-        To create a command: cmd = cmdManager.createCommand(cmdName)
-    """
+        The registery is shared between the C++ and Python, so commands defined in Python 
+        can be created from C++ code too, and vice versa.
 
+        The CommandManager is a singleton and should not be created directly.
+        - Get the manager: cmdManager = GetCommandManager()
+
+        - Register a command: GetCommandRegistry().registerComand(cmdName, userData)
+        
+        - Create a command (C++/Python): cmd = cmdManager.createCommand(cmdName)
+    """
+    
     def __init__(self):
         super(CommandManager, self).__init__()
         
-        # \internal
+        # !!! Very important !!!!!
+        # Here, we set the C++ pointer of the C++ CommandManager 
+        # singleton equal to this python instance of CommandManager.
+        Commands.BaseCommandManager.SetCommandManagerSingleton(self)
+
         # There is no "new" is python, so we need to own the commands created in Python.
         # They are refered by the BaseCommandManager undo-redo stacks. 
         self.__flatCommandsStack = []
-
+ 
     def createCommand(self, cmdName, args = {}, doCmd = True):
         """ Implementation of BaseCommandManager.
             Raises an exception if an error occurs. 
         """
         try:
-            cmd = CommandRegistry.CreateCommand(cmdName)
-            
-            # In case the command has been registered in C++ but
-            # is created from Python, ask the C++ command registery to do it.
-            if cmd is None:
-                cmd = super(CommandManager, self).createCommand(cmdName)
-
-            cmd.creationCallback(self)
-            
+            cmd = GetCommandRegistry().createCommand(cmdName)
+                  
             if len(args) > 0:
               self.checkCommandArgs(cmd, args)
 
@@ -67,7 +72,7 @@ class CommandManager(Commands.BaseCommandManager_Python):
         """ Implementation of BaseCommandManager.
             Raises an exception if an error occurs. 
         """
-        error = self.redoCommand_Python()
+        error = super(CommandManager, self).redoCommand_Python()
         if error:
             raise Exception(error)
 
@@ -82,7 +87,7 @@ class CommandManager(Commands.BaseCommandManager_Python):
             Implementation of BaseCommandManager.
             Raises an exception if an error occurs. 
         """
-        error = self.checkCommandArgs_Python(cmd, args)
+        error = super(CommandManager, self).checkCommandArgs_Python(cmd, args)
         if error:
             raise Exception(error)
 
@@ -99,3 +104,14 @@ class CommandManager(Commands.BaseCommandManager_Python):
             Implementation of BaseCommandManager
         """
         self.__flatCommandsStack.append(cmd)
+
+
+# \internal
+# !!!!! Store the reference to the 
+# CommandManager singleton !!!!
+s_cmdManager = CommandManager()
+
+def GetCommandManager():
+    """ Gets the CommandManager singleton.
+    """
+    return Commands.BaseCommandManager.GetCommandManager()

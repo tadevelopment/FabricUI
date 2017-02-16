@@ -4,6 +4,7 @@
 
 #include <string>
 #include "CommandManager.h"
+#include "CommandRegistry.h"
 
 using namespace FabricUI;
 using namespace Commands;
@@ -17,6 +18,18 @@ CommandManager::~CommandManager()
 {
 }
 
+BaseCommandManager* CommandManager::GetCommandManager()
+{
+  BaseCommandManager *manager = BaseCommandManager::GetCommandManager();
+  if (!manager)
+  {
+    manager = new CommandManager();
+    BaseCommandManager::SetCommandManagerSingleton(manager);
+  }
+  
+  return manager;
+}
+
 BaseCommand* CommandManager::createCommand(
   const QString &cmdName, 
   const QMap<QString, QString> &args, 
@@ -24,9 +37,7 @@ BaseCommand* CommandManager::createCommand(
 {
   try 
   {  
-    BaseCommand *cmd = BaseCommandManager::createCommand(cmdName);
-
-    cmd->creationCallback(this);
+    BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(cmdName);
     
     if( args.size() > 0 ) 
       checkCommandArgs(cmd, args);
