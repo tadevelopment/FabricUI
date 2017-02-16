@@ -223,6 +223,9 @@ DFGWidget::DFGWidget(
   layout->addWidget( splitter );
   setLayout( layout );
 
+  m_usingLegacyTabSearchWidget = false;
+  m_legacyTabSearchWidget = new DFGLegacyTabSearchWidget( this, m_dfgConfig );
+  m_legacyTabSearchWidget->hide();
   m_tabSearchWidget = new DFGTabSearchWidget(this, m_dfgConfig);
   m_tabSearchWidget->hide();
 
@@ -274,8 +277,10 @@ DFGController * DFGWidget::getUIController()
   return m_uiController.get();
 }
 
-DFGTabSearchWidget * DFGWidget::getTabSearchWidget()
+DFGBaseTabSearchWidget * DFGWidget::getTabSearchWidget()
 {
+  if( m_usingLegacyTabSearchWidget )
+    return m_legacyTabSearchWidget;
   return m_tabSearchWidget;
 }
 

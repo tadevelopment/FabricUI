@@ -80,7 +80,7 @@ namespace DFG {
       GraphView::Graph * getUIGraph();
       DFGKLEditorWidget * getKLEditor();
       DFGController * getUIController();
-      DFGTabSearchWidget * getTabSearchWidget();
+      DFGBaseTabSearchWidget * getTabSearchWidget();
       DFGGraphViewWidget * getGraphViewWidget();
       DFGExecHeaderWidget * getHeaderWidget();
       DFGErrorsWidget *getErrorsWidget() const
@@ -164,6 +164,7 @@ namespace DFG {
       void onEditSelectedNode();
       void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);
+      void toggleLegacyTabSearch( bool toggled ) { m_usingLegacyTabSearchWidget = toggled; }
 
     protected slots:
 
@@ -210,7 +211,9 @@ namespace DFG {
       DFGNotificationRouter * m_router;
       DFGKLEditorWidget * m_klEditor;
       DFGExecBlockEditorWidget *m_execBlockEditorWidget;
+      DFGLegacyTabSearchWidget * m_legacyTabSearchWidget;
       DFGTabSearchWidget * m_tabSearchWidget;
+      bool m_usingLegacyTabSearchWidget;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGConfig m_dfgConfig;
 
