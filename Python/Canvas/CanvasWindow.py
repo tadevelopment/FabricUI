@@ -1164,7 +1164,7 @@ class CanvasWindow(QtGui.QMainWindow):
                       "Use legacy TabSearch widget", self.dfgWidget)
                     self.toggleLegacyTabSearchAction.setCheckable(True)
                     self.toggleLegacyTabSearchAction.triggered.connect(
-                      self.dfgWidget.toggleLegacyTabSearch)
+                      lambda: self.dfgWidget.onToggleLegacyTabSearch( self.toggleLegacyTabSearchAction.isChecked() ) )
                     menu.addAction(self.toggleLegacyTabSearchAction)
 
         elif name == 'View':

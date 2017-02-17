@@ -164,7 +164,7 @@ namespace DFG {
       void onEditSelectedNode();
       void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);
-      void toggleLegacyTabSearch( bool toggled ) { m_usingLegacyTabSearchWidget = toggled; }
+      void onToggleLegacyTabSearch( bool toggled ) { m_usingLegacyTabSearchWidget = toggled; }
 
     protected slots:
 
