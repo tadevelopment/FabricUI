@@ -16,7 +16,22 @@ namespace FabricUI
   {
     class DFGWidget;
 
-    class DFGBaseTabSearchWidget : public QWidget 
+    class DFGAbstractTabSearchWidget : public QWidget
+    {
+      Q_OBJECT
+
+    public:
+
+      DFGAbstractTabSearchWidget( DFGWidget* parent );
+      virtual void showForSearch( QPoint globalPos ) = 0;
+
+    signals :
+
+      void enabled( bool );
+
+    };
+
+    class DFGBaseTabSearchWidget : public DFGAbstractTabSearchWidget
     {
       Q_OBJECT
 
@@ -75,6 +90,8 @@ namespace FabricUI
 
     class DFGLegacyTabSearchWidget : public DFGBaseTabSearchWidget
     {
+      Q_OBJECT
+
     public:
       DFGLegacyTabSearchWidget( DFGWidget * parent, const DFGConfig & config )
         : DFGBaseTabSearchWidget( parent, config )
@@ -94,6 +111,8 @@ namespace FabricUI
 
     class DFGTabSearchWidget : public DFGBaseTabSearchWidget
     {
+      Q_OBJECT
+
     public:
       DFGTabSearchWidget( DFGWidget * parent, const DFGConfig & config );
 

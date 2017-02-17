@@ -80,7 +80,7 @@ namespace DFG {
       GraphView::Graph * getUIGraph();
       DFGKLEditorWidget * getKLEditor();
       DFGController * getUIController();
-      DFGBaseTabSearchWidget * getTabSearchWidget();
+      DFGAbstractTabSearchWidget * getTabSearchWidget();
       DFGGraphViewWidget * getGraphViewWidget();
       DFGExecHeaderWidget * getHeaderWidget();
       DFGErrorsWidget *getErrorsWidget() const

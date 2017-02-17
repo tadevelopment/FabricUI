@@ -277,7 +277,7 @@ DFGController * DFGWidget::getUIController()
   return m_uiController.get();
 }
 
-DFGBaseTabSearchWidget * DFGWidget::getTabSearchWidget()
+DFGAbstractTabSearchWidget * DFGWidget::getTabSearchWidget()
 {
   if( m_usingLegacyTabSearchWidget )
     return m_legacyTabSearchWidget;
