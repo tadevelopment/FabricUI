@@ -582,6 +582,7 @@ class CanvasWindow(QtGui.QMainWindow):
             tl_loopMode = dfgExec.getMetadata("timeline_loopMode")
             tl_simulationMode = dfgExec.getMetadata("timeline_simMode")
             tl_current = dfgExec.getMetadata("timeline_current")
+            tl_timerFps = dfgExec.getMetadata("timeline_timerFps")
 
             if len(tl_start) > 0 and len(tl_end) > 0:
                 self.timeLine.setTimeRange(int(tl_start), int(tl_end))
@@ -598,6 +599,9 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.timeLine.setSimulationMode(int(tl_simulationMode))
             else:
                 self.timeLine.setSimulationMode(0)
+
+            if len(tl_timerFps) > 0:
+                self.timeLine.setTimerFromFps(float(tl_timerFps))
 
             camera_mat44 = dfgExec.getMetadata("camera_mat44")
             camera_focalDistance = dfgExec.getMetadata("camera_focalDistance")
@@ -932,9 +936,10 @@ class CanvasWindow(QtGui.QMainWindow):
                           False)
         graph.setMetadata("timeline_loopMode", str(self.timeLine.loopMode()),
                           False)
-        graph.setMetadata("timeline_simMode",
-                          str(self.timeLine.simulationMode()), False)
-
+        graph.setMetadata("timeline_simMode", str(self.timeLine.simulationMode()), 
+                          False)
+        graph.setMetadata("timeline_timerFps", str(self.timeLine.getFps()), 
+                          False)
         try:
             camera = self.viewport.getCamera()
             mat44 = camera.getMat44('Mat44')
