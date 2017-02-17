@@ -250,6 +250,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
                                        self.mainBinding, '', graph, self.astManager,
                                        self.dfguiCommandHandler, self.config)
+        self.dfgWidget.fileMenuAboutToShow.connect(self.updateRecentFileActions)
         self.scriptEditor.setDFGControllerGlobal(self.dfgWidget.getDFGController())
 
         tabSearchWidget = self.dfgWidget.getTabSearchWidget()
@@ -520,6 +521,10 @@ class CanvasWindow(QtGui.QMainWindow):
         if type(files) is not list:
           files = [files]           
 
+        # Convert paths to abspath, to make sure that they collide
+        filePath = os.path.abspath( filePath )
+        files = [ os.path.abspath( file ) for file in files ]       
+
         # Try to remove the entry if it is already in the list
         try:
             files.remove(filePath)
@@ -528,6 +533,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         # Insert the entry first in the list
         files.insert(0, filePath)
+
         # Update the list and crop it to maxRecentFiles
         self.settings.setValue('mainWindow/recentFiles', files[:self.maxRecentFiles])
 
@@ -538,9 +544,17 @@ class CanvasWindow(QtGui.QMainWindow):
         if type(files) is not list:
           files = [files]                   
 
+        # Only keep files that still exist
+        files = [ f for f in files if os.path.exists( f ) ]               
+
         if len(self.recentFilesAction) >0:
             for i,filepath in enumerate(files):
-                text = "&%d %s" % (i + 1, filepath)
+                maxLen = 90
+                displayedFilepath = filepath
+                if len(displayedFilepath) > maxLen :
+                    # crop the filepath in the middle if it is too long
+                    displayedFilepath = displayedFilepath[:maxLen/2] + "..." + displayedFilepath[-maxLen/2:]
+                text = str(i + 1) + " " + displayedFilepath
                 self.recentFilesAction[i].setText(text)
                 self.recentFilesAction[i].setData(filepath)
                 self.recentFilesAction[i].setVisible(True)
