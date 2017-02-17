@@ -550,10 +550,11 @@ class CanvasWindow(QtGui.QMainWindow):
         if len(self.recentFilesAction) >0:
             for i,filepath in enumerate(files):
                 maxLen = 90
-                if len(filepath) > maxLen :
+                displayedFilepath = filepath
+                if len(displayedFilepath) > maxLen :
                     # crop the filepath in the middle if it is too long
-                    filepath = filepath[:maxLen/2] + "..." + filepath[-maxLen/2:]
-                text = str(i + 1) + " " + filepath
+                    displayedFilepath = displayedFilepath[:maxLen/2] + "..." + displayedFilepath[-maxLen/2:]
+                text = str(i + 1) + " " + displayedFilepath
                 self.recentFilesAction[i].setText(text)
                 self.recentFilesAction[i].setData(filepath)
                 self.recentFilesAction[i].setVisible(True)
