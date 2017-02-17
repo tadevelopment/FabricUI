@@ -251,6 +251,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
                                        self.mainBinding, '', graph, self.astManager,
                                        self.dfguiCommandHandler, self.config)
+        self.dfgWidget.fileMenuAboutToShow.connect(self.updateRecentFileActions)
         self.scriptEditor.setDFGControllerGlobal(self.dfgWidget.getDFGController())
 
         tabSearchWidget = self.dfgWidget.getTabSearchWidget()
@@ -521,6 +522,10 @@ class CanvasWindow(QtGui.QMainWindow):
         if type(files) is not list:
           files = [files]           
 
+        # Convert paths to abspath, to make sure that they collide
+        filePath = os.path.abspath( filePath )
+        files = [ os.path.abspath( file ) for file in files ]       
+
         # Try to remove the entry if it is already in the list
         try:
             files.remove(filePath)
@@ -529,6 +534,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         # Insert the entry first in the list
         files.insert(0, filePath)
+
         # Update the list and crop it to maxRecentFiles
         self.settings.setValue('mainWindow/recentFiles', files[:self.maxRecentFiles])
 
@@ -539,9 +545,17 @@ class CanvasWindow(QtGui.QMainWindow):
         if type(files) is not list:
           files = [files]                   
 
+        # Only keep files that still exist
+        files = [ f for f in files if os.path.exists( f ) ]               
+
         if len(self.recentFilesAction) >0:
             for i,filepath in enumerate(files):
-                text = "&%d %s" % (i + 1, filepath)
+                maxLen = 90
+                displayedFilepath = filepath
+                if len(displayedFilepath) > maxLen :
+                    # crop the filepath in the middle if it is too long
+                    displayedFilepath = displayedFilepath[:maxLen/2] + "..." + displayedFilepath[-maxLen/2:]
+                text = str(i + 1) + " " + displayedFilepath
                 self.recentFilesAction[i].setText(text)
                 self.recentFilesAction[i].setData(filepath)
                 self.recentFilesAction[i].setVisible(True)
@@ -583,6 +597,7 @@ class CanvasWindow(QtGui.QMainWindow):
             tl_loopMode = dfgExec.getMetadata("timeline_loopMode")
             tl_simulationMode = dfgExec.getMetadata("timeline_simMode")
             tl_current = dfgExec.getMetadata("timeline_current")
+            tl_timerFps = dfgExec.getMetadata("timeline_timerFps")
 
             if len(tl_start) > 0 and len(tl_end) > 0:
                 self.timeLine.setTimeRange(int(tl_start), int(tl_end))
@@ -599,6 +614,9 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.timeLine.setSimulationMode(int(tl_simulationMode))
             else:
                 self.timeLine.setSimulationMode(0)
+
+            if len(tl_timerFps) > 0:
+                self.timeLine.setTimerFromFps(float(tl_timerFps))
 
             camera_mat44 = dfgExec.getMetadata("camera_mat44")
             camera_focalDistance = dfgExec.getMetadata("camera_focalDistance")
@@ -933,9 +951,10 @@ class CanvasWindow(QtGui.QMainWindow):
                           False)
         graph.setMetadata("timeline_loopMode", str(self.timeLine.loopMode()),
                           False)
-        graph.setMetadata("timeline_simMode",
-                          str(self.timeLine.simulationMode()), False)
-
+        graph.setMetadata("timeline_simMode", str(self.timeLine.simulationMode()), 
+                          False)
+        graph.setMetadata("timeline_timerFps", str(self.timeLine.getFps()), 
+                          False)
         try:
             camera = self.viewport.getCamera()
             mat44 = camera.getMat44('Mat44')

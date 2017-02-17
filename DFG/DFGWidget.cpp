@@ -2261,6 +2261,7 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
     emit additionalMenuActionsRequested("File", fileMenu, true);
     if(fileMenu->actions().count() > 0)
       fileMenu->addSeparator();
+    connect( fileMenu, SIGNAL( aboutToShow() ), this, SIGNAL( fileMenuAboutToShow() ) );
   }
 
   QMenu *editMenu = menuBar->addMenu(tr("&Edit"));
