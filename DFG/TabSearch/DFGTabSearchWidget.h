@@ -25,8 +25,12 @@ namespace FabricUI
 
       void keyPressEvent( QKeyEvent *event ) FTL_OVERRIDE;
 
+    signals:
+      void selectedPreset( QString preset );
+
     private slots:
       void onQueryChanged( QString query );
+      void validateSelection();
 
     private:
       TabSearch::QueryEdit* m_queryEdit;

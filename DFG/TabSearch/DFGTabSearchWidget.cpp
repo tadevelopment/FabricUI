@@ -38,6 +38,9 @@ void DFGTabSearchWidget2::showForSearch( QPoint globalPos )
 
 void DFGTabSearchWidget2::keyPressEvent( QKeyEvent *event )
 {
+  if( event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return )
+    validateSelection();
+  else
   if( event->key() == Qt::Key_Up )
     m_resultsView->moveSelection( -1 );
   else
@@ -100,3 +103,9 @@ void DFGTabSearchWidget2::onQueryChanged( QString query )
   m_resultsView->setResults( results );
 }
 
+void DFGTabSearchWidget2::validateSelection()
+{
+  if( m_resultsView->numberResults() )
+    emit selectedPreset( m_resultsView->getSelectedPreset() );
+  std::cout << "Selected " << m_resultsView->getSelectedPreset().toStdString() << std::endl;
+}

@@ -19,6 +19,9 @@ namespace FabricUI
       public:
         ResultsView();
 
+        QString getSelectedPreset();
+        inline int numberResults() const { return m_model.rowCount(); }
+
       public slots:
         void setResults( std::vector<std::string> results );
         void moveSelection( int increment = +1 );

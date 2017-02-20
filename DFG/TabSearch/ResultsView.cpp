@@ -3,6 +3,7 @@
 #include "ResultsView.h"
 
 #include <iostream>
+#include <assert.h>
 
 using namespace FabricUI::DFG::TabSearch;
 
@@ -19,21 +20,27 @@ void ResultsView::setResults( std::vector<std::string> results )
     list.append( QString::fromStdString( results[i] ) );
   m_model.setStringList( list );
 
-  if( list.size() > 0 )
+  if( numberResults() > 0 )
     setSelection( 0 );
+}
+
+QString ResultsView::getSelectedPreset()
+{
+  assert( numberResults() > 0 );
+  return m_model.data( currentIndex(), Qt::DisplayRole ).value<QString>();
 }
 
 void ResultsView::moveSelection( int increment )
 {
-  if( m_model.rowCount() == 0 )
+  if( numberResults() == 0 )
     return;
 
   int newSelection = currentIndex().row() + increment;
   if( newSelection < 0 )
-    newSelection = m_model.rowCount() + newSelection;
+    newSelection = numberResults() + newSelection;
   else
-  if( newSelection >= m_model.rowCount() )
-    newSelection = newSelection % m_model.rowCount();
+  if( newSelection >= numberResults() )
+    newSelection = newSelection % numberResults();
 
   setSelection( newSelection );
 }
