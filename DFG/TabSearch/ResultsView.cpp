@@ -16,7 +16,7 @@ ResultsView::ResultsView()
 void ResultsView::setResults( std::vector<std::string> results )
 {
   QStringList list;
-  for( int i = 0; i < results.size(); i++ )
+  for( size_t i = 0; i < results.size(); i++ )
     list.append( QString::fromStdString( results[i] ) );
   m_model.setStringList( list );
 
