@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <QApplication>
-#include "DFGTabSearchWidget.h"
+#include "DFGPresetSearchWidget.h"
 
 void ReportCallBack(
   void *userdata,
@@ -27,7 +27,7 @@ void main( int argc, char** argv )
   FabricCore::DFGHost host = client.getDFGHost();
 
   // TabSearch
-  DFGTabSearchWidget2* w = new DFGTabSearchWidget2( &host );
+  DFGPresetSearchWidget* w = new DFGPresetSearchWidget( &host );
   w->showForSearch( QPoint( 500, 500 ) );
 
   app->exec();

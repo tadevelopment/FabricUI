@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#ifndef __UI_DFG_TabSearch_DFGTabSearchWidget__
-#define __UI_DFG_TabSearch_DFGTabSearchWidget__
+#ifndef __UI_DFG_TabSearch_DFGPresetSearchWidget__
+#define __UI_DFG_TabSearch_DFGPresetSearchWidget__
 
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
 

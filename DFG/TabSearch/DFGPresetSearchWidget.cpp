@@ -1,6 +1,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include "DFGTabSearchWidget.h"
+#include "DFGPresetSearchWidget.h"
 
 #include <FTL/JSONValue.h>
 #include <QLayout>

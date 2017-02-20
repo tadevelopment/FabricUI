@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (DFGTabSearchWidget)
+project (DFGPresetSearchWidget)
 
 set(
   FabricStageDir "${FABRIC_DIR}"
@@ -29,8 +29,8 @@ link_directories(
   )
 
 add_executable(
-  DFGTabSearchWidget
-  ../DFGTabSearchWidget.cpp
+  DFGPresetSearchWidget
+  ../DFGPresetSearchWidget.cpp
   ../QueryEdit.cpp
   ../ResultsView.cpp
   Moc.cpp
@@ -38,7 +38,7 @@ add_executable(
   )
 
 target_link_libraries(
-  DFGTabSearchWidget
+  DFGPresetSearchWidget
   FabricCore-2.5.lib
   Qt5Gui.lib
   Qt5Widgets.lib

@@ -19,7 +19,7 @@
 #include <FabricUI/DFG/DFGKLEditorWidget.h>
 #include <FabricUI/DFG/DFGNotificationRouter.h>
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
-#include <FabricUI/DFG/TabSearch/DFGTabSearchWidget.h>
+#include <FabricUI/DFG/TabSearch/DFGPresetSearchWidget.h>
 #include <FabricUI/DFG/Dialogs/DFGBaseDialog.h>
 #include <QVBoxLayout>
 
