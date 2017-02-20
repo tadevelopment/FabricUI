@@ -10,7 +10,6 @@
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/ConnectionTarget.h>
-#include <QDebug>
 
 using namespace FabricUI::GraphView;
 using namespace FabricServices::Commands;

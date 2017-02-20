@@ -1744,6 +1744,18 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
       QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
       // qDebug() << "mainPanelPos " << mainPanelPos;
       mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
+
+
+      QPointF center = graphViewWidgetRect.center();
+
+      center -= graphViewWidgetPos;
+
+      QPointF pan = mainPanel->canvasPan();
+
+      pan += center;
+      
+      mainPanel->setCanvasPan(pan);
+
     }
 
     m_uiGraphZoomBeforeQuickZoom = 0;
