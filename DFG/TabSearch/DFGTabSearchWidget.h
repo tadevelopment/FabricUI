@@ -16,10 +16,14 @@ namespace FabricUI
     {
       Q_OBJECT
 
+      typedef DFGAbstractTabSearchWidget Parent;
+
     public:
       DFGTabSearchWidget2( FabricCore::DFGHost* host );
 
       void showForSearch( QPoint globalPos ) FTL_OVERRIDE;
+
+      void keyPressEvent( QKeyEvent *event ) FTL_OVERRIDE;
 
     private slots:
       void onQueryChanged( QString query );
@@ -27,6 +31,8 @@ namespace FabricUI
     private:
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
+
+      // Used to query the database
       FabricCore::DFGHost* m_host;
     };
   };

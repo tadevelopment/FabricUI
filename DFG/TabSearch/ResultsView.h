@@ -21,6 +21,10 @@ namespace FabricUI
 
       public slots:
         void setResults( std::vector<std::string> results );
+        void moveSelection( int increment = +1 );
+
+      protected:
+        void setSelection( unsigned int index );
 
       private:
         QStringListModel m_model;

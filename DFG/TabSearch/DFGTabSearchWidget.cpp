@@ -16,7 +16,6 @@ DFGTabSearchWidget2::DFGTabSearchWidget2( FabricCore::DFGHost* host )
 
   m_queryEdit = new TabSearch::QueryEdit();
   layout->addWidget( m_queryEdit );
-  m_queryEdit->setFocus();
   connect( m_queryEdit, SIGNAL( queryChanged( QString ) ),
     this, SLOT( onQueryChanged( QString ) ) );
 
@@ -24,7 +23,9 @@ DFGTabSearchWidget2::DFGTabSearchWidget2( FabricCore::DFGHost* host )
   layout->addWidget( m_resultsView );
 
   layout->setMargin( 0 );
+  layout->setSpacing( 0 );
   this->setLayout( layout );
+  m_queryEdit->setFocus();
 }
 
 void DFGTabSearchWidget2::showForSearch( QPoint globalPos )
@@ -33,6 +34,17 @@ void DFGTabSearchWidget2::showForSearch( QPoint globalPos )
 
   emit enabled( true );
   show();
+}
+
+void DFGTabSearchWidget2::keyPressEvent( QKeyEvent *event )
+{
+  if( event->key() == Qt::Key_Up )
+    m_resultsView->moveSelection( -1 );
+  else
+  if( event->key() == Qt::Key_Down )
+    m_resultsView->moveSelection( +1 );
+  else
+    Parent::keyPressEvent( event );
 }
 
 void DFGTabSearchWidget2::onQueryChanged( QString query )
@@ -58,9 +70,11 @@ void DFGTabSearchWidget2::onQueryChanged( QString query )
   std::vector<char const*> tags( tagsStr.size() );
 
   // Debug : TODO remove
+  /*
   for( unsigned int i = 0; i < tagsStr.size(); i++ )
     std::cout << "\"" << tagsStr[i] << "\" ";
   std::cout << std::endl;
+  */
 
   for( unsigned int i = 0; i < tagsStr.size(); i++ )
     tags[i] = tagsStr[i].data();

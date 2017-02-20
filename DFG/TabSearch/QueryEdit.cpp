@@ -6,7 +6,7 @@ using namespace FabricUI::DFG::TabSearch;
 
 QueryEdit::QueryEdit()
 {
-  QFont font; font.setPointSize( 32 );
+  QFont font; font.setPointSize( 16 );
   this->setFont( font );
 
   connect(
