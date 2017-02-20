@@ -12,14 +12,14 @@ namespace FabricUI
 {
   namespace DFG
   {
-    class DFGTabSearchWidget2 : public DFGAbstractTabSearchWidget
+    class DFGTabSearchWidget : public DFGAbstractTabSearchWidget
     {
       Q_OBJECT
 
       typedef DFGAbstractTabSearchWidget Parent;
 
     public:
-      DFGTabSearchWidget2( FabricCore::DFGHost* host );
+      DFGTabSearchWidget( FabricCore::DFGHost* host );
 
       void showForSearch( QPoint globalPos ) FTL_OVERRIDE;
 
@@ -41,20 +41,5 @@ namespace FabricUI
     };
   };
 };
-
-namespace FabricUI
-{
-  namespace DFG
-  {
-    class DFGTabSearchWidget;
-
-    namespace TabSearch
-    {
-      class QueryEdit;
-      class Preview;
-      class ResultsView;
-    }
-  }
-}
 
 #endif // __UI_DFG_TabSearch_DFGTabSearchWidget__

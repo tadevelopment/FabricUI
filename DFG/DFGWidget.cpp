@@ -224,9 +224,9 @@ DFGWidget::DFGWidget(
   setLayout( layout );
 
   m_usingLegacyTabSearchWidget = false;
-  m_legacyTabSearchWidget = new DFGTabSearchWidget( this, m_dfgConfig );
+  m_legacyTabSearchWidget = new DFGLegacyTabSearchWidget( this, m_dfgConfig );
   m_legacyTabSearchWidget->hide();
-  m_tabSearchWidget = new DFGTabSearchWidget2( &getDFGController()->getHost() );
+  m_tabSearchWidget = new DFGTabSearchWidget( &getDFGController()->getHost() );
   m_tabSearchWidget->hide();
 
   QObject::connect(

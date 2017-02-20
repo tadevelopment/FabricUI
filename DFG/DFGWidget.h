@@ -213,8 +213,8 @@ namespace DFG {
       DFGNotificationRouter * m_router;
       DFGKLEditorWidget * m_klEditor;
       DFGExecBlockEditorWidget *m_execBlockEditorWidget;
-      DFGTabSearchWidget * m_legacyTabSearchWidget;
-      DFGTabSearchWidget2 * m_tabSearchWidget;
+      DFGLegacyTabSearchWidget * m_legacyTabSearchWidget;
+      DFGTabSearchWidget * m_tabSearchWidget;
       bool m_usingLegacyTabSearchWidget;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGConfig m_dfgConfig;
