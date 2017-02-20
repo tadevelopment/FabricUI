@@ -89,9 +89,14 @@ void StringViewItem::onInspect()
   layout->addWidget( txtEdit );
 
   // Ok/cancel
-  QDialogButtonBox* buttonBox = new QDialogButtonBox( 
-                                      QDialogButtonBox::Ok
-                                    | QDialogButtonBox::Cancel );
+  // QDialogButtonBox* buttonBox = new QDialogButtonBox( 
+  //                                     QDialogButtonBox::Ok
+  //                                   | QDialogButtonBox::Cancel );
+  
+  QDialogButtonBox* buttonBox = new QDialogButtonBox;
+
+  buttonBox->addButton(QDialogButtonBox::Ok);
+  buttonBox->addButton(QDialogButtonBox::Cancel);
 
   connect( buttonBox, SIGNAL( accepted() ), &dlg, SLOT( accept() ) );
   connect( buttonBox, SIGNAL( rejected() ), &dlg, SLOT( reject() ) );
