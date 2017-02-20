@@ -1662,7 +1662,6 @@ void DFGWidget::explodeNode( const char *nodeName )
 
 void DFGWidget::keyPressEvent(QKeyEvent * event)
 {
-  // qDebug() << "DFGWidget::keyPressEvent";
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   if ( event->key() == Qt::Key_Z
     && !keyMod.testFlag(Qt::ShiftModifier)
@@ -1709,7 +1708,6 @@ Ty clamp( Ty const &v, Ty const &lo, Ty const &hi )
 
 void DFGWidget::keyReleaseEvent(QKeyEvent * event)
 {
-  // qDebug() << "DFGWidget::keyReleaseEvent";
   if ( event->key() == Qt::Key_Z
     && !event->isAutoRepeat()
     && m_uiGraphZoomBeforeQuickZoom != 0 )
@@ -1719,7 +1717,6 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
     if (m_uiGraphZoomBeforeQuickZoom > 0)
     {
       QPoint globalPos = QCursor::pos();
-      // qDebug() << "globalPos " << globalPos;
       GraphView::GraphViewWidget *graphViewWidget = getGraphViewWidget();
       QRect graphViewWidgetRect = graphViewWidget->geometry();
       QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
@@ -1736,26 +1733,16 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
           graphViewWidgetRect.bottom()
           )
         );
-      // qDebug() << "graphViewWidgetPos " << graphViewWidgetPos;
       QPointF scenePos = graphViewWidget->mapToScene( graphViewWidgetPos );
-      // qDebug() << "scenePos " << scenePos;
       GraphView::Graph *graph = graphViewWidget->graph();
       GraphView::MainPanel *mainPanel = graph->mainPanel();
       QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
-      // qDebug() << "mainPanelPos " << mainPanelPos;
       mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
 
-
-      QPointF center = graphViewWidgetRect.center();
-
-      center -= graphViewWidgetPos;
-
-      QPointF pan = mainPanel->canvasPan();
-
-      pan += center;
-      
-      mainPanel->setCanvasPan(pan);
-
+      // center Canvas pan.
+      QPointF center = graphViewWidgetRect.center() - graphViewWidgetPos;
+      QPointF newPan = mainPanel->canvasPan() + center;
+      mainPanel->setCanvasPan(newPan);
     }
 
     m_uiGraphZoomBeforeQuickZoom = 0;
