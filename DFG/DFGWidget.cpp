@@ -1672,21 +1672,29 @@ void DFGWidget::keyPressEvent(QKeyEvent * event)
   {
     event->accept();
 
-    FTL::CStrRef uiGraphZoomStr =
-      m_uiController->getExec().getMetadata( "uiGraphZoom" );
-    FTL::JSONStrWithLoc jsonStrWithLoc( uiGraphZoomStr );
-    FTL::OwnedPtr<FTL::JSONValue const> jsonValue(
-      FTL::JSONValue::Decode( jsonStrWithLoc )
-      );
-    if ( jsonValue )
+    if (   getUIGraph()->nodes().size() == 0
+        || m_uiController->allNodesAreVisible() )
     {
-      FTL::JSONObject const *jsonObject = jsonValue->cast<FTL::JSONObject>();
-      m_uiGraphZoomBeforeQuickZoom =
-        jsonObject->getFloat64( FTL_STR("value") );
+      m_uiGraphZoomBeforeQuickZoom = -1;
     }
-    // qDebug() << "m_uiGraphZoomBeforeQuickZoom " << m_uiGraphZoomBeforeQuickZoom;
+    else
+    {
+      FTL::CStrRef uiGraphZoomStr =
+        m_uiController->getExec().getMetadata( "uiGraphZoom" );
+      FTL::JSONStrWithLoc jsonStrWithLoc( uiGraphZoomStr );
+      FTL::OwnedPtr<FTL::JSONValue const> jsonValue(
+        FTL::JSONValue::Decode( jsonStrWithLoc )
+        );
+      if ( jsonValue )
+      {
+        FTL::JSONObject const *jsonObject = jsonValue->cast<FTL::JSONObject>();
+        m_uiGraphZoomBeforeQuickZoom =
+          jsonObject->getFloat64( FTL_STR("value") );
+      }
+      // qDebug() << "m_uiGraphZoomBeforeQuickZoom " << m_uiGraphZoomBeforeQuickZoom;
 
-    m_uiController->frameAllNodes();
+      m_uiController->frameAllNodes();
+    }
 
     return;
   }
@@ -1708,32 +1716,35 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
   {
     event->accept();
 
-    QPoint globalPos = QCursor::pos();
-    // qDebug() << "globalPos " << globalPos;
-    GraphView::GraphViewWidget *graphViewWidget = getGraphViewWidget();
-    QRect graphViewWidgetRect = graphViewWidget->geometry();
-    QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
-    // [pz 20160724] Constraint point to widget geometry
-    graphViewWidgetPos = QPoint(
-      clamp(
-        graphViewWidgetPos.x(),
-        graphViewWidgetRect.left(),
-        graphViewWidgetRect.right()
-        ),
-      clamp(
-        graphViewWidgetPos.y(),
-        graphViewWidgetRect.top(),
-        graphViewWidgetRect.bottom()
-        )
-      );
-    // qDebug() << "graphViewWidgetPos " << graphViewWidgetPos;
-    QPointF scenePos = graphViewWidget->mapToScene( graphViewWidgetPos );
-    // qDebug() << "scenePos " << scenePos;
-    GraphView::Graph *graph = graphViewWidget->graph();
-    GraphView::MainPanel *mainPanel = graph->mainPanel();
-    QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
-    // qDebug() << "mainPanelPos " << mainPanelPos;
-    mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
+    if (m_uiGraphZoomBeforeQuickZoom > 0)
+    {
+      QPoint globalPos = QCursor::pos();
+      // qDebug() << "globalPos " << globalPos;
+      GraphView::GraphViewWidget *graphViewWidget = getGraphViewWidget();
+      QRect graphViewWidgetRect = graphViewWidget->geometry();
+      QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
+      // [pz 20160724] Constraint point to widget geometry
+      graphViewWidgetPos = QPoint(
+        clamp(
+          graphViewWidgetPos.x(),
+          graphViewWidgetRect.left(),
+          graphViewWidgetRect.right()
+          ),
+        clamp(
+          graphViewWidgetPos.y(),
+          graphViewWidgetRect.top(),
+          graphViewWidgetRect.bottom()
+          )
+        );
+      // qDebug() << "graphViewWidgetPos " << graphViewWidgetPos;
+      QPointF scenePos = graphViewWidget->mapToScene( graphViewWidgetPos );
+      // qDebug() << "scenePos " << scenePos;
+      GraphView::Graph *graph = graphViewWidget->graph();
+      GraphView::MainPanel *mainPanel = graph->mainPanel();
+      QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
+      // qDebug() << "mainPanelPos " << mainPanelPos;
+      mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
+    }
 
     m_uiGraphZoomBeforeQuickZoom = 0;
 
