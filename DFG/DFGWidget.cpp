@@ -1738,6 +1738,7 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
 
     m_uiGraphZoomBeforeQuickZoom = 0;
     graphViewWidget->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
+    graphViewWidget->update();
 
     return;
   }
