@@ -28,14 +28,14 @@ namespace FabricUI
 
     };
 
-    class DFGBaseTabSearchWidget : public DFGAbstractTabSearchWidget
+    class DFGTabSearchWidget : public DFGAbstractTabSearchWidget 
     {
       Q_OBJECT
 
     public:
 
-      DFGBaseTabSearchWidget(DFGWidget * parent, const DFGConfig & config);
-      virtual ~DFGBaseTabSearchWidget();
+      DFGTabSearchWidget(DFGWidget * parent, const DFGConfig & config);
+      virtual ~DFGTabSearchWidget();
 
       void showForSearch( QPoint globalPos );
       void showForSearch();
@@ -65,11 +65,7 @@ namespace FabricUI
 
       char const *getHelpText() const;
 
-      virtual unsigned int resultsSize() const = 0;
-      virtual FTL::StrRef getName( unsigned int index ) const = 0;
-      virtual void clear() = 0;
-      virtual void select( unsigned int index ) = 0;
-      virtual bool acceptKey( const Qt::Key key ) const;
+    private:
 
       void addNodeForIndex( unsigned index );
 
@@ -83,45 +79,7 @@ namespace FabricUI
 
       int m_currentIndex;
       QString m_search;
-    };
-
-    class DFGLegacyTabSearchWidget : public DFGBaseTabSearchWidget
-    {
-      Q_OBJECT
-
-    public:
-      DFGLegacyTabSearchWidget( DFGWidget * parent, const DFGConfig & config )
-        : DFGBaseTabSearchWidget( parent, config )
-      {}
-
-    protected:
-
-      unsigned int resultsSize() const FTL_OVERRIDE { return m_results.getSize(); }
-      FTL::StrRef getName( unsigned int index ) const FTL_OVERRIDE;
-      void clear() FTL_OVERRIDE { m_results.clear(); }
-      void updateSearch() FTL_OVERRIDE;
-      void select( unsigned int index ) FTL_OVERRIDE { m_results.select( index ); }
-
-    private:
       FabricServices::SplitSearch::Matches m_results;
-    };
-
-    class DFGTabSearchWidget : public DFGBaseTabSearchWidget
-    {
-      Q_OBJECT
-
-    public:
-      DFGTabSearchWidget( DFGWidget * parent, const DFGConfig & config );
-
-      unsigned int resultsSize() const FTL_OVERRIDE { return m_results.size(); }
-      FTL::StrRef getName( unsigned int index ) const FTL_OVERRIDE;
-      void clear() FTL_OVERRIDE { m_results.clear(); }
-      void updateSearch() FTL_OVERRIDE;
-      void select( unsigned int index ) FTL_OVERRIDE {}
-      bool acceptKey( const Qt::Key key ) const FTL_OVERRIDE;
-
-    private:
-      std::vector<std::string> m_results;
     };
 
   };
