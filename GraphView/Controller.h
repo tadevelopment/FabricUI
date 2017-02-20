@@ -131,6 +131,8 @@ namespace FabricUI
       virtual bool frameAndFitNodes( FTL::ArrayRef<Node *> nodes );
       virtual bool frameSelectedNodes();
       virtual bool frameAllNodes();
+      virtual bool nodesAreVisible( FTL::ArrayRef<Node *> nodes );
+      virtual bool allNodesAreVisible();
       virtual bool canConnectTo(
         char const *pathA,
         char const *pathB,
