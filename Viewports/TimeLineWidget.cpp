@@ -179,58 +179,17 @@ TimeLineWidget::TimeLineWidget()
   connect( m_loopModeComBox , SIGNAL(activated(int)) , this , SLOT( loopModeChanged(int))  );
   connect( m_simModeComBox , SIGNAL(activated(int)) , this , SLOT( simModeChanged(int))  );
 
- 
-  // FE-5724 -> Should use commands instead
-  m_togglePlaybackShortCut = new QShortcut(this);
-  m_playShortCut = new QShortcut(this);
-  m_pauseShortCut = new QShortcut(this);
-  m_goToNextFrameShortCut = new QShortcut(this);
-  m_goToPreviousFrameShortCut = new QShortcut(this);
-  m_goToEndFrameShortCut = new QShortcut(this);
-  m_goToStartFrameShortCut = new QShortcut(this);
- 
-  connect(m_togglePlaybackShortCut, SIGNAL(activated()), this, SLOT(togglePlayback()));
-  connect(m_playShortCut, SIGNAL(activated()), this, SLOT(play()));
-  connect(m_pauseShortCut, SIGNAL(activated()), this, SLOT(pause()));
-  connect(m_goToNextFrameShortCut, SIGNAL(activated()), this, SLOT(goToNextFrame()));
-  connect(m_goToPreviousFrameShortCut, SIGNAL(activated()), this, SLOT(goToPreviousFrame()));
-  connect(m_goToEndFrameShortCut, SIGNAL(activated()), this, SLOT(goToEndFrame()));
-  connect(m_goToStartFrameShortCut, SIGNAL(activated()), this, SLOT(goToStartFrame()));
-    
-  QList<QKeySequence> shortCutList;
-  shortCutList.append(QKeySequence()); 
-  shortCutList.append(QKeySequence(Qt::Key_Up)); 
-  shortCutList.append(QKeySequence(Qt::Key_Down));
-  shortCutList.append(QKeySequence(Qt::Key_Right)); 
-  shortCutList.append(QKeySequence(Qt::Key_Left));
-  shortCutList.append(QKeySequence(Qt::Key_End));
-  shortCutList.append(QKeySequence(Qt::Key_Home));
-  setPlayBackControlShortcuts(shortCutList);
+  // FE-5724 
+  this->addAction(new TogglePlaybackAction(this));
+  this->addAction(new PlayAction(this));
+  this->addAction(new PauseAction(this));
+  this->addAction(new GoToNextFrameAction(this));
+  this->addAction(new GoToPreviousFrameAction(this));
+  this->addAction(new GoToEndFrameAction(this));
+  this->addAction(new GoToStartFrameAction(this));
 
   // [FE-6693] set default framerate to 60 fps.
   setFrameRate(60.0f);
-}
-
-void TimeLineWidget::setPlayBackControlShortcuts(QList<QKeySequence> shortCutList) 
-{  
-  int shortCutListCount = int(shortCutList.size());
-  if (shortCutListCount < 7)
-    throw(
-      std::string(
-        QString(
-          "Error in TimeLineWidget::setPlayBackControlShortcuts, the number of shorCuts '" + 
-          QString::number(shortCutListCount) + "' must be equal to 7"
-        ).toUtf8().constData()
-      )
-    );
-
-  m_togglePlaybackShortCut->setKey(shortCutList[0]);
-  m_playShortCut->setKey(shortCutList[1]);
-  m_pauseShortCut->setKey(shortCutList[2]);
-  m_goToNextFrameShortCut->setKey(shortCutList[3]);
-  m_goToPreviousFrameShortCut->setKey(shortCutList[4]);
-  m_goToEndFrameShortCut->setKey(shortCutList[5]);
-  m_goToStartFrameShortCut->setKey(shortCutList[6]);
 }
 
 void TimeLineWidget::setTime(int time)
