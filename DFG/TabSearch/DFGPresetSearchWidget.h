@@ -22,8 +22,9 @@ namespace FabricUI
       DFGPresetSearchWidget( FabricCore::DFGHost* host );
 
       void showForSearch( QPoint globalPos ) FTL_OVERRIDE;
-
       void keyPressEvent( QKeyEvent *event ) FTL_OVERRIDE;
+      void hideEvent( QHideEvent * e ) FTL_OVERRIDE;
+      bool focusNextPrevChild( bool next ) FTL_OVERRIDE;
 
     signals:
       void selectedPreset( QString preset );
@@ -31,6 +32,7 @@ namespace FabricUI
     private slots:
       void onQueryChanged( QString query );
       void validateSelection();
+      void close();
 
     private:
       TabSearch::QueryEdit* m_queryEdit;

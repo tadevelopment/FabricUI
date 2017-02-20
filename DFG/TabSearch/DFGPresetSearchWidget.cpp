@@ -30,6 +30,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 
 void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
 {
+  move( QPoint( 0, 0 ) );
   move( mapFromGlobal( globalPos ) );
 
   emit enabled( true );
@@ -38,16 +39,18 @@ void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
 
 void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
 {
-  if( event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return )
-    validateSelection();
-  else
-  if( event->key() == Qt::Key_Up )
-    m_resultsView->moveSelection( -1 );
-  else
-  if( event->key() == Qt::Key_Down )
-    m_resultsView->moveSelection( +1 );
-  else
-    Parent::keyPressEvent( event );
+  switch( event->key() )
+  {
+    case Qt::Key_Enter :
+    case Qt::Key_Return :
+      validateSelection(); break;
+    case Qt::Key_Up :
+      m_resultsView->moveSelection( -1 ); break;
+    case Qt::Key_Down :
+      m_resultsView->moveSelection( +1 ); break;
+    default:
+      Parent::keyPressEvent( event );
+  }
 }
 
 void DFGPresetSearchWidget::onQueryChanged( QString query )
@@ -107,5 +110,25 @@ void DFGPresetSearchWidget::validateSelection()
 {
   if( m_resultsView->numberResults() )
     emit selectedPreset( m_resultsView->getSelectedPreset() );
-  std::cout << "Selected " << m_resultsView->getSelectedPreset().toStdString() << std::endl;
+  close();
+}
+
+void DFGPresetSearchWidget::hideEvent( QHideEvent* e )
+{
+  Parent::hideEvent( e );
+  this->close();
+}
+
+bool DFGPresetSearchWidget::focusNextPrevChild( bool next )
+{
+  this->close();
+  return false;
+}
+
+void DFGPresetSearchWidget::close()
+{
+  m_queryEdit->setText( "" );
+  emit enabled( false );
+  if( !this->isHidden() )
+    this->hide();
 }

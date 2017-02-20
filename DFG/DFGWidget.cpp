@@ -228,6 +228,10 @@ DFGWidget::DFGWidget(
   m_legacyTabSearchWidget->hide();
   m_tabSearchWidget = new DFGPresetSearchWidget( &getDFGController()->getHost() );
   m_tabSearchWidget->hide();
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedPreset( QString ) ),
+    this, SLOT( onPresetAddedFromTabSearch( QString ) )
+  );
 
   QObject::connect(
     m_uiHeader, SIGNAL(goUpPressed()),
@@ -759,10 +763,20 @@ void DFGWidget::tabSearch()
     if (getUIController()->validPresetSplit())
     {
       QPoint pos = getGraphViewWidget()->lastEventPos();
+      m_tabSearchPos = pos;
       pos = getGraphViewWidget()->mapToGlobal(pos);
       getTabSearchWidget()->showForSearch(pos);
     }
   }
+}
+
+void DFGWidget::onPresetAddedFromTabSearch( QString preset )
+{
+  QPoint localPos = m_tabSearchPos;
+  this->getUIController()->cmdAddInstFromPreset(
+    preset,
+    this->getGraphViewWidget()->graph()->itemGroup()->mapFromScene( localPos )
+  );
 }
 
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)

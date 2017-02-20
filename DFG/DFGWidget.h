@@ -166,6 +166,7 @@ namespace DFG {
       void onEditSelectedNode();
       void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);
+      void onPresetAddedFromTabSearch( QString preset );
       void onToggleLegacyTabSearch( bool toggled ) { m_usingLegacyTabSearchWidget = toggled; }
 
     protected slots:
@@ -213,6 +214,7 @@ namespace DFG {
       DFGNotificationRouter * m_router;
       DFGKLEditorWidget * m_klEditor;
       DFGExecBlockEditorWidget *m_execBlockEditorWidget;
+      QPoint m_tabSearchPos;
       DFGTabSearchWidget * m_legacyTabSearchWidget;
       DFGPresetSearchWidget * m_tabSearchWidget;
       bool m_usingLegacyTabSearchWidget;
