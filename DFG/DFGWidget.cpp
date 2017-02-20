@@ -1683,6 +1683,7 @@ void DFGWidget::keyPressEvent(QKeyEvent * event)
       FTL::JSONObject const *jsonObject = jsonValue->cast<FTL::JSONObject>();
       m_uiGraphZoomBeforeQuickZoom =
         jsonObject->getFloat64( FTL_STR("value") );
+      getGraphViewWidget()->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
     }
     // qDebug() << "m_uiGraphZoomBeforeQuickZoom " << m_uiGraphZoomBeforeQuickZoom;
 
@@ -1736,6 +1737,7 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
     mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
 
     m_uiGraphZoomBeforeQuickZoom = 0;
+    graphViewWidget->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
 
     return;
   }

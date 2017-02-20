@@ -22,6 +22,7 @@ GraphViewWidget::GraphViewWidget(
   )
   : QGraphicsView(parent)
   , m_altWasHeldAtLastMousePress( false )
+  , m_uiGraphZoomBeforeQuickZoom( 0.0f )
 {
   setRenderHint(QPainter::Antialiasing);
   // setRenderHint(QPainter::HighQualityAntialiasing);
@@ -109,6 +110,8 @@ void GraphViewWidget::mousePressEvent(QMouseEvent * event)
 void GraphViewWidget::mouseMoveEvent(QMouseEvent * event)
 {
   m_lastEventPos = event->pos();
+  if (getUiGraphZoomBeforeQuickZoom() > 0)
+    update();
   QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -177,6 +180,16 @@ void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRec
 
   // fill the background.
   painter->fillRect(rect, config.mainPanelBackgroundColor);
+
+  // if the hotkey zoom is active then draw
+  // a rectangle for the hotkey zoom result.
+  if (getUiGraphZoomBeforeQuickZoom() > 0)
+  {
+    QPointF p = lastEventPos();
+    QRectF r;
+    r.setRect(p.x() - 50 , p.y() - 25, 100, 50);
+    painter->fillRect(r, config.mainPanelBackgroundColor.lighter(150));
+  }
 
   // draw the grid.
   if (config.mainPanelDrawGrid)
