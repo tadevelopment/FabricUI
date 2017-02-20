@@ -1,4 +1,5 @@
 __all__ = [
+    'Utils',
     'BindingWrapper',
   	'CommandManager',
     'CommandRegistry',

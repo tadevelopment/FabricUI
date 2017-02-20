@@ -3,20 +3,20 @@
 #
 
 from FabricEngine.FabricUI import Commands
-from FabricEngine.Canvas.GlobalInjector import GlobalInjector
+from FabricEngine.Canvas.Utils import *
+ 
 
 class CommandRegistry(Commands.CommandRegistry):
 
     """ CommandRegistry registers commands used in the Canvas application.
         It specializes the C++ CommandRegistry (Commands/CommandRegistry.h(cpp))
         so it can create commands registered in C++ or Python. However, it can 
-        register Python command only.
+        register Python command only. The registery is shared between the C++ and 
+        Python, so commands defined in Python can be called from C++ code too, 
+        and vice versa.
 
         It is a singleton and should not be created directly.
         - Get the registry: cmdRegistry = GetCommandRegistry()
-
-        The registery is shared between the C++ and Python, so commands defined in Python 
-        can be called from C++ code too, and vice versa.
 
         - Register a command (Python only): cmdRegistry.registerCommand(cmdName, cmdType, userData)
 
@@ -27,6 +27,19 @@ class CommandRegistry(Commands.CommandRegistry):
         In the RegisterCommand method, the userData argument is used to pass optional 
         custom data to the command (C++ void *). The data is referenced by the registery, 
         and given to the command throught the BaseCommand::registrationCallBack callback.
+
+
+        When a command in registered, a function that creates and executes the command 
+        with named arguments is dynimically defined in Python. Each function in added 
+        to the python 'Commands' module. For example, the scriptable command FooCmd 
+        with arguments {arg_1:"foo_1", arg_2:"foo_2"} can be created and executed via:
+        - from FabricEngine.Canvas.CommandRegistry import *
+        - import Commands
+        - Commands.FooCmd(arg_1 = "foo_1", arg_2 = "foo_2)
+
+        This is equivalent to (see CommandManager.py):
+        - args = {arg_1:"foo_1", arg_2:"foo_2"}
+        - GetCommandManager().createCommand("FooCmd", args, True)
     """
 
     def __init__(self): 
@@ -126,7 +139,8 @@ class CommandRegistry(Commands.CommandRegistry):
             'userData':userData
         }
 
-        # Register the command info
+        # Run-time creation of the function to create the command.
+        # The function is added to the "Commands" modules 
         exec('\
 def ' + cmdName + '(**kwargs):\n\
     from FabricEngine.Canvas.CommandManager import *\n\
@@ -134,8 +148,13 @@ def ' + cmdName + '(**kwargs):\n\
         return GetCommandManager().createCommand("' + cmdName + '", kwargs )\n\
     except Exception as e:\n\
         raise Exception(e)\n\
-setattr(GlobalInjector(), "' + cmdName + '", '+ cmdName + ')')
+setattr(GetOrCreateModule("Commands") , "' + cmdName + '", '+ cmdName + ')')
 
+# \internal
+# Creates the "Commands" module right now so we 
+# can import it with the usual syntax later
+# import Commands
+GetOrCreateModule("Commands")
 
 # \internal
 # !!!!! Store the reference to the 
