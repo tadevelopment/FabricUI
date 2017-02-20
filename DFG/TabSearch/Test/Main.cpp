@@ -25,11 +25,10 @@ void main( int argc, char** argv )
   createOptions.guarded = true;
   FabricCore::Client client( &ReportCallBack, 0, &createOptions );
   FabricCore::DFGHost host = client.getDFGHost();
-  FabricCore::DFGBinding binding = host.createBindingToNewGraph();
 
   // TabSearch
-  DFGTabSearchWidget2* w = new DFGTabSearchWidget2();
-  w->show();
+  DFGTabSearchWidget2* w = new DFGTabSearchWidget2( &host );
+  w->showForSearch( QPoint( 500, 500 ) );
 
   app->exec();
 }

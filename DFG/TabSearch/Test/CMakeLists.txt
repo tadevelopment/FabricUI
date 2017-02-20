@@ -31,6 +31,8 @@ link_directories(
 add_executable(
   DFGTabSearchWidget
   ../DFGTabSearchWidget.cpp
+  ../QueryEdit.cpp
+  ../ResultsView.cpp
   Moc.cpp
   Main.cpp
   )
