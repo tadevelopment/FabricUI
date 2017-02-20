@@ -21,12 +21,9 @@ namespace FabricUI
       Q_OBJECT
 
     public:
-
-      DFGAbstractTabSearchWidget( DFGWidget* parent );
       virtual void showForSearch( QPoint globalPos ) = 0;
 
     signals :
-
       void enabled( bool );
 
     };

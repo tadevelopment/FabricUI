@@ -19,6 +19,7 @@
 #include <FabricUI/DFG/DFGKLEditorWidget.h>
 #include <FabricUI/DFG/DFGNotificationRouter.h>
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
+#include <FabricUI/DFG/TabSearch/DFGTabSearchWidget.h>
 #include <FabricUI/DFG/Dialogs/DFGBaseDialog.h>
 #include <QVBoxLayout>
 
@@ -213,7 +214,7 @@ namespace DFG {
       DFGKLEditorWidget * m_klEditor;
       DFGExecBlockEditorWidget *m_execBlockEditorWidget;
       DFGLegacyTabSearchWidget * m_legacyTabSearchWidget;
-      DFGTabSearchWidget * m_tabSearchWidget;
+      DFGTabSearchWidget2 * m_tabSearchWidget;
       bool m_usingLegacyTabSearchWidget;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGConfig m_dfgConfig;

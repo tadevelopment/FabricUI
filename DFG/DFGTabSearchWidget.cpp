@@ -12,21 +12,17 @@ using namespace FabricServices;
 using namespace FabricUI;
 using namespace FabricUI::DFG;
 
-DFGAbstractTabSearchWidget::DFGAbstractTabSearchWidget( DFGWidget* parent )
-  : QWidget( parent )
-{}
-
 DFGBaseTabSearchWidget::DFGBaseTabSearchWidget(
   DFGWidget * parent,
   const DFGConfig & config
   )
-  : DFGAbstractTabSearchWidget(parent)
-  , m_parent( parent )
+  : m_parent( parent )
   , m_config( config )
   , m_queryMetrics( config.searchQueryFont )
   , m_resultsMetrics( config.searchResultsFont )
   , m_helpMetrics( config.searchHelpFont )
 {
+  this->setParent( parent );
   // always show on top
   setWindowFlags(windowFlags() | Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint);
   setMouseTracking(true);
