@@ -28,11 +28,10 @@ namespace FabricUI
 
     };
 
-    class DFGLegacyTabSearchWidget : public DFGAbstractTabSearchWidget 
+    class DFGTabSearchWidget : public DFGAbstractTabSearchWidget 
     {
       Q_OBJECT
 
-#define DFGTabSearchWidget DFGLegacyTabSearchWidget
     public:
 
       DFGTabSearchWidget(DFGWidget * parent, const DFGConfig & config);
@@ -82,8 +81,6 @@ namespace FabricUI
       QString m_search;
       FabricServices::SplitSearch::Matches m_results;
     };
-
-#undef DFGTabSearchWidget
 
   };
 

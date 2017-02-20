@@ -12,8 +12,6 @@ using namespace FabricServices;
 using namespace FabricUI;
 using namespace FabricUI::DFG;
 
-#define DFGTabSearchWidget DFGLegacyTabSearchWidget
-
 DFGTabSearchWidget::DFGTabSearchWidget(
   DFGWidget * parent,
   const DFGConfig & config

@@ -7,7 +7,7 @@
 
 using namespace FabricUI::DFG;
 
-DFGTabSearchWidget::DFGTabSearchWidget( FabricCore::DFGHost* host )
+DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_host( host )
 {
   this->setWindowFlags( Qt::Popup );
@@ -28,7 +28,7 @@ DFGTabSearchWidget::DFGTabSearchWidget( FabricCore::DFGHost* host )
   m_queryEdit->setFocus();
 }
 
-void DFGTabSearchWidget::showForSearch( QPoint globalPos )
+void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
 {
   move( mapFromGlobal( globalPos ) );
 
@@ -36,7 +36,7 @@ void DFGTabSearchWidget::showForSearch( QPoint globalPos )
   show();
 }
 
-void DFGTabSearchWidget::keyPressEvent( QKeyEvent *event )
+void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
 {
   if( event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return )
     validateSelection();
@@ -50,7 +50,7 @@ void DFGTabSearchWidget::keyPressEvent( QKeyEvent *event )
     Parent::keyPressEvent( event );
 }
 
-void DFGTabSearchWidget::onQueryChanged( QString query )
+void DFGPresetSearchWidget::onQueryChanged( QString query )
 {
   // Splitting the search string into a char**
   const std::string searchStr = query.toStdString().data();
@@ -103,7 +103,7 @@ void DFGTabSearchWidget::onQueryChanged( QString query )
   m_resultsView->setResults( results );
 }
 
-void DFGTabSearchWidget::validateSelection()
+void DFGPresetSearchWidget::validateSelection()
 {
   if( m_resultsView->numberResults() )
     emit selectedPreset( m_resultsView->getSelectedPreset() );

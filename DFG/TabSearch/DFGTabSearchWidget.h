@@ -12,14 +12,14 @@ namespace FabricUI
 {
   namespace DFG
   {
-    class DFGTabSearchWidget : public DFGAbstractTabSearchWidget
+    class DFGPresetSearchWidget : public DFGAbstractTabSearchWidget
     {
       Q_OBJECT
 
-      typedef DFGAbstractTabSearchWidget Parent;
+    typedef DFGAbstractTabSearchWidget Parent;
 
     public:
-      DFGTabSearchWidget( FabricCore::DFGHost* host );
+      DFGPresetSearchWidget( FabricCore::DFGHost* host );
 
       void showForSearch( QPoint globalPos ) FTL_OVERRIDE;
 
