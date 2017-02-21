@@ -38,12 +38,13 @@ namespace FabricUI
       void close();
 
     private:
-      TabSearch::QueryEdit* m_queryEdit;
-      TabSearch::ResultsView* m_resultsView;
-      TabSearch::ResultPreview* m_resultPreview;
 
       // Used to query the database
       FabricCore::DFGHost* m_host;
+
+      TabSearch::QueryEdit* m_queryEdit;
+      TabSearch::ResultsView* m_resultsView;
+      TabSearch::ResultPreview* m_resultPreview;
     };
   };
 };
