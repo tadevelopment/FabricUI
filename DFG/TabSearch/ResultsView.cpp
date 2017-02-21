@@ -7,21 +7,18 @@
 
 using namespace FabricUI::DFG::TabSearch;
 
-void ResultsView::SelectionModel::setCurrentIndex(
-  const QModelIndex &index,
-  QItemSelectionModel::SelectionFlags command
-)
+void ResultsView::onResultSelected()
 {
-  QItemSelectionModel::setCurrentIndex( index, command );
-  emit view->presetSelected( view->getSelectedPreset() );
+  emit presetSelected( this->getSelectedPreset() );
 }
 
 ResultsView::ResultsView()
-  : m_selectionModel( this )
 {
   setModel( &m_model );
-  m_selectionModel.setModel( &m_model );
-  this->setSelectionModel( &m_selectionModel );
+  connect(
+    this->selectionModel(), SIGNAL( currentChanged( const QModelIndex &, const QModelIndex & ) ),
+    this, SLOT( onResultSelected() )
+  );
   this->setEditTriggers( QAbstractItemView::NoEditTriggers );
 }
 

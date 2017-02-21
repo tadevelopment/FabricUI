@@ -27,6 +27,7 @@ namespace FabricUI
       public slots:
         void setResults( std::vector<std::string> results );
         void moveSelection( int increment = +1 );
+        void onResultSelected();
 
       signals:
         void presetSelected( QString preset );
@@ -36,13 +37,6 @@ namespace FabricUI
 
       private:
         QStringListModel m_model;
-
-        struct SelectionModel : public QItemSelectionModel
-        {
-          ResultsView* view;
-          SelectionModel( ResultsView* view ) : view( view ) {}
-          void setCurrentIndex( const QModelIndex &index, QItemSelectionModel::SelectionFlags command ) FTL_OVERRIDE;
-        } m_selectionModel;
       };
     }
   };
