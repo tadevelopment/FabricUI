@@ -5,9 +5,11 @@
 #include "TimeLineWidget.h"
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 
+#include <QDialog>
+#include <QHBoxLayout>
 #include <QInputDialog>
 #include <QLabel>
-#include <QHBoxLayout>
+#include <QPushButton>
 
 #include <math.h>
 
@@ -517,15 +519,42 @@ void TimeLineWidget::updateTargetFrameRate(int index)
     m_fps = 1000; // max fps
   else if(m_fps == -1.0) // custom fps
   {
-    bool ok;
-    double userFps = QInputDialog::getDouble(
-      this, tr("Custom FPS"), tr(""),
-      24.0, 1.0, 1000.0, 2, &ok );
-    if(ok)
+    QDialog *customFPSDialog = new QDialog( this->parentWidget() );
+    customFPSDialog->setWindowTitle ( "Custom FPS" );
+    customFPSDialog->setMinimumHeight(10);
+    customFPSDialog->setSizePolicy( QSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding) );
+
+    QVBoxLayout *parentLayout = new QVBoxLayout;
+
+    customFPSDialog->setLayout(parentLayout);
+
+    QDoubleSpinBox *fpsSpinBox = new QDoubleSpinBox;
+    fpsSpinBox->setValue( 24.0 );
+    fpsSpinBox->setWrapping( false );
+    fpsSpinBox->setFrame( false );
+
+    parentLayout->addWidget(fpsSpinBox);
+
+    QHBoxLayout *buttonsLayout = new QHBoxLayout;
+    buttonsLayout->setContentsMargins( 0, 0, 0, 0 );
+
+    QPushButton *okButton = new QPushButton( "OK" );
+    QPushButton *cancelButton = new QPushButton( "Cancel" );
+
+    buttonsLayout->addWidget( okButton );
+    buttonsLayout->addWidget( cancelButton );
+    
+    parentLayout->addLayout(buttonsLayout);
+    parentLayout->addStretch(2);
+
+    QObject::connect( okButton, SIGNAL(clicked()), customFPSDialog, SLOT(accept()) );
+    QObject::connect( cancelButton, SIGNAL(clicked()), customFPSDialog, SLOT(reject()) );
+
+    if ( customFPSDialog->exec() == QDialog::Accepted )
     {
-      m_fps = userFps;
+      m_fps = fpsSpinBox->value();
       m_frameRateComboBox->setItemText( index, 
-        "custom " + QString::number(m_fps) );
+        "custom " + QString::number( m_fps ) );
     }
   }
   emit targetFrameRateChanged( framerate() );
