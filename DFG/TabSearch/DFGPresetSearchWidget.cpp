@@ -66,8 +66,6 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
 
 void DFGPresetSearchWidget::onQueryChanged( QString query )
 {
-  this->hidePreview();
-
   // Splitting the search string into a char**
   const std::string searchStr = query.toStdString().data();
 
@@ -116,6 +114,9 @@ void DFGPresetSearchWidget::onQueryChanged( QString query )
   for( unsigned int i = 0; i < resultsJson->size(); i++ )
     results.push_back( resultsJson->getArray( i )->getString( 0 ) );
 
+  if( results.size() == 0 )
+    hidePreview();
+
   m_resultsView->setResults( results );
 }
 
@@ -150,9 +151,12 @@ void DFGPresetSearchWidget::hidePreview()
 
 void DFGPresetSearchWidget::setPreview( QString preset )
 {
-  this->hidePreview();
-  m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
-  layout()->addWidget( m_resultPreview );
+  if( m_resultPreview == NULL || preset != m_resultPreview->getPreset() )
+  {
+    this->hidePreview();
+    m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
+    layout()->addWidget( m_resultPreview );
+  }
 }
 
 void DFGPresetSearchWidget::close()

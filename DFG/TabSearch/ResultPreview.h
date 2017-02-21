@@ -22,6 +22,10 @@ namespace FabricUI
 
       public:
         ResultPreview( QString preset, FabricCore::DFGHost* host );
+        QString getPreset() const;
+
+      private:
+        QString m_preset;
       };
     }
   };
