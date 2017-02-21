@@ -191,10 +191,6 @@ InstBlockPort::InstBlockPort(
   m_outCircle = new PinCircle(this, PortType_Output, m_color);
   layout->addItem(m_outCircle);
   layout->setAlignment(m_outCircle, Qt::AlignRight | Qt::AlignVCenter);
-  if(portType() == PortType_Input)
-  {
-    m_outCircle->setClipping(true);
-  }
   setDaisyChainCircleVisible(false);
   QGraphicsItem const *graphicsItem = m_outCircle;
   while ( graphicsItem )

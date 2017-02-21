@@ -84,8 +84,6 @@ namespace FabricUI
       QColor pinFontHighlightColor;
       float pinRadius;
       float pinLabelSpacing;
-      bool pinInputUsesFullCircle;
-      bool pinOutputUsesFullCircle;
       float pinClickableDistance;
       
       float instBlockMinWidth;
