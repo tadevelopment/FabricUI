@@ -6,6 +6,8 @@
 #include <QListView>
 #include <QStringListModel>
 
+#include <FTL/Config.h>
+
 namespace FabricUI
 {
   namespace DFG
@@ -26,11 +28,21 @@ namespace FabricUI
         void setResults( std::vector<std::string> results );
         void moveSelection( int increment = +1 );
 
+      signals:
+        void presetSelected( QString preset );
+
       protected:
         void setSelection( unsigned int index );
 
       private:
         QStringListModel m_model;
+
+        struct SelectionModel : public QItemSelectionModel
+        {
+          ResultsView* view;
+          SelectionModel( ResultsView* view ) : view( view ) {}
+          void setCurrentIndex( const QModelIndex &index, QItemSelectionModel::SelectionFlags command ) FTL_OVERRIDE;
+        } m_selectionModel;
       };
     }
   };

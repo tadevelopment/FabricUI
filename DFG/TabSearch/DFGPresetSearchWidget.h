@@ -7,6 +7,7 @@
 
 #include "QueryEdit.h"
 #include "ResultsView.h"
+#include "ResultPreview.h"
 
 namespace FabricUI
 {
@@ -32,11 +33,14 @@ namespace FabricUI
     private slots:
       void onQueryChanged( QString query );
       void validateSelection();
+      void hidePreview();
+      void setPreview( QString preset );
       void close();
 
     private:
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
+      TabSearch::ResultPreview* m_resultPreview;
 
       // Used to query the database
       FabricCore::DFGHost* m_host;

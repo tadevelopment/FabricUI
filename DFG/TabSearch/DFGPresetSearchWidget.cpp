@@ -9,22 +9,33 @@ using namespace FabricUI::DFG;
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_host( host )
+  , m_resultPreview( NULL )
 {
   this->setWindowFlags( Qt::Popup );
 
-  QVBoxLayout* layout = new QVBoxLayout();
+  QVBoxLayout* vlayout = new QVBoxLayout();
 
   m_queryEdit = new TabSearch::QueryEdit();
-  layout->addWidget( m_queryEdit );
+  m_queryEdit->setMinimumWidth( 800 );
+  vlayout->addWidget( m_queryEdit );
   connect( m_queryEdit, SIGNAL( queryChanged( QString ) ),
     this, SLOT( onQueryChanged( QString ) ) );
 
   m_resultsView = new TabSearch::ResultsView();
-  layout->addWidget( m_resultsView );
+  vlayout->addWidget( m_resultsView );
+  connect(
+    m_resultsView, SIGNAL( presetSelected( QString ) ),
+    this, SLOT( setPreview( QString ) )
+  );
 
-  layout->setMargin( 0 );
-  layout->setSpacing( 0 );
-  this->setLayout( layout );
+  vlayout->setMargin( 0 );
+  vlayout->setSpacing( 0 );
+
+  QHBoxLayout* hlayout = new QHBoxLayout();
+  hlayout->addLayout( vlayout );
+  hlayout->setMargin( 0 );
+
+  this->setLayout( hlayout );
   m_queryEdit->setFocus();
 }
 
@@ -55,6 +66,8 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
 
 void DFGPresetSearchWidget::onQueryChanged( QString query )
 {
+  this->hidePreview();
+
   // Splitting the search string into a char**
   const std::string searchStr = query.toStdString().data();
 
@@ -123,6 +136,23 @@ bool DFGPresetSearchWidget::focusNextPrevChild( bool next )
 {
   this->close();
   return false;
+}
+
+void DFGPresetSearchWidget::hidePreview()
+{
+  if( m_resultPreview != NULL )
+  {
+    layout()->removeWidget( m_resultPreview );
+    delete m_resultPreview;
+    m_resultPreview = NULL;
+  }
+}
+
+void DFGPresetSearchWidget::setPreview( QString preset )
+{
+  this->hidePreview();
+  m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
+  layout()->addWidget( m_resultPreview );
 }
 
 void DFGPresetSearchWidget::close()

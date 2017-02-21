@@ -33,6 +33,7 @@ add_executable(
   ../DFGPresetSearchWidget.cpp
   ../QueryEdit.cpp
   ../ResultsView.cpp
+  ../ResultPreview.cpp
   Moc.cpp
   Main.cpp
   )
