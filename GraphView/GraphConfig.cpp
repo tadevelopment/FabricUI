@@ -158,6 +158,7 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( pinHoverPen, QPen(nodeFontHighlightColor, 1.5) );
   GET_PARAMETER( pinRadius, 5.5f );
   GET_PARAMETER( pinLabelSpacing, 2.0f );
+  GET_PARAMETER( pinDisplayAsFullCircle, false );
   GET_PARAMETER( pinClickableDistance, 30.0f );
 
   GET_PARAMETER( dimConnectionLines, true );

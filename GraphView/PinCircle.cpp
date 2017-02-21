@@ -41,15 +41,18 @@ PinCircle::PinCircle(
   m_ellipse->setPos(radius(), radius());
   m_ellipse->setRect(-radius(), -radius(), diameter(), diameter());
 
-  if(portType == PortType_Input)
+  if (!m_target->graph()->config().pinDisplayAsFullCircle)
   {
-    m_ellipse->setStartAngle(270 * 16);
-    m_ellipse->setSpanAngle(180 * 16);
-  }
-  else
-  {
-    m_ellipse->setStartAngle(90 * 16);
-    m_ellipse->setSpanAngle(180 * 16);
+    if(portType == PortType_Input)
+    {
+      m_ellipse->setStartAngle(270 * 16);
+      m_ellipse->setSpanAngle(180 * 16);
+    }
+    else
+    {
+      m_ellipse->setStartAngle(90 * 16);
+      m_ellipse->setSpanAngle(180 * 16);
+    }
   }
 
   m_ellipse->setVisible( !m_invisible );
