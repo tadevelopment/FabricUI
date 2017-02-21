@@ -28,6 +28,7 @@ namespace FabricUI
       QColor headerFontColor;
 
       QColor mainPanelBackgroundColor;
+      QColor mainPanelHotkeyZoomBackgroundColor;
       bool mainPanelDrawGrid;
       int mainPanelGridSpan;
       bool mainPanelGridSnap;

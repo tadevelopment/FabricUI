@@ -179,17 +179,18 @@ void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRec
   rect.setLeft(graph()->sidePanel(GraphView::PortType_Output)->rect().right());
 
   // fill the background.
-  painter->fillRect(rect, config.mainPanelBackgroundColor);
-
-  // if the hotkey zoom is active then draw
-  // a rectangle for the hotkey zoom result.
   if (getUiGraphZoomBeforeQuickZoom() > 0)
   {
+    painter->fillRect(rect, config.mainPanelHotkeyZoomBackgroundColor);
     QPointF pos = lastEventPos();
     QSizeF size = mainPanel->canvasZoom() * rect.size() / getUiGraphZoomBeforeQuickZoom();
     QRectF zoomRect;
     zoomRect.setRect(pos.x() - 0.5f * size.width() , pos.y() - 0.5f * size.height(), size.width(), size.height());
-    painter->fillRect(zoomRect, config.mainPanelBackgroundColor.lighter(150));
+    painter->fillRect(zoomRect, config.mainPanelBackgroundColor);
+  }
+  else
+  {
+    painter->fillRect(rect, config.mainPanelBackgroundColor);
   }
 
   // draw the grid.
