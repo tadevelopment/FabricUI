@@ -12,7 +12,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPlainTextEdit>
-#include <QDialogButtonBox>
 #include <QFrame>
 
 using namespace FabricUI::ValueEditor;
