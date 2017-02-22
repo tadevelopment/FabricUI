@@ -17,19 +17,22 @@ namespace FabricUI
       {
         Q_OBJECT
 
+        typedef QTreeView Parent;
+
       public:
         ResultsView();
         ~ResultsView();
+        void keyPressEvent( QKeyEvent * ) FTL_OVERRIDE;
 
       public slots:
         // Sets the result of Search, to be displayed
         void setResults( const std::string& searchResult );
-        // Moves the current selection up/down
-        void moveSelection( int increment = +1 );
         // Tells that we accept the current selection (on Key_Enter, for example)
         void validateSelection();
 
       signals:
+        // Emitted when the selection is moved to a non-preset
+        void presetDeselected();
         // Emitted when a new preset is selected/highlighted (to preview it, for example)
         void presetSelected( QString preset );
         // Emitted when a preset has been chosen
@@ -39,8 +42,6 @@ namespace FabricUI
         void selectionChanged();
 
       private:
-        void setSelection( unsigned int index );
-        inline int numberResults() const { return model()->rowCount(); }
         QString getSelectedPreset();
         class Model;
         Model* m_model;

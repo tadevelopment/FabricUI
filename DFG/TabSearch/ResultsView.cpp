@@ -109,6 +109,9 @@ public:
     this->root.computeParentPointers();
     this->endResetModel();
   }
+
+  inline bool isPreset( const QModelIndex& index ) const
+  { return cast( index )->isPreset; }
 };
 
 ResultsView::Model::Node::Node( const TagNode& node )
@@ -159,6 +162,10 @@ ResultsView::ResultsView()
     this->selectionModel(), SIGNAL( currentChanged( const QModelIndex &, const QModelIndex & ) ),
     this, SLOT( selectionChanged() )
   );
+  connect(
+    this, SIGNAL( doubleClicked( const QModelIndex & ) ),
+    this, SLOT( validateSelection() )
+  );
   this->setEditTriggers( QAbstractItemView::NoEditTriggers );
 }
 
@@ -169,12 +176,16 @@ ResultsView::~ResultsView()
 
 void ResultsView::validateSelection()
 {
-  //emit presetValidated( this->getSelectedPreset() );
+  if( m_model->isPreset( currentIndex() ) )
+    emit presetValidated( this->getSelectedPreset() );
 }
 
 void ResultsView::selectionChanged()
 {
-  //emit presetSelected( this->getSelectedPreset() );
+  if( m_model->isPreset( currentIndex() ) )
+    emit presetSelected( this->getSelectedPreset() );
+  else
+    emit presetDeselected();
 }
 
 void ResultsView::setResults( const std::string& searchResult )
@@ -203,32 +214,22 @@ void ResultsView::setResults( const std::string& searchResult )
   m_model->setRoot( rootNode );
   this->expandAll();
 
-  if( numberResults() > 0 )
-    setSelection( 0 );
+  if( m_model->rowCount() > 0 )
+  {
+    const QModelIndex& firstEntry = m_model->index( 0, 0 );
+    if( m_model->isPreset( firstEntry ) )
+      this->setCurrentIndex( firstEntry );
+  }
+
 }
 
 QString ResultsView::getSelectedPreset()
 {
-  assert( numberResults() > 0 );
-  return "";// m_model.data( currentIndex(), Qt::DisplayRole ).value<QString>();
+  assert( numberResults() > 0 && m_model->isPreset( currentIndex() ) );
+  return m_model->data( currentIndex(), Qt::DisplayRole ).value<QString>();
 }
 
-void ResultsView::moveSelection( int increment )
+void ResultsView::keyPressEvent( QKeyEvent * event )
 {
-  if( numberResults() == 0 )
-    return;
-
-  int newSelection = currentIndex().row() + increment;
-  if( newSelection < 0 )
-    newSelection = numberResults() + newSelection;
-  else
-  if( newSelection >= numberResults() )
-    newSelection = newSelection % numberResults();
-
-  setSelection( newSelection );
-}
-
-void ResultsView::setSelection( unsigned int index )
-{
-  //selectionModel()->setCurrentIndex( model()->index( index, 0 ), QItemSelectionModel::SelectCurrent );
+  Parent::keyPressEvent( event );
 }
