@@ -11,7 +11,10 @@ set(
 
 add_definitions(-DFEC_SHARED)
 
-execute_process( COMMAND "${CMAKE_CURRENT_LIST_DIR}/moc.bat" ${QtDir} ${CMAKE_CURRENT_LIST_DIR} )
+add_custom_target(
+  qtMoc
+  COMMAND "${CMAKE_CURRENT_LIST_DIR}/moc.bat" ${QtDir} ${CMAKE_CURRENT_LIST_DIR}
+)
 
 include_directories(
   ../
@@ -37,6 +40,8 @@ add_executable(
   Moc.cpp
   Main.cpp
   )
+
+add_dependencies( DFGPresetSearchWidget qtMoc )
 
 target_link_libraries(
   DFGPresetSearchWidget
