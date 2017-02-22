@@ -37,7 +37,8 @@ ResultPreview::ResultPreview( QString preset, DFGHost* host )
   }
 
   // Tags
-#if 1 // Hack : we should use a Core/External service instead of parsing the DB here
+#if 0
+  // Hack : we should use a Core/External service instead of parsing the DB here
   try
   {
     String dbStrR = host->dumpPresetSearchDB();
