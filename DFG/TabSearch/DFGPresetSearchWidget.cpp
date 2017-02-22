@@ -44,7 +44,6 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   hlayout->setMargin( 0 );
 
   this->setLayout( hlayout );
-  m_queryEdit->setFocus();
 }
 
 void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
@@ -54,6 +53,7 @@ void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
 
   emit enabled( true );
   show();
+  m_queryEdit->setFocus();
 }
 
 void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
