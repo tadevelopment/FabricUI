@@ -66,7 +66,6 @@ InstBlockHeader::InstBlockHeader(
     true, // interactiveConnectionsAllowed
     true // invisible
     );
-  m_outCircle->setClipping(false);
   layout->addItem(m_outCircle);
   layout->setAlignment(m_outCircle, Qt::AlignRight | Qt::AlignVCenter);
   m_outCircle->setEnabled( false );

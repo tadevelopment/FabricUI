@@ -2192,6 +2192,19 @@ namespace DFG {
                 srcs.push_back( pinOut );
                 dsts.push_back( m_connection->dst() );
                 m_dfgWidget->getUIController()->gvcDoAddConnections(srcs, dsts);
+
+                // remove the original connection if it still exists.
+                // note: this can happen with "Execute" ports that
+                //       support more than one source. 
+                std::vector<GraphView::Connection *> connections = m_dfgWidget->getUIGraph()->connections();
+                for(int i=0;i<(int)connections.size();i++)
+                  if (   connections[i]->src() == m_connection->src()
+                      && connections[i]->dst() == m_connection->dst() )
+                  {
+                    m_dfgWidget->getUIController()->cmdDisconnect( QStringList( m_connection->src()->path_QS() ),
+                                                                   QStringList( m_connection->dst()->path_QS() ) );
+                    break;
+                  }
               }
             }
             m_connection = NULL;
