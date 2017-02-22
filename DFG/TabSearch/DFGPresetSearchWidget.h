@@ -28,6 +28,7 @@ namespace FabricUI
       bool focusNextPrevChild( bool next ) FTL_OVERRIDE;
 
     signals:
+      // Emitted when a Preset has been chosen
       void selectedPreset( QString preset );
 
     private slots:

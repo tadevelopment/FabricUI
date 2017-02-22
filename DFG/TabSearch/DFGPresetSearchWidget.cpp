@@ -27,6 +27,14 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     m_resultsView, SIGNAL( presetSelected( QString ) ),
     this, SLOT( setPreview( QString ) )
   );
+  connect(
+    m_resultsView, SIGNAL( presetValidated( QString ) ),
+    this, SIGNAL( selectedPreset( QString ) )
+  );
+  connect(
+    m_resultsView, SIGNAL( presetValidated( QString ) ),
+    this, SLOT( close() )
+  );
 
   vlayout->setMargin( 0 );
   vlayout->setSpacing( 0 );
@@ -122,9 +130,7 @@ void DFGPresetSearchWidget::onQueryChanged( QString query )
 
 void DFGPresetSearchWidget::validateSelection()
 {
-  if( m_resultsView->numberResults() )
-    emit selectedPreset( m_resultsView->getSelectedPreset() );
-  close();
+  m_resultsView->validateSelection();
 }
 
 void DFGPresetSearchWidget::hideEvent( QHideEvent* e )

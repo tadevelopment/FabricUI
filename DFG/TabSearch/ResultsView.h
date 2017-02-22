@@ -21,21 +21,27 @@ namespace FabricUI
       public:
         ResultsView();
 
-        QString getSelectedPreset();
-        inline int numberResults() const { return m_model.rowCount(); }
-
       public slots:
-        void setResults( std::vector<std::string> results );
+        // Sets the result of Search, to be displayed
+        void setResults( const std::vector<std::string>& results );
+        // Moves the current selection up/down
         void moveSelection( int increment = +1 );
-        void onResultSelected();
+        // Tells that we accept the current selection (on Key_Enter, for example)
+        void validateSelection();
 
       signals:
+        // Emitted when a new preset is selected/highlighted (to preview it, for example)
         void presetSelected( QString preset );
+        // Emitted when a preset has been chosen
+        void presetValidated( QString preset );
 
-      protected:
-        void setSelection( unsigned int index );
+      private slots:
+        void selectionChanged();
 
       private:
+        void setSelection( unsigned int index );
+        inline int numberResults() const { return m_model.rowCount(); }
+        QString getSelectedPreset();
         QStringListModel m_model;
       };
     }

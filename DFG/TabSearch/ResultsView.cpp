@@ -7,7 +7,12 @@
 
 using namespace FabricUI::DFG::TabSearch;
 
-void ResultsView::onResultSelected()
+void ResultsView::validateSelection()
+{
+  emit presetValidated( this->getSelectedPreset() );
+}
+
+void ResultsView::selectionChanged()
 {
   emit presetSelected( this->getSelectedPreset() );
 }
@@ -17,12 +22,12 @@ ResultsView::ResultsView()
   setModel( &m_model );
   connect(
     this->selectionModel(), SIGNAL( currentChanged( const QModelIndex &, const QModelIndex & ) ),
-    this, SLOT( onResultSelected() )
+    this, SLOT( selectionChanged() )
   );
   this->setEditTriggers( QAbstractItemView::NoEditTriggers );
 }
 
-void ResultsView::setResults( std::vector<std::string> results )
+void ResultsView::setResults( const std::vector<std::string>& results )
 {
   QStringList list;
   for( size_t i = 0; i < results.size(); i++ )
