@@ -17,6 +17,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 
   m_queryEdit = new TabSearch::QueryEdit();
   m_queryEdit->setMinimumWidth( 800 );
+  this->setMinimumHeight( 600 );
   vlayout->addWidget( m_queryEdit );
   connect( m_queryEdit, SIGNAL( queryChanged( QString ) ),
     this, SLOT( onQueryChanged( QString ) ) );
@@ -111,21 +112,13 @@ void DFGPresetSearchWidget::onQueryChanged( QString query )
     tags.size(),
     tags.data(),
     0,
-    16
+    8
   );
   FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
-  const FTL::JSONValue* json = FTL::JSONValue::Decode( jsonStrR );
-  const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
-  const FTL::JSONArray* resultsJson = root->getArray( "results" );
 
-  std::vector<std::string> results;
-  for( unsigned int i = 0; i < resultsJson->size(); i++ )
-    results.push_back( resultsJson->getArray( i )->getString( 0 ) );
+  hidePreview();
 
-  if( results.size() == 0 )
-    hidePreview();
-
-  m_resultsView->setResults( results );
+  m_resultsView->setResults( jsonStrR );
 }
 
 void DFGPresetSearchWidget::validateSelection()

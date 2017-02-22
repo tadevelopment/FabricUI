@@ -3,8 +3,7 @@
 #ifndef __UI_DFG_TabSearch_ResultsView__
 #define __UI_DFG_TabSearch_ResultsView__
 
-#include <QListView>
-#include <QStringListModel>
+#include <QTreeView>
 
 #include <FTL/Config.h>
 
@@ -14,16 +13,17 @@ namespace FabricUI
   {
     namespace TabSearch
     {
-      class ResultsView : public QListView
+      class ResultsView : public QTreeView
       {
         Q_OBJECT
 
       public:
         ResultsView();
+        ~ResultsView();
 
       public slots:
         // Sets the result of Search, to be displayed
-        void setResults( const std::vector<std::string>& results );
+        void setResults( const std::string& searchResult );
         // Moves the current selection up/down
         void moveSelection( int increment = +1 );
         // Tells that we accept the current selection (on Key_Enter, for example)
@@ -40,9 +40,10 @@ namespace FabricUI
 
       private:
         void setSelection( unsigned int index );
-        inline int numberResults() const { return m_model.rowCount(); }
+        inline int numberResults() const { return model()->rowCount(); }
         QString getSelectedPreset();
-        QStringListModel m_model;
+        class Model;
+        Model* m_model;
       };
     }
   };
