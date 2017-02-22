@@ -4,6 +4,7 @@
 
 #include "TimeLineWidget.h"
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
+#include <FabricUI/Dialog/BaseDialog.h>
 
 #include <QDialog>
 #include <QHBoxLayout>
@@ -15,6 +16,7 @@
 
 
 using namespace FabricUI::TimeLine;
+using namespace FabricUI::Dialog;
 
 TimeLineWidget::TimeLineWidget()
 {
@@ -519,36 +521,30 @@ void TimeLineWidget::updateTargetFrameRate(int index)
     m_fps = 1000; // max fps
   else if(m_fps == -1.0) // custom fps
   {
-    QDialog *customFPSDialog = new QDialog( this->parentWidget() );
+    BaseDialog *customFPSDialog = new BaseDialog( this->parentWidget() );
     customFPSDialog->setWindowTitle ( "Custom FPS" );
-    customFPSDialog->setMinimumHeight(10);
-    customFPSDialog->setSizePolicy( QSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding) );
 
-    QVBoxLayout *parentLayout = new QVBoxLayout;
+    QHBoxLayout *fpsWidgetLayout = new QHBoxLayout;
+    fpsWidgetLayout->setContentsMargins( 0, 0, 0, 0 );
+    fpsWidgetLayout->setSpacing( 5 );
 
-    customFPSDialog->setLayout(parentLayout);
+    QFrame *fpsWidget = new QFrame;
+    fpsWidget->setLayout(fpsWidgetLayout);
+
+    QLabel *fpsLabel = new QLabel( "FPS" );
 
     QDoubleSpinBox *fpsSpinBox = new QDoubleSpinBox;
+    fpsSpinBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum));
     fpsSpinBox->setValue( 24.0 );
     fpsSpinBox->setWrapping( false );
     fpsSpinBox->setFrame( false );
 
-    parentLayout->addWidget(fpsSpinBox);
+    fpsWidgetLayout->addWidget( fpsLabel );
+    fpsWidgetLayout->setAlignment( fpsLabel, Qt::AlignLeft | Qt::AlignVCenter );
+    fpsWidgetLayout->addWidget( fpsSpinBox );
 
-    QHBoxLayout *buttonsLayout = new QHBoxLayout;
-    buttonsLayout->setContentsMargins( 0, 0, 0, 0 );
-
-    QPushButton *okButton = new QPushButton( "OK" );
-    QPushButton *cancelButton = new QPushButton( "Cancel" );
-
-    buttonsLayout->addWidget( okButton );
-    buttonsLayout->addWidget( cancelButton );
-    
-    parentLayout->addLayout(buttonsLayout);
-    parentLayout->addStretch(2);
-
-    QObject::connect( okButton, SIGNAL(clicked()), customFPSDialog, SLOT(accept()) );
-    QObject::connect( cancelButton, SIGNAL(clicked()), customFPSDialog, SLOT(reject()) );
+    QVBoxLayout *inputsLayout = customFPSDialog->inputsLayout();
+    inputsLayout->addWidget(fpsWidget);
 
     if ( customFPSDialog->exec() == QDialog::Accepted )
     {
