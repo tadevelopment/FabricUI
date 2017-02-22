@@ -41,15 +41,18 @@ PinCircle::PinCircle(
   m_ellipse->setPos(radius(), radius());
   m_ellipse->setRect(-radius(), -radius(), diameter(), diameter());
 
-  if(portType == PortType_Input && !m_target->graph()->config().pinInputUsesFullCircle)
+  if (!m_target->graph()->config().pinDisplayAsFullCircle)
   {
-    m_ellipse->setStartAngle(270 * 16);
-    m_ellipse->setSpanAngle(180 * 16);
-  }
-  else if(portType == PortType_Output && !m_target->graph()->config().pinOutputUsesFullCircle)
-  {
-    m_ellipse->setStartAngle(90 * 16);
-    m_ellipse->setSpanAngle(180 * 16);
+    if(portType == PortType_Input)
+    {
+      m_ellipse->setStartAngle(270 * 16);
+      m_ellipse->setSpanAngle(180 * 16);
+    }
+    else
+    {
+      m_ellipse->setStartAngle(90 * 16);
+      m_ellipse->setSpanAngle(180 * 16);
+    }
   }
 
   m_ellipse->setVisible( !m_invisible );
@@ -268,20 +271,6 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
   }
   else
     QGraphicsWidget::mousePressEvent(event);
-}
-
-void PinCircle::setClipping(bool state)
-{
-  if(state)
-  {
-    m_ellipse->setStartAngle(90 * 16);
-    m_ellipse->setSpanAngle(180 * 16);
-  }
-  else
-  {
-    m_ellipse->setStartAngle(0);
-    m_ellipse->setSpanAngle(5760);
-  }
 }
 
 void PinCircle::setDaisyChainCircleVisible(bool state)

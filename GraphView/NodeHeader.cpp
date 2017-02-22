@@ -79,7 +79,6 @@ NodeHeader::NodeHeader(
   setEditable( node()->canEdit() );
 
   m_inCircle = new PinCircle(this, PortType_Input, m_node->color());
-  // m_inCircle->setClipping(true);
   layout->addItem(m_inCircle);
   layout->setAlignment(m_inCircle, Qt::AlignLeft | Qt::AlignVCenter);
 
@@ -100,7 +99,6 @@ NodeHeader::NodeHeader(
   }
     
   m_outCircle = new PinCircle(this, PortType_Output, m_node->color());
-  m_outCircle->setClipping(false);
   layout->addItem(m_outCircle);
   layout->setAlignment(m_outCircle, Qt::AlignRight | Qt::AlignVCenter);
 
