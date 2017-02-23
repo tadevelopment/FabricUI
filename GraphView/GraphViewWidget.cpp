@@ -189,7 +189,7 @@ void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRec
     zoomRect.setRect(pos.x() - 0.5f * size.width() , pos.y() - 0.5f * size.height(), size.width(), size.height());
 
     QPainterPath path;
-    path.addRoundedRect(zoomRect, 10, 10);
+    path.addRoundedRect(zoomRect, 5, 5);
     QPen pen(config.mainPanelHotkeyZoomBorderColor, 1.5f, Qt::DashLine);
     painter->setPen(pen);
     painter->fillPath(path, config.mainPanelBackgroundColor);
