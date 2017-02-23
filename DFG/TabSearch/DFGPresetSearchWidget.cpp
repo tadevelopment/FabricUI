@@ -17,11 +17,13 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 
   m_queryEdit = new TabSearch::QueryEdit();
   m_queryEdit->setMinimumWidth( 800 );
+  this->setMinimumHeight( 600 );
   vlayout->addWidget( m_queryEdit );
   connect( m_queryEdit, SIGNAL( queryChanged( QString ) ),
     this, SLOT( onQueryChanged( QString ) ) );
 
   m_resultsView = new TabSearch::ResultsView();
+  m_resultsView->setFocusProxy( this );
   vlayout->addWidget( m_resultsView );
   connect(
     m_resultsView, SIGNAL( presetSelected( QString ) ),
@@ -64,9 +66,8 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
     case Qt::Key_Return :
       validateSelection(); break;
     case Qt::Key_Up :
-      m_resultsView->moveSelection( -1 ); break;
     case Qt::Key_Down :
-      m_resultsView->moveSelection( +1 ); break;
+      m_resultsView->keyPressEvent( event ); break;
     default:
       Parent::keyPressEvent( event );
   }
@@ -119,21 +120,13 @@ void DFGPresetSearchWidget::onQueryChanged( QString query )
     requiredTags.size(),
     requiredTags.data(),
     0,
-    16
+    8
   );
   FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
-  const FTL::JSONValue* json = FTL::JSONValue::Decode( jsonStrR );
-  const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
-  const FTL::JSONArray* resultsJson = root->getArray( "results" );
 
-  std::vector<std::string> results;
-  for( unsigned int i = 0; i < resultsJson->size(); i++ )
-    results.push_back( resultsJson->getArray( i )->getString( 0 ) );
+  hidePreview();
 
-  if( results.size() == 0 )
-    hidePreview();
-
-  m_resultsView->setResults( results );
+  m_resultsView->setResults( jsonStrR );
 }
 
 void DFGPresetSearchWidget::validateSelection()
@@ -170,6 +163,10 @@ void DFGPresetSearchWidget::setPreview( QString preset )
     this->hidePreview();
     m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
     layout()->addWidget( m_resultPreview );
+    connect(
+      m_resultsView, SIGNAL( presetDeselected() ),
+      this, SLOT( hidePreview() )
+    );
   }
 }
 

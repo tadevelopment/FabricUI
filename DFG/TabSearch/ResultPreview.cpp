@@ -37,41 +37,15 @@ ResultPreview::ResultPreview( QString preset, DFGHost* host )
   }
 
   // Tags
-#if 0
-  // Hack : we should use a Core/External service instead of parsing the DB here
-  try
   {
-    String dbStrR = host->dumpPresetSearchDB();
-    FTL::StrRef dbStr( dbStrR.getCStr(), dbStrR.getSize() );
-    FTL::JSONValue* db = FTL::JSONValue::Decode( dbStr );
-    FTL::JSONObject* dbO = db->cast<FTL::JSONObject>();
+    FEC_StringRef tagsStrR = FEC_DFGHostGetPresetTags( host->getFECDFGHostRef(), preset.toStdString().data() );
+    FTL::StrRef tagsStr( FEC_StringGetCStr( tagsStrR ), FEC_StringGetSize( tagsStrR ) );
+    FTL::JSONValue* tags = FTL::JSONValue::Decode( tagsStr );
+    FTL::JSONArray* tagsA = tags->cast<FTL::JSONArray>();
 
-    std::string presetName = preset.toStdString();
-
-    for( FTL::JSONObject::const_iterator it=dbO->begin(); it!=dbO->end(); it++ )
-    {
-      const FTL::JSONObject* tagV = it->second->cast<FTL::JSONObject>();
-      const FTL::JSONArray* presets = tagV->getArray( "presets" );
-      for( size_t pI = 0; pI < presets->size(); pI++ )
-      {
-        const FTL::JSONArray* preset = presets->getArray( pI );
-        if( presetName == preset->getString( 0 ) )
-        {
-          QLabel* label = new QLabel( QString::fromStdString(it->first) );
-          label->setToolTip(
-            "TagWeight : " + QString::number( tagV->getFloat64( "weight" ) )
-            + "; TagAndPresetWeight : " + QString::number( preset->getFloat64( 1 ) )
-          );
-          layout->addWidget( label );
-        }
-      }
-    }
+    for( FTL::JSONArray::const_iterator it = tagsA->begin(); it != tagsA->end(); it++ )
+      layout->addWidget( new QLabel( QString::fromStdString( (*it)->getStringValue() ) ) );
   }
-  catch( FTL::JSONException e )
-  {
-    std::cout << e.getDesc() << std::endl;
-  }
-#endif
 
   layout->setAlignment( Qt::AlignTop );
   this->setLayout( layout );
