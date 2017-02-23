@@ -22,6 +22,7 @@ GraphViewWidget::GraphViewWidget(
   )
   : QGraphicsView(parent)
   , m_altWasHeldAtLastMousePress( false )
+  , m_uiGraphZoomBeforeQuickZoom( 0.0f )
 {
   setRenderHint(QPainter::Antialiasing);
   // setRenderHint(QPainter::HighQualityAntialiasing);
@@ -109,6 +110,8 @@ void GraphViewWidget::mousePressEvent(QMouseEvent * event)
 void GraphViewWidget::mouseMoveEvent(QMouseEvent * event)
 {
   m_lastEventPos = event->pos();
+  if (getUiGraphZoomBeforeQuickZoom() > 0)
+    update();
   QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -176,7 +179,26 @@ void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRec
   rect.setLeft(graph()->sidePanel(GraphView::PortType_Output)->rect().right());
 
   // fill the background.
-  painter->fillRect(rect, config.mainPanelBackgroundColor);
+  if (getUiGraphZoomBeforeQuickZoom() > 0)
+  {
+    painter->fillRect(rect, config.mainPanelHotkeyZoomBackgroundColor);
+
+    QPointF pos = lastEventPos();
+    QSizeF size = mainPanel->canvasZoom() * rect.size() / getUiGraphZoomBeforeQuickZoom();
+    QRectF zoomRect;
+    zoomRect.setRect(pos.x() - 0.5f * size.width() , pos.y() - 0.5f * size.height(), size.width(), size.height());
+
+    QPainterPath path;
+    path.addRoundedRect(zoomRect, 5, 5);
+    QPen pen(config.mainPanelHotkeyZoomBorderColor, 1.5f, Qt::DashLine);
+    painter->setPen(pen);
+    painter->fillPath(path, config.mainPanelBackgroundColor);
+    painter->drawPath(path);
+  }
+  else
+  {
+    painter->fillRect(rect, config.mainPanelBackgroundColor);
+  }
 
   // draw the grid.
   if (config.mainPanelDrawGrid)
