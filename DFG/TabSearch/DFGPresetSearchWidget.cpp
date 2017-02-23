@@ -157,7 +157,7 @@ void DFGPresetSearchWidget::setPreview( QString preset )
     layout()->addWidget( m_resultPreview );
     connect(
       m_resultsView, SIGNAL( presetDeselected() ),
-      m_resultPreview, SLOT( hide() )
+      this, SLOT( hidePreview() )
     );
   }
 }
