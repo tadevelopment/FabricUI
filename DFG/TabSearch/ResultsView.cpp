@@ -156,6 +156,7 @@ void ResultsView::Model::Node::computeParentPointers()
 ResultsView::ResultsView()
   : m_model( new Model() )
 {
+  setItemsExpandable( false );
   setModel( m_model );
   this->setHeaderHidden( true );
   connect(
