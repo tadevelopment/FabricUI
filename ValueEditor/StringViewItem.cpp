@@ -12,7 +12,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPlainTextEdit>
-#include <QDialogButtonBox>
 #include <QFrame>
 
 using namespace FabricUI::ValueEditor;
@@ -82,20 +81,31 @@ void StringViewItem::onInspect()
   VEDialog dlg( m_widget, Qt::Window | Qt::Dialog /*| Qt::FramelessWindowHint*/ );
   dlg.setWindowTitle( getName() );
   dlg.setModal( true );
+
   // Add text editor
   QVBoxLayout *layout = new QVBoxLayout( &dlg );
   QPlainTextEdit* txtEdit = new QPlainTextEdit;
   txtEdit->setPlainText( m_edit->text() );
   layout->addWidget( txtEdit );
 
-  // Ok/cancel
-  QDialogButtonBox* buttonBox = new QDialogButtonBox( 
-                                      QDialogButtonBox::Ok
-                                    | QDialogButtonBox::Cancel );
+  // Add OK & Cancel buttons
+  // ethivierge: Add buttons manually to ensure the order
+  QHBoxLayout *buttonLayout = new QHBoxLayout;
+  buttonLayout->setContentsMargins( 0, 0, 0, 0 );
 
-  connect( buttonBox, SIGNAL( accepted() ), &dlg, SLOT( accept() ) );
-  connect( buttonBox, SIGNAL( rejected() ), &dlg, SLOT( reject() ) );
-  layout->addWidget( buttonBox );
+  QPushButton* okButton = new QPushButton( "OK" );
+  okButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::MinimumExpanding );
+
+  QPushButton* cancelButton = new QPushButton( "Cancel" );
+  cancelButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::MinimumExpanding );
+
+  buttonLayout->addWidget( okButton );
+  buttonLayout->addWidget( cancelButton );
+
+  connect( okButton, SIGNAL( clicked() ), &dlg, SLOT( accept() ) );
+  connect( cancelButton, SIGNAL( clicked() ), &dlg, SLOT( reject() ) );
+  
+  layout->addLayout( buttonLayout );
  
   // Post dialog under mouse
   QPoint pos = QCursor::pos();

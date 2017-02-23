@@ -719,11 +719,25 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
 
   result->addSeparator();
 
-  bool canAddTimelinePort = (   editable
-                             && portType == FabricUI::GraphView::PortType_Output
-                             && exec.getExecPath().getLength() == 0
-                             && graph->ports("timeline").size() == 0 );
-  result->addAction( new CreateTimelinePortAction( graphWidget, result, canAddTimelinePort ) );
+
+  QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
+  timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );
+  {
+    QString portname[4] = {"timeline", "timelineStart", "timelineEnd", "timelineFramerate"};
+    bool canAddTimelinePort[4];
+    bool canAddAllTimelinePorts = false;
+    for (int i=0;i<4;i++)
+    {
+      canAddTimelinePort[i] = (   editable
+                               && portType == FabricUI::GraphView::PortType_Output
+                               && exec.getExecPath().getLength() == 0
+                               && graph->ports(portname[i].toUtf8().data()).size() == 0 );
+      canAddAllTimelinePorts |= canAddTimelinePort[i];
+      timelinePortsMenu->addAction( new CreateTimelinePortAction( graphWidget, timelinePortsMenu, i, canAddTimelinePort[i] ) );
+    }
+    timelinePortsMenu->addSeparator();
+    timelinePortsMenu->addAction( new CreateAllTimelinePortsAction( graphWidget, timelinePortsMenu, true /* createOnlyMissingPorts */, canAddAllTimelinePorts ) );
+  }
 
   result->addSeparator();
   

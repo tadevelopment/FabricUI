@@ -531,11 +531,22 @@ namespace DFG {
       CreateTimelinePortAction(
         DFGWidget *dfgWidget,
         QObject *parent,
+        int createWhat,
         bool enable = true )
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
+        , m_createWhat( createWhat )
       {
-        setText( "Create timeline port" );
+        m_portname = "noname";
+        switch (createWhat)
+        {
+          case 0:   m_portname = "timeline";          break;
+          case 1:   m_portname = "timelineStart";     break;
+          case 2:   m_portname = "timelineEnd";       break;
+          case 3:   m_portname = "timelineFramerate"; break;
+          default:                                    break;
+        };
+        setText( "Create " + m_portname + " port" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -546,7 +557,7 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->getUIController()->cmdAddPort(
-          "timeline",
+          m_portname.toUtf8().data(),
           FabricCore::DFGPortType_In,
           "Scalar",
           QString(), // portToConnect
@@ -558,6 +569,66 @@ namespace DFG {
     private:
 
       DFGWidget *m_dfgWidget;
+      int m_createWhat;
+      QString m_portname;
+    };
+
+    class CreateAllTimelinePortsAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      CreateAllTimelinePortsAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool createOnlyMissingPorts = true,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_createOnlyMissingPorts( createOnlyMissingPorts )
+      {
+        setText( "Create all timeline ports" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        for (int i=0;i<4;i++)
+        {
+          QString portname = "";
+          switch (i)
+          {
+            case 0:   portname = "timeline";          break;
+            case 1:   portname = "timelineStart";     break;
+            case 2:   portname = "timelineEnd";       break;
+            case 3:   portname = "timelineFramerate"; break;
+            default:                                  break;
+          };
+
+          if (   m_createOnlyMissingPorts
+              && m_dfgWidget->getUIGraph()->ports(portname.toUtf8().data()).size() > 0 )
+            continue;
+
+          m_dfgWidget->getUIController()->cmdAddPort(
+            portname.toUtf8().data(),
+            FabricCore::DFGPortType_In,
+            "Scalar",
+            QString(), // portToConnect
+            QString(), // extDep
+            QString()  // uiMetadata
+            );
+        }
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      bool m_createOnlyMissingPorts;
     };
 
     class NewVariableNodeAction : public QAction

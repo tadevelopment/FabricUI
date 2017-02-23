@@ -122,6 +122,7 @@ env.MergeFlags(qtFlags)
 
 dirs = [
   'Util',
+  'Dialog',
   'Style',
   'Viewports',
   'KLEditor',
