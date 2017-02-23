@@ -80,7 +80,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   // Splitting the search string into a char**
   const std::string searchStr = query.text.toStdString().data();
 
-  std::vector<std::string> tagsStr;
+  std::vector<std::string> searchTermsStr;
   unsigned int start = 0;
   for( unsigned int end = 0; end < searchStr.size(); end++ )
   {
@@ -88,31 +88,39 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
     if( c == '.' || c == ' ' ) // delimiters
     {
       if( end - start > 0 )
-        tagsStr.push_back( searchStr.substr( start, end - start ) );
+        searchTermsStr.push_back( searchStr.substr( start, end - start ) );
       start = end + 1;
     }
   }
   if( start < searchStr.size() )
-    tagsStr.push_back( searchStr.substr( start, searchStr.size() - start ) );
+    searchTermsStr.push_back( searchStr.substr( start, searchStr.size() - start ) );
 
-  std::vector<char const*> tags( tagsStr.size() );
+  std::vector<char const*> searchTerms( searchTermsStr.size() );
 
   // Debug : TODO remove
   /*
-  for( unsigned int i = 0; i < tagsStr.size(); i++ )
-    std::cout << "\"" << tagsStr[i] << "\" ";
+  for( unsigned int i = 0; i < searchTermsStr.size(); i++ )
+    std::cout << "\"" << searchTermsStr[i] << "\" ";
   std::cout << std::endl;
   */
 
-  for( unsigned int i = 0; i < tagsStr.size(); i++ )
-    tags[i] = tagsStr[i].data();
+  for( unsigned int i = 0; i < searchTermsStr.size(); i++ )
+    searchTerms[i] = searchTermsStr[i].data();
+
+  // [pz 20170223] FIXME
+  // This is where you should put the required tags
+  // They should be of the form tagCat:tagText as
+  // returned by the Core
+  std::vector<char const *> requiredTags;
 
   // Querying the DataBase of presets
   FabricCore::DFGHost* host = m_host;
   FEC_StringRef jsonStr = FEC_DFGHostSearchPresets(
     host->getFECDFGHostRef(),
-    tags.size(),
-    tags.data(),
+    searchTerms.size(),
+    searchTerms.data(),
+    requiredTags.size(),
+    requiredTags.data(),
     0,
     8
   );
