@@ -13,8 +13,8 @@ namespace FabricUI
     {
       struct Query
       {
-        typedef std::vector<QString> Tags;
-        QString text;
+        typedef std::vector<std::string> Tags;
+        std::string text;
         Tags tags;
       };
 

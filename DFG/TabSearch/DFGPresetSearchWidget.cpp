@@ -78,7 +78,7 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
 void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 {
   // Splitting the search string into a char**
-  const std::string searchStr = query.text.toStdString().data();
+  const std::string searchStr = query.text;
 
   std::vector<std::string> searchTermsStr;
   unsigned int start = 0;
@@ -107,11 +107,10 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   for( unsigned int i = 0; i < searchTermsStr.size(); i++ )
     searchTerms[i] = searchTermsStr[i].data();
 
-  // [pz 20170223] FIXME
-  // This is where you should put the required tags
-  // They should be of the form tagCat:tagText as
-  // returned by the Core
   std::vector<char const *> requiredTags;
+  requiredTags.resize( query.tags.size() );
+  for( size_t i=0; i<query.tags.size(); i++ )
+    requiredTags[i] = query.tags[i].data();
 
   // Querying the DataBase of presets
   FabricCore::DFGHost* host = m_host;

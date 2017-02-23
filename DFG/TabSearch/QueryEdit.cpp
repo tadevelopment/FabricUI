@@ -17,6 +17,6 @@ QueryEdit::QueryEdit()
 
 void QueryEdit::onTextChanged( const QString& text )
 {
-  m_query.text = text;
+  m_query.text = text.toStdString();
   emit queryChanged( m_query );
 }
