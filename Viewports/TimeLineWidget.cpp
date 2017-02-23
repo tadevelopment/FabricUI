@@ -4,15 +4,19 @@
 
 #include "TimeLineWidget.h"
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
+#include <FabricUI/Dialog/BaseDialog.h>
 
+#include <QDialog>
+#include <QHBoxLayout>
 #include <QInputDialog>
 #include <QLabel>
-#include <QHBoxLayout>
+#include <QPushButton>
 
 #include <math.h>
 
 
 using namespace FabricUI::TimeLine;
+using namespace FabricUI::Dialog;
 
 TimeLineWidget::TimeLineWidget()
 {
@@ -517,15 +521,36 @@ void TimeLineWidget::updateTargetFrameRate(int index)
     m_fps = 1000; // max fps
   else if(m_fps == -1.0) // custom fps
   {
-    bool ok;
-    double userFps = QInputDialog::getDouble(
-      this, tr("Custom FPS"), tr(""),
-      24.0, 1.0, 1000.0, 2, &ok );
-    if(ok)
+    BaseDialog *customFPSDialog = new BaseDialog( this->parentWidget() );
+    customFPSDialog->setWindowTitle ( "Custom FPS" );
+
+    QHBoxLayout *fpsWidgetLayout = new QHBoxLayout;
+    fpsWidgetLayout->setContentsMargins( 0, 0, 0, 0 );
+    fpsWidgetLayout->setSpacing( 5 );
+
+    QFrame *fpsWidget = new QFrame;
+    fpsWidget->setLayout(fpsWidgetLayout);
+
+    QLabel *fpsLabel = new QLabel( "FPS" );
+
+    QDoubleSpinBox *fpsSpinBox = new QDoubleSpinBox;
+    fpsSpinBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum));
+    fpsSpinBox->setValue( 24.0 );
+    fpsSpinBox->setWrapping( false );
+    fpsSpinBox->setFrame( false );
+
+    fpsWidgetLayout->addWidget( fpsLabel );
+    fpsWidgetLayout->setAlignment( fpsLabel, Qt::AlignLeft | Qt::AlignVCenter );
+    fpsWidgetLayout->addWidget( fpsSpinBox );
+
+    QVBoxLayout *inputsLayout = customFPSDialog->inputsLayout();
+    inputsLayout->addWidget(fpsWidget);
+
+    if ( customFPSDialog->exec() == QDialog::Accepted )
     {
-      m_fps = userFps;
+      m_fps = fpsSpinBox->value();
       m_frameRateComboBox->setItemText( index, 
-        "custom " + QString::number(m_fps) );
+        "custom " + QString::number( m_fps ) );
     }
   }
   emit targetFrameRateChanged( framerate() );
