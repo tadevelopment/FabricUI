@@ -10,7 +10,13 @@ QueryEdit::QueryEdit()
   this->setFont( font );
 
   connect(
-    this, SIGNAL( textChanged( QString ) ),
-    this, SIGNAL( queryChanged( QString ) )
+    this, SIGNAL( textChanged( const QString& ) ),
+    this, SLOT( onTextChanged( const QString& ) )
   );
+}
+
+void QueryEdit::onTextChanged( const QString& text )
+{
+  m_query.text = text;
+  emit queryChanged( m_query );
 }

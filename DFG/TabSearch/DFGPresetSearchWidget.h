@@ -32,7 +32,7 @@ namespace FabricUI
       void selectedPreset( QString preset );
 
     private slots:
-      void onQueryChanged( QString query );
+      void onQueryChanged( const TabSearch::Query& query );
       void validateSelection();
       void hidePreview();
       void setPreview( QString preset );

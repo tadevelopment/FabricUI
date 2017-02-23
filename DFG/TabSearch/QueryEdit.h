@@ -11,6 +11,13 @@ namespace FabricUI
   {
     namespace TabSearch
     {
+      struct Query
+      {
+        typedef std::vector<QString> Tags;
+        QString text;
+        Tags tags;
+      };
+
       class QueryEdit : public QLineEdit
       {
         Q_OBJECT
@@ -19,7 +26,13 @@ namespace FabricUI
         QueryEdit();
 
       signals:
-        void queryChanged( QString query );
+        void queryChanged( const TabSearch::Query& query );
+
+      private slots:
+        void onTextChanged( const QString& text );
+
+      private:
+        Query m_query;
       };
     }
   };

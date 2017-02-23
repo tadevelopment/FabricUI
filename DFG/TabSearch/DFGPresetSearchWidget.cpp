@@ -19,8 +19,10 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   m_queryEdit->setMinimumWidth( 800 );
   this->setMinimumHeight( 600 );
   vlayout->addWidget( m_queryEdit );
-  connect( m_queryEdit, SIGNAL( queryChanged( QString ) ),
-    this, SLOT( onQueryChanged( QString ) ) );
+  connect(
+    m_queryEdit, SIGNAL( queryChanged( const TabSearch::Query& ) ),
+    this, SLOT( onQueryChanged( const TabSearch::Query& ) )
+  );
 
   m_resultsView = new TabSearch::ResultsView();
   m_resultsView->setFocusProxy( this );
@@ -73,10 +75,10 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
   }
 }
 
-void DFGPresetSearchWidget::onQueryChanged( QString query )
+void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 {
   // Splitting the search string into a char**
-  const std::string searchStr = query.toStdString().data();
+  const std::string searchStr = query.text.toStdString().data();
 
   std::vector<std::string> tagsStr;
   unsigned int start = 0;
