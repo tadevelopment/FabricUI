@@ -182,11 +182,18 @@ void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRec
   if (getUiGraphZoomBeforeQuickZoom() > 0)
   {
     painter->fillRect(rect, config.mainPanelHotkeyZoomBackgroundColor);
+
     QPointF pos = lastEventPos();
     QSizeF size = mainPanel->canvasZoom() * rect.size() / getUiGraphZoomBeforeQuickZoom();
     QRectF zoomRect;
     zoomRect.setRect(pos.x() - 0.5f * size.width() , pos.y() - 0.5f * size.height(), size.width(), size.height());
-    painter->fillRect(zoomRect, config.mainPanelBackgroundColor);
+
+    QPainterPath path;
+    path.addRoundedRect(zoomRect, 10, 10);
+    QPen pen(config.mainPanelHotkeyZoomBorderColor, 1.5f, Qt::DashLine);
+    painter->setPen(pen);
+    painter->fillPath(path, config.mainPanelBackgroundColor);
+    painter->drawPath(path);
   }
   else
   {
