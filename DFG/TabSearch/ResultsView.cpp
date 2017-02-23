@@ -9,10 +9,26 @@
 
 using namespace FabricUI::DFG::TabSearch;
 
+struct ScoredTag
+{
+  std::string name;
+  float score;
+  ScoredTag( const std::string& name, const float score )
+    : name( name ), score( score ) {}
+  inline bool operator<( const ScoredTag& tag ) const { return this->score > tag.score; }
+  inline bool operator==( const ScoredTag& tag ) const { return this->name == tag.name; }
+  inline void operator+=( const ScoredTag& tag )
+  {
+    this->name += " ";
+    this->name += tag.name;
+    this->score += tag.score;
+  }
+};
+
 // This is a temporary storage
 struct TagNode
 {
-  typedef std::unordered_map<std::string, TagNode> Tags;
+  typedef std::map<ScoredTag, TagNode> Tags;
   Tags tags;
   typedef std::vector<std::string> Presets;
   Presets presets;
@@ -30,18 +46,17 @@ void TagNode::reduce()
       TagNode& child = cI->second;
       if( child.tags.size() == 1 )
       {
-        std::string newKey = cI->first;
+        ScoredTag newKey = cI->first;
         TagNode* newChild = &child;
         while( newChild->presets.size() == 0 && newChild->tags.size() == 1 )
         {
-          newKey += " ";
           newKey += newChild->tags.begin()->first;
           newChild = &newChild->tags.begin()->second;
         }
-        newChildren.insert( { newKey, *newChild } );
+        newChildren.insert( Tags::value_type( newKey, *newChild ) );
       }
       else
-        newChildren.insert( { cI->first, child } );
+        newChildren.insert( Tags::value_type( cI->first, child ) );
     }
     this->tags = newChildren;
     for( Tags::iterator cI = tags.begin(); cI != tags.end(); cI++ )
@@ -79,7 +94,7 @@ public:
     if( !hasIndex( row, column, parent ) )
       return QModelIndex();
     const Node* parentItem = ( parent.isValid() ? cast( parent ) : &this->root );
-    return ( row < parentItem->children.size() ?
+    return ( row < int(parentItem->children.size()) ?
       this->createIndex( row, column, (void*) &(parentItem->children[row]) )
       : QModelIndex() );
   }
@@ -131,7 +146,7 @@ ResultsView::Model::Node::Node( const TagNode& node )
     {
       child = Node( tagN );
       child.isPreset = false;
-      child.name = it->first;
+      child.name = it->first.name;
     }
   }
   for( TagNode::Presets::const_iterator it = node.presets.begin(); it != node.presets.end(); it++ )
@@ -203,9 +218,12 @@ void ResultsView::setResults( const std::string& searchResult )
     TagNode* node = &rootNode;
     for( size_t j = 0; j < tags->size(); j++ )
     {
-      const FTL::CStrRef tag = tags->getObject( j )->getString( "tag" );
+      const FTL::JSONObject* tagO = tags->getObject( j );
+      const FTL::CStrRef tagName = tagO->getString( "tag" );
+      float tagScore = tagO->getFloat64( "weight" );
+      ScoredTag tag( tagName, tagScore );
       if( node->tags.find( tag ) == node->tags.end() )
-        node->tags.insert( { tag, TagNode() } );
+        node->tags.insert( TagNode::Tags::value_type( tag, TagNode() ) );
       node = &node->tags[tag];
     }
     node->presets.push_back( preset );
