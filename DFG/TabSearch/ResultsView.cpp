@@ -176,7 +176,7 @@ ResultsView::ResultsView()
   this->setHeaderHidden( true );
   connect(
     this->selectionModel(), SIGNAL( currentChanged( const QModelIndex &, const QModelIndex & ) ),
-    this, SLOT( selectionChanged() )
+    this, SLOT( onSelectionChanged() )
   );
   connect(
     this, SIGNAL( doubleClicked( const QModelIndex & ) ),
@@ -196,7 +196,7 @@ void ResultsView::validateSelection()
     emit presetValidated( this->getSelectedPreset() );
 }
 
-void ResultsView::selectionChanged()
+void ResultsView::onSelectionChanged()
 {
   if( m_model->isPreset( currentIndex() ) )
     emit presetSelected( this->getSelectedPreset() );

@@ -39,7 +39,8 @@ namespace FabricUI
         void presetValidated( QString preset );
 
       private slots:
-        void selectionChanged();
+      
+        void onSelectionChanged();
 
       private:
         QString getSelectedPreset();
