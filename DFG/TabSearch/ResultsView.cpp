@@ -92,7 +92,7 @@ template<typename T>
 struct Node
 {
   T value;
-  std::vector<Node<T>> children;
+  std::vector<Node> children;
 
 protected:
   // Utilitary method to convert a Tree to another
@@ -115,7 +115,7 @@ struct TagAndMap
 };
 
 // First step : Temporary tree used to gather results by Tag
-typedef Node<PresetOr<TagAndMap>> TmpNode;
+typedef Node< PresetOr< TagAndMap > > TmpNode;
 TmpNode& AddTag( TmpNode& t, const Tag& tag )
 {
   const std::string& key = tag.name;
@@ -132,7 +132,7 @@ TmpNode& AddTag( TmpNode& t, const Tag& tag )
 }
 
 // Second step : Reducing the tree by fusioning consecutive nodes
-struct ReducedNode : Node<PresetOr<Tags>>
+struct ReducedNode : Node< PresetOr< Tags > >
 {
   ReducedNode( const TmpNode& tmpTI )
   {
@@ -148,8 +148,11 @@ struct ReducedNode : Node<PresetOr<Tags>>
         if( !n->value.isPreset() )
           this->value.getOther() += n->value.getOther().tag;
       }
-      for( const TmpNode& c : n->children )
-        this->children.push_back( ReducedNode( c ) );
+      for(
+        std::vector<TmpNode>::const_iterator it = n->children.begin();
+        it != n->children.end(); it++
+      )
+        this->children.push_back( ReducedNode( *it ) );
     }
     else
       value = PresetOr<Tags>( tmpTI.value.getPreset() );
