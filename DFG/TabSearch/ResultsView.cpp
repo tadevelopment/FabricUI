@@ -13,6 +13,7 @@ using namespace FabricUI::DFG::TabSearch;
 struct JSONSerializable
 {
   virtual FTL::JSONValue* toJSON() const = 0;
+  virtual ~JSONSerializable() {}
 };
 
 struct NameAndScore : JSONSerializable
@@ -312,9 +313,15 @@ namespace Test
     if( n.value.isPreset() )
       return 1;
     size_t sum = 0;
-    for( NodeT::Children::const_iterator it = n.children.begin(); it != n.children.end(); it++ )
-      sum += CountPresets( *it );
+    for( size_t i = 0; i < n.children.size(); i++ )
+      sum += CountPresets( n.children[i] );
     return sum;
+  }
+
+  void Write( const std::string& filePath, const std::string& content )
+  {
+    std::ofstream file( filePath.data() );
+    file << content;
   }
 
   template<typename NodeT>
@@ -322,7 +329,7 @@ namespace Test
   {
     size_t presetCount = CountPresets( root );
     std::cout << presetCount << " presets in " << fileName << std::endl;
-    std::ofstream( fileName ) << root.toEncodedJSON() << std::endl;
+    Write( fileName, root.toEncodedJSON() );
     return presetCount;
   }
 }
@@ -349,7 +356,7 @@ void ResultsView::UnitTest( const std::string& logFolder )
   );
   FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
   std::string json = jsonStrR;
-  std::ofstream( logFolder + "0_results.json" ) << json << std::endl;
+  Test::Write( logFolder + "0_results.json", json );
 
   TmpNode tmpNode = BuildResultTree( json );
   size_t newCount = Test::LogTree( tmpNode, logFolder + "1_tmpNode.json" );
