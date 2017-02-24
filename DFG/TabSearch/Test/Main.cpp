@@ -18,6 +18,8 @@ using namespace FabricUI::DFG;
 
 void main( int argc, char** argv )
 {
+  TabSearch::ResultsView::UnitTest( "./" );
+
   QApplication* app = new QApplication( argc, argv );
 
   // Core Client
