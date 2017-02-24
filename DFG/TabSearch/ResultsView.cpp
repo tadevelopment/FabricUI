@@ -126,7 +126,8 @@ template<typename T>
 struct Node : JSONSerializable
 {
   T value;
-  std::vector<Node> children;
+  typedef std::vector<Node> Children;
+  Children children;
 
   std::string toEncodedJSON() const
   {
@@ -284,15 +285,38 @@ TmpNode BuildResultTree( const std::string& searchResult )
   return rootNode;
 }
 
-static void ReportCallBack(
-  void *userdata,
-  FEC_ReportSource source,
-  FEC_ReportLevel level,
-  char const *data,
-  uint32_t size
-)
+namespace Test
 {
-  std::cout << std::string( data, size ).c_str() << std::endl;
+  static void ReportCallBack(
+    void *userdata,
+    FEC_ReportSource source,
+    FEC_ReportLevel level,
+    char const *data,
+    uint32_t size
+  )
+  {
+    std::cout << std::string( data, size ).c_str() << std::endl;
+  }
+
+  template<typename NodeT>
+  size_t CountPresets( const NodeT& n )
+  {
+    if( n.value.isPreset() )
+      return 1;
+    size_t sum = 0;
+    for( NodeT::Children::const_iterator it = n.children.begin(); it != n.children.end(); it++ )
+      sum += CountPresets( *it );
+    return sum;
+  }
+
+  template<typename NodeT>
+  size_t LogTree( const NodeT& root, const std::string& fileName )
+  {
+    size_t presetCount = CountPresets( root );
+    std::cout << presetCount << " presets in " << fileName << std::endl;
+    std::ofstream( fileName ) << root.toEncodedJSON() << std::endl;
+    return presetCount;
+  }
 }
 
 void ResultsView::UnitTest( const std::string& logFolder )
@@ -300,11 +324,12 @@ void ResultsView::UnitTest( const std::string& logFolder )
   // Core Client
   FabricCore::Client::CreateOptions createOptions = {};
   createOptions.guarded = true;
-  FabricCore::Client client( &ReportCallBack, 0, &createOptions );
+  FabricCore::Client client( &Test::ReportCallBack, 0, &createOptions );
   FabricCore::DFGHost host = client.getDFGHost();
 
   const char* searchTerms[2] = { "Get", "Sphere" };
 
+  size_t originalCount = 32;
   FEC_StringRef jsonStr = FEC_DFGHostSearchPresets(
     host.getFECDFGHostRef(),
     2,
@@ -312,18 +337,23 @@ void ResultsView::UnitTest( const std::string& logFolder )
     0,
     NULL,
     0,
-    32
+    originalCount
   );
   FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
   std::string json = jsonStrR;
-
   std::ofstream( logFolder + "0_results.json" ) << json << std::endl;
+
   TmpNode tmpNode = BuildResultTree( json );
-  std::ofstream( logFolder + "1_tmpNode.json" ) << tmpNode.toEncodedJSON() << std::endl;
+  size_t newCount = Test::LogTree( tmpNode, logFolder + "1_tmpNode.json" );
+  assert( newCount == originalCount );
+
   ReducedNode redNode = tmpNode;
-  std::ofstream( logFolder + "2_reduced.json" ) << redNode.toEncodedJSON() << std::endl;
+  newCount = Test::LogTree( redNode, logFolder + "2_reduced.json" );
+  assert( newCount == originalCount );
+
   ModelNode modNode = redNode;
-  std::ofstream( logFolder + "3_final.json" ) << modNode.toEncodedJSON() << std::endl;
+  newCount = Test::LogTree( modNode, logFolder + "3_final.json" );
+  assert( newCount == originalCount );
 }
 
 // Model for the TreeView
