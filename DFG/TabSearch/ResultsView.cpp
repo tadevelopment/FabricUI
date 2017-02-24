@@ -210,11 +210,19 @@ struct ReducedNode : Node< PresetOr< Tags > >
         if( !n->value.isPreset() )
           this->value.getOther() += n->value.getOther().tag;
       }
-      for(
-        std::vector<TmpNode>::const_iterator it = n->children.begin();
-        it != n->children.end(); it++
-      )
-        this->children.push_back( ReducedNode( *it ) );
+      // If the child is a preset : override all the tags by
+      // that single preset
+      if( n->value.isPreset() )
+        value = PresetOr<Tags>( n->value .getPreset() );
+      else
+      {
+        // otherwise, just add all its children
+        for( std::vector<TmpNode>::const_iterator it = n->children.begin();
+          it != n->children.end(); it++ )
+        {
+          this->children.push_back( ReducedNode( *it ) );
+        }
+      }
     }
     else
       value = PresetOr<Tags>( tmpTI.value.getPreset() );
