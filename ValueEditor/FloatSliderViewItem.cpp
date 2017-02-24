@@ -141,7 +141,7 @@ void FloatSliderViewItem::onLineEditTextModified( QString text )
     m_hardMinimum,
     std::min(
       m_hardMaximum,
-      text.toDouble()
+      text.replace(',', '.').toDouble()
       )
     );
 
