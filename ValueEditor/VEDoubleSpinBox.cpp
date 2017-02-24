@@ -28,6 +28,11 @@ QString VEDoubleSpinBox::textFromValue( double val ) const
   return QString::number( val );
 }
 
+double VEDoubleSpinBox::valueFromText(const QString &text) const
+{
+  return QString(text).replace(',', '.').toDouble();
+}
+
 double VEDoubleSpinBox::implicitLogBaseChangePerStep()
 {
   if ( minimum() == -MAX_QT_VAL

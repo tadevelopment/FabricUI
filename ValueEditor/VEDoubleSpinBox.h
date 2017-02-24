@@ -21,7 +21,8 @@ public:
   VEDoubleSpinBox();
   ~VEDoubleSpinBox();
 
-  QString textFromValue( double val ) const;
+  virtual QString textFromValue( double val ) const /*override*/;
+  virtual double valueFromText(const QString &text) const /*override*/;
 
   virtual double implicitLogBaseChangePerStep() /*override*/;
 
