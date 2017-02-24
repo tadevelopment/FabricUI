@@ -2,6 +2,7 @@
 
 #include "ResultsView.h"
 
+#include <FabricCore.h>
 #include <FTL/JSONValue.h>
 #include <iostream>
 #include <fstream>
@@ -9,25 +10,41 @@
 
 using namespace FabricUI::DFG::TabSearch;
 
-struct Tag
+struct JSONSerializable
 {
-  std::string name;
-  double score;
-  Tag() {}
-  Tag( const std::string& name, const double& score ) : name( name ), score( score ) {}
-  QString toString() const { return QString::fromStdString(name) + " [" + QString::number( score ) + "]" ; }
+  virtual FTL::JSONValue* toJSON() const = 0;
 };
 
-struct Preset
+struct NameAndScore : JSONSerializable
 {
   std::string name;
   double score;
-  Preset() {}
-  Preset( const std::string& name, const double& score ) : name( name ), score( score ) {}
+  NameAndScore() {}
+  NameAndScore( const std::string& name, const double& score )
+    : name( name ), score( score ) {}
   QString toString() const { return QString::fromStdString( name ) + " [" + QString::number( score ) + "]"; }
+  FTL::JSONValue* toJSON() const FTL_OVERRIDE
+  {
+    FTL::JSONObject* obj = new FTL::JSONObject();
+    obj->insert( "name", new FTL::JSONString( name ) );
+    obj->insert( "score", new FTL::JSONFloat64( score ) );
+    return obj;
+  }
 };
 
-struct Tags : public std::vector<Tag>
+struct Tag : NameAndScore
+{
+  Tag() {}
+  Tag( const std::string& name, const double& score ) : NameAndScore( name, score ) {}
+};
+
+struct Preset : NameAndScore
+{
+  Preset() {}
+  Preset( const std::string& name, const double& score ) : NameAndScore( name, score ) {}
+};
+
+struct Tags : public std::vector<Tag>, public JSONSerializable
 {
   inline void operator+=( const Tag& t )
   { this->push_back( t ); }
@@ -39,11 +56,18 @@ struct Tags : public std::vector<Tag>
       dst += it->toString() + " ";
     return dst;
   }
+  FTL::JSONValue* toJSON() const FTL_OVERRIDE
+  {
+    FTL::JSONArray* ar = new FTL::JSONArray();
+    for( const_iterator it = begin(); it < end(); it++ )
+      ar->push_back( it->toJSON() );
+    return ar;
+  }
 };
 
 // Variant : can be either a Preset, or T
 template<typename T>
-class PresetOr
+class PresetOr : JSONSerializable
 {
   enum Type { UNDEFINED, PRESET, OTHER } type;
   Preset preset;
@@ -64,6 +88,7 @@ public:
     this->preset = o.preset;
     this->other = o.other;
   }
+  inline bool isUndefined() const { return type == UNDEFINED; }
   inline bool isPreset() const { return type == PRESET; }
   inline Preset& getPreset()
   {
@@ -85,14 +110,31 @@ public:
     assert( type == OTHER );
     return other;
   }
+  FTL::JSONValue* toJSON() const FTL_OVERRIDE
+  {
+    if( type == UNDEFINED )
+      return new FTL::JSONString( "undefined" );
+    FTL::JSONObject* obj = new FTL::JSONObject();
+    obj->insert( "isPreset", new FTL::JSONBoolean( this->isPreset() ) );
+    obj->insert( "value", ( isPreset() ? getPreset().toJSON() : getOther().toJSON() ) );
+    return obj;
+  }
 };
 
 // Generic tree structure, used below
 template<typename T>
-struct Node
+struct Node : JSONSerializable
 {
   T value;
   std::vector<Node> children;
+
+  std::string toEncodedJSON() const
+  {
+    FTL::JSONValue* json = this->toJSON();
+    std::string dst = json->encode();
+    delete json;
+    return dst;
+  }
 
 protected:
   // Utilitary method to convert a Tree to another
@@ -104,14 +146,29 @@ protected:
     for( size_t i=0; i<o.children.size(); i++ )
       this->children[i].assign( o.children[i] );
   }
+  FTL::JSONValue* toJSON() const FTL_OVERRIDE
+  {
+    FTL::JSONObject* obj = new FTL::JSONObject();
+    obj->insert( "value", value.toJSON() );
+    FTL::JSONArray* ar = new FTL::JSONArray();
+    for( size_t i=0; i<children.size(); i++ )
+      ar->push_back( children[i].toJSON() );
+    obj->insert( "children", ar );
+    return obj;
+  }
 };
 
 typedef std::map<std::string, size_t> Indexes;
-struct TagAndMap
+struct TagAndMap : JSONSerializable
 {
   Tag tag;
   // Map from the name of to the index of a child
   Indexes tagIndexes;
+  FTL::JSONValue* toJSON() const FTL_OVERRIDE
+  {
+    // TODO
+    return tag.toJSON();
+  }
 };
 
 // First step : Temporary tree used to gather results by Tag
@@ -119,6 +176,8 @@ typedef Node< PresetOr< TagAndMap > > TmpNode;
 TmpNode& AddTag( TmpNode& t, const Tag& tag )
 {
   const std::string& key = tag.name;
+  if( t.value.isUndefined() )
+    t.value = TagAndMap();
   Indexes& indexes = t.value.getOther().tagIndexes;
   if( indexes.find( key ) == indexes.end() )
   {
@@ -139,6 +198,8 @@ struct ReducedNode : Node< PresetOr< Tags > >
     if( !tmpTI.value.isPreset() )
     {
       const TmpNode* n = &tmpTI;
+      if( this->value.isUndefined() )
+        this->value = Tags();
       this->value.getOther() += n->value.getOther().tag;
       // If there is a chain of items (Tag or Preset) with
       // only one child, merge them into a single Item
@@ -192,6 +253,77 @@ void ComputeParents( ModelNode& item )
     item.children[i].value.index = i;
     ComputeParents( static_cast<ModelNode&>( item.children[i] ) );
   }
+}
+
+TmpNode BuildResultTree( const std::string& searchResult )
+{
+  const FTL::JSONValue* json = FTL::JSONValue::Decode( searchResult.c_str() );
+  const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
+  const FTL::JSONArray* resultsJson = root->getArray( "results" );
+
+  TmpNode rootNode;
+  for( size_t i = 0; i < resultsJson->size(); i++ )
+  {
+    const FTL::JSONArray* result = resultsJson->getArray( i );
+    const FTL::JSONArray* tags = result->getArray( 2 );
+    TmpNode* node = &rootNode;
+    for( size_t j = 0; j < tags->size(); j++ )
+    {
+      const FTL::JSONObject* tagO = tags->getObject( j );
+      node = &AddTag( *node, Tag(
+        tagO->getString( "tag" ),
+        tagO->getFloat64( "weight" )
+      ) );
+    }
+    TmpNode newItem; newItem.value = Preset(
+      result->getString( 0 ),
+      result->getFloat64( 1 )
+    );
+    node->children.push_back( newItem );
+  }
+  return rootNode;
+}
+
+static void ReportCallBack(
+  void *userdata,
+  FEC_ReportSource source,
+  FEC_ReportLevel level,
+  char const *data,
+  uint32_t size
+)
+{
+  std::cout << std::string( data, size ).c_str() << std::endl;
+}
+
+void ResultsView::UnitTest( const std::string& logFolder )
+{
+  // Core Client
+  FabricCore::Client::CreateOptions createOptions = {};
+  createOptions.guarded = true;
+  FabricCore::Client client( &ReportCallBack, 0, &createOptions );
+  FabricCore::DFGHost host = client.getDFGHost();
+
+  const char* searchTerms[2] = { "Get", "Sphere" };
+
+  FEC_StringRef jsonStr = FEC_DFGHostSearchPresets(
+    host.getFECDFGHostRef(),
+    2,
+    searchTerms,
+    0,
+    NULL,
+    0,
+    32
+  );
+  FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
+  std::string json = jsonStrR;
+
+  std::ofstream( logFolder + "0_results.json" ) << json << std::endl;
+  TmpNode tmpNode = BuildResultTree( json );
+  std::ofstream( logFolder + "1_tmpNode.json" ) << tmpNode.toEncodedJSON() << std::endl;
+  ReducedNode redNode = tmpNode;
+  std::ofstream( logFolder + "2_reduced.json" ) << redNode.toEncodedJSON() << std::endl;
+  ModelNode modNode = redNode;
+  std::ofstream( logFolder + "3_final.json" ) << modNode.toEncodedJSON() << std::endl;
 }
 
 // Model for the TreeView
@@ -286,32 +418,7 @@ void ResultsView::selectionChanged()
 
 void ResultsView::setResults( const std::string& searchResult )
 {
-  const FTL::JSONValue* json = FTL::JSONValue::Decode( searchResult.c_str() );
-  const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
-  const FTL::JSONArray* resultsJson = root->getArray( "results" );
-
-  TmpNode rootNode;
-  for( size_t i = 0; i < resultsJson->size(); i++ )
-  {
-    const FTL::JSONArray* result = resultsJson->getArray( i );
-    const FTL::JSONArray* tags = result->getArray( 2 );
-    TmpNode* node = &rootNode;
-    for( size_t j = 0; j < tags->size(); j++ )
-    {
-      const FTL::JSONObject* tagO = tags->getObject( j );
-      node = &AddTag( *node, Tag(
-        tagO->getString( "tag" ),
-        tagO->getFloat64( "weight" )
-      ) );
-    }
-    TmpNode newItem; newItem.value = Preset(
-      result->getString( 0 ),
-      result->getFloat64( 1 )
-    );
-    node->children.push_back( newItem );
-  }
-
-  m_model->setRoot( rootNode );
+  m_model->setRoot( BuildResultTree( searchResult ) );
   this->expandAll();
 
   if( m_model->rowCount() > 0 )
@@ -320,7 +427,6 @@ void ResultsView::setResults( const std::string& searchResult )
     if( m_model->isPreset( firstEntry ) )
       this->setCurrentIndex( firstEntry );
   }
-
 }
 
 QString ResultsView::getSelectedPreset()
