@@ -91,6 +91,9 @@ GraphConfig::GraphConfig()
   // If the default value is changed, it should also be updated there (see FabricUI/Util/Config.cpp)
   GET_PARAMETER( mainPanelBackgroundColor, QColor(68, 68, 68, 255) );
 
+  GET_PARAMETER( mainPanelHotkeyZoomBackgroundColor, QColor(56, 56, 56, 255) );
+  GET_PARAMETER( mainPanelHotkeyZoomBorderColor, QColor(255, 255, 255, 160) );
+
   GET_PARAMETER( mainPanelDrawGrid, true );
   GET_PARAMETER( mainPanelGridSpan, 30 );
   GET_PARAMETER( mainPanelGridSnap, false );

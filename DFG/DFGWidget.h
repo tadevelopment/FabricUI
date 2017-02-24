@@ -535,7 +535,6 @@ namespace DFG {
         bool enable = true )
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
-        , m_createWhat( createWhat )
       {
         m_portname = "noname";
         switch (createWhat)
@@ -569,7 +568,6 @@ namespace DFG {
     private:
 
       DFGWidget *m_dfgWidget;
-      int m_createWhat;
       QString m_portname;
     };
 

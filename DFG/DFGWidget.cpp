@@ -1708,6 +1708,7 @@ void DFGWidget::keyPressEvent(QKeyEvent * event)
         || m_uiController->allNodesAreVisible() )
     {
       m_uiGraphZoomBeforeQuickZoom = -1;
+      getGraphViewWidget()->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
     }
     else
     {
@@ -1720,11 +1721,9 @@ void DFGWidget::keyPressEvent(QKeyEvent * event)
       if ( jsonValue )
       {
         FTL::JSONObject const *jsonObject = jsonValue->cast<FTL::JSONObject>();
-        m_uiGraphZoomBeforeQuickZoom =
-          jsonObject->getFloat64( FTL_STR("value") );
+        m_uiGraphZoomBeforeQuickZoom = jsonObject->getFloat64( FTL_STR("value") );
+        getGraphViewWidget()->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
       }
-      // qDebug() << "m_uiGraphZoomBeforeQuickZoom " << m_uiGraphZoomBeforeQuickZoom;
-
       m_uiController->frameAllNodes();
     }
 
@@ -1747,10 +1746,10 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
   {
     event->accept();
 
+    GraphView::GraphViewWidget *graphViewWidget = getGraphViewWidget();
     if (m_uiGraphZoomBeforeQuickZoom > 0)
     {
       QPoint globalPos = QCursor::pos();
-      GraphView::GraphViewWidget *graphViewWidget = getGraphViewWidget();
       QRect graphViewWidgetRect = graphViewWidget->geometry();
       QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
       // [pz 20160724] Constraint point to widget geometry
@@ -1779,6 +1778,8 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
     }
 
     m_uiGraphZoomBeforeQuickZoom = 0;
+    graphViewWidget->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
+    graphViewWidget->update();
 
     return;
   }
