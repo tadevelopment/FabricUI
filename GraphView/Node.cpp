@@ -404,8 +404,14 @@ void Node::reorderPins(QStringList names)
   updatePinLayout();
 }
 
-std::vector<Node*> Node::upStreamNodes(bool sortForPins, std::vector<Node*> rootNodes)
+std::vector<Node*> Node::upStreamNodes_deprecated(bool sortForPins, std::vector<Node*> rootNodes)
 {
+  /*
+    [FE-7239] / [.TECHDEBT]
+    this function (and the weird members m_row & co) can be removed once
+    DFGController::relaxNodes() has been entirely rewritten (see FE-3680).
+  */
+
   int maxCol = 0;
 
   std::vector<GraphView::Node*> allNodes = graph()->nodes();
@@ -604,7 +610,7 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
 
 void Node::selectUpStreamNodes()
 {
-  std::vector<Node*> nodes = upStreamNodes();
+  std::vector<Node*> nodes = upStreamNodes_deprecated();
 
   for ( size_t i = 0; i<nodes.size(); i++ )
     graph()->controller()->selectNode( nodes[i], true );
