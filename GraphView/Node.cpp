@@ -404,7 +404,18 @@ void Node::reorderPins(QStringList names)
   updatePinLayout();
 }
 
-std::vector<Node*> Node::upStreamNodes_deprecated(bool sortForPins, std::vector<Node*> rootNodes)
+std::vector<Node *> Node::upStreamNodes()
+{
+  std::vector<Node *> upStreamNodes;
+
+  // the first upstream node is this.
+  upStreamNodes.push_back(this);
+
+  // return the result.
+  return upStreamNodes
+}
+
+std::vector<Node *> Node::upStreamNodes_deprecated(bool sortForPins, std::vector<Node *> rootNodes)
 {
   /*
     [FE-7239] / [.TECHDEBT]

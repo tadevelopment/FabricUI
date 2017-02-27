@@ -191,7 +191,8 @@ namespace FabricUI
       void renameInstBlockAtIndex( unsigned index, FTL::StrRef newName );
       void removeInstBlockAtIndex( unsigned index );
 
-      virtual std::vector<Node*> upStreamNodes_deprecated(bool sortForPins = false, std::vector<Node*> rootNodes = std::vector<Node*>());
+      virtual std::vector<Node *> upStreamNodes();
+      virtual std::vector<Node *> upStreamNodes_deprecated(bool sortForPins = false, std::vector<Node*> rootNodes = std::vector<Node*>());
       // temporary information around row and col
       virtual int row() const;
       virtual void setRow(int i);
