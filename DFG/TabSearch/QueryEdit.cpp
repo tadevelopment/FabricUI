@@ -2,6 +2,8 @@
 
 #include "QueryEdit.h"
 
+#include <iostream>
+
 using namespace FabricUI::DFG::TabSearch;
 
 QueryEdit::QueryEdit()
@@ -19,4 +21,9 @@ void QueryEdit::onTextChanged( const QString& text )
 {
   m_query.text = text.toStdString();
   emit queryChanged( m_query );
+}
+
+void QueryEdit::requestTag( QString tag )
+{
+  std::cout << "request tag : " << tag.toStdString() << std::endl;
 }

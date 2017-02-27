@@ -497,7 +497,7 @@ void ResultsView::keyPressEvent( QKeyEvent * event )
 
 struct TagsView : public QWidget
 {
-  TagsView( const Tags& tags )
+  TagsView( const Tags& tags, const ResultsView& view )
   {
     m_layout = new QHBoxLayout();
     for( size_t i = 0; i < tags.size(); i++ )
@@ -505,6 +505,10 @@ struct TagsView : public QWidget
       TagView* w = new TagView( tags[i].name );
       w->setScore( tags[i].score );
       m_layout->addWidget( w );
+      connect(
+        w, SIGNAL( activated( QString ) ),
+        &view, SIGNAL( tagRequested( QString ) )
+      );
     }
     m_layout->setMargin( 0 );
     m_layout->setAlignment( Qt::AlignLeft );
@@ -528,7 +532,7 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     }
     else
     {
-      widget = new TagsView( m_model->getTags( index ) );
+      widget = new TagsView( m_model->getTags( index ), *this );
     }
     assert( widget != NULL );
     widget->setMaximumHeight( sizeHintForIndex( index ).height() );

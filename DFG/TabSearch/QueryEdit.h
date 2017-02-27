@@ -25,6 +25,9 @@ namespace FabricUI
       public:
         QueryEdit();
 
+      public slots:
+        void requestTag( QString tag );
+
       signals:
         void queryChanged( const TabSearch::Query& query );
 

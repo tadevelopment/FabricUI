@@ -39,6 +39,14 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     m_resultsView, SIGNAL( presetValidated( QString ) ),
     this, SLOT( close() )
   );
+  connect(
+    m_resultsView, SIGNAL( tagRequested( QString ) ),
+    m_queryEdit, SLOT( requestTag( QString ) )
+  );
+  connect(
+    m_resultsView, SIGNAL( presetDeselected() ),
+    this, SLOT( hidePreview() )
+  );
 
   vlayout->setMargin( 0 );
   vlayout->setSpacing( 0 );
@@ -165,8 +173,8 @@ void DFGPresetSearchWidget::setPreview( QString preset )
     m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
     layout()->addWidget( m_resultPreview );
     connect(
-      m_resultsView, SIGNAL( presetDeselected() ),
-      this, SLOT( hidePreview() )
+      m_resultPreview, SIGNAL( tagRequested( QString ) ),
+      m_queryEdit, SLOT( requestTag( QString ) )
     );
   }
 }

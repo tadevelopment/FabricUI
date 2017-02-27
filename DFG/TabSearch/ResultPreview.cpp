@@ -46,7 +46,14 @@ ResultPreview::ResultPreview( QString preset, DFGHost* host )
     FTL::JSONArray* tagsA = tags->cast<FTL::JSONArray>();
 
     for( FTL::JSONArray::const_iterator it = tagsA->begin(); it != tagsA->end(); it++ )
-      layout->addWidget( new TagView( (*it)->getStringValue() ) );
+    {
+      TagView* tagView = new TagView( ( *it )->getStringValue() );
+      connect(
+        tagView, SIGNAL( activated( QString ) ),
+        this, SIGNAL( tagRequested( QString ) )
+      );
+      layout->addWidget( tagView );
+    }
   }
 
   layout->setAlignment( Qt::AlignTop );

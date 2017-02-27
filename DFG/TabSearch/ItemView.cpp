@@ -3,15 +3,33 @@
 #include "ItemView.h"
 
 #include <QLayout>
+#include <QLabel>
+#include <QPushButton>
 
 using namespace FabricUI::DFG::TabSearch;
 
 TagView::TagView( const std::string& tagName )
-  : QPushButton( QString::fromStdString( tagName ) )
+  : m_name( QString::fromStdString( tagName ) )
 {
+  QHBoxLayout* lay = new QHBoxLayout();
+  lay->setMargin( 0 );
+  QPushButton* button = new QPushButton( QString::fromStdString( tagName ) );
+  button->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
+  button->setContentsMargins( QMargins( 0, 0, 0, 0 ) );
+  button->setStyleSheet( "background-color: rgba( 50, 30, 0, 50 );" );
+  lay->addWidget( button );
+  this->setLayout( lay );
+
+  connect(
+    button, SIGNAL( released() ),
+    this, SLOT( onActivated() )
+  );
   this->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
-  this->setContentsMargins( QMargins( 0, 0, 0, 0 ) );
-  this->setStyleSheet( "background-color: rgba( 50, 30, 0, 50 );" );
+}
+
+void TagView::onActivated()
+{
+  emit activated( m_name );
 }
 
 void TagView::setScore( double score )

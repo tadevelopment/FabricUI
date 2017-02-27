@@ -24,6 +24,10 @@ namespace FabricUI
         ResultPreview( QString preset, FabricCore::DFGHost* host );
         QString getPreset() const;
 
+      signals:
+        // Emitted when a Tag has been requested
+        void tagRequested( QString tag );
+
       private:
         QString m_preset;
       };

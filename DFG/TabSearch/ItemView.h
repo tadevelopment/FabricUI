@@ -3,8 +3,9 @@
 #ifndef __UI_DFG_TabSearch_ItemView__
 #define __UI_DFG_TabSearch_ItemView__
 
-#include <QLabel>
-#include <QPushButton>
+#include <QWidget>
+
+class QLabel;
 
 namespace FabricUI
 {
@@ -12,7 +13,7 @@ namespace FabricUI
   {
     namespace TabSearch
     {
-      class TagView : public QPushButton
+      class TagView : public QWidget
       {
         Q_OBJECT
 
@@ -21,7 +22,13 @@ namespace FabricUI
         void setScore( double score );
 
       signals:
-        void clicked( QString name );
+        void activated( QString name );
+
+      private slots:
+        void onActivated();
+
+      private:
+        QString m_name;
       };
 
       class PresetView : public QWidget
