@@ -3,7 +3,8 @@
 #ifndef __UI_DFG_TabSearch_QueryEdit__
 #define __UI_DFG_TabSearch_QueryEdit__
 
-#include <QLineEdit>
+#include <QWidget>
+#include <unordered_map>
 
 namespace FabricUI
 {
@@ -11,14 +12,34 @@ namespace FabricUI
   {
     namespace TabSearch
     {
-      struct Query
+      // Model
+      struct Query : public QObject
       {
+        Q_OBJECT
+
+      public:
         typedef std::vector<std::string> Tags;
-        std::string text;
-        Tags tags;
+        inline const std::string& getText() const { return m_text; }
+        inline const Tags getTags() const { return m_orderedTags; }
+
+      public slots:
+        inline void setText( const std::string& text ) { m_text = text; emit changed(); }
+        void addTag( const std::string& tag );
+        void removeTag( const std::string& tag );
+        void clear();
+
+      signals:
+        void changed();
+
+      private:
+        std::string m_text;
+        Tags m_orderedTags;
+        typedef std::unordered_map<std::string, size_t> TagMap;
+        TagMap m_tagMap;
       };
 
-      class QueryEdit : public QLineEdit
+      // View
+      class QueryEdit : public QWidget
       {
         Q_OBJECT
 
@@ -26,16 +47,21 @@ namespace FabricUI
         QueryEdit();
 
       public slots:
-        void requestTag( QString tag );
+        void requestTag( const std::string& tag );
+        void clear();
 
       signals:
         void queryChanged( const TabSearch::Query& query );
 
       private slots:
         void onTextChanged( const QString& text );
+        void onQueryChanged();
+        void updateTagsView();
 
       private:
         Query m_query;
+        class TagsView;
+        TagsView* m_tagsView;
       };
     }
   };

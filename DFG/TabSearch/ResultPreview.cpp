@@ -49,8 +49,8 @@ ResultPreview::ResultPreview( QString preset, DFGHost* host )
     {
       TagView* tagView = new TagView( ( *it )->getStringValue() );
       connect(
-        tagView, SIGNAL( activated( QString ) ),
-        this, SIGNAL( tagRequested( QString ) )
+        tagView, SIGNAL( activated( const std::string& ) ),
+        this, SIGNAL( tagRequested( const std::string& ) )
       );
       layout->addWidget( tagView );
     }

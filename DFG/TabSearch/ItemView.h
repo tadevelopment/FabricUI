@@ -22,13 +22,13 @@ namespace FabricUI
         void setScore( double score );
 
       signals:
-        void activated( QString name );
+        void activated( const std::string& name );
 
       private slots:
         void onActivated();
 
       private:
-        QString m_name;
+        std::string m_name;
       };
 
       class PresetView : public QWidget

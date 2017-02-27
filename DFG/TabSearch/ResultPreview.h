@@ -26,7 +26,7 @@ namespace FabricUI
 
       signals:
         // Emitted when a Tag has been requested
-        void tagRequested( QString tag );
+        void tagRequested( const std::string& tag );
 
       private:
         QString m_preset;

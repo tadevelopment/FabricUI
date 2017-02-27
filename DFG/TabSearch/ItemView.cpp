@@ -9,7 +9,7 @@
 using namespace FabricUI::DFG::TabSearch;
 
 TagView::TagView( const std::string& tagName )
-  : m_name( QString::fromStdString( tagName ) )
+  : m_name( tagName )
 {
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );

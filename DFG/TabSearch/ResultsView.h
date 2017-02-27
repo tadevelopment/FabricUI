@@ -40,7 +40,7 @@ namespace FabricUI
         // Emitted when a preset has been chosen
         void presetValidated( QString preset );
         // Emitted when a Tag has been requested
-        void tagRequested( QString tag );
+        void tagRequested( const std::string& tag );
 
       private slots:
       

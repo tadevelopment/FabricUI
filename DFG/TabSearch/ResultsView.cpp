@@ -453,7 +453,7 @@ ResultsView::ResultsView()
 
 ResultsView::~ResultsView()
 {
-  delete m_model;
+  m_model->deleteLater();
 }
 
 void ResultsView::validateSelection()
@@ -506,8 +506,8 @@ struct TagsView : public QWidget
       w->setScore( tags[i].score );
       m_layout->addWidget( w );
       connect(
-        w, SIGNAL( activated( QString ) ),
-        &view, SIGNAL( tagRequested( QString ) )
+        w, SIGNAL( activated( const std::string& ) ),
+        &view, SIGNAL( tagRequested( const std::string& ) )
       );
     }
     m_layout->setMargin( 0 );

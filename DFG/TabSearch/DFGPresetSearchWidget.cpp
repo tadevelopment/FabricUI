@@ -40,8 +40,8 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     this, SLOT( close() )
   );
   connect(
-    m_resultsView, SIGNAL( tagRequested( QString ) ),
-    m_queryEdit, SLOT( requestTag( QString ) )
+    m_resultsView, SIGNAL( tagRequested( const std::string& ) ),
+    m_queryEdit, SLOT( requestTag( const std::string& ) )
   );
   connect(
     m_resultsView, SIGNAL( presetDeselected() ),
@@ -78,6 +78,8 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
     case Qt::Key_Up :
     case Qt::Key_Down :
       m_resultsView->keyPressEvent( event ); break;
+    case Qt::Key_Tab :
+      close();
     default:
       Parent::keyPressEvent( event );
   }
@@ -86,7 +88,7 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
 void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 {
   // Splitting the search string into a char**
-  const std::string searchStr = query.text;
+  const std::string searchStr = query.getText();
 
   std::vector<std::string> searchTermsStr;
   unsigned int start = 0;
@@ -116,9 +118,10 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
     searchTerms[i] = searchTermsStr[i].data();
 
   std::vector<char const *> requiredTags;
-  requiredTags.resize( query.tags.size() );
-  for( size_t i=0; i<query.tags.size(); i++ )
-    requiredTags[i] = query.tags[i].data();
+  const TabSearch::Query::Tags& queryTags = query.getTags();
+  requiredTags.resize( queryTags.size() );
+  for( size_t i=0; i<queryTags.size(); i++ )
+    requiredTags[i] = queryTags[i].data();
 
   // Querying the DataBase of presets
   FabricCore::DFGHost* host = m_host;
@@ -132,8 +135,6 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
     8
   );
   FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
-
-  hidePreview();
 
   m_resultsView->setResults( jsonStrR );
 }
@@ -151,7 +152,6 @@ void DFGPresetSearchWidget::hideEvent( QHideEvent* e )
 
 bool DFGPresetSearchWidget::focusNextPrevChild( bool next )
 {
-  this->close();
   return false;
 }
 
@@ -160,7 +160,7 @@ void DFGPresetSearchWidget::hidePreview()
   if( m_resultPreview != NULL )
   {
     layout()->removeWidget( m_resultPreview );
-    delete m_resultPreview;
+    m_resultPreview->deleteLater();
     m_resultPreview = NULL;
   }
 }
@@ -173,15 +173,15 @@ void DFGPresetSearchWidget::setPreview( QString preset )
     m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
     layout()->addWidget( m_resultPreview );
     connect(
-      m_resultPreview, SIGNAL( tagRequested( QString ) ),
-      m_queryEdit, SLOT( requestTag( QString ) )
+      m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
+      m_queryEdit, SLOT( requestTag( const std::string& ) )
     );
   }
 }
 
 void DFGPresetSearchWidget::close()
 {
-  m_queryEdit->setText( "" );
+  m_queryEdit->clear();
   emit enabled( false );
   if( !this->isHidden() )
     this->hide();
