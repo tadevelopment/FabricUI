@@ -24,6 +24,8 @@ namespace FabricUI
         ~ResultsView();
         void keyPressEvent( QKeyEvent * ) FTL_OVERRIDE;
 
+      static void UnitTest( const std::string& logFolder = "./" );
+
       public slots:
         // Sets the result of Search, to be displayed
         void setResults( const std::string& searchResult );
