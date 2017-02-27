@@ -56,12 +56,14 @@ namespace FabricUI
       private slots:
         void onTextChanged( const QString& text );
         void onQueryChanged();
-        void updateTagsView();
+        void updateTagsEdit();
 
       private:
         Query m_query;
-        class TagsView;
-        TagsView* m_tagsView;
+        class TagsEdit;
+        TagsEdit* m_tagsEdit;
+        class TextEdit;
+        TextEdit* m_textEdit;
       };
     }
   };

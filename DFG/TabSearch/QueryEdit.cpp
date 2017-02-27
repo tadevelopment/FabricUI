@@ -11,10 +11,10 @@
 
 using namespace FabricUI::DFG::TabSearch;
 
-class QueryEdit::TagsView : public QWidget
+class QueryEdit::TagsEdit : public QWidget
 {
 public:
-  TagsView( const Query& query )
+  TagsEdit( const Query& query )
   {
     QHBoxLayout* m_layout = new QHBoxLayout();
     m_layout->setMargin( 0 );
@@ -33,6 +33,11 @@ public:
   }
 };
 
+class QueryEdit::TextEdit : public QLineEdit
+{
+
+};
+
 QueryEdit::QueryEdit()
 {
   QFont font; font.setPointSize( 16 );
@@ -41,10 +46,10 @@ QueryEdit::QueryEdit()
   QHBoxLayout* m_layout = new QHBoxLayout();
   this->setLayout( m_layout );
 
-  m_tagsView = new TagsView( m_query );
-  this->layout()->addWidget( m_tagsView );
+  m_tagsEdit = new TagsEdit( m_query );
+  this->layout()->addWidget( m_tagsEdit );
 
-  QLineEdit* m_textEdit = new QLineEdit();
+  m_textEdit = new TextEdit();
   connect(
     m_textEdit, SIGNAL( textChanged( const QString& ) ),
     this, SLOT( onTextChanged( const QString& ) )
@@ -114,17 +119,22 @@ void QueryEdit::clear()
   m_query.clear();
 }
 
-void QueryEdit::updateTagsView()
+void QueryEdit::updateTagsEdit()
 {
-  TagsView* newTagsView = new TagsView( m_query );
-  layout()->replaceWidget( m_tagsView, newTagsView );
-  m_tagsView->deleteLater();
-  m_tagsView = newTagsView;
+  // Remove the widgets from the layout
+  layout()->removeWidget( m_tagsEdit );
+  layout()->removeWidget( m_textEdit );
+  // Delete the TagsEdit and create a new one
+  m_tagsEdit->deleteLater();
+  m_tagsEdit = new TagsEdit( m_query );
+  // Put back the widgets (in the right order)
+  layout()->addWidget( m_tagsEdit );
+  layout()->addWidget( m_textEdit );
   this->layout()->setSpacing( m_query.getTags().size() == 0 ? 0 : -1 );
 }
 
 void QueryEdit::onQueryChanged()
 {
-  updateTagsView();
+  updateTagsEdit();
   emit queryChanged( m_query );
 }
