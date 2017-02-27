@@ -37,6 +37,7 @@ add_executable(
   ../QueryEdit.cpp
   ../ResultsView.cpp
   ../ResultPreview.cpp
+  ../ItemView.cpp
   Moc.cpp
   Main.cpp
   )

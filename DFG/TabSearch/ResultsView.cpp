@@ -2,6 +2,10 @@
 
 #include "ResultsView.h"
 
+#include "ItemView.h"
+
+#include <QLayout>
+
 #include <FabricCore.h>
 #include <FTL/JSONValue.h>
 #include <iostream>
@@ -91,6 +95,7 @@ public:
   }
   inline bool isUndefined() const { return type == UNDEFINED; }
   inline bool isPreset() const { return type == PRESET; }
+  inline bool isOther() const { return type == OTHER; }
   inline Preset& getPreset()
   {
     assert( type == PRESET );
@@ -386,8 +391,11 @@ public:
   inline bool isPreset( const QModelIndex& index ) const
   { return cast( index )->value.isPreset(); }
 
-  QString getPresetName( const QModelIndex& index ) const
-  { return QString::fromStdString( cast( index )->value.getPreset().name ); }
+  const Preset& getPreset( const QModelIndex& index ) const
+  { return cast( index )->value.getPreset(); }
+
+  const Tags& getTags( const QModelIndex& index ) const
+  { return cast( index )->value.getOther(); }
 
   QModelIndex index( int row, int column, const QModelIndex & parent = QModelIndex() ) const FTL_OVERRIDE
   {
@@ -412,8 +420,9 @@ public:
   int columnCount( const QModelIndex & parent = QModelIndex() ) const FTL_OVERRIDE { return 1; }
   QVariant data( const QModelIndex & index, int role = Qt::DisplayRole ) const FTL_OVERRIDE
   {
-    return ( index.isValid() && role == Qt::DisplayRole ?
-      cast( index )->value.toString() : QVariant() );
+    //return ( index.isValid() && role == Qt::DisplayRole ?
+    //  cast( index )->value.toString() : QVariant() );
+    return QVariant();
   }
 
   void setRoot( const TmpNode& root ) {
@@ -472,15 +481,61 @@ void ResultsView::setResults( const std::string& searchResult )
     if( m_model->isPreset( firstEntry ) )
       this->setCurrentIndex( firstEntry );
   }
+  replaceViewItems();
 }
 
 QString ResultsView::getSelectedPreset()
 {
   assert( m_model->isPreset( currentIndex() ) );
-  return m_model->getPresetName( currentIndex() );
+  return QString::fromStdString( m_model->getPreset( currentIndex() ).name );
 }
 
 void ResultsView::keyPressEvent( QKeyEvent * event )
 {
   Parent::keyPressEvent( event );
+}
+
+struct TagsView : public QWidget
+{
+  TagsView( const Tags& tags )
+  {
+    m_layout = new QHBoxLayout();
+    for( size_t i = 0; i < tags.size(); i++ )
+    {
+      TagView* w = new TagView( tags[i].name );
+      w->setScore( tags[i].score );
+      m_layout->addWidget( w );
+    }
+    m_layout->setMargin( 0 );
+    m_layout->setAlignment( Qt::AlignLeft );
+    this->setLayout( m_layout );
+  }
+  QHBoxLayout* m_layout;
+};
+
+void ResultsView::replaceViewItems( const QModelIndex& index )
+{
+  // Setting a QWidget accordingly
+  if( index.isValid() )
+  {
+    QWidget* widget = NULL;
+    if( m_model->isPreset( index ) )
+    {
+      const Preset& preset = m_model->getPreset( index );
+      PresetView* w = new PresetView( preset.name );
+      w->setScore( preset.score );
+      widget = w;
+    }
+    else
+    {
+      widget = new TagsView( m_model->getTags( index ) );
+    }
+    assert( widget != NULL );
+    widget->setMaximumHeight( sizeHintForIndex( index ).height() );
+    setIndexWidget( index, widget );
+  }
+
+  // Applying recursively to the children
+  for( size_t i = 0; i < model()->rowCount( index ); i++ )
+    replaceViewItems( model()->index( i, 0, index ) );
 }

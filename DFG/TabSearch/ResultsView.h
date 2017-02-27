@@ -39,12 +39,15 @@ namespace FabricUI
         void presetSelected( QString preset );
         // Emitted when a preset has been chosen
         void presetValidated( QString preset );
+        // Emitted when a Tag has been requested
+        void tagRequested( QString tag );
 
       private slots:
       
         void onSelectionChanged();
 
       private:
+        void replaceViewItems( const QModelIndex& parent = QModelIndex() );
         QString getSelectedPreset();
         class Model;
         Model* m_model;

@@ -2,6 +2,8 @@
 
 #include "ResultPreview.h"
 
+#include "ItemView.h"
+
 #include <FabricCore.h>
 #include <iostream>
 #include <QLayout>
@@ -44,7 +46,7 @@ ResultPreview::ResultPreview( QString preset, DFGHost* host )
     FTL::JSONArray* tagsA = tags->cast<FTL::JSONArray>();
 
     for( FTL::JSONArray::const_iterator it = tagsA->begin(); it != tagsA->end(); it++ )
-      layout->addWidget( new QLabel( QString::fromStdString( (*it)->getStringValue() ) ) );
+      layout->addWidget( new TagView( (*it)->getStringValue() ) );
   }
 
   layout->setAlignment( Qt::AlignTop );
