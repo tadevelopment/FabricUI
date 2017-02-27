@@ -1598,7 +1598,7 @@ void DFGWidget::exportGraph( const char *nodeName )
     lastPresetFolder += "/" + title;
   }
 
-  QString filter = "DFG Preset (*.canvas)";
+  QString filter = "Canvas Preset (*.canvas)";
   QString filePath = QFileDialog::getSaveFileName(this, "Export graph", lastPresetFolder, filter, &filter);
   if(filePath.length() == 0)
     return;
