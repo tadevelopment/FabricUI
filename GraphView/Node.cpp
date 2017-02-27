@@ -412,7 +412,7 @@ std::vector<Node *> Node::upStreamNodes()
   upStreamNodes.push_back(this);
 
   // return the result.
-  return upStreamNodes
+  return upStreamNodes;
 }
 
 std::vector<Node *> Node::upStreamNodes_deprecated(bool sortForPins, std::vector<Node *> rootNodes)
