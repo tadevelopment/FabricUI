@@ -54,6 +54,7 @@ namespace FabricUI
         void requestTags( const std::vector<std::string>& tags );
         void deselectTags();
         void clear();
+        void removeHighlightedTag();
 
       signals:
         void queryChanged( const TabSearch::Query& query );
@@ -65,7 +66,6 @@ namespace FabricUI
         void onQueryChanged();
         void updateTagsEdit();
         void updateTagHighlight();
-        void removeHighlightedTag();
 
       private:
 

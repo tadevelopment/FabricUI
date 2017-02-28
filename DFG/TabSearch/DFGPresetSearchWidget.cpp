@@ -157,6 +157,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 void DFGPresetSearchWidget::validateSelection()
 {
   m_resultsView->validateSelection();
+  m_queryEdit->removeHighlightedTag();
 }
 
 void DFGPresetSearchWidget::hideEvent( QHideEvent* e )
