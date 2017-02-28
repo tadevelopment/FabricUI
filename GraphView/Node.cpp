@@ -404,14 +404,42 @@ void Node::reorderPins(QStringList names)
   updatePinLayout();
 }
 
-std::vector<Node *> Node::upStreamNodes()
+void Node::getUpStreamNodes_recursive(Node *node, std::vector<Connection *> &connections, std::map<Node *, Node *> &ioVisitedNodes, std::vector<Node *> &ioUpStreamNodes)
 {
-  std::vector<Node *> upStreamNodes;
+  if (   node == NULL
+      || ioVisitedNodes.find(node) != ioVisitedNodes.end() )
+    return;
 
-  // the first upstream node is this.
-  upStreamNodes.push_back(this);
+  ioVisitedNodes.insert(std::pair<Node *, Node *>(node, node));
+  ioUpStreamNodes.push_back(node);
 
-  // return the result.
+  for (unsigned int i=0;i<node->pinCount();i++)
+  {
+    Pin *pin = node->pin(i);
+    for (size_t j=0;j<connections.size();j++)
+    {
+      ConnectionTarget *src = connections[j]->src();
+      ConnectionTarget *dst = connections[j]->dst();
+
+      if (dst != pin || src == NULL)
+        continue;
+
+      if (src->targetType() == TargetType_Pin)
+        getUpStreamNodes_recursive(((Pin *)src)->node(), connections, ioVisitedNodes, ioUpStreamNodes);
+    }
+  }
+}
+
+std::vector<Node *> Node::getUpStreamNodes()
+{
+  // init.
+  std::vector<Node *>      upStreamNodes;
+  std::map<Node *, Node *> visitedNodes;
+
+  // do it.
+  getUpStreamNodes_recursive(this, graph()->connections(), visitedNodes, upStreamNodes);
+
+  // done.
   return upStreamNodes;
 }
 
@@ -419,7 +447,7 @@ std::vector<Node *> Node::upStreamNodes_deprecated(bool sortForPins, std::vector
 {
   /*
     [FE-7239] / [.TECHDEBT]
-    this function (and the weird members m_row & co) can be removed once
+    This function (and the weird members m_row & co) can be removed once
     DFGController::relaxNodes() has been entirely rewritten (see FE-3680).
   */
 
@@ -621,7 +649,7 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
 
 void Node::selectUpStreamNodes()
 {
-  std::vector<Node*> nodes = upStreamNodes_deprecated();
+  std::vector<Node *> nodes = getUpStreamNodes();
 
   for ( size_t i = 0; i<nodes.size(); i++ )
     graph()->controller()->selectNode( nodes[i], true );

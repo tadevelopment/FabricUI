@@ -16,6 +16,7 @@
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/GraphicItemTypes.h>
+#include <FabricUI/GraphView/Connection.h>
 
 #include <vector>
 
@@ -191,7 +192,7 @@ namespace FabricUI
       void renameInstBlockAtIndex( unsigned index, FTL::StrRef newName );
       void removeInstBlockAtIndex( unsigned index );
 
-      virtual std::vector<Node *> upStreamNodes();
+      std::vector<Node *> getUpStreamNodes();
       virtual std::vector<Node *> upStreamNodes_deprecated(bool sortForPins = false, std::vector<Node*> rootNodes = std::vector<Node*>());
       // temporary information around row and col
       virtual int row() const;
@@ -250,6 +251,9 @@ namespace FabricUI
       bool onMouseDoubleClicked( const QGraphicsSceneMouseEvent *event );
 
       void contextMenuEvent( QGraphicsSceneContextMenuEvent * event ) FTL_OVERRIDE;
+
+      // used by getUpStreamNodes().
+      static void getUpStreamNodes_recursive(Node *node, std::vector<Connection *> &connections, std::map<Node *, Node *> &ioVisitedNodes, std::vector<Node *> &ioUpStreamNodes);
 
       Graph * m_graph;
       NodeType m_nodeType;
