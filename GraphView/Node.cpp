@@ -456,11 +456,12 @@ void Node::getUpStreamNodes_recursive(Node *node, std::vector<Connection *> &con
 std::vector<Node *> Node::getUpStreamNodes()
 {
   // init.
-  std::vector<Node *>      upStreamNodes;
-  std::map<Node *, Node *> visitedNodes;
+  std::vector<Node *>       upStreamNodes;
+  std::map<Node *, Node *>  visitedNodes;
+  std::vector<Connection *> connections = graph()->connections();
 
   // do it.
-  getUpStreamNodes_recursive((Node *)this, graph()->connections(), visitedNodes, upStreamNodes);
+  getUpStreamNodes_recursive((Node *)this, connections, visitedNodes, upStreamNodes);
 
   // done.
   return upStreamNodes;
