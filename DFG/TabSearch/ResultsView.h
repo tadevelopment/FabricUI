@@ -34,6 +34,8 @@ namespace FabricUI
         void setResults( const std::string& searchResult );
         // Tells that we accept the current selection (on Key_Enter, for example)
         void validateSelection();
+        // Removes the current selection
+        void clearSelection();
 
       signals:
         // Emitted when the selection is moved to a non-preset
@@ -45,6 +47,8 @@ namespace FabricUI
         // Emitted when a Tag has been requested
         void tagRequested( const std::string& tag );
         void tagsRequested( const std::vector<std::string>& tags );
+        // Emitted when moving to a valid selection
+        void selectingItems();
 
       protected slots:
       

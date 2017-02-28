@@ -57,7 +57,12 @@ protected:
   void keyPressEvent( QKeyEvent * e ) FTL_OVERRIDE
   {
     if( e->key() == Qt::Key_Backspace )
-      m_parent->removeHighlightedTag();
+    {
+      if( m_parent->m_highlightedTag == -1 && cursorPosition() == 0 )
+        m_parent->m_highlightedTag = m_parent->m_query.getTags().size() - 1;
+      else
+        m_parent->removeHighlightedTag();
+    }
 
     // Navigating in the Tags with the arrow keys
     if( cursorPosition() == 0 && e->key() == Qt::Key_Right )
@@ -70,6 +75,9 @@ protected:
     else
     if( cursorPosition() == 0 && e->key() == Qt::Key_Left )
     {
+      if( m_parent->m_highlightedTag == -1 )
+        m_parent->m_highlightedTag = m_parent->m_query.getTags().size() - 1;
+      else
       // stop at the leftmost tag (since -1 is reserved)
       if( m_parent->m_highlightedTag > 0 )
         m_parent->m_highlightedTag--;
@@ -179,9 +187,15 @@ void QueryEdit::updateTagHighlight()
   // remove the highlight
   if( m_textEdit->cursorPosition() > 0 || m_highlightedTag >= int(m_query.getTags().size()) )
     m_highlightedTag = -1;
-  else
-  if( m_highlightedTag == -1 ) // We are at the beginning, but there is no highlight
-    m_highlightedTag = m_query.getTags().size()-1; // So we highlight the last tag
+
+  m_tagsEdit->setHighlightedTag( m_highlightedTag );
+  if( m_highlightedTag != -1 )
+    emit selectingTags();
+}
+
+void QueryEdit::deselectTags()
+{
+  m_highlightedTag = -1;
   m_tagsEdit->setHighlightedTag( m_highlightedTag );
 }
 

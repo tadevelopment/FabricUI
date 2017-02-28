@@ -52,10 +52,13 @@ namespace FabricUI
       public slots:
         void requestTag( const std::string& tag );
         void requestTags( const std::vector<std::string>& tags );
+        void deselectTags();
         void clear();
 
       signals:
         void queryChanged( const TabSearch::Query& query );
+        // Emitted when the widget is moving through its TagsEdit
+        void selectingTags();
 
       private slots:
         void onTextChanged( const QString& text );

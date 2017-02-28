@@ -483,6 +483,11 @@ void ResultsView::currentChanged( const QModelIndex &current, const QModelIndex 
 
 void ResultsView::onSelectionChanged()
 {
+  if( !currentIndex().isValid() )
+    return;
+  else
+    emit selectingItems();
+
   if( m_model->isPreset( currentIndex() ) )
     emit presetSelected( this->getSelectedPreset() );
   else
@@ -594,4 +599,9 @@ void ResultsView::updateHighlight( const QModelIndex& index )
   TagsViewItems::const_iterator tags = m_tagsViewItems.find( ptr );
   if( tags != m_tagsViewItems.end() )
     tags->second->setHighlighted( highlighted );
+}
+
+void ResultsView::clearSelection()
+{
+  this->setCurrentIndex( QModelIndex() );
 }

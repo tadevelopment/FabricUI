@@ -52,6 +52,17 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     this, SLOT( hidePreview() )
   );
 
+  // Selecting elements (the selection must be exclusive to either
+  // the ResultsView or the QueryEdit
+  connect(
+    m_resultsView, SIGNAL( selectingItems() ),
+    m_queryEdit, SLOT( deselectTags() )
+  );
+  connect(
+    m_queryEdit, SIGNAL( selectingTags() ),
+    m_resultsView, SLOT( clearSelection() )
+  );
+
   vlayout->setMargin( 0 );
   vlayout->setSpacing( 0 );
 
