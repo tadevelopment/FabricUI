@@ -13,6 +13,7 @@
 #include <QStyledItemDelegate>
 #include <QProxyStyle>
 #include <QTableWidget>
+#include <FabricUI/Actions/BaseAction.h>
 
 class QPushButton;
 
@@ -117,13 +118,14 @@ protected slots:
 
   void onAddElementClicked();
 
+  void onCustomContextMenuRequested( QPoint const &pos );
+
+public slots:
   void onInspectSelected();
 
   void onDuplicateSelected();
 
   void onRemoveSelected();
-
-  void onCustomContextMenuRequested( QPoint const &pos );
 
 private:
 
@@ -354,6 +356,131 @@ private:
 
   FabricCore::Client m_client;
   QRegExp m_typeSpecRegExp;
+};
+
+class BaseDFGPEWidget_ElementsAction : public Actions::BaseAction
+{
+  Q_OBJECT
+
+public:
+
+  BaseDFGPEWidget_ElementsAction(
+    DFGPEWidget_Elements *dfgPEWidget_Elements,
+    QObject *parent,
+    const QString &name, 
+    const QString &text = "", 
+    QKeySequence shortcut = QKeySequence(),
+    Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut,
+    bool enable = true,
+    const QIcon &icon = QIcon() )
+    : Actions::BaseAction( 
+      parent
+      , name 
+      , text 
+      , shortcut 
+      , context
+      , enable
+      , icon)
+    , m_dfgPEWidget_Elements( dfgPEWidget_Elements )
+  {
+  }
+
+protected:
+
+  DFGPEWidget_Elements *m_dfgPEWidget_Elements;
+};
+
+class DuplicateAction : public BaseDFGPEWidget_ElementsAction
+{
+  Q_OBJECT
+
+public:
+
+  DuplicateAction(
+    DFGPEWidget_Elements *dfgPEWidget_Elements,
+    QObject *parent,
+    const QIcon &icon = QIcon() )
+    : BaseDFGPEWidget_ElementsAction( 
+      dfgPEWidget_Elements
+      , parent
+      , "DFGPEWidget_Elements::duplicateAction" 
+      , "Duplicate" 
+      , QKeySequence(  Qt::CTRL + Qt::Key_D )
+      , Qt::WidgetWithChildrenShortcut
+      , true
+      , icon)
+  {
+  }
+
+private slots:
+
+  virtual void onTriggered()
+  {
+    m_dfgPEWidget_Elements->onDuplicateSelected();
+  }
+
+};
+
+class EditSelectionAction : public BaseDFGPEWidget_ElementsAction
+{
+  Q_OBJECT
+
+public:
+
+  EditSelectionAction(
+    DFGPEWidget_Elements *dfgPEWidget_Elements,
+    QObject *parent,
+    const QIcon &icon = QIcon() )
+    : BaseDFGPEWidget_ElementsAction( 
+      dfgPEWidget_Elements
+      , parent
+      , "DFGPEWidget_Elements::editSelectionAction" 
+      , "Edit Selected" 
+      , QKeySequence()
+      , Qt::WidgetWithChildrenShortcut
+      , true
+      , icon)
+  {
+  }
+
+private slots:
+
+  virtual void onTriggered()
+  {
+    m_dfgPEWidget_Elements->onInspectSelected();
+  }
+
+};
+
+class DeleteSelectionAction : public BaseDFGPEWidget_ElementsAction
+{
+  Q_OBJECT
+
+public:
+
+  DeleteSelectionAction(
+    DFGPEWidget_Elements *dfgPEWidget_Elements,
+    QObject *parent,
+    const QIcon &icon = QIcon() )
+    : BaseDFGPEWidget_ElementsAction( 
+      dfgPEWidget_Elements
+      , parent
+      , "DFGPEWidget_Elements::deleteSelectionAction" 
+      , "Delete Selected" 
+      , QKeySequence()
+      , Qt::WidgetWithChildrenShortcut
+      , true
+      , icon)
+  {
+  }
+
+private slots:
+
+  virtual void onTriggered()
+  {
+    m_dfgPEWidget_Elements->onRemoveSelected();
+  }
+
 };
 
 } // namespace DFG

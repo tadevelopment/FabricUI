@@ -20,6 +20,7 @@
 #include <FabricUI/DFG/DFGNotificationRouter.h>
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
 #include <FabricUI/DFG/Dialogs/DFGBaseDialog.h>
+#include <FabricUI/Actions/BaseAction.h>
 #include <QVBoxLayout>
 
 #include <FTL/OwnedPtr.h>
@@ -165,9 +166,6 @@ namespace DFG {
       void onEditSelectedNode();
       void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);
-
-    protected slots:
-
       void onReloadStyles();
 
     private slots:
@@ -225,7 +223,37 @@ namespace DFG {
       static QSettings * g_settings;
     };
 
-    class TabSearchAction : public QAction
+    class BaseDFGWidgetAction : public Actions::BaseAction
+    {
+      Q_OBJECT
+
+    public:
+
+      BaseDFGWidgetAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        const QString &name, 
+        const QString &text = "", 
+        QKeySequence shortcut = QKeySequence(),
+        Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut,
+        bool enable = true)
+        : Actions::BaseAction( 
+          parent
+          , name 
+          , text 
+          , shortcut 
+          , context
+          , enable)
+        , m_dfgWidget( dfgWidget )
+      {
+      }
+ 
+    protected:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class TabSearchAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -235,30 +263,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::TabSearchAction" 
+          , "Tab search" 
+          , Qt::Key_Tab 
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Tab search" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_Tab );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->tabSearch();
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class GoUpAction : public QAction
+    class GoUpAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -268,27 +293,23 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::goUpAction" 
+          , "Back" 
+          , Qt::Key_U 
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Back" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_U );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->onGoUpPressed();
       }
-
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
     class InspectNodeAction : public QAction
@@ -888,7 +909,7 @@ namespace DFG {
       GraphView::Node *m_node;
     };
 
-    class EditSelectedNodeAction : public QAction
+    class EditSelectedNodeAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -898,30 +919,26 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::EditSelectedNodeAction" 
+          , "Edit" 
+          , Qt::Key_I 
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Edit" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_I );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->onEditSelectedNode();
       }
-
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class EditSelectedNodePropertiesAction : public QAction
+    class EditSelectedNodePropertiesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -931,27 +948,24 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::EditSelectedNodePropertiesAction" 
+          , "Properties" 
+          , Qt::Key_F2 
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Properties" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_F2 );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->onEditSelectedNodeProperties();
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
     class SplitFromPresetAction : public QAction
@@ -1090,7 +1104,7 @@ namespace DFG {
       GraphView::Node *m_node;
     };
 
-    class SelectAllNodesAction : public QAction
+    class SelectAllNodesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1100,30 +1114,26 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::SelectAllNodesAction" 
+          , "Select all" 
+          , QKeySequence::SelectAll
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Select all" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( QKeySequence::SelectAll );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIGraph()->selectAllNodes();
       }
-
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class DeselectAllNodesAction : public QAction
+    class DeselectAllNodesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1133,27 +1143,23 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::DeselectAllNodesAction" 
+          , "Deselect all" 
+          , QKeySequence(Qt::CTRL + Qt::Key_D)
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Deselect all" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( QKeySequence(Qt::CTRL + Qt::Key_D) );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIGraph()->clearSelection();
       }
-
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
     class SidePanelScrollUpAction : public QAction
@@ -1220,7 +1226,7 @@ namespace DFG {
       FabricUI::GraphView::SidePanel *m_sidePanel;
     };
 
-    class AutoConnectionsAction : public QAction
+    class AutoConnectionsAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1230,30 +1236,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::AutoConnectionsAction" 
+          , "Auto connect selected nodes" 
+          , Qt::Key_C 
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Auto connect selected nodes" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_C );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIGraph()->autoConnections();
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class RemoveConnectionsAction : public QAction
+    class RemoveConnectionsAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1263,30 +1266,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::RemoveConnectionsAction" 
+          , "Remove connections to selected node(s)" 
+          , Qt::Key_D 
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Remove connections to selected node(s)" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_D );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIGraph()->removeConnections();
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class CopyNodesAction : public QAction
+    class CopyNodesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1296,30 +1296,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::copyNodesAction" 
+          , "Copy" 
+          , QKeySequence::Copy
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Copy" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( QKeySequence::Copy );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIController()->copy();
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class CutNodesAction : public QAction
+    class CutNodesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1329,30 +1326,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::cutNodesAction" 
+          , "Cut" 
+          , QKeySequence::Cut
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Cut" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( QKeySequence::Cut );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIController()->cmdCut();
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class PasteNodesAction : public QAction
+    class PasteNodesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1362,30 +1356,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::PasteNodesAction" 
+          , "Paste" 
+          , QKeySequence::Paste
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Paste" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( QKeySequence::Paste );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIController()->cmdPaste();
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class CollapseLevel1Action : public QAction
+    class CollapseLevel1Action : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1395,30 +1386,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::CollapseLevel1Action" 
+          , "Collapse level 1" 
+          , Qt::Key_1
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Collapse level 1" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_1 );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIController()->setSelectedNodesCollapseState(2);
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class CollapseLevel2Action : public QAction
+    class CollapseLevel2Action : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1428,30 +1416,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::CollapseLevel2Action" 
+          , "Collapse level 2" 
+          , Qt::Key_2
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Collapse level 2" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_2 );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIController()->setSelectedNodesCollapseState(1);
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class CollapseLevel3Action : public QAction
+    class CollapseLevel3Action : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1461,30 +1446,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::CollapseLevel3Action" 
+          , "Collapse level 3" 
+          , Qt::Key_3
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Collapse level 3" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_3 );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIController()->setSelectedNodesCollapseState(0);
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class ResetZoomAction : public QAction
+    class ResetZoomAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1494,30 +1476,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::ResetZoomAction" 
+          , "Reset zoom" 
+          , QKeySequence(Qt::CTRL + Qt::Key_0)
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Reset zoom" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( QKeySequence(Qt::CTRL + Qt::Key_0) );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIController()->zoomCanvas(1.0);
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class FrameSelectedNodesAction : public QAction
+    class FrameSelectedNodesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1527,30 +1506,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::FrameSelectedNodesAction" 
+          , "Frame selected" 
+          , Qt::Key_F 
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Frame selected" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_F );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIController()->frameSelectedNodes();
       }
-
-    private:
-
-      DFGWidget *m_dfgWidget;
+ 
     };
 
-    class FrameAllNodesAction : public QAction
+    class FrameAllNodesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1560,30 +1536,27 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::FrameAllNodesAction" 
+          , "Frame all" 
+          , Qt::Key_A 
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Frame all" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_A );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIController()->frameAllNodes();
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class RelaxNodesAction : public QAction
+    class RelaxNodesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1593,27 +1566,24 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::RelaxNodesAction" 
+          , "Relax nodes" 
+          , QKeySequence(Qt::CTRL + Qt::Key_R)
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Relax nodes" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( QKeySequence(Qt::CTRL + Qt::Key_R) );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         m_dfgWidget->getUIController()->relaxNodes();
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
     class ReloadExtensionsAction : public QAction
@@ -1721,7 +1691,7 @@ namespace DFG {
       GraphView::Node *m_node;
     };
 
-    class DeleteNodes1Action : public QAction
+    class DeleteNodes1Action : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1731,20 +1701,20 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::DeleteNodes1Action" 
+          , "Delete" 
+          , QKeySequence(Qt::Key_Delete)
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Delete" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_Delete );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         if (m_dfgWidget->isEditable())
         {
@@ -1753,12 +1723,9 @@ namespace DFG {
         }
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
-    class DeleteNodes2Action : public QAction
+    class DeleteNodes2Action : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -1768,20 +1735,20 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::DeleteNodes2Action" 
+          , "Delete" 
+          , QKeySequence(Qt::Key_Backspace)
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
       {
-        setText( "Delete" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
-        setShortcut( Qt::Key_Backspace );
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         if (m_dfgWidget->isEditable())
         {
@@ -1790,9 +1757,6 @@ namespace DFG {
         }
       }
 
-    private:
-
-      DFGWidget *m_dfgWidget;
     };
 
     class NewBlockNodeAction : public QAction
@@ -2120,7 +2084,7 @@ namespace DFG {
       bool m_selectTarget;
     };
 
-    class ConnectionRemoveAction : public QAction
+    class ConnectionRemoveAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -2131,20 +2095,21 @@ namespace DFG {
         GraphView::Connection *connection,
         QObject *parent,
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::ConnectionRemoveAction" 
+          , "Remove Connection" 
+          , QKeySequence(Qt::Key_D)
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
         , m_connection( connection )
       {
-        setText( "Remove Connection" );
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setShortcut( Qt::Key_D );
-        setEnabled( enable );
       }
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         std::vector<GraphView::ConnectionTarget *> srcs;
         std::vector<GraphView::ConnectionTarget *> dsts;
@@ -2155,11 +2120,10 @@ namespace DFG {
 
     private:
 
-      DFGWidget *m_dfgWidget;
       GraphView::Connection *m_connection;
     };
 
-    class ConnectionInsertPresetAction : public QAction
+    class ConnectionInsertPresetAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
@@ -2176,8 +2140,14 @@ namespace DFG {
         QKeySequence shortcut = QKeySequence(),
         QString presetPortSetFromSrcName = "",
         bool enable = true )
-        : QAction( parent )
-        , m_dfgWidget( dfgWidget )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::ConnectionInsertPresetAction" 
+          , "" 
+          , shortcut
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
         , m_connection( connection )
         , m_presetPath( presetPath )
         , m_presetPortIn( presetPortIn )
@@ -2187,14 +2157,6 @@ namespace DFG {
       {
         QString presetName = getPresetNameFromPath(m_presetPath);
         setText( "Insert '" + presetName + "' Preset");
-        if (!shortcut.isEmpty())
-        {
-          setShortcut( shortcut );
-          setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        }
-        connect( this, SIGNAL(triggered()),
-                 this, SLOT(onTriggered()) );
-        setEnabled( enable );
       }
 
       QString getPresetNameFromPath(QString presetPath)
@@ -2205,7 +2167,7 @@ namespace DFG {
 
     private slots:
 
-      void onTriggered()
+      virtual void onTriggered()
       {
         if (m_dfgWidget->isEditable())
         {
@@ -2283,13 +2245,42 @@ namespace DFG {
 
     private:
 
-      DFGWidget *m_dfgWidget;
       GraphView::Connection *m_connection;
       QString m_presetPath;
       QString m_presetPortIn;
       QString m_presetPortOut;
       QPoint  m_presetGlobalPos;
       QString m_presetPortSetFromSrcName;
+    };
+
+    class ReloadStyleAction : public BaseDFGWidgetAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ReloadStyleAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true )
+        : BaseDFGWidgetAction( 
+          dfgWidget
+          , parent
+          , "DFGWidget::ReloadStyleAction" 
+          , "Reload QSS Styles" 
+          , QKeySequence( "Ctrl+Shift+R" )
+          , Qt::WindowShortcut
+          , enable)
+      {
+      }
+
+    private slots:
+
+      virtual void onTriggered()
+      {
+        m_dfgWidget->onReloadStyles();
+      }
+
     };
 
 } // namespace DFG

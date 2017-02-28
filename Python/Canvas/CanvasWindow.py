@@ -10,7 +10,7 @@ import sys
 
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core, FabricUI, Util
-from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine
+from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine, Actions
 from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
@@ -422,6 +422,9 @@ class CanvasWindow(QtGui.QMainWindow):
         self.scriptEditor.titleDataChanged.connect(scriptEditorTitleDataChanged)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.scriptEditorDock, QtCore.Qt.Vertical)
 
+    def onTriggered(self):
+        self.scriptEditor.newScript()
+
     def _initMenus(self):
         """Initializes all menus for the application."""
 
@@ -432,21 +435,25 @@ class CanvasWindow(QtGui.QMainWindow):
         # Toggle DFG Dock Widget Action
         toggleAction = self.dfgDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_1)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.dfgDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Explorer Dock Widget Action
         toggleAction = self.treeDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_2)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.treeDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Value Editor Dock Widget Action
         toggleAction = self.valueEditorDockWidget.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_3)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.valueEditorDockWidget.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Timeline Dock Widget Action
         toggleAction = self.timeLineDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_4)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.timeLineDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         windowMenu.addSeparator()
@@ -454,21 +461,25 @@ class CanvasWindow(QtGui.QMainWindow):
         # Toggle Undo Dock Widget Action
         toggleAction = self.undoDockWidget.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_5)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.undoDockWidget.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Log Dock Widget Action
         toggleAction = self.logDockWidget.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_6)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.logDockWidget.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Script Editor Dock Widget Action
         toggleAction = self.scriptEditorDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_7)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.scriptEditorDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Rendering Options Widget Action
         toggleAction = self.renderingOptionsDockWidget.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
         windowMenu.addAction( toggleAction )
 
     def onPortManipulationRequested(self, portName):
