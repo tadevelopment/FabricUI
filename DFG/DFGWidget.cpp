@@ -1207,7 +1207,7 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       expandMetadataSection = true;
     }
 
-    dialog.setSectionCollapsed("Metadata", !expandMetadataSection);
+    dialog.setSectionCollapsed("metadata", !expandMetadataSection);
 
     if (!duplicatePort || isCTRL)
     {
