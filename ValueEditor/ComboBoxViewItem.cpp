@@ -12,10 +12,11 @@
 
 using namespace FabricUI::ValueEditor;
 
-ComboBoxViewItem::ComboBoxViewItem( QString const &name, QVariant const &v, ItemMetadata* metadata, bool isString )
+ComboBoxViewItem::ComboBoxViewItem( QString const &name, QVariant const &v, ItemMetadata* metadata, bool isString, bool isRotationOrder)
   : BaseViewItem(name, metadata)
   , m_comboBox(NULL)
   , m_isString(isString)
+  , m_isRotationOrder(isRotationOrder)
 {
   m_comboBox = new ComboBox;
 
@@ -42,30 +43,43 @@ ComboBoxViewItem::~ComboBoxViewItem()
 
 void ComboBoxViewItem::metadataChanged()
 {
-  const char* str = m_metadata.getString( "uiCombo" );
-  if (str == NULL)
-    return;
-
-  std::string uiComboStr = str;
-  if (uiComboStr.size() > 0)
+  if ( m_isRotationOrder )
   {
-    if (uiComboStr[0] == '(')
-      uiComboStr = uiComboStr.substr( 1 );
-    if (uiComboStr[uiComboStr.size() - 1] == ')')
-      uiComboStr = uiComboStr.substr( 0, uiComboStr.size() - 1 );
-
-    QStringList parts = QString( uiComboStr.c_str() ).split( ',' );
-    // Push options to UI combobox
     m_comboBox->clear();
-    for (int i = 0; i < parts.size(); i++)
-    {
-      QString itemStr = parts[i].trimmed();
-      if (itemStr.startsWith( "\"" ))
-        itemStr.remove( 0, 1 );
-      if (itemStr.endsWith( "\"" ) )
-        itemStr.chop( 1 );
+    m_comboBox->addItem( "zyx" );
+    m_comboBox->addItem( "xzy" );
+    m_comboBox->addItem( "yxz" );
+    m_comboBox->addItem( "yzx" );
+    m_comboBox->addItem( "xyz" );
+    m_comboBox->addItem( "zxy" );
+  }
+  else
+  {
+    const char* str = m_metadata.getString( "uiCombo" );
+    if (str == NULL)
+      return;
 
-      m_comboBox->addItem( itemStr );
+    std::string uiComboStr = str;
+    if (uiComboStr.size() > 0)
+    {
+      if (uiComboStr[0] == '(')
+        uiComboStr = uiComboStr.substr( 1 );
+      if (uiComboStr[uiComboStr.size() - 1] == ')')
+        uiComboStr = uiComboStr.substr( 0, uiComboStr.size() - 1 );
+
+      QStringList parts = QString( uiComboStr.c_str() ).split( ',' );
+      // Push options to UI combobox
+      m_comboBox->clear();
+      for (int i = 0; i < parts.size(); i++)
+      {
+        QString itemStr = parts[i].trimmed();
+        if (itemStr.startsWith( "\"" ))
+          itemStr.remove( 0, 1 );
+        if (itemStr.endsWith( "\"" ) )
+          itemStr.chop( 1 );
+
+        m_comboBox->addItem( itemStr );
+      }
     }
   }
 }
@@ -112,18 +126,32 @@ BaseViewItem* ComboBoxViewItem::CreateItem(
   ItemMetadata* metaData
   )
 {
-  if ( metaData != NULL &&
-       metaData->has("uiCombo") )
+  FabricCore::RTVal rtVal = value.value<FabricCore::RTVal>();
+  bool isString = RTVariant::canConvert( value, QVariant::String );
+
+  if ( !rtVal.isValid() )
+    return 0;
+  else
   {
-    bool isString = RTVariant::canConvert( value, QVariant::String );
-    if ( RTVariant::canConvert( value, QVariant::Int ) ||
-         RTVariant::canConvert( value, QVariant::UInt ) || 
-         isString )
+    if ( rtVal.hasType( "RotationOrder" ) )
     {
-      return new ComboBoxViewItem( name, value, metaData, isString );
+      return new ComboBoxViewItem( name, value, metaData, isString , true);
+    }
+    else
+    { 
+      if ( metaData != NULL &&
+           metaData->has("uiCombo") )
+      {
+        if ( RTVariant::canConvert( value, QVariant::Int ) ||
+             RTVariant::canConvert( value, QVariant::UInt ) || 
+             isString )
+        {
+          return new ComboBoxViewItem( name, value, metaData, isString );
+        }
+      }
+      return 0;
     }
   }
-  return 0;
 }
 
 const int ComboBoxViewItem::Priority = 5;
