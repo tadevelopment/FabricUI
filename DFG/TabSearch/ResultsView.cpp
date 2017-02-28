@@ -462,6 +462,14 @@ void ResultsView::validateSelection()
     emit presetValidated( this->getSelectedPreset() );
 }
 
+void ResultsView::currentChanged( const QModelIndex &current, const QModelIndex &previous )
+{
+  Parent::currentChanged( current, previous );
+
+  updateHighlight( previous );
+  updateHighlight( current );
+}
+
 void ResultsView::onSelectionChanged()
 {
   if( m_model->isPreset( currentIndex() ) )
@@ -472,16 +480,20 @@ void ResultsView::onSelectionChanged()
 
 void ResultsView::setResults( const std::string& searchResult )
 {
+  // The ViewItems will become obsolete since ModelItems will be destroyed
+  m_presetViewItems.clear();
+  m_tagsViewItems.clear();
+
   m_model->setRoot( BuildResultTree( searchResult ) );
   this->expandAll();
 
+  replaceViewItems();
   if( m_model->rowCount() > 0 )
   {
     const QModelIndex& firstEntry = m_model->index( 0, 0 );
     if( m_model->isPreset( firstEntry ) )
       this->setCurrentIndex( firstEntry );
   }
-  replaceViewItems();
 }
 
 QString ResultsView::getSelectedPreset()
@@ -495,14 +507,16 @@ void ResultsView::keyPressEvent( QKeyEvent * event )
   Parent::keyPressEvent( event );
 }
 
-struct TagsView : public QWidget
+class ResultsView::TagsView : public QWidget
 {
+public:
   TagsView( const Tags& tags, const ResultsView& view )
   {
     m_layout = new QHBoxLayout();
     for( size_t i = 0; i < tags.size(); i++ )
     {
       TagView* w = new TagView( tags[i].name );
+      m_tagViews.push_back( w );
       w->setScore( tags[i].score );
       m_layout->addWidget( w );
       connect(
@@ -513,7 +527,17 @@ struct TagsView : public QWidget
     m_layout->setMargin( 0 );
     m_layout->setAlignment( Qt::AlignLeft );
     this->setLayout( m_layout );
+    setHighlighted( false );
   }
+
+  void setHighlighted( bool highlighted )
+  {
+    for( size_t i = 0; i < m_tagViews.size(); i++ )
+      m_tagViews[i]->setHighlighted( highlighted );
+  }
+
+private:
+  std::vector<TagView*> m_tagViews;
   QHBoxLayout* m_layout;
 };
 
@@ -527,12 +551,15 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     {
       const Preset& preset = m_model->getPreset( index );
       PresetView* w = new PresetView( preset.name );
+      m_presetViewItems.insert( std::pair<void*,PresetView*>( index.internalPointer(), w ) );
       w->setScore( preset.score );
       widget = w;
     }
     else
     {
-      widget = new TagsView( m_model->getTags( index ), *this );
+      TagsView* w = new TagsView( m_model->getTags( index ), *this );
+      m_tagsViewItems.insert( std::pair<void*, TagsView*>( index.internalPointer(), w ) );
+      widget = w;
     }
     assert( widget != NULL );
     widget->setMaximumHeight( sizeHintForIndex( index ).height() );
@@ -542,4 +569,18 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
   // Applying recursively to the children
   for( size_t i = 0; i < model()->rowCount( index ); i++ )
     replaceViewItems( model()->index( i, 0, index ) );
+}
+
+void ResultsView::updateHighlight( const QModelIndex& index )
+{
+  bool highlighted = ( index == currentIndex() );
+  void* ptr = index.internalPointer();
+
+  PresetViewItems::const_iterator preset = m_presetViewItems.find( ptr );
+  if( preset != m_presetViewItems.end() )
+    preset->second->setHighlighted( highlighted );
+
+  TagsViewItems::const_iterator tags = m_tagsViewItems.find( ptr );
+  if( tags != m_tagsViewItems.end() )
+    tags->second->setHighlighted( highlighted );
 }

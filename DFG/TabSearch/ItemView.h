@@ -6,6 +6,7 @@
 #include <QWidget>
 
 class QLabel;
+class QPushButton;
 
 namespace FabricUI
 {
@@ -24,11 +25,15 @@ namespace FabricUI
       signals:
         void activated( const std::string& name );
 
+      public slots:
+        void setHighlighted( bool highlighted );
+
       private slots:
         void onActivated();
 
       private:
         std::string m_name;
+        QPushButton* m_button;
       };
 
       class PresetView : public QWidget
@@ -38,6 +43,9 @@ namespace FabricUI
       public:
         PresetView( const std::string& presetName );
         void setScore( double score );
+
+      public slots:
+        void setHighlighted( bool highlighted );
 
       private:
         QLabel* m_scoreLabel;

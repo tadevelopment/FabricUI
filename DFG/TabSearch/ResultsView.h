@@ -6,6 +6,7 @@
 #include <QTreeView>
 
 #include <FTL/Config.h>
+#include <unordered_map>
 
 namespace FabricUI
 {
@@ -13,6 +14,8 @@ namespace FabricUI
   {
     namespace TabSearch
     {
+      class PresetView;
+
       class ResultsView : public QTreeView
       {
         Q_OBJECT
@@ -42,8 +45,13 @@ namespace FabricUI
         // Emitted when a Tag has been requested
         void tagRequested( const std::string& tag );
 
-      private slots:
+      protected slots:
       
+        void currentChanged( const QModelIndex &, const QModelIndex & ) FTL_OVERRIDE;
+
+      private slots:
+
+        void updateHighlight( const QModelIndex& );
         void onSelectionChanged();
 
       private:
@@ -51,6 +59,13 @@ namespace FabricUI
         QString getSelectedPreset();
         class Model;
         Model* m_model;
+
+        // The void* is QModelIndex::internalPointer()
+        typedef std::unordered_map< void*, PresetView* > PresetViewItems;
+        PresetViewItems m_presetViewItems;
+        class TagsView;
+        typedef std::unordered_map< void*, TagsView* > TagsViewItems;
+        TagsViewItems m_tagsViewItems;
       };
     }
   };

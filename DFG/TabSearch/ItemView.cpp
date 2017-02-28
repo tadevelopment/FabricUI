@@ -13,18 +13,27 @@ TagView::TagView( const std::string& tagName )
 {
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );
-  QPushButton* button = new QPushButton( QString::fromStdString( tagName ) );
-  button->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
-  button->setContentsMargins( QMargins( 0, 0, 0, 0 ) );
-  button->setStyleSheet( "background-color: rgba( 50, 30, 0, 50 );" );
-  lay->addWidget( button );
+  m_button = new QPushButton( QString::fromStdString( tagName ) );
+  m_button->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
+  m_button->setContentsMargins( QMargins( 0, 0, 0, 0 ) );
+  lay->addWidget( m_button );
   this->setLayout( lay );
 
   connect(
-    button, SIGNAL( released() ),
+    m_button, SIGNAL( released() ),
     this, SLOT( onActivated() )
   );
   this->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
+  this->setHighlighted( false );
+}
+
+void TagView::setHighlighted( bool highlighted )
+{
+  m_button->setStyleSheet(
+    highlighted ?
+    "color : #000; background-color: rgba( 255, 255, 255, 255 );" :
+    "color: #FFF; background-color: rgba( 50, 30, 0, 50 );"
+  );
 }
 
 void TagView::onActivated()
@@ -53,6 +62,12 @@ PresetView::PresetView( const std::string& presetName )
   nameLabel->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
   QLabel* pathLabel = new QLabel( "<i>" + QString::fromStdString( path ) + "</i>" );
   this->layout()->addWidget( pathLabel );
+  setHighlighted( false );
+}
+
+void PresetView::setHighlighted( bool highlighted )
+{
+  setStyleSheet( highlighted ? "color : #000;" : "color: #FFF;" );
 }
 
 void PresetView::setScore( double score )
