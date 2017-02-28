@@ -44,6 +44,10 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     m_queryEdit, SLOT( requestTag( const std::string& ) )
   );
   connect(
+    m_resultsView, SIGNAL( tagsRequested( const std::vector<std::string>& ) ),
+    m_queryEdit, SLOT( requestTags( const std::vector<std::string>& ) )
+  );
+  connect(
     m_resultsView, SIGNAL( presetDeselected() ),
     this, SLOT( hidePreview() )
   );

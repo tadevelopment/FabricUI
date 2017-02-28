@@ -458,8 +458,19 @@ ResultsView::~ResultsView()
 
 void ResultsView::validateSelection()
 {
+  if( !currentIndex().isValid() )
+    return;
+  else
   if( m_model->isPreset( currentIndex() ) )
     emit presetValidated( this->getSelectedPreset() );
+  else
+  {
+    const Tags& tags = m_model->getTags( currentIndex() );
+    std::vector<std::string> names;
+    for( size_t i = 0; i < tags.size(); i++ )
+      names.push_back( tags[i].name );
+    emit tagsRequested( names );
+  }
 }
 
 void ResultsView::currentChanged( const QModelIndex &current, const QModelIndex &previous )

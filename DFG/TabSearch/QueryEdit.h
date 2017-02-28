@@ -48,6 +48,7 @@ namespace FabricUI
 
       public slots:
         void requestTag( const std::string& tag );
+        void requestTags( const std::vector<std::string>& tags );
         void clear();
 
       signals:

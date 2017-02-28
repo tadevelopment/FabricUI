@@ -44,6 +44,7 @@ namespace FabricUI
         void presetValidated( QString preset );
         // Emitted when a Tag has been requested
         void tagRequested( const std::string& tag );
+        void tagsRequested( const std::vector<std::string>& tags );
 
       protected slots:
       

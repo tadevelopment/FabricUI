@@ -114,6 +114,12 @@ void QueryEdit::requestTag( const std::string& tag )
   m_query.addTag( tag );
 }
 
+void QueryEdit::requestTags( const std::vector<std::string>& tags )
+{
+  for( size_t i = 0; i < tags.size(); i++ )
+    m_query.addTag( tags[i] );
+}
+
 void QueryEdit::clear()
 {
   m_query.clear();
