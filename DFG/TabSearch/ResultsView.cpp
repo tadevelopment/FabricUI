@@ -567,7 +567,7 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
   }
 
   // Applying recursively to the children
-  for( size_t i = 0; i < model()->rowCount( index ); i++ )
+  for( int i = 0; i < model()->rowCount( index ); i++ )
     replaceViewItems( model()->index( i, 0, index ) );
 }
 

@@ -6,7 +6,7 @@
 #include <QTreeView>
 
 #include <FTL/Config.h>
-#include <unordered_map>
+#include <map>
 
 namespace FabricUI
 {
@@ -61,10 +61,10 @@ namespace FabricUI
         Model* m_model;
 
         // The void* is QModelIndex::internalPointer()
-        typedef std::unordered_map< void*, PresetView* > PresetViewItems;
+        typedef std::map< void*, PresetView* > PresetViewItems;
         PresetViewItems m_presetViewItems;
         class TagsView;
-        typedef std::unordered_map< void*, TagsView* > TagsViewItems;
+        typedef std::map< void*, TagsView* > TagsViewItems;
         TagsViewItems m_tagsViewItems;
       };
     }

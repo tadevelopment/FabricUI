@@ -4,7 +4,7 @@
 #define __UI_DFG_TabSearch_QueryEdit__
 
 #include <QWidget>
-#include <unordered_map>
+#include <map>
 
 namespace FabricUI
 {
@@ -34,7 +34,7 @@ namespace FabricUI
       private:
         std::string m_text;
         Tags m_orderedTags;
-        typedef std::unordered_map<std::string, size_t> TagMap;
+        typedef std::map<std::string, size_t> TagMap;
         TagMap m_tagMap;
       };
 
