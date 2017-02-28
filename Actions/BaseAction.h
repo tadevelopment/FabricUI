@@ -59,7 +59,7 @@ class BaseAction : public QAction
             , "Do my action" 
             , QtCore.Qt.Key_R)
           
-          def void onTriggered(self):
+          def onTriggered(self):
             # Do you action
             pass
   */

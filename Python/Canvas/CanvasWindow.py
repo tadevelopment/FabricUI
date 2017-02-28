@@ -22,6 +22,164 @@ class CanvasWindowEventFilter(QtCore.QObject):
         super(CanvasWindowEventFilter, self).__init__()
         self.window = window
 
+class BaseCanvasWindowAction(Actions.BaseAction):
+
+    def __init__(self,
+        parent,
+        canvasWindow, 
+        name, 
+        text, 
+        shortcut = QtGui.QKeySequence(), 
+        context = QtCore.Qt.ApplicationShortcut):
+
+        self.canvasWindow = canvasWindow
+
+        super(BaseCanvasWindowAction, self).__init__(
+            parent, 
+            name, 
+            text, 
+            shortcut, 
+            context)
+
+class NewGraphAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(NewGraphAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.NewGraphAction", 
+            "New Graph", 
+            QtGui.QKeySequence.New)
+        
+    def onTriggered(self):
+        self.canvasWindow.execNewGraph()
+
+class LoadGraphAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(LoadGraphAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.LoadGraphAction", 
+            "Load Graph", 
+            QtGui.QKeySequence.Open)
+        
+    def onTriggered(self):
+        self.canvasWindow.onLoadGraph()
+
+class ImportGraphAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(ImportGraphAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.ImportGraphAction", 
+            "Import Graph", 
+            QtGui.QKeySequence('Ctrl+I'))
+        
+    def onTriggered(self):
+        self.canvasWindow.onImportGraphAsNode()
+
+class SaveGraphAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(SaveGraphAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.SaveGraphAction", 
+            "Save Graph", 
+            QtGui.QKeySequence.Save)
+        
+    def onTriggered(self):
+        self.canvasWindow.onSaveGraph()
+
+class SaveGraphAsAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(SaveGraphAsAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.SaveGraphAsAction", 
+            "Save Graph", 
+            QtGui.QKeySequence.SaveAs)
+        
+    def onTriggered(self):
+        self.canvasWindow.onSaveGraphAs()
+
+class QuitApplicationAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(QuitApplicationAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.QuitApplicationAction", 
+            "Quit", 
+            QtGui.QKeySequence.Quit)
+    
+    def onTriggered(self):
+        self.canvasWindow.close()
+
+class ToggleManipulationAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, viewport):
+        super(ToggleManipulationAction, self).__init__(
+            parent,     
+            None, 
+            "CanvasWindow.ToggleManipulationAction", 
+            "Toggle manipulation", 
+            QtGui.QKeySequence(QtCore.Qt.Key_Q),
+            QtCore.Qt.WidgetWithChildrenShortcut)
+        
+        self.viewport = viewport
+        self.setCheckable(True)
+        self.setChecked(self.viewport.isManipulationActive())
+
+    def onTriggered(self):
+        self.viewport.toggleManipulation()
+
+class GridVisibilityAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, viewport):
+        super(GridVisibilityAction, self).__init__(
+            parent,     
+            None, 
+            "CanvasWindow.GridVisibilityAction", 
+            "&Display Grid", 
+            QtGui.QKeySequence(QtCore.Qt.Key_G),
+            QtCore.Qt.WidgetWithChildrenShortcut)
+        
+        self.toggled.connect(viewport.setGridVisible)
+        self.setCheckable(True)
+        self.setChecked(viewport.isGridVisible())
+
+class ResetCameraAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, viewport):
+        super(ResetCameraAction, self).__init__(
+            parent,     
+            None, 
+            "CanvasWindow.ResetCameraAction", 
+            "&Reset Camera", 
+            QtGui.QKeySequence(QtCore.Qt.Key_R),
+            QtCore.Qt.WidgetWithChildrenShortcut)
+        
+        self.triggered.connect(viewport.resetCamera)
+       
+class BlockGraphCompilationAction(BaseCanvasWindowAction):
+
+    def __init__(self, canvasWindow):
+        super(BlockGraphCompilationAction, self).__init__(
+            None,     
+            canvasWindow, 
+            "CanvasWindow.BlockGraphCompilationAction", 
+            "Disable graph compilations", 
+            QtGui.QKeySequence(QtCore.Qt.SHIFT  + QtCore.Qt.CTRL + QtCore.Qt.Key_Return),
+            QtCore.Qt.WidgetWithChildrenShortcut)
+        
+        self.setCheckable(True)
+        self.setChecked(False)
+        self.toggled.connect(self.canvasWindow.setBlockCompilations)
+   
 class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
 
@@ -109,7 +267,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.redoAction = None
         self.newGraphAction = None
         self.loadGraphAction = None
-        self.importGraphAsNodeAction = None
+        self.importGraphAction = None
         self.saveGraphAction = None
         self.saveGraphAsAction = None
         self.recentFilesAction = []
@@ -1085,8 +1243,8 @@ class CanvasWindow(QtGui.QMainWindow):
             self.newGraphAction.blockSignals(enabled)
         if self.loadGraphAction:
             self.loadGraphAction.blockSignals(enabled)
-        if self.importGraphAsNodeAction:
-            self.importGraphAsNodeAction.blockSignals(enabled)
+        if self.importGraphAction:
+            self.importGraphAction.blockSignals(enabled)
         if self.saveGraphAction:
             self.saveGraphAction.blockSignals(enabled)
         if self.saveGraphAsAction:
@@ -1123,16 +1281,11 @@ class CanvasWindow(QtGui.QMainWindow):
 
         if name == 'File':
             if prefix:
-                self.newGraphAction = QtGui.QAction('New Graph', menu)
-                self.newGraphAction.setShortcut(QtGui.QKeySequence.New)
-                self.loadGraphAction = QtGui.QAction('Load Graph...', menu)
-                self.loadGraphAction.setShortcut(QtGui.QKeySequence.Open)
-                self.importGraphAsNodeAction = QtGui.QAction('Import Graph...', menu)
-                self.importGraphAsNodeAction.setShortcut(QtGui.QKeySequence('Ctrl+I'))
-                self.saveGraphAction = QtGui.QAction('Save Graph', menu)
-                self.saveGraphAction.setShortcut(QtGui.QKeySequence.Save)
-                self.saveGraphAsAction = QtGui.QAction('Save Graph As...', menu)
-                self.saveGraphAsAction.setShortcut(QtGui.QKeySequence.SaveAs)
+                self.newGraphAction = NewGraphAction(menu, self)
+                self.loadGraphAction = LoadGraphAction(menu, self)
+                self.importGraphAction = ImportGraphAction(menu, self)
+                self.saveGraphAction = SaveGraphAction(menu, self)
+                self.saveGraphAsAction = SaveGraphAsAction(menu, self)
 
                 for i in range(self.maxRecentFiles):
                     self.recentFilesAction.append(QtGui.QAction(menu))
@@ -1141,7 +1294,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
                 menu.addAction(self.newGraphAction)
                 menu.addAction(self.loadGraphAction)
-                menu.addAction(self.importGraphAsNodeAction)
+                menu.addAction(self.importGraphAction)
                 menu.addAction(self.saveGraphAction)
                 menu.addAction(self.saveGraphAsAction)
                 self.separator = menu.addSeparator()
@@ -1150,16 +1303,10 @@ class CanvasWindow(QtGui.QMainWindow):
                     menu.addAction(self.recentFilesAction[i])
 
                 self.updateRecentFileActions()
-
-                self.newGraphAction.triggered.connect(self.execNewGraph)
-                self.loadGraphAction.triggered.connect(self.onLoadGraph)
-                self.importGraphAsNodeAction.triggered.connect(self.onImportGraphAsNode)
-                self.saveGraphAction.triggered.connect(self.onSaveGraph)
-                self.saveGraphAsAction.triggered.connect(self.onSaveGraphAs)
+  
             else:
                 menu.addSeparator()
-                self.quitAction = QtGui.QAction('Quit', menu)
-                self.quitAction.setShortcut(QtGui.QKeySequence.Quit)
+                self.quitAction = QuitApplicationAction(menu, self)
                 menu.addAction(self.quitAction)
 
                 self.quitAction.triggered.connect(self.close)
@@ -1167,54 +1314,32 @@ class CanvasWindow(QtGui.QMainWindow):
             if prefix:
                 self.undoAction = self.qUndoStack.createUndoAction(self)
                 self.undoAction.setShortcut(QtGui.QKeySequence.Undo)
+                Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.undoAction", self.undoAction)
                 menu.addAction(self.undoAction)
+                
                 self.redoAction = self.qUndoStack.createRedoAction(self)
                 self.redoAction.setShortcut(QtGui.QKeySequence.Redo)
+                Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.redoAction", self.redoAction)
                 menu.addAction(self.redoAction)
             else:
                 if self.isCanvas:
                     menu.addSeparator()
-                    self.manipAction = QtGui.QAction(
-                        'Toggle manipulation', self.viewport)
-                    self.manipAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Q))
-                    self.manipAction.setShortcutContext(
-                        QtCore.Qt.WidgetWithChildrenShortcut)
-                    self.manipAction.setCheckable(True)
-                    self.manipAction.setChecked(
-                        self.viewport.isManipulationActive())
-                    self.manipAction.triggered.connect(
-                        self.viewport.toggleManipulation)
-                    self.viewport.addAction(self.manipAction)
+                    self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
                     menu.addAction(self.manipAction)
         elif name == 'View':
             if prefix:
 
                 if self.isCanvas:
-                    self.setGridVisibleAction = QtGui.QAction('&Display Grid', self.viewport)
-                    self.setGridVisibleAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_G))
-                    self.setGridVisibleAction.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-                    self.setGridVisibleAction.setCheckable(True)
-                    self.setGridVisibleAction.setChecked(self.viewport.isGridVisible())
-                    self.setGridVisibleAction.toggled.connect(self.viewport.setGridVisible)
+                    self.setGridVisibleAction = GridVisibilityAction(self.viewport, self.viewport)
                     self.viewport.addAction(self.setGridVisibleAction)
 
-                    self.resetCameraAction = QtGui.QAction('&Reset Camera', self.viewport)
-                    self.resetCameraAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_R))
-                    self.resetCameraAction.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-                    self.resetCameraAction.triggered.connect(self.viewport.resetCamera)
+                    self.resetCameraAction = ResetCameraAction(self.viewport, self.viewport)
                     self.viewport.addAction(self.resetCameraAction)
 
                 self.clearLogAction = QtGui.QAction('&Clear Log Messages', None)
                 self.clearLogAction.triggered.connect(self.logWidget.clear)
 
-                self.blockCompilationsAction = QtGui.QAction(
-                    'Disable graph compilations', None)
-                self.blockCompilationsAction.setCheckable(True)
-                self.blockCompilationsAction.setChecked(False)
-                self.blockCompilationsAction.setShortcut(QtCore.Qt.SHIFT  + QtCore.Qt.CTRL + QtCore.Qt.Key_Return );
-
-                self.blockCompilationsAction.toggled.connect(
-                    self.setBlockCompilations)
+                self.blockCompilationsAction = BlockGraphCompilationAction(self)
 
                 if self.isCanvas:
                     menu.addAction(self.setGridVisibleAction)
