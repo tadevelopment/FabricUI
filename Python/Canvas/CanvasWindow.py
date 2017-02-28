@@ -1309,7 +1309,6 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.quitAction = QuitApplicationAction(menu, self)
                 menu.addAction(self.quitAction)
 
-                self.quitAction.triggered.connect(self.close)
         elif name == 'Edit':
             if prefix:
                 self.undoAction = self.qUndoStack.createUndoAction(self)
