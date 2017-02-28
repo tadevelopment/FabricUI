@@ -6,6 +6,7 @@
 #include <FabricUI/GraphView/GraphConfig.h>
 #include <FabricUI/GraphView/HighlightEffect.h>
 #include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/NodeLabel.h>
@@ -415,17 +416,39 @@ void Node::getUpStreamNodes_recursive(Node *node, std::vector<Connection *> &con
 
   for (unsigned int i=0;i<node->pinCount();i++)
   {
-    Pin *pin = node->pin(i);
+    Pin *p = node->pin(i);
     for (size_t j=0;j<connections.size();j++)
     {
       ConnectionTarget *src = connections[j]->src();
       ConnectionTarget *dst = connections[j]->dst();
+      if (src && dst == p)
+      {
+        Node *srcNode = NULL;
+        if      (src->targetType() == TargetType_Pin)           srcNode = ((Pin *)src)->node();
+        else if (src->targetType() == TargetType_InstBlockPort) srcNode = ((InstBlockPort *)src)->node();
+        getUpStreamNodes_recursive(srcNode, connections, ioVisitedNodes, ioUpStreamNodes);
+      }
+    }
+  }
 
-      if (dst != pin || src == NULL)
-        continue;
-
-      if (src->targetType() == TargetType_Pin)
-        getUpStreamNodes_recursive(((Pin *)src)->node(), connections, ioVisitedNodes, ioUpStreamNodes);
+  for (unsigned int k=0;k<node->instBlockCount();k++)
+  {
+    InstBlock *instBlock = node->instBlockAtIndex(k);
+    for (unsigned int i=0;i<instBlock->instBlockPortCount();i++)
+    {
+      InstBlockPort *p = instBlock->instBlockPort(i);
+      for (size_t j=0;j<connections.size();j++)
+      {
+        ConnectionTarget *src = connections[j]->src();
+        ConnectionTarget *dst = connections[j]->dst();
+        if (src && dst == p)
+        {
+          Node *srcNode = NULL;
+          if      (src->targetType() == TargetType_Pin)           srcNode = ((Pin *)src)->node();
+          else if (src->targetType() == TargetType_InstBlockPort) srcNode = ((InstBlockPort *)src)->node();
+          getUpStreamNodes_recursive(srcNode, connections, ioVisitedNodes, ioUpStreamNodes);
+        }
+      }
     }
   }
 }
