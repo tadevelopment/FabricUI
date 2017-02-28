@@ -104,7 +104,7 @@ class ActionRegistry : public QObject
   signals:
     /// Emitted when an action 
     /// has been registered.
-    void actionIsRegistered(
+    void actionRegistered(
       const QString &actionName,
       QAction *action);
 

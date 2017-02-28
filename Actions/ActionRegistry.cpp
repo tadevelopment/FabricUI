@@ -47,7 +47,7 @@ void ActionRegistry::registerAction(
   QAction *action)
 {
   m_registeredActions[actionName] = action;
-  emit actionIsRegistered(actionName, action);
+  emit actionRegistered(actionName, action);
 }
 
 void ActionRegistry::unregisterAction(
