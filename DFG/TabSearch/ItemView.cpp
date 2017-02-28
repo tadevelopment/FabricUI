@@ -20,6 +20,7 @@ TagView::TagView( const std::string& tagName )
   m_button->setContentsMargins( QMargins( 0, 0, 0, 0 ) );
   lay->addWidget( m_button );
   this->setLayout( lay );
+  m_button->setFocusPolicy( Qt::NoFocus );
 
   connect(
     m_button, SIGNAL( released() ),
