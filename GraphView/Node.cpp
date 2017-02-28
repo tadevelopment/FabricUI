@@ -460,7 +460,7 @@ std::vector<Node *> Node::getUpStreamNodes()
   std::map<Node *, Node *> visitedNodes;
 
   // do it.
-  getUpStreamNodes_recursive(this, graph()->connections(), visitedNodes, upStreamNodes);
+  getUpStreamNodes_recursive((Node *)this, graph()->connections(), visitedNodes, upStreamNodes);
 
   // done.
   return upStreamNodes;
