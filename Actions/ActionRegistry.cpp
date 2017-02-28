@@ -1,6 +1,5 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include "QAction.h"
 #include "ActionRegistry.h"
 
 using namespace FabricUI;
@@ -19,7 +18,6 @@ ActionRegistry::~ActionRegistry()
   while (ite.hasNext()) 
   {
     ite.next();
-    QAction* action = (QAction*)ite.value();
     m_registeredActions.remove(ite.key());
   }
   s_instanceFlag = false;
