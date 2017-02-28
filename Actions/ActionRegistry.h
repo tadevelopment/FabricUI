@@ -94,6 +94,13 @@ class ActionRegistry : public QObject
       const QString &actionName
       ) const;
 
+    /// Gets the action name. Returns 
+    /// an empty string if the action 
+    /// has not been registered.
+    QString getActionName(
+      QAction* action
+      ) const;
+
     /// Gets all the registered action.
     QList<QString> getActionNameList() const;
 
@@ -107,6 +114,11 @@ class ActionRegistry : public QObject
     void actionRegistered(
       const QString &actionName,
       QAction *action);
+
+    /// Emitted when an action 
+    /// is unregistered.
+    void actionUnregistered(
+      const QString &actionName);
 
   private:
     /// Dictionaries of registered actions.

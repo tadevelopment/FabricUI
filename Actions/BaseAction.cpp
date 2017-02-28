@@ -14,12 +14,12 @@ void BaseAction::init(
   const QIcon &icon)
 {
   m_name = name;
-  ActionRegistry::GetActionRegistry()->registerAction(this);
   setIcon(icon);
   setText(text);
   connect(this, SIGNAL(triggered()), this, SLOT(onTriggered()));
   setEnabled(enable);
   setShortcutContext(context);
+  ActionRegistry::GetActionRegistry()->registerAction(this);
 }
 
 BaseAction::BaseAction(
@@ -32,13 +32,13 @@ BaseAction::BaseAction(
   const QIcon &icon)
   : QAction(parent)
 {
+  setShortcut(shortcut);
+
   init(name, 
     text, 
     context, 
     enable, 
     icon);
-
-  setShortcut(shortcut);
 }
 
 BaseAction::BaseAction(
@@ -51,13 +51,13 @@ BaseAction::BaseAction(
   const QIcon &icon)
   : QAction(parent)
 {
+  setShortcuts(shortcuts);
+
   init(name, 
     text, 
     context, 
     enable, 
     icon);
-
-  setShortcuts(shortcuts);
 }
 
 BaseAction::~BaseAction()

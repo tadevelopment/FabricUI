@@ -46,6 +46,29 @@ void ActionRegistry::registerAction(
   const QString &actionName,
   QAction *action)
 {
+  // Check if the actions hasn't been registered already.
+  // Usefull to debug
+  QAction *temp = getAction(actionName);
+
+  if( temp && temp->shortcuts() == action->shortcuts() )
+  {
+    QString sequence;
+    QList<QKeySequence> shortcutsList = action->shortcuts();
+    for(int i=0; i<shortcutsList.size(); ++i)
+    {
+      sequence += shortcutsList[i].toString();
+      sequence += (i < shortcutsList.size()-1) ? ", " : "";
+    }
+
+    printf(
+      "ActionRegistry::registerAction, action '%s[%s]' already registered\n", 
+      actionName.toUtf8().constData(),
+      sequence.toUtf8().constData()
+    );
+
+    return;
+  }
+
   m_registeredActions[actionName] = action;
   emit actionRegistered(actionName, action);
 }
@@ -54,7 +77,10 @@ void ActionRegistry::unregisterAction(
   BaseAction* action)
 {
   if(action && isActionRegistered(action->getName()))
+  {
+    emit actionUnregistered(action->getName());
   	m_registeredActions.remove(action->getName());
+  }
 }
 
 bool ActionRegistry::isActionRegistered(
@@ -99,6 +125,20 @@ QAction* ActionRegistry::getAction(
 		: 0;
 }
 
+QString ActionRegistry::getActionName(
+  QAction *action) const
+{
+  QMapIterator<QString, QAction*> ite(m_registeredActions);
+  while (ite.hasNext()) 
+  {
+    ite.next();
+    QAction *temp = (QAction *)ite.value();
+    if (temp == action)
+      return ite.key();
+  }
+  return "";
+}
+
 QList<QString> ActionRegistry::getActionNameList() const
 {
   QList<QString> actionNameList;
@@ -121,12 +161,14 @@ QString ActionRegistry::getContent() const
     QAction *action = (QAction *)ite.value();
     QList<QKeySequence> shortcutsList = action->shortcuts();
 
-    res += "["+ ite.key() + "], key:";
-
+    res += ite.key();
+    res +=+ "[";
     for(int i=0; i<shortcutsList.size(); ++i)
     {
-      res += shortcutsList[i].toString() + " ";
+      res += shortcutsList[i].toString();
+      res += (i < shortcutsList.size()-1) ? ", " : "";
     }
+    res +=+ "]";
     res += '\n';
   }
   return res;
