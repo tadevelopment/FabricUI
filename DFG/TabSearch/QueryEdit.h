@@ -4,6 +4,7 @@
 #define __UI_DFG_TabSearch_QueryEdit__
 
 #include <QWidget>
+#include <FTL/Config.h>
 #include <map>
 
 namespace FabricUI
@@ -43,6 +44,8 @@ namespace FabricUI
       {
         Q_OBJECT
 
+        typedef QWidget Parent;
+
       public:
         QueryEdit();
 
@@ -58,13 +61,18 @@ namespace FabricUI
         void onTextChanged( const QString& text );
         void onQueryChanged();
         void updateTagsEdit();
+        void updateTagHighlight();
+        void removeHighlightedTag();
 
       private:
+
         Query m_query;
         class TagsEdit;
         TagsEdit* m_tagsEdit;
         class TextEdit;
         TextEdit* m_textEdit;
+
+        int m_highlightedTag; // -1 if None
       };
     }
   };
