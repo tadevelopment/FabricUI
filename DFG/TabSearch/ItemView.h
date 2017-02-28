@@ -4,6 +4,7 @@
 #define __UI_DFG_TabSearch_ItemView__
 
 #include <QWidget>
+#include <FTL/Config.h>
 
 class QLabel;
 class QPushButton;
@@ -18,6 +19,8 @@ namespace FabricUI
       {
         Q_OBJECT
 
+        typedef QWidget Parent;
+
       public:
         TagView( const std::string& tagName );
         void setScore( double score );
@@ -28,12 +31,19 @@ namespace FabricUI
       public slots:
         void setHighlighted( bool highlighted );
 
+      protected:
+        void enterEvent( QEvent * ) FTL_OVERRIDE;
+        void leaveEvent( QEvent * ) FTL_OVERRIDE;
+
       private slots:
         void onActivated();
 
       private:
+        void updateHighlightColor();
         std::string m_name;
         QPushButton* m_button;
+        bool m_hovered;
+        bool m_highlighted;
       };
 
       class PresetView : public QWidget

@@ -10,6 +10,8 @@ using namespace FabricUI::DFG::TabSearch;
 
 TagView::TagView( const std::string& tagName )
   : m_name( tagName )
+  , m_hovered( false )
+  , m_highlighted( false )
 {
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );
@@ -24,16 +26,36 @@ TagView::TagView( const std::string& tagName )
     this, SLOT( onActivated() )
   );
   this->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
-  this->setHighlighted( false );
+  this->updateHighlightColor();
 }
 
 void TagView::setHighlighted( bool highlighted )
 {
+  m_highlighted = highlighted;
+  updateHighlightColor();
+}
+
+void TagView::updateHighlightColor()
+{
   m_button->setStyleSheet(
-    highlighted ?
+    ( m_highlighted || m_hovered ) ?
     "color : #000; background-color: rgba( 255, 255, 255, 255 );" :
     "color: #FFF; background-color: rgba( 50, 30, 0, 50 );"
   );
+}
+
+void TagView::enterEvent( QEvent * e )
+{
+  Parent::enterEvent( e );
+  m_hovered = true;
+  updateHighlightColor();
+}
+
+void TagView::leaveEvent( QEvent * e )
+{
+  Parent::leaveEvent( e );
+  m_hovered = false;
+  updateHighlightColor();
 }
 
 void TagView::onActivated()
