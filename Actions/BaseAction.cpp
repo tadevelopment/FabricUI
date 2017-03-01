@@ -19,7 +19,10 @@ void BaseAction::init(
   connect(this, SIGNAL(triggered()), this, SLOT(onTriggered()));
   setEnabled(enable);
   setShortcutContext(context);
-  ActionRegistry::GetActionRegistry()->registerAction(this);
+  
+  // Register the action inn the registry.
+  ActionRegistry *registry = ActionRegistry::GetActionRegistry();
+  registry->registerAction(this);
 }
 
 BaseAction::BaseAction(
@@ -31,8 +34,16 @@ BaseAction::BaseAction(
   bool enable,
   const QIcon &icon)
   : QAction(parent)
-{
-  setShortcut(shortcut);
+{ 
+  // Checks if an action under this name has been 
+  // registered already. If so, use its shortcuts.
+  // Synchronize the shortcuts of all the actions.
+  ActionRegistry *registry = ActionRegistry::GetActionRegistry();
+  setShortcut( 
+    (registry->getRegistrationCount(name) > 0)
+    ? registry->getShortcut(name) 
+    : shortcut
+  );
 
   init(name, 
     text, 
@@ -51,8 +62,13 @@ BaseAction::BaseAction(
   const QIcon &icon)
   : QAction(parent)
 {
-  setShortcuts(shortcuts);
-
+  ActionRegistry *registry = ActionRegistry::GetActionRegistry();
+  setShortcuts( 
+    (registry->getRegistrationCount(name) > 0)
+    ? registry->getShortcuts(name) 
+    : shortcuts
+  );
+  
   init(name, 
     text, 
     context, 
@@ -62,6 +78,7 @@ BaseAction::BaseAction(
 
 BaseAction::~BaseAction()
 {
+  // Unregister our-self of the registry.
   ActionRegistry::GetActionRegistry()->unregisterAction(this);
 }
 
