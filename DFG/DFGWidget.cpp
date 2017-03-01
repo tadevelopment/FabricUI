@@ -223,7 +223,6 @@ DFGWidget::DFGWidget(
   layout->addWidget( splitter );
   setLayout( layout );
 
-  m_usingLegacyTabSearchWidget = false;
   m_legacyTabSearchWidget = new DFGTabSearchWidget( this, m_dfgConfig );
   m_legacyTabSearchWidget->hide();
   m_tabSearchWidget = new DFGPresetSearchWidget( &getDFGController()->getHost() );
@@ -281,9 +280,21 @@ DFGController * DFGWidget::getUIController()
   return m_uiController.get();
 }
 
+const char* legacyTabSearchKey = "useLegacyTabSearch";
+
+bool DFGWidget::isUsingLegacyTabSearch() const
+{
+  return getSettings()->value( legacyTabSearchKey, true ).toBool();
+}
+
+void DFGWidget::onToggleLegacyTabSearch( bool toggled )
+{
+  getSettings()->setValue( legacyTabSearchKey, toggled );
+}
+
 DFGAbstractTabSearchWidget * DFGWidget::getTabSearchWidget()
 {
-  if( m_usingLegacyTabSearchWidget )
+  if( this->isUsingLegacyTabSearch() )
     return m_legacyTabSearchWidget;
   return m_tabSearchWidget;
 }

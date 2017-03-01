@@ -102,6 +102,7 @@ namespace DFG {
       void reloadStyles();
 
       void tabSearch();
+      bool isUsingLegacyTabSearch() const;
       void emitNodeInspectRequested(FabricUI::GraphView::Node *);
 
       void createPort( FabricUI::GraphView::PortType portType );
@@ -167,7 +168,7 @@ namespace DFG {
       void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);
       void onPresetAddedFromTabSearch( QString preset );
-      void onToggleLegacyTabSearch( bool toggled ) { m_usingLegacyTabSearchWidget = toggled; }
+      void onToggleLegacyTabSearch( bool toggled );
 
     protected slots:
 
@@ -217,7 +218,6 @@ namespace DFG {
       QPoint m_tabSearchPos;
       DFGTabSearchWidget * m_legacyTabSearchWidget;
       DFGPresetSearchWidget * m_tabSearchWidget;
-      bool m_usingLegacyTabSearchWidget;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGConfig m_dfgConfig;
 
