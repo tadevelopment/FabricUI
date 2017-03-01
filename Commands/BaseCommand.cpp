@@ -3,8 +3,7 @@
 //
 
 #include "BaseCommand.h"
-#include <typeinfo>
-
+ 
 using namespace FabricUI;
 using namespace Commands;
 
@@ -16,19 +15,19 @@ BaseCommand::~BaseCommand()
 {
 }
 
-void BaseCommand::registrationCallBack(
+void BaseCommand::registrationCallback(
 	const QString &name,
 	void *userData) 
 {
   m_name = name;
 }
 
-const QString & BaseCommand::getName() const 
+QString BaseCommand::getName() 
 {
   return m_name;
 }
 
-bool BaseCommand::canUndo() const 
+bool BaseCommand::canUndo() 
 {
   return false;
 }
