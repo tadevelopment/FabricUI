@@ -4,9 +4,8 @@
     <namespace-type name="Commands"  generate="yes">
       <object-type name="BaseCommand" />
       <object-type name="BaseScriptableCommand" />
-      <object-type name="BaseScriptableCommand_Python" />
-      <object-type name="BaseCommandManager" />
-      <object-type name="BaseCommandManager_Python" />
+      <object-type name="CommandManager" />
+      <object-type name="CommandManager_Python" />
       <object-type name="CommandRegistry" />
       <object-type name="CppToPythonTestCommand" />
     </namespace-type>
