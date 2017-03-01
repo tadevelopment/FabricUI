@@ -87,7 +87,7 @@ void IntSlider::wheelEvent( QWheelEvent *event )
 
 void IntSlider::setResolution( int min, int max )
 {
-  double resolution = max - min;
+  int resolution = max - min;
   setRange( 0, resolution );
   m_max = max;
   m_min = min;
