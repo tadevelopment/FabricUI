@@ -671,7 +671,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_pos( pos )
       {
-        setText( "New variable" );
+        setText( "New Variable" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -705,7 +705,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_pos( pos )
       {
-        setText( "Read variable (Get)" );
+        setText( "Get Variable" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -739,7 +739,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_pos( pos )
       {
-        setText( "Read variable (Set)" );
+        setText( "Set Variable" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
