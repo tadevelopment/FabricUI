@@ -37,7 +37,7 @@ public:
   void setHighlightedTag( int index )
   {
     for( size_t i = 0; i < m_tagViews.size(); i++ )
-      m_tagViews[i]->setHighlighted( i == index );
+      m_tagViews[i]->setHighlighted( int(i) == index );
   }
 
 private:
