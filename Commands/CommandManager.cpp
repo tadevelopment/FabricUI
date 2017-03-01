@@ -321,7 +321,7 @@ void CommandManager::synchronizeKL()
   // Get the number of undo KL commands 
   // in this manager
   int cppKLCmdCount = 0;
-  for(unsigned int i=0; i<m_undoStack.size(); ++i)
+  for(int i=0; i<m_undoStack.size(); ++i)
   {
     KLCommand *cmd = dynamic_cast<KLCommand *>(m_undoStack[i].topLevelCmd);
     KLScriptableCommand *scriptCmd = dynamic_cast<KLScriptableCommand *>(m_undoStack[i].topLevelCmd);
@@ -333,7 +333,7 @@ void CommandManager::synchronizeKL()
   {
     try
     {
-      for(unsigned int i=cppKLCmdCount; i<klCmdCount; ++i)
+      for(int i=cppKLCmdCount; i<klCmdCount; ++i)
       {
         BaseCommand *cmd = 0;
 
