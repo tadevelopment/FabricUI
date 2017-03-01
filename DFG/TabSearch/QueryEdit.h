@@ -22,6 +22,7 @@ namespace FabricUI
         typedef std::vector<std::string> Tags;
         inline const std::string& getText() const { return m_text; }
         inline const Tags getTags() const { return m_orderedTags; }
+        inline bool hasTag( const std::string& tag ) const { return m_tagMap.find( tag ) != m_tagMap.end(); }
 
       public slots:
         inline void setText( const std::string& text ) { m_text = text; emit changed(); }
@@ -39,6 +40,33 @@ namespace FabricUI
         TagMap m_tagMap;
       };
 
+      // Controller : used for Undo/Redo
+      class QueryController : public QObject
+      {
+        Q_OBJECT
+
+      public slots:
+        void addTag( const std::string& tag );
+        void removeTag( const std::string& tag );
+        void setText( const std::string& text );
+        void clear();
+        void undo();
+        void redo();
+
+      public:
+
+        QueryController( Query& query );
+        ~QueryController();
+        struct Action;
+
+      private:
+        void addAndDoAction( Action* action );
+        void clearStack();
+        std::vector<Action*> m_stack;
+        int m_currentIndex;
+        Query& m_query;
+      };
+
       // View
       class QueryEdit : public QWidget
       {
@@ -48,6 +76,7 @@ namespace FabricUI
 
       public:
         QueryEdit();
+        ~QueryEdit();
 
       public slots:
         void requestTag( const std::string& tag );
@@ -76,6 +105,7 @@ namespace FabricUI
         TextEdit* m_textEdit;
 
         int m_highlightedTag; // -1 if None
+        QueryController* m_controller;
       };
     }
   };

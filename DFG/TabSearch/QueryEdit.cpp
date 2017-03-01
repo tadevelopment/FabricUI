@@ -12,10 +12,129 @@
 
 using namespace FabricUI::DFG::TabSearch;
 
+
+struct QueryController::Action
+{
+  virtual void undo() = 0;
+  virtual void redo() = 0;
+  Query* m_query;
+  Action() : m_query( NULL ) {}
+};
+
+struct AddTag : QueryController::Action
+{
+  AddTag( const std::string& name ) : m_tagName( name ) {}
+protected:
+  std::string m_tagName;
+  void undo() FTL_OVERRIDE { m_query->removeTag( m_tagName ); }
+  void redo() FTL_OVERRIDE { m_query->addTag( m_tagName ); }
+};
+
+struct RemoveTag : QueryController::Action
+{
+  RemoveTag( const std::string& name ) : m_tagName( name ) {}
+protected:
+  std::string m_tagName;
+  void undo() FTL_OVERRIDE { m_query->addTag( m_tagName ); }
+  void redo() FTL_OVERRIDE { m_query->removeTag( m_tagName ); }
+};
+
+struct SetText : QueryController::Action
+{
+  SetText(
+    const std::string& textAfter,
+    const std::string& textBefore
+  ) : m_textAfter( textAfter ), m_textBefore( textBefore ) {}
+protected:
+  std::string m_textAfter, m_textBefore;
+  void undo() FTL_OVERRIDE { m_query->setText( m_textBefore ); }
+  void redo() FTL_OVERRIDE { m_query->setText( m_textAfter ); }
+};
+
+void QueryController::addAndDoAction( QueryController::Action* action )
+{
+  action->m_query = &m_query;
+  action->redo();
+
+  assert( m_currentIndex >= -1 );
+
+  // Cropping actions after
+  for( size_t i = size_t( m_currentIndex + 1 ); i<m_stack.size(); i++ )
+    delete m_stack[i];
+  if( m_stack.size() > size_t( m_currentIndex + 1 ) )
+    m_stack.resize( size_t( m_currentIndex + 1 ) );
+
+  m_stack.push_back( action );
+  m_currentIndex = int( m_stack.size() ) - 1;
+}
+
+QueryController::QueryController( Query& query )
+  : m_query( query )
+{
+
+}
+
+QueryController::~QueryController()
+{
+  clearStack();
+}
+
+void QueryController::clearStack()
+{
+  m_currentIndex = -1;
+  for( size_t i = 0; i < m_stack.size(); i++ )
+    delete m_stack[i];
+  m_stack.resize( 0 );
+}
+
+void QueryController::undo()
+{
+  if( m_currentIndex > -1 )
+  {
+    if( m_currentIndex < int( m_stack.size() ) )
+      m_stack[m_currentIndex]->undo();
+    m_currentIndex--;
+  }
+}
+
+void QueryController::redo()
+{
+  if( m_currentIndex < int( m_stack.size() ) )
+  {
+    if( m_currentIndex > -1 )
+      m_stack[m_currentIndex]->redo();
+    m_currentIndex++;
+  }
+}
+
+void QueryController::addTag( const std::string& tag )
+{
+  if( !m_query.hasTag( tag ) )
+    addAndDoAction( new AddTag( tag ) );
+}
+
+void QueryController::removeTag( const std::string& tag )
+{
+  assert( m_query.hasTag( tag ) );
+  addAndDoAction( new RemoveTag( tag ) );
+}
+
+void QueryController::setText( const std::string& text )
+{
+  if( text != m_query.getText() )
+    addAndDoAction( new SetText( text, m_query.getText() ) );
+}
+
+void QueryController::clear()
+{
+  clearStack();
+  m_query.clear();
+}
+
 class QueryEdit::TagsEdit : public QWidget
 {
 public:
-  TagsEdit( const Query& query )
+  TagsEdit( const Query& query, const QueryController* controller )
   {
     QHBoxLayout* m_layout = new QHBoxLayout();
     m_layout->setMargin( 0 );
@@ -29,7 +148,7 @@ public:
       m_layout->addWidget( tagView );
       connect(
         tagView, SIGNAL( activated( const std::string& ) ),
-        &query, SLOT( removeTag( const std::string& ) )
+        controller, SLOT( removeTag( const std::string& ) )
       );
     }
   }
@@ -56,10 +175,22 @@ public:
 protected:
   void keyPressEvent( QKeyEvent * e ) FTL_OVERRIDE
   {
+    // Undo - Redo
+    if( e->matches( QKeySequence::Undo ) )
+    {
+      m_parent->m_controller->undo();
+      return;
+    }
+    if( e->matches( QKeySequence::Redo ) )
+    {
+      m_parent->m_controller->redo();
+      return;
+    }
+
     if( e->key() == Qt::Key_Backspace )
     {
       if( m_parent->m_highlightedTag == -1 && cursorPosition() == 0 )
-        m_parent->m_highlightedTag = m_parent->m_query.getTags().size() - 1;
+        m_parent->m_highlightedTag = int(m_parent->m_query.getTags().size()) - 1;
       else
         m_parent->removeHighlightedTag();
     }
@@ -76,7 +207,7 @@ protected:
     if( cursorPosition() == 0 && e->key() == Qt::Key_Left )
     {
       if( m_parent->m_highlightedTag == -1 )
-        m_parent->m_highlightedTag = m_parent->m_query.getTags().size() - 1;
+        m_parent->m_highlightedTag = int(m_parent->m_query.getTags().size()) - 1;
       else
       // stop at the leftmost tag (since -1 is reserved)
       if( m_parent->m_highlightedTag > 0 )
@@ -94,6 +225,7 @@ private:
 
 QueryEdit::QueryEdit()
   : m_highlightedTag( -1 )
+  , m_controller( new QueryController( m_query ) )
 {
   QFont font; font.setPointSize( 16 );
   this->setFont( font );
@@ -101,7 +233,7 @@ QueryEdit::QueryEdit()
   QHBoxLayout* m_layout = new QHBoxLayout();
   this->setLayout( m_layout );
 
-  m_tagsEdit = new TagsEdit( m_query );
+  m_tagsEdit = new TagsEdit( m_query, m_controller );
   this->layout()->addWidget( m_tagsEdit );
 
   m_textEdit = new TextEdit( this );
@@ -120,6 +252,11 @@ QueryEdit::QueryEdit()
   onQueryChanged();
 }
 
+QueryEdit::~QueryEdit()
+{
+  delete m_controller;
+}
+
 void Query::clear()
 {
   m_orderedTags.clear();
@@ -129,7 +266,7 @@ void Query::clear()
 
 void Query::addTag( const std::string& tag )
 {
-  if( m_tagMap.find( tag ) == m_tagMap.end() )
+  if( !hasTag( tag ) )
   {
     m_tagMap.insert( TagMap::value_type( tag, m_orderedTags.size() ) );
     m_orderedTags.push_back( tag );
@@ -161,23 +298,23 @@ void Query::removeTag( const std::string& tag )
 
 void QueryEdit::onTextChanged( const QString& text )
 {
-  m_query.setText( text.toStdString() );
+  m_controller->setText( text.toStdString() );
 }
 
 void QueryEdit::requestTag( const std::string& tag )
 {
-  m_query.addTag( tag );
+  m_controller->addTag( tag );
 }
 
 void QueryEdit::requestTags( const std::vector<std::string>& tags )
 {
   for( size_t i = 0; i < tags.size(); i++ )
-    m_query.addTag( tags[i] );
+    m_controller->addTag( tags[i] );
 }
 
 void QueryEdit::clear()
 {
-  m_query.clear();
+  m_controller->clear();
 }
 
 void QueryEdit::updateTagHighlight()
@@ -201,9 +338,9 @@ void QueryEdit::deselectTags()
 
 void QueryEdit::removeHighlightedTag()
 {
-  assert( m_highlightedTag < m_query.getTags().size() );
+  assert( m_highlightedTag < int(m_query.getTags().size()) );
   if( m_highlightedTag >= 0 ) // If a tag is highlighted, remove it
-    m_query.removeTag( m_query.getTags()[m_highlightedTag] );
+    m_controller->removeTag( m_query.getTags()[m_highlightedTag] );
   m_highlightedTag = -1;
 }
 
@@ -214,7 +351,7 @@ void QueryEdit::updateTagsEdit()
   layout()->removeWidget( m_textEdit );
   // Delete the TagsEdit and create a new one
   m_tagsEdit->deleteLater();
-  m_tagsEdit = new TagsEdit( m_query );
+  m_tagsEdit = new TagsEdit( m_query, m_controller );
   // Put back the widgets (in the right order)
   layout()->addWidget( m_tagsEdit );
   layout()->addWidget( m_textEdit );
@@ -223,6 +360,11 @@ void QueryEdit::updateTagsEdit()
 
 void QueryEdit::onQueryChanged()
 {
+  // Update the QLineEdit, while saving the cursor position
+  int textCursor = m_textEdit->cursorPosition();
+  m_textEdit->setText( QString::fromStdString( m_query.getText() ) );
+  m_textEdit->setCursorPosition( textCursor );
+
   updateTagsEdit();
   m_highlightedTag = -1;
   updateTagHighlight();
