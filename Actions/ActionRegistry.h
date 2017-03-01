@@ -4,6 +4,7 @@
 #define __UI_ACTION_REGISTRY__
 
 #include <QMap>
+#include <QSet>
 #include <QList>
 #include <QObject>
 #include "BaseAction.h"
@@ -163,7 +164,7 @@ class ActionRegistry : public QObject
 
   private:
     /// Dictionaries of registered actions.
-    QMap< QString, QList< QAction * > > m_registeredActions;
+    QMap< QString, QSet< QAction * > > m_registeredActions;
     /// Registry singleton.
     static ActionRegistry * s_actionRegistry;
     /// Check if the singleton has been set.
