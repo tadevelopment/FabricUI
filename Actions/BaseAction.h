@@ -15,8 +15,8 @@ class BaseAction : public QAction
 {
   /**
     BaseAction inherates QActions and are registered in the ActionRegistry
-    when created. The action unregisteres it- self when it's destroyed. 
-    Any actions using shortcuts shall specializes this class.
+    when created. The action unregisteres it-self when it's destroyed. 
+    Any actions using shortcuts shall specialize this class.
     
     Usage:
     -C++:

@@ -14,17 +14,16 @@ namespace Actions {
 class ActionRegistry : public QObject
 {
   /**
-    ActionRegistry registers QAction or BaseAction as a key-value pair in a map so we know 
-    which actions and key-shortcuts are used in the application. These informations are not   
-    provided by Qt and are needed by the command system. While BaseAction register-unregister 
-    them-selves automatically, it's not the case for QAction. When an action is registered-
-    unregistered, the signals `actionRegistered` and `actionUnregistered` are emitted. 
+    ActionRegistry registers QAction and BaseAction as a key-value pair in a map
+    so we know which actions and key-shortcuts are used in the application. These
+    informations are not provided by Qt and are needed by the command system. 
 
-    The same action may be created several times from differents places. At each time, the
-    action is registered and pushed in a flat list. When an action is deleted, it's removed
-    from the list. When the list size is null, the key-value pair is removed from the map
-    and the action unregisters. ActionRegistry provides functionalities to synchronizes the
-    shortcut sequence of all the actions sharing the same name.
+    When an action is registered-unregistered, the signals `actionRegistered` and 
+    `actionUnregistered` are emitted. The same action may be created several times 
+    from differents places. At each time, the action is registered and pushed in a 
+    flat list. When an action is deleted, it's removed from the list. When the list 
+    size is null, the is action unregistered. ActionRegistry provides functionalities 
+    to synchronizes the shortcut sequence of all the actions sharing the same name.
 
     The registry sets it-self as a singleton:
     - C++:
@@ -39,8 +38,6 @@ class ActionRegistry : public QObject
     - Register a QAction: actionRegistry->:registerAction(actionName, new QAction(...));
     
     - Register a BaseAction: actionRegistry->:registerAction(new BaseAction(...));
-
-    - Unregister an action: actionRegistry->:unregisterAction(QAction(...));
 
     - Check if an action is registered: actionRegistry->isActionRegistered(actionName);
     
@@ -72,11 +69,6 @@ class ActionRegistry : public QObject
       BaseAction *action
       );
 
-    /// Unregisters a action.
-    void unregisterAction(
-      QAction *action
-      );
-    
     /// Checks if an action is
     /// registered under 'actionName'.
     bool isActionRegistered(
@@ -161,6 +153,13 @@ class ActionRegistry : public QObject
     /// is unregistered.
     void actionUnregistered(
       const QString &actionName);
+
+  private slots:
+    /// Called when an action 
+    /// is destroyed.
+    void onUnregisterAction(
+      QObject *obj
+      );
 
   private:
     /// Dictionaries of registered actions.

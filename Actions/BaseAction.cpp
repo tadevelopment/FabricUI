@@ -20,7 +20,7 @@ void BaseAction::init(
   setEnabled(enable);
   setShortcutContext(context);
   
-  // Register the action inn the registry.
+  // Register the action.
   ActionRegistry *registry = ActionRegistry::GetActionRegistry();
   registry->registerAction(this);
 }
@@ -78,8 +78,6 @@ BaseAction::BaseAction(
 
 BaseAction::~BaseAction()
 {
-  // Unregister our-self of the registry.
-  ActionRegistry::GetActionRegistry()->unregisterAction(this);
 }
 
 QString BaseAction::getName() const

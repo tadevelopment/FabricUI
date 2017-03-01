@@ -40,13 +40,25 @@ void ActionRegistry::registerAction(
   const QString &actionName,
   QAction *action)
 {
+  QObject::connect(
+    action,
+    SIGNAL(destroyed(QObject *)),
+    this,
+    SLOT(onUnregisterAction(QObject *))
+  );
+
   m_registeredActions[actionName].append(action);
+
   emit actionRegistered(actionName, action);
 }
 
-void ActionRegistry::unregisterAction(
-  QAction* action)
+void ActionRegistry::onUnregisterAction(
+  QObject *obj)
 {
+  QAction* action = (QAction*)obj;
+  if(!action)
+      return;
+
   QString actionName = getActionName(action);
   if(actionName.isEmpty())
     return;
