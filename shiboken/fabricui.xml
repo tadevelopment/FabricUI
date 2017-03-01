@@ -31,6 +31,7 @@
     </namespace-type>
   
     <load-typesystem name="fabricui_menus.xml" generate="yes"/>
+    <load-typesystem name="fabricui_actions.xml" generate="yes"/>
     <load-typesystem name="fabricui_modelitems.xml" generate="yes"/>
     <load-typesystem name="fabricui_valueeditor.xml" generate="yes"/>
     <load-typesystem name="fabricui_scenehub.xml" generate="yes"/>

@@ -47,14 +47,7 @@ DFGPEWidget_Elements::DFGPEWidget_Elements(
   setLayout( m_layout );
   setModel( model );
 
-  QAction *duplicateAction =
-    new QAction( parent );
-  connect(
-    duplicateAction, SIGNAL(triggered()),
-    this, SLOT(onDuplicateSelected())
-    );
-  duplicateAction->setShortcut( Qt::CTRL + Qt::Key_D );
-  this->addAction( duplicateAction );
+  this->addAction( new DuplicateAction(this, parent) );
 }
 
 void DFGPEWidget_Elements::setModel( DFGPEModel *newModel )
@@ -311,23 +304,14 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
 
   if ( m_canInspectElements )
   {
-    QAction *inspectAction =
-      new QAction( m_editIcon, "Edit Selected", &menu );
-    connect(
-      inspectAction, SIGNAL(triggered()),
-      this, SLOT(onInspectSelected())
-      );
+    QAction *inspectAction = new EditSelectionAction(this, &menu, m_editIcon);
     menu.addAction( inspectAction );
+ 
     bool canEdit = (    selectedIndices.size() == 1
                     && !m_model->isElementReadOnly( selectedIndices[0] ) );
     inspectAction->setEnabled( canEdit );
 
-    QAction *removeAction =
-      new QAction( m_minusIcon, "Delete Selected", &menu );
-    connect(
-      removeAction, SIGNAL(triggered()),
-      this, SLOT(onRemoveSelected())
-      );
+    QAction *removeAction = new DeleteSelectionAction(this, &menu, m_minusIcon);
     menu.addAction( removeAction );
     bool canRemoveAtLeastOne = false;
     for ( int i = 0; i < selectedIndices.size(); ++i )
@@ -338,13 +322,7 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
       }
     removeAction->setEnabled( canRemoveAtLeastOne );
 
-    QAction *duplicateAction =
-      new QAction( m_plusIcon, "Duplicate Selected", &menu );
-    connect(
-      duplicateAction, SIGNAL(triggered()),
-      this, SLOT(onDuplicateSelected())
-      );
-    duplicateAction->setShortcut( Qt::CTRL + Qt::Key_D );
+    QAction *duplicateAction = new DuplicateAction(this, &menu, m_plusIcon);
     menu.addAction( duplicateAction );
     duplicateAction->setEnabled( !m_model->isReadOnly() );
   }

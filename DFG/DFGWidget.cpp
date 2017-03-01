@@ -238,14 +238,7 @@ DFGWidget::DFGWidget(
 
   m_uiController->setHostBindingExec( host, binding, execPath, exec );
 
-  QAction *reloadStylesAction = new QAction( "Reload QSS Styles", this );
-  reloadStylesAction->setShortcut( QKeySequence( "Ctrl+Shift+R" ) );
-  reloadStylesAction->setShortcutContext( Qt::WindowShortcut );
-  connect(
-    reloadStylesAction, SIGNAL(triggered()),
-    this, SLOT(onReloadStyles())
-    );
-  addAction( reloadStylesAction );
+  addAction( new ReloadStyleAction(this, this) );
 }
 
 DFGWidget::~DFGWidget()
