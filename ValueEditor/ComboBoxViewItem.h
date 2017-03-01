@@ -6,6 +6,7 @@
 #define FABRICUI_VALUEEDITOR_COMBOBOXVIEWITEM_H
 
 #include "BaseViewItem.h"
+#include <FabricCore.h>
 
 
 namespace FabricUI {
@@ -16,6 +17,8 @@ class ComboBox;
 class ComboBoxViewItem : public BaseViewItem
 {
   Q_OBJECT
+
+  FabricCore::RTVal m_val;
 
 public:
   

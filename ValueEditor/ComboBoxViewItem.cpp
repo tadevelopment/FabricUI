@@ -17,6 +17,7 @@ ComboBoxViewItem::ComboBoxViewItem( QString const &name, QVariant const &v, Item
   , m_comboBox(NULL)
   , m_isString(isString)
   , m_isRotationOrder(isRotationOrder)
+  , m_val(v.value<FabricCore::RTVal>())
 {
   m_comboBox = new ComboBox;
 
@@ -110,6 +111,14 @@ void ComboBoxViewItem::entrySelected(int index)
       QVariant::fromValue<QString>( m_comboBox->itemText( index ) )
       );
   }
+  else if ( m_isRotationOrder )
+  {
+    m_val = ToRotationOrder( m_val, index );
+
+    emit viewValueChanged(
+      QVariant::fromValue<FabricCore::RTVal>( m_val )
+      );
+  }
   else
   {
     emit viewValueChanged(
@@ -117,6 +126,21 @@ void ComboBoxViewItem::entrySelected(int index)
       );
   }
 }
+//////////////////////////////////////////////////////////////////////////
+// 
+FabricCore::RTVal ToRotationOrder( FabricCore::RTVal& val, const int index )
+{
+  FabricCore::RTVal indexAsRTVal = FabricCore::RTVal::ConstructUInt8(
+    val.getContext(),
+    index);
+
+  return FabricCore::RTVal::Create(
+    val.getContext(),
+    "RotationOrder",
+    1,
+    indexAsRTVal );
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // 
