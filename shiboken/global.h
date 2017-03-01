@@ -8,6 +8,8 @@
 #include "pyside_global.h"
 
 #include "global_commands.h"
+#include "global_actions.h"
+
 
 #include <FabricUI/Menus/BaseMenu.h>
 #include <FabricUI/GraphView/Graph.h>

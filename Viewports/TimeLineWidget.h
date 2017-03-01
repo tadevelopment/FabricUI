@@ -5,14 +5,13 @@
 #include <QMouseEvent>
 #include <QTimer>
 #include <QTime>
-#include <QShortcut>
-#include <QAction>
 #include <QList>
 
 #include <QDoubleSpinBox>
 #include <QSlider>
 #include <QPushButton>
 #include <QComboBox>
+#include <FabricUI/Actions/BaseAction.h>
 
 #include <ctime>
 
@@ -274,8 +273,40 @@ namespace FabricUI
         QComboBox * m_simModeComBox;
     };
 
-    // // FE-5724 
-    class TogglePlaybackAction : public QAction
+    // FE-5724 
+    class BaseTimeLineAction : public Actions::BaseAction
+    {
+      Q_OBJECT
+
+      public:
+        BaseTimeLineAction(
+          TimeLineWidget *timeLine,
+          const QString &name, 
+          const QString &text = "", 
+          QKeySequence shortcut = QKeySequence(),
+          Qt::ShortcutContext context = Qt::ApplicationShortcut,
+          bool enable = true)
+          : Actions::BaseAction( 
+            timeLine
+            , name 
+            , text 
+            , shortcut 
+            , context
+            , enable)
+          , m_timeLine(timeLine)
+        {
+        }
+
+        virtual ~BaseTimeLineAction()
+        {
+        }
+
+      protected:
+        TimeLineWidget *m_timeLine;
+
+    };
+
+    class TogglePlaybackAction : public BaseTimeLineAction
     {
       Q_OBJECT
 
@@ -283,18 +314,29 @@ namespace FabricUI
         TogglePlaybackAction(
           TimeLineWidget *timeLine,
           bool enable = true )
-          : QAction( timeLine )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::TogglePlaybackAction"
+            , "Toggle playback" 
+            , QKeySequence("Ctrl+Space" ) 
+            , Qt::ApplicationShortcut
+            , enable)
         {
-          setText( "Toggle playback" );
-          connect( this, SIGNAL(triggered()),
-                   timeLine, SLOT(togglePlayback()) );
-          setEnabled( enable );
-          setShortcut( QKeySequence("Ctrl+Space" ) );
-          setShortcutContext(Qt::ApplicationShortcut);
         }
+
+        virtual ~TogglePlaybackAction()
+        {
+        }
+
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->togglePlayback();
+        }
+
     };
 
-    class PlayAction : public QAction
+    class PlayAction : public BaseTimeLineAction
     {
       Q_OBJECT
 
@@ -302,18 +344,28 @@ namespace FabricUI
         PlayAction(
           TimeLineWidget *timeLine,
           bool enable = true )
-          : QAction( timeLine )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::PlayAction"
+            , "Play" 
+            , QKeySequence("Ctrl+Up" ) 
+            , Qt::ApplicationShortcut
+            , enable)
         {
-          setText( "Play" );
-          connect( this, SIGNAL(triggered()),
-                   timeLine, SLOT(play()) );
-          setEnabled( enable );
-          setShortcut( QKeySequence("Ctrl+Up") );
-          setShortcutContext(Qt::ApplicationShortcut);
+        }
+
+        virtual ~PlayAction()
+        {
+        }
+
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->play();
         }
     };
 
-    class PauseAction : public QAction
+    class PauseAction : public BaseTimeLineAction
     {
       Q_OBJECT
 
@@ -321,37 +373,57 @@ namespace FabricUI
         PauseAction(
           TimeLineWidget *timeLine,
           bool enable = true )
-          : QAction( timeLine )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::PauseAction"
+            , "Pause" 
+            , QKeySequence("Ctrl+Down" ) 
+            , Qt::ApplicationShortcut
+            , enable)
         {
-          setText( "Pause" );
-          connect( this, SIGNAL(triggered()),
-                   timeLine, SLOT(pause()) );
-          setEnabled( enable );
-          setShortcut( QKeySequence("Ctrl+Down") );
-          setShortcutContext(Qt::ApplicationShortcut);
+        }
+
+        virtual ~PauseAction()
+        {
+        }
+
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->pause();
         }
     };
 
-    class GoToNextFrameAction : public QAction
+    class GoToNextFrameAction : public BaseTimeLineAction
     {
       Q_OBJECT
 
       public:
-         GoToNextFrameAction(
-            TimeLineWidget *timeLine,
-            bool enable = true )
-            : QAction( timeLine )
-          {
-            setText( "Go to next Frame" );
-            connect( this, SIGNAL(triggered()),
-                     timeLine, SLOT(goToNextFrame()) );
-            setEnabled( enable );
-            setShortcut( QKeySequence("Ctrl+Right") );
-            setShortcutContext(Qt::ApplicationShortcut);
-          }
+        GoToNextFrameAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::GoToNextFrameAction"
+            , "Go to next Frame" 
+            , QKeySequence("Ctrl+Right" ) 
+            , Qt::ApplicationShortcut
+            , enable)
+        {
+        }
+
+        virtual ~GoToNextFrameAction()
+        {
+        }
+        
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->goToNextFrame();
+        }
     };
 
-    class GoToPreviousFrameAction : public QAction
+    class GoToPreviousFrameAction : public BaseTimeLineAction
     {
       Q_OBJECT
 
@@ -359,18 +431,28 @@ namespace FabricUI
         GoToPreviousFrameAction(
           TimeLineWidget *timeLine,
           bool enable = true )
-          : QAction( timeLine )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::GoToPreviousFrameAction"
+            , "Go to previous Frame" 
+            , QKeySequence("Ctrl+Left" ) 
+            , Qt::ApplicationShortcut
+            , enable)
         {
-          setText( "Go to previous Frame" );
-          connect( this, SIGNAL(triggered()),
-                   timeLine, SLOT(goToPreviousFrame()) );
-          setEnabled( enable );
-          setShortcut( QKeySequence("Ctrl+Left") );
-          setShortcutContext(Qt::ApplicationShortcut);
+        }
+
+        virtual ~GoToPreviousFrameAction()
+        {
+        }
+        
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->goToPreviousFrame();
         }
     };
 
-    class GoToEndFrameAction : public QAction
+    class GoToEndFrameAction : public BaseTimeLineAction
     {
       Q_OBJECT
 
@@ -378,18 +460,29 @@ namespace FabricUI
         GoToEndFrameAction(
           TimeLineWidget *timeLine,
           bool enable = true )
-          : QAction( timeLine )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::GoToEndFrameAction"
+            , "Go to end Frame" 
+            , QKeySequence("Ctrl+End" ) 
+            , Qt::ApplicationShortcut
+            , enable)
         {
-          setText( "Go to end Frame" );
-          connect( this, SIGNAL(triggered()),
-                   timeLine, SLOT(goToEndFrame()) );
-          setEnabled( enable );
-          setShortcut( QKeySequence("Ctrl+End") );
-          setShortcutContext(Qt::ApplicationShortcut);
         }
+
+        virtual ~GoToEndFrameAction()
+        {
+        }
+
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->goToEndFrame();
+        }
+
     };
 
-    class GoToStartFrameAction : public QAction
+    class GoToStartFrameAction : public BaseTimeLineAction
     {
       Q_OBJECT
 
@@ -397,15 +490,26 @@ namespace FabricUI
         GoToStartFrameAction(
           TimeLineWidget *timeLine,
           bool enable = true )
-          : QAction( timeLine )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::GoToStartFrameAction"
+            , "Go to start Frame" 
+            , QKeySequence("Ctrl+Home" ) 
+            , Qt::ApplicationShortcut
+            , enable)
         {
-          setText( "Go to first Frame" );
-          connect( this, SIGNAL(triggered()),
-                   timeLine, SLOT(goToStartFrame()) );
-          setEnabled( enable );
-          setShortcut( QKeySequence("Ctrl+Home") );
-          setShortcutContext(Qt::ApplicationShortcut);
         }
+
+        virtual ~GoToStartFrameAction()
+        {
+        }
+        
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->goToStartFrame();
+        }
+
     };
   };
   
