@@ -15,6 +15,9 @@ from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
+from FabricEngine.Canvas.CommandManager import *
+from FabricEngine.Canvas.CommandManagerQtCallback import *
+from FabricEngine.Canvas.HotkeyEditor import *
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -218,6 +221,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self._initKL(unguarded, noopt)
         self._initLog()
         self._initDFG()
+        self._initCommand()
+        self._initDFGWidget()
         self._initTreeView()
         self._initValueEditor()
         self._initGL()
@@ -364,9 +369,9 @@ class CanvasWindow(QtGui.QMainWindow):
         client.loadExtension('Math')
         client.loadExtension('Parameters')
         client.loadExtension('Util')
+        client.loadExtension('FabricInterfaces')
         client.setStatusCallback(self._statusCallback)
         self.client = client
-        self.qUndoStack = QtGui.QUndoStack()
         self.rtvalEncoderDecoder.client = self.client
 
     def _initDFG(self):
@@ -380,10 +385,6 @@ class CanvasWindow(QtGui.QMainWindow):
         interact with it via the DFGWidget and through other scripted methods
         within the application.
 
-        The UICmdHandler handles the interaction between the UI and the client.
-
-        The DFGWidget is the UI that reflects the binding to the graph that is
-        created and changed through the application.
         """
 
         self.evalContext = self.client.RT.types.EvalContext.create()
@@ -396,14 +397,38 @@ class CanvasWindow(QtGui.QMainWindow):
         self.lastSavedBindingVersion = self.mainBinding.getVersion()
         self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
 
-        graph = self.mainBinding.getExec()
+    def _initCommand(self):
+        """Initializes the commands framework.
+ 
+        The UICmdHandler handles the interaction between the UI and the client.
+
+        """
+        CreateCommandManager(self.client)
+        self.hotkeyEditor = HotkeyEditor(self)
+
+        self.qUndoStack = QtGui.QUndoStack()
+        self.qUndoView = QtGui.QUndoView(self.qUndoStack)
+        self.qUndoView.setObjectName('DFGHistoryWidget')
+        self.qUndoView.setEmptyLabel("New Graph")
+
         self.scriptEditor = ScriptEditor(self.client, self.mainBinding, self.qUndoStack, self.logWidget, self.settings, self, self.config)
         self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
+        self.cmdManagerQtCallback = CommandManagerQtCallback(self.qUndoStack, self.scriptEditor)
+        
+        self.hotkeyEditorDockWidget = QtGui.QDockWidget("Hotkey Editor", self)
+        self.hotkeyEditorDockWidget.setObjectName("Hotkey Editor")
+        self.hotkeyEditorDockWidget.setWidget( self.hotkeyEditor )
+        self.hotkeyEditorDockWidget.setFeatures(self.dockFeatures)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.hotkeyEditorDockWidget, QtCore.Qt.Vertical)
+        self.hotkeyEditorDockWidget.hide()
 
-        astManager = KLASTManager(self.client)
-        self.lastSavedBindingVersion = self.mainBinding.getVersion()
-        self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
+    def _initDFGWidget(self):
+        """Initializes the Data Flow Graph.
 
+        The DFGWidget is the UI that reflects the binding to the graph that is
+        created and changed through the application.
+        """
+ 
         graph = self.mainBinding.getExec()
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
                                        self.mainBinding, '', graph, self.astManager,
@@ -466,12 +491,9 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget.stylesReloaded.connect(self.valueEditor.reloadStyles)
 
     def _initLog(self):
-        """Initializes the DFGLogWidget and Undo view."""
+        """Initializes the DFGLogWidget."""
         self.logWidget = DFG.DFGLogWidget(self.config)
-        self.qUndoView = QtGui.QUndoView(self.qUndoStack)
-        self.qUndoView.setObjectName('DFGHistoryWidget')
-        self.qUndoView.setEmptyLabel("New Graph")
-
+      
     def _initTimeLine(self):
         """Initializes the TimeLineWidget.
 
@@ -638,6 +660,11 @@ class CanvasWindow(QtGui.QMainWindow):
         toggleAction = self.renderingOptionsDockWidget.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
         Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
+        windowMenu.addAction( toggleAction )
+
+        # Toggle ShortCut Menu Widget Action
+        toggleAction = self.hotkeyEditorDockWidget.toggleViewAction()
+        toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_9)
         windowMenu.addAction( toggleAction )
 
     def onPortManipulationRequested(self, portName):
