@@ -297,6 +297,10 @@ namespace FabricUI
         {
         }
 
+        virtual ~BaseTimeLineAction()
+        {
+        }
+
       protected:
         TimeLineWidget *m_timeLine;
 
@@ -320,7 +324,11 @@ namespace FabricUI
         {
         }
 
-      private:
+        virtual ~TogglePlaybackAction()
+        {
+        }
+
+      private slots:
         virtual void onTriggered()
         {
           m_timeLine->togglePlayback();
@@ -346,7 +354,11 @@ namespace FabricUI
         {
         }
 
-      private:
+        virtual ~PlayAction()
+        {
+        }
+
+      private slots:
         virtual void onTriggered()
         {
           m_timeLine->play();
@@ -371,7 +383,11 @@ namespace FabricUI
         {
         }
 
-      private:
+        virtual ~PauseAction()
+        {
+        }
+
+      private slots:
         virtual void onTriggered()
         {
           m_timeLine->pause();
@@ -396,7 +412,11 @@ namespace FabricUI
         {
         }
 
-      private:
+        virtual ~GoToNextFrameAction()
+        {
+        }
+        
+      private slots:
         virtual void onTriggered()
         {
           m_timeLine->goToNextFrame();
@@ -421,7 +441,11 @@ namespace FabricUI
         {
         }
 
-      private:
+        virtual ~GoToPreviousFrameAction()
+        {
+        }
+        
+      private slots:
         virtual void onTriggered()
         {
           m_timeLine->goToPreviousFrame();
@@ -446,7 +470,11 @@ namespace FabricUI
         {
         }
 
-      private:
+        virtual ~GoToEndFrameAction()
+        {
+        }
+
+      private slots:
         virtual void onTriggered()
         {
           m_timeLine->goToEndFrame();
@@ -472,7 +500,11 @@ namespace FabricUI
         {
         }
 
-      private:
+        virtual ~GoToStartFrameAction()
+        {
+        }
+        
+      private slots:
         virtual void onTriggered()
         {
           m_timeLine->goToStartFrame();

@@ -247,7 +247,11 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
       {
       }
- 
+
+      virtual ~BaseDFGWidgetAction()
+      {
+      }
+
     protected:
 
       DFGWidget *m_dfgWidget;
@@ -271,6 +275,10 @@ namespace DFG {
           , Qt::Key_Tab 
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~TabSearchAction()
       {
       }
 
@@ -301,6 +309,10 @@ namespace DFG {
           , Qt::Key_U 
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~GoUpAction()
       {
       }
 
@@ -930,6 +942,10 @@ namespace DFG {
       {
       }
 
+      virtual ~EditSelectedNodeAction()
+      {
+      }
+
     private slots:
 
       virtual void onTriggered()
@@ -956,6 +972,10 @@ namespace DFG {
           , Qt::Key_F2 
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~EditSelectedNodePropertiesAction()
       {
       }
 
@@ -1125,6 +1145,10 @@ namespace DFG {
       {
       }
 
+      virtual ~SelectAllNodesAction()
+      {
+      }
+
     private slots:
 
       virtual void onTriggered()
@@ -1151,6 +1175,10 @@ namespace DFG {
           , QKeySequence(Qt::CTRL + Qt::Key_D)
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~DeselectAllNodesAction()
       {
       }
 
@@ -1247,6 +1275,10 @@ namespace DFG {
       {
       }
 
+      virtual ~AutoConnectionsAction()
+      {
+      }
+
     private slots:
 
       virtual void onTriggered()
@@ -1274,6 +1306,10 @@ namespace DFG {
           , Qt::Key_D 
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~RemoveConnectionsAction()
       {
       }
 
@@ -1307,6 +1343,10 @@ namespace DFG {
       {
       }
 
+      virtual ~CopyNodesAction()
+      {
+      }
+
     private slots:
 
       virtual void onTriggered()
@@ -1334,6 +1374,10 @@ namespace DFG {
           , QKeySequence::Cut
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~CutNodesAction()
       {
       }
 
@@ -1367,6 +1411,10 @@ namespace DFG {
       {
       }
 
+      virtual ~PasteNodesAction()
+      {
+      }
+
     private slots:
 
       virtual void onTriggered()
@@ -1394,6 +1442,10 @@ namespace DFG {
           , Qt::Key_1
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~CollapseLevel1Action()
       {
       }
 
@@ -1427,6 +1479,10 @@ namespace DFG {
       {
       }
 
+      virtual ~CollapseLevel2Action()
+      {
+      }
+
     private slots:
 
       virtual void onTriggered()
@@ -1454,6 +1510,10 @@ namespace DFG {
           , Qt::Key_3
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~CollapseLevel3Action()
       {
       }
 
@@ -1487,6 +1547,10 @@ namespace DFG {
       {
       }
 
+      virtual ~ResetZoomAction()
+      {
+      }
+
     private slots:
 
       virtual void onTriggered()
@@ -1514,6 +1578,10 @@ namespace DFG {
           , Qt::Key_F 
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~FrameSelectedNodesAction()
       {
       }
 
@@ -1547,6 +1615,10 @@ namespace DFG {
       {
       }
 
+      virtual ~FrameAllNodesAction()
+      {
+      }
+
     private slots:
 
       virtual void onTriggered()
@@ -1574,6 +1646,10 @@ namespace DFG {
           , QKeySequence(Qt::CTRL + Qt::Key_R)
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~RelaxNodesAction()
       {
       }
 
@@ -1712,6 +1788,10 @@ namespace DFG {
       {
       }
 
+      virtual ~DeleteNodes1Action()
+      {
+      }
+
     private slots:
 
       virtual void onTriggered()
@@ -1743,6 +1823,10 @@ namespace DFG {
           , QKeySequence(Qt::Key_Backspace)
           , Qt::WidgetWithChildrenShortcut
           , enable)
+      {
+      }
+
+      virtual ~DeleteNodes2Action()
       {
       }
 
@@ -2107,6 +2191,10 @@ namespace DFG {
       {
       }
 
+      virtual ~ConnectionRemoveAction()
+      {
+      }
+
     private slots:
 
       virtual void onTriggered()
@@ -2163,6 +2251,10 @@ namespace DFG {
       {
         QStringList path = presetPath.split(".");
         return (path.size() > 0 ? path[path.size() - 1] : "");
+      }
+
+      virtual ~ConnectionInsertPresetAction()
+      {
       }
 
     private slots:
@@ -2274,6 +2366,10 @@ namespace DFG {
       {
       }
 
+      virtual ~ReloadStyleAction()
+      {
+      }
+      
     private slots:
 
       virtual void onTriggered()

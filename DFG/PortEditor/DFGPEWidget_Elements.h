@@ -385,6 +385,10 @@ public:
   {
   }
 
+  virtual ~BaseDFGPEWidget_ElementsAction()
+  {
+  }
+
 protected:
 
   DFGPEWidget_Elements *m_dfgPEWidget_Elements;
@@ -409,6 +413,10 @@ public:
       , Qt::WidgetWithChildrenShortcut
       , true
       , icon)
+  {
+  }
+
+  virtual ~DuplicateAction()
   {
   }
 
@@ -443,6 +451,10 @@ public:
   {
   }
 
+  virtual ~EditSelectionAction()
+  {
+  }
+
 private slots:
 
   virtual void onTriggered()
@@ -471,6 +483,10 @@ public:
       , Qt::WidgetWithChildrenShortcut
       , true
       , icon)
+  {
+  }
+
+  virtual ~DeleteSelectionAction()
   {
   }
 

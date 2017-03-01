@@ -110,6 +110,10 @@ public:
   {
   }
 
+  virtual ~BaseDFGErrorWidgetAction()
+  {
+  }
+
 protected:
 
   DFGErrorsWidget *m_dfgErrorsWidget;
@@ -132,7 +136,11 @@ public:
   {
   }
 
-  private:
+  virtual ~DismissSelectionAction()
+  {
+  }
+
+  private slots:
 
     virtual void onTriggered()
     {
@@ -159,7 +167,11 @@ public:
   {
   }
 
-private:
+  virtual ~CopySelectionAction()
+  {
+  }
+
+private slots:
 
   virtual void onTriggered()
   {
