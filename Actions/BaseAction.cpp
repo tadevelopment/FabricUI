@@ -14,12 +14,15 @@ void BaseAction::init(
   const QIcon &icon)
 {
   m_name = name;
-  ActionRegistry::GetActionRegistry()->registerAction(this);
   setIcon(icon);
   setText(text);
   connect(this, SIGNAL(triggered()), this, SLOT(onTriggered()));
   setEnabled(enable);
   setShortcutContext(context);
+  
+  // Register the action inn the registry.
+  ActionRegistry *registry = ActionRegistry::GetActionRegistry();
+  registry->registerAction(this);
 }
 
 BaseAction::BaseAction(
@@ -31,14 +34,22 @@ BaseAction::BaseAction(
   bool enable,
   const QIcon &icon)
   : QAction(parent)
-{
+{ 
+  // Checks if an action under this name has been 
+  // registered already. If so, use its shortcuts.
+  // Synchronize the shortcuts of all the actions.
+  ActionRegistry *registry = ActionRegistry::GetActionRegistry();
+  setShortcut( 
+    (registry->getRegistrationCount(name) > 0)
+    ? registry->getShortcut(name) 
+    : shortcut
+  );
+
   init(name, 
     text, 
     context, 
     enable, 
     icon);
-
-  setShortcut(shortcut);
 }
 
 BaseAction::BaseAction(
@@ -51,17 +62,23 @@ BaseAction::BaseAction(
   const QIcon &icon)
   : QAction(parent)
 {
+  ActionRegistry *registry = ActionRegistry::GetActionRegistry();
+  setShortcuts( 
+    (registry->getRegistrationCount(name) > 0)
+    ? registry->getShortcuts(name) 
+    : shortcuts
+  );
+  
   init(name, 
     text, 
     context, 
     enable, 
     icon);
-
-  setShortcuts(shortcuts);
 }
 
 BaseAction::~BaseAction()
 {
+  // Unregister our-self of the registry.
   ActionRegistry::GetActionRegistry()->unregisterAction(this);
 }
 

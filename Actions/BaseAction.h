@@ -14,10 +14,9 @@ namespace Actions {
 class BaseAction : public QAction
 {
   /**
-    BaseAction inherates QActions and are registered in the 
-    ActionRegistry when created. The action unregisteres it-
-    self when it's destroyed. Any actions using shortcuts
-    should specializes this class.
+    BaseAction inherates QActions and are registered in the ActionRegistry
+    when created. The action unregisteres it- self when it's destroyed. 
+    Any actions using shortcuts shall specializes this class.
     
     Usage:
     -C++:
@@ -59,7 +58,7 @@ class BaseAction : public QAction
             , "Do my action" 
             , QtCore.Qt.Key_R)
           
-          def void onTriggered(self):
+          def onTriggered(self):
             # Do you action
             pass
   */
@@ -88,7 +87,7 @@ class BaseAction : public QAction
 
     virtual ~BaseAction();
 
-    /// Gets the action name
+    /// Gets the action name.
     QString getName() const;
  
   protected slots:
@@ -96,7 +95,7 @@ class BaseAction : public QAction
     virtual void onTriggered();
 
   private:
-    /// Intializes the BaseAction
+    /// Intializes the BaseAction.
     void init(
       const QString &name, 
       const QString &text = "", 
@@ -104,7 +103,7 @@ class BaseAction : public QAction
       bool enable = true,
       const QIcon &icon = QIcon());
 
-    /// Action name
+    /// Action name.
     QString m_name;
 };
 

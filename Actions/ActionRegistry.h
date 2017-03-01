@@ -14,10 +14,17 @@ namespace Actions {
 class ActionRegistry : public QObject
 {
   /**
-    ActionRegistry registers the QAction and BaseAction so we can 
-    know which actions and key-shortcuts are used in the application. 
-    These informations are not provided by Qt and are needed by the
-    command system. 
+    ActionRegistry registers QAction or BaseAction as a key-value pair in a map so we know 
+    which actions and key-shortcuts are used in the application. These informations are not   
+    provided by Qt and are needed by the command system. While BaseAction register-unregister 
+    them-selves automatically, it's not the case for QAction. When an action is registered-
+    unregistered, the signals `actionRegistered` and `actionUnregistered` are emitted. 
+
+    The same action may be created several times from differents places. At each time, the
+    action is registered and pushed in a flat list. When an action is deleted, it's removed
+    from the list. When the list size is null, the key-value pair is removed from the map
+    and the action unregisters. ActionRegistry provides functionalities to synchronizes the
+    shortcut sequence of all the actions sharing the same name.
 
     The registry sets it-self as a singleton:
     - C++:
@@ -33,9 +40,9 @@ class ActionRegistry : public QObject
     
     - Register a BaseAction: actionRegistry->:registerAction(new BaseAction(...));
 
-    - Unregister a BaseAction: actionRegistry->:unregisterAction(new BaseAction(...));
+    - Unregister an action: actionRegistry->:unregisterAction(QAction(...));
 
-    - Check a action is registered: unregisterAction->isActionRegistered(actionName);
+    - Check if an action is registered: actionRegistry->isActionRegistered(actionName);
     
     - Check if a shortcut is used: actionRegistry->isShortcutUsed(actionName, QAction *action);
 
@@ -53,25 +60,32 @@ class ActionRegistry : public QObject
     static ActionRegistry* GetActionRegistry();
 
     /// Registers a QAction 
-    /// under actionName.
+    /// under 'actionName'.
     void registerAction(
       const QString &actionName,
       QAction *action
       );
 
-    /// Registers a BaseAction.
+    /// Registers a BaseAction 
+    /// under 'actionName'.
     void registerAction(
       BaseAction *action
       );
 
-    /// Unregisters a BaseAction.
+    /// Unregisters a action.
     void unregisterAction(
-      BaseAction *action
+      QAction *action
       );
     
     /// Checks if an action is
     /// registered under 'actionName'.
     bool isActionRegistered(
+      const QString &actionName
+      ) const;
+
+    /// Gets the number of time the
+    /// action has been registered.
+    int getRegistrationCount(
       const QString &actionName
       ) const;
 
@@ -87,11 +101,46 @@ class ActionRegistry : public QObject
       const QList<QKeySequence> &shortcuts
       ) const;
 
+    /// Sets the shortcut of the actions
+    /// registered under `actionName`.
+    void setShortcut(
+      const QString &actionName,
+      QKeySequence shortcut
+      ) const;
+
+    /// Sets the shortcuts of the actions
+    /// registered under `actionName`.
+    void setShortcuts(
+      const QString &actionName,
+      const QList<QKeySequence> &shortcuts
+      ) const;
+
+    /// Gets the shortcut. Returns an
+    /// empty sequence if the action 
+    /// has not been registered
+    QKeySequence getShortcut(
+      const QString &actionName
+      ) const;
+
+    /// Gets the shortcuts. Returns 
+    /// an empty list if the action 
+    /// has not been registered
+    QList<QKeySequence> getShortcuts(
+      const QString &actionName
+      ) const;
+
     /// Gets the action registered under
     /// 'actionName'. Returns null if the
     /// action has not been registered.
     QAction* getAction(
       const QString &actionName
+      ) const;
+
+    /// Gets the action name. Returns 
+    /// an empty string if the action 
+    /// has not been registered.
+    QString getActionName(
+      QAction* action
       ) const;
 
     /// Gets all the registered action.
@@ -104,13 +153,18 @@ class ActionRegistry : public QObject
   signals:
     /// Emitted when an action 
     /// has been registered.
-    void actionIsRegistered(
+    void actionRegistered(
       const QString &actionName,
       QAction *action);
 
+    /// Emitted when an action 
+    /// is unregistered.
+    void actionUnregistered(
+      const QString &actionName);
+
   private:
     /// Dictionaries of registered actions.
-    QMap< QString, QAction *> m_registeredActions;
+    QMap< QString, QList< QAction * > > m_registeredActions;
     /// Registry singleton.
     static ActionRegistry * s_actionRegistry;
     /// Check if the singleton has been set.
