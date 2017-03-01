@@ -3,71 +3,48 @@
 #
 
 from FabricEngine.FabricUI import Commands
-from FabricEngine.Canvas.Utils import *
  
-
 class CommandRegistry(Commands.CommandRegistry):
 
-    """ CommandRegistry registers commands used in the Canvas application.
-        It specializes the C++ CommandRegistry (Commands/CommandRegistry.h(cpp))
-        so it can create commands registered in C++ or Python. However, it can 
-        register Python command only. The registery is shared between the C++ and 
-        Python, so commands defined in Python can be called from C++ code too, 
-        and vice versa.
+    """ CommandRegistry registers commands used in the Canvas application. It specializes the C++ 
+        CommandRegistry (./Commands/CommandRegistry.h(cpp)) so it can create commands registered in, 
+        KL, C++ or Python. However, it can register Python command only. The registry is shared between 
+        the C++ and Python, so commands defined in Python can be created from C++ code, and vice versa.
 
         It is a singleton and should not be created directly.
+        - Create the registry: cmdRegistry = CommandRegistry(fabricClient)
+
         - Get the registry: cmdRegistry = GetCommandRegistry()
 
-        - Register a command (Python only): cmdRegistry.registerCommand(cmdName, cmdType, userData)
+        Usage:
+        - Register a command (Python): cmdRegistry.registerCommand(cmdName, cmdType, userData)
 
-        - Check a command is registered (Python/C++): cmdRegistry.isCommandRegistered(cmdName)
+        - Get a command specs [type, implementationType] (Python/C++/KL): cmdRegistry.getCommandSpecs(cmdName)
 
-        - Create a command (Python/C++): cmd = cmdRegistry.createCommand(cmdName)
+        - Check a command is registered (Python/C++/KL): cmdRegistry.isCommandRegistered(cmdName)
 
-        In the RegisterCommand method, the userData argument is used to pass optional 
-        custom data to the command (C++ void *). The data is referenced by the registery, 
-        and given to the command throught the BaseCommand::registrationCallBack callback.
+        - Create a command (Python/C++/KL): cmd = cmdRegistry.createCommand(cmdName)
+        
+        - Synchronize with the KL registry: cmdRegistry.synchronizeKL()
 
-
-        When a command in registered, a function that creates and executes the command 
-        with named arguments is dynimically defined in Python. Each function in added 
-        to the python 'Commands' module. For example, the scriptable command FooCmd 
-        with arguments {arg_1:"foo_1", arg_2:"foo_2"} can be created and executed via:
-        - from FabricEngine.Canvas.CommandRegistry import *
-        - import Commands
-        - Commands.FooCmd(arg_1 = "foo_1", arg_2 = "foo_2)
-
-        This is equivalent to (see CommandManager.py):
-        - args = {arg_1:"foo_1", arg_2:"foo_2"}
-        - GetCommandManager().createCommand("FooCmd", args, True)
+        In the RegisterCommand method, the userData argument is used to pass optional custom data to the 
+        command (C++ void *). The data is referenced by the registry, and given to the command throught 
+        the BaseCommand::registrationCallback callback.
     """
 
-    def __init__(self): 
-        super(CommandRegistry, self).__init__()
+    def __init__(self, client): 
+        """ Initializes the CommandRegistry.
+
+            Arguments:
+            - client: A FabricCore client.
+        """
         
-        # !!! Very important !!!!!
-        # Here, we set the C++ pointer of the C++ CommandRegistry 
-        # singleton equal to this python instance of CommandRegistry.
-        Commands.CommandRegistry.SetCommandRegistrySingleton(self)
-        # Dictionaries of registered commands (Python/C++): 
-        # {cmdName, {From, type, userData}}
-        self.__registeredCmds = {}
-
-    def isCommandRegistered(self, cmdName):
-        """ Checks if a command (Python or C++) has been registered under "cmdName", 
-
-            Returns a list [isRegistered, cmdType, From]:
-            - isRegistered: If true, the command is registered
-            - cmdType: Type of the commands
-            - From: Tell 'Python' or 'C++'
-        """       
-
-        cmdInfo = self.__registeredCmds.get(cmdName)
-
-        if cmdInfo is not None and cmdInfo['type'] is not None:
-            return [True, cmdInfo['type'], cmdInfo['From']]
-
-        return [False, None, None]
+        super(CommandRegistry, self).__init__(client)
+        # Dictionaty of Command Object types (to construct them)
+        # {cmdName, pythonCmdType}
+        self.cmdObjectTypeDict = {}
+        # Dictionaty of user data
+        self.cmdUserDataDict = {}
 
     def registerCommand(self, cmdName, cmdType, userData = None):
         """ Registers a Python command 'cmdType' under the name "cmdName".
@@ -78,90 +55,69 @@ class CommandRegistry(Commands.CommandRegistry):
         """
 
         if not cmdName:
-            raise Exception("Error CommandRegistry.RegisterCommand: cmdName is empty") 
+            raise Exception("CommandRegistry.RegisterCommand, error: cmdName is empty") 
 
         if not issubclass(cmdType, Commands.BaseCommand):
-            raise Exception("Error CommandRegistry.RegisterCommand: command '" + str(cmdName) + "': type '" + str(cmdType) + "' is not a Command")
+            raise Exception(
+                "CommandRegistry.RegisterCommand, error: command '" + 
+                str(cmdName) + "': type '" + 
+                str(cmdType) + "' is not a command")
 
-        [isRegistered, existingCmdType, From] = self.isCommandRegistered(cmdName)
-        
-        if isRegistered is False:
-            self.__commandIsRegistered("Python", cmdName, cmdType, userData)
+        if super(CommandRegistry, self).isCommandRegistered(cmdName) is False:
+            self.cmdUserDataDict[cmdName] = userData
+            self.cmdObjectTypeDict[cmdName] = cmdType
+            self.commandRegistered(cmdName, str(cmdType), Commands.CommandRegistry.COMMAND_PYTHON)
 
-        elif cmdType != existingCmdType:
-            error = "Error CommandRegistry.RegisterCommand: command '" + str(cmdName) + "': type '" + str(cmdType) + "' overriding previous type '" + str(existingCmdType) + "'"
-            raise Exception(error)
+        elif cmdType != self.cmdObjectTypeDict[cmdName]:
+            raise Exception(
+                "CommandRegistry.RegisterCommand, error: command '" + str(cmdName) + 
+                "': type '" + str(cmdType) + 
+                "' overriding previous type '" + str(self.cmdObjectTypeDict[cmdName]) + "'")
    
     def createCommand(self, cmdName):
-        """ Creates and returns a registered command (Python or C++) named "cmdName".
+        """ Creates and returns a registered command (Python, C++, KL) named "cmdName".
             Raises an exception if the command cannot be created (has to be registered first) 
         """
-
-        [isRegistred, cmdType, From] = self.isCommandRegistered(cmdName)
         
-        if isRegistred is True:
+        if super(CommandRegistry, self).isCommandRegistered(cmdName) is True:
 
-            cmd = None
-            if From == "Python":
+            # If the command's is registered in Python, create it here
+            if super(CommandRegistry, self).getCommandSpecs(cmdName)[1] == Commands.CommandRegistry.COMMAND_PYTHON:
                 # Create the command
-                cmd = cmdType()
+                cmd = self.cmdObjectTypeDict[cmdName]() 
                 # Callback -> set name and user-data
-                cmd.registrationCallBack(
+                cmd.registrationCallback(
                     cmdName, 
-                    self.__registeredCmds[cmdName]['userData'])
+                    self.cmdUserDataDict[cmdName])
 
-            elif From == "C++":
-                # If the command's been registered in C++, create it in C++.
+            # Otherwise (C++/KL), create it in C++.
+            else:
                 cmd = super(CommandRegistry, self).createCommand(cmdName)
 
             return cmd
 
         else:
-            raise Exception( "Cannot create command '" + cmdName + "', it is not registered") 
-
-    def commandIsRegistered(self, cmdName, cmdType):
-        """ \Internal 
-            Implementation of CommandRegistry (C++),
-            Callback when a command is registered in C++.
-        """
-
-        self.__commandIsRegistered("C++", cmdName, cmdType, None)
-
-    def __commandIsRegistered(self, From, cmdName, cmdType, userData):
-        """ \Internal
-            Callback when a command is registered in C++ pr Python.
-        """
-
-        # Register the command info
-        self.__registeredCmds[cmdName] = {
-            'From':From, 
-            'type':cmdType, 
-            'userData':userData
-        }
-
-        # Run-time creation of the function to create the command.
-        # The function is added to the "Commands" modules 
-        exec('\
-def ' + cmdName + '(**kwargs):\n\
-    from FabricEngine.Canvas.CommandManager import *\n\
-    try:\n\
-        return GetCommandManager().createCommand("' + cmdName + '", kwargs )\n\
-    except Exception as e:\n\
-        raise Exception(e)\n\
-setattr(GetOrCreateModule("Commands") , "' + cmdName + '", '+ cmdName + ')')
+            raise Exception( "CommandRegistry.createCommand, error: " +
+                "cannot create command '" + cmdName + "', it is not registered") 
 
 # \internal
-# Creates the "Commands" module right now so we 
-# can import it with the usual syntax later
-# import Commands
-GetOrCreateModule("Commands")
-
-# \internal
-# !!!!! Store the reference to the 
-# CommmandRegistery singleton !!!!
-s_registery = CommandRegistry()
+# Store the CommmandRegistry singleton 
+global s_cmdRegistrySingleton
+s_cmdRegistrySingleton = None
 
 def GetCommandRegistry():
     """ Gets the CommandRegistry singleton.
+        Raises an exception if the registry is not created. 
     """
-    return Commands.CommandRegistry.GetCommandRegistry()
+    if s_cmdRegistrySingleton is None:
+        raise Exception("CommandRegistry.GetCommandRegistry, the registry is null.\n\
+            To create it : CreateCommandRegistry(FabricCore.Client).")
+    else:
+        return s_cmdRegistrySingleton
+
+def CreateCommandRegistry(client):
+    """ Creates the CommandRegistry singleton.
+    """
+    global s_cmdRegistrySingleton
+    if s_cmdRegistrySingleton is None:
+        s_cmdRegistrySingleton = CommandRegistry(client)

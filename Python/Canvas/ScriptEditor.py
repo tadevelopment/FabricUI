@@ -337,7 +337,7 @@ class ScriptEditor(QtGui.QWidget):
         self.__undoStackIndex = qUndoStack.index()
         qUndoStack.indexChanged.connect(self.undoStackIndexChanged)
         self.__qUndoStack = qUndoStack
-        self.__echoStackIndexChanges = True
+        self._echoStackIndexChanges = True
 
         self.eval_globals = {
             "binding": BindingWrapper(client, binding, qUndoStack),
@@ -424,7 +424,7 @@ class ScriptEditor(QtGui.QWidget):
         self.cmd.setTextCursor(textCursor)
 
     def undoStackIndexChanged(self, index):
-        if self.__echoStackIndexChanges and self.echoCommandsAction.isChecked():
+        if self._echoStackIndexChanges and self.echoCommandsAction.isChecked():
             if index < self.__undoStackIndex:
                 for i in range(self.__undoStackIndex-1, index-1, -1):
                     s = self.__qUndoStack.text(i)
@@ -541,8 +541,8 @@ class ScriptEditor(QtGui.QWidget):
     def eval(self, code):
         if self.echoCommandsAction.isChecked():
             self.log.appendCommand(code + "\n")
-        oldEchoStackIndexChanges = self.__echoStackIndexChanges
-        self.__echoStackIndexChanges = False
+        oldEchoStackIndexChanges = self._echoStackIndexChanges
+        self._echoStackIndexChanges = False
         old_stdout = sys.stdout
         old_stderr = sys.stderr
         sys.stdout = self.stdout
@@ -559,14 +559,14 @@ class ScriptEditor(QtGui.QWidget):
             result = None
         sys.stderr = old_stderr
         sys.stdout = old_stdout
-        self.__echoStackIndexChanges = oldEchoStackIndexChanges
+        self._echoStackIndexChanges = oldEchoStackIndexChanges
         return result
 
     def exec_(self, code):
         if self.echoCommandsAction.isChecked():
             self.log.appendCommand(code + "\n")
-        oldEchoStackIndexChanges = self.__echoStackIndexChanges
-        self.__echoStackIndexChanges = False
+        oldEchoStackIndexChanges = self._echoStackIndexChanges
+        self._echoStackIndexChanges = False
         old_stdout = sys.stdout
         old_stderr = sys.stderr
         sys.stdout = self.stdout
@@ -580,8 +580,12 @@ class ScriptEditor(QtGui.QWidget):
                 )
         sys.stderr = old_stderr
         sys.stdout = old_stdout
-        self.__echoStackIndexChanges = oldEchoStackIndexChanges
+        self._echoStackIndexChanges = oldEchoStackIndexChanges
 
+    def logText(self, text):
+        if self.echoCommandsAction.isChecked():
+            self.log.appendCommand(text + "\n")
+            
 class BaseScriptEditorAction(Actions.BaseAction):
  
     def __init__(self,

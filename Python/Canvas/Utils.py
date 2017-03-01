@@ -3,6 +3,7 @@
 #
 
 import sys, imp
+from PySide import QtCore, QtGui
 
 def GetOrCreateModule(name):
     """ Get or creates dynamically a module named "name".
@@ -12,14 +13,53 @@ def GetOrCreateModule(name):
     	- import module
     """
     
-    isDefined = True
+    exist = True
+
+    # Check if the module exists already.
     try:
         module = sys.modules[name]
     except Exception, e:
-        isDefined = False
+        exist = False
 
-    if isDefined is False:
+    if exist is False:
         module = imp.new_module(name)
         sys.modules[name] = module
 
     return sys.modules[name]
+
+def GetQKeySequenceFromQKeyEvent(keyEvent):
+    """ Gets the QKeySequence of the key 
+        strockes of the key event.
+    """
+    
+    if keyEvent.type() is not QtCore.QEvent.KeyPress:
+        return None
+
+    if keyEvent.isAutoRepeat():
+        return None
+
+    key = keyEvent.key() 
+
+    if key == QtCore.Qt.Key_unknown:
+        return None
+
+    if (key == QtCore.Qt.Key_Control or
+        key == QtCore.Qt.Key_Shift or
+        key == QtCore.Qt.Key_Alt or
+        key == QtCore.Qt.Key_Meta):
+        return None
+ 
+    modifiers = keyEvent.modifiers() 
+    if modifiers & QtCore.Qt.ShiftModifier:
+        key = key + QtCore.Qt.SHIFT 
+
+    if modifiers & QtCore.Qt.ControlModifier:
+        key = key + QtCore.Qt.CTRL 
+
+    if modifiers & QtCore.Qt.AltModifier:
+        key = key + QtCore.Qt.ALT 
+
+    if modifiers & QtCore.Qt.MetaModifier:
+        key = key + QtCore.Qt.META 
+
+    return QtGui.QKeySequence(key).toString(QtGui.QKeySequence.NativeText) 
