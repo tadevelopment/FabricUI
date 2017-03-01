@@ -743,7 +743,7 @@ bool DFGController::relaxNodes(QStringList paths)
   if(rootNodes.size() == 0)
     return false;
 
-  std::vector<GraphView::Node*> nodes = rootNodes[0]->upStreamNodes(true, rootNodes);
+  std::vector<GraphView::Node*> nodes = rootNodes[0]->upStreamNodes_deprecated(true, rootNodes);
   if(nodes.size() <= 1)
     return false;
 
