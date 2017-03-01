@@ -12,6 +12,8 @@
 
 using namespace FabricUI::ValueEditor;
 
+FabricCore::RTVal ToRotationOrder( FabricCore::RTVal& val, const int index );
+
 ComboBoxViewItem::ComboBoxViewItem( QString const &name, QVariant const &v, ItemMetadata* metadata, bool isString, bool isRotationOrder)
   : BaseViewItem(name, metadata)
   , m_comboBox(NULL)
@@ -138,7 +140,7 @@ FabricCore::RTVal ToRotationOrder( FabricCore::RTVal& val, const int index )
     val.getContext(),
     "RotationOrder",
     1,
-    indexAsRTVal );
+    &indexAsRTVal );
 }
 
 
