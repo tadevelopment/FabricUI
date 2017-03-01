@@ -1207,7 +1207,7 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       expandMetadataSection = true;
     }
 
-    dialog.setSectionCollapsed("metadata", !expandMetadataSection);
+    dialog.setSectionCollapsed("Metadata", !expandMetadataSection);
 
     if (!duplicatePort || isCTRL)
     {
@@ -1290,7 +1290,7 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       m_uiController->cmdAddPort(
         newPortName,
         exec.getExecPortType( execPortName.c_str() ),
-        exec.getExecPortResolvedType( execPortName.c_str() ),
+        typeSpec,
         QString(), // portToConnect
         extDep,
         QString::fromUtf8( uiMetadata.c_str() )
@@ -1598,7 +1598,7 @@ void DFGWidget::exportGraph( const char *nodeName )
     lastPresetFolder += "/" + title;
   }
 
-  QString filter = "DFG Preset (*.canvas)";
+  QString filter = "Canvas Preset (*.canvas)";
   QString filePath = QFileDialog::getSaveFileName(this, "Export graph", lastPresetFolder, filter, &filter);
   if(filePath.length() == 0)
     return;
