@@ -111,6 +111,13 @@ namespace FabricUI
 
       // Parent virtual functions
 
+      virtual std::string gvcDoCopy(
+        );
+
+      virtual void gvcDoPaste(
+        bool mapPositionToMouseCursor = true
+        );
+
       virtual bool gvcDoRemoveNodes(
         FTL::ArrayRef<GraphView::Node *> nodes
         );
@@ -157,7 +164,9 @@ namespace FabricUI
 
       virtual void gvcDoMoveNodes(
         std::vector<GraphView::Node *> const &nodes,
+        std::vector<QPointF> const &nodesOriginalPos,
         QPointF delta,
+        float gridSnapSize,
         bool allowUndo
         );
 
@@ -193,6 +202,12 @@ namespace FabricUI
 
       QString cmdAddInstWithEmptyGraph(
         QString title,
+        QPointF pos
+        );
+
+      QString cmdAddInstFromJSON(
+        QString nodeName,
+        QString filePath,
         QPointF pos
         );
 
@@ -306,10 +321,15 @@ namespace FabricUI
 
       void cmdCut();
 
-      void cmdPaste();
+      void cmdPaste(bool mapPositionToMouseCursor = true);
 
       void cmdSetArgValue(
         QString argName,
+        FabricCore::RTVal const &value
+        );
+
+      void cmdSetPortDefaultValue(
+        QString portPath,
         FabricCore::RTVal const &value
         );
 
@@ -354,6 +374,9 @@ namespace FabricUI
       QStringList getSelectedNodesName();
       /// Returns the selected nodes path
       QStringList getSelectedNodesPath();
+      /// Selects the nodes in the list 
+      void selectNodes(QList<QString> nodeNames);
+
       virtual std::string copy();
 
       virtual bool reloadExtensionDependencies(char const * path);
@@ -448,6 +471,9 @@ namespace FabricUI
     public slots:
 
       void onTopoDirty();
+      void onFrameChanged( int frame );
+      void onTimelineRangeChanged( int start, int end );
+      void onTimelineTargetFramerateChanged( float frameRate );
 
       void onVariablesChanged();
       virtual void onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderButton * button);
@@ -503,6 +529,30 @@ namespace FabricUI
       bool m_defaultValuesChangedPending;
       bool m_topoDirtyPending;
       bool m_dirtyPending;
+
+      // helper to compute the index of a native timeline port (-1 if none)
+      int getTimelinePortIndex( const std::string& name );
+      // helper to set the value of a timeline port (checks for -1)
+      void setTimelinePortValue( int portIndex, float value );
+      // computes the indices from the ports of the current graph
+      void updateTimelinePortIndices();
+      // reset indices to -1
+      void resetTimelinePortIndices();
+      // sends the timeline values to the current graph
+      void setTimelineValuesToGraph();
+
+      // Will be -1 if the port doesn't exist
+      int m_timelinePortIndex
+        , m_timelineStartPortIndex
+        , m_timelineEndPortIndex
+        , m_timelineFrameratePortIndex
+      ;
+      // Storing the values, in case the graph changes
+      float m_timelineFrame
+        , m_timelineStart
+        , m_timelineEnd
+        , m_timelineFramerate
+      ;
 
       QTimer *m_executeTimer;
 

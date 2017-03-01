@@ -184,14 +184,20 @@ void MainPanel::mousePressEvent(QGraphicsSceneMouseEvent * event)
     setManipulationMode( ManipulationMode_Select );
   }
   else if(   event->button() == Qt::MiddleButton
-         || (event->button() == Qt::LeftButton && event->modifiers().testFlag(Qt::AltModifier))
-    )
+         || (event->button() == Qt::LeftButton &&  event->modifiers().testFlag(Qt::AltModifier)
+                                               && !event->modifiers().testFlag(Qt::ControlModifier)
+                                               && !event->modifiers().testFlag(Qt::ShiftModifier)
+            )
+         )
   {
     setManipulationMode( ManipulationMode_Pan );
     m_lastPanPoint = mapFromScene( event->scenePos() );
     event->accept();
   }
-  else if(event->button() == Qt::RightButton && event->modifiers().testFlag(Qt::AltModifier))
+  else if(event->button() == Qt::RightButton &&  event->modifiers().testFlag(Qt::AltModifier)
+                                             && !event->modifiers().testFlag(Qt::ControlModifier)
+                                             && !event->modifiers().testFlag(Qt::ShiftModifier)
+         )
   {
     setManipulationMode( ManipulationMode_Zoom );
     m_lastPanPoint = mapFromScene( event->scenePos() );
@@ -220,13 +226,20 @@ void MainPanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     std::vector<Node*> nodes = m_graph->nodes();
     for(size_t i=0;i<nodes.size();i++)
     {
-      if(m_selectionRect->collidesWithItem(nodes[i]))
+      bool hit = nodes[i]->collidesWithItem(m_selectionRect, Qt::IntersectsItemBoundingRect);
+
+      if (hit && nodes[i]->isBackDropNode())
       {
-        if(!nodes[i]->selected())
-        {
-          m_graph->controller()->selectNode(nodes[i], true);
-          m_ongoingSelection.push_back(nodes[i]);
-        }
+        // backdrop nodes are only hit when the selection
+        // rectangle intersects with the backdrop's border
+        // or if it contains the entire backdrop.
+        hit = !m_selectionRect->collidesWithItem(nodes[i], Qt::ContainsItemBoundingRect);
+      }
+
+      if (hit && !nodes[i]->selected())
+      {
+        m_graph->controller()->selectNode(nodes[i], true);
+        m_ongoingSelection.push_back(nodes[i]);
       }
     }
   }

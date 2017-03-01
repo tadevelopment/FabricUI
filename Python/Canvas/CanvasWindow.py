@@ -109,6 +109,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.redoAction = None
         self.newGraphAction = None
         self.loadGraphAction = None
+        self.importGraphAsNodeAction = None
         self.saveGraphAction = None
         self.saveGraphAsAction = None
         self.recentFilesAction = []
@@ -249,6 +250,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
                                        self.mainBinding, '', graph, self.astManager,
                                        self.dfguiCommandHandler, self.config)
+        self.dfgWidget.fileMenuAboutToShow.connect(self.updateRecentFileActions)
         self.scriptEditor.setDFGControllerGlobal(self.dfgWidget.getDFGController())
 
         tabSearchWidget = self.dfgWidget.getTabSearchWidget()
@@ -322,14 +324,16 @@ class CanvasWindow(QtGui.QMainWindow):
         with the Value Editor's onFrameChanged method too.
         """
 
-        self.timeLinePortIndex = -1
-        self.timeLinePortPath = None
         self.timeLine = TimeLine.TimeLineWidget()
+        controller = self.dfgWidget.getDFGController()
+        self.timeLine.frameChanged.connect( controller.onFrameChanged )
+        self.timeLine.targetFrameRateChanged.connect( controller.onTimelineTargetFramerateChanged )
+        controller.onTimelineTargetFramerateChanged( self.timeLine.framerate() )
+        self.timeLine.rangeChanged.connect( controller.onTimelineRangeChanged )
         self.timeLine.setTimeRange(CanvasWindow.defaultFrameIn, CanvasWindow.defaultFrameOut)
         self.timeLine.updateTime(1)
         self.dfgWidget.stylesReloaded.connect(self.timeLine.reloadStyles)
         self.timeLine.frameChanged.connect(self.onFrameChanged)
-        self.timeLine.frameChanged.connect(self.valueEditor.onFrameChanged)
         self.scriptEditor.setTimeLineGlobal(self.timeLine)
 
         self.timelineFrame = QtGui.QFrame()
@@ -517,6 +521,10 @@ class CanvasWindow(QtGui.QMainWindow):
         if type(files) is not list:
           files = [files]           
 
+        # Convert paths to abspath, to make sure that they collide
+        filePath = os.path.abspath( filePath )
+        files = [ os.path.abspath( file ) for file in files ]       
+
         # Try to remove the entry if it is already in the list
         try:
             files.remove(filePath)
@@ -525,6 +533,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         # Insert the entry first in the list
         files.insert(0, filePath)
+
         # Update the list and crop it to maxRecentFiles
         self.settings.setValue('mainWindow/recentFiles', files[:self.maxRecentFiles])
 
@@ -535,9 +544,17 @@ class CanvasWindow(QtGui.QMainWindow):
         if type(files) is not list:
           files = [files]                   
 
+        # Only keep files that still exist
+        files = [ f for f in files if os.path.exists( f ) ]               
+
         if len(self.recentFilesAction) >0:
             for i,filepath in enumerate(files):
-                text = "&%d %s" % (i + 1, filepath)
+                maxLen = 90
+                displayedFilepath = filepath
+                if len(displayedFilepath) > maxLen :
+                    # crop the filepath in the middle if it is too long
+                    displayedFilepath = displayedFilepath[:maxLen/2] + "..." + displayedFilepath[-maxLen/2:]
+                text = str(i + 1) + " " + displayedFilepath
                 self.recentFilesAction[i].setText(text)
                 self.recentFilesAction[i].setData(filepath)
                 self.recentFilesAction[i].setVisible(True)
@@ -554,7 +571,6 @@ class CanvasWindow(QtGui.QMainWindow):
         """
 
         self.timeLine.pause()
-        self.timeLinePortPath = None
 
         try:
             dfgController = self.dfgWidget.getDFGController()
@@ -580,6 +596,7 @@ class CanvasWindow(QtGui.QMainWindow):
             tl_loopMode = dfgExec.getMetadata("timeline_loopMode")
             tl_simulationMode = dfgExec.getMetadata("timeline_simMode")
             tl_current = dfgExec.getMetadata("timeline_current")
+            tl_timerFps = dfgExec.getMetadata("timeline_timerFps")
 
             if len(tl_start) > 0 and len(tl_end) > 0:
                 self.timeLine.setTimeRange(int(tl_start), int(tl_end))
@@ -596,6 +613,9 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.timeLine.setSimulationMode(int(tl_simulationMode))
             else:
                 self.timeLine.setSimulationMode(0)
+
+            if len(tl_timerFps) > 0:
+                self.timeLine.setTimerFromFps(float(tl_timerFps))
 
             camera_mat44 = dfgExec.getMetadata("camera_mat44")
             camera_focalDistance = dfgExec.getMetadata("camera_focalDistance")
@@ -736,31 +756,6 @@ class CanvasWindow(QtGui.QMainWindow):
         except Exception as e:
             self.dfgWidget.getDFGController().logError(str(e))
 
-        if not self.timeLinePortPath:
-            return
-
-        try:
-            binding = self.dfgWidget.getDFGController().getBinding()
-            dfgExec = binding.getExec()
-            if dfgExec.isExecPortResolvedType(self.timeLinePortIndex,
-                                              "SInt32"):
-                binding.setArgValue(self.timeLinePortPath,
-                                    self.client.RT.types.SInt32(frame), False)
-            elif dfgExec.isExecPortResolvedType(self.timeLinePortIndex,
-                                                "UInt32"):
-                binding.setArgValue(self.timeLinePortPath,
-                                    self.client.RT.types.UInt32(frame), False)
-            elif dfgExec.isExecPortResolvedType(self.timeLinePortIndex,
-                                                "Float32"):
-                binding.setArgValue(self.timeLinePortPath,
-                                    self.client.RT.types.Float32(frame), False)
-            elif dfgExec.isExecPortResolvedType(self.timeLinePortIndex,
-                                                "Float64"):
-                binding.setArgValue(self.timeLinePortPath,
-                                    self.client.RT.types.Float64(frame), False)
-        except Exception as e:
-            self.dfgWidget.getDFGController().logError(str(e))
-
     @staticmethod
     def formatFPS(fps):
         if fps >= 9950.0:
@@ -875,7 +870,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
             binding = self.host.createBindingToNewGraph()
             self.lastSavedBindingVersion = binding.getVersion()
-            self.timeLinePortPath = None
 
             self.dfgWidget.replaceBinding(binding)
             self.scriptEditor.updateBinding(binding)
@@ -920,6 +914,23 @@ class CanvasWindow(QtGui.QMainWindow):
                                    str(folder.path()))
             self.loadGraph(filePath)
 
+    def onImportGraphAsNode(self):
+        """Callback for when users wish to import a graph as a node from the UI.
+
+        A file dialog is opened and users can select the file to import. The last
+        directory the user saved or opened a graph from is used.
+        """
+
+        lastPresetFolder = self.settings.value("mainWindow/lastPresetFolder")
+        fileInfo = QtCore.QFileInfo(str(QtGui.QFileDialog.getOpenFileName(self, "Import graph as node", lastPresetFolder, "*.canvas")[0]))
+        
+        if fileInfo.exists() :
+            point = self.dfgWidget.rect().center() 
+            self.dfgWidget.createNewNodeFromJSON(fileInfo, point)
+            
+            fileInfo.dir().cdUp()
+            self.settings.setValue( "mainWindow/lastPresetFolder", fileInfo.dir().path() )
+
     def performSave(self, binding, filePath):
         """Writes the current graph to disk.
 
@@ -939,9 +950,10 @@ class CanvasWindow(QtGui.QMainWindow):
                           False)
         graph.setMetadata("timeline_loopMode", str(self.timeLine.loopMode()),
                           False)
-        graph.setMetadata("timeline_simMode",
-                          str(self.timeLine.simulationMode()), False)
-
+        graph.setMetadata("timeline_simMode", str(self.timeLine.simulationMode()), 
+                          False)
+        graph.setMetadata("timeline_timerFps", str(self.timeLine.getFps()), 
+                          False)
         try:
             camera = self.viewport.getCamera()
             mat44 = camera.getMat44('Mat44')
@@ -1062,6 +1074,8 @@ class CanvasWindow(QtGui.QMainWindow):
             self.newGraphAction.blockSignals(enabled)
         if self.loadGraphAction:
             self.loadGraphAction.blockSignals(enabled)
+        if self.importGraphAsNodeAction:
+            self.importGraphAsNodeAction.blockSignals(enabled)
         if self.saveGraphAction:
             self.saveGraphAction.blockSignals(enabled)
         if self.saveGraphAsAction:
@@ -1102,6 +1116,8 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.newGraphAction.setShortcut(QtGui.QKeySequence.New)
                 self.loadGraphAction = QtGui.QAction('Load Graph...', menu)
                 self.loadGraphAction.setShortcut(QtGui.QKeySequence.Open)
+                self.importGraphAsNodeAction = QtGui.QAction('Import Graph...', menu)
+                self.importGraphAsNodeAction.setShortcut(QtGui.QKeySequence('Ctrl+I'))
                 self.saveGraphAction = QtGui.QAction('Save Graph', menu)
                 self.saveGraphAction.setShortcut(QtGui.QKeySequence.Save)
                 self.saveGraphAsAction = QtGui.QAction('Save Graph As...', menu)
@@ -1114,6 +1130,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
                 menu.addAction(self.newGraphAction)
                 menu.addAction(self.loadGraphAction)
+                menu.addAction(self.importGraphAsNodeAction)
                 menu.addAction(self.saveGraphAction)
                 menu.addAction(self.saveGraphAsAction)
                 self.separator = menu.addSeparator()
@@ -1125,6 +1142,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
                 self.newGraphAction.triggered.connect(self.execNewGraph)
                 self.loadGraphAction.triggered.connect(self.onLoadGraph)
+                self.importGraphAsNodeAction.triggered.connect(self.onImportGraphAsNode)
                 self.saveGraphAction.triggered.connect(self.onSaveGraph)
                 self.saveGraphAsAction.triggered.connect(self.onSaveGraphAs)
             else:
@@ -1230,16 +1248,29 @@ class CanvasWindow(QtGui.QMainWindow):
         event.acceptProposedAction()
 
         bypassUnsavedChanges = event.keyboardModifiers() & QtCore.Qt.ControlModifier
-        self.onUrlDropped(url, bypassUnsavedChanges)
+        self.onUrlDropped(url, bypassUnsavedChanges, False, event.pos() )
 
-    def onUrlDropped(self, url, bypassUnsavedChanges):
-        filename = FabricUI.Util.GetFilenameForFileURL(url)
-        if not filename:
+    def onUrlDropped(self, url, bypassUnsavedChanges, importAsNode, pos):
+        """Callback when an item (.canvas file) is dropped on the graphview.
+
+        Args:
+            url: The path of the graph to load or import.
+            bypassUnsavedChanges: It the graph is loaded (importAsNode == False), check if the graph needs to be saved
+            importAsNode: If true, import the file as a node, load it as the current graph otherwise.
+            pos: The drop position.
+        """
+
+        fileInfo = QtCore.QFileInfo(FabricUI.Util.GetFilenameForFileURL(url))
+        if not fileInfo.exists():
             return
 
-        self.timeLine.pause()
+        if importAsNode:
+            self.dfgWidget.createNewNodeFromJSON(fileInfo, pos)
+        else:
+            self.timeLine.pause()
 
-        if not (bypassUnsavedChanges or self.checkUnsavedChanges()):
-            return
+            if not (bypassUnsavedChanges or self.checkUnsavedChanges()):
+                return
+        
+            self.loadGraph(fileInfo.filePath())
 
-        self.loadGraph(filename)

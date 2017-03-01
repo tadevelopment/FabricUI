@@ -2,20 +2,18 @@
 #define __TIMELINEWIDGET_H__
 
 #include <QWidget>
-#include <QGLWidget>
-#include <QContextMenuEvent>
-#include <QMenu>
-#include <QHBoxLayout>
+#include <QMouseEvent>
 #include <QTimer>
 #include <QTime>
+#include <QShortcut>
+#include <QAction>
+#include <QList>
 
 #include <QDoubleSpinBox>
 #include <QSlider>
 #include <QPushButton>
 #include <QComboBox>
 
-#include <map>
-#include <set>
 #include <ctime>
 
 namespace FabricUI
@@ -175,6 +173,10 @@ namespace FabricUI
 
         /// this is emitted whenever playback changes
         void playbackChanged(bool isPlaying);
+
+        void rangeChanged( int start, int end );
+
+        void targetFrameRateChanged( float frameRate );
       
       public slots:
 
@@ -193,8 +195,14 @@ namespace FabricUI
         /// start or stop the playback ( act as a switch on the playing state )
         void onPlayButtonToggled( bool checked );
         
+        /// start the playback
+        void play();
+
         /// stop the playback
         void pause();
+
+        /// toogle the playback
+        void togglePlayback();
 
         /// set the frame to the start of the current time slider range
         void goToStartFrame();
@@ -217,7 +225,7 @@ namespace FabricUI
       private slots:
 
         /// called when the frameRate is changed ( only few fixed option at moment )
-        void frameRateChanged(int index);
+        void updateTargetFrameRate(int index);
 
         /// called when the looping scheme changed
         void loopModeChanged(int index);
@@ -264,7 +272,140 @@ namespace FabricUI
         QComboBox * m_frameRateComboBox;
         QComboBox * m_loopModeComBox;
         QComboBox * m_simModeComBox;
+    };
 
+    // // FE-5724 
+    class TogglePlaybackAction : public QAction
+    {
+      Q_OBJECT
+
+      public:
+        TogglePlaybackAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : QAction( timeLine )
+        {
+          setText( "Toggle playback" );
+          connect( this, SIGNAL(triggered()),
+                   timeLine, SLOT(togglePlayback()) );
+          setEnabled( enable );
+          setShortcut( QKeySequence("Ctrl+Space" ) );
+          setShortcutContext(Qt::ApplicationShortcut);
+        }
+    };
+
+    class PlayAction : public QAction
+    {
+      Q_OBJECT
+
+      public:
+        PlayAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : QAction( timeLine )
+        {
+          setText( "Play" );
+          connect( this, SIGNAL(triggered()),
+                   timeLine, SLOT(play()) );
+          setEnabled( enable );
+          setShortcut( QKeySequence("Ctrl+Up") );
+          setShortcutContext(Qt::ApplicationShortcut);
+        }
+    };
+
+    class PauseAction : public QAction
+    {
+      Q_OBJECT
+
+      public:
+        PauseAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : QAction( timeLine )
+        {
+          setText( "Pause" );
+          connect( this, SIGNAL(triggered()),
+                   timeLine, SLOT(pause()) );
+          setEnabled( enable );
+          setShortcut( QKeySequence("Ctrl+Down") );
+          setShortcutContext(Qt::ApplicationShortcut);
+        }
+    };
+
+    class GoToNextFrameAction : public QAction
+    {
+      Q_OBJECT
+
+      public:
+         GoToNextFrameAction(
+            TimeLineWidget *timeLine,
+            bool enable = true )
+            : QAction( timeLine )
+          {
+            setText( "Go to next Frame" );
+            connect( this, SIGNAL(triggered()),
+                     timeLine, SLOT(goToNextFrame()) );
+            setEnabled( enable );
+            setShortcut( QKeySequence("Ctrl+Right") );
+            setShortcutContext(Qt::ApplicationShortcut);
+          }
+    };
+
+    class GoToPreviousFrameAction : public QAction
+    {
+      Q_OBJECT
+
+      public:
+        GoToPreviousFrameAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : QAction( timeLine )
+        {
+          setText( "Go to previous Frame" );
+          connect( this, SIGNAL(triggered()),
+                   timeLine, SLOT(goToPreviousFrame()) );
+          setEnabled( enable );
+          setShortcut( QKeySequence("Ctrl+Left") );
+          setShortcutContext(Qt::ApplicationShortcut);
+        }
+    };
+
+    class GoToEndFrameAction : public QAction
+    {
+      Q_OBJECT
+
+      public:
+        GoToEndFrameAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : QAction( timeLine )
+        {
+          setText( "Go to end Frame" );
+          connect( this, SIGNAL(triggered()),
+                   timeLine, SLOT(goToEndFrame()) );
+          setEnabled( enable );
+          setShortcut( QKeySequence("Ctrl+End") );
+          setShortcutContext(Qt::ApplicationShortcut);
+        }
+    };
+
+    class GoToStartFrameAction : public QAction
+    {
+      Q_OBJECT
+
+      public:
+        GoToStartFrameAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : QAction( timeLine )
+        {
+          setText( "Go to first Frame" );
+          connect( this, SIGNAL(triggered()),
+                   timeLine, SLOT(goToStartFrame()) );
+          setEnabled( enable );
+          setShortcut( QKeySequence("Ctrl+Home") );
+          setShortcutContext(Qt::ApplicationShortcut);
+        }
     };
   };
   

@@ -16,6 +16,7 @@
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/GraphicItemTypes.h>
+#include <FabricUI/GraphView/Connection.h>
 
 #include <vector>
 
@@ -191,7 +192,8 @@ namespace FabricUI
       void renameInstBlockAtIndex( unsigned index, FTL::StrRef newName );
       void removeInstBlockAtIndex( unsigned index );
 
-      virtual std::vector<Node*> upStreamNodes(bool sortForPins = false, std::vector<Node*> rootNodes = std::vector<Node*>());
+      std::vector<Node *> getUpStreamNodes();
+      virtual std::vector<Node *> upStreamNodes_deprecated(bool sortForPins = false, std::vector<Node*> rootNodes = std::vector<Node*>());
       // temporary information around row and col
       virtual int row() const;
       virtual void setRow(int i);
@@ -210,6 +212,9 @@ namespace FabricUI
       void setCanEdit( bool canEdit );
 
       void collectEditingTargets( EditingTargets &editingTargets );
+
+      void setConnectionHighlighted(bool state)
+        {  m_isConnectionHighlighted = state; }
 
       bool isHighlighted() const
         { return m_isHighlighted; }
@@ -247,6 +252,9 @@ namespace FabricUI
 
       void contextMenuEvent( QGraphicsSceneContextMenuEvent * event ) FTL_OVERRIDE;
 
+      // used by getUpStreamNodes().
+      static void getUpStreamNodes_recursive(Node *node, std::vector<Connection *> &connections, std::map<Node *, Node *> &ioVisitedNodes, std::vector<Node *> &ioUpStreamNodes);
+
       Graph * m_graph;
       NodeType m_nodeType;
       std::string m_name;
@@ -273,9 +281,11 @@ namespace FabricUI
       bool m_selected;
       int m_dragging;
       bool m_mightSelectUpstreamNodesOnDrag;
+      bool m_duplicateNodesOnDrag;
       Qt::MouseButton m_dragButton;
       QPointF m_mouseDownPos;
       std::vector<Node *> m_nodesToMove;
+      std::vector<QPointF> m_nodesToMoveOriginalPos;
 
       std::vector<Pin*> m_pins;
       int m_row;
@@ -286,6 +296,7 @@ namespace FabricUI
 
       bool m_canEdit;
       bool m_isHighlighted;
+      bool m_isConnectionHighlighted;
     };
 
 

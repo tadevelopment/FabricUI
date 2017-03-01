@@ -176,6 +176,29 @@ QString DFGUICmdHandler_QUndo::dfgDoAddGraph(
   return cmd->getActualNodeName();
 }
 
+QString DFGUICmdHandler_QUndo::dfgDoImportNodeFromJSON(
+  FabricCore::DFGBinding const &binding,
+  QString execPath,
+  FabricCore::DFGExec const &exec,
+  QString nodeName,
+  QString filePath,
+  QPointF pos
+  )
+{
+  DFGUICmd_ImportNodeFromJSON *cmd =
+    new DFGUICmd_ImportNodeFromJSON(
+      binding,
+      execPath,
+      exec,
+      nodeName,
+      filePath,
+      pos
+      );
+  m_qUndoStack->push( new WrappedCommand( cmd ) );
+  return cmd->getActualNodeName();
+}
+
+
 QString DFGUICmdHandler_QUndo::dfgDoAddFunc(
   FabricCore::DFGBinding const &binding,
   QString execPath,

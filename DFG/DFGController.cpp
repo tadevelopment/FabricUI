@@ -60,6 +60,8 @@ DFGController::DFGController(
   , m_topoDirtyPending( false )
   , m_dirtyPending( false )
 {
+  resetTimelinePortIndices();
+
   m_tabSearchPrefsJSONFilename = FabricCore::GetFabricPrivateDir();
   FTL::PathAppendEntry(
     m_tabSearchPrefsJSONFilename,
@@ -179,6 +181,8 @@ void DFGController::setBindingExec(
 
   emit bindingChanged( m_binding );
   emitTopoDirty();
+  this->resetTimelinePortIndices();
+  this->updateTimelinePortIndices();
 }
 
 void DFGController::setExec(
@@ -297,6 +301,18 @@ bool DFGController::validPresetSplit() const
   // }
 
   return false;
+}
+
+std::string DFGController::gvcDoCopy()
+{
+  return copy();
+}
+
+void DFGController::gvcDoPaste(
+  bool mapPositionToMouseCursor
+  )
+{
+  cmdPaste( mapPositionToMouseCursor );
 }
 
 bool DFGController::gvcDoRemoveNodes(
@@ -727,7 +743,7 @@ bool DFGController::relaxNodes(QStringList paths)
   if(rootNodes.size() == 0)
     return false;
 
-  std::vector<GraphView::Node*> nodes = rootNodes[0]->upStreamNodes(true, rootNodes);
+  std::vector<GraphView::Node*> nodes = rootNodes[0]->upStreamNodes_deprecated(true, rootNodes);
   if(nodes.size() <= 1)
     return false;
 
@@ -963,7 +979,16 @@ void DFGController::cmdCut()
   }
 }
 
-void DFGController::cmdPaste()
+void DFGController::selectNodes(QList<QString> nodeNames) {
+  graph()->clearSelection();
+  for ( int i = 0; i < nodeNames.size(); ++i )
+  {
+    if ( FabricUI::GraphView::Node *node = graph()->node( nodeNames[i] ) )
+      node->setSelected( true );
+  }
+}
+
+void DFGController::cmdPaste(bool mapPositionToMouseCursor)
 {
   if(!validPresetSplit())
     return;
@@ -974,8 +999,22 @@ void DFGController::cmdPaste()
     QString textToPaste = clipboard->text();
     if ( !textToPaste.isEmpty() )
     {
-      QPointF pos =
-        m_dfgWidget->getGraphViewWidget()->mapToGraph( QCursor::pos() );
+      QPointF pos(0, 0);
+      if ( mapPositionToMouseCursor )
+      {
+        pos = m_dfgWidget->getGraphViewWidget()->mapToGraph( QCursor::pos() );
+      }
+      else
+      {
+        // use average top left node positions as pos.
+        std::vector<FabricUI::GraphView::Node *> nodes = m_dfgWidget->getGraphViewWidget()->graph()->selectedNodes();
+        if ( nodes.size() > 0 )
+        {
+          for (size_t i=0;i<nodes.size();i++)
+            pos += nodes[i]->topLeftGraphPos();
+          pos /= (float)nodes.size();
+        }
+      }
 
       // paste.
       QList<QString> pastedNodes =
@@ -987,12 +1026,7 @@ void DFGController::cmdPaste()
           pos
           );
 
-      graph()->clearSelection();
-      for ( int i = 0; i < pastedNodes.size(); ++i )
-      {
-        if ( FabricUI::GraphView::Node *node = graph()->node( pastedNodes[i] ) )
-          node->setSelected( true );
-      }
+      selectNodes(pastedNodes);
     }
   }
   catch(FabricCore::Exception e)
@@ -1035,6 +1069,8 @@ void DFGController::onTopoDirty()
 {
   updateErrors();
   updateNodeErrors();
+  updateTimelinePortIndices();
+  setTimelineValuesToGraph();
 }
 
 void DFGController::updateErrors()
@@ -1297,6 +1333,23 @@ void DFGController::cmdSetArgValue(
       value.copy()
       );
   }
+}
+
+void DFGController::cmdSetPortDefaultValue(
+  QString portPath,
+  FabricCore::RTVal const &value
+  )
+{
+  if(!validPresetSplit())
+    return;
+
+  m_cmdHandler->dfgDoSetPortDefaultValue(
+    getBinding(),
+    getExecPath_QS(),
+    getExec(),
+    portPath,
+    value.copy()
+    );
 }
 
 void DFGController::cmdSetRefVarPath(
@@ -1673,6 +1726,25 @@ QString DFGController::cmdAddInstWithEmptyGraph(
     );
 }
 
+QString DFGController::cmdAddInstFromJSON(
+  QString nodeName,
+  QString filePath,
+  QPointF pos
+  )
+{
+  if(!validPresetSplit())
+    return "";
+
+  return m_cmdHandler->dfgDoImportNodeFromJSON(
+    getBinding(),
+    getExecPath_QS(),
+    getExec(),
+    nodeName,
+    filePath,
+    pos
+    );
+}
+
 QString DFGController::cmdAddInstWithEmptyFunc(
   QString title,
   QString initialCode,
@@ -1932,37 +2004,65 @@ QList<QString> DFGController::cmdExplodeNode(
 
 void DFGController::gvcDoMoveNodes(
   std::vector<GraphView::Node *> const &nodes,
+  std::vector<QPointF> const &nodesOriginalPos,
   QPointF delta,
+  float gridSnapSize,
   bool allowUndo
   )
 {
+  if (   nodes.size() == 0
+      || nodes.size() != nodesOriginalPos.size() )
+    return;
+
+  if (nodes.size() > 1 && gridSnapSize > 0)
+  {
+    // if two or more nodes are being moved
+    // then we apply the grid snapping to the
+    // delta instead of applying it to each
+    // node.
+    delta.setX( gridSnapSize * qRound(delta.rx() / gridSnapSize) );
+    delta.setY( gridSnapSize * qRound(delta.ry() / gridSnapSize) );
+    gridSnapSize = 0;
+  }
+
   if ( allowUndo )
   {
     QStringList nodeNames;
     QList<QPointF> newTopLeftPoss;
     nodeNames.reserve( nodes.size() );
     newTopLeftPoss.reserve( nodes.size() );
+    int i = 0;
     for ( std::vector<GraphView::Node *>::const_iterator it = nodes.begin();
-      it != nodes.end(); ++it )
+      it != nodes.end(); ++it, ++i )
     {
       GraphView::Node *node = *it;
       FTL::CStrRef nodeName = node->name();
       nodeNames.append( QString::fromUtf8( nodeName.data(), nodeName.size() ) );
-      newTopLeftPoss.append( node->topLeftGraphPos() + delta );
+      QPointF newPos = nodesOriginalPos[i] + delta;
+      if (gridSnapSize > 0)
+      {
+        newPos.setX( gridSnapSize * qRound(newPos.rx() / gridSnapSize) );
+        newPos.setY( gridSnapSize * qRound(newPos.ry() / gridSnapSize) );
+      }
+      newTopLeftPoss.append( newPos );
     }
-
+    
     cmdMoveNodes( nodeNames, newTopLeftPoss );
   }
   else
   {
+    int i = 0;
     for ( std::vector<GraphView::Node *>::const_iterator it = nodes.begin();
-      it != nodes.end(); ++it )
+      it != nodes.end(); ++it, ++i )
     {
       GraphView::Node *node = *it;
       FTL::CStrRef nodeName = node->name();
-
-      QPointF newPos = node->topLeftGraphPos() + delta;
-
+      QPointF newPos = nodesOriginalPos[i] + delta;
+      if (gridSnapSize > 0)
+      {
+        newPos.setX( gridSnapSize * qRound(newPos.rx() / gridSnapSize) );
+        newPos.setY( gridSnapSize * qRound(newPos.ry() / gridSnapSize) );
+      }
       std::string newPosJSON;
       {
         FTL::JSONEnc<> enc( newPosJSON );
@@ -2185,3 +2285,121 @@ void DFGController::onParentExecNodeRenamed(
   m_dfgWidget->onExecPathOrTitleChanged();
 }
 
+int DFGController::getTimelinePortIndex( const std::string& name )
+{
+  int index = -1;
+  try
+  {
+    FabricCore::DFGExec graph = getExec();
+    unsigned portCount = graph.getExecPortCount();
+    for( unsigned i = 0; i < portCount; i++ )
+    {
+      if( graph.getExecPortType( i ) == FabricCore::DFGPortType_Out )
+        continue;
+      FTL::CStrRef portName = graph.getExecPortName( i );
+      if( portName != name )
+        continue;
+      if( !graph.isExecPortResolvedType( i, "SInt32" )
+        && !graph.isExecPortResolvedType( i, "UInt32" )
+        && !graph.isExecPortResolvedType( i, "Float32" )
+        && !graph.isExecPortResolvedType( i, "Float64" ) )
+        continue;
+      index = int( i );
+      break;
+    }
+  }
+  catch( FabricCore::Exception e )
+  {
+    log( e.getDesc_cstr() );
+  }
+  return index;
+}
+
+void DFGController::setTimelinePortValue( int portIndex, float value )
+{
+  if( portIndex == -1 )
+    return;
+
+  try
+  {
+    FabricCore::DFGBinding binding = this->getBinding();
+    FabricCore::DFGExec exec = binding.getExec();
+    FabricCore::Context ctxt = binding.getHost().getContext();
+
+    if( exec.isExecPortResolvedType( portIndex, "SInt32" ) )
+      binding.setArgValue(
+        portIndex,
+        FabricCore::RTVal::ConstructSInt32( ctxt, int(value) ),
+        false
+      );
+    else if( exec.isExecPortResolvedType( portIndex, "UInt32" ) )
+      binding.setArgValue(
+        portIndex,
+        FabricCore::RTVal::ConstructUInt32( ctxt, int(value) ),
+        false
+      );
+    else if( exec.isExecPortResolvedType( portIndex, "Float32" ) )
+      binding.setArgValue(
+        portIndex,
+        FabricCore::RTVal::ConstructFloat32( ctxt, value ),
+        false
+      );
+    else if( exec.isExecPortResolvedType( portIndex, "Float64" ) )
+      binding.setArgValue(
+        portIndex,
+        FabricCore::RTVal::ConstructFloat64( ctxt, value ),
+        false
+      );
+  }
+  catch( FabricCore::Exception e )
+  {
+    log( e.getDesc_cstr() );
+  }
+}
+
+void DFGController::resetTimelinePortIndices()
+{
+  m_timelinePortIndex = -1;
+  m_timelineStartPortIndex = -1;
+  m_timelineEndPortIndex = -1;
+  m_timelineFrameratePortIndex = -1;
+}
+
+void DFGController::updateTimelinePortIndices()
+{
+  if( this->isViewingRootGraph() )
+  {
+    m_timelinePortIndex = getTimelinePortIndex( "timeline" );
+    m_timelineStartPortIndex = getTimelinePortIndex( "timelineStart" );
+    m_timelineEndPortIndex = getTimelinePortIndex( "timelineEnd" );
+    m_timelineFrameratePortIndex = getTimelinePortIndex( "timelineFramerate" );
+  }
+}
+
+void DFGController::onFrameChanged( int frame )
+{
+  m_timelineFrame = frame;
+  this->setTimelinePortValue( m_timelinePortIndex, m_timelineFrame );
+}
+
+void DFGController::onTimelineRangeChanged( int start, int end )
+{
+  m_timelineStart = start;
+  m_timelineEnd = end;
+  this->setTimelinePortValue( m_timelineStartPortIndex, m_timelineStart );
+  this->setTimelinePortValue( m_timelineEndPortIndex, m_timelineEnd );
+}
+
+void DFGController::onTimelineTargetFramerateChanged( float frameRate )
+{
+  m_timelineFramerate = frameRate;
+  this->setTimelinePortValue( m_timelineFrameratePortIndex, m_timelineFramerate );
+}
+
+void DFGController::setTimelineValuesToGraph()
+{
+  this->setTimelinePortValue( m_timelinePortIndex, m_timelineFrame );
+  this->setTimelinePortValue( m_timelineStartPortIndex, m_timelineStart );
+  this->setTimelinePortValue( m_timelineEndPortIndex, m_timelineEnd );
+  this->setTimelinePortValue( m_timelineFrameratePortIndex, m_timelineFramerate );
+}

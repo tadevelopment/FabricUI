@@ -13,6 +13,8 @@
 
 #include <FTL/JSONValue.h>
 
+#include <FabricUI/Util/LoadFabricStyleSheet.h>
+
 class MainLicenseDialog : public QDialog
 {
   Q_OBJECT
@@ -26,6 +28,10 @@ public:
     setWindowTitle( "Fabric Licensing" );
     setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
     setMinimumSize( 500, 350 );
+
+    QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
+    if ( !styleSheet.isEmpty() )
+      setStyleSheet( styleSheet );
 
     setLayout( new QVBoxLayout() );
 

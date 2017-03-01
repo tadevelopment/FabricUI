@@ -111,9 +111,15 @@ protected slots:
     int row
     );
 
+  void onDuplicateRowClicked(
+    int row
+    );
+
   void onAddElementClicked();
 
   void onInspectSelected();
+
+  void onDuplicateSelected();
 
   void onRemoveSelected();
 
@@ -207,6 +213,7 @@ public:
     int row,
     QIcon iconOne,
     QIcon iconTwo = QIcon(),
+    QIcon iconThree = QIcon(),
     QWidget *parent = NULL
     );
 
@@ -217,11 +224,13 @@ signals:
 
   void oneClicked( int row );
   void twoClicked( int row );
+  void threeClicked( int row );
 
 protected slots:
 
   void onOneClicked();
   void onTwoClicked();
+  void onThreeClicked();
 
 private:
 

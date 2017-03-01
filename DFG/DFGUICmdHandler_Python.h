@@ -97,6 +97,15 @@ public:
     QPointF pos
     ) { return QString(); }
 
+  virtual QString dfgDoImportNodeFromJSON(
+    FabricCore::DFGBinding const &binding,
+    QString execPath,
+    FabricCore::DFGExec const &exec,
+    QString nodeName,
+    QString filePath,
+    QPointF pos
+    ) { return QString(); }
+
   virtual QString dfgDoAddFunc(
     FabricCore::DFGBinding const &binding,
     QString execPath,

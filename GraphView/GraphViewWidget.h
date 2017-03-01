@@ -33,7 +33,7 @@ namespace FabricUI
 
     signals:
 
-      void urlDropped( QUrl url, bool bypassUnsavedChanges );
+      void urlDropped( QUrl url, bool ctrlPressed, bool altPressed, QPointF pos  );
 
     protected:
 
@@ -69,6 +69,11 @@ namespace FabricUI
 
       QPointF mapToGraph( QPoint const &globalPos ) const;
       
+      float getUiGraphZoomBeforeQuickZoom()
+        { return m_uiGraphZoomBeforeQuickZoom; }
+      void setUiGraphZoomBeforeQuickZoom(float zoom)
+        { m_uiGraphZoomBeforeQuickZoom = zoom; }
+      
     public slots:
 
       void onSceneChanged();
@@ -76,18 +81,22 @@ namespace FabricUI
     signals:
 
       void sceneChanged();
-      void urlDropped( QUrl url, bool bypassUnsavedChanges );
+      void urlDropped( QUrl url, bool ctrlPressed, bool altPressed, QPointF pos );
  
     protected:
 
       virtual bool focusNextPrevChild(bool next);
       
+      virtual void drawBackground(QPainter *painter, const QRectF &exposedRect);
+
     private:
 
       QPoint m_lastEventPos;
       GraphViewScene * m_scene;
       Graph * m_graph;
       bool m_altWasHeldAtLastMousePress;
+      std::vector<QLineF> m_lines;
+      float m_uiGraphZoomBeforeQuickZoom;
     };
 
   };

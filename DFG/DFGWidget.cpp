@@ -32,7 +32,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QColorDialog>
-#include <QCursor>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSplitter>
@@ -134,8 +133,8 @@ DFGWidget::DFGWidget(
 
   m_uiGraphViewWidget = new DFGGraphViewWidget(this, dfgConfig.graphConfig, NULL);
   QObject::connect(
-    m_uiGraphViewWidget, SIGNAL(urlDropped(QUrl, bool)),
-    this, SIGNAL(urlDropped(QUrl, bool))
+    m_uiGraphViewWidget, SIGNAL(urlDropped(QUrl, bool, bool, QPointF)),
+    this, SIGNAL(urlDropped(QUrl, bool, bool, QPointF))
     );
 
   m_uiGraphViewWidget->addAction(new TabSearchAction                 (this, m_uiGraphViewWidget));
@@ -158,6 +157,14 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(new DeleteNodes2Action              (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodeAction          (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodePropertiesAction(this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new ConnectionInsertPresetAction    (this, m_uiGraphViewWidget,
+                                                                      NULL,
+                                                                      "Fabric.Compounds.Debug.LabeledReport",
+                                                                      "value",
+                                                                      "value",
+                                                                      QCursor::pos(),
+                                                                      QKeySequence(Qt::Key_R),
+                                                                      "label"));
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -361,10 +368,10 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  result->addAction(new NewGraphNodeAction        (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewFunctionNodeAction     (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewBackdropNodeAction     (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new ImplodeSelectedNodesAction(graphWidget, result, graphWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
+  result->addAction(new NewGraphNodeAction              (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewFunctionNodeAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewBackdropNodeAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new ImplodeSelectedNodesAction      (graphWidget, result, graphWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
 
   result->addSeparator();
 
@@ -602,6 +609,77 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   return menu;
 }
 
+QMenu *DFGWidget::connectionContextMenuCallback(
+  FabricUI::GraphView::Connection *connection,
+  void *userData
+  )
+{
+  DFGWidget * dfgWidget = (DFGWidget*)userData;
+
+  QMenu *result = new QMenu(connection->scene()->views()[0]);
+
+  result->addAction(new ConnectionRemoveAction(dfgWidget, connection, result, dfgWidget->isEditable()));
+
+  result->addSeparator();
+
+  QMenu *selectMenu = result->addMenu(tr("Select"));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, true,  false));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, false, true));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, true,  true));
+
+  result->addSeparator();
+
+  QMenu *insertPresetMenu = result->addMenu(tr("Insert Preset"));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection, 
+                                                               "Fabric.Core.Func.Report",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, result, connection,
+                                                               "Fabric.Compounds.Debug.LabeledReport",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(Qt::Key_R),
+                                                               "label",
+                                                               dfgWidget->isEditable()));
+
+  insertPresetMenu->addSeparator();
+
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
+                                                               "Fabric.Core.Data.Cache",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+
+  insertPresetMenu->addSeparator();
+
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
+                                                               "Fabric.Compounds.Data.PassIn",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
+                                                               "Fabric.Compounds.Data.PassIO",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+
+  return result;
+}
+
 QMenu *DFGWidget::sidePanelContextMenuCallback(
   FabricUI::GraphView::SidePanel* panel,
   void* userData
@@ -632,11 +710,25 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
 
   result->addSeparator();
 
-  bool canAddTimelinePort = (   editable
-                             && portType == FabricUI::GraphView::PortType_Output
-                             && exec.getExecPath().getLength() == 0
-                             && graph->ports("timeline").size() == 0 );
-  result->addAction( new CreateTimelinePortAction( graphWidget, result, canAddTimelinePort ) );
+
+  QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
+  timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );
+  {
+    QString portname[4] = {"timeline", "timelineStart", "timelineEnd", "timelineFramerate"};
+    bool canAddTimelinePort[4];
+    bool canAddAllTimelinePorts = false;
+    for (int i=0;i<4;i++)
+    {
+      canAddTimelinePort[i] = (   editable
+                               && portType == FabricUI::GraphView::PortType_Output
+                               && exec.getExecPath().getLength() == 0
+                               && graph->ports(portname[i].toUtf8().data()).size() == 0 );
+      canAddAllTimelinePorts |= canAddTimelinePort[i];
+      timelinePortsMenu->addAction( new CreateTimelinePortAction( graphWidget, timelinePortsMenu, i, canAddTimelinePort[i] ) );
+    }
+    timelinePortsMenu->addSeparator();
+    timelinePortsMenu->addAction( new CreateAllTimelinePortsAction( graphWidget, timelinePortsMenu, true /* createOnlyMissingPorts */, canAddAllTimelinePorts ) );
+  }
 
   result->addSeparator();
   
@@ -693,7 +785,7 @@ void DFGWidget::createNewBlockNode( QPoint const &globalPos )
 
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag( Qt::ControlModifier );
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New block", text, m_dfgConfig, true); 
     if(dialog.exec() != QDialog::Accepted)
@@ -729,7 +821,7 @@ void DFGWidget::createNewGraphNode( QPoint const &globalPos )
   QString text = "graph";
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New Empty Graph", text, m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
@@ -752,13 +844,38 @@ void DFGWidget::createNewGraphNode( QPoint const &globalPos )
     uiNode->setSelected( true );
 }
 
+void DFGWidget::createNewNodeFromJSON( QPoint const &globalPos )
+{
+  QString lastPresetFolder = getSettings()->value("mainWindow/lastPresetFolder").toString();
+  QFileInfo fileInfo(QFileDialog::getOpenFileName(this, "Import graph", lastPresetFolder, "*.canvas"));
+  if ( fileInfo.exists() )
+  {
+    fileInfo.dir().cdUp();
+    getSettings()->setValue( "mainWindow/lastPresetFolder", fileInfo.dir().path() );
+    createNewNodeFromJSON(fileInfo, m_uiGraphViewWidget->mapToGraph( globalPos ) );
+  }
+}
+
+void DFGWidget::createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const &pos )
+{
+  QString nodeName = m_uiController->cmdAddInstFromJSON(
+    fileInfo.baseName(), 
+    fileInfo.filePath(), 
+    pos 
+    );
+
+  QStringList selectedNodes;
+  selectedNodes.append( nodeName );
+  m_uiController->selectNodes( selectedNodes );
+}
+
 void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
 {
   QString text = "func";
 
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New Empty Function", text, m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
@@ -770,8 +887,6 @@ void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
       return; }
   }
 
-  m_uiController->beginInteraction();
-
   static const FTL::CStrRef initialCode = FTL_STR("\
 dfgEntry {\n\
   // result = a + b;\n\
@@ -782,11 +897,6 @@ dfgEntry {\n\
       QString::fromUtf8( initialCode.c_str() ),
       m_uiGraphViewWidget->mapToGraph( globalPos )
       );
-  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
-  {
-    maybeEditNode( uiNode );
-  }
-  m_uiController->endInteraction();
 }
 
 void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
@@ -795,7 +905,7 @@ void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
 
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New Backdrop", text, m_dfgConfig, false);
     if(dialog.exec() != QDialog::Accepted)
@@ -1020,6 +1130,9 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
     FabricCore::Client &client = m_uiController->getClient();
     FabricCore::DFGExec &exec = m_uiController->getExec();
 
+    Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
+    bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
+
     DFGEditPortDialog dialog(
       this,
       client,
@@ -1094,12 +1207,15 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       expandMetadataSection = true;
     }
 
-    dialog.setSectionCollapsed("metadata", !expandMetadataSection);
+    dialog.setSectionCollapsed("Metadata", !expandMetadataSection);
 
-    emit portEditDialogCreated(&dialog);
+    if (!duplicatePort || isCTRL)
+    {
+      emit portEditDialogCreated(&dialog);
 
-    if(dialog.exec() != QDialog::Accepted)
-      return;
+      if(dialog.exec() != QDialog::Accepted)
+        return;
+    }
 
     emit portEditDialogInvoked(&dialog, NULL);
 
@@ -1174,7 +1290,7 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       m_uiController->cmdAddPort(
         newPortName,
         exec.getExecPortType( execPortName.c_str() ),
-        exec.getExecPortResolvedType( execPortName.c_str() ),
+        typeSpec,
         QString(), // portToConnect
         extDep,
         QString::fromUtf8( uiMetadata.c_str() )
@@ -1244,7 +1360,7 @@ void DFGWidget::movePortsToEnd( bool moveInputs )
 
 void DFGWidget::implodeSelectedNodes( bool displayDialog )
 {
-  QString text = "graph";
+  QString text = "imploded_nodes";
 
   if (displayDialog)
   {
@@ -1482,7 +1598,7 @@ void DFGWidget::exportGraph( const char *nodeName )
     lastPresetFolder += "/" + title;
   }
 
-  QString filter = "DFG Preset (*.canvas)";
+  QString filter = "Canvas Preset (*.canvas)";
   QString filePath = QFileDialog::getSaveFileName(this, "Export graph", lastPresetFolder, filter, &filter);
   if(filePath.length() == 0)
     return;
@@ -1560,7 +1676,6 @@ void DFGWidget::explodeNode( const char *nodeName )
 
 void DFGWidget::keyPressEvent(QKeyEvent * event)
 {
-  // qDebug() << "DFGWidget::keyPressEvent";
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   if ( event->key() == Qt::Key_Z
     && !keyMod.testFlag(Qt::ShiftModifier)
@@ -1570,21 +1685,28 @@ void DFGWidget::keyPressEvent(QKeyEvent * event)
   {
     event->accept();
 
-    FTL::CStrRef uiGraphZoomStr =
-      m_uiController->getExec().getMetadata( "uiGraphZoom" );
-    FTL::JSONStrWithLoc jsonStrWithLoc( uiGraphZoomStr );
-    FTL::OwnedPtr<FTL::JSONValue const> jsonValue(
-      FTL::JSONValue::Decode( jsonStrWithLoc )
-      );
-    if ( jsonValue )
+    if (   getUIGraph()->nodes().size() == 0
+        || m_uiController->allNodesAreVisible() )
     {
-      FTL::JSONObject const *jsonObject = jsonValue->cast<FTL::JSONObject>();
-      m_uiGraphZoomBeforeQuickZoom =
-        jsonObject->getFloat64( FTL_STR("value") );
+      m_uiGraphZoomBeforeQuickZoom = -1;
+      getGraphViewWidget()->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
     }
-    // qDebug() << "m_uiGraphZoomBeforeQuickZoom " << m_uiGraphZoomBeforeQuickZoom;
-
-    m_uiController->frameAllNodes();
+    else
+    {
+      FTL::CStrRef uiGraphZoomStr =
+        m_uiController->getExec().getMetadata( "uiGraphZoom" );
+      FTL::JSONStrWithLoc jsonStrWithLoc( uiGraphZoomStr );
+      FTL::OwnedPtr<FTL::JSONValue const> jsonValue(
+        FTL::JSONValue::Decode( jsonStrWithLoc )
+        );
+      if ( jsonValue )
+      {
+        FTL::JSONObject const *jsonObject = jsonValue->cast<FTL::JSONObject>();
+        m_uiGraphZoomBeforeQuickZoom = jsonObject->getFloat64( FTL_STR("value") );
+        getGraphViewWidget()->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
+      }
+      m_uiController->frameAllNodes();
+    }
 
     return;
   }
@@ -1599,41 +1721,46 @@ Ty clamp( Ty const &v, Ty const &lo, Ty const &hi )
 
 void DFGWidget::keyReleaseEvent(QKeyEvent * event)
 {
-  // qDebug() << "DFGWidget::keyReleaseEvent";
   if ( event->key() == Qt::Key_Z
     && !event->isAutoRepeat()
     && m_uiGraphZoomBeforeQuickZoom != 0 )
   {
     event->accept();
 
-    QPoint globalPos = QCursor::pos();
-    // qDebug() << "globalPos " << globalPos;
     GraphView::GraphViewWidget *graphViewWidget = getGraphViewWidget();
-    QRect graphViewWidgetRect = graphViewWidget->geometry();
-    QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
-    // [pz 20160724] Constraint point to widget geometry
-    graphViewWidgetPos = QPoint(
-      clamp(
-        graphViewWidgetPos.x(),
-        graphViewWidgetRect.left(),
-        graphViewWidgetRect.right()
-        ),
-      clamp(
-        graphViewWidgetPos.y(),
-        graphViewWidgetRect.top(),
-        graphViewWidgetRect.bottom()
-        )
-      );
-    // qDebug() << "graphViewWidgetPos " << graphViewWidgetPos;
-    QPointF scenePos = graphViewWidget->mapToScene( graphViewWidgetPos );
-    // qDebug() << "scenePos " << scenePos;
-    GraphView::Graph *graph = graphViewWidget->graph();
-    GraphView::MainPanel *mainPanel = graph->mainPanel();
-    QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
-    // qDebug() << "mainPanelPos " << mainPanelPos;
-    mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
+    if (m_uiGraphZoomBeforeQuickZoom > 0)
+    {
+      QPoint globalPos = QCursor::pos();
+      QRect graphViewWidgetRect = graphViewWidget->geometry();
+      QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
+      // [pz 20160724] Constraint point to widget geometry
+      graphViewWidgetPos = QPoint(
+        clamp(
+          graphViewWidgetPos.x(),
+          graphViewWidgetRect.left(),
+          graphViewWidgetRect.right()
+          ),
+        clamp(
+          graphViewWidgetPos.y(),
+          graphViewWidgetRect.top(),
+          graphViewWidgetRect.bottom()
+          )
+        );
+      QPointF scenePos = graphViewWidget->mapToScene( graphViewWidgetPos );
+      GraphView::Graph *graph = graphViewWidget->graph();
+      GraphView::MainPanel *mainPanel = graph->mainPanel();
+      QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
+      mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
+
+      // center Canvas pan.
+      QPointF center = graphViewWidgetRect.center() - graphViewWidgetPos;
+      QPointF newPan = mainPanel->canvasPan() + center;
+      mainPanel->setCanvasPan(newPan);
+    }
 
     m_uiGraphZoomBeforeQuickZoom = 0;
+    graphViewWidget->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
+    graphViewWidget->update();
 
     return;
   }
@@ -1700,8 +1827,31 @@ void DFGWidget::onToggleDimConnections()
   std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
   for(size_t i=0;i<connections.size();i++)
     connections[i]->update();
-  // [Julien] FE-5264 Sets the dimConnectionLines property to the settings
   if(getSettings()) getSettings()->setValue( "DFGWidget/dimConnectionLines", m_uiGraph->config().dimConnectionLines );
+}
+
+void DFGWidget::onToggleConnectionShowTooltip()
+{
+  m_uiGraph->config().connectionShowTooltip = !m_uiGraph->config().connectionShowTooltip;
+  std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
+  for(size_t i=0;i<connections.size();i++)
+    connections[i]->enableToolTip(m_uiGraph->config().connectionShowTooltip);
+  if(getSettings()) getSettings()->setValue( "DFGWidget/connectionShowTooltip", m_uiGraph->config().connectionShowTooltip );
+}
+
+void DFGWidget::onToggleHighlightConnectionTargets()
+{
+  m_uiGraph->config().highlightConnectionTargets = !m_uiGraph->config().highlightConnectionTargets;
+  if(getSettings()) getSettings()->setValue( "DFGWidget/highlightConnectionTargets", m_uiGraph->config().highlightConnectionTargets );
+}
+
+void DFGWidget::onToggleConnectionDrawAsCurves()
+{
+  m_uiGraph->config().connectionDrawAsCurves = !m_uiGraph->config().connectionDrawAsCurves;
+  std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
+  for(size_t i=0;i<connections.size();i++)
+    connections[i]->dependencyMoved();
+  if(getSettings()) getSettings()->setValue( "DFGWidget/connectionDrawAsCurves", m_uiGraph->config().connectionDrawAsCurves );
 }
 
 void DFGWidget::onTogglePortsCentered()
@@ -1709,8 +1859,20 @@ void DFGWidget::onTogglePortsCentered()
   m_uiGraph->config().portsCentered = !m_uiGraph->config().portsCentered;
   m_uiGraph->sidePanel(GraphView::PortType_Input)->updateItemGroupScroll();  
   m_uiGraph->sidePanel(GraphView::PortType_Output)->updateItemGroupScroll();  
-  // [Julien] FE-5264 Sets the onTogglePortsCentered property to the settings
   if(getSettings()) getSettings()->setValue( "DFGWidget/portsCentered", m_uiGraph->config().portsCentered );
+}
+
+void DFGWidget::onToggleDrawGrid()
+{
+  m_uiGraph->config().mainPanelDrawGrid = !m_uiGraph->config().mainPanelDrawGrid;
+  m_uiGraph->update();
+  if(getSettings()) getSettings()->setValue( "DFGWidget/mainPanelDrawGrid", m_uiGraph->config().mainPanelDrawGrid );
+}
+
+void DFGWidget::onToggleSnapToGrid()
+{
+  m_uiGraph->config().mainPanelGridSnap = !m_uiGraph->config().mainPanelGridSnap;
+  if(getSettings()) getSettings()->setValue( "DFGWidget/mainPanelGridSnap", m_uiGraph->config().mainPanelGridSnap );
 }
 
 bool DFGWidget::maybeEditNode(
@@ -2119,6 +2281,7 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
     emit additionalMenuActionsRequested("File", fileMenu, true);
     if(fileMenu->actions().count() > 0)
       fileMenu->addSeparator();
+    connect( fileMenu, SIGNAL( aboutToShow() ), this, SIGNAL( fileMenuAboutToShow() ) );
   }
 
   QMenu *editMenu = menuBar->addMenu(tr("&Edit"));
@@ -2164,15 +2327,46 @@ void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDC
   QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
   editMenu->addAction(pasteNodesAction);
 
-  // view menu
-  QAction * dimLinesAction = viewMenu->addAction("Dim Connections");
+  // view -> graph view menu
+
+  QMenu *graphViewMenu = viewMenu->addMenu(tr("Graph View"));
+
+  QAction * dimLinesAction = graphViewMenu->addAction("Dim Connections");
   dimLinesAction->setCheckable(true);
   dimLinesAction->setChecked(m_uiGraph->config().dimConnectionLines);
   QObject::connect(dimLinesAction, SIGNAL(triggered()), this, SLOT(onToggleDimConnections()));
-  QAction * portsCenteredAction = viewMenu->addAction("Side Ports Centered");
+
+  QAction * connectionShowTooltipAction = graphViewMenu->addAction("Show Connection Tooltips");
+  connectionShowTooltipAction->setCheckable(true);
+  connectionShowTooltipAction->setChecked(m_uiGraph->config().connectionShowTooltip);
+  QObject::connect(connectionShowTooltipAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionShowTooltip()));
+
+  QAction * highlightConnectionTargetsAction = graphViewMenu->addAction("Highlight Connection Targets");
+  highlightConnectionTargetsAction->setCheckable(true);
+  highlightConnectionTargetsAction->setChecked(m_uiGraph->config().highlightConnectionTargets);
+  QObject::connect(highlightConnectionTargetsAction, SIGNAL(triggered()), this, SLOT(onToggleHighlightConnectionTargets()));
+
+  QAction * connectionDrawAsCurvesAction = graphViewMenu->addAction("Display Connections as Curves");
+  connectionDrawAsCurvesAction->setCheckable(true);
+  connectionDrawAsCurvesAction->setChecked(m_uiGraph->config().connectionDrawAsCurves);
+  QObject::connect(connectionDrawAsCurvesAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionDrawAsCurves()));
+
+  QAction * portsCenteredAction = graphViewMenu->addAction("Side Ports Centered");
   portsCenteredAction->setCheckable(true);
   portsCenteredAction->setChecked(m_uiGraph->config().portsCentered);
   QObject::connect(portsCenteredAction, SIGNAL(triggered()), this, SLOT(onTogglePortsCentered()));
+
+  graphViewMenu->addSeparator();
+
+  QAction * displayGrid = graphViewMenu->addAction("Display Grid");
+  displayGrid->setCheckable(true);
+  displayGrid->setChecked(m_uiGraph->config().mainPanelDrawGrid);
+  QObject::connect(displayGrid, SIGNAL(triggered()), this, SLOT(onToggleDrawGrid()));
+
+  QAction * snapToGrid = graphViewMenu->addAction("Snap to Grid");
+  snapToGrid->setCheckable(true);
+  snapToGrid->setChecked(m_uiGraph->config().mainPanelGridSnap);
+  QObject::connect(snapToGrid, SIGNAL(triggered()), this, SLOT(onToggleSnapToGrid()));
 
   // emit the suffix menu entry requests
   emit additionalMenuActionsRequested("Edit", editMenu, false);
@@ -2216,6 +2410,8 @@ void DFGWidget::onExecChanged()
     {
       m_uiGraph->config().dimConnectionLines = getSettings()->value( "DFGWidget/dimConnectionLines").toBool();
       m_uiGraph->config().portsCentered = getSettings()->value( "DFGWidget/portsCentered").toBool();
+      m_uiGraph->config().mainPanelDrawGrid = getSettings()->value( "DFGWidget/mainPanelDrawGrid").toBool();
+      m_uiGraph->config().mainPanelGridSnap = getSettings()->value( "DFGWidget/mainPanelGridSnap").toBool();
     }
     m_uiGraph->initialize();
 
@@ -2227,6 +2423,7 @@ void DFGWidget::onExecChanged()
     m_uiGraph->setNodeContextMenuCallback( &nodeContextMenuCallback, this );
     m_uiGraph->setPortContextMenuCallback( &portContextMenuCallback, this );
     m_uiGraph->setFixedPortContextMenuCallback( &fixedPortContextMenuCallback, this );
+    m_uiGraph->setConnectionContextMenuCallback( &connectionContextMenuCallback, this );
     m_uiGraph->setSidePanelContextMenuCallback( &sidePanelContextMenuCallback, this );
 
     if ( !m_uiController->getExecBlockName().empty() )

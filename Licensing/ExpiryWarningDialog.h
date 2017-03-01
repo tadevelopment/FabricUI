@@ -14,6 +14,8 @@
 
 #include <FTL/CStrRef.h>
 
+#include <FabricUI/Util/LoadFabricStyleSheet.h>
+
 class ExpiryWarningDialog : public QDialog
 {
   Q_OBJECT
@@ -25,6 +27,10 @@ public:
   {
     setWindowTitle( "Fabric Licensing" );
     setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
+
+    QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
+    if ( !styleSheet.isEmpty() )
+      setStyleSheet( styleSheet );
 
     setLayout( new QVBoxLayout() );
 

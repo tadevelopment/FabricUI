@@ -20,6 +20,7 @@ DFGSavePresetDialog::DFGSavePresetDialog(
   : DFGBaseDialog(parent, true, dfgConfig)
   , m_dfgController( dfgController )
 {
+  setObjectName( "DFGSavePresetDialog" );
   setWindowTitle("Create Preset");
   m_presetTree = new PresetTreeWidget(dfgController, dfgConfig, true, false, true, true, true, false);
 

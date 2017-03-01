@@ -26,8 +26,7 @@ using namespace DFG;
 using namespace ModelItems;
 
 DFGVEEditorOwner::DFGVEEditorOwner( DFGWidget * dfgWidget )
-  : m_timelinePortIndex( -1 )
-  , m_dfgWidget(dfgWidget)
+  : m_dfgWidget(dfgWidget)
   , m_setGraph( NULL )
   , m_notifProxy( NULL )
 {
@@ -324,7 +323,6 @@ void DFGVEEditorOwner::onControllerBindingChanged(
   FabricCore::DFGBinding const &newBinding
   )
 {
-  onStructureChanged();
   onSidePanelInspectRequested();
 }
 
@@ -1067,83 +1065,6 @@ void DFGVEEditorOwner::onExecRefVarPathChanged(
         }
       }
     }
-  }
-}
-
-void DFGVEEditorOwner::onStructureChanged()
-{
-  if (getDFGController()->isViewingRootGraph())
-  {
-    m_timelinePortIndex = -1;
-    try
-    {
-      FabricCore::DFGExec graph =
-        getDFGController()->getExec();
-      unsigned portCount = graph.getExecPortCount();
-      for (unsigned i = 0; i < portCount; i++)
-      {
-        if (graph.getExecPortType( i ) == FabricCore::DFGPortType_Out)
-          continue;
-        FTL::CStrRef portName = graph.getExecPortName( i );
-        if (portName != FTL_STR( "timeline" ))
-          continue;
-        if (    !graph.isExecPortResolvedType( i, "SInt32" )
-             && !graph.isExecPortResolvedType( i, "UInt32" )
-             && !graph.isExecPortResolvedType( i, "Float32" )
-             && !graph.isExecPortResolvedType( i, "Float64" ))
-          continue;
-        m_timelinePortIndex = int( i );
-        break;
-      }
-    }
-    catch (FabricCore::Exception e)
-    {
-      emit log( e.getDesc_cstr() );
-    }
-  }
-}
-
-void DFGVEEditorOwner::onFrameChanged( int frame )
-{
-  VEEditorOwner::onFrameChanged(frame);
-  if (m_timelinePortIndex == -1)
-    return;
-
-  try
-  {
-    FabricCore::DFGBinding binding =
-      getDFGController()->getBinding();
-    FabricCore::DFGExec exec = binding.getExec();
-    FabricCore::Context ctxt = binding.getHost().getContext();
-
-    if (exec.isExecPortResolvedType( m_timelinePortIndex, "SInt32" ))
-      binding.setArgValue(
-        m_timelinePortIndex,
-        FabricCore::RTVal::ConstructSInt32( ctxt, frame ),
-        false
-        );
-    else if (exec.isExecPortResolvedType( m_timelinePortIndex, "UInt32" ))
-      binding.setArgValue(
-        m_timelinePortIndex,
-        FabricCore::RTVal::ConstructUInt32( ctxt, frame ),
-        false
-        );
-    else if (exec.isExecPortResolvedType( m_timelinePortIndex, "Float32" ))
-      binding.setArgValue(
-        m_timelinePortIndex,
-        FabricCore::RTVal::ConstructFloat32( ctxt, frame ),
-        false
-        );
-    else if (exec.isExecPortResolvedType( m_timelinePortIndex, "Float64" ))
-      binding.setArgValue(
-        m_timelinePortIndex,
-        FabricCore::RTVal::ConstructFloat64( ctxt, frame ),
-        false
-        );
-  }
-  catch (FabricCore::Exception e)
-  {
-    emit log( e.getDesc_cstr() );
   }
 }
 

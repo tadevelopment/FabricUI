@@ -283,8 +283,7 @@ namespace FabricUI {
         FTL::ArrayRef<unsigned> newOrder
         );
 
-      virtual void onStructureChanged();
-      virtual void onFrameChanged(int frame);
+      virtual void onStructureChanged() {};
 
       virtual void onGraphSet(FabricUI::GraphView::Graph * graph);
 
@@ -302,8 +301,6 @@ namespace FabricUI {
         FTL::CStrRef nodeName,
         FabricUI::ModelItems::ItemModelItem *nodeModelItem
         );
-
-      int m_timelinePortIndex;
 
       DFG::DFGWidget * m_dfgWidget;
       FabricUI::GraphView::Graph * m_setGraph;

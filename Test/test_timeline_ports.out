@@ -1,0 +1,20 @@
+timeline = +1.0
+timelineStart = +1.0
+timelineEnd = +250.0
+timelineFramerate = +60.0
+
+timeline = +11.0
+timelineStart = +1.0
+timelineEnd = +250.0
+timelineFramerate = +60.0
+
+timeline = +11.0
+timelineStart = +11.0
+timelineEnd = +314.0
+timelineFramerate = +60.0
+
+timeline = +11.0
+timelineStart = +11.0
+timelineEnd = +314.0
+timelineFramerate = +25.0
+

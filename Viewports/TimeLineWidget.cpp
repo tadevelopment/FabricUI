@@ -2,19 +2,21 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
-#include <iostream>
 #include "TimeLineWidget.h"
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
+#include <FabricUI/Dialog/BaseDialog.h>
 
-#include <QMenu>
+#include <QDialog>
+#include <QHBoxLayout>
 #include <QInputDialog>
-#include <QDesktopWidget>
 #include <QLabel>
+#include <QPushButton>
 
-#include <algorithm>
 #include <math.h>
 
+
 using namespace FabricUI::TimeLine;
+using namespace FabricUI::Dialog;
 
 TimeLineWidget::TimeLineWidget()
 {
@@ -92,23 +94,28 @@ TimeLineWidget::TimeLineWidget()
 
   m_goToStartFrameButton = new QPushButton(this);
   m_goToStartFrameButton->setObjectName( "DFGTimelineGoToStartFrame" );
+  m_goToStartFrameButton->setToolTip("Go to start frame");
   layout()->addWidget(m_goToStartFrameButton);
 
   m_goToPreviousFrameButton = new QPushButton(this);
   m_goToPreviousFrameButton->setObjectName( "DFGTimelineGoToPreviousFrame" );
+  m_goToPreviousFrameButton->setToolTip("Go to previous frame");
   layout()->addWidget(m_goToPreviousFrameButton);
 
   m_playButton = new QPushButton(this);
   m_playButton->setObjectName( "DFGTimelinePlay" );
   m_playButton->setCheckable( true );
+  m_playButton->setToolTip("Play / Pause");
   layout()->addWidget(m_playButton);
 
   m_goToNextFrameButton = new QPushButton(this);
   m_goToNextFrameButton->setObjectName( "DFGTimelineGoToNextFrame" );
+  m_goToNextFrameButton->setToolTip("Go to next frame");
   layout()->addWidget(m_goToNextFrameButton);
 
   m_goToEndFrameButton = new QPushButton(this);
   m_goToEndFrameButton->setObjectName( "DFGTimelineGoToEndFrame" );
+  m_goToEndFrameButton->setToolTip("Go to end frame");
   layout()->addWidget(m_goToEndFrameButton);
 
   m_frameRateComboBox = new QComboBox(this);
@@ -172,9 +179,18 @@ TimeLineWidget::TimeLineWidget()
 
   connect( m_timer , SIGNAL(timeout()) , this , SLOT(timerUpdate()) );
 
-  connect( m_frameRateComboBox , SIGNAL(activated(int)) , this , SLOT( frameRateChanged(int))  );
+  connect( m_frameRateComboBox , SIGNAL(activated(int)) , this , SLOT( updateTargetFrameRate(int))  );
   connect( m_loopModeComBox , SIGNAL(activated(int)) , this , SLOT( loopModeChanged(int))  );
   connect( m_simModeComBox , SIGNAL(activated(int)) , this , SLOT( simModeChanged(int))  );
+
+  // FE-5724 
+  this->addAction(new TogglePlaybackAction(this));
+  this->addAction(new PlayAction(this));
+  this->addAction(new PauseAction(this));
+  this->addAction(new GoToNextFrameAction(this));
+  this->addAction(new GoToPreviousFrameAction(this));
+  this->addAction(new GoToEndFrameAction(this));
+  this->addAction(new GoToStartFrameAction(this));
 
   // [FE-6693] set default framerate to 60 fps.
   setFrameRate(60.0f);
@@ -216,6 +232,8 @@ void TimeLineWidget::setTime(int time)
   {
     m_lastSteppedFrame = time;
   }
+
+
 
   emit frameChanged(time);
 }
@@ -293,8 +311,8 @@ void TimeLineWidget::setFrameRate(float framesPerSecond) {
     index = 7; // 48 fps
   else if( framesPerSecond <= 70 )
     index = 8; // 60 fps
-  frameRateChanged( index );
   m_frameRateComboBox->setCurrentIndex( index );
+  updateTargetFrameRate( index );
 }
 
 void TimeLineWidget::setLoopMode(int mode)
@@ -360,6 +378,8 @@ void TimeLineWidget::updateFrameRange()
 
   m_frameSlider->setMinimum( min );
   m_frameSlider->setMaximum( max );
+
+  emit rangeChanged( getRangeStart(), getRangeEnd() );
 }
 
 void TimeLineWidget::onPlayButtonToggled( bool checked )
@@ -368,6 +388,7 @@ void TimeLineWidget::onPlayButtonToggled( bool checked )
   {
     m_playButton->setText( QString::fromUtf8( "\xEF\x81\x8B" ) ); /* FontAwesome > */
     m_timer->stop();
+    m_playButton->setChecked( false );
     emit playbackChanged(false);
   }
   else if ( checked && !m_timer->isActive() )
@@ -381,14 +402,19 @@ void TimeLineWidget::onPlayButtonToggled( bool checked )
   }
 }
 
+void TimeLineWidget::play()
+{
+  onPlayButtonToggled(true);
+}
+
 void TimeLineWidget::pause()
 {
-  if ( m_timer->isActive() )
-  {
-    m_timer->stop();
-    m_playButton->setChecked( false );
-    emit playbackChanged(false);
-  }
+  onPlayButtonToggled(false);
+}
+
+void TimeLineWidget::togglePlayback()
+{
+  onPlayButtonToggled(!isPlaying());
 }
 
 void TimeLineWidget::goToStartFrame()
@@ -488,24 +514,46 @@ void TimeLineWidget::timerUpdate()
   }
 }
 
-void TimeLineWidget::frameRateChanged(int index)
+void TimeLineWidget::updateTargetFrameRate(int index)
 {
   m_fps = m_frameRateComboBox->itemData(index).toDouble();
   if(m_fps == 0.0) // max fps
     m_fps = 1000; // max fps
   else if(m_fps == -1.0) // custom fps
   {
-    bool ok;
-    double userFps = QInputDialog::getDouble(
-      this, tr("Custom FPS"), tr(""),
-      24.0, 1.0, 1000.0, 2, &ok );
-    if(ok)
+    BaseDialog *customFPSDialog = new BaseDialog( this->parentWidget() );
+    customFPSDialog->setWindowTitle ( "Custom FPS" );
+
+    QHBoxLayout *fpsWidgetLayout = new QHBoxLayout;
+    fpsWidgetLayout->setContentsMargins( 0, 0, 0, 0 );
+    fpsWidgetLayout->setSpacing( 5 );
+
+    QFrame *fpsWidget = new QFrame;
+    fpsWidget->setLayout(fpsWidgetLayout);
+
+    QLabel *fpsLabel = new QLabel( "FPS" );
+
+    QDoubleSpinBox *fpsSpinBox = new QDoubleSpinBox;
+    fpsSpinBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum));
+    fpsSpinBox->setValue( 24.0 );
+    fpsSpinBox->setWrapping( false );
+    fpsSpinBox->setFrame( false );
+
+    fpsWidgetLayout->addWidget( fpsLabel );
+    fpsWidgetLayout->setAlignment( fpsLabel, Qt::AlignLeft | Qt::AlignVCenter );
+    fpsWidgetLayout->addWidget( fpsSpinBox );
+
+    QVBoxLayout *inputsLayout = customFPSDialog->inputsLayout();
+    inputsLayout->addWidget(fpsWidget);
+
+    if ( customFPSDialog->exec() == QDialog::Accepted )
     {
-      m_fps = userFps;
+      m_fps = fpsSpinBox->value();
       m_frameRateComboBox->setItemText( index, 
-        "custom " + QString::number(m_fps) );
+        "custom " + QString::number( m_fps ) );
     }
   }
+  emit targetFrameRateChanged( framerate() );
 }
 
 void TimeLineWidget::loopModeChanged(int index)

@@ -1,3 +1,4 @@
+from FabricEngine import Core
 import FabricEngine.FabricUI
 from PySide.QtGui import QColor, QFont
 

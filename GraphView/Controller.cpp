@@ -170,6 +170,44 @@ bool Controller::frameAllNodes()
   return frameAndFitNodes(m_graph->nodes());
 }
 
+bool Controller::nodesAreVisible( FTL::ArrayRef<Node *> nodes )
+{
+  if(!m_graph)
+    return false;
+  if(nodes.size() == 0)
+    return false;
+  MainPanel *mainPanel = m_graph->mainPanel();
+
+  // get the boundingRect of the nodes.
+  QRectF nodesBoundingRect_ItemGroup;
+  for ( size_t i = 0; i < nodes.size(); ++i )
+  {
+    Node *node = nodes[i];
+    QRectF nodeBoundingRect = node->boundingRect();
+    QPointF nodeTopLeftPos = node->topLeftGraphPos();
+    nodesBoundingRect_ItemGroup |=
+      nodeBoundingRect.translated( nodeTopLeftPos );
+  }
+
+  // consider pan and zoom.
+  QPointF pnt1 = nodesBoundingRect_ItemGroup.topLeft();
+  QPointF pnt2 = nodesBoundingRect_ItemGroup.bottomRight();
+  pnt1 *= mainPanel->canvasZoom();
+  pnt1 += mainPanel->canvasPan();
+  pnt2 *= mainPanel->canvasZoom();
+  pnt2 += mainPanel->canvasPan();
+  nodesBoundingRect_ItemGroup.setTopLeft(pnt1);
+  nodesBoundingRect_ItemGroup.setBottomRight(pnt2);
+
+  // return true if boundingRect is fully contained in the view rect.
+  return mainPanel->boundingRect().contains(nodesBoundingRect_ItemGroup);
+}
+
+bool Controller::allNodesAreVisible()
+{
+  return nodesAreVisible(m_graph->nodes());
+}
+
 void Controller::collapseNodes(int state, const std::vector<Node*> & nodes) {
   for(size_t i=0;i<nodes.size();i++)
     nodes[i]->setCollapsedState((Node::CollapseState)state);
