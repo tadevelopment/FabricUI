@@ -13,7 +13,7 @@ from FabricEngine.Canvas.BindingWrapper import BindingWrapper
 from FabricEngine.Canvas.LogWidget import LogWidget
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.PythonHighlighter import PythonHighlighter
-from FabricEngine.FabricUI import DFG
+from FabricEngine.FabricUI import DFG, Actions
 
 class LogStd:
 
@@ -368,33 +368,17 @@ class ScriptEditor(QtGui.QWidget):
         splitter.addWidget(self.cmd)
         splitter.addWidget(self.log)
 
-        newAction = QtGui.QAction("New", self)
-        newAction.setShortcut(QtGui.QKeySequence("Alt+Ctrl+N"))
-        newAction.setToolTip("New script (%s)" % newAction.shortcut().toString(QtGui.QKeySequence.NativeText))
-        newAction.triggered.connect(self.newScript)
-
-        openAction = QtGui.QAction("Open", self)
-        openAction.setShortcut(QtGui.QKeySequence("Alt+Ctrl+O"))
-        openAction.setToolTip("Open script (%s)" % openAction.shortcut().toString(QtGui.QKeySequence.NativeText))
-        openAction.triggered.connect(self.open)
-
-        self.saveAction = QtGui.QAction("Save", self)
-        self.saveAction.setShortcut(QtGui.QKeySequence("Alt+Ctrl+S"))
-        self.saveAction.setToolTip("Save script (%s)" % self.saveAction.shortcut().toString(QtGui.QKeySequence.NativeText))
-        self.saveAction.triggered.connect(self.save)
-        self.saveAction.setEnabled(False)
+        newAction = NewScriptAction(self)
+        
+        openAction = OpenScriptAction(self)
+  
+        self.saveAction = SaveScriptAction(self)
+     
         self.cmd.modificationChanged.connect(self.onModificationChanged)
 
-        saveAsAction = QtGui.QAction("Save As...", self)
-        saveAsAction.setShortcut(QtGui.QKeySequence("Alt+Shift+Ctrl+S"))
-        saveAsAction.setToolTip("Save script As... (%s)" % saveAsAction.shortcut().toString(QtGui.QKeySequence.NativeText))
-        saveAsAction.triggered.connect(self.saveAs)
-
-        executeAction = QtGui.QAction("Execute", self)
-        executeAction.setShortcuts([QtGui.QKeySequence("Ctrl+Return"), QtGui.QKeySequence("Ctrl+Enter")])
-        executeAction.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-        executeAction.setToolTip("Execute script (%s)" % executeAction.shortcut().toString(QtGui.QKeySequence.NativeText))
-        executeAction.triggered.connect(self.execute)
+        saveAsAction = SaveScriptAsAction(self)
+   
+        executeAction = ExecuteScriptAction(self)
         self.cmd.addAction(executeAction)
 
         self.echoCommandsAction = QtGui.QAction("Echo Commands", self)
@@ -597,3 +581,108 @@ class ScriptEditor(QtGui.QWidget):
         sys.stderr = old_stderr
         sys.stdout = old_stdout
         self.__echoStackIndexChanges = oldEchoStackIndexChanges
+
+class BaseScriptEditorAction(Actions.BaseAction):
+ 
+    def __init__(self,
+        scriptEditor, 
+        name, 
+        text, 
+        shortcut, 
+        context = QtCore.Qt.ApplicationShortcut, 
+        enable = True):
+
+        self.scriptEditor = scriptEditor
+
+        super(BaseScriptEditorAction, self).__init__(
+            scriptEditor, 
+            name, 
+            text, 
+            shortcut, 
+            context, 
+            enable)
+ 
+class NewScriptAction(BaseScriptEditorAction):
+ 
+    def __init__(self, scriptEditor):
+        super(NewScriptAction, self).__init__(
+            scriptEditor, 
+            "ScriptEditor.NewScriptAction", 
+            "New", 
+            QtGui.QKeySequence("Alt+Ctrl+N"))
+
+        self.setToolTip("New script (%s)" % self.shortcut().toString(QtGui.QKeySequence.NativeText))
+        
+    def onTriggered(self):
+        self.scriptEditor.newScript()
+
+class OpenScriptAction(BaseScriptEditorAction):
+ 
+    def __init__(self, scriptEditor):
+        super(OpenScriptAction, self).__init__(
+            scriptEditor, 
+            "ScriptEditor.OpenScriptAction", 
+            "Open", 
+            QtGui.QKeySequence("Alt+Ctrl+O"))
+        
+        self.setToolTip("Open script (%s)" % self.shortcut().toString(QtGui.QKeySequence.NativeText))
+
+    def onTriggered(self):
+        self.scriptEditor.open()
+ 
+class SaveScriptAction(BaseScriptEditorAction):
+ 
+    def __init__(self, scriptEditor):
+        super(SaveScriptAction, self).__init__(
+            scriptEditor, 
+            "ScriptEditor.SaveScriptAction", 
+            "Save", 
+            QtGui.QKeySequence("Alt+Ctrl+S"))
+        
+        self.setToolTip("Save script (%s)" % self.shortcut().toString(QtGui.QKeySequence.NativeText))
+
+    def onTriggered(self):
+        self.scriptEditor.save()
+ 
+class SaveScriptAsAction(BaseScriptEditorAction):
+ 
+    def __init__(self, scriptEditor):
+        super(SaveScriptAsAction, self).__init__(
+            scriptEditor, 
+            "ScriptEditor.SaveScriptAsAction", 
+            "Save As", 
+            QtGui.QKeySequence("Alt+Shift+Ctrl+S"))
+        
+        self.setToolTip("Save script As... (%s)" % self.shortcut().toString(QtGui.QKeySequence.NativeText))
+
+    def onTriggered(self):
+        self.scriptEditor.saveAs()
+
+class ExecuteScriptAction(BaseScriptEditorAction):
+ 
+    def __init__(self, scriptEditor):
+        super(ExecuteScriptAction, self).__init__(
+            scriptEditor, 
+            "ScriptEditor.ExecuteScriptAction", 
+            "Execute", 
+            [QtGui.QKeySequence("Ctrl+Return"), QtGui.QKeySequence("Ctrl+Enter")],
+            QtCore.Qt.WidgetWithChildrenShortcut)
+        
+        self.setToolTip("Execute script (%s)" % self.shortcut().toString(QtGui.QKeySequence.NativeText))
+ 
+    def onTriggered(self):
+        self.scriptEditor.execute()
+
+class EchoCommandAction(BaseScriptEditorAction):
+ 
+    def __init__(self, scriptEditor):
+        super(EchoCommandAction, self).__init__(
+            scriptEditor, 
+            "ScriptEditor.EchoCommandAction", 
+            "Echo Commands")
+
+        self.setCheckable(True)
+        self.setChecked(bool(self.settings.value("scriptEditor/echoCommands", True)))
+    
+    def onTriggered(self):
+        self.scriptEditor.echoCommandsToggled()

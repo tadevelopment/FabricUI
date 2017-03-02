@@ -330,20 +330,9 @@ void DFGErrorsWidget::onCustomContextMenuRequested( QPoint const &pos )
 {
   QMenu menu( this );
 
-  QAction *dismissAction = new QAction( "Dismiss Selected", &menu );
-  connect(
-    dismissAction, SIGNAL(triggered()),
-    this, SLOT(onDismissSelected())
-    );
+  Actions::BaseAction *dismissAction = new DismissSelectionAction( this, &menu );
   menu.addAction( dismissAction );
-  
-  QAction *copyAction = new QAction( "Copy Selected", &menu );
-  copyAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_C) );
-  connect(
-    copyAction, SIGNAL(triggered()),
-    this, SLOT(onCopySelected())
-    );
-  menu.addAction( copyAction );
+  menu.addAction( new CopySelectionAction( this, &menu ) );
 
   bool haveDiagIndex = false;
   // [FABMODO-8] ** temporary fix consisting of changing the crash into a memory leak **
