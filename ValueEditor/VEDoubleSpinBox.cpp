@@ -4,6 +4,8 @@
 
 #include "VEDoubleSpinBox.h"
 
+#include <FabricUI/Util/StringUtils.h>
+
 #include <float.h>
 #include <math.h>
 #include <algorithm>
@@ -15,6 +17,7 @@ int const VEDoubleSpinBox::MAX_QT_EXP = 10;
 
 VEDoubleSpinBox::VEDoubleSpinBox()
 {
+  m_validator = FabricUI::Util::newDoubleValidator(this);
   setRange( -MAX_QT_VAL, MAX_QT_VAL );
   resetPrecision();
 }
@@ -30,7 +33,11 @@ QString VEDoubleSpinBox::textFromValue( double val ) const
 
 double VEDoubleSpinBox::valueFromText(const QString &text) const
 {
-  return QString(text).replace(',', '.').toDouble();
+  QString t = text;
+  t.replace(',', '.');
+  if (t.startsWith('.'))
+    t = "0" + t;
+  return t.toDouble();
 }
 
 double VEDoubleSpinBox::implicitLogBaseChangePerStep()
@@ -73,4 +80,9 @@ double VEDoubleSpinBox::updateStep(
 void VEDoubleSpinBox::resetPrecision()
 {
   setDecimals( MAX_QT_EXP );
+}
+
+QValidator::State VEDoubleSpinBox::validate(QString &text, int &pos) const
+{
+  return m_validator->validate(text, pos);
 }

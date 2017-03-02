@@ -33,6 +33,8 @@ public:
 
   virtual void resetPrecision() /*override*/;
 
+  virtual QValidator::State validate(QString &text, int &pos) const;
+
 signals:
 
   void interactionBegin();
@@ -67,6 +69,8 @@ private:
 
   static double const MAX_QT_VAL;
   static int const MAX_QT_EXP;
+
+  QRegExpValidator *m_validator;
 };
 
 } // namespace FabricUI 

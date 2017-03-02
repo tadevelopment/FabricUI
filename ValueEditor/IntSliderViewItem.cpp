@@ -13,7 +13,6 @@
 #include <QVariant>
 #include <QHBoxLayout>
 #include <QSlider>
-#include <QIntValidator>
 
 #include <FabricUI/Util/UIRange.h>
 #include <FTL/AutoSet.h>
@@ -46,7 +45,7 @@ IntSliderViewItem::IntSliderViewItem(
   if(value > m_slider->maximum())
     m_slider->setMaximum(value);
 
-  m_lineEdit->setValidator(new QIntValidator(m_lineEdit));
+  m_lineEdit->setValidatorInt();
   m_lineEdit->setText( QString::number( value ) );
   m_slider->setValue( value );
 

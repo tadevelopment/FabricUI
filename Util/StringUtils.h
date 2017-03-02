@@ -26,6 +26,8 @@
 
 #include <QString>
 #include <QStringList>
+#include <QRegExp>
+#include <QValidator>
 
 namespace FabricUI {
 namespace Util {  
@@ -151,7 +153,7 @@ template<typename T> T ToNum(const std::string &number) {
   return value;
 }
 
-/// Spits a string into a vector.
+/// Splits a string into a vector.
 /// \param s The string to split
 /// \param c The delimiter tat splits the string
 inline std::vector<std::string> Split(const std::string& s, char c) {
@@ -169,6 +171,14 @@ inline std::vector<std::string> Split(const std::string& s, char c) {
      v.push_back(s.substr(i, s.length()));
   }
   return v;
+}
+
+/// returns a new validator for doubles that
+/// accepts dots and commas as decimal separator.
+//  (this can be used instead of QDoubleValidator).
+inline QRegExpValidator *newDoubleValidator(QObject *parent)
+{
+  return new QRegExpValidator(QRegExp("[-+]?\\d*[\\.,]?\\d+([eE][-+]?\\d+)?"), parent);
 }
 
 } // namespace Utils
