@@ -9,7 +9,6 @@
 
 class QWidget;
 
-
 namespace FabricUI {
 namespace ValueEditor {
 

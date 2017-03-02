@@ -8,7 +8,6 @@
 #include <QSlider>
 #include <qevent.h>
 
-
 namespace FabricUI {
 namespace ValueEditor {
 
