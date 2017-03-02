@@ -3,7 +3,7 @@ The LogWidget receives and saves logging output from the ScriptEditor.
 """
 
 from PySide import QtCore, QtGui
-
+from FabricEngine.FabricUI import DFG, Actions
 
 class AppendingTextWidget(QtGui.QTextEdit):
     def __init__(self):
@@ -32,16 +32,11 @@ class LogWidget(AppendingTextWidget):
         self.commentColor = QtGui.QColor("#9AD6D6")
         self.exceptionColor = QtGui.QColor("#E14D59")
 
-        self.copyAction = QtGui.QAction("Copy", self)
-        self.copyAction.setShortcut(QtGui.QKeySequence.Copy)
-        self.copyAction.setEnabled(self.textCursor().hasSelection())
-        self.copyAction.triggered.connect(self.copy)
+        self.copyAction = CopyLogAction(self)
         self.copyAvailable.connect(self.copyAction.setEnabled)
 
     def clearAction(self, desc):
-        result = QtGui.QAction(desc, self)
-        result.triggered.connect(self.clear)
-        return result
+        return ClearLogAction(self, desc)
 
     def appendCommand(self, text):
         self.append(text, self.commandColor)
@@ -58,3 +53,48 @@ class LogWidget(AppendingTextWidget):
         menu.addSeparator()
         menu.addAction(self.clearAction("Clear"))
         menu.exec_(self.mapToGlobal(event.pos()))
+
+class BaseLogWidgetAction(Actions.BaseAction):
+ 
+    def __init__(self,
+        logWidget, 
+        name, 
+        text, 
+        shortcut = QtGui.QKeySequence(), 
+        context = QtCore.Qt.ApplicationShortcut):
+
+        self.logWidget = logWidget
+
+        super(BaseLogWidgetAction, self).__init__(
+            logWidget, 
+            name, 
+            text, 
+            shortcut, 
+            context)
+
+class CopyLogAction(BaseLogWidgetAction):
+ 
+    def __init__(self, logWidget):
+
+        super(CopyLogAction, self).__init__(
+            logWidget, 
+            "LogWidget.CopyLogAction", 
+            "Copy", 
+            QtGui.QKeySequence.Copy)
+ 
+        self.setEnabled(self.logWidget.textCursor().hasSelection())
+
+    def onTriggered(self):
+        self.logWidget.copy()
+
+class ClearLogAction(BaseLogWidgetAction):
+ 
+    def __init__(self, logWidget, desc):
+
+        super(ClearLogAction, self).__init__(
+            logWidget, 
+            "LogWidget.clearAction", 
+            desc)
+ 
+    def onTriggered(self):
+        self.logWidget.clear()
