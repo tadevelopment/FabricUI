@@ -65,9 +65,9 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
   int lineHeight = m_metrics->height() + m_metrics->leading() * 2;
   int offset = lineHeight + 1;
   if(m_lineOffset == 0)
-    offset += 1;
-  else
     offset -= 2;
+  else
+    offset -= 4;
 #endif
 
   painter.setFont(m_config.lineNumberFont);
