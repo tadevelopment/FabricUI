@@ -8,3 +8,4 @@ echo // MOC > %Dir%/Moc.cpp
 %QtDir%/bin/moc %Dir%/../ResultsView.h >> %Dir%/Moc.cpp
 %QtDir%/bin/moc %Dir%/../ResultPreview.h >> %Dir%/Moc.cpp
 %QtDir%/bin/moc %Dir%/../ItemView.h >> %Dir%/Moc.cpp
+%QtDir%/bin/moc %Dir%/../HeatBar.h >> %Dir%/Moc.cpp

@@ -38,6 +38,7 @@ add_executable(
   ../ResultsView.cpp
   ../ResultPreview.cpp
   ../ItemView.cpp
+  ../HeatBar.cpp
   Moc.cpp
   Main.cpp
   )
