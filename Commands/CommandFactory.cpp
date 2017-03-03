@@ -15,6 +15,12 @@ BaseCommandFactory::BaseCommandFactory(
 
 BaseCommandFactory::~BaseCommandFactory()
 {
+  // Delete the user data if needed.
+  if(m_userData != 0)
+  {
+    delete m_userData;
+    m_userData = 0;
+  }
 }
 
 BaseCommand *BaseCommandFactory::createCommand() 
