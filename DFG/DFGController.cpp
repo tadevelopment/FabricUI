@@ -30,6 +30,7 @@
 #include <FabricUI/DFG/DFGUIUtil.h>
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
+#include <FabricUI/DFG/Commands/DFGCommandRegistrationCallback.h>
 
 using namespace FabricServices;
 using namespace FabricUI;
@@ -97,6 +98,8 @@ void DFGController::setHostBindingExec(
   m_host = host;
 
   setBindingExec( binding, execPath, exec, execBlockName );
+
+  DFGCommandRegistrationCallback::RegisterCommands((void*)this);
 
   emit hostChanged();
 }
@@ -197,7 +200,7 @@ void DFGController::setExec(
   m_execPath = execPath;
   m_exec = exec;
   m_execBlockName = execBlockName;
-
+ 
   m_presetDictsUpToDate = false;
 
   if ( m_binding.isValid()
