@@ -54,7 +54,7 @@ namespace FabricUI
 
       public:
         PresetView( const std::string& presetName );
-        void setScore( double score );
+        void setScore( double score, double minScore = 0, double maxScore = 1 );
 
       public slots:
         void setHighlighted( bool highlighted );

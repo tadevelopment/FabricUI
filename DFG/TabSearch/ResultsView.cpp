@@ -580,9 +580,7 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     {
       const Preset& preset = m_model->getPreset( index );
       PresetView* w = new PresetView( preset.name );
-      double normalizedScore = this->minPresetScore < this->maxPresetScore ?
-        ( preset.score - this->minPresetScore ) / ( this->maxPresetScore - this->minPresetScore ) : 1.0;
-      w->setScore( normalizedScore );
+      w->setScore( preset.score, this->minPresetScore, this->maxPresetScore );
       m_presetViewItems.insert( std::pair<void*,PresetView*>( index.internalPointer(), w ) );
       widget = w;
     }

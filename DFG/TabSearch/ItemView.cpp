@@ -96,7 +96,9 @@ void PresetView::setHighlighted( bool highlighted )
   setStyleSheet( highlighted ? "color : #000;" : "color: #FFF;" );
 }
 
-void PresetView::setScore( double score )
+void PresetView::setScore( double score, double minScore, double maxScore )
 {
-  m_heatBar->set( score, 0.0f, 1.0f );
+  m_heatBar->set( score, minScore, maxScore );
+  m_heatBar->setToolTip( QString::number( score ) );
+  m_heatBar->setStyleSheet( "color: #000;" );
 }
