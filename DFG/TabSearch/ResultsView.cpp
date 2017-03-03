@@ -428,7 +428,14 @@ public:
   void setRoot( const TmpNode& root ) {
     this->beginResetModel();
     // Performing the 3 steps here (by converting each type)
-    this->root = ReducedNode( root );
+    ReducedNode node( root );
+    if( node.value.isOther() )
+      this->root = node;
+    else
+    {
+      this->root = ModelNode();
+      this->root.children.push_back( ModelNode( node ) );
+    }
     ComputeParents( this->root );
     this->endResetModel();
   }
