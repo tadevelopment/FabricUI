@@ -98,5 +98,5 @@ void PresetView::setHighlighted( bool highlighted )
 
 void PresetView::setScore( double score )
 {
-  m_heatBar->set( score, 0.0f, 2.0f );
+  m_heatBar->set( score, 0.0f, 1.0f );
 }

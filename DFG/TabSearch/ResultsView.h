@@ -71,6 +71,7 @@ namespace FabricUI
         class TagsView;
         typedef std::map< void*, TagsView* > TagsViewItems;
         TagsViewItems m_tagsViewItems;
+        double minPresetScore, maxPresetScore;
       };
     }
   };

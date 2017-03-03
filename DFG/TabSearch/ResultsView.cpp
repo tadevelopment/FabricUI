@@ -270,11 +270,13 @@ void ComputeParents( ModelNode& item )
   }
 }
 
-TmpNode BuildResultTree( const std::string& searchResult )
+TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore, double& maxPresetScore )
 {
   const FTL::JSONValue* json = FTL::JSONValue::Decode( searchResult.c_str() );
   const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
   const FTL::JSONArray* resultsJson = root->getArray( "results" );
+  minPresetScore = INFINITY;
+  maxPresetScore = -INFINITY;
 
   TmpNode rootNode;
   for( size_t i = 0; i < resultsJson->size(); i++ )
@@ -290,10 +292,13 @@ TmpNode BuildResultTree( const std::string& searchResult )
         tagO->getFloat64( "weight" )
       ) );
     }
+    double presetScore = result->getFloat64( 1 );
     TmpNode newItem; newItem.value = Preset(
       result->getString( 0 ),
-      result->getFloat64( 1 )
+      presetScore
     );
+    minPresetScore = std::min( minPresetScore, presetScore );
+    maxPresetScore = std::max( maxPresetScore, presetScore );
     node->children.push_back( newItem );
   }
   return rootNode;
@@ -363,7 +368,8 @@ void ResultsView::UnitTest( const std::string& logFolder )
   std::string json = jsonStrR;
   Test::Write( logFolder + "0_results.json", json );
 
-  TmpNode tmpNode = BuildResultTree( json );
+  double minS, maxS;
+  TmpNode tmpNode = BuildResultTree( json, minS, maxS );
   size_t newCount = Test::LogTree( tmpNode, logFolder + "1_tmpNode.json" );
   assert( newCount == originalCount );
 
@@ -507,7 +513,7 @@ void ResultsView::setResults( const std::string& searchResult )
   m_presetViewItems.clear();
   m_tagsViewItems.clear();
 
-  m_model->setRoot( BuildResultTree( searchResult ) );
+  m_model->setRoot( BuildResultTree( searchResult, this->minPresetScore, this->maxPresetScore ) );
   this->expandAll();
 
   replaceViewItems();
@@ -574,8 +580,10 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     {
       const Preset& preset = m_model->getPreset( index );
       PresetView* w = new PresetView( preset.name );
+      double normalizedScore = this->minPresetScore < this->maxPresetScore ?
+        ( preset.score - this->minPresetScore ) / ( this->maxPresetScore - this->minPresetScore ) : 1.0;
+      w->setScore( normalizedScore );
       m_presetViewItems.insert( std::pair<void*,PresetView*>( index.internalPointer(), w ) );
-      w->setScore( preset.score );
       widget = w;
     }
     else
