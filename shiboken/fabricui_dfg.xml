@@ -55,7 +55,9 @@
       <object-type name="DFGUICmd_SplitFromPreset" />
       <object-type name="DFGVEEditorOwner" />
       <object-type name="DFGWidget" />
-      <object-type name="PresetTreeWidget" />-
+      <object-type name="PresetTreeWidget" />
+      <object-type name="BaseDFGCommand" />
+      <object-type name="DFGCommandRegistrationCallback" />
     </namespace-type>
   </namespace-type>
 </typesystem>

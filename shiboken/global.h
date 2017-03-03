@@ -80,6 +80,9 @@
 #include <FabricUI/ModelItems/VarPathItemMetadata.h>
 #include <FabricUI/ModelItems/VarPortItemMetadata.h>
 #include <FabricUI/ModelItems/VarPortModelItem.h>
+
+#include "global_dfg_commands.h"
+
 #include <FabricUI/DFG/DFGConfig.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
 #include <FabricUI/DFG/DFGController.h>
@@ -122,8 +125,9 @@
 #include <FabricUI/Viewports/GLViewportWidget.h>
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Viewports/TimeLineWidget.h>
-#include <FabricUI/Util/StringUtils.h>
-#include <FabricUI/Util/Config.h>
+
+#include "global_util.h"
+
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>
 #include <FabricUI/SceneHub/SHStates.h>
