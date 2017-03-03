@@ -2,8 +2,8 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
-#ifndef __UI_FABRICUI_STRING_UTILS_H__
-#define __UI_FABRICUI_STRING_UTILS_H__
+#ifndef __UI_STRING_UTIL__
+#define __UI_STRING_UTIL__
 
 #include <FTL/Config.h>
 #include <FabricCore.h>
@@ -30,10 +30,10 @@
 namespace FabricUI {
 namespace Util {  
 
-class StringUtils {
+class StringUtil {
   
   public:
-    StringUtils() {}
+    StringUtil() {}
 
     static QStringList ProcessPathQStringForOsX(QStringList pathList) {
       QStringList pathList_;
@@ -174,4 +174,4 @@ inline std::vector<std::string> Split(const std::string& s, char c) {
 } // namespace Utils
 } // namespace FabricUI
  
-#endif // __UI_FABRICUI_STRING_UTILS_H__
+#endif // __UI_STRING_UTIL__
