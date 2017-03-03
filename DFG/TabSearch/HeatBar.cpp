@@ -29,8 +29,6 @@ QSize HeatBar::sizeHint() const
 
 void HeatBar::paintEvent( QPaintEvent *event )
 {
-  Parent::paintEvent( event );
-
   QRect r = rect();
   QLinearGradient g( r.left(), 0, r.right(), 0 );
   g.setColorAt( 0.0f, m_coldColor );
@@ -39,6 +37,8 @@ void HeatBar::paintEvent( QPaintEvent *event )
   r.setRight( r.left() + int( roundf( r.width() * m_percentage ) ) );
   QPainter p( this );
   p.fillRect( r, g );
+
+  Parent::paintEvent( event );
 }
   
 } // namespace TabSearch
