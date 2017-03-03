@@ -60,7 +60,7 @@ public:
   void set( qreal value, qreal minValue, qreal maxValue )
   {
     if ( minValue >= maxValue )
-      m_percentage = 0.5f;
+      m_percentage = 1.0f;
     else
     {
       value = std::min( maxValue, std::max( minValue, value ) );
