@@ -12,10 +12,10 @@ namespace TabSearch {
 
 HeatBar::HeatBar( QWidget *parent )
   : Parent( parent )
-  , m_coldColor( Qt::green )
+  , m_coldColor( Qt::darkYellow )
   , m_warmColor( Qt::yellow )
-  , m_hotColor( Qt::red )
-  , m_warmPos( 0.5f )
+  , m_hotColor( Qt::green )
+  , m_warmPos( 0.33f )
   , m_percentage( 0.5f )
 {
   setFrameStyle( QFrame::StyledPanel | QFrame::Plain );
@@ -24,7 +24,7 @@ HeatBar::HeatBar( QWidget *parent )
 
 QSize HeatBar::sizeHint() const
 {
-  return QSize( 32, 10 );
+  return QSize( 48, 12 );
 }
 
 void HeatBar::paintEvent( QPaintEvent *event )

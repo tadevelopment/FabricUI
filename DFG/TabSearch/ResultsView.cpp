@@ -275,6 +275,7 @@ TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore
   const FTL::JSONValue* json = FTL::JSONValue::Decode( searchResult.c_str() );
   const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
   const FTL::JSONArray* resultsJson = root->getArray( "results" );
+  
   minPresetScore = INFINITY;
   maxPresetScore = -INFINITY;
 
@@ -301,6 +302,10 @@ TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore
     maxPresetScore = std::max( maxPresetScore, presetScore );
     node->children.push_back( newItem );
   }
+
+  if ( minPresetScore < maxPresetScore )
+    minPresetScore = minPresetScore - 0.05 * (maxPresetScore - minPresetScore);
+
   return rootNode;
 }
 
