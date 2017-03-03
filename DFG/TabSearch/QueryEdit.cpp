@@ -19,6 +19,7 @@ struct QueryController::Action
   virtual void redo() = 0;
   Query* m_query;
   Action() : m_query( NULL ) {}
+  virtual ~Action() {}
 };
 
 struct AddTag : QueryController::Action
