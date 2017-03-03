@@ -15,6 +15,8 @@ namespace FabricUI
   {
     namespace TabSearch
     {
+      class HeatBar;
+
       class TagView : public QWidget
       {
         Q_OBJECT
@@ -58,7 +60,8 @@ namespace FabricUI
         void setHighlighted( bool highlighted );
 
       private:
-        QLabel* m_scoreLabel;
+        
+        HeatBar* m_heatBar;
       };
     }
   };

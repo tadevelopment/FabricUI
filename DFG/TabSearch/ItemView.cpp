@@ -1,6 +1,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "ItemView.h"
+#include "HeatBar.h"
 
 #include <QLayout>
 #include <QLabel>
@@ -70,7 +71,7 @@ void TagView::setScore( double score )
 }
 
 PresetView::PresetView( const std::string& presetName )
-  : m_scoreLabel( NULL )
+  : m_heatBar( new HeatBar( this ) )
 {
   size_t dotI = presetName.rfind( '.' );
   std::string baseName = presetName.substr( dotI+1 );
@@ -85,6 +86,8 @@ PresetView::PresetView( const std::string& presetName )
   nameLabel->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
   QLabel* pathLabel = new QLabel( "<i>" + QString::fromStdString( path ) + "</i>" );
   this->layout()->addWidget( pathLabel );
+  this->layout()->addWidget( m_heatBar );
+  this->layout()->setAlignment( m_heatBar, Qt::AlignRight | Qt::AlignVCenter );
   setHighlighted( false );
 }
 
@@ -95,12 +98,5 @@ void PresetView::setHighlighted( bool highlighted )
 
 void PresetView::setScore( double score )
 {
-  //this->setToolTip( "Score = " + QString::number( score ) );
-  if( m_scoreLabel == NULL )
-  {
-    m_scoreLabel = new QLabel();
-    this->layout()->addWidget( m_scoreLabel );
-    this->layout()->setAlignment( m_scoreLabel, Qt::AlignRight );
-  }
-  m_scoreLabel->setText( QString::number( score ) );
+  m_heatBar->set( score, 0.0f, 2.0f );
 }
