@@ -65,14 +65,14 @@ class KLScriptableCommand : public BaseScriptableCommand
       
       // Create an execute the command
       CommandManager *manager = CommandManager.GetCommandManager();
-      BaseCommand *cmd = manager->createCommand("myCommand", args) 
+      BaseCommand *cmd = manager->createCommand("myCommand", args);
       
       // Get back the arguments
       strRTVal.setJSON(cmd->getArg("arg_1"));
       floatRTVal.setJSON(cmd->getArg("arg_2"));
 
     - Python:
-      client = CommandManager.GetCommandManager().getFabricClient()
+      client = GetCommandManager().getFabricClient()
 
       // Create the arguments values as RTVal
       strRTVal = client.RT.types.String("someString")

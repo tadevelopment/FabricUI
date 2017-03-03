@@ -4,8 +4,9 @@
 
 #include <string>
 #include "KLCommand.h"
-#include "KLScriptableCommand.h"
 #include "CommandManager.h"
+#include "KLScriptableCommand.h"
+#include <FabricUI/Util/RTValUtil.h>
 
 using namespace FabricUI;
 using namespace Commands;
@@ -69,8 +70,6 @@ QString KLScriptableCommand::getArg(
 
   try 
   {
-    // Convert the C++ RTVal wrapping the KL type to a C++ 
-    // RTVal wrapping a KL RTVal wrapping the KL type.
     RTVal keyVal = RTVal::ConstructString(
       CommandManager::GetCommandManager()->getFabricClient(), 
       key.toUtf8().constData());
@@ -81,20 +80,9 @@ QString KLScriptableCommand::getArg(
       1, 
       &keyVal);
 
-    // Get the type of the value stored by the KL RTVal
-    QString dataType = klRTVal.callMethod(
-      "String", 
-      "type", 
-      0, 
-      0).getStringCString();
-    
-    RTVal rtValData = RTVal::Construct(
-      CommandManager::GetCommandManager()->getFabricClient(), 
-      dataType.toUtf8().constData(), 
-      1, 
-      &klRTVal);
-
-    return rtValData.getJSON().getStringCString();
+    return Util::RTValUtil::klRTValToJSON(
+      CommandManager::GetCommandManager()->getFabricClient(),
+      klRTVal);
   }
 
   catch(Exception &e)
@@ -138,7 +126,7 @@ QMap<QString, QString> KLScriptableCommand::getArgs()
  
 void KLScriptableCommand::setArg(
   const QString &key, 
-  const QString &jsonRTVal) 
+  const QString &json) 
 {
   if(key.isEmpty()) 
     throw(
@@ -149,8 +137,8 @@ void KLScriptableCommand::setArg(
 
   try 
   {
-    // Convert the C++ RTVal wrapping the KL type to a C++ 
-    // RTVal wrapping a KL RTVal wrapping the KL type :)
+    // Convert the C++ RTVal wrapping the KL arg to a C++ 
+    // RTVal wrapping a KL RTVal wrapping the KL arg :)
     RTVal keyVal = RTVal::ConstructString(
       CommandManager::GetCommandManager()->getFabricClient(), 
       key.toUtf8().constData());
@@ -161,28 +149,17 @@ void KLScriptableCommand::setArg(
       1, 
       &keyVal);
 
-    // Get the type of the value stored by the KL RTVal
-    QString dataType = klRTVal.callMethod(
+    // Get the type of the arg stored by the KL RTVal
+    QString rtValType = klRTVal.callMethod(
       "String", 
       "type", 
       0, 
       0).getStringCString();
 
-    // From the type, construct a C++ RTVal of this type and sets its value
-    RTVal rtVal = RTVal::Construct(
-      CommandManager::GetCommandManager()->getFabricClient(), 
-      dataType.toUtf8().constData(), 
-      0, 
-      0);
-
-    rtVal.setJSON(jsonRTVal.toUtf8().constData());
-    
-    // Then, sets the value of the KL RTVal from the KL type
-    klRTVal = RTVal::Construct(
-      CommandManager::GetCommandManager()->getFabricClient(), 
-      "RTVal", 
-      1, 
-      &rtVal);
+    klRTVal = Util::RTValUtil::jsonToKLRTVal(
+      CommandManager::GetCommandManager()->getFabricClient(),
+      json,
+      rtValType);
 
     // Set the KL command arguments.
     RTVal args[3] = { 

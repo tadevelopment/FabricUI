@@ -50,13 +50,15 @@ class BaseCommand
           float *myUserData = (float*)userData;
         }
 
-        virtual bool canUndo() {
+        virtual bool canUndo() 
+        {
           return true;
         }
 
-        virtual bool doIt() {
-
+        virtual bool doIt() 
+        {
           ... Do you logic
+
           --> Create a sub command
           CommandManager *manager = CommandManager.GetCommandManager();
           BaseCommand *mySubCommand = manager->createCommand("mySubCommand")
@@ -64,14 +66,17 @@ class BaseCommand
           return true;
         }
 
-        virtual bool undoIt() {
+        virtual bool undoIt() 
+        {
           ... Undo it
           return true;
         }
 
-        virtual bool redoIt() {
+        virtual bool redoIt() 
+        {
           ... Redo it
           return true;
+        }
       };
       
       // Register the command
@@ -83,9 +88,39 @@ class BaseCommand
       BaseCommand *cmd = manager->createCommand("myCommand") 
 
     - Python:
+      class MyCommand(Commands.BaseCommand):
+          
+        def __ini__(self):
+          super(MyCommand, self)__init__()  
+
+        def registrationCallback(self, name, userData:
+          super(MyCommand, self)registrationCallback(name, userData)  
+          myUserData = userData
+      
+        def canUndo(self):
+          return True
+        
+        def doIt(self):
+          ... Do you logic
+
+          --> Create a sub command
+          mySubCommand = GetCommandManager().createCommand("mySubCommand")
+          return True
+
+        def undoIt(self):
+          ... Undo it
+          return True
+        
+        def redoIt(self):
+          ... Redo it
+          return True
+      
+      // Register the command
+      userData = 32;
+      GetCommandRegistry().registerCommand("myCommand", MyCommand, userData)
+
       // Create an execute the command
-      manager = GetCommandManager()
-      cmd = manager.createCommand("myCommand") 
+      myCommand = GetCommandManager().createCommand("myCommand")
   */
 
   public:
