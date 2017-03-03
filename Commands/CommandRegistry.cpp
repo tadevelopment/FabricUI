@@ -298,6 +298,27 @@ void CommandRegistry::commandRegistered(
   spec.append(implType);
   m_registeredCmdSpecs[cmdName] = spec;
 
+  // Inform the KL registry
+  try
+  {
+    RTVal nameVal = RTVal::ConstructString(
+      m_client,
+      cmdName.toUtf8().constData());
+
+    m_klCmdRegistry.callMethod(
+      "",
+      "registerCppCommand",
+      1,
+      &nameVal);
+  }
+
+  catch(Exception &e)
+  {
+    printf(
+      "CommandRegistry::commandRegistered: exception: %s\n", 
+      e.getDesc_cstr());
+  }
+   
   // inform a command has been registered.
   emit commandRegisteredCallback(
     cmdName,

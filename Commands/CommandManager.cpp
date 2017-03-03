@@ -7,6 +7,7 @@
 #include "CommandManager.h"
 #include "KLScriptableCommand.h"
 #include "BaseScriptableCommand.h"
+#include <FabricUI/Util/RTValUtil.h>
 
 using namespace FabricUI;
 using namespace Commands;
@@ -318,8 +319,7 @@ void CommandManager::synchronizeKL()
       e.getDesc_cstr());
   }
 
-  // Get the number of undo KL commands 
-  // in this manager
+  // Get the number of undo KL commands  in this manager
   int cppKLCmdCount = 0;
   for(int i=0; i<m_undoStack.size(); ++i)
   {
@@ -328,55 +328,8 @@ void CommandManager::synchronizeKL()
     cppKLCmdCount += (cmd || scriptCmd) ? 1 : 0;
   } 
 
-  // Synchronize our stack with KL
-  if (cppKLCmdCount < klCmdCount)
-  {
-    try
-    {
-      for(int i=cppKLCmdCount; i<klCmdCount; ++i)
-      {
-        BaseCommand *cmd = 0;
-
-        RTVal cmdIndex = RTVal::ConstructUInt32(m_client, i);
-
-        // Gets the KL command from the KL manager. 
-        // Check if it's a scriptable command
-        RTVal klCmd = m_klCmdManager.callMethod(
-          "BaseScriptableCommand", 
-          "getCommandAtIndex", 
-          1, 
-          &cmdIndex);
-
-        if(!klCmd.isNullObject())
-          cmd = new KLScriptableCommand(klCmd);
-        
-        // if not, it's a simple command.
-        else
-        {
-          klCmd = m_klCmdManager.callMethod(
-            "Command", 
-            "getCommandAtIndex", 
-            1, 
-            &cmdIndex);
-
-          cmd = new KLCommand(klCmd);
-        }
-
-        // Push the command
-        pushTopCommand(cmd, true);
-      } 
-    }
-
-    catch(Exception &e)
-    {
-      printf(
-        "CommandManager::synchronizeKL: exception: %s\n", 
-        e.getDesc_cstr());
-    }
-  }
-
   // !! Problem, KL and C++ command managers are out of synch
-  else if(cppKLCmdCount > klCmdCount)
+  if(cppKLCmdCount > klCmdCount)
     throw(
       std::string(
         QString(
@@ -384,6 +337,105 @@ void CommandManager::synchronizeKL()
         ).toUtf8().constData() 
       )
     );
+
+  // Synchronize our stack with KL, two scenarios: 
+  // 1. A KL command is created in KL. We construct the
+  //     C++ wrappers KLCommand and KLScriptableCommand.
+  // 2. A C++/Python command is asked to be created from KL.
+  try
+  {
+    for(int i=cppKLCmdCount; i<klCmdCount; ++i)
+    {
+      RTVal cmdIndex = RTVal::ConstructUInt32(
+        m_client, 
+        i);
+
+      // Gets the KL command from the KL manager. 
+      // Check if it's a scriptable command
+      RTVal klCmd = m_klCmdManager.callMethod(
+        "BaseScriptableCommand", 
+        "getCommandAtIndex", 
+        1, 
+        &cmdIndex);
+
+      if(!klCmd.isNullObject())
+      {
+        // Gets the command name
+        QString cmdName = klCmd.callMethod(
+          "String",
+          "getName",
+          0, 
+          0).getStringCString();
+
+        // Check if this manager knows the command.
+        // If so, we need to create it.
+        if(CommandRegistry::GetCommandRegistry()->isCommandRegistered(cmdName))
+        {      
+          RTVal argNameList = klCmd.callMethod(
+            "String[]", 
+            "getArgNameList", 
+            0, 
+            0);
+
+          QMap< QString, QString > args;
+          for(unsigned int i=0; i<argNameList.getArraySize(); ++i)
+          {
+            RTVal argNameVal = argNameList.getArrayElement(i);
+            RTVal klRTVal = klCmd.callMethod(
+              "RTVal", 
+              "getArg", 
+              1, 
+              &argNameVal);
+
+            args[argNameVal.getStringCString()] = 
+              Util::RTValUtil::klRTValToJSON(
+                m_client,
+                klRTVal);
+          }
+
+          // !!! Undo the KL command so it's cleared
+          // when the C++ command is created.
+          RTVal error = RTVal::ConstructString(
+            m_client, 
+            "");
+
+          m_klCmdManager.callMethod(
+            "Boolean",
+            "undoCommand",
+            1,
+            &error);
+
+          // Create and execute the command
+          createCommand(cmdName, args);
+        }
+
+        // Else, it's a `pure` KL command.
+        // Push the command without executing it
+        else
+          pushTopCommand( new KLScriptableCommand(klCmd), true);
+      }
+      
+      // if not, it's a simple command.
+      else
+      {
+        klCmd = m_klCmdManager.callMethod(
+          "Command", 
+          "getCommandAtIndex", 
+          1, 
+          &cmdIndex);
+
+          // Push the command without executing it
+        pushTopCommand( new KLCommand(klCmd), true);
+      }
+    } 
+  }
+
+  catch(Exception &e)
+  {
+    printf(
+      "CommandManager::synchronizeKL: exception: %s\n", 
+      e.getDesc_cstr());
+  }
 }
 
 QString CommandManager::getContent()

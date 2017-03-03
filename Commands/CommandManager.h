@@ -24,20 +24,23 @@ class CommandManager : public QObject
 {
   /**
     CommandManager contains and manages the command undo-redo stack. It's in charge 
-    of creating the commands, executing and undo-redoing them. It has a reference to 
-    tke KL command manager so it can create KL commands. However, the C++ manager is not
-    automatically ynchronized with the KL manager. If commands are added to the KL manager
-    directly, the C++ manager needs explicitly synchronizes with it. The manager can only 
-    create commands (KL/C++/Python) registered in the command registry.
-    
-    CommandManager can register 'CommandManagerCallback' that are informed when
-    commands have been added to the stack. It's mainly used to attached the command
-    to external stacks.
+    of creating the commands, executing and undo-redoing them. It has a reference  
+    to the KL command manager so it can create KL commands. However, the C++ manager
+    is not automatically synchronized with the KL manager. If commands are added to
+    the KL manager directly, the C++ manager needs explicitly to synchronize with it. 
+    Two scenarios are possible. First, the KL manager create a KL command. Specials
+    C++ commands (KLCommand-KLScriptableCommand) that wraps KL command are created.
+    Secondly, C++ command are asked to be created in KL. An 'empty' command is created
+    in KL. When the two managers are synchronized, the C++ manager 'detects' the empty
+     KL command, and actualluy create the corresponding C++.
 
-    CommandManager is specialized depending on the command registration system (C++/Phyton), 
-    see CommandManager.h(cpp) for the C++ implementation, CommandManager_Python.h(cpp)
-    and Python/Canvas/CommandManager.py for the Python one. The manager is shared between 
-    C++ and Python, so commands defined in Python can be created from C++, and vice versa.
+    CommandManager is specialized depending on the command registration system, C++
+    vs Phyton, see CommandManager for the C++ implementation, CommandManager_Python
+    and Python/Canvas/CommandManager.py for the Python one. The manager is shared 
+    between C++ and Python, so commands defined in Python can be created from C++, 
+    and vice versa. The manager can only create commands (KL/C++/Python) registered 
+    in the command registry. When a command is added to the stack, the signal 
+    `commandPushedCallback` is emitted. 
     
     The manager sets it-self as a singleton when it's constructed:
     - Create the manager: CommandManager cmdManager(fabricClient);

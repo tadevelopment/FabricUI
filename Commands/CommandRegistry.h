@@ -22,11 +22,11 @@ class CommandRegistry : public QObject
     CommandRegistry registers the C++ command-factories and creates commands from them. 
     It has a reference to tke KL command registry, and automatially creates the C++ 
     wrappers (see KLCommand and KLScriptableCommand) of any KL commandregistered in the
-    KL command registry. CommandRegistry can register 'CommandRegistryCallback' that are 
-    informed when a command has been registered.
+    KL command registry. When a command is registered, the signal `commandRegisteredCallback`
+    is emitted.
     
     When specialized in Python, the same registry is shared between C++ and Python, 
-    so commands implemented in Python can be created from C++ and vice versa
+    so commands implemented in Python can be created from C++ and vice versa.
     
     The registry sets it-self as a singleton when it's constructed:
     - Create the registry: CommandRegistry cmdRegistry(fabricClient);
