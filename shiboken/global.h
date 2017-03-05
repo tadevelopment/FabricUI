@@ -9,6 +9,7 @@
 
 #include "global_commands.h"
 #include "global_actions.h"
+#include "global_dialog.h"
 
 
 #include <FabricUI/Menus/BaseMenu.h>
@@ -81,7 +82,7 @@
 #include <FabricUI/ModelItems/VarPortItemMetadata.h>
 #include <FabricUI/ModelItems/VarPortModelItem.h>
 
-#include "global_dfg_commands.h"
+#include "global_dfg.h"
 
 #include <FabricUI/DFG/DFGConfig.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
@@ -154,6 +155,5 @@
 #include <FabricUI/Viewports/ManipulationTool.h>
 #include <FabricUI/Viewports/ViewportOptionsEditor.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>
-#include <FabricUI/Util/GetFilenameForFileURL.h>
-#include <FabricUI/Util/QTSignalBlocker.h>
+
 #include <FabricUI/Test/RTValCrash.h>

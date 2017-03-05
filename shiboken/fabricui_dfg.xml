@@ -58,6 +58,7 @@
       <object-type name="PresetTreeWidget" />
       <object-type name="BaseDFGCommand" />
       <object-type name="DFGCommandRegistrationCallback" />
+      <object-type name="DFGCommandRegistrationCallback" />
     </namespace-type>
   </namespace-type>
 </typesystem>
