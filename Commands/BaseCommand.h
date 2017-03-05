@@ -159,6 +159,10 @@ class BaseCommand
     /// Returns true if succeded, false otherwise.
     /// To override.
     virtual bool redoIt();
+    
+    /// Gets the command help (description)
+    /// To override.
+    virtual QString getHelp();
 
   protected:
     /// Name of the command.

@@ -167,6 +167,28 @@ bool KLCommand::RedoIt()
   return false;
 }
 
+QString KLCommand::GetHelp(
+  RTVal klCmd) 
+{
+  try 
+  {
+    return klCmd.callMethod(
+      "String", 
+      "getHelp", 
+      0, 
+      0).getStringCString();
+  }
+
+  catch(Exception &e)
+  {
+    printf(
+      "KLCommand::GetHelp: exception: %s\n", 
+      e.getDesc_cstr());
+  }
+
+  return "";
+}
+
 KLCommand::KLCommand(
   FabricCore::RTVal klCmd)
   : BaseCommand() 
@@ -201,4 +223,9 @@ bool KLCommand::undoIt()
 bool KLCommand::redoIt() 
 {  
   return KLCommand::RedoIt();
+}
+
+QString KLCommand::getHelp() 
+{
+  return KLCommand::GetHelp(m_klCmd);
 }

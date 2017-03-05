@@ -55,6 +55,11 @@ class CppTestScriptableCommand : public BaseScriptableCommand
       std::cout << "Redo " << getName().toUtf8().constData() << std::endl;
       return true;
     }
+
+    virtual QString getHelp() 
+    {
+      return getName();
+    }
 };
 
 class CppTestMetaCommand : public CppTestScriptableCommand 

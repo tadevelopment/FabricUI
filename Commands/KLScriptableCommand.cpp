@@ -252,21 +252,5 @@ QString KLScriptableCommand::getArgsDescription()
 
 QString KLScriptableCommand::getHelp() 
 {
-  try 
-  {
-    return m_klCmd.callMethod(
-      "String", 
-      "getHelp", 
-      0, 
-      0).getStringCString();
-  }
-
-  catch(Exception &e)
-  {
-    printf(
-      "KLScriptableCommand::getHelp: exception: %s\n", 
-      e.getDesc_cstr());
-  }
-
-  return "";
+  return KLCommand::GetHelp(m_klCmd);
 }

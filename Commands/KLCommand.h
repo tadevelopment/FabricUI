@@ -89,6 +89,11 @@ class KLCommand : public BaseCommand
       );
 
     /// Shared with KLSCriptableCommand.
+    static QString GetHelp(
+      FabricCore::RTVal klCmd
+      );
+
+    /// Shared with KLSCriptableCommand.
     static bool UndoIt();
 
     /// Shared with KLSCriptableCommand.
@@ -108,6 +113,9 @@ class KLCommand : public BaseCommand
 
     /// Implementation of BaseCommand.
     virtual bool redoIt();
+
+    /// Implementation of BaseCommand.
+    virtual QString getHelp();
 
   private:
     /// KL Command

@@ -145,8 +145,3 @@ QString BaseScriptableCommand::getArgsDescription()
 
   return res;
 }
-
-QString BaseScriptableCommand::getHelp() 
-{
-  return "";
-}

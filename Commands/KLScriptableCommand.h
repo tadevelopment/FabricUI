@@ -115,6 +115,9 @@ class KLScriptableCommand : public BaseScriptableCommand
 
     /// Implementation of BaseCommand.
     virtual bool redoIt();
+ 
+    /// Implementation of BaseCommand.
+    virtual QString getHelp();
 
     /// Implementation of BaseScriptableCommand.
     /// Does nothing, done in KL.
@@ -143,9 +146,6 @@ class KLScriptableCommand : public BaseScriptableCommand
 
     /// Implementation of BaseScriptableCommand.
     virtual QString getArgsDescription();
- 
-    /// Implementation of BaseScriptableCommand.
-    virtual QString getHelp();
 
   private:
     /// KL Command

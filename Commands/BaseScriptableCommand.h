@@ -66,10 +66,6 @@ class BaseScriptableCommand : public BaseCommand
     /// Used for debugging.
     virtual QString getArgsDescription();
 
-    /// Gets the command help (description)
-    /// To override.
-    virtual QString getHelp();
-
   protected:
     /// Defines the arguments specs:
     /// default value, optional
