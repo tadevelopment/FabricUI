@@ -183,6 +183,19 @@ class BlockGraphCompilationAction(BaseCanvasWindowAction):
         self.setChecked(False)
         self.toggled.connect(self.canvasWindow.setBlockCompilations)
    
+class ShowHotkeyEditorAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, canvasWindow):
+        super(ShowHotkeyEditorAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.ShowHotkeyEditorAction", 
+            "Hotkey editor", 
+            QtGui.QKeySequence(QtCore.Qt.Key_K))
+ 
+    def onTriggered(self):
+        self.canvasWindow.onShowHotkeyEditor()
+
 class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
 
@@ -282,6 +295,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.resetCameraAction = None
         self.clearLogAction = None
         self.blockCompilationsAction = None
+        self.showHotkeyEditorAction = None
 
         self.windowTitle = 'Fabric Engine - Canvas'
         self.lastFileName = ''
@@ -415,13 +429,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
         self.cmdManagerQtCallback = CommandManagerQtCallback(self.qUndoStack, self.scriptEditor)
         
-        self.hotkeyEditorDockWidget = QtGui.QDockWidget("Hotkey Editor", self)
-        self.hotkeyEditorDockWidget.setObjectName("Hotkey Editor")
-        self.hotkeyEditorDockWidget.setWidget( self.hotkeyEditor )
-        self.hotkeyEditorDockWidget.setFeatures(self.dockFeatures)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.hotkeyEditorDockWidget, QtCore.Qt.Vertical)
-        self.hotkeyEditorDockWidget.hide()
-
     def _initDFGWidget(self):
         """Initializes the Data Flow Graph.
 
@@ -661,12 +668,7 @@ class CanvasWindow(QtGui.QMainWindow):
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
         Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
         windowMenu.addAction( toggleAction )
-
-        # Toggle ShortCut Menu Widget Action
-        toggleAction = self.hotkeyEditorDockWidget.toggleViewAction()
-        toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_9)
-        windowMenu.addAction( toggleAction )
-
+ 
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested by manipulators
         in the viewport.
@@ -1017,6 +1019,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
         dfgController.savePrefs()
 
+    def onShowHotkeyEditor(self):
+        if self.hotkeyEditor.exec_() != QtGui.QDialog.Accepted:
+            return;
 
     def execNewGraph(self, skip_save=False):
         """Callback Executed when a key or menu command has requested a new graph.
@@ -1288,6 +1293,8 @@ class CanvasWindow(QtGui.QMainWindow):
             self.clearLogAction.blockSignals(enabled)
         if self.blockCompilationsAction:
             self.blockCompilationsAction.blockSignals(enabled)
+        if self.showHotkeyEditorAction:
+            self.showHotkeyEditorAction.blockSignals(enabled)
 
     def openRecentFile(self):
         action = self.sender()
@@ -1352,6 +1359,10 @@ class CanvasWindow(QtGui.QMainWindow):
                     menu.addSeparator()
                     self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
                     menu.addAction(self.manipAction)
+                    menu.addSeparator()
+                    self.showHotkeyEditorAction = ShowHotkeyEditorAction(menu, self)
+                    menu.addAction(self.showHotkeyEditorAction)
+
         elif name == 'View':
             if prefix:
 

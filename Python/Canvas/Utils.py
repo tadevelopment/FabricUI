@@ -62,4 +62,4 @@ def GetQKeySequenceFromQKeyEvent(keyEvent):
     if modifiers & QtCore.Qt.MetaModifier:
         key = key + QtCore.Qt.META 
 
-    return QtGui.QKeySequence(key).toString(QtGui.QKeySequence.NativeText) 
+    return QtGui.QKeySequence(key)

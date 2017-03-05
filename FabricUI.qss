@@ -321,7 +321,36 @@ QDialog QPushButton:focus
   border: 1px solid #555555;
 }
 
-QDialog QTreeView
+QDialog QTableView
+{
+  border: 0;
+  border-radius: 3px;
+  background: #333333;
+  color: white;
+  font: 10pt "Roboto";
+  font-weight: normal;  
+}
+
+QDialog QTableView::item
+{
+  padding: 2px;
+  color: white;
+}
+
+QDialog QTableView::item:hover
+{
+  padding: 0;
+  background-color: #596D7A;
+}
+
+QDialog QTableView::item:selected
+{
+  border: 0;
+  padding: 0;
+  background-color: #50626E;
+}
+
+QDialog QTableView
 {
   border: 0;
   border-radius: 3px;
@@ -1685,5 +1714,73 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DFGSavePresetDialog QLabel
 {
   padding-left: 4px;
+  color: #FFFFFF;
+}
+
+/****************************************************************************
+ * HotkeyEditor
+ ***************************************************************************/
+
+#HotkeyEditor QToolBar {
+  border: 0;
+}
+
+#HotkeyEditor QToolButton
+{
+  color: #FFFFFF;
+  border: 0;
+  border-radius: 3px;
+  padding: 4px;
+  margin: 4px;
+  background-color: #2F2F2F;
+}
+
+#HotkeyEditor QToolButton::disabled
+{
+  background-color: #444;
+  color: #6D6D6D;
+}
+
+#HotkeyEditor QToolButton::checked
+{
+  background-color: #176580;
+}
+
+#HotkeyEditor QToolButton::checked:hover
+{
+  background-color: #1C7A99;
+}
+
+#HotkeyEditor QToolButton:hover
+{
+  background-color: #50626E;
+}
+
+#HotkeyEditor QToolButton::pressed
+{
+  border-style: inset;
+  margin-top: 6px;
+  margin-left: 6px;
+
+  background-color: #50626E;
+}
+
+#HotkeyTable
+{
+  border-top: 1px solid #2B2B2B;
+  border-right: 1px solid #484848;
+  border-bottom: 1px solid #484848;
+  border-left: 1px solid #2B2B2B;
+}
+
+#HotkeyEditor QLabel
+{
+  padding-left: 4px;
+  color: #FFFFFF;
+}
+
+#HotkeyEditor QComboBox
+{
+  padding-right: 4px;
   color: #FFFFFF;
 }
