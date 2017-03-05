@@ -350,7 +350,7 @@ QDialog QTableView::item:selected
   background-color: #50626E;
 }
 
-QDialog QTableView
+QDialog QTreeView
 {
   border: 0;
   border-radius: 3px;
