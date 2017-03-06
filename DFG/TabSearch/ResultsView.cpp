@@ -10,6 +10,7 @@
 #include <FTL/JSONValue.h>
 #include <iostream>
 #include <fstream>
+#include <limits>
 #include <assert.h>
 
 using namespace FabricUI::DFG::TabSearch;
@@ -276,8 +277,8 @@ TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore
   const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
   const FTL::JSONArray* resultsJson = root->getArray( "results" );
   
-  minPresetScore = INFINITY;
-  maxPresetScore = -INFINITY;
+  minPresetScore = std::numeric_limits<double>::max();
+  maxPresetScore = std::numeric_limits<double>::min();
 
   TmpNode rootNode;
   for( size_t i = 0; i < resultsJson->size(); i++ )
