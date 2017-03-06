@@ -8,8 +8,8 @@
 using namespace FabricUI::DFG;
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
-  : m_host( host )
-  , m_clearQueryOnClose( false )
+  : m_clearQueryOnClose( false )
+  , m_host( host )
   , m_resultPreview( NULL )
 {
   this->setWindowFlags( Qt::Popup );
