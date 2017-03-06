@@ -1687,3 +1687,17 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding-left: 4px;
   color: #FFFFFF;
 }
+
+FabricUI--DFG--TabSearch--TagView[highlighted="true"] *,
+FabricUI--DFG--TabSearch--PresetView[highlighted="true"] *
+{
+  color: #000;
+  background-color: #FFF;
+}
+
+FabricUI--DFG--TabSearch--TagView QPushButton:hover
+{
+  color: #000;
+  background-color: #FFF;
+}
+
