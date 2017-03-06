@@ -15,9 +15,9 @@ from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
-from FabricEngine.Canvas.CommandManager import *
-from FabricEngine.Canvas.CommandManagerQtCallback import *
-from FabricEngine.Canvas.HotkeyEditor import *
+from FabricEngine.Canvas.Commands.CommandManager import *
+from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
+from FabricEngine.Canvas.HotkeyEditor.HotkeyEditor import *
 
 class CanvasWindowEventFilter(QtCore.QObject):
 

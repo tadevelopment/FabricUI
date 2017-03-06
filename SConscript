@@ -512,12 +512,21 @@ if uiLibPrefix == 'ui':
         Glob(os.path.join(pysideModuleSrcDir.abspath, '*'))
         )
       )
-    installedPySideLibs.append(
-      pysideEnv.Install(
-        pysideEnv['STAGE_DIR'].Dir('Python').Dir(pythonVersion).Dir('FabricEngine').Dir('Canvas'),
-        Glob(os.path.join(pysideEnv.Dir('Python').Dir('Canvas').abspath, '*'))
+
+    pythonDir = [
+      'Canvas',
+      'Canvas/HotkeyEditor',
+      'Canvas/Commands'
+    ]
+
+    for dir_ in pythonDir:
+      installedPySideLibs.append(
+        pysideEnv.Install(
+          pysideEnv['STAGE_DIR'].Dir('Python').Dir(pythonVersion).Dir('FabricEngine').Dir(dir_),
+          Glob(os.path.join(pysideEnv.Dir('Python').Dir(dir_).abspath, '*.py'))
+          )
         )
-      )
+
     installedPySideLibs.append(
       pysideEnv.Install(
         pysideEnv['STAGE_DIR'].Dir('bin'),

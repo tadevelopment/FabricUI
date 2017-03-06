@@ -1,9 +1,6 @@
 __all__ = [
     'Utils',
     'BindingWrapper',
-  	'CommandManager',
-    'CommandRegistry',
-    'CommandManagerQtCallback',
     'HotkeyEditor',
     'CanvasWindow',
     'FabricParser',
