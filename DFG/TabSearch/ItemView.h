@@ -16,6 +16,7 @@ namespace FabricUI
     namespace TabSearch
     {
       class HeatBar;
+      static const char* HighlightedPropertyStr = "highlighted";
 
       class TagView : public QWidget
       {
@@ -33,15 +34,10 @@ namespace FabricUI
       public slots:
         void setHighlighted( bool highlighted );
 
-      protected:
-        void enterEvent( QEvent * ) FTL_OVERRIDE;
-        void leaveEvent( QEvent * ) FTL_OVERRIDE;
-
       private slots:
         void onActivated();
 
       private:
-        void updateHighlightColor();
         std::string m_name;
         QPushButton* m_button;
         bool m_hovered;

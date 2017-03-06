@@ -5,6 +5,7 @@
 
 #include <QLayout>
 #include <QLabel>
+#include <QVariant>
 #include <QPushButton>
 
 using namespace FabricUI::DFG::TabSearch;
@@ -28,36 +29,13 @@ TagView::TagView( const std::string& tagName )
     this, SLOT( onActivated() )
   );
   this->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
-  this->updateHighlightColor();
+  setHighlighted( false );
 }
 
 void TagView::setHighlighted( bool highlighted )
 {
-  m_highlighted = highlighted;
-  updateHighlightColor();
-}
-
-void TagView::updateHighlightColor()
-{
-  m_button->setStyleSheet(
-    ( m_highlighted || m_hovered ) ?
-    "color : #000; background-color: rgba( 255, 255, 255, 255 );" :
-    "color: #FFF; background-color: rgba( 50, 30, 0, 50 );"
-  );
-}
-
-void TagView::enterEvent( QEvent * e )
-{
-  Parent::enterEvent( e );
-  m_hovered = true;
-  updateHighlightColor();
-}
-
-void TagView::leaveEvent( QEvent * e )
-{
-  Parent::leaveEvent( e );
-  m_hovered = false;
-  updateHighlightColor();
+  this->setProperty( HighlightedPropertyStr, QVariant( highlighted ) );
+  this->setStyleSheet( this->styleSheet() );
 }
 
 void TagView::onActivated()
@@ -93,7 +71,8 @@ PresetView::PresetView( const std::string& presetName )
 
 void PresetView::setHighlighted( bool highlighted )
 {
-  setStyleSheet( highlighted ? "color : #000;" : "color: #FFF;" );
+  this->setProperty( HighlightedPropertyStr, QVariant( highlighted ) );
+  this->setStyleSheet( this->styleSheet() );
 }
 
 void PresetView::setScore( double score, double minScore, double maxScore )
