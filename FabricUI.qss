@@ -1704,3 +1704,12 @@ FabricUI--DFG--TabSearch--TagView QPushButton:hover
   color: #000;
   background-color: #FFF;
 }
+
+FabricUI--DFG--TabSearch--HeatBar
+{
+  qproperty-coldColor: #550;
+  qproperty-warmColor: yellow;
+  qproperty-hotColor: green;
+  qproperty-warmPos: 0.33;
+  background-color: #333;
+}
