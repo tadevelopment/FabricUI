@@ -157,7 +157,7 @@ public:
   void setHighlightedTag( int index )
   {
     for( size_t i = 0; i < m_tagViews.size(); i++ )
-      m_tagViews[i]->setHighlighted( int(i) == index );
+      m_tagViews[i]->setHighlighted( index == AllHighlighted || int(i) == index );
   }
 
 private:
@@ -174,6 +174,8 @@ public:
   {}
 
 protected:
+
+  // TODO : Refactor the Selection system ?
   void keyPressEvent( QKeyEvent * e ) FTL_OVERRIDE
   {
     // Undo - Redo
@@ -188,18 +190,36 @@ protected:
       return;
     }
 
-    if( e->key() == Qt::Key_Backspace )
+    // Select all Tags only if the text is already all selected
+    if( e->matches( QKeySequence::SelectAll ) && selectedText() == text() )
+      m_parent->m_highlightedTag = AllHighlighted;
+
+    if( m_parent->m_highlightedTag == AllHighlighted
+      && ( e->key() == Qt::Key_Left || e->key() == Qt::Key_Right ) )
     {
-      if( m_parent->m_highlightedTag == -1 && cursorPosition() == 0 )
-        m_parent->m_highlightedTag = int(m_parent->m_query.getTags().size()) - 1;
-      else
-        m_parent->removeHighlightedTag();
+      m_parent->m_highlightedTag = NoHighlight;
     }
 
+    if( e->key() == Qt::Key_Backspace )
+    {
+      int highlitedTag = m_parent->m_highlightedTag; // Selection might change after the text has changed
+      Parent::keyPressEvent( e );
+      m_parent->m_highlightedTag = highlitedTag;
+
+      if( m_parent->m_highlightedTag == NoHighlight && cursorPosition() == 0 )
+        m_parent->m_highlightedTag = int(m_parent->m_query.getTags().size()) - 1;
+      else
+      {
+        m_parent->removeHighlightedTag();
+        if( highlitedTag >= 0 )
+          m_parent->m_highlightedTag = highlitedTag - 1;
+      }
+    }
+    else
     // Navigating in the Tags with the arrow keys
     if( cursorPosition() == 0 && e->key() == Qt::Key_Right )
     {
-      if( m_parent->m_highlightedTag == -1 )
+      if( m_parent->m_highlightedTag == NoHighlight )
         Parent::keyPressEvent( e ); // If no selected Tag, move in the Text
       else
         m_parent->m_highlightedTag++;
@@ -207,7 +227,7 @@ protected:
     else
     if( cursorPosition() == 0 && e->key() == Qt::Key_Left )
     {
-      if( m_parent->m_highlightedTag == -1 )
+      if( m_parent->m_highlightedTag == NoHighlight )
         m_parent->m_highlightedTag = int(m_parent->m_query.getTags().size()) - 1;
       else
       // stop at the leftmost tag (since -1 is reserved)
@@ -225,7 +245,7 @@ private:
 };
 
 QueryEdit::QueryEdit()
-  : m_highlightedTag( -1 )
+  : m_highlightedTag( NoHighlight )
   , m_controller( new QueryController( m_query ) )
 {
   QFont font; font.setPointSize( 16 );
@@ -324,17 +344,18 @@ void QueryEdit::updateTagHighlight()
   // If the TextCursor is not at the beginning
   // or if we overflowed the number of tags :
   // remove the highlight
-  if( m_textEdit->cursorPosition() > 0 || m_highlightedTag >= int(m_query.getTags().size()) )
-    m_highlightedTag = -1;
+  if( ( m_textEdit->cursorPosition() > 0 && m_highlightedTag != AllHighlighted )
+      || m_highlightedTag >= int(m_query.getTags().size()) )
+    m_highlightedTag = NoHighlight;
 
   m_tagsEdit->setHighlightedTag( m_highlightedTag );
-  if( m_highlightedTag != -1 )
+  if( m_highlightedTag != NoHighlight )
     emit selectingTags();
 }
 
 void QueryEdit::deselectTags()
 {
-  m_highlightedTag = -1;
+  m_highlightedTag = NoHighlight;
   m_tagsEdit->setHighlightedTag( m_highlightedTag );
 }
 
@@ -343,7 +364,14 @@ void QueryEdit::removeHighlightedTag()
   assert( m_highlightedTag < int(m_query.getTags().size()) );
   if( m_highlightedTag >= 0 ) // If a tag is highlighted, remove it
     m_controller->removeTag( m_query.getTags()[m_highlightedTag] );
-  m_highlightedTag = -1;
+  else
+  if( m_highlightedTag == AllHighlighted )
+  {
+    const Query::Tags& allTags = m_query.getTags();
+    for( size_t i = 0; i < allTags.size(); i++ )
+      m_controller->removeTag( allTags[i] );
+  }
+  m_highlightedTag = NoHighlight;
 }
 
 void QueryEdit::updateTagsEdit()
@@ -360,6 +388,13 @@ void QueryEdit::updateTagsEdit()
   this->layout()->setSpacing( m_query.getTags().size() == 0 ? 0 : -1 );
 }
 
+void QueryEdit::selectAll()
+{
+  m_textEdit->selectAll();
+  m_highlightedTag = AllHighlighted;
+  updateTagHighlight();
+}
+
 void QueryEdit::onQueryChanged()
 {
   // Update the QLineEdit, while saving the cursor position
@@ -368,7 +403,6 @@ void QueryEdit::onQueryChanged()
   m_textEdit->setCursorPosition( textCursor );
 
   updateTagsEdit();
-  m_highlightedTag = -1;
   updateTagHighlight();
   emit queryChanged( m_query );
 }
