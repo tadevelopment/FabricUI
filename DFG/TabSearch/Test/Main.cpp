@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QProxyStyle>
 #include <QStyleFactory>
+#include <QTextStream>
 #include "DFGPresetSearchWidget.h"
 
 void ReportCallBack(
@@ -85,6 +86,9 @@ void main( int argc, char** argv )
 
   // TabSearch
   DFGPresetSearchWidget* w = new DFGPresetSearchWidget( &host );
+  QFile styleSheet( "TabSearch.qss" );
+  styleSheet.open( QIODevice::ReadOnly );
+  w->setStyleSheet( QTextStream( &styleSheet ).readAll() );
   w->showForSearch( QPoint( 500, 500 ) );
 
   app->exec();
