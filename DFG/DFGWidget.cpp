@@ -226,6 +226,7 @@ DFGWidget::DFGWidget(
   m_legacyTabSearchWidget = new DFGTabSearchWidget( this, m_dfgConfig );
   m_legacyTabSearchWidget->hide();
   m_tabSearchWidget = new DFGPresetSearchWidget( &getDFGController()->getHost() );
+  m_tabSearchWidget->setParent( this );
   m_tabSearchWidget->hide();
   QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedPreset( QString ) ),

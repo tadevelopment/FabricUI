@@ -1688,6 +1688,10 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   color: #FFFFFF;
 }
 
+/****************************************************************************
+ * TabSearch
+ ***************************************************************************/
+
 FabricUI--DFG--TabSearch--TagView[highlighted="true"] *,
 FabricUI--DFG--TabSearch--PresetView[highlighted="true"] *
 {
@@ -1700,4 +1704,3 @@ FabricUI--DFG--TabSearch--TagView QPushButton:hover
   color: #000;
   background-color: #FFF;
 }
-
