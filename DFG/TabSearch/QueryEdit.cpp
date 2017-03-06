@@ -262,6 +262,7 @@ void Query::clear()
 {
   m_orderedTags.clear();
   m_tagMap.clear();
+  m_text.clear();
   emit changed();
 }
 
