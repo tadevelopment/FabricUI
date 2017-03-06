@@ -529,6 +529,8 @@ void ResultsView::setResults( const std::string& searchResult )
     if( m_model->isPreset( firstEntry ) )
       this->setCurrentIndex( firstEntry );
   }
+  else
+    emit presetDeselected();
 }
 
 QString ResultsView::getSelectedPreset()
