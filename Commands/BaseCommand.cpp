@@ -46,3 +46,8 @@ bool BaseCommand::redoIt()
 {
   return false;
 }
+
+QString BaseCommand::getHelp() 
+{
+  return "";
+}
