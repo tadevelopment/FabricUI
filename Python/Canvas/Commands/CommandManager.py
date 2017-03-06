@@ -3,7 +3,7 @@
 #
 
 from FabricEngine.FabricUI import Commands
-from FabricEngine.Canvas.CommandRegistry import *
+from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.Utils import *
 
 class CommandManager(Commands.CommandManager_Python):
@@ -31,7 +31,7 @@ class CommandManager(Commands.CommandManager_Python):
         When a command in registered, a function creating the command with named arguments is dynimically  
         defined in Python. Each function in added to the python 'Commands' module. For example, the scriptable 
         command FooCmd with arguments {arg_1:"foo_1", arg_2:"foo_2"} can be created and executed via:
-        - from FabricEngine.Canvas.CommandRegistry import *
+        - from FabricEngine.Canvas.Commands.CommandRegistry import *
         - import Commands
         - Commands.FooCmd(arg_1 = "foo_1", arg_2 = "foo_2)
 

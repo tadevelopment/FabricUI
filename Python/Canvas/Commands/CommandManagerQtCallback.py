@@ -4,8 +4,8 @@
 
 from PySide import QtGui, QtCore
 from FabricEngine.FabricUI import Commands
-from FabricEngine.Canvas.CommandManager import *
-
+from FabricEngine.Canvas.Commands.CommandManager import *
+ 
 class CommandManagerQtCallback(QtCore.QObject):
 
     """ CommandManagerQtCallback specializes CommandManagerCallback (C++) 
