@@ -4,96 +4,11 @@
 
 import re, json, os
 from PySide import QtCore, QtGui
-from FabricEngine.FabricUI import Commands, Actions, Dialog
-from FabricEngine.Canvas.CommandManager import *
-from FabricEngine.Canvas.CommandRegistry import *
-from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
-from FabricEngine.Canvas.Utils import *
-
-class HotkeyTableWidgetItemDelegate(QtGui.QStyledItemDelegate):
-
-    """ Used to override the event in QTableWidgetItem.    
-    """
-
-    keyPressed = QtCore.Signal(QtGui.QKeySequence)
-
-    def __init__(self, parent=None):
-        super(HotkeyTableWidgetItemDelegate, self).__init__(parent)
-
-    def createEditor(self, parent, option, index):
-        self.editor = QtGui.QLineEdit(parent)
-        self.editor.setFrame(False)
-        self.editor.installEventFilter(self)
-        return self.editor
-
-    def setEditorData(self, editor, index):
-        value = index.model().data(index, QtCore.Qt.EditRole)
-        editor.setText(value)
-
-    def setModelData(self, editor, model, index):
-        value = editor.text()
-        model.setData(index, value, QtCore.Qt.EditRole)
-
-    def updateEditorGeometry(self, editor, option, index):
-        editor.setGeometry(option.rect)
-
-    def eventFilter(self, target, event):
-        if target is self.editor:
-            if event.type() == QtCore.QEvent.KeyPress:
-                # Gets the sequence from the event.
-                keySequence = GetQKeySequenceFromQKeyEvent(event)
-                if keySequence is not None:
-                    self.keyPressed.emit(keySequence)
-
-                return True  
-
-            if event.type() == QtCore.QEvent.MouseButtonPress:
-                return True 
-
-            if event.type() == QtCore.QEvent.MouseButtonDblClick:
-                return True  
-
-            if event.type() == QtCore.QEvent.MouseMove:
-                return True
-
-        return False    
-
-class CommandAction(QtGui.QAction):
-    """ CommandAction associates a command to 
-        an action, both have the same name.
-        The action has
-    """
-
-    def __init__(self, parent, cmdName, shortcut, tooltip):
-        """ Initializes a CommandAction.
-            Arguments:
-            - parent: A reference to the parent
-            - cmdName: Name of the command
-            - shortcut: Shortcut triggering the command
-            - tooltip: Action's tooltip
-        """
-
-        super(CommandAction, self).__init__(parent)  
-         
-        self.setText(cmdName)
-        self.setToolTip(tooltip)
-        self.triggered.connect(self.onTriggered)
-        self.setShortcutContext(QtCore.Qt.ApplicationShortcut)
-
-        # Register the action so an item
-        # is created in the HotkeyTable.
-        Actions.ActionRegistry.GetActionRegistry().registerAction(cmdName, self)
-
-    def onTriggered(self):
-        """ \internal.
-            Implementation of Actions.BaseAction.
-            Create the command.
-        """
-        try:
-            GetCommandManager().createCommand(self.text())
-        except Exception as e:    
-            print str(e)
-
+from FabricEngine.FabricUI import Actions
+from FabricEngine.Canvas.Commands.CommandRegistry import *
+from FabricEngine.Canvas.Commands.CommandAction import CommandAction
+from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetItemDelegate import HotkeyTableWidgetItemDelegate
+ 
 class HotkeyTable(QtGui.QTableWidget):
 
     """ HotkeyTable is used to associate a shortcut to an action/command.
@@ -162,8 +77,7 @@ class HotkeyTable(QtGui.QTableWidget):
 
         # qss
         self.setObjectName('HotkeyTable')
-        self.setStyleSheet(LoadFabricStyleSheet('FabricUI.qss'))
- 
+  
     def __getCurrentShortcutItem(self):
         """ \internal.
             Gets the current shortcut item
@@ -212,7 +126,6 @@ class HotkeyTable(QtGui.QTableWidget):
         """ \internal.
             Create a new row [actionName, shortcut].
         """
-
         rowCount = self.rowCount() 
         self.insertRow(rowCount)
       
@@ -365,7 +278,6 @@ class HotkeyTable(QtGui.QTableWidget):
             Filters the items according the actions' names or shorcuts.
             To filter by shortcut, use '#' before the query.  
         """
-
         searchByShortcut = False
         if len(query):
             searchByShortcut = query[0] == '#'
@@ -444,7 +356,6 @@ class HotkeyTable(QtGui.QTableWidget):
             that override the current actions' shortcuts (if matched). Report 
             a warning if changes have niot been saved.
         """
-
         if len(self.__changedActionDic) > 0:
             message = QtGui.QMessageBox()
             message.warning(self, 'Hotkey editor', 'Changes not saved' )
@@ -485,7 +396,6 @@ class HotkeyTable(QtGui.QTableWidget):
             Saves in the current json file a list of pair 
             {actionName, shortcut} of the current actions. 
         """
-
         # If no filename, call save as.
         if not self.filename and not self.saveActionsAs():
             return
@@ -512,11 +422,12 @@ class HotkeyTable(QtGui.QTableWidget):
             Saves in a new json file a list of pair 
             {actionName, shortcut} of the current actions. 
         """
-
         fname = self.filename
+        
         if not fname:
             fname = str(self.canvasWindow.settings.value("hotkeyEditor/lastFolder"))
         fname, _ = QtGui.QFileDialog.getSaveFileName(self, "Save Hotkey file", fname, "*.json")
+        
         if not fname:
             return False
 
@@ -524,176 +435,4 @@ class HotkeyTable(QtGui.QTableWidget):
         self.filename = fname
 
         self.saveActions()
-
   
-class BaseHotkeyEditorAction(Actions.BaseAction):
- 
-    def __init__(self, hotkeyEditor, name, text, shortcut):
-
-        self.hotkeyEditor = hotkeyEditor
-
-        super(BaseHotkeyEditorAction, self).__init__(
-            hotkeyEditor, 
-            name, 
-            text, 
-            shortcut, 
-            QtCore.Qt.ApplicationShortcut)
- 
-class OpenHotkeyFileAction(BaseHotkeyEditorAction):
- 
-    def __init__(self, hotkeyEditor):
-        super(OpenHotkeyFileAction, self).__init__(
-            hotkeyEditor, 
-            "HotkeyEditor.OpenHotkeyFileAction", 
-            "Open", 
-            QtGui.QKeySequence(""))
-
-        self.setToolTip('Open a Hotkey file')
-        
-    def onTriggered(self):
-        if self.hotkeyEditor.hotkeyTable.openActions():
-            basename = os.path.basename(self.hotkeyEditor.hotkeyTable.filename)
-            self.hotkeyEditor.setWindowTitle('Hotkey Editor: ' + basename)
-
-class SaveHotkeyFileAction(BaseHotkeyEditorAction):
- 
-    def __init__(self, hotkeyEditor):
-        super(SaveHotkeyFileAction, self).__init__(
-            hotkeyEditor, 
-            "HotkeyEditor.SaveHotkeyFileAction", 
-            "Save", 
-            QtGui.QKeySequence(""))
-
-        self.setToolTip('Save a Hotkey file')
-        
-    def onTriggered(self):
-        self.hotkeyEditor.hotkeyTable.saveActions()
- 
-class SaveHotkeyFileAsAction(BaseHotkeyEditorAction):
- 
-    def __init__(self, hotkeyEditor):
-        super(SaveHotkeyFileAsAction, self).__init__(
-            hotkeyEditor, 
-            "HotkeyEditor.SaveHotkeyFileAsAction", 
-            "Save As", 
-            QtGui.QKeySequence(""))
-
-        self.setToolTip('Save a Hotkey file as')
-        
-    def onTriggered(self):
-        self.hotkeyEditor.hotkeyTable.saveActionsAs()
- 
-class AcceptActionChanges(BaseHotkeyEditorAction):
- 
-    def __init__(self, hotkeyEditor):
-        super(AcceptActionChanges, self).__init__(
-            hotkeyEditor, 
-            "HotkeyEditor.AcceptActionChanges", 
-            "Ok", 
-            QtGui.QKeySequence(""))
-
-        self.setToolTip('Accept a Hotkey changes')
-        
-    def onTriggered(self):
-        self.hotkeyEditor.accept()
-
-class RejectActionChanges(BaseHotkeyEditorAction):
- 
-    def __init__(self, hotkeyEditor):
-        super(RejectActionChanges, self).__init__(
-            hotkeyEditor, 
-            "HotkeyEditor.RejectActionChanges", 
-            "Cancel", 
-            QtGui.QKeySequence(""))
-
-        self.setToolTip('Reject a Hotkey changes')
-        
-    def onTriggered(self):
-        self.hotkeyEditor.reject()
-
-class HotkeyEditor(QtGui.QDialog):
-
-    def __init__(self, canvasWindow):
-        """ Initializes the HotkeyEditor.
-            Arguments:
-            - canvasWindow: A reference to the canvasWindow widget.
-        """
-
-        super(HotkeyEditor, self).__init__(canvasWindow) 
-        
-        # Controls
-        comboBoxLabel = QtGui.QLabel('Set')
-        self.__comboBox = QtGui.QComboBox(self)
-        self.__comboBox.addItem('All')
-        self.__comboBox.addItem('Actions')
-        self.__comboBox.addItem('Commands')
-        self.__comboBox.currentIndexChanged.connect(self.__onFilterItems)
-
-        lineEditLabel =  QtGui.QLabel('Search')
-        self.__lineEdit = QtGui.QLineEdit(self)
-        self.__lineEdit.textChanged.connect(self.__onFilterItems)
-
-        ctrlLayout = QtGui.QHBoxLayout()
-        ctrlLayout.addWidget(lineEditLabel)
-        ctrlLayout.addWidget(self.__lineEdit)
-        ctrlLayout.addWidget(comboBoxLabel)
-        ctrlLayout.addWidget(self.__comboBox)
-        
-        # HotkeyTable
-        self.hotkeyTable = HotkeyTable(self, canvasWindow)
- 
-        # Toolbar
-        openHotkeyFileAction = OpenHotkeyFileAction(self)
-        saveHotkeyFileAction = SaveHotkeyFileAction(self)
-        saveHotkeyFileAsAction = SaveHotkeyFileAsAction(self)
-
-        acceptActionChanges = AcceptActionChanges(self)
-        rejectActionChanges = RejectActionChanges(self)
-
-        toolBar = QtGui.QToolBar()
-        toolBar.addAction(openHotkeyFileAction)
-        toolBar.addAction(saveHotkeyFileAction)
-        toolBar.addAction(saveHotkeyFileAsAction)
-        toolBar.addSeparator()
-        toolBar.addAction(acceptActionChanges)
-        toolBar.addAction(rejectActionChanges)
-    
-        # All
-        layout = QtGui.QVBoxLayout()
-        layout.setContentsMargins(0,0,0,0)
-        layout.addWidget(toolBar)
-        layout.addLayout(ctrlLayout)
-        layout.addWidget(self.hotkeyTable)
-        self.setLayout(layout)
-
-        # qss
-        self.setWindowTitle('Hotkey Editor')
-        self.setObjectName('HotkeyEditor')
-        self.setStyleSheet(LoadFabricStyleSheet('FabricUI.qss'))
-
-        # !!!! To change
-        self.setMinimumHeight(800)
-        self.setMinimumWidth(1200)
-        self.adjustSize()
- 
-    def __onFilterItems(self):
-        """ \internal.
-            Filter the actions.
-        """
-        self.hotkeyTable.filterItems(self.__lineEdit.text(), self.__comboBox.currentText())
-
-    def accept(self):
-        """ \internal.
-            Implementation of QtGui.QDialog.
-        """
-        self.hotkeyTable.acceptShortcutChanges()
-        super(HotkeyEditor, self).accept()
-
-    def reject(self):
-        """ \internal.
-            Implementation of QtGui.QDialog.
-        """
-        self.hotkeyTable.rejectShortcutChanges()
-
-        super(HotkeyEditor, self).reject()
- 
