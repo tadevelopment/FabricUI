@@ -86,7 +86,7 @@ void main( int argc, char** argv )
 
   // TabSearch
   DFGPresetSearchWidget* w = new DFGPresetSearchWidget( &host );
-  QFile styleSheet( "TabSearch.qss" );
+  QFile styleSheet( "FabricUI.qss" );
   styleSheet.open( QIODevice::ReadOnly );
   w->setStyleSheet( QTextStream( &styleSheet ).readAll() );
   w->showForSearch( QPoint( 500, 500 ) );

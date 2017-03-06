@@ -43,7 +43,8 @@ add_executable(
   Main.cpp
   )
 
-file( COPY ${CMAKE_CURRENT_LIST_DIR}/TabSearch.qss DESTINATION ${CMAKE_BINARY_DIR}/ )
+set( FABRIC_DIR ${FabricStageDir} )
+configure_file( ${CMAKE_CURRENT_LIST_DIR}/../../../FabricUI.qss ${CMAKE_BINARY_DIR}/ )
 
 add_dependencies( DFGPresetSearchWidget qtMoc )
 
