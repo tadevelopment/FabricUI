@@ -1713,3 +1713,8 @@ FabricUI--DFG--TabSearch--HeatBar
   qproperty-warmPos: 0.33;
   background-color: #333;
 }
+
+FabricUI--DFG--TabSearch--PresetView[highlighted="true"] FabricUI--DFG--TabSearch--HeatBar
+{
+  background-color: #000;
+}
