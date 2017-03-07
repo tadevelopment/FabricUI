@@ -8,7 +8,8 @@
 using namespace FabricUI::DFG;
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
-  : m_host( host )
+  : m_clearQueryOnClose( false )
+  , m_host( host )
   , m_resultPreview( NULL )
 {
   this->setWindowFlags( Qt::Popup );
@@ -151,6 +152,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   );
   FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
 
+  hidePreview();
   m_resultsView->setResults( jsonStrR );
 }
 
@@ -197,7 +199,13 @@ void DFGPresetSearchWidget::setPreview( QString preset )
 
 void DFGPresetSearchWidget::close()
 {
-  m_queryEdit->clear();
+  if( m_clearQueryOnClose )
+    m_queryEdit->clear();
+  else
+    // Selecting all the query : the user will only 
+    // need to press Backspace to clear the query
+    m_queryEdit->selectAll();
+
   emit enabled( false );
   if( !this->isHidden() )
     this->hide();

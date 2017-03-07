@@ -82,6 +82,7 @@ namespace FabricUI
         void requestTag( const std::string& tag );
         void requestTags( const std::vector<std::string>& tags );
         void deselectTags();
+        void selectAll();
         void clear();
         void removeHighlightedTag();
 
@@ -104,7 +105,9 @@ namespace FabricUI
         class TextEdit;
         TextEdit* m_textEdit;
 
-        int m_highlightedTag; // -1 if None
+        static const int NoHighlight = -1;
+        static const int AllHighlighted = -2;
+        int m_highlightedTag;
         QueryController* m_controller;
       };
     }

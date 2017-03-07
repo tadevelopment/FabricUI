@@ -40,6 +40,9 @@ namespace FabricUI
 
     private:
 
+      // Will the Query persist between 2 invocations ?
+      bool m_clearQueryOnClose;
+
       // Used to query the database
       FabricCore::DFGHost* m_host;
 

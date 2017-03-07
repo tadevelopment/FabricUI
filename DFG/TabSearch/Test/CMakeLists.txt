@@ -34,11 +34,17 @@ link_directories(
 add_executable(
   DFGPresetSearchWidget
   ../DFGPresetSearchWidget.cpp
+  ../DFGPresetSearchWidget.h
   ../QueryEdit.cpp
+  ../QueryEdit.h
   ../ResultsView.cpp
+  ../ResultsView.h
   ../ResultPreview.cpp
+  ../ResultPreview.h
   ../ItemView.cpp
+  ../ItemView.h
   ../HeatBar.cpp
+  ../HeatBar.h
   Moc.cpp
   Main.cpp
   )
