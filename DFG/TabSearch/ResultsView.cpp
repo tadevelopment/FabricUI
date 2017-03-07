@@ -620,6 +620,10 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
       }
       PresetView* w = new PresetView( preset.name, tagNames );
       w->setScore( preset.score, this->minPresetScore, this->maxPresetScore );
+      connect(
+        w, SIGNAL( requestTag( const std::string& ) ),
+        this, SIGNAL( tagRequested( const std::string& ) )
+      );
       m_presetViewItems.insert( std::pair<void*,PresetView*>( index.internalPointer(), w ) );
       widget = w;
     }

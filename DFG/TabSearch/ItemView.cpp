@@ -89,6 +89,10 @@ PresetView::PresetView( const std::string& presetName, const std::vector<std::st
   for( size_t i = 0; i < tags.size(); i++ )
   {
     TagView* tagView = new TagView( tags[i] );
+    connect(
+      tagView, SIGNAL( activated( const std::string& ) ),
+      this, SIGNAL( requestTag( const std::string& ) )
+    );
     this->m_tagViews.push_back( tagView );
     this->layout()->addWidget( tagView );
   }

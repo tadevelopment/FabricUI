@@ -59,6 +59,9 @@ namespace FabricUI
         );
         void setScore( double score, double minScore = 0, double maxScore = 1 );
 
+      signals:
+        void requestTag( const std::string& tagName );
+
       public slots:
         void setHighlighted( bool highlighted );
 
