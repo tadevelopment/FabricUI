@@ -73,57 +73,65 @@ struct Tags : public std::vector<Tag>, public JSONSerializable
 
 // Variant : can be either a Preset, or T
 template<typename T>
-class PresetOr : JSONSerializable
+class PresetAnd : JSONSerializable
 {
-  enum Type { UNDEFINED, PRESET, OTHER } type;
+  bool m_hasPreset, m_hasOther;
   Preset preset;
   T other;
 
 public:
-  PresetOr() : type( UNDEFINED ) {}
-  PresetOr( const Preset& p )
-    : type( PRESET ), preset( p )
-  {}
-  PresetOr( const T& o )
-    : type( OTHER ), other( o )
-  {}
+  PresetAnd() : m_hasPreset( false ), m_hasOther( false ) {}
+  void setPreset( const Preset& p )
+  {
+    m_hasPreset = true;
+    this->preset = p;
+  }
+  void setOther( const T& o )
+  {
+    m_hasOther = true;
+    this->other = o;
+  }
   template<typename T2>
   void assign( const T2& o )
   {
-    this->type = o.type;
+    m_hasPreset = o.m_hasPreset;
+    m_hasOther = o.m_hasOther;
     this->preset = o.preset;
     this->other = o.other;
   }
-  inline bool isUndefined() const { return type == UNDEFINED; }
-  inline bool isPreset() const { return type == PRESET; }
-  inline bool isOther() const { return type == OTHER; }
+  inline bool isUndefined() const { return !m_hasPreset && !m_hasOther; }
+  inline bool isPreset() const { return m_hasPreset; }
+  inline bool isOther() const { return !m_hasPreset && m_hasOther; }
+  inline bool hasOther() const { return m_hasOther; }
   inline Preset& getPreset()
   {
-    assert( type == PRESET );
+    assert( isPreset() );
     return preset;
   }
   inline const Preset& getPreset() const
   {
-    assert( type == PRESET );
+    assert( isPreset() );
     return preset;
   }
   inline T& getOther()
   {
-    assert( type == OTHER );
+    assert( hasOther() );
     return other;
   }
   inline const T& getOther() const
   {
-    assert( type == OTHER );
+    assert( hasOther() );
     return other;
   }
   FTL::JSONValue* toJSON() const FTL_OVERRIDE
   {
-    if( type == UNDEFINED )
-      return new FTL::JSONString( "undefined" );
     FTL::JSONObject* obj = new FTL::JSONObject();
     obj->insert( "isPreset", new FTL::JSONBoolean( this->isPreset() ) );
-    obj->insert( "value", ( isPreset() ? getPreset().toJSON() : getOther().toJSON() ) );
+    obj->insert( "hasOther", new FTL::JSONBoolean( this->hasOther() ) );
+    if( isPreset() )
+      obj->insert( "preset", getPreset().toJSON() );
+    if( hasOther() )
+      obj->insert( "other", getOther().toJSON() );
     return obj;
   }
 };
@@ -180,48 +188,52 @@ struct TagAndMap : JSONSerializable
 };
 
 // First step : Temporary tree used to gather results by Tag
-typedef Node< PresetOr< TagAndMap > > TmpNode;
+typedef Node< PresetAnd< TagAndMap > > TmpNode;
 TmpNode& AddTag( TmpNode& t, const Tag& tag )
 {
   const std::string& key = tag.name;
-  if( t.value.isUndefined() )
-    t.value = TagAndMap();
   Indexes& indexes = t.value.getOther().tagIndexes;
   if( indexes.find( key ) == indexes.end() )
   {
     // If this is a new tag, add it as a child
     indexes.insert( Indexes::value_type( key, t.children.size() ) );
     TagAndMap tam; tam.tag = tag;
-    TmpNode newItem; newItem.value = tam;
+    TmpNode newItem; newItem.value.setOther( tam );
     t.children.push_back( newItem );
   }
   return t.children[indexes[key]];
 }
 
 // Second step : Reducing the tree by fusioning consecutive nodes
-struct ReducedNode : Node< PresetOr< Tags > >
+struct ReducedNode : Node< PresetAnd< Tags > >
 {
   ReducedNode( const TmpNode& tmpTI )
   {
     if( !tmpTI.value.isPreset() )
     {
       const TmpNode* n = &tmpTI;
-      if( this->value.isUndefined() )
-        this->value = Tags();
-      this->value.getOther() += n->value.getOther().tag;
+      if( n->value.hasOther() )
+      {
+        this->value.setOther( Tags() );
+        this->value.getOther() += n->value.getOther().tag;
+      }
       // If there is a chain of items (Tag or Preset) with
       // only one child, merge them into a single Item
       while( n->children.size() == 1 )
       {
         n = &n->children[0];
-        if( !n->value.isPreset() )
+        if( n->value.hasOther() )
+        {
+          if( !this->value.isOther() )
+            this->value.setOther( Tags() );
           this->value.getOther() += n->value.getOther().tag;
+        }
       }
       // If the child is a preset : override all the tags by
       // that single preset
       if( n->value.isPreset() )
-        value = PresetOr<Tags>( n->value .getPreset() );
-      else
+        value.setPreset( n->value.getPreset() );
+
       {
         // otherwise, just add all its children
         for( std::vector<TmpNode>::const_iterator it = n->children.begin();
@@ -232,14 +244,14 @@ struct ReducedNode : Node< PresetOr< Tags > >
       }
     }
     else
-      value = PresetOr<Tags>( tmpTI.value.getPreset() );
+      value.setPreset( tmpTI.value.getPreset() );
   }
 };
 
 // Third and last step : this tree is the one
 // used by the Qt model
 struct ModelNode;
-struct ModelValue : PresetOr<Tags>
+struct ModelValue : PresetAnd<Tags>
 {
   // Pointers to the parents : this is required
   // by the QAbstractItemModel
@@ -295,10 +307,10 @@ TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore
       ) );
     }
     double presetScore = result->getFloat64( 1 );
-    TmpNode newItem; newItem.value = Preset(
+    TmpNode newItem; newItem.value.setPreset( Preset(
       result->getString( 0 ),
       presetScore
-    );
+    ) );
     minPresetScore = std::min( minPresetScore, presetScore );
     maxPresetScore = std::max( maxPresetScore, presetScore );
     node->children.push_back( newItem );
@@ -441,7 +453,7 @@ public:
     this->beginResetModel();
     // Performing the 3 steps here (by converting each type)
     ReducedNode node( root );
-    if( node.value.isOther() )
+    if( node.value.isUndefined() )
       this->root = node;
     else
     {
@@ -587,7 +599,11 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     if( m_model->isPreset( index ) )
     {
       const Preset& preset = m_model->getPreset( index );
-      PresetView* w = new PresetView( preset.name );
+      const Tags& presetTags = m_model->getTags( index );
+      std::vector<std::string> tagNames;
+      for( size_t i = 0; i < presetTags.size(); i++ )
+        tagNames.push_back( presetTags[i].name );
+      PresetView* w = new PresetView( preset.name, tagNames );
       w->setScore( preset.score, this->minPresetScore, this->maxPresetScore );
       m_presetViewItems.insert( std::pair<void*,PresetView*>( index.internalPointer(), w ) );
       widget = w;
