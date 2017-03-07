@@ -493,6 +493,10 @@ public:
     ComputeParents( this->root );
     this->endResetModel();
   }
+
+  inline bool hasNoResults() const { return rowCount() == 0; }
+  inline bool hasSingleResult() const { return hasNoResults() ? false : isPreset( index( 0, 0 ) ); }
+  inline bool hasSeveralResults() const { return !hasNoResults() && !hasSingleResult(); }
 };
 
 ResultsView::ResultsView()
@@ -630,7 +634,8 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     {
       const Preset& preset = m_model->getPreset( index );
       std::vector<std::string> tagNames;
-      if( m_model->hasTags( index ) )
+      if( m_model->hasTags( index )
+        && !m_model->hasSingleResult() ) // Don't show Tags if Single Result
       {
         const Tags& presetTags = m_model->getTags( index );
         for( size_t i = 0; i < presetTags.size(); i++ )
