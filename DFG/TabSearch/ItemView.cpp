@@ -86,6 +86,14 @@ PresetView::PresetView( const std::string& presetName, const std::vector<std::st
   nameLabel->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
   //QLabel* pathLabel = new QLabel( "<i>" + QString::fromStdString( path ) + "</i>" );
   //this->layout()->addWidget( pathLabel );
+  if( tags.size() > 0 )
+  {
+    QWidget* emptySpace = new QWidget();
+    int separtorW = 32;
+    emptySpace->setMinimumWidth( separtorW );
+    emptySpace->setMaximumWidth( separtorW );
+    lay->addWidget( emptySpace );
+  }
   for( size_t i = 0; i < tags.size(); i++ )
   {
     TagView* tagView = new TagView( tags[i] );
