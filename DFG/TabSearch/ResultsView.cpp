@@ -178,13 +178,20 @@ protected:
 typedef std::map<std::string, size_t> Indexes;
 struct TagAndMap : JSONSerializable
 {
-  Tag tag;
+private:
+  Tag m_tag;
+  bool m_hasTag;
+public:
   // Map from the name of to the index of a child
   Indexes tagIndexes;
+  TagAndMap() : m_hasTag( false ) {}
+  void setTag( const Tag& tag ) { m_hasTag = true; m_tag = tag; }
+  inline const Tag& getTag() const { assert( m_hasTag ); return m_tag; }
+  inline const bool hasTag() const { return m_hasTag; }
   FTL::JSONValue* toJSON() const FTL_OVERRIDE
   {
     // TODO
-    return tag.toJSON();
+    return m_tag.toJSON();
   }
 };
 
@@ -193,12 +200,14 @@ typedef Node< PresetAnd< TagAndMap > > TmpNode;
 TmpNode& AddTag( TmpNode& t, const Tag& tag )
 {
   const std::string& key = tag.name;
+  if( t.value.isUndefined() )
+    t.value.setOther( TagAndMap() );
   Indexes& indexes = t.value.getOther().tagIndexes;
   if( indexes.find( key ) == indexes.end() )
   {
     // If this is a new tag, add it as a child
     indexes.insert( Indexes::value_type( key, t.children.size() ) );
-    TagAndMap tam; tam.tag = tag;
+    TagAndMap tam; tam.setTag( tag );
     TmpNode newItem; newItem.value.setOther( tam );
     t.children.push_back( newItem );
   }
@@ -213,25 +222,24 @@ struct ReducedNode : Node< PresetAnd< Tags > >
     if( !tmpTI.value.isPreset() )
     {
       const TmpNode* n = &tmpTI;
-      if( n->value.hasOther() )
+      if( n->value.hasOther() && n->value.getOther().hasTag() )
       {
         this->value.setOther( Tags() );
-        this->value.getOther() += n->value.getOther().tag;
+        this->value.getOther() += n->value.getOther().getTag();
       }
       // If there is a chain of items (Tag or Preset) with
       // only one child, merge them into a single Item
       while( n->children.size() == 1 )
       {
         n = &n->children[0];
-        if( n->value.hasOther() )
+        if( n->value.hasOther() && n->value.getOther().hasTag() )
         {
           if( !this->value.isOther() )
             this->value.setOther( Tags() );
-          this->value.getOther() += n->value.getOther().tag;
+          this->value.getOther() += n->value.getOther().getTag();
         }
       }
-      // If the child is a preset : override all the tags by
-      // that single preset
+
       if( n->value.isPreset() )
         value.setPreset( n->value.getPreset() );
 
@@ -419,6 +427,9 @@ public:
   const Preset& getPreset( const QModelIndex& index ) const
   { return cast( index )->value.getPreset(); }
 
+  const bool hasTags( const QModelIndex& index ) const
+  { return cast( index )->value.hasOther(); }
+
   const Tags& getTags( const QModelIndex& index ) const
   { return cast( index )->value.getOther(); }
 
@@ -600,10 +611,13 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     if( m_model->isPreset( index ) )
     {
       const Preset& preset = m_model->getPreset( index );
-      const Tags& presetTags = m_model->getTags( index );
       std::vector<std::string> tagNames;
-      for( size_t i = 0; i < presetTags.size(); i++ )
-        tagNames.push_back( presetTags[i].name );
+      if( m_model->hasTags( index ) )
+      {
+        const Tags& presetTags = m_model->getTags( index );
+        for( size_t i = 0; i < presetTags.size(); i++ )
+          tagNames.push_back( presetTags[i].name );
+      }
       PresetView* w = new PresetView( preset.name, tagNames );
       w->setScore( preset.score, this->minPresetScore, this->maxPresetScore );
       m_presetViewItems.insert( std::pair<void*,PresetView*>( index.internalPointer(), w ) );
