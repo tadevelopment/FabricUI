@@ -17,6 +17,15 @@ using namespace FabricUI::DFG::TabSearch;
 
 struct JSONSerializable
 {
+  std::string toEncodedJSON() const
+  {
+    FTL::JSONValue* json = this->toJSON();
+    std::string dst = json->encode();
+    delete json;
+    return dst;
+  }
+
+protected:
   virtual FTL::JSONValue* toJSON() const = 0;
   virtual ~JSONSerializable() {}
 };
@@ -143,14 +152,6 @@ struct Node : JSONSerializable
   T value;
   typedef std::vector<Node> Children;
   Children children;
-
-  std::string toEncodedJSON() const
-  {
-    FTL::JSONValue* json = this->toJSON();
-    std::string dst = json->encode();
-    delete json;
-    return dst;
-  }
 
 protected:
   // Utilitary method to convert a Tree to another
