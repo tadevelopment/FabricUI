@@ -21,7 +21,7 @@ namespace FabricUI
       public:
         typedef std::vector<std::string> Tags;
         inline const std::string& getText() const { return m_text; }
-        inline const Tags getTags() const { return m_orderedTags; }
+        inline const Tags& getTags() const { return m_orderedTags; }
         inline bool hasTag( const std::string& tag ) const { return m_tagMap.find( tag ) != m_tagMap.end(); }
 
       public slots:

@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+#include <set>
 #include <assert.h>
 
 using namespace FabricUI::DFG::TabSearch;
@@ -292,7 +293,12 @@ void ComputeParents( ModelNode& item )
   }
 }
 
-TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore, double& maxPresetScore )
+TmpNode BuildResultTree(
+  const std::string& searchResult,
+  double& minPresetScore,
+  double& maxPresetScore,
+  const Query& query
+)
 {
   const FTL::JSONValue* json = FTL::JSONValue::Decode( searchResult.c_str() );
   const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
@@ -300,6 +306,15 @@ TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore
   
   minPresetScore = std::numeric_limits<double>::max();
   maxPresetScore = std::numeric_limits<double>::min();
+
+  // Set of tags from the Query : no need to display them again
+  // since they must be in all the results
+  std::set<std::string> queryTags;
+  {
+    const Query::Tags& queryTagsVec = query.getTags();
+    for( size_t i = 0; i < queryTagsVec.size(); i++ )
+      queryTags.insert( queryTagsVec[i] );
+  }
 
   TmpNode rootNode;
   for( size_t i = 0; i < resultsJson->size(); i++ )
@@ -310,8 +325,11 @@ TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore
     for( size_t j = 0; j < tags->size(); j++ )
     {
       const FTL::JSONObject* tagO = tags->getObject( j );
+      const std::string tagName = tagO->getString( "tag" );
+      if( queryTags.find( tagName ) != queryTags.end() )
+        continue; // Ignore tags from the Query
       node = &AddTag( *node, Tag(
-        tagO->getString( "tag" ),
+        tagName,
         tagO->getFloat64( "weight" )
       ) );
     }
@@ -396,7 +414,7 @@ void ResultsView::UnitTest( const std::string& logFolder )
   Test::Write( logFolder + "0_results.json", json );
 
   double minS, maxS;
-  TmpNode tmpNode = BuildResultTree( json, minS, maxS );
+  TmpNode tmpNode = BuildResultTree( json, minS, maxS, Query() );
   size_t newCount = Test::LogTree( tmpNode, logFolder + "1_tmpNode.json" );
   assert( newCount == originalCount );
 
@@ -537,13 +555,13 @@ void ResultsView::onSelectionChanged()
     emit presetDeselected();
 }
 
-void ResultsView::setResults( const std::string& searchResult )
+void ResultsView::setResults( const std::string& searchResult, const Query& query )
 {
   // The ViewItems will become obsolete since ModelItems will be destroyed
   m_presetViewItems.clear();
   m_tagsViewItems.clear();
 
-  m_model->setRoot( BuildResultTree( searchResult, this->minPresetScore, this->maxPresetScore ) );
+  m_model->setRoot( BuildResultTree( searchResult, this->minPresetScore, this->maxPresetScore, query ) );
   this->expandAll();
 
   replaceViewItems();

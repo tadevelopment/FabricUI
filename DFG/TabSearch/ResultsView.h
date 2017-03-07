@@ -6,6 +6,7 @@
 #include <QTreeView>
 
 #include <FTL/Config.h>
+#include "QueryEdit.h"
 #include <map>
 
 namespace FabricUI
@@ -31,7 +32,7 @@ namespace FabricUI
 
       public slots:
         // Sets the result of Search, to be displayed
-        void setResults( const std::string& searchResult );
+        void setResults( const std::string& searchResult, const Query& query );
         // Tells that we accept the current selection (on Key_Enter, for example)
         void validateSelection();
         // Removes the current selection

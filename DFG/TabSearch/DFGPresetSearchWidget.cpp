@@ -153,7 +153,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
 
   hidePreview();
-  m_resultsView->setResults( jsonStrR );
+  m_resultsView->setResults( jsonStrR, query );
 }
 
 void DFGPresetSearchWidget::validateSelection()
