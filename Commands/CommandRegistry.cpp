@@ -307,7 +307,7 @@ void CommandRegistry::commandRegistered(
 
     m_klCmdRegistry.callMethod(
       "",
-      "registerCppCommand",
+      "registerAppCommand",
       1,
       &nameVal);
   }

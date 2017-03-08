@@ -16,10 +16,18 @@ using namespace FabricCore;
 bool CommandManager::s_instanceFlag = false;
 CommandManager* CommandManager::s_cmdManager = 0;
 
+inline bool isKLCommand(BaseCommand *cmd)
+{
+  KLCommand *klCmd = dynamic_cast<KLCommand *>(cmd);
+  KLScriptableCommand *klScriptCmd = dynamic_cast<KLScriptableCommand *>(cmd);
+  return (klCmd || klScriptCmd);
+}
+
 CommandManager::CommandManager(
   Client client) 
   : QObject()
   , m_client(client)
+  , m_klCmdUndoStackCount(0)
 {
   if(s_instanceFlag)
     throw("CommandManager::CommandManager, CommandManager singleton has already been created");
@@ -46,7 +54,7 @@ CommandManager::CommandManager(
       e.getDesc_cstr());
   }
 
-  /// Registers our-self, needed in python.
+  /// Connect our-self, needed in python.
   QObject::connect(
     CommandRegistry::GetCommandRegistry(),
     SIGNAL(
@@ -98,7 +106,7 @@ BaseCommand* CommandManager::createCommand(
     if(args.size() > 0) 
       checkCommandArgs(cmd, args);
 
-    if (doCmd) 
+    if(doCmd) 
       this->doCommand(cmd);
   
     return cmd;
@@ -122,32 +130,37 @@ void CommandManager::doCommand(
     throw(std::string("CommandManager::doCommand, Command is null"));
  
   bool subCmd = m_undoStack.size() != 0 && !m_undoStack[m_undoStack.size() - 1].succeeded;
-  if(!subCmd) 
+  
+  if(cmd->canUndo() && !subCmd) 
   {
-    // Clear all the redo-able commands
     clearRedoStack();
-    // push a new one
     pushTopCommand(cmd, false);
   }
 
-  if (!cmd->doIt())
+  if(!cmd->doIt())
   {
-    //Use the name of the top-level cmd
-    BaseCommand* cmdForErrorLog = (cmd != 0) ? cmd : m_undoStack[m_undoStack.size() - 1].topLevelCmd;
+    QString cmdForErrorLog = (cmd != 0) 
+      ? cmd->getName() : 
+      m_undoStack[m_undoStack.size() - 1].topLevelCmd->getName();
+    
+    cleanupUnfinishedCommands();
+
     throw(
       std::string(
         QString(
-          "CommandManager::doCommand, error doing command '" + cmdForErrorLog->getName() + "'"
+          "CommandManager::doCommand, error doing command '" + cmdForErrorLog + "'"
         ).toUtf8().constData() 
      )
    );
   } 
 
-  else if (subCmd && cmd->canUndo())
-    pushLowCommand(cmd);
- 
-  else
-    m_undoStack[m_undoStack.size() - 1].succeeded = true;
+  if(cmd->canUndo())
+  {
+    if(subCmd)
+      pushLowCommand(cmd);
+    else
+      m_undoStack[m_undoStack.size() - 1].succeeded = true;
+  }
 }
 
 void CommandManager::undoCommand() 
@@ -199,6 +212,7 @@ void CommandManager::undoCommand()
 
   m_undoStack.pop_back();
   m_redoStack.push_back(stackedCmd);
+  m_klCmdUndoStackCount -= isKLCommand(top) ? 1 : 0;
 }
 
 void CommandManager::redoCommand() 
@@ -250,6 +264,7 @@ void CommandManager::redoCommand()
  
   m_redoStack.pop_back();
   m_undoStack.push_back(stackedCmd);
+  m_klCmdUndoStackCount += isKLCommand(top) ? 1 : 0;
 }
 
 void CommandManager::clear() 
@@ -319,17 +334,8 @@ void CommandManager::synchronizeKL()
       e.getDesc_cstr());
   }
 
-  // Get the number of undo KL commands  in this manager
-  int cppKLCmdCount = 0;
-  for(int i=0; i<m_undoStack.size(); ++i)
-  {
-    KLCommand *cmd = dynamic_cast<KLCommand *>(m_undoStack[i].topLevelCmd);
-    KLScriptableCommand *scriptCmd = dynamic_cast<KLScriptableCommand *>(m_undoStack[i].topLevelCmd);
-    cppKLCmdCount += (cmd || scriptCmd) ? 1 : 0;
-  } 
-
   // !! Problem, KL and C++ command managers are out of synch
-  if(cppKLCmdCount > klCmdCount)
+  if(m_klCmdUndoStackCount > klCmdCount)
     throw(
       std::string(
         QString(
@@ -339,93 +345,101 @@ void CommandManager::synchronizeKL()
     );
 
   // Synchronize our stack with KL, two scenarios: 
-  // 1. A KL command is created in KL. We construct the
-  //     C++ wrappers KLCommand and KLScriptableCommand.
+  // 1. A KL command is created in KL : we construct the
+  //    KLCommand and KLScriptableCommand wrappers.
   // 2. A C++/Python command is asked to be created from KL.
   try
   {
-    for(int i=cppKLCmdCount; i<klCmdCount; ++i)
+    unsigned int klCmdUndoStackCount = m_klCmdUndoStackCount;
+
+    for(int i=klCmdUndoStackCount; i<klCmdCount; ++i)
     {
       RTVal cmdIndex = RTVal::ConstructUInt32(
         m_client, 
         i);
-
+      
       // Gets the KL command from the KL manager. 
-      // Check if it's a scriptable command
       RTVal klCmd = m_klCmdManager.callMethod(
-        "BaseScriptableCommand", 
+        "Command", 
         "getCommandAtIndex", 
         1, 
         &cmdIndex);
 
-      if(!klCmd.isNullObject())
-      {
-        // Gets the command name
-        QString cmdName = klCmd.callMethod(
+      // Check if it's an AppCommand.
+      // Construct C++ commands from KL
+      RTVal appCmd = RTVal::Construct(
+        m_client,
+        "AppCommand", 
+        1, 
+        &klCmd);
+
+      if(appCmd.isValid() && !appCmd.isNullObject())
+      {     
+        // Gets the command name.
+        QString cmdName = appCmd.callMethod(
           "String",
           "getName",
           0, 
           0).getStringCString();
+ 
+        RTVal argNameList = appCmd.callMethod(
+          "String[]", 
+          "getArgNameList", 
+          0, 
+          0);
 
-        // Check if this manager knows the command.
-        // If so, we need to create it.
-        if(CommandRegistry::GetCommandRegistry()->isCommandRegistered(cmdName))
-        {      
-          RTVal argNameList = klCmd.callMethod(
-            "String[]", 
-            "getArgNameList", 
-            0, 
-            0);
+        QMap< QString, QString > args;
+        for(unsigned int j=0; j<argNameList.getArraySize(); ++j)
+        {
+          RTVal argNameVal = argNameList.getArrayElement(j);
+          RTVal klRTVal = appCmd.callMethod(
+            "RTVal", 
+            "getArg", 
+            1, 
+            &argNameVal);
 
-          QMap< QString, QString > args;
-          for(unsigned int i=0; i<argNameList.getArraySize(); ++i)
-          {
-            RTVal argNameVal = argNameList.getArrayElement(i);
-            RTVal klRTVal = klCmd.callMethod(
-              "RTVal", 
-              "getArg", 
-              1, 
-              &argNameVal);
-
-            args[argNameVal.getStringCString()] = 
-              Util::RTValUtil::klRTValToJSON(
-                m_client,
-                klRTVal);
-          }
-
-          // !!! Undo the KL command so it's cleared
-          // when the C++ command is created.
-          RTVal error = RTVal::ConstructString(
-            m_client, 
-            "");
-
-          m_klCmdManager.callMethod(
-            "Boolean",
-            "undoCommand",
-            1,
-            &error);
-
-          // Create and execute the command
-          createCommand(cmdName, args);
+          args[argNameVal.getStringCString()] = 
+            Util::RTValUtil::klRTValToJSON(
+              m_client,
+              klRTVal);
         }
 
-        // Else, it's a `pure` KL command.
-        // Push the command without executing it
-        else
-          pushTopCommand( new KLScriptableCommand(klCmd), true);
-      }
-      
-      // if not, it's a simple command.
-      else
-      {
-        klCmd = m_klCmdManager.callMethod(
-          "Command", 
-          "getCommandAtIndex", 
-          1, 
+        // Remove the KL command
+        m_klCmdManager.callMethod(
+          "Boolean",
+          "removeCommandAtIndex",
+          1,
           &cmdIndex);
 
-          // Push the command without executing it
-        pushTopCommand( new KLCommand(klCmd), true);
+        // decrement
+        i--;
+        klCmdCount--;
+
+        // Create and execute the C++ command.
+        createCommand(cmdName, args);
+      }
+
+      // KL commands have actually been 
+      // created, create the C++ wrappers.
+      else
+      {
+        RTVal scriptCmd = RTVal::Construct(
+          m_client,
+          "BaseScriptableCommand", 
+          1, 
+          &klCmd);
+
+        if(scriptCmd.isValid() && !scriptCmd.isNullObject())
+          pushTopCommand( 
+            new KLScriptableCommand(scriptCmd), 
+            true);
+
+        else
+          pushTopCommand( 
+            new KLCommand(klCmd), 
+            true);
+
+        m_klCmdUndoStackCount ++;
       }
     } 
   }
@@ -620,4 +634,27 @@ QString CommandManager::getStackContent(
   }
 
   return res;
+}
+
+void CommandManager::cleanupUnfinishedCommands() 
+{
+  if( m_undoStack.size() && !m_undoStack[m_undoStack.size() - 1].succeeded ) 
+  {
+    StackedCommand top = m_undoStack[m_undoStack.size() - 1];
+    m_undoStack.removeLast();
+
+    for( int i = top.lowLevelCmds.size(); i--; ) 
+    {
+      if( !top.lowLevelCmds[i]->undoIt() ) 
+        throw(
+          std::string(
+            QString(
+              "CommandManager::cleanupUnfinishedCommands, rrror while reverting command '" + 
+               top.lowLevelCmds[i]->getName() 
+            ).toUtf8().constData()
+          )
+        );
+    }
+
+  }
 }

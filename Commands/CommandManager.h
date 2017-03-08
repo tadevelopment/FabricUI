@@ -28,11 +28,11 @@ class CommandManager : public QObject
     to the KL command manager so it can create KL commands. However, the C++ manager
     is not automatically synchronized with the KL manager. If commands are added to
     the KL manager directly, the C++ manager needs explicitly to synchronize with it. 
-    Two scenarios are possible. First, the KL manager create a KL command. Specials
-    C++ commands (KLCommand-KLScriptableCommand) that wraps KL command are created.
-    Secondly, C++ command are asked to be created in KL. An 'empty' command is created
-    in KL. When the two managers are synchronized, the C++ manager 'detects' the empty
-     KL command, and actualluy create the corresponding C++.
+    Two scenarios are possible. First, the KL manager creates KL commands. Specials
+    C++ commands (KLCommand-KLScriptableCommand) that wrap KL commands are created.
+    Secondly, C++ commands are asked to be created frrom KL. An 'AppCommand' command
+    is created in KL. When the two managers are synchronized, the C++ manager detects 
+    the 'AppCommand' KL command, and creates the corresponding C++.
 
     CommandManager is specialized depending on the command registration system, C++
     vs Phyton, see CommandManager for the C++ implementation, CommandManager_Python
@@ -197,10 +197,15 @@ class CommandManager : public QObject
       const QList<StackedCommand> &stack
       );
 
+    /// Cleans the command stack if errors 
+    /// occur when doing a command.
+    void cleanupUnfinishedCommands();
+
     /// KL command manager.
     FabricCore::RTVal m_klCmdManager;
     /// Fabric client.
     FabricCore::Client m_client;
+    unsigned int m_klCmdUndoStackCount;
     /// CommandManager singleton, set from Constructor.
     static CommandManager *s_cmdManager;
     /// Check if the singleton has been set.
