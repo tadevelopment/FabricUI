@@ -414,7 +414,8 @@ void ResultsView::UnitTest( const std::string& logFolder )
   Test::Write( logFolder + "0_results.json", json );
 
   double minS, maxS;
-  TmpNode tmpNode = BuildResultTree( json, minS, maxS, Query() );
+  Query query;
+  TmpNode tmpNode = BuildResultTree( json, minS, maxS, query );
   size_t newCount = Test::LogTree( tmpNode, logFolder + "1_tmpNode.json" );
   assert( newCount == originalCount );
 
