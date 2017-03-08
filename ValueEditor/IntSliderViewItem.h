@@ -11,12 +11,11 @@ class QString;
 class QVariant;
 class QWidget;
 
-
 namespace FabricUI {
 namespace ValueEditor {
 
-class ItemMetadata;
 class IntSlider;
+class ItemMetadata;
 class VELineEdit;
 
 class IntSliderViewItem : public BaseViewItem
@@ -45,7 +44,7 @@ public:
 
   virtual void onModelValueChanged( QVariant const &value ) /*override*/;
 
-  virtual void metadataChanged( );
+  virtual void metadataChanged() /*override*/;
   
 private:
 
@@ -63,7 +62,7 @@ private slots:
   void onLineEditTextModified( QString text );
 
   void onSliderPressed();
-  void onValueChanged( int value );
+  void onIntegerValueChanged( int value );
   void onSliderReleased();
 };
 

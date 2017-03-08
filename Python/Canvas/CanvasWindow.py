@@ -103,7 +103,7 @@ class SaveGraphAsAction(BaseCanvasWindowAction):
             parent,     
             canvasWindow, 
             "CanvasWindow.SaveGraphAsAction", 
-            "Save Graph", 
+            "Save Graph As", 
             QtGui.QKeySequence.SaveAs)
         
     def onTriggered(self):

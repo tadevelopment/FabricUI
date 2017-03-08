@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <QLayout>
-#include <QDoubleValidator>
 #include <QTimer>
 
 #include "DFGNodePropertiesDialog.h"

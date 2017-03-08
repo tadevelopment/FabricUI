@@ -682,6 +682,7 @@ void Node::selectUpStreamNodes()
 void Node::updateNodesToMove( bool backdrops )
 {
   m_nodesToMove = graph()->selectedNodes();
+
   if ( backdrops )
   {
     std::vector<Node *> additionalNodes;
@@ -703,6 +704,10 @@ void Node::updateNodesToMove( bool backdrops )
       additionalNodes.end()
     );
   }
+
+  m_nodesToMoveOriginalPos.resize(m_nodesToMove.size());
+  for (size_t i=0;i<m_nodesToMove.size();i++)
+    m_nodesToMoveOriginalPos[i] = m_nodesToMove[i]->topLeftGraphPos();
 }
     
 void Node::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
@@ -818,9 +823,6 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
   {
     if (m_dragging == 1)
     {
-      m_nodesToMoveOriginalPos.resize(m_nodesToMove.size());
-      for (size_t i=0;i<m_nodesToMove.size();i++)
-        m_nodesToMoveOriginalPos[i] = m_nodesToMove[i]->topLeftGraphPos();
       m_dragging = 2;
     }
 
