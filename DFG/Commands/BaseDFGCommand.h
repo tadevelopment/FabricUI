@@ -4,21 +4,20 @@
 #define __UI_BASE_DFG_COMMAND__
 
 #include <FabricUI/DFG/DFGController.h>
-#include <FabricUI/Commands/BaseScriptableCommand.h>
+#include <FabricUI/Commands/BaseRTValScriptableCommand.h>
 
 namespace FabricUI {
 namespace DFG {
 
-class BaseDFGCommand : public Commands::BaseScriptableCommand 
+class BaseDFGCommand : public Commands::BaseRTValScriptableCommand 
 {
   public:
     /**
       BaseDFGCommand is the base class for any DFGExec-based command.
       It has a pointer to the DFGController from where it can access
       the DFGExec and the DFGBinding. It manages the command undo-redo
-      so speciaized class only implement the command logic.
-
-      Because the core use
+      so speciaized classes only implement the command logic. Finally, 
+      it uses JSON/RTVal-based arguments.
 
       Usage:
       - C++:
@@ -27,17 +26,25 @@ class BaseDFGCommand : public Commands::BaseScriptableCommand
           public:
             DFGCommand() : BaseDFGCommand()
             {
+              FabricCore::Client client = 
+                Commands::CommandManager::GetCommandManager()->getFabricClient();
+
               // String argument
-              declareArg("myArg", false, "MyString");
+              declareArg(
+                "myArg", 
+                "String", 
+                false, 
+                FabricCore::RTVal::ConstructString(
+                  client,
+                  "MyString")
+              );
             }
 
             virtual bool doIt()
             {
               // Get the arguments 
-              QString myArg = Util::RTValUtil::jsonToRTVal(
-                Commands::CommandManager::GetCommandManager()->getFabricClient(),
-                getArg("myArg"),
-                "String"
+              QString myArg = getArgAsRTVal(
+                "myArg"
                 ).getStringCString();
  
               // Do some stuff with DFGExec
@@ -78,14 +85,20 @@ class BaseDFGCommand : public Commands::BaseScriptableCommand
         
           def __init__(self):
             super(DFGCommand, self).__init__()
-            self.declareArg("myArg", False, ".")
-       
+            client = GetCommandManager().getFabricClient()
+
+            // String argument
+            self.declareArg(
+              "myArg", 
+              "String", 
+              False, 
+              client.RT.types.String("MyString")
+            )
+              
           def doIt(self):
             # Get the arguments 
-            myArg = Util.RTValUtil.jsonToRTVal(
-              GetCommandManager().getFabricClient(),
-              self.getArg("myArg"),
-              "String"
+            myArg =getArgAsRTVal(
+              "myArg"
               ).getSimpleType()
 
             # Do some stuff with DFGExec

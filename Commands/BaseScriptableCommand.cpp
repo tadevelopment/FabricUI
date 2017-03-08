@@ -96,10 +96,9 @@ void BaseScriptableCommand::validateSetArgs()
 
 QString BaseScriptableCommand::getDescription() 
 {
-  QString text = getName();
-
-  // Get the args from the method, since
-  // different implementation may exist.
+  QString text = "Commands.";
+  text += getName();
+ 
   QMap<QString, QString> args = getArgs();
   if( args.size() > 0 )
   {
@@ -114,6 +113,7 @@ QString BaseScriptableCommand::getDescription()
       text += ":";
       text += ite.value();
       text += (count < args.size() - 1) ? ", " : ")";
+      count ++;
     }
   }
 

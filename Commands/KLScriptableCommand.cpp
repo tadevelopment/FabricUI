@@ -14,7 +14,7 @@ using namespace FabricCore;
 
 KLScriptableCommand::KLScriptableCommand(
   RTVal klCmd)
-  : BaseScriptableCommand() 
+  : BaseRTValScriptableCommand() 
   , m_klCmd(klCmd)
 {
 }
@@ -52,20 +52,14 @@ bool KLScriptableCommand::redoIt()
 {  
   return KLCommand::RedoIt();
 }
-
-void KLScriptableCommand::declareArg(
-  const QString &key, 
-  bool optional, 
-  const QString &defaultValue) 
-{
-}
-
+ 
 QString KLScriptableCommand::getArg(
   const QString &key) 
 {
   if(key.isEmpty()) 
     throw(
-      std::string("KLScriptableCommand::getArg, error getting arg: key not specified")
+      std::string(
+        "KLScriptableCommand::getArg, error getting arg: key not specified")
     );
 
   try 

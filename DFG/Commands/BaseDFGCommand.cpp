@@ -8,7 +8,7 @@ using namespace Commands;
 using namespace FabricCore;
 
 BaseDFGCommand::BaseDFGCommand() 
-  : BaseScriptableCommand()
+  : BaseRTValScriptableCommand()
   , m_coreCmdCount(0)
   , m_dfgController(0)
 {

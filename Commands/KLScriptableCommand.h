@@ -5,14 +5,12 @@
 #ifndef __UI_KL_SCRIPTABLE_COMMAND__
 #define __UI_KL_SCRIPTABLE_COMMAND__
 
-#include <QList>
-#include <FabricCore.h>
-#include "BaseScriptableCommand.h"
+#include "BaseRTValScriptableCommand.h"
 
 namespace FabricUI {
 namespace Commands {
 
-class KLScriptableCommand : public BaseScriptableCommand
+class KLScriptableCommand : public BaseRTValScriptableCommand
 {
   /**
     KLScriptableCommand wraps the KL scriptable commands so they  
@@ -24,7 +22,7 @@ class KLScriptableCommand : public BaseScriptableCommand
 
     Usage:
     - KL:
-      object MyCommand : BaseScriptableCommand {
+      object MyCommand : BaseRTValScriptableCommand {
       };
 
       MyCommand() {
@@ -118,14 +116,6 @@ class KLScriptableCommand : public BaseScriptableCommand
  
     /// Implementation of BaseCommand.
     virtual QString getHelp();
-
-    /// Implementation of BaseScriptableCommand.
-    /// Does nothing, done in KL.
-    virtual void declareArg( 
-      const QString &key, 
-      bool optional = true, 
-      const QString &defaultValue = QString()
-      );
 
     /// Implementation of BaseScriptableCommand.
     virtual QMap<QString, QString> getArgs();

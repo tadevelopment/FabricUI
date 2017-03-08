@@ -39,7 +39,7 @@ bool KLCommand::CanUndo(
   try 
   {
     return klCmd.callMethod(
-      "String", 
+      "Boolean", 
       "canUndo", 
       0, 
       0).getBoolean();

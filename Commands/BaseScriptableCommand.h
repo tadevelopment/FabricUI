@@ -31,7 +31,7 @@ class BaseScriptableCommand : public BaseCommand
 
     /// Declares and sets an argument.
     /// To call from the command constructor.
-    virtual void declareArg( 
+    void declareArg( 
       const QString &key, 
       bool optional = true, 
       const QString &defaultValue = QString()
@@ -60,7 +60,7 @@ class BaseScriptableCommand : public BaseCommand
     /// Gets a description of the command
     /// logged in the script-editor:
     /// cmdName(arg1:val1, arg2:val2, ...)
-    QString getDescription();
+    virtual QString getDescription();
 
     /// Gets a decription of the arguments.
     /// Used for debugging.
@@ -71,6 +71,7 @@ class BaseScriptableCommand : public BaseCommand
     /// default value, optional
     struct ScriptableCommandArgSpec 
     {
+      QString type;
       QString defaultValue;
       bool optional;
     };

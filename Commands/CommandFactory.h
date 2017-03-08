@@ -16,8 +16,8 @@ class BaseCommandFactory
 {
   /**
     BaseCommandFactory is the base class of all the CommandFactory that are
-    used to create commands. Each CommandFactory is associated to one type of
-    command, and the factories are registered in the CommandRegistry. 
+    used to create commands. Each CommandFactory is associated to one type
+    of command, and the factories are registered in the CommandRegistry. 
 
     The userData argument is void pointer used to pass optional custom data 
     to the command. The data is referenced by the factory, and its passed to 

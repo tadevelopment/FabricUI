@@ -8,6 +8,7 @@
       <object-type name="CommandManager_Python" />
       <object-type name="CommandRegistry" />
       <object-type name="CppToPythonTestCommand" />
+      <object-type name="BaseRTValScriptableCommand" />      
     </namespace-type>
   </namespace-type>
 </typesystem>
