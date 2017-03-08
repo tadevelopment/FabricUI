@@ -15,7 +15,6 @@
 #include <FTL/AutoSet.h>
 #include <QVariant>
 #include <QHBoxLayout>
-#include <QDoubleValidator>
 
 
 using namespace FabricUI::ValueEditor;
@@ -46,7 +45,7 @@ FloatSliderViewItem::FloatSliderViewItem(
   if(value > m_slider->max())
     m_slider->setResolution(FLOAT_SLIDER_DECIMALS, m_slider->min(), value);
 
-  m_lineEdit->setValidator(new QDoubleValidator(m_lineEdit));
+  m_lineEdit->setValidatorDouble();
   m_lineEdit->setText( QString::number( value ) );
   m_slider->setDoubleValue( value );
 
@@ -138,6 +137,9 @@ void FloatSliderViewItem::metadataChanged()
 
 void FloatSliderViewItem::onLineEditTextModified( QString text )
 {
+  text.replace(',', '.');
+  if (text.startsWith('.'))
+    text = "0" + text;
   double value = std::max(
     m_hardMinimum,
     std::min(
