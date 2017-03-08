@@ -152,7 +152,7 @@ class HotkeyTable(QtGui.QTableWidget):
 
         if actionRegistry.getAction(cmdName) is None:
             # Must construct the command to get the tooltip
-            tooltip = GetCommandRegistry().createCommand(cmdName).getHelp()
+            tooltip = ''#GetCommandRegistry().createCommand(cmdName).getHelp()
             # Add the action to the canvasWindow so it's available.
             # Actions of hidden widgets are not triggered.
             self.canvasWindow.addAction(CommandAction(self, cmdName, QtGui.QKeySequence(), tooltip))

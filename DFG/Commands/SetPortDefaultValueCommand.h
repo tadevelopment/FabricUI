@@ -20,29 +20,49 @@ class SetPortDefaultValueCommand : public BaseDFGCommand
       - execPath (String): Path of the DFGExec.
       - portName (String): Name of the port.
       - portValue (RTVal): Value to set, must be of the same that the port type.
+      - isUndoable (Boolean): If true, the command is undoable.
     */
     
     SetPortDefaultValueCommand() 
       : BaseDFGCommand()
     {
-    	BaseScriptableCommand::declareArg(
+    	declareArg(
         "execPath",
-        false,
-        ".");
+        "String",
+        false);
 
-      BaseScriptableCommand::declareArg(
+      declareArg(
         "portName",
-        false,
-        "");
+        "String",
+        false);
 
-     	BaseScriptableCommand::declareArg(
+     	declareArg(
         "portValue",
-        false,
-        "");
+        false);
+
+      FabricCore::Client client = 
+        Commands::CommandManager::GetCommandManager()->getFabricClient();
+                
+      declareArg( 
+        "isUndoable",
+        "Boolean",
+        true,
+        FabricCore::RTVal::ConstructBoolean(
+          client,
+          true)
+        );
     }
 
     virtual ~SetPortDefaultValueCommand() 
     {
+    }
+
+    /// Implementation of BaseCommand.
+    bool canUndo()
+    {
+      return getArgAsRTVal(
+        "isUndoable"
+        ).getBoolean();
     }
  
     /// Implementation of BaseCommand.
@@ -50,40 +70,42 @@ class SetPortDefaultValueCommand : public BaseDFGCommand
     {
       try 
       {
-        FabricCore::Client client = Commands::CommandManager::GetCommandManager()->getFabricClient();
-        
-        QString execPath = Util::RTValUtil::jsonToRTVal(
-          client,
-          getArg("execPath"),
-          "String"
+        QString execPath = getArgAsRTVal(
+          "execPath"
+          ).getStringCString();
+
+        QString portName = getArgAsRTVal(
+          "portName"
           ).getStringCString();
 
         FabricCore::DFGExec subExec = m_dfgController->getExec().getSubExec(
-          execPath.toUtf8().constData());
+          execPath.toUtf8().constData()
+          );
         
-        QString portName = Util::RTValUtil::jsonToRTVal(
-          client,
-          getArg("portName"),
-          "String"
-          ).getStringCString();
+        // Sets the type of the arg here because 
+        // we did not know the RTVal type before.
+        setArgType(
+          "portValue", 
+          subExec.getPortTypeSpec(
+            portName.toUtf8().constData()
+          ));
 
-        QString portType = subExec.getPortTypeSpec(
-          portName.toUtf8().constData()
+        FabricCore::RTVal portVal = getArgAsRTVal(
+          "portValue"
           );
-        
-        FabricCore::RTVal portVal = Util::RTValUtil::jsonToRTVal(
-          client,
-          getArg("portValue"),
-          portType
-          );
- 
+
+        bool isUndoable = getArgAsRTVal(
+          "isUndoable"
+          ).getBoolean();
+  
         subExec.setPortDefaultValue( 
         	portName.toUtf8().constData(), 
         	portVal, 
-        	true
+        	isUndoable
           );
 
-    		++m_coreCmdCount;
+        if(isUndoable)
+    		  ++m_coreCmdCount;
 
         return true;
       }
@@ -107,6 +129,7 @@ class SetPortDefaultValueCommand : public BaseDFGCommand
       help +=  "- execPath (String): Path of the DFGExec.\n";
       help +=  "- portName (String): Name of the port.\n";
       help +=  "- portValue (RTVal): Value to set, must be of the same that the port type.";
+      help +=  "- isUndoable (Boolean): If true, the command is undoable.";
       return help;
     }
 };

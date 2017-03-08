@@ -8,6 +8,7 @@
 #include <FabricUI/Viewports/QtToKLEvent.h>
 #include <map>
 #include <iostream>
+#include <FabricUI/Commands/CommandManager.h>
 
 using namespace FabricUI::Viewports;
 
@@ -128,7 +129,14 @@ bool ManipulationTool::onEvent(QEvent *event) {
       // Invoke the event...
       m_eventDispatcher.callMethod("Boolean", "onEvent", 1, &klevent);
       bool result = klevent.callMethod("Boolean", "isAccepted", 0, 0).getBoolean();
-      if(result) event->accept();
+      if(result) 
+      {
+        event->accept();
+        Commands::CommandManager::GetCommandManager()->synchronizeKL();
+      }
+
+      if (event->type() == QEvent::MouseButtonRelease)
+        Commands::CommandManager::GetCommandManager()->synchronizeKL();
 
       FabricCore::RTVal host = klevent.maybeGetMember("host");
       if(host.maybeGetMember("redrawRequested").getBoolean())
