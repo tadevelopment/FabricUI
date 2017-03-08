@@ -498,6 +498,22 @@ public:
   inline bool hasNoResults() const { return rowCount() == 0; }
   inline bool hasSingleResult() const { return hasNoResults() ? false : isPreset( index( 0, 0 ) ); }
   inline bool hasSeveralResults() const { return !hasNoResults() && !hasSingleResult(); }
+
+  inline QModelIndex getFirstPreset() const
+  {
+    assert( rowCount() > 0 );
+    QModelIndex item = this->index( 0, 0 );
+    if( isPreset( item ) )
+      return item;
+    while( rowCount( item ) > 0 )
+    {
+      item = this->index( 0, 0, item );
+      if( isPreset( item ) )
+        return item;
+    }
+    assert( false );
+    return QModelIndex();
+  }
 };
 
 ResultsView::ResultsView()
@@ -570,12 +586,10 @@ void ResultsView::setResults( const std::string& searchResult, const Query& quer
   this->expandAll();
 
   replaceViewItems();
-  if( m_model->rowCount() > 0 )
-  {
-    const QModelIndex& firstEntry = m_model->index( 0, 0 );
-    if( m_model->isPreset( firstEntry ) )
-      this->setCurrentIndex( firstEntry );
-  }
+
+  // Select the first result
+  if( !m_model->hasNoResults() )
+    this->setCurrentIndex( m_model->getFirstPreset() );
   else
     emit presetDeselected();
 }
