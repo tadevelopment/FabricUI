@@ -205,6 +205,8 @@ class CommandManager : public QObject
     FabricCore::RTVal m_klCmdManager;
     /// Fabric client.
     FabricCore::Client m_client;
+    /// Number of KLCommand (KLScriptableCommand)
+    /// added, use to compare wit the KL manager.
     unsigned int m_klCmdUndoStackCount;
     /// CommandManager singleton, set from Constructor.
     static CommandManager *s_cmdManager;

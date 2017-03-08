@@ -287,6 +287,7 @@ void CommandManager::clear()
   }
 
   // Clear our-self
+  m_klCmdUndoStackCount = 0;
   clearRedoStack();
   clearCommandStack(m_undoStack);
 }
