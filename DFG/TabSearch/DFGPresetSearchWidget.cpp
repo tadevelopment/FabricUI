@@ -148,7 +148,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
     requiredTags.size(),
     requiredTags.data(),
     0,
-    8
+    16
   );
   FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
 
