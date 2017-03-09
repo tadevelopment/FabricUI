@@ -16,7 +16,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 
   QVBoxLayout* vlayout = new QVBoxLayout();
 
-  m_queryEdit = new TabSearch::QueryEdit();
+  m_queryEdit = new TabSearch::QueryEdit( m_host );
   m_queryEdit->setMinimumWidth( 800 );
   this->setMinimumHeight( 600 );
   vlayout->addWidget( m_queryEdit );
@@ -106,29 +106,8 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   // Splitting the search string into a char**
   const std::string searchStr = query.getText();
 
-  std::vector<std::string> searchTermsStr;
-  unsigned int start = 0;
-  for( unsigned int end = 0; end < searchStr.size(); end++ )
-  {
-    const char c = searchStr[end];
-    if( c == '.' || c == ' ' ) // delimiters
-    {
-      if( end - start > 0 )
-        searchTermsStr.push_back( searchStr.substr( start, end - start ) );
-      start = end + 1;
-    }
-  }
-  if( start < searchStr.size() )
-    searchTermsStr.push_back( searchStr.substr( start, searchStr.size() - start ) );
-
+  std::vector<std::string> searchTermsStr = query.getSplitText();
   std::vector<char const*> searchTerms( searchTermsStr.size() );
-
-  // Debug : TODO remove
-  /*
-  for( unsigned int i = 0; i < searchTermsStr.size(); i++ )
-    std::cout << "\"" << searchTermsStr[i] << "\" ";
-  std::cout << std::endl;
-  */
 
   for( unsigned int i = 0; i < searchTermsStr.size(); i++ )
     searchTerms[i] = searchTermsStr[i].data();
