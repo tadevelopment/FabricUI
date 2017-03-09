@@ -34,10 +34,10 @@ QSize HeatBar::sizeHint() const
 QColor Interpolate( const QColor& a, const QColor&b, qreal v )
 {
   return QColor(
-    ( 1 - v ) * a.red() + v * b.red(),
-    ( 1 - v ) * a.green() + v * b.green(),
-    ( 1 - v ) * a.blue() + v * b.blue(),
-    ( 1 - v ) * a.alpha() + v * b.alpha()
+    int( ( 1 - v ) * a.red() + v * b.red() ),
+    int( ( 1 - v ) * a.green() + v * b.green() ),
+    int( ( 1 - v ) * a.blue() + v * b.blue() ),
+    int( ( 1 - v ) * a.alpha() + v * b.alpha() )
   );
 }
 
@@ -81,7 +81,7 @@ void HeatBar::paintEvent( QPaintEvent *event )
       qreal leftX = r.left() + barI * ( barW + spacingW );
       qreal rightX = leftX + barW;
       QRect barR = r;
-      barR.setLeft( leftX ); barR.setRight( rightX );
+      barR.setLeft( int( leftX ) ); barR.setRight( int( rightX ) );
       if( !smooth() )
         p.fillRect( barR, interpolateColor( ( leftX + rightX ) / ( 2 * r.width() ) ) );
       else

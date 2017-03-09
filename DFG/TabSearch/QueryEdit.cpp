@@ -245,9 +245,9 @@ private:
 };
 
 QueryEdit::QueryEdit( FabricCore::DFGHost* host )
-  : m_highlightedTag( NoHighlight )
+  : m_host( host )
+  , m_highlightedTag( NoHighlight )
   , m_controller( new QueryController( m_query ) )
-  , m_host( host )
 {
   QFont font; font.setPointSize( 16 );
   this->setFont( font );
@@ -320,11 +320,11 @@ void Query::removeTag( const std::string& tag )
     assert( false );
 }
 
-std::vector<std::pair<size_t, size_t>> Query::getSplitTextIndices() const
+std::vector< std::pair<size_t, size_t> > Query::getSplitTextIndices() const
 {
   const std::string& searchStr = getText();
   size_t start = 0;
-  std::vector<std::pair<size_t, size_t>> dst;
+  std::vector< std::pair<size_t, size_t> > dst;
   for( unsigned int end = 0; end < searchStr.size(); end++ )
   {
     const char c = searchStr[end];
@@ -344,7 +344,7 @@ std::vector<std::string> Query::getSplitText() const
 {
   const std::string& searchStr = getText();
   std::vector<std::string> searchTermsStr;
-  std::vector<std::pair<size_t, size_t>> indices = getSplitTextIndices();
+  std::vector< std::pair<size_t, size_t> > indices = getSplitTextIndices();
   for( size_t i = 0; i < indices.size(); i++ )
   {
     size_t start = indices[i].first, end = indices[i].second;
@@ -361,7 +361,7 @@ void QueryEdit::onTextChanged( const QString& text )
 
 void QueryEdit::convertTextToTags()
 {
-  std::vector<std::pair<size_t, size_t>> indices = m_query.getSplitTextIndices();
+  std::vector< std::pair<size_t, size_t> > indices = m_query.getSplitTextIndices();
   std::string previousText = m_query.getText(), newText = "";
   size_t offset = 0;
   for( size_t i = 0; i < indices.size(); i++ )
@@ -485,7 +485,7 @@ void QueryEdit::updateTagDBFromHost()
   FTL::JSONObject* dbO = db->cast<FTL::JSONObject>();
   for( FTL::JSONObject::const_iterator it = dbO->begin(); it != dbO->end(); it++ )
   {
-    Query::Tag tag = it->first;
+    Query::Tag tag = std::string( it->first );
     Query::Tag::Cat cat = tag.cat();
     if( m_tagDB.find( cat ) == m_tagDB.end() )
       m_tagDB.insert( TagDB::value_type( cat, std::set<Query::Tag>() ) );

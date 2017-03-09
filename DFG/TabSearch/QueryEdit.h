@@ -38,7 +38,7 @@ namespace FabricUI
         inline const std::string& getText() const { return m_text; }
         inline const Tags& getTags() const { return m_orderedTags; }
         inline bool hasTag( const std::string& tag ) const { return m_tagMap.find( tag ) != m_tagMap.end(); }
-        std::vector<std::pair<size_t,size_t>> getSplitTextIndices() const;
+        std::vector< std::pair<size_t,size_t> > getSplitTextIndices() const;
         std::vector<std::string> getSplitText() const;
 
       public slots:
@@ -124,7 +124,7 @@ namespace FabricUI
 
         FabricCore::DFGHost* m_host;
         void updateTagDBFromHost();
-        typedef std::map<Query::Tag::Cat, std::set<Query::Tag>> TagDB;
+        typedef std::map< Query::Tag::Cat, std::set<Query::Tag> > TagDB;
         TagDB m_tagDB;
         void convertTextToTags();
 
