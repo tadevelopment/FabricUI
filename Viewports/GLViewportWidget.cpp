@@ -182,6 +182,9 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
       //   m_viewport.callMethod("", "setupLicensingOverlay", 0, 0);
     }
 
+    // Proto tool setup
+    FabricCore::RTVal::Create( m_client, "RenderEngineInlineDrawingSetup", 0, 0 );
+
     m_camera = m_viewport.maybeGetMember("camera");
     m_cameraManipulator = FabricCore::RTVal::Create(m_client, "CameraManipulator", 1, &m_camera);
 

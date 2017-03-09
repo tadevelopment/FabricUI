@@ -61,15 +61,16 @@ ManipulationTool::~ManipulationTool()
 void ManipulationTool::toolOnSetup() {
   try
   {
-    // Proto tool setup
-    FabricCore::RTVal::Create( m_view->getClient(), "RenderEngineInlineDrawingSetup", 0, 0 );
-
-    FabricCore::RTVal eventDispatcherHandle = FabricCore::RTVal::Create(m_view->getClient(), "EventDispatcherHandle", 0, 0);
-    if(eventDispatcherHandle.isValid())
+    if(!m_eventDispatcher.isValid())
     {
-      m_eventDispatcher = eventDispatcherHandle.callMethod("EventDispatcher", "getEventDispatcher", 0, 0);
-      if(m_eventDispatcher.isValid())  m_eventDispatcher.callMethod("", "activateManipulation", 0, 0);
+
+      FabricCore::RTVal eventDispatcherHandle = FabricCore::RTVal::Create(m_view->getClient(), "EventDispatcherHandle", 0, 0);
+      if(eventDispatcherHandle.isValid())
+      {
+        m_eventDispatcher = eventDispatcherHandle.callMethod("EventDispatcher", "getEventDispatcher", 0, 0);
+      }
     }
+    if(m_eventDispatcher.isValid())  m_eventDispatcher.callMethod("", "activateManipulation", 0, 0);
   }
   catch(FabricCore::Exception e)
   {
@@ -103,7 +104,7 @@ void ManipulationTool::toolOffCleanup() {
   m_active = false;
   m_view->setMouseTracking(false);
   m_view->updateGL();
-  m_eventDispatcher = FabricCore::RTVal();
+  //m_eventDispatcher = FabricCore::RTVal();
 }
 
 bool ManipulationEventFilterObject::eventFilter(QObject *object, QEvent *event) {

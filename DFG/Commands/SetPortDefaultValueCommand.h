@@ -17,7 +17,7 @@ class SetPortDefaultValueCommand : public BaseDFGCommand
       SetPortDefaultValueCommand sets the value of a DFG port.
 
       Args:
-      - execPath (String): Path of the DFGExec.
+      - execPath (String): Absolute path of the DFGExec.
       - portName (String): Name of the port.
       - portValue (RTVal): Value to set, must be of the same that the port type.
       - isUndoable (Boolean): If true, the command is undoable.
@@ -78,7 +78,7 @@ class SetPortDefaultValueCommand : public BaseDFGCommand
           "portName"
           ).getStringCString();
 
-        FabricCore::DFGExec subExec = m_dfgController->getExec().getSubExec(
+        FabricCore::DFGExec subExec = m_dfgController->getBinding().getExec().getSubExec(
           execPath.toUtf8().constData()
           );
         
@@ -126,7 +126,7 @@ class SetPortDefaultValueCommand : public BaseDFGCommand
       QString help;
       help +=  "Sets the value of a DFG port.\n";
       help +=  "Arguments:\n";
-      help +=  "- execPath (String): Path of the DFGExec.\n";
+      help +=  "- execPath (String): Absolute path of the DFGExec.\n";
       help +=  "- portName (String): Name of the port.\n";
       help +=  "- portValue (RTVal): Value to set, must be of the same that the port type.";
       help +=  "- isUndoable (Boolean): If true, the command is undoable.";
