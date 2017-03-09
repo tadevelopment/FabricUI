@@ -370,7 +370,8 @@ void QueryEdit::convertTextToTags()
     const std::string text = previousText.substr( start, end - start );
 
     bool isTag = false;
-    if( text.find( ':' ) != std::string::npos )
+    if( text.find( ':' ) != std::string::npos
+      && end != previousText.size() ) // Ignore tags while they are being written
     {
       Query::Tag tag = text;
       if( m_tagDB.find( tag.cat() ) != m_tagDB.end() )
