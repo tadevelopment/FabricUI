@@ -246,6 +246,7 @@ private:
 
 QueryEdit::QueryEdit( FabricCore::DFGHost* host )
   : m_host( host )
+  , m_tagDBWInitialized( false )
   , m_highlightedTag( NoHighlight )
   , m_controller( new QueryController( m_query ) )
 {
@@ -361,6 +362,12 @@ void QueryEdit::onTextChanged( const QString& text )
 
 void QueryEdit::convertTextToTags()
 {
+  if( !m_tagDBWInitialized )
+  {
+    updateTagDBFromHost();
+    m_tagDBWInitialized = true;
+  }
+
   std::vector< std::pair<size_t, size_t> > indices = m_query.getSplitTextIndices();
   std::string previousText = m_query.getText(), newText = "";
   size_t offset = 0;
@@ -479,6 +486,9 @@ void QueryEdit::onQueryChanged()
 
 void QueryEdit::updateTagDBFromHost()
 {
+  if( !m_host->isValid() )
+    return;
+
   FabricCore::String dbStrR = m_host->dumpPresetSearchDB();
   std::string dbStr( dbStrR.getCStr(), dbStrR.getSize() );
   FTL::JSONValue* db = FTL::JSONValue::Decode( dbStr.c_str() );
@@ -492,4 +502,6 @@ void QueryEdit::updateTagDBFromHost()
     m_tagDB[cat].insert( tag );
   }
   delete db;
+
+  m_tagDBWInitialized = true;
 }

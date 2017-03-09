@@ -123,6 +123,7 @@ namespace FabricUI
         TextEdit* m_textEdit;
 
         FabricCore::DFGHost* m_host;
+        bool m_tagDBWInitialized;
         void updateTagDBFromHost();
         typedef std::map< Query::Tag::Cat, std::set<Query::Tag> > TagDB;
         TagDB m_tagDB;
