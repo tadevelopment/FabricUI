@@ -27,6 +27,7 @@ namespace FabricUI
         ResultsView();
         ~ResultsView();
         void keyPressEvent( QKeyEvent * ) FTL_OVERRIDE;
+        QSize sizeHint() const FTL_OVERRIDE;
 
       static void UnitTest( const std::string& logFolder = "./" );
 

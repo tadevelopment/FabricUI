@@ -18,7 +18,6 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 
   m_queryEdit = new TabSearch::QueryEdit( m_host );
   m_queryEdit->setMinimumWidth( 800 );
-  this->setMinimumHeight( 600 );
   vlayout->addWidget( m_queryEdit );
   connect(
     m_queryEdit, SIGNAL( queryChanged( const TabSearch::Query& ) ),
@@ -133,6 +132,12 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 
   hidePreview();
   m_resultsView->setResults( jsonStrR, query );
+
+  { // HACK
+    m_resultsView->setMinimumHeight( m_resultsView->sizeHint().height() );
+    adjustSize();
+    adjustSize();
+  }
 }
 
 void DFGPresetSearchWidget::validateSelection()
