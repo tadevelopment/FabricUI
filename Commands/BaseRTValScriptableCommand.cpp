@@ -37,7 +37,7 @@ void BaseRTValScriptableCommand::declareArg(
   const QString &key, 
   const QString &type,
   bool optional, 
-  RTVal &defaultValue) 
+  RTVal defaultValue) 
 {
   Client client = 
     Commands::CommandManager::GetCommandManager()->getFabricClient();

@@ -60,7 +60,8 @@ void BaseScriptableCommand::setArg(
     // TODO: make this an optional behavior
     throw(
       std::string(
-        "BaseScriptableCommand::setArg, error setting arg: '" + std::string(key.toUtf8().constData()) + "' not supported by this command"
+        "BaseScriptableCommand::setArg, error setting arg: '" + 
+        std::string(key.toUtf8().constData()) + "' not supported by this command"
       )
     );
 
@@ -87,7 +88,8 @@ void BaseScriptableCommand::validateSetArgs()
       if(arg.isEmpty())//is null
        throw(
         std::string(
-          "BaseScriptableCommand::validateSetArgs, error validating arg: '" + std::string(key.toUtf8().constData()) + "' has not been set"
+          "BaseScriptableCommand::validateSetArgs, error validating arg: '" + 
+          std::string(key.toUtf8().constData()) + "' has not been set"
         )
       );
     }

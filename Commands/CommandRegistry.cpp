@@ -121,7 +121,8 @@ BaseCommand* CommandRegistry::createCommand(
     throw( 
       std::string(
         QString(
-          "CommandRegistry::createCommand, cannot create command, '" + cmdName + "' is not registered"
+          "CommandRegistry::createCommand, cannot create command, '" + 
+          cmdName + "' is not registered"
         ).toUtf8().constData() 
       )
     );

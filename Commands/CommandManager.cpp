@@ -115,7 +115,9 @@ BaseCommand* CommandManager::createCommand(
   catch(std::string &e) {
     throw(
       std::string(
-        QString("Cannot create command '" + cmdName + "', " + QString(e.c_str())).toUtf8().constData()
+        QString("Cannot create command '" + 
+        cmdName + "', " + 
+        QString(e.c_str())).toUtf8().constData()
       )
     );
   }
@@ -129,7 +131,8 @@ void CommandManager::doCommand(
   if(!cmd) 
     throw(std::string("CommandManager::doCommand, Command is null"));
  
-  bool subCmd = m_undoStack.size() != 0 && !m_undoStack[m_undoStack.size() - 1].succeeded;
+  bool subCmd = m_undoStack.size() != 0 && 
+                !m_undoStack[m_undoStack.size() - 1].succeeded;
   
   if(cmd->canUndo() && !subCmd) 
   {
@@ -148,7 +151,8 @@ void CommandManager::doCommand(
     throw(
       std::string(
         QString(
-          "CommandManager::doCommand, error doing command '" + cmdForErrorLog + "'"
+          "CommandManager::doCommand, error doing command '" + 
+          cmdForErrorLog + "'"
         ).toUtf8().constData() 
      )
    );
@@ -318,7 +322,7 @@ void CommandManager::synchronizeKL()
 {
   // Get the number of KL commands 
   // in the KL manager undo stack
-  int klCmdCount = 0;
+  unsigned int klCmdCount = 0;
   try
   {
     klCmdCount = m_klCmdManager.callMethod(
@@ -355,7 +359,7 @@ void CommandManager::synchronizeKL()
   {
     unsigned int klCmdUndoStackCount = m_klCmdUndoStackCount;
 
-    for(int i=klCmdUndoStackCount; i<klCmdCount; ++i)
+    for(unsigned int i=klCmdUndoStackCount; i<klCmdCount; ++i)
     {
       RTVal cmdIndex = RTVal::ConstructUInt32(
         m_client, 
@@ -459,8 +463,11 @@ QString CommandManager::getContent()
 {
   QString res = 
     QString(
-      "--> Command Manager - size:"+ QString::number(count()) + ", index:" + QString::number(getStackIndex()) + 
-      ", undo:"+  QString::number(m_undoStack.size()) +  ", redo:" + QString::number(m_redoStack.size()) + "\n"
+      "--> Command Manager - size:"+ QString::number(count()) + 
+      ", index:" + QString::number(getStackIndex()) + 
+      ", undo:"+  QString::number(m_undoStack.size()) +  
+      ", redo:" + QString::number(m_redoStack.size()) + 
+      "\n"
     );
   res += getStackContent("Undo", m_undoStack);
   res += getStackContent("Redo", m_redoStack);
@@ -499,7 +506,8 @@ void CommandManager::checkCommandArgs(
       throw(
         std::string(
           QString(
-            "CommandManager::checkCommandArgs, command '" + cmd->getName() + "' is created with args, but is not implementing the ScriptableCommand interface"
+            "CommandManager::checkCommandArgs, command '" + cmd->getName() + 
+            "' is created with args, but is not implementing the ScriptableCommand interface"
           ).toUtf8().constData() 
         )
       );

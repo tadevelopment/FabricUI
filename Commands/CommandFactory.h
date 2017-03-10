@@ -21,7 +21,7 @@ class BaseCommandFactory
 
     The userData argument is void pointer used to pass optional custom data 
     to the command. The data is referenced by the factory, and its passed to 
-    the command throught the BaseCommand::registrationCallback callback.
+    the command throught the BaseCommand::registrationCallback callback. 
   */
 
   public:

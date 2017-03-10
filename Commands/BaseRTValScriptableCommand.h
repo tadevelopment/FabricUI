@@ -38,7 +38,7 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
       const QString &key, 
       const QString &type,
       bool optional, 
-      FabricCore::RTVal &defaultValue
+      FabricCore::RTVal defaultValue
       );
 
     /// Sets the type of an argument.
