@@ -1731,6 +1731,11 @@ FabricUI--DFG--TabSearch--ResultsView #TagsView[highlighted="true"]
   background-color: #666666;
 }
 
+FabricUI--DFG--TabSearch--ResultsView #TagsView QPushButton
+{
+  border-style: inset;
+}
+
 FabricUI--DFG--TabSearch--ResultsView::item
 {
   border-radius: 4px;
