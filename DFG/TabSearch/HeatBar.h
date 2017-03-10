@@ -3,7 +3,7 @@
 //
 
 #include <QFrame>
-
+#include <FTL/Config.h>
 #include <algorithm>
 #include <math.h>
 
@@ -84,7 +84,7 @@ public:
     update();
   }
 
-  virtual QSize sizeHint() const;
+  QSize minimumSizeHint() const FTL_OVERRIDE;
 
 protected:
 

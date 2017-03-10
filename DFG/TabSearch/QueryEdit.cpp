@@ -250,9 +250,6 @@ QueryEdit::QueryEdit( FabricCore::DFGHost* host )
   , m_highlightedTag( NoHighlight )
   , m_controller( new QueryController( m_query ) )
 {
-  QFont font; font.setPointSize( 16 );
-  this->setFont( font );
-
   QHBoxLayout* m_layout = new QHBoxLayout();
   this->setLayout( m_layout );
 

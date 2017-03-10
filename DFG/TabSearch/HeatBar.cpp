@@ -22,13 +22,13 @@ HeatBar::HeatBar( QWidget *parent )
   , m_spacing( 0.4 )
 {
   this->setAutoFillBackground( true );
-  setFrameStyle( QFrame::StyledPanel | QFrame::Plain );
+  setFrameStyle( QFrame::Plain );
   setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
 }
 
-QSize HeatBar::sizeHint() const
+QSize HeatBar::minimumSizeHint() const
 {
-  return QSize( 48, 12 );
+  return QSize( 128, 20 );
 }
 
 QColor Interpolate( const QColor& a, const QColor&b, qreal v )
@@ -51,7 +51,7 @@ QColor HeatBar::interpolateColor( const qreal percentage ) const
 
 void HeatBar::paintEvent( QPaintEvent *event )
 {
-  const QRect r = rect();
+  const QRect r = contentsRect();
   QPainter p( this );
   if( this->nbBars() <= 1 )
   {
