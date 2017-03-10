@@ -66,6 +66,7 @@ class CommandManagerQtCallback(QtCore.QObject):
         self.qUndoStack = qUndoStack
         self.scriptEditor = scriptEditor
         GetCommandManager().commandPushedCallback.connect(self.__onCommandPushed)
+        GetCommandManager().cleared.connect(self.__onCleared)
 
     def __onCommandPushed(self, cmd, isLowCmd):
         """ \internal
@@ -87,3 +88,9 @@ class CommandManagerQtCallback(QtCore.QObject):
             else:
                 self.scriptEditor.logText( cmd.getName() )
 
+    def __onCleared(self):
+        """ \internal
+            Called when the manager is cleared. 
+        """
+        
+        self.qUndoStack.clear()

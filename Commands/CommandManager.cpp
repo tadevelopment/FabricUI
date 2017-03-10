@@ -290,6 +290,8 @@ void CommandManager::clear()
   m_klCmdUndoStackCount = 0;
   clearRedoStack();
   clearCommandStack(m_undoStack);
+
+  emit cleared();
 }
 
 int CommandManager::count()

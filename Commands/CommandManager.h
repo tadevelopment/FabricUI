@@ -128,6 +128,9 @@ class CommandManager : public QObject
       bool isLowCmd
       );
 
+    /// Emitted when the manager is cleared.
+    void cleared();
+
   protected slots:
     /// Called when a command has been registered,
     /// needed by the python implementation.
