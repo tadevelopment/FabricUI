@@ -862,7 +862,7 @@ namespace DFG {
       void onTriggered()
       {
         DFGController *UIController = m_dfgWidget->getDFGController();        
-        FabricCore::DFGExec &exec  = UIController->getExec().getSubExec(m_node->name().c_str());
+        FabricCore::DFGExec exec  = UIController->getExec().getSubExec(m_node->name().c_str());
         UIController->getCmdHandler()->dfgDoSplitFromPreset(UIController->getBinding(), m_node->name_QS(), exec);
       }
 
