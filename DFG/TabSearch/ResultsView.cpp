@@ -11,12 +11,22 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+#include <set>
 #include <assert.h>
 
 using namespace FabricUI::DFG::TabSearch;
 
 struct JSONSerializable
 {
+  std::string toEncodedJSON() const
+  {
+    FTL::JSONValue* json = this->toJSON();
+    std::string dst = json->encode();
+    delete json;
+    return dst;
+  }
+
+protected:
   virtual FTL::JSONValue* toJSON() const = 0;
   virtual ~JSONSerializable() {}
 };
@@ -73,57 +83,65 @@ struct Tags : public std::vector<Tag>, public JSONSerializable
 
 // Variant : can be either a Preset, or T
 template<typename T>
-class PresetOr : JSONSerializable
+class PresetAnd : JSONSerializable
 {
-  enum Type { UNDEFINED, PRESET, OTHER } type;
+  bool m_hasPreset, m_hasOther;
   Preset preset;
   T other;
 
 public:
-  PresetOr() : type( UNDEFINED ) {}
-  PresetOr( const Preset& p )
-    : type( PRESET ), preset( p )
-  {}
-  PresetOr( const T& o )
-    : type( OTHER ), other( o )
-  {}
+  PresetAnd() : m_hasPreset( false ), m_hasOther( false ) {}
+  void setPreset( const Preset& p )
+  {
+    m_hasPreset = true;
+    this->preset = p;
+  }
+  void setOther( const T& o )
+  {
+    m_hasOther = true;
+    this->other = o;
+  }
   template<typename T2>
   void assign( const T2& o )
   {
-    this->type = o.type;
+    m_hasPreset = o.m_hasPreset;
+    m_hasOther = o.m_hasOther;
     this->preset = o.preset;
     this->other = o.other;
   }
-  inline bool isUndefined() const { return type == UNDEFINED; }
-  inline bool isPreset() const { return type == PRESET; }
-  inline bool isOther() const { return type == OTHER; }
+  inline bool isUndefined() const { return !m_hasPreset && !m_hasOther; }
+  inline bool isPreset() const { return m_hasPreset; }
+  inline bool isOther() const { return !m_hasPreset && m_hasOther; }
+  inline bool hasOther() const { return m_hasOther; }
   inline Preset& getPreset()
   {
-    assert( type == PRESET );
+    assert( isPreset() );
     return preset;
   }
   inline const Preset& getPreset() const
   {
-    assert( type == PRESET );
+    assert( isPreset() );
     return preset;
   }
   inline T& getOther()
   {
-    assert( type == OTHER );
+    assert( hasOther() );
     return other;
   }
   inline const T& getOther() const
   {
-    assert( type == OTHER );
+    assert( hasOther() );
     return other;
   }
   FTL::JSONValue* toJSON() const FTL_OVERRIDE
   {
-    if( type == UNDEFINED )
-      return new FTL::JSONString( "undefined" );
     FTL::JSONObject* obj = new FTL::JSONObject();
     obj->insert( "isPreset", new FTL::JSONBoolean( this->isPreset() ) );
-    obj->insert( "value", ( isPreset() ? getPreset().toJSON() : getOther().toJSON() ) );
+    obj->insert( "hasOther", new FTL::JSONBoolean( this->hasOther() ) );
+    if( isPreset() )
+      obj->insert( "preset", getPreset().toJSON() );
+    if( hasOther() )
+      obj->insert( "other", getOther().toJSON() );
     return obj;
   }
 };
@@ -135,14 +153,6 @@ struct Node : JSONSerializable
   T value;
   typedef std::vector<Node> Children;
   Children children;
-
-  std::string toEncodedJSON() const
-  {
-    FTL::JSONValue* json = this->toJSON();
-    std::string dst = json->encode();
-    delete json;
-    return dst;
-  }
 
 protected:
   // Utilitary method to convert a Tree to another
@@ -169,59 +179,71 @@ protected:
 typedef std::map<std::string, size_t> Indexes;
 struct TagAndMap : JSONSerializable
 {
-  Tag tag;
+private:
+  Tag m_tag;
+  bool m_hasTag;
+public:
   // Map from the name of to the index of a child
   Indexes tagIndexes;
+  TagAndMap() : m_hasTag( false ) {}
+  void setTag( const Tag& tag ) { m_hasTag = true; m_tag = tag; }
+  inline const Tag& getTag() const { assert( m_hasTag ); return m_tag; }
+  inline const bool hasTag() const { return m_hasTag; }
   FTL::JSONValue* toJSON() const FTL_OVERRIDE
   {
     // TODO
-    return tag.toJSON();
+    return m_tag.toJSON();
   }
 };
 
 // First step : Temporary tree used to gather results by Tag
-typedef Node< PresetOr< TagAndMap > > TmpNode;
+typedef Node< PresetAnd< TagAndMap > > TmpNode;
 TmpNode& AddTag( TmpNode& t, const Tag& tag )
 {
   const std::string& key = tag.name;
   if( t.value.isUndefined() )
-    t.value = TagAndMap();
+    t.value.setOther( TagAndMap() );
   Indexes& indexes = t.value.getOther().tagIndexes;
   if( indexes.find( key ) == indexes.end() )
   {
     // If this is a new tag, add it as a child
     indexes.insert( Indexes::value_type( key, t.children.size() ) );
-    TagAndMap tam; tam.tag = tag;
-    TmpNode newItem; newItem.value = tam;
+    TagAndMap tam; tam.setTag( tag );
+    TmpNode newItem; newItem.value.setOther( tam );
     t.children.push_back( newItem );
   }
   return t.children[indexes[key]];
 }
 
 // Second step : Reducing the tree by fusioning consecutive nodes
-struct ReducedNode : Node< PresetOr< Tags > >
+struct ReducedNode : Node< PresetAnd< Tags > >
 {
   ReducedNode( const TmpNode& tmpTI )
   {
     if( !tmpTI.value.isPreset() )
     {
       const TmpNode* n = &tmpTI;
-      if( this->value.isUndefined() )
-        this->value = Tags();
-      this->value.getOther() += n->value.getOther().tag;
+      if( n->value.hasOther() && n->value.getOther().hasTag() )
+      {
+        this->value.setOther( Tags() );
+        this->value.getOther() += n->value.getOther().getTag();
+      }
       // If there is a chain of items (Tag or Preset) with
       // only one child, merge them into a single Item
       while( n->children.size() == 1 )
       {
         n = &n->children[0];
-        if( !n->value.isPreset() )
-          this->value.getOther() += n->value.getOther().tag;
+        if( n->value.hasOther() && n->value.getOther().hasTag() )
+        {
+          if( !this->value.isOther() )
+            this->value.setOther( Tags() );
+          this->value.getOther() += n->value.getOther().getTag();
+        }
       }
-      // If the child is a preset : override all the tags by
-      // that single preset
+
       if( n->value.isPreset() )
-        value = PresetOr<Tags>( n->value .getPreset() );
-      else
+        value.setPreset( n->value.getPreset() );
+
       {
         // otherwise, just add all its children
         for( std::vector<TmpNode>::const_iterator it = n->children.begin();
@@ -232,14 +254,14 @@ struct ReducedNode : Node< PresetOr< Tags > >
       }
     }
     else
-      value = PresetOr<Tags>( tmpTI.value.getPreset() );
+      value.setPreset( tmpTI.value.getPreset() );
   }
 };
 
 // Third and last step : this tree is the one
 // used by the Qt model
 struct ModelNode;
-struct ModelValue : PresetOr<Tags>
+struct ModelValue : PresetAnd<Tags>
 {
   // Pointers to the parents : this is required
   // by the QAbstractItemModel
@@ -271,7 +293,12 @@ void ComputeParents( ModelNode& item )
   }
 }
 
-TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore, double& maxPresetScore )
+TmpNode BuildResultTree(
+  const std::string& searchResult,
+  double& minPresetScore,
+  double& maxPresetScore,
+  const Query& query
+)
 {
   const FTL::JSONValue* json = FTL::JSONValue::Decode( searchResult.c_str() );
   const FTL::JSONObject* root = json->cast<FTL::JSONObject>();
@@ -279,6 +306,15 @@ TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore
   
   minPresetScore = std::numeric_limits<double>::max();
   maxPresetScore = std::numeric_limits<double>::min();
+
+  // Set of tags from the Query : no need to display them again
+  // since they must be in all the results
+  std::set<std::string> queryTags;
+  {
+    const Query::Tags& queryTagsVec = query.getTags();
+    for( size_t i = 0; i < queryTagsVec.size(); i++ )
+      queryTags.insert( queryTagsVec[i] );
+  }
 
   TmpNode rootNode;
   for( size_t i = 0; i < resultsJson->size(); i++ )
@@ -289,16 +325,19 @@ TmpNode BuildResultTree( const std::string& searchResult, double& minPresetScore
     for( size_t j = 0; j < tags->size(); j++ )
     {
       const FTL::JSONObject* tagO = tags->getObject( j );
+      const std::string tagName = tagO->getString( "tag" );
+      if( queryTags.find( tagName ) != queryTags.end() )
+        continue; // Ignore tags from the Query
       node = &AddTag( *node, Tag(
-        tagO->getString( "tag" ),
+        tagName,
         tagO->getFloat64( "weight" )
       ) );
     }
     double presetScore = result->getFloat64( 1 );
-    TmpNode newItem; newItem.value = Preset(
+    TmpNode newItem; newItem.value.setPreset( Preset(
       result->getString( 0 ),
       presetScore
-    );
+    ) );
     minPresetScore = std::min( minPresetScore, presetScore );
     maxPresetScore = std::max( maxPresetScore, presetScore );
     node->children.push_back( newItem );
@@ -375,9 +414,10 @@ void ResultsView::UnitTest( const std::string& logFolder )
   Test::Write( logFolder + "0_results.json", json );
 
   double minS, maxS;
-  TmpNode tmpNode = BuildResultTree( json, minS, maxS );
+  Query query;
+  TmpNode tmpNode = BuildResultTree( json, minS, maxS, query );
   size_t newCount = Test::LogTree( tmpNode, logFolder + "1_tmpNode.json" );
-  assert( newCount == originalCount );
+  originalCount = newCount;
 
   ReducedNode redNode = tmpNode;
   newCount = Test::LogTree( redNode, logFolder + "2_reduced.json" );
@@ -405,6 +445,9 @@ public:
 
   const Preset& getPreset( const QModelIndex& index ) const
   { return cast( index )->value.getPreset(); }
+
+  const bool hasTags( const QModelIndex& index ) const
+  { return cast( index )->value.hasOther(); }
 
   const Tags& getTags( const QModelIndex& index ) const
   { return cast( index )->value.getOther(); }
@@ -441,7 +484,7 @@ public:
     this->beginResetModel();
     // Performing the 3 steps here (by converting each type)
     ReducedNode node( root );
-    if( node.value.isOther() )
+    if( node.value.isUndefined() )
       this->root = node;
     else
     {
@@ -450,6 +493,26 @@ public:
     }
     ComputeParents( this->root );
     this->endResetModel();
+  }
+
+  inline bool hasNoResults() const { return rowCount() == 0; }
+  inline bool hasSingleResult() const { return hasNoResults() ? false : isPreset( index( 0, 0 ) ); }
+  inline bool hasSeveralResults() const { return !hasNoResults() && !hasSingleResult(); }
+
+  inline QModelIndex getFirstPreset() const
+  {
+    assert( rowCount() > 0 );
+    QModelIndex item = this->index( 0, 0 );
+    if( isPreset( item ) )
+      return item;
+    while( rowCount( item ) > 0 )
+    {
+      item = this->index( 0, 0, item );
+      if( isPreset( item ) )
+        return item;
+    }
+    assert( false );
+    return QModelIndex();
   }
 };
 
@@ -513,24 +576,22 @@ void ResultsView::onSelectionChanged()
     emit presetDeselected();
 }
 
-void ResultsView::setResults( const std::string& searchResult )
+void ResultsView::setResults( const std::string& searchResult, const Query& query )
 {
   // The ViewItems will become obsolete since ModelItems will be destroyed
   m_presetViewItems.clear();
   m_tagsViewItems.clear();
 
-  m_model->setRoot( BuildResultTree( searchResult, this->minPresetScore, this->maxPresetScore ) );
+  m_model->setRoot( BuildResultTree( searchResult, this->minPresetScore, this->maxPresetScore, query ) );
   this->expandAll();
 
   replaceViewItems();
-  if( m_model->rowCount() > 0 )
-  {
-    const QModelIndex& firstEntry = m_model->index( 0, 0 );
-    if( m_model->isPreset( firstEntry ) )
-      this->setCurrentIndex( firstEntry );
-  }
-  else
-    emit presetDeselected();
+
+  // Select the first result
+  if( !m_model->hasNoResults() )
+    this->setCurrentIndex( m_model->getFirstPreset() );
+  emit presetDeselected();
+  adjustSize();
 }
 
 QString ResultsView::getSelectedPreset()
@@ -542,6 +603,23 @@ QString ResultsView::getSelectedPreset()
 void ResultsView::keyPressEvent( QKeyEvent * event )
 {
   Parent::keyPressEvent( event );
+}
+
+QSize ResultsView::sizeHint() const
+{
+  QSize s = Parent::sizeHint();
+  int height = 0;
+  if( model()->rowCount() > 0 )
+  {
+    // Getting the last item
+    QModelIndex index = model()->index( model()->rowCount() - 1, 0 );
+    while( model()->rowCount( index ) > 0 )
+      index = model()->index( model()->rowCount( index ) - 1, 0, index );
+    height = visualRect( index ).bottom() + 1;
+    height += contentsMargins().bottom() + contentsMargins().top();
+  }
+  s.setHeight( std::max( height, 0 ) );
+  return s;
 }
 
 class ResultsView::TagsView : public QWidget
@@ -587,8 +665,20 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     if( m_model->isPreset( index ) )
     {
       const Preset& preset = m_model->getPreset( index );
-      PresetView* w = new PresetView( preset.name );
+      std::vector<std::string> tagNames;
+      if( m_model->hasTags( index )
+        && !m_model->hasSingleResult() ) // Don't show Tags if Single Result
+      {
+        const Tags& presetTags = m_model->getTags( index );
+        for( size_t i = 0; i < presetTags.size(); i++ )
+          tagNames.push_back( presetTags[i].name );
+      }
+      PresetView* w = new PresetView( preset.name, tagNames );
       w->setScore( preset.score, this->minPresetScore, this->maxPresetScore );
+      connect(
+        w, SIGNAL( requestTag( const std::string& ) ),
+        this, SIGNAL( tagRequested( const std::string& ) )
+      );
       m_presetViewItems.insert( std::pair<void*,PresetView*>( index.internalPointer(), w ) );
       widget = w;
     }

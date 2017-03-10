@@ -4,6 +4,7 @@
 
 #include "ItemView.h"
 
+#include <FTL/JSONValue.h>
 #include <qevent.h>
 #include <QLineEdit>
 #include <QLayout>
@@ -11,7 +12,6 @@
 #include <assert.h>
 
 using namespace FabricUI::DFG::TabSearch;
-
 
 struct QueryController::Action
 {
@@ -244,8 +244,10 @@ private:
   QueryEdit* m_parent;
 };
 
-QueryEdit::QueryEdit()
-  : m_highlightedTag( NoHighlight )
+QueryEdit::QueryEdit( FabricCore::DFGHost* host )
+  : m_host( host )
+  , m_tagDBWInitialized( false )
+  , m_highlightedTag( NoHighlight )
   , m_controller( new QueryController( m_query ) )
 {
   QFont font; font.setPointSize( 16 );
@@ -270,6 +272,7 @@ QueryEdit::QueryEdit()
   m_layout->setMargin( 0 );
   this->setFocusProxy( m_textEdit );
 
+  updateTagDBFromHost();
   onQueryChanged();
 }
 
@@ -318,9 +321,83 @@ void Query::removeTag( const std::string& tag )
     assert( false );
 }
 
+std::vector< std::pair<size_t, size_t> > Query::getSplitTextIndices() const
+{
+  const std::string& searchStr = getText();
+  size_t start = 0;
+  std::vector< std::pair<size_t, size_t> > dst;
+  for( unsigned int end = 0; end < searchStr.size(); end++ )
+  {
+    const char c = searchStr[end];
+    if( c == '.' || c == ' ' ) // delimiters
+    {
+      if( end - start > 0 )
+        dst.push_back( std::pair<size_t,size_t>( start, end ) );
+      start = end + 1;
+    }
+  }
+  if( start < searchStr.size() )
+    dst.push_back( std::pair<size_t,size_t>( start, searchStr.size() ) );
+  return dst;
+}
+
+std::vector<std::string> Query::getSplitText() const
+{
+  const std::string& searchStr = getText();
+  std::vector<std::string> searchTermsStr;
+  std::vector< std::pair<size_t, size_t> > indices = getSplitTextIndices();
+  for( size_t i = 0; i < indices.size(); i++ )
+  {
+    size_t start = indices[i].first, end = indices[i].second;
+    searchTermsStr.push_back( searchStr.substr( start, end - start ) );
+  }
+  return searchTermsStr;
+}
+
 void QueryEdit::onTextChanged( const QString& text )
 {
   m_controller->setText( text.toStdString() );
+  convertTextToTags();
+}
+
+void QueryEdit::convertTextToTags()
+{
+  if( !m_tagDBWInitialized )
+  {
+    updateTagDBFromHost();
+    m_tagDBWInitialized = true;
+  }
+
+  std::vector< std::pair<size_t, size_t> > indices = m_query.getSplitTextIndices();
+  std::string previousText = m_query.getText(), newText = "";
+  size_t offset = 0;
+  for( size_t i = 0; i < indices.size(); i++ )
+  {
+    size_t start = indices[i].first, end = indices[i].second;
+    const std::string text = previousText.substr( start, end - start );
+
+    bool isTag = false;
+    if( text.find( ':' ) != std::string::npos
+      && end != previousText.size() ) // Ignore tags while they are being written
+    {
+      Query::Tag tag = text;
+      if( m_tagDB.find( tag.cat() ) != m_tagDB.end() )
+      {
+        const std::set<Query::Tag>& catTags = m_tagDB[tag.cat()];
+        if( catTags.find( tag ) != catTags.end() && !m_query.hasTag( tag ) )
+        {
+          isTag = true;
+          m_controller->addTag( tag );
+        }
+      }
+    }
+    if( !isTag )
+      newText += previousText.substr( offset, end - offset );
+
+    offset = end;
+  }
+  newText += previousText.substr( offset, previousText.size() - offset );
+  m_controller->setText( newText );
 }
 
 void QueryEdit::requestTag( const std::string& tag )
@@ -405,4 +482,26 @@ void QueryEdit::onQueryChanged()
   updateTagsEdit();
   updateTagHighlight();
   emit queryChanged( m_query );
+}
+
+void QueryEdit::updateTagDBFromHost()
+{
+  if( !m_host->isValid() )
+    return;
+
+  FabricCore::String dbStrR = m_host->dumpPresetSearchDB();
+  std::string dbStr( dbStrR.getCStr(), dbStrR.getSize() );
+  FTL::JSONValue* db = FTL::JSONValue::Decode( dbStr.c_str() );
+  FTL::JSONObject* dbO = db->cast<FTL::JSONObject>();
+  for( FTL::JSONObject::const_iterator it = dbO->begin(); it != dbO->end(); it++ )
+  {
+    Query::Tag tag = std::string( it->first );
+    Query::Tag::Cat cat = tag.cat();
+    if( m_tagDB.find( cat ) == m_tagDB.end() )
+      m_tagDB.insert( TagDB::value_type( cat, std::set<Query::Tag>() ) );
+    m_tagDB[cat].insert( tag );
+  }
+  delete db;
+
+  m_tagDBWInitialized = true;
 }

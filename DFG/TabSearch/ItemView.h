@@ -49,14 +49,21 @@ namespace FabricUI
         Q_OBJECT
 
       public:
-        PresetView( const std::string& presetName );
+        PresetView(
+          const std::string& presetName,
+          const std::vector<std::string>& tags = std::vector<std::string>()
+        );
         void setScore( double score, double minScore = 0, double maxScore = 1 );
+
+      signals:
+        void requestTag( const std::string& tagName );
 
       public slots:
         void setHighlighted( bool highlighted );
 
       private:
-        
+        // TODO: Interaction
+        std::vector<TagView*> m_tagViews;
         HeatBar* m_heatBar;
       };
     }

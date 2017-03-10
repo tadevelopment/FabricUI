@@ -6,6 +6,7 @@
 #include <QTreeView>
 
 #include <FTL/Config.h>
+#include "QueryEdit.h"
 #include <map>
 
 namespace FabricUI
@@ -26,12 +27,13 @@ namespace FabricUI
         ResultsView();
         ~ResultsView();
         void keyPressEvent( QKeyEvent * ) FTL_OVERRIDE;
+        QSize sizeHint() const FTL_OVERRIDE;
 
       static void UnitTest( const std::string& logFolder = "./" );
 
       public slots:
         // Sets the result of Search, to be displayed
-        void setResults( const std::string& searchResult );
+        void setResults( const std::string& searchResult, const Query& query );
         // Tells that we accept the current selection (on Key_Enter, for example)
         void validateSelection();
         // Removes the current selection
