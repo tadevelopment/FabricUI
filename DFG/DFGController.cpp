@@ -99,8 +99,17 @@ void DFGController::setHostBindingExec(
 
   setBindingExec( binding, execPath, exec, execBlockName );
 
-  DFGCommandRegistrationCallback::RegisterCommands((void*)this);
-
+  // The new command system is used
+  // by canvas.py only, not canvas.exe
+  try
+  {
+    DFGCommandRegistrationCallback::RegisterCommands((void*)this);
+  }
+  catch(std::string &e) 
+  {
+    printf("DFGController::setHostBindingExec, error: %s", e.c_str());
+  }
+ 
   emit hostChanged();
 }
 
