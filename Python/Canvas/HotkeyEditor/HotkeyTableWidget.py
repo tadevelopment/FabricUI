@@ -6,7 +6,7 @@ import re, json, os
 from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import Actions
 from FabricEngine.Canvas.Commands.CommandRegistry import *
-from FabricEngine.Canvas.Commands.CommandAction import CommandAction
+from FabricEngine.Canvas.HotkeyEditor.CommandAction import CommandAction
 from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetActionItem import HotkeyTableWidgetActionItem
 from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetItemDelegate import HotkeyTableWidgetItemDelegate
 
