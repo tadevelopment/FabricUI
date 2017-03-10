@@ -1726,6 +1726,23 @@ FabricUI--DFG--TabSearch--ResultsView #TagsView
   background-color: #444444;
 }
 
+FabricUI--DFG--TabSearch--ResultsView::branch:has-children
+{
+  background-color: #444444;
+  margin: 2px 0px 2px 2px;
+}
+
+FabricUI--DFG--TabSearch--ResultsView::branch:has-children:selected
+{
+  background-color: #666666;
+}
+
+FabricUI--DFG--TabSearch--ResultsView::branch:has-children:open
+{
+  border-image: none;
+  image: url(${FABRIC_DIR}/Resources/Icons/DFGOneDown.png);
+}
+
 FabricUI--DFG--TabSearch--ResultsView #TagsView[highlighted="true"]
 {
   background-color: #666666;
@@ -1739,14 +1756,13 @@ FabricUI--DFG--TabSearch--ResultsView #TagsView QPushButton
 FabricUI--DFG--TabSearch--ResultsView::item
 {
   border-radius: 4px;
-  margin: 2px;
+  margin: 2px 2px 2px 0px;
 }
 
 FabricUI--DFG--TabSearch--ResultsView::item:selected
 {
   background-color: #666666;
 }
-
 FabricUI--DFG--TabSearch--TagView *
 {
   background-color: #444444;
