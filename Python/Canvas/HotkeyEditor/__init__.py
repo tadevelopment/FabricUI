@@ -4,5 +4,5 @@ __all__ = [
 'HotkeyTableWidgetActionItem',
 'HotkeyTableWidget',
 'HotKeyEditorActions',
-'HotkeyEditor'
+'HotkeyEditorDialog'
 ]

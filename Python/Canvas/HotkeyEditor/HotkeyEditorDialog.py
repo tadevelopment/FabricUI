@@ -8,15 +8,15 @@ from FabricEngine.Canvas.HotkeyEditor.HotKeyEditorActions import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidget import HotkeyTableWidget
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
   
-class HotkeyEditor(QtGui.QDialog):
+class HotkeyEditorDialog(QtGui.QDialog):
 
     def __init__(self, canvasWindow):
-        """ Initializes the HotkeyEditor.
+        """ Initializes the HotkeyEditorDialog.
             Arguments:
             - canvasWindow: A reference to the canvasWindow widget.
         """
 
-        super(HotkeyEditor, self).__init__(canvasWindow) 
+        super(HotkeyEditorDialog, self).__init__(canvasWindow) 
         
         # Controls
         comboBoxLabel = QtGui.QLabel('Set')
@@ -65,7 +65,7 @@ class HotkeyEditor(QtGui.QDialog):
 
         # qss
         self.setWindowTitle('Hotkey Editor')
-        self.setObjectName('HotkeyEditor')
+        self.setObjectName('HotkeyEditorDialog')
         self.setStyleSheet(LoadFabricStyleSheet('FabricUI.qss'))
 
         # !!!! To change
@@ -84,7 +84,7 @@ class HotkeyEditor(QtGui.QDialog):
             Implementation of QtGui.QDialog.
         """
         self.hotkeyTableWidget.acceptShortcutChanges()
-        super(HotkeyEditor, self).accept()
+        super(HotkeyEditorDialog, self).accept()
 
     def reject(self):
         """ \internal.
@@ -92,5 +92,5 @@ class HotkeyEditor(QtGui.QDialog):
         """
         self.hotkeyTableWidget.rejectShortcutChanges()
 
-        super(HotkeyEditor, self).reject()
+        super(HotkeyEditorDialog, self).reject()
  

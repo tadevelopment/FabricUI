@@ -1718,14 +1718,14 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 }
 
 /****************************************************************************
- * HotkeyEditor
+ * HotkeyEditorDialog
  ***************************************************************************/
 
-#HotkeyEditor QToolBar {
+#HotkeyEditorDialog QToolBar {
   border: 0;
 }
 
-#HotkeyEditor QToolButton
+#HotkeyEditorDialog QToolButton
 {
   color: #FFFFFF;
   border: 0;
@@ -1735,28 +1735,28 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #2F2F2F;
 }
 
-#HotkeyEditor QToolButton::disabled
+#HotkeyEditorDialog QToolButton::disabled
 {
   background-color: #444;
   color: #6D6D6D;
 }
 
-#HotkeyEditor QToolButton::checked
+#HotkeyEditorDialog QToolButton::checked
 {
   background-color: #176580;
 }
 
-#HotkeyEditor QToolButton::checked:hover
+#HotkeyEditorDialog QToolButton::checked:hover
 {
   background-color: #1C7A99;
 }
 
-#HotkeyEditor QToolButton:hover
+#HotkeyEditorDialog QToolButton:hover
 {
   background-color: #50626E;
 }
 
-#HotkeyEditor QToolButton::pressed
+#HotkeyEditorDialog QToolButton::pressed
 {
   border-style: inset;
   margin-top: 6px;
@@ -1765,7 +1765,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#HotkeyTable
+#HotkeyTableWidget
 {
   border-top: 1px solid #2B2B2B;
   border-right: 1px solid #484848;
@@ -1773,13 +1773,13 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-left: 1px solid #2B2B2B;
 }
 
-#HotkeyEditor QLabel
+#HotkeyEditorDialog QLabel
 {
   padding-left: 4px;
   color: #FFFFFF;
 }
 
-#HotkeyEditor QComboBox
+#HotkeyEditorDialog QComboBox
 {
   padding-right: 4px;
   color: #FFFFFF;

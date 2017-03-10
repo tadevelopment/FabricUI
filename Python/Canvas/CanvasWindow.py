@@ -17,7 +17,7 @@ from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
-from FabricEngine.Canvas.HotkeyEditor.HotkeyEditor import *
+from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -183,18 +183,18 @@ class BlockGraphCompilationAction(BaseCanvasWindowAction):
         self.setChecked(False)
         self.toggled.connect(self.canvasWindow.setBlockCompilations)
    
-class ShowHotkeyEditorAction(BaseCanvasWindowAction):
+class ShowHotkeyEditorDialogAction(BaseCanvasWindowAction):
 
     def __init__(self, parent, canvasWindow):
-        super(ShowHotkeyEditorAction, self).__init__(
+        super(ShowHotkeyEditorDialogAction, self).__init__(
             parent,     
             canvasWindow, 
-            "CanvasWindow.ShowHotkeyEditorAction", 
+            "CanvasWindow.ShowHotkeyEditorDialogAction", 
             "Hotkey editor", 
             QtGui.QKeySequence(QtCore.Qt.Key_K))
  
     def onTriggered(self):
-        self.canvasWindow.onShowHotkeyEditor()
+        self.canvasWindow.onShowHotkeyEditorDialog()
 
 class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
@@ -295,7 +295,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.resetCameraAction = None
         self.clearLogAction = None
         self.blockCompilationsAction = None
-        self.showHotkeyEditorAction = None
+        self.showHotkeyEditorDialogAction = None
 
         self.windowTitle = 'Fabric Engine - Canvas'
         self.lastFileName = ''
@@ -419,7 +419,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         """
         CreateCommandManager(self.client)
-        self.hotkeyEditor = HotkeyEditor(self)
+        self.hotkeyEditor = HotkeyEditorDialog(self)
 
         self.qUndoStack = QtGui.QUndoStack()
         self.qUndoView = QtGui.QUndoView(self.qUndoStack)
@@ -1021,7 +1021,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         dfgController.savePrefs()
 
-    def onShowHotkeyEditor(self):
+    def onShowHotkeyEditorDialog(self):
         if self.hotkeyEditor.exec_() != QtGui.QDialog.Accepted:
             return;
 
@@ -1296,8 +1296,8 @@ class CanvasWindow(QtGui.QMainWindow):
             self.clearLogAction.blockSignals(enabled)
         if self.blockCompilationsAction:
             self.blockCompilationsAction.blockSignals(enabled)
-        if self.showHotkeyEditorAction:
-            self.showHotkeyEditorAction.blockSignals(enabled)
+        if self.showHotkeyEditorDialogAction:
+            self.showHotkeyEditorDialogAction.blockSignals(enabled)
 
     def openRecentFile(self):
         action = self.sender()
@@ -1363,8 +1363,8 @@ class CanvasWindow(QtGui.QMainWindow):
                     self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
                     menu.addAction(self.manipAction)
                     menu.addSeparator()
-                    self.showHotkeyEditorAction = ShowHotkeyEditorAction(menu, self)
-                    menu.addAction(self.showHotkeyEditorAction)
+                    self.showHotkeyEditorDialogAction = ShowHotkeyEditorDialogAction(menu, self)
+                    menu.addAction(self.showHotkeyEditorDialogAction)
 
         elif name == 'View':
             if prefix:
