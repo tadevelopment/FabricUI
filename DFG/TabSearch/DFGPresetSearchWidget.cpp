@@ -169,7 +169,8 @@ void DFGPresetSearchWidget::hidePreview()
 
 void DFGPresetSearchWidget::setPreview( QString preset )
 {
-  if( m_resultPreview == NULL || preset != m_resultPreview->getPreset() )
+  //if( m_resultPreview == NULL || preset != m_resultPreview->getPreset() )
+  if( false ) // HACK : Disabled the Preview
   {
     this->hidePreview();
     m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
