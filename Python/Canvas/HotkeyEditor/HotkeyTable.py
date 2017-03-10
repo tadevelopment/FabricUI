@@ -7,8 +7,9 @@ from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import Actions
 from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.Commands.CommandAction import CommandAction
+from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetActionItem import HotkeyTableWidgetActionItem
 from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetItemDelegate import HotkeyTableWidgetItemDelegate
- 
+
 class HotkeyTable(QtGui.QTableWidget):
 
     """ HotkeyTable is used to associate a shortcut to an action/command.
@@ -58,10 +59,10 @@ class HotkeyTable(QtGui.QTableWidget):
         # Notify when an command is registered.
         GetCommandRegistry().commandRegisteredCallback.connect(self.__onCommandRegistered)
  
-        # Construct the delegate
-        delegate = HotkeyTableWidgetItemDelegate()
-        delegate.keyPressed.connect(self.__onSetItemKeySequence)
-        self.setItemDelegate(delegate)
+        # Construct the item-delegate
+        itemDelegate = HotkeyTableWidgetItemDelegate()
+        itemDelegate.keyPressed.connect(self.__onSetItemKeySequence)
+        self.setItemDelegate(itemDelegate)
 
         # Two coloums: [actionName, shortcut]
         self.setColumnCount(2)
@@ -96,6 +97,15 @@ class HotkeyTable(QtGui.QTableWidget):
             return self.item(items[0].row(), 1)
         return None
 
+    def __getActionItem(self, actionName):
+        """ \internal.
+            Gets the shortcut item from the command name.
+        """
+        items = self.findItems(actionName, QtCore.Qt.MatchExactly)
+        if items:
+            return self.item(items[0].row(), 0)
+        return None
+
     def __getShortcutFromJSON(self, actionName):
         """ \internal.
             Returns the shortcut in the json data
@@ -122,18 +132,26 @@ class HotkeyTable(QtGui.QTableWidget):
         """
         pass
 
-    def __createNewRow(self, actionName, shortcut, tooltip = ''):
+    def __createNewRow(self, actionName, action):
         """ \internal.
-            Create a new row [actionName, shortcut].
+            Create a new row: [actionName, shortcut] items.
         """
+
         rowCount = self.rowCount() 
         self.insertRow(rowCount)
-      
-        item = QtGui.QTableWidgetItem(actionName) 
         
-        item.setToolTip(tooltip)
-        item.setFlags(QtCore.Qt.NoItemFlags)
+        # 1. Action item
+        item = HotkeyTableWidgetActionItem(actionName, action.toolTip()) 
         self.setItem(rowCount, 0, item)
+
+        # 2. Shortcut item
+        # Get the shorcut, from the action or the json data.
+        shortcut = self.__getShortcutFromJSON(actionName)
+        if shortcut:
+            actionRegistry = Actions.ActionRegistry.GetActionRegistry()
+            actionRegistry.setShortcut(actionName, QtGui.QKeySequence(shortcut))
+        else:
+            shortcut = action.shortcut().toString(QtGui.QKeySequence.NativeText)
 
         item = QtGui.QTableWidgetItem(shortcut)
         self.setItem(rowCount, 1, item)
@@ -152,7 +170,7 @@ class HotkeyTable(QtGui.QTableWidget):
 
         if actionRegistry.getAction(cmdName) is None:
             # Must construct the command to get the tooltip
-            tooltip = ''#GetCommandRegistry().createCommand(cmdName).getHelp()
+            tooltip = GetCommandRegistry().createCommand(cmdName).getHelp()
             # Add the action to the canvasWindow so it's available.
             # Actions of hidden widgets are not triggered.
             self.canvasWindow.addAction(CommandAction(self, cmdName, QtGui.QKeySequence(), tooltip))
@@ -165,16 +183,13 @@ class HotkeyTable(QtGui.QTableWidget):
         actionRegistry = Actions.ActionRegistry.GetActionRegistry()
 
         # Check it's the first time the action is registered.
-        if actionRegistry.getRegistrationCount(actionName) == 1:
-                
-            # Get the shorcut, from the action or the json data.
-            shortcut = self.__getShortcutFromJSON(actionName)
-            if shortcut:
-                actionRegistry.setShortcut(actionName, QtGui.QKeySequence(shortcut))
-            else:
-                shortcut = action.shortcut().toString(QtGui.QKeySequence.NativeText)
-            
-            self.__createNewRow(actionName, shortcut, action.toolTip())
+        if actionRegistry.getRegistrationCount(actionName) == 1:     
+            self.__createNewRow(actionName, action)
+        
+        # To update the item tool tip.
+        hotkeyTableWidgetActionItem = self.__getActionItem(actionName)
+        if hotkeyTableWidgetActionItem:
+            action.changed.connect(hotkeyTableWidgetActionItem.onActionChanged)
 
     def __onActionUnregistered(self, actionName):
         """ \internal.
@@ -253,9 +268,9 @@ class HotkeyTable(QtGui.QTableWidget):
         """
         actionName = self.item(item.row(), 0).text()
         
-        if  (   keySequence != QtGui.QKeySequence() and 
+        if  (  keySequence != QtGui.QKeySequence() and 
                 keySequence != QtGui.QKeySequence('Del') and 
-                keySequence != QtGui.QKeySequence('Backspace')  ):
+                keySequence != QtGui.QKeySequence('Backspace') ):
 
             shortcut = keySequence.toString(QtGui.QKeySequence.NativeText)
             actionName_ = self.__canShortcutBeUsed(actionName, keySequence)
@@ -297,8 +312,8 @@ class HotkeyTable(QtGui.QTableWidget):
             actionName = self.item(i, 0).text()
             shortCut = self.item(i, 1).text()
 
-            if  (   ( searchByShortcut and regex.search(shortCut.lower()) ) or 
-                    ( not searchByShortcut and regex.search(actionName.lower()) ) ):
+            if  (   (searchByShortcut and regex.search(shortCut.lower()) ) or 
+                    (not searchByShortcut and regex.search(actionName.lower()) ) ):
 
                 isCommand = GetCommandRegistry().isCommandRegistered(actionName)
                 
@@ -358,7 +373,7 @@ class HotkeyTable(QtGui.QTableWidget):
         """
         if len(self.__changedActionDic) > 0:
             message = QtGui.QMessageBox()
-            message.warning(self, 'Hotkey editor', 'Changes not saved' )
+            message.warning(self, 'Hotkey editor', 'Changes not saved')
             return False
 
         lastDir = str(self.canvasWindow.settings.value("hotkeyEditor/lastFolder"))

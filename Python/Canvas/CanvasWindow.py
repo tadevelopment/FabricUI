@@ -384,6 +384,7 @@ class CanvasWindow(QtGui.QMainWindow):
         client.loadExtension('Parameters')
         client.loadExtension('Util')
         client.loadExtension('FabricInterfaces')
+        client.loadExtension('Manipulation')
         client.setStatusCallback(self._statusCallback)
         self.client = client
         self.rtvalEncoderDecoder.client = self.client
@@ -777,6 +778,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
             self.host.flushUndoRedo()
             self.qUndoStack.clear()
+            GetCommandManager().clear()
             self.qUndoView.setEmptyLabel("Load Graph")
             self.viewport.clearInlineDrawing()
 
@@ -1063,6 +1065,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
             self.host.flushUndoRedo()
             self.qUndoStack.clear()
+            GetCommandManager().clear()
             self.viewport.clearInlineDrawing()
             QtCore.QCoreApplication.processEvents()
 

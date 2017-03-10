@@ -128,7 +128,7 @@ class SetPortDefaultValueCommand : public BaseDFGCommand
       help +=  "Arguments:\n";
       help +=  "- execPath (String): Absolute path of the DFGExec.\n";
       help +=  "- portName (String): Name of the port.\n";
-      help +=  "- portValue (RTVal): Value to set, must be of the same that the port type.";
+      help +=  "- portValue (RTVal): Value to set, must be of the same that the port type.\n";
       help +=  "- isUndoable (Boolean): If true, the command is undoable.";
       return help;
     }

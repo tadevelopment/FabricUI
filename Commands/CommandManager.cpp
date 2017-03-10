@@ -652,7 +652,7 @@ void CommandManager::cleanupUnfinishedCommands()
         throw(
           std::string(
             QString(
-              "CommandManager::cleanupUnfinishedCommands, rrror while reverting command '" + 
+              "CommandManager::cleanupUnfinishedCommands, error while reverting command '" + 
                top.lowLevelCmds[i]->getName() 
             ).toUtf8().constData()
           )
