@@ -9,20 +9,123 @@ using namespace Actions;
 void BaseAction::init(
   const QString &name, 
   const QString &text, 
-  Qt::ShortcutContext context,
   bool enable,
-  const QIcon &icon)
+  bool isEditable)
 {
   m_name = name;
-  setIcon(icon);
-  setText(text);
-  connect(this, SIGNAL(triggered()), this, SLOT(onTriggered()));
-  setEnabled(enable);
-  setShortcutContext(context);
+  m_isEditable = isEditable;
   
+  setText(text);
+  setEnabled(enable);
+
+  connect(
+    this, 
+    SIGNAL(triggered()), 
+    this, 
+    SLOT(onTriggered())
+    );
+
+  connect(
+    this, 
+    SIGNAL(toggled(bool)), 
+    this, 
+    SLOT(onToggled(bool))
+    );
+
   // Register the action.
   ActionRegistry *registry = ActionRegistry::GetActionRegistry();
   registry->registerAction(this);
+}
+
+void BaseAction::init(
+  const QString &name, 
+  const QString &text, 
+  QKeySequence shortcut,
+  Qt::ShortcutContext context,
+  bool enable,
+  bool isEditable)
+{
+  // Checks if an action under this name has been 
+  // registered already. If so, use its shortcuts.
+  // Synchronize the shortcuts of all the actions.
+  ActionRegistry *registry = ActionRegistry::GetActionRegistry();
+  setShortcut( 
+    (registry->getRegistrationCount(name) > 0)
+    ? registry->getShortcut(name) 
+    : shortcut
+  );
+  setShortcutContext(context);
+
+  init(name, 
+    text, 
+    enable, 
+    isEditable);
+}
+
+void BaseAction::init(
+  const QString &name, 
+  const QString &text, 
+  const QList<QKeySequence> & shortcuts,
+  Qt::ShortcutContext context,
+  bool enable,
+  bool isEditable)
+{
+  ActionRegistry *registry = ActionRegistry::GetActionRegistry();
+  setShortcuts( 
+    (registry->getRegistrationCount(name) > 0)
+    ? registry->getShortcuts(name) 
+    : shortcuts
+  );
+  setShortcutContext(context);
+
+  init(name, 
+    text, 
+    enable, 
+    isEditable);
+}
+
+void BaseAction::init(
+  const QString &name, 
+  const QString &text, 
+  QKeySequence shortcut,
+  Qt::ShortcutContext context,
+  const QIcon &icon,
+  bool enable,
+  bool isEditable)
+{
+  setIcon(icon);
+  
+  init(name, 
+    text, 
+    shortcut,
+    context, 
+    enable, 
+    isEditable);
+}
+
+void BaseAction::init(
+  const QString &name, 
+  const QString &text, 
+  const QList<QKeySequence> & shortcuts,
+  Qt::ShortcutContext context,
+  const QIcon &icon,
+  bool enable,
+  bool isEditable)
+{
+  setIcon(icon);
+    
+  init(name, 
+    text, 
+    shortcuts,
+    context, 
+    enable, 
+    isEditable);
+}
+
+BaseAction::BaseAction(
+  QObject *parent)
+  : QAction(parent)
+{
 }
 
 BaseAction::BaseAction(
@@ -34,22 +137,13 @@ BaseAction::BaseAction(
   bool enable,
   const QIcon &icon)
   : QAction(parent)
-{ 
-  // Checks if an action under this name has been 
-  // registered already. If so, use its shortcuts.
-  // Synchronize the shortcuts of all the actions.
-  ActionRegistry *registry = ActionRegistry::GetActionRegistry();
-  setShortcut( 
-    (registry->getRegistrationCount(name) > 0)
-    ? registry->getShortcut(name) 
-    : shortcut
-  );
-
+{
   init(name, 
     text, 
+    shortcut,
     context, 
-    enable, 
-    icon);
+    icon,
+    enable);
 }
 
 BaseAction::BaseAction(
@@ -62,18 +156,12 @@ BaseAction::BaseAction(
   const QIcon &icon)
   : QAction(parent)
 {
-  ActionRegistry *registry = ActionRegistry::GetActionRegistry();
-  setShortcuts( 
-    (registry->getRegistrationCount(name) > 0)
-    ? registry->getShortcuts(name) 
-    : shortcuts
-  );
-  
   init(name, 
     text, 
+    shortcuts,
     context, 
-    enable, 
-    icon);
+    icon,
+    enable);
 }
 
 BaseAction::~BaseAction()
@@ -85,6 +173,15 @@ QString BaseAction::getName() const
   return m_name;
 }
 
+bool BaseAction::isEditable() const
+{
+  return m_isEditable;
+}
+
 void BaseAction::onTriggered()
+{
+}
+
+void BaseAction::onToggled(bool checked)
 {
 }

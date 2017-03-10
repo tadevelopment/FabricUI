@@ -12,7 +12,7 @@ class CommandAction(Actions.BaseAction):
         The action has
     """
 
-    def __init__(self, parent, cmdName, shortcut, tooltip):
+    def __init__(self, parent, cmdName, shortcut, tooltip, isScriptable):
         """ Initializes a CommandAction.
             Arguments:
             - parent: A reference to the parent
@@ -20,16 +20,16 @@ class CommandAction(Actions.BaseAction):
             - shortcut: Shortcut triggering the command
             - tooltip: Action's tooltip
         """
-
-        super(CommandAction, self).__init__(
-            parent, 
+        super(CommandAction, self).__init__(parent)
+        
+        super(CommandAction, self).init(
             cmdName, 
             cmdName, 
             shortcut, 
-            QtCore.Qt.ApplicationShortcut)  
-         
-        self.setToolTip(tooltip)
-     
+            QtCore.Qt.ApplicationShortcut,
+            True,
+            not isScriptable)  
+ 
     def onTriggered(self):
         """ \internal.
             Implementation of Actions.BaseAction.

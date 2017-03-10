@@ -4,7 +4,7 @@
 
 import re, json, os
 from PySide import QtCore, QtGui
-from FabricEngine.FabricUI import Actions
+from FabricEngine.FabricUI import Actions, Commands
 from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.HotkeyEditor.CommandAction import CommandAction
 from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetActionItem import HotkeyTableWidgetActionItem
@@ -136,7 +136,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         """ \internal.
             Create a new row: [actionName, shortcut] items.
         """
-
+        
         rowCount = self.rowCount() 
         self.insertRow(rowCount)
         
@@ -153,7 +153,15 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         else:
             shortcut = action.shortcut().toString(QtGui.QKeySequence.NativeText)
 
+        # Check if we can edit the action is editable
+        isEditable = True
+        if issubclass(type(action), Actions.BaseAction):
+            isEditable = action.isEditable()
+
         item = QtGui.QTableWidgetItem(shortcut)
+        if not isEditable:
+            item.setFlags(QtCore.Qt.NoItemFlags)
+          
         self.setItem(rowCount, 1, item)
 
         # Hack to refresh the view correctly.
@@ -170,10 +178,16 @@ class HotkeyTableWidget(QtGui.QTableWidget):
 
         if actionRegistry.getAction(cmdName) is None:
             # Must construct the command to get the tooltip
-            tooltip = GetCommandRegistry().createCommand(cmdName).getHelp()
+            cmd = GetCommandRegistry().createCommand(cmdName)
+            
+            tooltip = cmd.getHelp()
+            isScriptable = issubclass(type(cmd), Commands.BaseScriptableCommand)
+
             # Add the action to the canvasWindow so it's available.
             # Actions of hidden widgets are not triggered.
-            self.canvasWindow.addAction(CommandAction(self, cmdName, QtGui.QKeySequence(), tooltip))
+            self.canvasWindow.addAction(
+                CommandAction(
+                    self, cmdName, QtGui.QKeySequence(), tooltip, isScriptable))
  
     def __onActionRegistered(self, actionName, action):
         """ \internal.

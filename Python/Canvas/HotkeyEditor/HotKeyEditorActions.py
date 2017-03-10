@@ -10,15 +10,19 @@ class BaseHotkeyEditorAction(Actions.BaseAction):
  
     def __init__(self, hotkeyEditor, name, text, shortcut):
 
+        super(BaseHotkeyEditorAction, self).__init__(hotkeyEditor)
+        
         self.hotkeyEditor = hotkeyEditor
-
-        super(BaseHotkeyEditorAction, self).__init__(
-            hotkeyEditor, 
+        self.hotkeyTable = hotkeyEditor.hotkeyTableWidget
+       
+        super(BaseHotkeyEditorAction, self).init(
             name, 
             text, 
             shortcut, 
-            QtCore.Qt.ApplicationShortcut)
- 
+            QtCore.Qt.ApplicationShortcut,
+            True,
+            False)  
+
 class OpenHotkeyFileAction(BaseHotkeyEditorAction):
  
     def __init__(self, hotkeyEditor):
@@ -31,8 +35,8 @@ class OpenHotkeyFileAction(BaseHotkeyEditorAction):
         self.setToolTip('Open a Hotkey file')
         
     def onTriggered(self):
-        if self.hotkeyEditor.hotkeyTable.openActions():
-            basename = os.path.basename(self.hotkeyEditor.hotkeyTable.filename)
+        if self.hotkeyTable.openActions():
+            basename = os.path.basename(self.hotkeyTable.filename)
             self.hotkeyEditor.setWindowTitle('Hotkey Editor: ' + basename)
 
 class SaveHotkeyFileAction(BaseHotkeyEditorAction):
@@ -47,7 +51,7 @@ class SaveHotkeyFileAction(BaseHotkeyEditorAction):
         self.setToolTip('Save a Hotkey file')
         
     def onTriggered(self):
-        self.hotkeyEditor.hotkeyTable.saveActions()
+        self.hotkeyTable.saveActions()
  
 class SaveHotkeyFileAsAction(BaseHotkeyEditorAction):
  
@@ -61,7 +65,7 @@ class SaveHotkeyFileAsAction(BaseHotkeyEditorAction):
         self.setToolTip('Save a Hotkey file as')
         
     def onTriggered(self):
-        self.hotkeyEditor.hotkeyTable.saveActionsAs()
+        self.hotkeyTable.saveActionsAs()
  
 class AcceptActionChanges(BaseHotkeyEditorAction):
  
