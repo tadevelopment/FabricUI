@@ -1720,6 +1720,19 @@ FabricUI--DFG--TabSearch--ResultsView
   padding: 4px;
 }
 
+FabricUI--DFG--TabSearch--QueryEdit #TagsEdit
+{
+  background: #272822;
+  margin: 0px 8px 0px 8px;
+  border-radius: 4px;
+}
+
+FabricUI--DFG--TabSearch--QueryEdit #TagsEdit *[highlighted="true"] *
+{
+  color: #272822;
+  background-color: #f0f0f0;
+}
+
 FabricUI--DFG--TabSearch--ResultsView #TagsView
 {
   border-radius: 4px;

@@ -140,6 +140,8 @@ public:
     QHBoxLayout* m_layout = new QHBoxLayout();
     m_layout->setMargin( 0 );
     this->setLayout( m_layout );
+    this->setObjectName( "TagsEdit" );
+    layout()->setAlignment( Qt::AlignLeft );
 
     const Query::Tags& tags = query.getTags();
     for( size_t i = 0; i < tags.size(); i++ )
@@ -250,11 +252,10 @@ QueryEdit::QueryEdit( FabricCore::DFGHost* host )
   , m_highlightedTag( NoHighlight )
   , m_controller( new QueryController( m_query ) )
 {
-  QHBoxLayout* m_layout = new QHBoxLayout();
+  QVBoxLayout* m_layout = new QVBoxLayout();
   this->setLayout( m_layout );
 
   m_tagsEdit = new TagsEdit( m_query, m_controller );
-  this->layout()->addWidget( m_tagsEdit );
 
   m_textEdit = new TextEdit( this );
   connect(
@@ -265,7 +266,6 @@ QueryEdit::QueryEdit( FabricCore::DFGHost* host )
     &m_query, SIGNAL( changed() ),
     this, SLOT( onQueryChanged() )
   );
-  m_layout->addWidget( m_textEdit );
   m_layout->setMargin( 0 );
   this->setFocusProxy( m_textEdit );
 
@@ -459,7 +459,7 @@ void QueryEdit::updateTagsEdit()
   // Put back the widgets (in the right order)
   layout()->addWidget( m_tagsEdit );
   layout()->addWidget( m_textEdit );
-  this->layout()->setSpacing( m_query.getTags().size() == 0 ? 0 : -1 );
+  layout()->setSpacing( 0 );
 }
 
 void QueryEdit::selectAll()
