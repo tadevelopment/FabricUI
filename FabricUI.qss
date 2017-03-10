@@ -1692,29 +1692,38 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
  * TabSearch
  ***************************************************************************/
 
+FabricUI--DFG--DFGPresetSearchWidget *
+{
+  font-family: "Roboto";
+  font-size: 8pt;
+  background-color: #272822;
+}
+
 FabricUI--DFG--DFGPresetSearchWidget
 {
   background-color: #555555;
-}
-
-FabricUI--DFG--DFGPresetSearchWidget QLineEdit
-{
-  border: 8px solid #555555;
+  border: 2px solid #333333;
 }
 
 FabricUI--DFG--TabSearch--QueryEdit QLineEdit
 {
+  margin: 8px;
   font-size: 16pt;
+  border-radius: 8px;
+  padding: 4px;
 }
 
 FabricUI--DFG--TabSearch--ResultsView
 {
   margin: 0px 8px 8px 8px;
+  border-radius: 8px;
+  padding: 4px;
 }
 
-FabricUI--DFG--DFGPresetSearchWidget *
+FabricUI--DFG--TabSearch--ResultsView::item
 {
-  background-color: #272822;
+  border-radius: 4px;
+  margin: 2px;
 }
 
 FabricUI--DFG--TabSearch--ResultsView::item:selected
@@ -1727,7 +1736,12 @@ FabricUI--DFG--TabSearch--TagView *
   background-color: #444444;
 }
 
-FabricUI--DFG--TabSearch--TagView[highlighted="true"] *,
+FabricUI--DFG--TabSearch--TagView[highlighted="true"] *
+{
+  color: #FFF;
+  background-color: #999;
+}
+
 FabricUI--DFG--TabSearch--PresetView[highlighted="true"] *
 {
   color: #FFF;
@@ -1742,8 +1756,6 @@ FabricUI--DFG--TabSearch--TagView QPushButton:hover
 
 FabricUI--DFG--TabSearch--HeatBar
 {
-  width: 100px;
-  height: 100px;
   qproperty-coldColor: #27a8df;
   qproperty-warmColor: #27a8df;
   qproperty-hotColor: #27a8df;

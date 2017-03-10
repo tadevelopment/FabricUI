@@ -57,7 +57,7 @@ PresetView::PresetView( const std::string& presetName, const std::vector<std::st
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setSpacing( 8 );
   lay->setMargin( 0 );
-  lay->setContentsMargins( QMargins( 0, 0, 32, 0 ) );
+  lay->setContentsMargins( QMargins( 0, 0, 8, 0 ) );
   this->setLayout( lay );
   QLabel* nameLabel = new QLabel( "<b>" + QString::fromStdString( baseName ) + "</b>" );
   this->layout()->addWidget( nameLabel );
