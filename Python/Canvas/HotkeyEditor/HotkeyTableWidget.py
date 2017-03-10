@@ -10,9 +10,9 @@ from FabricEngine.Canvas.Commands.CommandAction import CommandAction
 from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetActionItem import HotkeyTableWidgetActionItem
 from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetItemDelegate import HotkeyTableWidgetItemDelegate
 
-class HotkeyTable(QtGui.QTableWidget):
+class HotkeyTableWidget(QtGui.QTableWidget):
 
-    """ HotkeyTable is used to associate a shortcut to an action/command.
+    """ HotkeyTableWidget is used to associate a shortcut to an action/command.
         When an action or command is registered, a signal is sent to the 
         table so it creates a new item. Items can be filtered according 
         to the actions name or shortcut. 
@@ -29,13 +29,13 @@ class HotkeyTable(QtGui.QTableWidget):
     """
 
     def __init__(self, parent, canvasWindow):
-        """ Initializes the HotkeyTable.
+        """ Initializes the HotkeyTableWidget.
             
             Arguments:
             - parent: A reference to wiget.
             - canvasWindow: A reference the canvasWindow.
         """
-        super(HotkeyTable, self).__init__(parent)
+        super(HotkeyTableWidget, self).__init__(parent)
 
         # shortcuts saving.
         self.filename = None
@@ -77,7 +77,7 @@ class HotkeyTable(QtGui.QTableWidget):
         self.horizontalHeader().setStretchLastSection(True)
 
         # qss
-        self.setObjectName('HotkeyTable')
+        self.setObjectName('HotkeyTableWidget')
   
     def __getCurrentShortcutItem(self):
         """ \internal.
@@ -121,7 +121,7 @@ class HotkeyTable(QtGui.QTableWidget):
         """ Implementation of QtGui.QTableWidget.
             Directly edit the item to simulate a double-click.
         """
-        super(HotkeyTable, self).mousePressEvent(event)
+        super(HotkeyTableWidget, self).mousePressEvent(event)
         item = self.__getCurrentShortcutItem()
         if item is not None:
             self.editItem(item)

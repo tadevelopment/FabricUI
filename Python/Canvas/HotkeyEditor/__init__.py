@@ -1,7 +1,7 @@
 __all__ = [
 'HotkeyTableWidgetItemDelegate',
 'HotkeyTableWidgetActionItem',
-'HotkeyTable',
+'HotkeyTableWidget',
 'HotKeyEditorActions',
 'HotkeyEditor'
 ]

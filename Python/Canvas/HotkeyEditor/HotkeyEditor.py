@@ -5,7 +5,7 @@
 from PySide import QtGui
 from FabricEngine.FabricUI import Actions
 from FabricEngine.Canvas.HotkeyEditor.HotKeyEditorActions import *
-from FabricEngine.Canvas.HotkeyEditor.HotkeyTable import HotkeyTable
+from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidget import HotkeyTableWidget
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
   
 class HotkeyEditor(QtGui.QDialog):
@@ -36,8 +36,8 @@ class HotkeyEditor(QtGui.QDialog):
         ctrlLayout.addWidget(comboBoxLabel)
         ctrlLayout.addWidget(self.__comboBox)
         
-        # HotkeyTable
-        self.hotkeyTable = HotkeyTable(self, canvasWindow)
+        # HotkeyTableWidget
+        self.hotkeyTableWidget = HotkeyTableWidget(self, canvasWindow)
  
         # Toolbar
         openHotkeyFileAction = OpenHotkeyFileAction(self)
@@ -60,7 +60,7 @@ class HotkeyEditor(QtGui.QDialog):
         layout.setContentsMargins(0,0,0,0)
         layout.addWidget(toolBar)
         layout.addLayout(ctrlLayout)
-        layout.addWidget(self.hotkeyTable)
+        layout.addWidget(self.hotkeyTableWidget)
         self.setLayout(layout)
 
         # qss
@@ -77,20 +77,20 @@ class HotkeyEditor(QtGui.QDialog):
         """ \internal.
             Filter the actions.
         """
-        self.hotkeyTable.filterItems(self.__lineEdit.text(), self.__comboBox.currentText())
+        self.hotkeyTableWidget.filterItems(self.__lineEdit.text(), self.__comboBox.currentText())
 
     def accept(self):
         """ \internal.
             Implementation of QtGui.QDialog.
         """
-        self.hotkeyTable.acceptShortcutChanges()
+        self.hotkeyTableWidget.acceptShortcutChanges()
         super(HotkeyEditor, self).accept()
 
     def reject(self):
         """ \internal.
             Implementation of QtGui.QDialog.
         """
-        self.hotkeyTable.rejectShortcutChanges()
+        self.hotkeyTableWidget.rejectShortcutChanges()
 
         super(HotkeyEditor, self).reject()
  

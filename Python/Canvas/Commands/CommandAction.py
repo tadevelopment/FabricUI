@@ -29,7 +29,7 @@ class CommandAction(QtGui.QAction):
         self.setShortcutContext(QtCore.Qt.ApplicationShortcut)
 
         # Register the action so an item
-        # is created in the HotkeyTable.
+        # is created in the HotkeyTableWidget.
         Actions.ActionRegistry.GetActionRegistry().registerAction(cmdName, self)
 
     def onTriggered(self):
