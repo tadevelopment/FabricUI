@@ -10,6 +10,12 @@
 
 using namespace FabricUI::DFG::TabSearch;
 
+void FabricUI::DFG::TabSearch::SetWidgetHighlight( QWidget* w, const bool highlighted )
+{
+  w->setProperty( "highlighted", QVariant( highlighted ) );
+  w->setStyleSheet( w->styleSheet() );
+}
+
 TagView::TagView( const std::string& tagName )
   : m_name( tagName )
   , m_hovered( false )
@@ -34,8 +40,7 @@ TagView::TagView( const std::string& tagName )
 
 void TagView::setHighlighted( bool highlighted )
 {
-  this->setProperty( HighlightedPropertyStr, QVariant( highlighted ) );
-  this->setStyleSheet( this->styleSheet() );
+  SetWidgetHighlight( this, highlighted );
 }
 
 void TagView::onActivated()
@@ -89,8 +94,7 @@ PresetView::PresetView( const std::string& presetName, const std::vector<std::st
 
 void PresetView::setHighlighted( bool highlighted )
 {
-  this->setProperty( HighlightedPropertyStr, QVariant( highlighted ) );
-  this->setStyleSheet( this->styleSheet() );
+  SetWidgetHighlight( this, highlighted );
   for( size_t i = 0; i < m_tagViews.size(); i++ )
     m_tagViews[i]->setHighlighted( highlighted );
 }

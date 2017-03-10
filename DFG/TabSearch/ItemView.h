@@ -16,7 +16,8 @@ namespace FabricUI
     namespace TabSearch
     {
       class HeatBar;
-      static const char* HighlightedPropertyStr = "highlighted";
+
+      void SetWidgetHighlight( QWidget* w, const bool highlighted );
 
       class TagView : public QWidget
       {

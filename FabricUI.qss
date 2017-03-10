@@ -1720,6 +1720,17 @@ FabricUI--DFG--TabSearch--ResultsView
   padding: 4px;
 }
 
+FabricUI--DFG--TabSearch--ResultsView #TagsView
+{
+  border-radius: 4px;
+  background-color: #444444;
+}
+
+FabricUI--DFG--TabSearch--ResultsView #TagsView[highlighted="true"]
+{
+  background-color: #666666;
+}
+
 FabricUI--DFG--TabSearch--ResultsView::item
 {
   border-radius: 4px;
@@ -1739,7 +1750,7 @@ FabricUI--DFG--TabSearch--TagView *
 FabricUI--DFG--TabSearch--TagView[highlighted="true"] *
 {
   color: #FFF;
-  background-color: #999;
+  background-color: #666666;
 }
 
 FabricUI--DFG--TabSearch--PresetView[highlighted="true"] *

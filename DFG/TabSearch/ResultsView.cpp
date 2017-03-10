@@ -628,6 +628,7 @@ public:
   TagsView( const Tags& tags, const ResultsView& view )
   {
     m_layout = new QHBoxLayout();
+    setObjectName( "TagsView" );
     for( size_t i = 0; i < tags.size(); i++ )
     {
       TagView* w = new TagView( tags[i].name );
@@ -647,6 +648,7 @@ public:
 
   void setHighlighted( bool highlighted )
   {
+    SetWidgetHighlight( this, highlighted );
     for( size_t i = 0; i < m_tagViews.size(); i++ )
       m_tagViews[i]->setHighlighted( highlighted );
   }
