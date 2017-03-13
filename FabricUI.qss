@@ -1727,6 +1727,14 @@ FabricUI--DFG--TabSearch--QueryEdit #TagsEdit
   border-radius: 4px;
 }
 
+FabricUI--DFG--TabSearch--QueryEdit #TagsEdit FabricUI--DFG--TabSearch--TagView *
+{
+  border-style: inset;
+  padding: 0px 4px 0px 4px;
+  margin: 0px;
+  background-color: #50626e;
+}
+
 FabricUI--DFG--TabSearch--QueryEdit #TagsEdit *[highlighted="true"] *
 {
   color: #272822;
