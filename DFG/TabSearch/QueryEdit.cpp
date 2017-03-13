@@ -461,7 +461,7 @@ void QueryEdit::removeHighlightedTag()
   else
   if( m_highlightedTag == AllHighlighted )
   {
-    const Query::Tags& allTags = m_query.getTags();
+    const Query::Tags allTags = m_query.getTags();
     for( size_t i = 0; i < allTags.size(); i++ )
       m_controller->removeTag( allTags[i] );
   }
