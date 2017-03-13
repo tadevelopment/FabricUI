@@ -21,6 +21,8 @@ HeatBar::HeatBar( QWidget *parent )
   , m_smooth( true )
   , m_spacing( 0.4 )
 {
+  this->setObjectName( "HeatBar" );
+
   this->setAutoFillBackground( true );
   setFrameStyle( QFrame::Plain );
   setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );

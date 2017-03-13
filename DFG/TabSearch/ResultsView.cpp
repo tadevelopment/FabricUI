@@ -519,6 +519,7 @@ public:
 ResultsView::ResultsView()
   : m_model( new Model() )
 {
+  this->setObjectName( "ResultsView" );
   setItemsExpandable( false );
   setModel( m_model );
   this->setHeaderHidden( true );

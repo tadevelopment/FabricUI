@@ -271,6 +271,7 @@ QueryEdit::QueryEdit( FabricCore::DFGHost* host )
   , m_highlightedTag( NoHighlight )
   , m_controller( new QueryController( m_query ) )
 {
+  this->setObjectName( "QueryEdit" );
   QVBoxLayout* m_layout = new QVBoxLayout();
   this->setLayout( m_layout );
 

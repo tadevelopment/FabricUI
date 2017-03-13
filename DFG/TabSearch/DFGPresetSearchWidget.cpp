@@ -14,6 +14,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   , m_frame( new QFrame(this) )
   , m_resultPreview( NULL )
 {
+  this->setObjectName( "DFGPresetSearchWidget" );
   this->setWindowFlags( Qt::Popup );
   QVBoxLayout* vlayout = new QVBoxLayout();
 

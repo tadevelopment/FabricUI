@@ -1692,7 +1692,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
  * TabSearch
  ***************************************************************************/
 
-FabricUI--DFG--DFGPresetSearchWidget > QFrame *
+#DFGPresetSearchWidget > QFrame *
 {
   font-family: "Roboto";
   font-size: 8pt;
@@ -1700,27 +1700,27 @@ FabricUI--DFG--DFGPresetSearchWidget > QFrame *
   padding: 0px;
 }
 
-FabricUI--DFG--DFGPresetSearchWidget > QFrame
+#DFGPresetSearchWidget > QFrame
 {
   background-color: #555555;
   border: 4px solid #333333;
   padding: 8px;
 }
 
-FabricUI--DFG--TabSearch--QueryEdit QLineEdit
+#QueryEdit QLineEdit
 {
   font-size: 16pt;
   border-radius: 8px;
   padding: 4px;
 }
 
-FabricUI--DFG--TabSearch--ResultsView
+#ResultsView
 {
   border-radius: 8px;
   padding: 4px;
 }
 
-FabricUI--DFG--TabSearch--QueryEdit #TagsEdit FabricUI--DFG--TabSearch--TagView *
+#QueryEdit #TagsEdit #TagView *
 {
   border-style: inset;
   padding: 0px 4px 0px 4px;
@@ -1728,91 +1728,92 @@ FabricUI--DFG--TabSearch--QueryEdit #TagsEdit FabricUI--DFG--TabSearch--TagView 
   background-color: #50626e;
 }
 
-FabricUI--DFG--TabSearch--QueryEdit #TagsEdit *[highlighted="true"] *
+#QueryEdit #TagsEdit #TagView[highlighted="true"] *
 {
   color: #272822;
   background-color: #f0f0f0;
 }
 
-FabricUI--DFG--TabSearch--QueryEdit #TagsEdit QPushButton:hover
+#QueryEdit #TagsEdit #TagView QPushButton:hover
 {
   color: #272822;
   background-color: #f0f0f0;
 }
 
-FabricUI--DFG--TabSearch--TagArrow
+#TagArrow
 {
   qproperty-bgColor: #50626e;
   qproperty-highlightBgColor: #f0f0f0;
 }
 
-FabricUI--DFG--TabSearch--ResultsView #TagsView
+#ResultsView #TagsView
 {
   border-radius: 4px;
   background-color: #444444;
 }
 
-FabricUI--DFG--TabSearch--ResultsView::branch:has-children
+#ResultsView::branch:has-children
 {
   background-color: #444444;
   margin: 2px 0px 2px 2px;
 }
 
-FabricUI--DFG--TabSearch--ResultsView::branch:has-children:selected
+#ResultsView::branch:has-children:selected
 {
   background-color: #666666;
 }
 
-FabricUI--DFG--TabSearch--ResultsView::branch:has-children:open
+#ResultsView::branch:has-children:open
 {
   border-image: none;
   image: url(${FABRIC_DIR}/Resources/Icons/DFGOneDown.png);
 }
 
-FabricUI--DFG--TabSearch--ResultsView #TagsView[highlighted="true"]
+#ResultsView #TagsView[highlighted="true"]
 {
   background-color: #666666;
 }
 
-FabricUI--DFG--TabSearch--ResultsView #TagsView QPushButton
+#ResultsView #TagsView QPushButton
 {
   border-style: inset;
 }
 
-FabricUI--DFG--TabSearch--ResultsView::item
+#ResultsView::item
 {
   border-radius: 4px;
   margin: 2px 2px 2px 0px;
 }
 
-FabricUI--DFG--TabSearch--ResultsView::item:selected
+#ResultsView::item:selected
 {
   background-color: #666666;
 }
-FabricUI--DFG--TabSearch--TagView *
+
+#TagView *
 {
   background-color: #444444;
 }
 
-FabricUI--DFG--TabSearch--TagView[highlighted="true"] *
+#TagView[highlighted="true"] *
 {
   color: #FFF;
   background-color: #666666;
 }
 
-FabricUI--DFG--TabSearch--PresetView[highlighted="true"] *
+#PresetView[highlighted="true"] *
 {
   color: #FFF;
   background-color: #666666;
 }
 
-FabricUI--DFG--TabSearch--TagView QPushButton:hover
+#TagView QPushButton:hover
 {
   color: #000;
   background-color: #FFF;
 }
 
-FabricUI--DFG--TabSearch--HeatBar
+#HeatBar
 {
   qproperty-coldColor: #27a8df;
   qproperty-warmColor: #27a8df;
@@ -1825,7 +1826,7 @@ FabricUI--DFG--TabSearch--HeatBar
   border: 2px solid #272822;
 }
 
-FabricUI--DFG--TabSearch--PresetView[highlighted="true"] FabricUI--DFG--TabSearch--HeatBar
+#PresetView[highlighted="true"] #HeatBar
 {
   background-color: #272822;
 }

@@ -22,6 +22,8 @@ TagView::TagView( const std::string& tagName )
   , m_hovered( false )
   , m_highlighted( false )
 {
+  this->setObjectName( "TagView" );
+
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );
   m_button = new QPushButton( QString::fromStdString( tagName ) );
@@ -60,6 +62,7 @@ TagArrow::TagArrow()
   , m_bgColor(QColor(0,0,0))
   , m_highlightBgColor(QColor(255,255,255))
 {
+  this->setObjectName( "TagArrow" );
   this->setMinimumWidth( 14 );
 }
 
@@ -102,6 +105,8 @@ void TagArrow::paintEvent( QPaintEvent *e )
 PresetView::PresetView( const std::string& presetName, const std::vector<std::string>& tags )
   : m_heatBar( new HeatBar( this ) )
 {
+  this->setObjectName( "PresetView" );
+
   size_t dotI = presetName.rfind( '.' );
   std::string baseName = presetName.substr( dotI+1 );
   std::string path = presetName.substr( 0, dotI );
