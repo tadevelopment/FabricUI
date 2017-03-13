@@ -15,7 +15,6 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   , m_resultPreview( NULL )
 {
   this->setWindowFlags( Qt::Popup );
-  m_frame->setSizePolicy( { QSizePolicy::Minimum, QSizePolicy::Minimum } );
   QVBoxLayout* vlayout = new QVBoxLayout();
 
   m_queryEdit = new TabSearch::QueryEdit( m_host );
