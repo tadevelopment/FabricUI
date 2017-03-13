@@ -72,8 +72,6 @@ namespace FabricUI
         inline void setRightHighlighted( bool hl ) { m_rightHighlighted = hl; update(); }
         inline void setHasRight( bool hr ) { m_hasRight = hr; update(); }
 
-        QSize minimumSizeHint() const FTL_OVERRIDE { return QSize( 18, 30 ); }
-
       private:
         int m_spacing;
         bool m_leftHighlighted, m_hasRight, m_rightHighlighted;

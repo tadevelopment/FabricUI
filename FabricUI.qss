@@ -1697,17 +1697,18 @@ FabricUI--DFG--DFGPresetSearchWidget > QFrame *
   font-family: "Roboto";
   font-size: 8pt;
   background-color: #272822;
+  padding: 0px;
 }
 
 FabricUI--DFG--DFGPresetSearchWidget > QFrame
 {
   background-color: #555555;
   border: 4px solid #333333;
+  padding: 8px;
 }
 
 FabricUI--DFG--TabSearch--QueryEdit QLineEdit
 {
-  margin: 8px;
   font-size: 16pt;
   border-radius: 8px;
   padding: 4px;
@@ -1715,16 +1716,8 @@ FabricUI--DFG--TabSearch--QueryEdit QLineEdit
 
 FabricUI--DFG--TabSearch--ResultsView
 {
-  margin: 0px 8px 8px 8px;
   border-radius: 8px;
   padding: 4px;
-}
-
-FabricUI--DFG--TabSearch--QueryEdit #TagsEdit
-{
-  background: #272822;
-  margin: 0px 8px 0px 8px;
-  border-radius: 4px;
 }
 
 FabricUI--DFG--TabSearch--QueryEdit #TagsEdit FabricUI--DFG--TabSearch--TagView *

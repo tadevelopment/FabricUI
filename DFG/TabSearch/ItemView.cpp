@@ -25,8 +25,6 @@ TagView::TagView( const std::string& tagName )
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );
   m_button = new QPushButton( QString::fromStdString( tagName ) );
-  m_button->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
-  m_button->setContentsMargins( QMargins( 0, 0, 0, 0 ) );
   lay->addWidget( m_button );
   this->setLayout( lay );
   m_button->setFocusPolicy( Qt::NoFocus );
@@ -62,7 +60,7 @@ TagArrow::TagArrow()
   , m_bgColor(QColor(0,0,0))
   , m_highlightBgColor(QColor(255,255,255))
 {
-
+  this->setMinimumWidth( 14 );
 }
 
 void TagArrow::paintEvent( QPaintEvent *e )

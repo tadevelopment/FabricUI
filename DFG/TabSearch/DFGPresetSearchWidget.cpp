@@ -65,13 +65,9 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   );
 
   vlayout->setMargin( 0 );
-  vlayout->setSpacing( 0 );
+  vlayout->setSpacing( 8 );
 
-  QHBoxLayout* hlayout = new QHBoxLayout();
-  hlayout->addLayout( vlayout );
-  hlayout->setMargin( 0 );
-
-  m_frame->setLayout( hlayout );
+  m_frame->setLayout( vlayout );
   
   updateSize();
 }

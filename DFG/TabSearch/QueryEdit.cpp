@@ -147,13 +147,13 @@ public:
   TagsEdit( const Query& query, const QueryController* controller )
   {
     QHBoxLayout* m_layout = new QHBoxLayout();
-    m_layout->setMargin( 0 );
     m_layout->setSpacing( 0 );
     this->setLayout( m_layout );
     this->setObjectName( "TagsEdit" );
     layout()->setAlignment( Qt::AlignLeft );
 
     const Query::Tags& tags = query.getTags();
+    m_layout->setMargin( tags.size() > 0 ? 4 : 0 );
     for( size_t i = 0; i < tags.size(); i++ )
     {
       TagView* tagView = new TagView( tags[i] );
@@ -478,7 +478,7 @@ void QueryEdit::updateTagsEdit()
   // Put back the widgets (in the right order)
   layout()->addWidget( m_tagsEdit );
   layout()->addWidget( m_textEdit );
-  layout()->setSpacing( 0 );
+  layout()->setSpacing( m_query.getTags().size() > 0 ? 8 : 0 );
 }
 
 void QueryEdit::selectAll()
