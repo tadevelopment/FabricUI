@@ -9,6 +9,8 @@
 #include "ResultsView.h"
 #include "ResultPreview.h"
 
+class QFrame;
+
 namespace FabricUI
 {
   namespace DFG
@@ -45,7 +47,7 @@ namespace FabricUI
 
       // Used to query the database
       FabricCore::DFGHost* m_host;
-
+      QFrame* m_frame;
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
       TabSearch::ResultPreview* m_resultPreview;

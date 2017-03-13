@@ -3,6 +3,7 @@
 #include "DFGPresetSearchWidget.h"
 
 #include <FTL/JSONValue.h>
+#include <QFrame>
 #include <QLayout>
 
 using namespace FabricUI::DFG;
@@ -10,10 +11,11 @@ using namespace FabricUI::DFG;
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
   , m_host( host )
+  , m_frame( new QFrame(this) )
   , m_resultPreview( NULL )
 {
   this->setWindowFlags( Qt::Popup );
-
+  m_frame->setSizePolicy( { QSizePolicy::Minimum, QSizePolicy::Minimum } );
   QVBoxLayout* vlayout = new QVBoxLayout();
 
   m_queryEdit = new TabSearch::QueryEdit( m_host );
@@ -70,7 +72,8 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   hlayout->addLayout( vlayout );
   hlayout->setMargin( 0 );
 
-  this->setLayout( hlayout );
+  m_frame->setLayout( hlayout );
+  m_frame->adjustSize();
 }
 
 void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
@@ -135,6 +138,8 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 
   { // HACK
     m_resultsView->setMinimumHeight( m_resultsView->sizeHint().height() );
+    m_frame->adjustSize();
+    m_frame->adjustSize();
     adjustSize();
     adjustSize();
   }
@@ -161,7 +166,7 @@ void DFGPresetSearchWidget::hidePreview()
 {
   if( m_resultPreview != NULL )
   {
-    layout()->removeWidget( m_resultPreview );
+    m_frame->layout()->removeWidget( m_resultPreview );
     m_resultPreview->deleteLater();
     m_resultPreview = NULL;
   }
@@ -174,7 +179,7 @@ void DFGPresetSearchWidget::setPreview( QString preset )
   {
     this->hidePreview();
     m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
-    layout()->addWidget( m_resultPreview );
+    m_frame->layout()->addWidget( m_resultPreview );
     connect(
       m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
       m_queryEdit, SLOT( requestTag( const std::string& ) )
