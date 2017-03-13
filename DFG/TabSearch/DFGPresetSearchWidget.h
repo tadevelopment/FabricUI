@@ -39,6 +39,7 @@ namespace FabricUI
       void hidePreview();
       void setPreview( QString preset );
       void close();
+      void updateSize();
 
     private:
 

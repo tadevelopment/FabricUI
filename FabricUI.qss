@@ -1750,7 +1750,7 @@ FabricUI--DFG--TabSearch--QueryEdit #TagsEdit QPushButton:hover
 FabricUI--DFG--TabSearch--TagArrow
 {
   qproperty-bgColor: #50626e;
-  qproperty-highlightBgColor: #FFF;
+  qproperty-highlightBgColor: #f0f0f0;
 }
 
 FabricUI--DFG--TabSearch--ResultsView #TagsView

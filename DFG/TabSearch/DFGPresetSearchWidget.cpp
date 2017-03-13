@@ -72,7 +72,8 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   hlayout->setMargin( 0 );
 
   m_frame->setLayout( hlayout );
-  m_frame->adjustSize();
+  
+  updateSize();
 }
 
 void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
@@ -135,13 +136,16 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   hidePreview();
   m_resultsView->setResults( jsonStrR, query );
 
-  { // HACK
-    m_resultsView->setMinimumHeight( m_resultsView->sizeHint().height() );
-    m_frame->adjustSize();
-    m_frame->adjustSize();
-    adjustSize();
-    adjustSize();
-  }
+  updateSize();
+}
+
+void DFGPresetSearchWidget::updateSize()
+{
+  m_resultsView->setMinimumHeight( m_resultsView->sizeHint().height() );
+  m_frame->adjustSize();
+  m_frame->adjustSize();
+  adjustSize();
+  adjustSize();
 }
 
 void DFGPresetSearchWidget::validateSelection()
