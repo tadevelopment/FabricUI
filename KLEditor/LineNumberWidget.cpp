@@ -58,7 +58,7 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
   int lineHeight = m_metrics->height();
   int offset = lineHeight;
   if(m_lineOffset == 0)
-    offset += 1;
+    offset += 2;
   else
     offset -= 4;
 #else
