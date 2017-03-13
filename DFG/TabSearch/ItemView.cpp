@@ -5,6 +5,7 @@
 
 #include <QLayout>
 #include <QLabel>
+#include <QPainter>
 #include <QVariant>
 #include <QPushButton>
 
@@ -51,6 +52,53 @@ void TagView::onActivated()
 void TagView::setScore( double score )
 {
   this->setToolTip( "Score = " + QString::number( score ) );
+}
+
+TagArrow::TagArrow()
+  : m_spacing(8)
+  , m_leftHighlighted( false )
+  , m_hasRight( false )
+  , m_rightHighlighted( false )
+  , m_bgColor(QColor(0,0,0))
+  , m_highlightBgColor(QColor(255,255,255))
+{
+
+}
+
+void TagArrow::paintEvent( QPaintEvent *e )
+{
+  QRect r = this->contentsRect();
+  r.setSize( QSize( r.width() + 1, r.height() + 1 ) );
+  QPainter p( this );
+  p.setRenderHint( QPainter::Antialiasing, true );
+  {
+    // Left triangle
+    QPainterPath path;
+    QPolygon poly;
+    poly.append( r.topLeft() );
+    poly.append( QPoint(
+      r.right() - m_spacing,
+      ( r.top() + r.bottom() ) / 2
+    ) );
+    poly.append( r.bottomLeft() );
+    path.addPolygon( poly );
+    p.fillPath( path, m_leftHighlighted ? m_highlightBgColor : m_bgColor );
+  }
+  for( size_t i = 0; m_hasRight && i<2; i++ )
+  {
+    // Right triangles
+    QPainterPath path;
+    QPolygon poly;
+    poly.append( QPoint(
+      r.left() + m_spacing,
+      i == 0 ? r.top() : r.bottom()
+    ) );
+    poly.append( ( r.topRight() + r.bottomRight() ) / 2 );
+    poly.append( i == 0 ? r.topRight() : r.bottomRight() );
+    path.addPolygon( poly );
+    p.fillPath( path, m_rightHighlighted ? m_highlightBgColor : m_bgColor );
+  }
+  Parent::paintEvent( e );
 }
 
 PresetView::PresetView( const std::string& presetName, const std::vector<std::string>& tags )

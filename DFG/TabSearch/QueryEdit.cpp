@@ -132,6 +132,15 @@ void QueryController::clear()
   m_query.clear();
 }
 
+struct ArrowedTag
+{
+  TagView* left;
+  TagArrow* right;
+  ArrowedTag( TagView* left, TagArrow* right )
+    : left( left ), right( right )
+  {}
+};
+
 class QueryEdit::TagsEdit : public QWidget
 {
 public:
@@ -139,6 +148,7 @@ public:
   {
     QHBoxLayout* m_layout = new QHBoxLayout();
     m_layout->setMargin( 0 );
+    m_layout->setSpacing( 0 );
     this->setLayout( m_layout );
     this->setObjectName( "TagsEdit" );
     layout()->setAlignment( Qt::AlignLeft );
@@ -147,8 +157,11 @@ public:
     for( size_t i = 0; i < tags.size(); i++ )
     {
       TagView* tagView = new TagView( tags[i] );
-      m_tagViews.push_back( tagView );
+      TagArrow* arrow = new TagArrow();
+      arrow->setHasRight( i < tags.size() - 1 );
       m_layout->addWidget( tagView );
+      m_layout->addWidget( arrow );
+      m_tagViews.push_back( ArrowedTag( tagView, arrow ) );
       connect(
         tagView, SIGNAL( activated( const std::string& ) ),
         controller, SLOT( removeTag( const std::string& ) )
@@ -159,11 +172,17 @@ public:
   void setHighlightedTag( int index )
   {
     for( size_t i = 0; i < m_tagViews.size(); i++ )
-      m_tagViews[i]->setHighlighted( index == AllHighlighted || int(i) == index );
+    {
+      bool highlighted = index == AllHighlighted || int( i ) == index;
+      m_tagViews[i].left->setHighlighted( highlighted );
+      m_tagViews[i].right->setLeftHighlighted( highlighted );
+      if( i > 0 )
+        m_tagViews[i-1].right->setRightHighlighted( highlighted );
+    }
   }
 
 private:
-  std::vector<TagView*> m_tagViews;
+  std::vector<ArrowedTag> m_tagViews;
 };
 
 class QueryEdit::TextEdit : public QLineEdit
