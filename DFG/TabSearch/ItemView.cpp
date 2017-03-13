@@ -2,6 +2,7 @@
 
 #include "ItemView.h"
 #include "HeatBar.h"
+#include "QueryEdit.h"
 
 #include <QLayout>
 #include <QLabel>
@@ -17,6 +18,16 @@ void FabricUI::DFG::TabSearch::SetWidgetHighlight( QWidget* w, const bool highli
   w->setStyleSheet( w->styleSheet() );
 }
 
+std::string FormatTagName( const std::string& tagName )
+{
+  Query::Tag tag = tagName;
+  // Capitalize the name of the category
+  std::string category = tag.cat();
+  if( category.size() > 0 )
+    category[0] = toupper( category[0] );
+  return category + ':' + std::string(tag.name());
+}
+
 TagView::TagView( const std::string& tagName )
   : m_name( tagName )
   , m_hovered( false )
@@ -26,7 +37,7 @@ TagView::TagView( const std::string& tagName )
 
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );
-  m_button = new QPushButton( QString::fromStdString( tagName ) );
+  m_button = new QPushButton( QString::fromStdString( FormatTagName( tagName ) ) );
   lay->addWidget( m_button );
   this->setLayout( lay );
   m_button->setFocusPolicy( Qt::NoFocus );

@@ -31,7 +31,7 @@ namespace FabricUI
           typedef std::string Cat;
           Tag( const std::string& s ) : std::string( s ), m_sep( s.find( ':' ) ) { assert( m_sep != -1 ); }
           inline FTL::StrRef cat() { return FTL::StrRef( data(), m_sep ); }
-          inline FTL::StrRef name() { return FTL::StrRef( data() + m_sep + 1, size() - m_sep + 1 ); }
+          inline FTL::StrRef name() { return FTL::StrRef( data() + m_sep + 1, size() - m_sep - 1 ); }
         };
 
         typedef std::vector<Tag> Tags;
