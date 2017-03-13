@@ -106,6 +106,17 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   const std::string searchStr = query.getText();
 
   std::vector<std::string> searchTermsStr = query.getSplitText();
+
+  // Remove tags (i.e. terms that contain ':') because they should be
+  // in query.getTags() instead (otherwise, it means they are being typed)
+  {
+    std::vector<std::string> filteredTerms;
+    for( size_t i = 0; i < searchTermsStr.size(); i++ )
+      if( searchTermsStr[i].find( ':' ) == std::string::npos )
+        filteredTerms.push_back( searchTermsStr[i] );
+    searchTermsStr = filteredTerms;
+  }
+
   std::vector<char const*> searchTerms( searchTermsStr.size() );
 
   for( unsigned int i = 0; i < searchTermsStr.size(); i++ )
