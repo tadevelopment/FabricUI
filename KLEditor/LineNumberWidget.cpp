@@ -56,10 +56,10 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
 
 #ifdef FABRIC_OS_LINUX
   if(m_lineOffset != 0)
-    offset -= 5;
+    offset -= 4;
 #else
   if(m_lineOffset != 0)
-    offset -= 5;
+    offset -= 4;
 #endif
 
   painter.setFont(m_config.lineNumberFont);
