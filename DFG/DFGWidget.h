@@ -85,6 +85,7 @@ namespace DFG {
       DFGController * getUIController();
       DFGAbstractTabSearchWidget * getTabSearchWidget();
       DFGGraphViewWidget * getGraphViewWidget();
+      const DFGGraphViewWidget * getGraphViewWidget() const;
       DFGExecHeaderWidget * getHeaderWidget();
       DFGErrorsWidget *getErrorsWidget() const
         { return m_errorsWidget; }
@@ -170,6 +171,7 @@ namespace DFG {
       void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);
       void onPresetAddedFromTabSearch( QString preset );
+      void onBackdropAddedFromTabSearch();
       void onToggleLegacyTabSearch( bool toggled );
       void onReloadStyles();
 
@@ -205,6 +207,7 @@ namespace DFG {
       bool maybePopExec( std::string &nodeName );
 
       bool checkForUnsaved();
+      QPointF getTabSearchScenePos() const;
 
       DFGGraphViewWidget * m_uiGraphViewWidget;
       DFGExecHeaderWidget * m_uiHeader;

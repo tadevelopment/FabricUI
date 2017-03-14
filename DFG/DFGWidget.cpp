@@ -232,6 +232,10 @@ DFGWidget::DFGWidget(
     m_tabSearchWidget, SIGNAL( selectedPreset( QString ) ),
     this, SLOT( onPresetAddedFromTabSearch( QString ) )
   );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedBackdrop() ),
+    this, SLOT( onBackdropAddedFromTabSearch() )
+  );
 
   QObject::connect(
     m_uiHeader, SIGNAL(goUpPressed()),
@@ -293,10 +297,8 @@ DFGAbstractTabSearchWidget * DFGWidget::getTabSearchWidget()
   return m_tabSearchWidget;
 }
 
-DFGGraphViewWidget * DFGWidget::getGraphViewWidget()
-{
-  return m_uiGraphViewWidget;
-}
+DFGGraphViewWidget * DFGWidget::getGraphViewWidget() { return m_uiGraphViewWidget; }
+const DFGGraphViewWidget * DFGWidget::getGraphViewWidget() const { return m_uiGraphViewWidget; }
 
 DFGExecHeaderWidget * DFGWidget::getHeaderWidget()
 {
@@ -789,12 +791,24 @@ void DFGWidget::tabSearch()
   }
 }
 
+QPointF DFGWidget::getTabSearchScenePos() const
+{
+  return this->getGraphViewWidget()->graph()->itemGroup()->mapFromScene( m_tabSearchPos );
+}
+
 void DFGWidget::onPresetAddedFromTabSearch( QString preset )
 {
-  QPoint localPos = m_tabSearchPos;
   this->getUIController()->cmdAddInstFromPreset(
     preset,
-    this->getGraphViewWidget()->graph()->itemGroup()->mapFromScene( localPos )
+    getTabSearchScenePos()
+  );
+}
+
+void DFGWidget::onBackdropAddedFromTabSearch()
+{
+  this->getUIController()->cmdAddBackDrop(
+    "backdrop",
+    getTabSearchScenePos()
   );
 }
 
