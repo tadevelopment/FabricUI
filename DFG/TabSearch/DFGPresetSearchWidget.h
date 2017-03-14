@@ -33,6 +33,7 @@ namespace FabricUI
     signals:
       // Emitted when a Preset has been chosen
       void selectedPreset( QString preset );
+      void selectedBackdrop();
 
     private slots:
       void onQueryChanged( const TabSearch::Query& query );
@@ -42,6 +43,7 @@ namespace FabricUI
       void setPreview( const std::string& preset );
       void close();
       void updateSize();
+      void registerBackdrop();
 
     private:
 

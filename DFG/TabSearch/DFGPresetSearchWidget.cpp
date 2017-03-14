@@ -16,6 +16,9 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   , m_status( new QStatusBar() )
   , m_resultPreview( NULL )
 {
+
+  registerBackdrop();
+
   this->setObjectName( "DFGPresetSearchWidget" );
   this->setWindowFlags( Qt::Popup );
   QVBoxLayout* vlayout = new QVBoxLayout();
@@ -151,9 +154,30 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   updateSize();
 }
 
+const std::string BackdropType = "backdrop";
+
+void DFGPresetSearchWidget::registerBackdrop()
+{
+  const char* tags[] = {
+    "name:BackDrop",
+    "aka:Layout",
+    "cat:Tidying",
+    "cat:UI"
+  };
+  m_host->searchDBAddUser( (BackdropType + ":BackDrop").data(), sizeof( tags ) / sizeof( const char* ), tags );
+}
+
 void DFGPresetSearchWidget::onResultValidated( const std::string& result )
 {
-  emit selectedPreset( QString::fromStdString( result ) );
+  size_t sep = result.find( ':' );
+  if( sep == std::string::npos )
+    emit selectedPreset( QString::fromStdString( result ) );
+  else
+  {
+    std::string type = result.substr( 0, sep );
+    if( type == BackdropType )
+      emit selectedBackdrop();
+  }
 }
 
 void DFGPresetSearchWidget::updateSize()

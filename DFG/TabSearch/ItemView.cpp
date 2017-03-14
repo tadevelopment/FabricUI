@@ -119,6 +119,8 @@ PresetView::PresetView( const std::string& presetName, const std::vector<std::st
   this->setObjectName( "PresetView" );
 
   size_t dotI = presetName.rfind( '.' );
+  if( dotI == std::string::npos )
+    dotI = presetName.find( ':' ); // Non-preset results (backdrops, variables, etc...)
   std::string baseName = presetName.substr( dotI+1 );
   std::string path = presetName.substr( 0, dotI );
   QHBoxLayout* lay = new QHBoxLayout();
