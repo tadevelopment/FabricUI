@@ -36,9 +36,10 @@ namespace FabricUI
 
     private slots:
       void onQueryChanged( const TabSearch::Query& query );
+      void onResultValidated( const std::string& result );
       void validateSelection();
       void hidePreview();
-      void setPreview( QString preset );
+      void setPreview( const std::string& preset );
       void close();
       void updateSize();
 

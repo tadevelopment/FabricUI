@@ -43,9 +43,9 @@ namespace FabricUI
         // Emitted when the selection is moved to a non-preset
         void presetDeselected();
         // Emitted when a new preset is selected/highlighted (to preview it, for example)
-        void presetSelected( QString preset );
+        void presetSelected( const std::string& preset );
         // Emitted when a preset has been chosen
-        void presetValidated( QString preset );
+        void presetValidated( const std::string& preset );
         // Emitted when a Tag has been requested
         void tagRequested( const std::string& tag );
         void tagsRequested( const std::vector<std::string>& tags );
@@ -63,7 +63,7 @@ namespace FabricUI
 
       private:
         void replaceViewItems( const QModelIndex& parent = QModelIndex() );
-        QString getSelectedPreset();
+        const std::string& getSelectedPreset();
         class Model;
         Model* m_model;
 

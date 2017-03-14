@@ -13,12 +13,12 @@
 using namespace FabricUI::DFG::TabSearch;
 using namespace FabricCore;
 
-ResultPreview::ResultPreview( QString preset, DFGHost* host )
+ResultPreview::ResultPreview( const std::string& preset, DFGHost* host )
   : m_preset( preset )
 {
   QVBoxLayout* layout = new QVBoxLayout();
 
-  String descStr = host->getPresetDesc( preset.toStdString().data() );
+  String descStr = host->getPresetDesc( preset.data() );
   FTL::JSONValue* desc = FTL::JSONValue::Decode( std::string( descStr.getCStr(), descStr.getSize() ) );
   FTL::CStrRef nameStr = desc->cast<FTL::JSONObject>()->getString( "presetName" );
 
@@ -33,14 +33,14 @@ ResultPreview::ResultPreview( QString preset, DFGHost* host )
 
   // Path
   {
-    QLabel* label = new QLabel( "<i>" + preset + "</i>" );
+    QLabel* label = new QLabel( "<i>" + QString::fromStdString( preset ) + "</i>" );
     font.setPointSize( 8 ); label->setFont( font );
     layout->addWidget( label );
   }
 
   // Tags
   {
-    FEC_StringRef tagsStrR = FEC_DFGHostGetPresetTags( host->getFECDFGHostRef(), preset.toStdString().data() );
+    FEC_StringRef tagsStrR = FEC_DFGHostGetPresetTags( host->getFECDFGHostRef(), preset.data() );
     FTL::StrRef tagsStr( FEC_StringGetCStr( tagsStrR ), FEC_StringGetSize( tagsStrR ) );
     FTL::JSONValue* tags = FTL::JSONValue::Decode( tagsStr );
     FTL::JSONArray* tagsA = tags->cast<FTL::JSONArray>();
@@ -60,4 +60,4 @@ ResultPreview::ResultPreview( QString preset, DFGHost* host )
   this->setLayout( layout );
 }
 
-QString ResultPreview::getPreset() const { return m_preset; }
+const std::string& ResultPreview::getPreset() const { return m_preset; }

@@ -596,10 +596,10 @@ void ResultsView::setResults( const std::string& searchResult, const Query& quer
   adjustSize();
 }
 
-QString ResultsView::getSelectedPreset()
+const std::string& ResultsView::getSelectedPreset()
 {
   assert( m_model->isPreset( currentIndex() ) );
-  return QString::fromStdString( m_model->getPreset( currentIndex() ).name );
+  return m_model->getPreset( currentIndex() ).name;
 }
 
 void ResultsView::keyPressEvent( QKeyEvent * event )

@@ -32,15 +32,15 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   m_resultsView->setFocusProxy( this );
   vlayout->addWidget( m_resultsView );
   connect(
-    m_resultsView, SIGNAL( presetSelected( QString ) ),
-    this, SLOT( setPreview( QString ) )
+    m_resultsView, SIGNAL( presetSelected( const std::string& ) ),
+    this, SLOT( setPreview( const std::string& ) )
   );
   connect(
-    m_resultsView, SIGNAL( presetValidated( QString ) ),
-    this, SIGNAL( selectedPreset( QString ) )
+    m_resultsView, SIGNAL( presetValidated( const std::string& ) ),
+    this, SLOT( onResultValidated( const std::string& ) )
   );
   connect(
-    m_resultsView, SIGNAL( presetValidated( QString ) ),
+    m_resultsView, SIGNAL( presetValidated( const std::string& ) ),
     this, SLOT( close() )
   );
   connect(
@@ -151,6 +151,11 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   updateSize();
 }
 
+void DFGPresetSearchWidget::onResultValidated( const std::string& result )
+{
+  emit selectedPreset( QString::fromStdString( result ) );
+}
+
 void DFGPresetSearchWidget::updateSize()
 {
   m_resultsView->setMinimumHeight( m_resultsView->sizeHint().height() );
@@ -191,7 +196,7 @@ void DFGPresetSearchWidget::hidePreview()
   updateSize();
 }
 
-void DFGPresetSearchWidget::setPreview( QString preset )
+void DFGPresetSearchWidget::setPreview( const std::string& preset )
 {
   //if( m_resultPreview == NULL || preset != m_resultPreview->getPreset() )
   if( false ) // HACK : Disabled the Preview
@@ -205,7 +210,7 @@ void DFGPresetSearchWidget::setPreview( QString preset )
     );
   }
 
-  m_status->showMessage( "INFO: " + preset );
+  m_status->showMessage( "INFO: " + QString::fromStdString( preset ) );
   m_status->setMaximumHeight( QWIDGETSIZE_MAX );
   updateSize();
 }

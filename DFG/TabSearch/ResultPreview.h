@@ -21,15 +21,15 @@ namespace FabricUI
         Q_OBJECT
 
       public:
-        ResultPreview( QString preset, FabricCore::DFGHost* host );
-        QString getPreset() const;
+        ResultPreview( const std::string& preset, FabricCore::DFGHost* host );
+        const std::string& getPreset() const;
 
       signals:
         // Emitted when a Tag has been requested
         void tagRequested( const std::string& tag );
 
       private:
-        QString m_preset;
+        std::string m_preset;
       };
     }
   };
