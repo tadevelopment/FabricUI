@@ -844,9 +844,9 @@ void DFGWidget::updateTabSearchVariables()
     binding,
     this->getUIController()->getExecPath()
   );
-  for( size_t i = 0; i < variableNames.size(); i++ )
+  for( QStringList::const_iterator it = variableNames.begin(); it != variableNames.end(); it++ )
   {
-    const std::string varName = variableNames[i].toUtf8().constData();
+    const std::string varName = it->toUtf8().constData();
     const std::string varType =
       binding.getExec().getVarValue( varName.data() ).getTypeNameCStr();
     m_tabSearchWidget->registerVariable( varName, varType );
