@@ -172,6 +172,8 @@ namespace DFG {
       void onRevealPresetInExplorer(const char* nodeName);
       void onPresetAddedFromTabSearch( QString preset );
       void onBackdropAddedFromTabSearch();
+      void onVariableSetterAddedFromTabSearch( const std::string name );
+      void onVariableGetterAddedFromTabSearch( const std::string name );
       void onToggleLegacyTabSearch( bool toggled );
       void onReloadStyles();
 
@@ -189,6 +191,7 @@ namespace DFG {
         int line,
         int column
         );
+      void updateTabSearchVariables();
 
     private:
 

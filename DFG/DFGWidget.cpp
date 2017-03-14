@@ -236,6 +236,18 @@ DFGWidget::DFGWidget(
     m_tabSearchWidget, SIGNAL( selectedBackdrop() ),
     this, SLOT( onBackdropAddedFromTabSearch() )
   );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
+    this, SLOT( onVariableGetterAddedFromTabSearch( const std::string ) )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedSetVariable( const std::string ) ),
+    this, SLOT( onVariableSetterAddedFromTabSearch( const std::string ) )
+  );
+  QObject::connect(
+    getUIController(), SIGNAL( varsChanged() ),
+    this, SLOT( updateTabSearchVariables() )
+  );
 
   QObject::connect(
     m_uiHeader, SIGNAL(goUpPressed()),
@@ -810,6 +822,35 @@ void DFGWidget::onBackdropAddedFromTabSearch()
     "backdrop",
     getTabSearchScenePos()
   );
+}
+
+void DFGWidget::onVariableSetterAddedFromTabSearch( const std::string name )
+{
+  this->getUIController()->cmdAddSet( "set", QString::fromStdString( name ), getTabSearchScenePos() );
+}
+
+void DFGWidget::onVariableGetterAddedFromTabSearch( const std::string name )
+{
+  this->getUIController()->cmdAddGet( "get", QString::fromStdString( name ), getTabSearchScenePos() );
+}
+
+void DFGWidget::updateTabSearchVariables()
+{
+  if( isUsingLegacyTabSearch() )
+    return;
+
+  FabricCore::DFGBinding& binding = this->getUIController()->getBinding();
+  QStringList variableNames = DFGBindingUtils::getVariableWordsFromBinding(
+    binding,
+    this->getUIController()->getExecPath()
+  );
+  for( size_t i = 0; i < variableNames.size(); i++ )
+  {
+    const std::string varName = variableNames[i].toUtf8().constData();
+    const std::string varType =
+      binding.getExec().getVarValue( varName.data() ).getTypeNameCStr();
+    m_tabSearchWidget->registerVariable( varName, varType );
+  }
 }
 
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)

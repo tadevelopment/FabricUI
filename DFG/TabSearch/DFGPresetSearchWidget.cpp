@@ -220,10 +220,10 @@ void DFGPresetSearchWidget::onResultValidated( const std::string& result )
       emit selectedBackdrop();
     else
     if( type == VariableGetType )
-      emit selectedGetVariable( result.substr( result.rfind( VariableSeparator ) ) );
+      emit selectedGetVariable( result.substr( result.find( VariableSeparator )+1 ) );
     else
     if( type == VariableSetType )
-      emit selectedSetVariable( result.substr( result.rfind( VariableSeparator ) ) );
+      emit selectedSetVariable( result.substr( result.find( VariableSeparator )+1 ) );
 
   }
 }
