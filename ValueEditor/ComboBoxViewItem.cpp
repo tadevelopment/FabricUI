@@ -12,14 +12,19 @@
 
 using namespace FabricUI::ValueEditor;
 
-FabricCore::RTVal ToRotationOrder( FabricCore::RTVal& val, const int index );
-
-ComboBoxViewItem::ComboBoxViewItem( QString const &name, QVariant const &v, ItemMetadata* metadata, bool isString, bool isRotationOrder)
+ComboBoxViewItem::ComboBoxViewItem(
+  QString const &name,
+  QVariant const &v,
+  ItemMetadata* metadata,
+  bool isString,
+  bool isRotationOrder,
+  FabricCore::Context contextForRotationOrder
+  )
   : BaseViewItem(name, metadata)
   , m_comboBox(NULL)
   , m_isString(isString)
   , m_isRotationOrder(isRotationOrder)
-  , m_val(v.value<FabricCore::RTVal>())
+  , m_contextForRotationOrder( contextForRotationOrder )
 {
   m_comboBox = new ComboBox;
 
@@ -99,6 +104,12 @@ void ComboBoxViewItem::onModelValueChanged( QVariant const &v )
     int index = m_comboBox->findText( getQVariantRTValValue<QString>(v) );
     m_comboBox->setCurrentIndex( index );
   }
+  else if( m_isRotationOrder )
+  {
+    FabricCore::RTVal rtVal = v.value<FabricCore::RTVal>();
+    FabricCore::RTVal orderRTVal = rtVal.getMemberRef( 0 );
+    m_comboBox->setCurrentIndex( orderRTVal.getSInt32() );
+  }
   else
   {
     m_comboBox->setCurrentIndex( getQVariantRTValValue<int>(v) );
@@ -115,11 +126,30 @@ void ComboBoxViewItem::entrySelected(int index)
   }
   else if ( m_isRotationOrder )
   {
-    m_val = ToRotationOrder( m_val, index );
+    try
+    {
+      FabricCore::RTVal indexAsRTVal =
+        FabricCore::RTVal::ConstructSInt32(
+          m_contextForRotationOrder,
+          index
+          );
 
-    emit viewValueChanged(
-      QVariant::fromValue<FabricCore::RTVal>( m_val )
-      );
+      FabricCore::RTVal rtVal =
+        FabricCore::RTVal::Construct(
+          m_contextForRotationOrder,
+          "RotationOrder",
+          1,
+          &indexAsRTVal
+          );
+
+      emit viewValueChanged(
+        QVariant::fromValue<FabricCore::RTVal>( rtVal )
+        );
+    }
+    catch ( FabricCore::Exception e )
+    {
+      std::cerr << e.getDesc_cstr() << '\n';
+    }
   }
   else
   {
@@ -128,21 +158,6 @@ void ComboBoxViewItem::entrySelected(int index)
       );
   }
 }
-//////////////////////////////////////////////////////////////////////////
-// 
-FabricCore::RTVal ToRotationOrder( FabricCore::RTVal& val, const int index )
-{
-  FabricCore::RTVal indexAsRTVal = FabricCore::RTVal::ConstructUInt8(
-    val.getContext(),
-    index);
-
-  return FabricCore::RTVal::Create(
-    val.getContext(),
-    "RotationOrder",
-    1,
-    &indexAsRTVal );
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 // 
@@ -153,31 +168,32 @@ BaseViewItem* ComboBoxViewItem::CreateItem(
   )
 {
   FabricCore::RTVal rtVal = value.value<FabricCore::RTVal>();
-  bool isString = RTVariant::canConvert( value, QVariant::String );
-
-  if ( !rtVal.isValid() )
-    return 0;
-  else
+  if ( rtVal.isValid()
+    && rtVal.hasType( "RotationOrder" ) )
   {
-    if ( rtVal.hasType( "RotationOrder" ) )
+    return new ComboBoxViewItem(
+      name,
+      value,
+      metaData,
+      false, // isString
+      true, // isRotationOrder
+      rtVal.getContext()
+      );
+  }
+
+  bool isString = RTVariant::canConvert( value, QVariant::String );
+  if ( metaData != NULL &&
+       metaData->has("uiCombo") )
+  {
+    if ( RTVariant::canConvert( value, QVariant::Int ) ||
+         RTVariant::canConvert( value, QVariant::UInt ) || 
+         isString )
     {
-      return new ComboBoxViewItem( name, value, metaData, isString , true);
-    }
-    else
-    { 
-      if ( metaData != NULL &&
-           metaData->has("uiCombo") )
-      {
-        if ( RTVariant::canConvert( value, QVariant::Int ) ||
-             RTVariant::canConvert( value, QVariant::UInt ) || 
-             isString )
-        {
-          return new ComboBoxViewItem( name, value, metaData, isString );
-        }
-      }
-      return 0;
+      return new ComboBoxViewItem( name, value, metaData, isString );
     }
   }
+
+  return 0;
 }
 
 const int ComboBoxViewItem::Priority = 5;
