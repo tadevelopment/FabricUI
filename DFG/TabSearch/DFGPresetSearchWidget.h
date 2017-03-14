@@ -10,6 +10,7 @@
 #include "ResultPreview.h"
 
 class QFrame;
+class QStatusBar;
 
 namespace FabricUI
 {
@@ -49,6 +50,7 @@ namespace FabricUI
       // Used to query the database
       FabricCore::DFGHost* m_host;
       QFrame* m_frame;
+      QStatusBar* m_status;
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
       TabSearch::ResultPreview* m_resultPreview;

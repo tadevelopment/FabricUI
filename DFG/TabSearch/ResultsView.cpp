@@ -591,7 +591,8 @@ void ResultsView::setResults( const std::string& searchResult, const Query& quer
   // Select the first result
   if( !m_model->hasNoResults() )
     this->setCurrentIndex( m_model->getFirstPreset() );
-  emit presetDeselected();
+  else
+    emit presetDeselected();
   adjustSize();
 }
 
