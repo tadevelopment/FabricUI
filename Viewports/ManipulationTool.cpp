@@ -136,6 +136,8 @@ bool ManipulationTool::onEvent(QEvent *event) {
         Commands::CommandManager::GetCommandManager()->synchronizeKL();
       }
 
+      // In certain cases, the kl event is not accepted but should be.
+      // We check if KL commands where added.
       if (event->type() == QEvent::MouseButtonRelease)
         Commands::CommandManager::GetCommandManager()->synchronizeKL();
 

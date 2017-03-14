@@ -75,7 +75,6 @@ QString KLScriptableCommand::getArg(
       &keyVal);
 
     return Util::RTValUtil::klRTValToJSON(
-      CommandManager::GetCommandManager()->getFabricClient(),
       klRTVal);
   }
 

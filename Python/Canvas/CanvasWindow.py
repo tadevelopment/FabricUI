@@ -491,7 +491,10 @@ class CanvasWindow(QtGui.QMainWindow):
         self.renderingOptionsDockWidget.setFeatures(self.dockFeatures)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.renderingOptionsDockWidget, QtCore.Qt.Vertical)
         self.renderingOptionsDockWidget.hide()
-
+        
+        # When a klWidget has is activated/deactivated from the value-editor.
+        self.valueEditor.refreshViewport.connect(self.viewport.redraw)
+      
     def _initValueEditor(self):
         """Initializes the value editor."""
 

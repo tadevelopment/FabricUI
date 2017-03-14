@@ -39,11 +39,7 @@ void BaseRTValScriptableCommand::declareArg(
   bool optional, 
   RTVal defaultValue) 
 {
-  Client client = 
-    Commands::CommandManager::GetCommandManager()->getFabricClient();
-
   QString defaultValueStr = Util::RTValUtil::rtValToJSON(
-    client,
     defaultValue
   );
 

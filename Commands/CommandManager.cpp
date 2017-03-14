@@ -407,7 +407,6 @@ void CommandManager::synchronizeKL()
 
           args[argNameVal.getStringCString()] = 
             Util::RTValUtil::klRTValToJSON(
-              m_client,
               klRTVal);
         }
 

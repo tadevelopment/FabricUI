@@ -65,6 +65,13 @@ protected slots:
   void prepareMenu( const QPoint& pt );
 
   void resetItem();
+  
+  void emitRefreshViewport();
+
+signals:
+  // Refreshes the viewport, if a klWidget
+  // has been activated-deactivated.
+  void refreshViewport();
 };
 
 } // namespace FabricUI 

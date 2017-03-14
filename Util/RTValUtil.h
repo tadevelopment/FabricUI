@@ -25,20 +25,40 @@ class RTValUtil
 
     /// Convert a C++ KL RTVal to a C++ RTVal.
     static FabricCore::RTVal klRTValToRTVal(
-      FabricCore::Client client,
       FabricCore::RTVal klRTVal
       );
 
     /// Convert a C++ RTVal to a C++ KL RTVal.
     static FabricCore::RTVal rtValToKLRTVal(
-      FabricCore::Client client,
       FabricCore::RTVal rtVal
       );
 
     /// Extract in JSON the C++ RTVal.
     static QString rtValToJSON(
-      FabricCore::Client client,
-      FabricCore::RTVal rtVal);
+      FabricCore::RTVal rtVal
+      );
+
+    /// Extract in JSON the C++ KL RTVal.
+    static QString klRTValToJSON(
+      FabricCore::RTVal klRTVal
+      );
+
+    /// Create a C++ RTVal of type rtValType 
+    /// and sets it's value from the json.
+    static FabricCore::RTVal jsonToRTVal(
+      FabricCore::Context ctxt,
+      const QString &json,
+      const QString &rtValType
+      );
+     
+    /// Create a C++ RTVal wrapping a KL RTVal 
+    /// of type rtValType and sets it's value
+    /// from the json.
+    static FabricCore::RTVal jsonToKLRTVal(
+      FabricCore::Context ctxt,
+      const QString &json,
+      const QString &rtValType
+      );
 
     /// Create a C++ RTVal of type rtValType 
     /// and sets it's value from the json.
@@ -48,12 +68,6 @@ class RTValUtil
       const QString &rtValType
       );
 
-    /// Extract in JSON the C++ KL RTVal.
-    static QString klRTValToJSON(
-      FabricCore::Client client,
-      FabricCore::RTVal klRTVal
-      );
-     
     /// Create a C++ RTVal wrapping a KL RTVal 
     /// of type rtValType and sets it's value
     /// from the json.

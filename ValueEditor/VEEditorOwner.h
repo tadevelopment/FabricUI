@@ -59,6 +59,7 @@ namespace FabricUI {
     protected slots:
       virtual void onModelItemInserted( FabricUI::ValueEditor::BaseModelItem* parent, int index, const char* childName );
       virtual void onModelValueChanged( QVariant const &newValue );
+      void emitRefreshViewport();
 
     signals:
       void log(const char * message);
@@ -69,7 +70,10 @@ namespace FabricUI {
       void modelItemRemoved( FabricUI::ValueEditor::BaseModelItem* removedItem);
       void modelItemChildrenReordered( FabricUI::ValueEditor::BaseModelItem* parent, const QList<int>& newOrder );
       void modelItemRenamed( FabricUI::ValueEditor::BaseModelItem* renamedItem );
-
+      // Refreshes the viewport, if a klWidget
+      // has been activated-deactivated.
+      void refreshViewport();
+      
     protected:
 
       VETreeWidget* m_valueEditor;

@@ -574,6 +574,13 @@ void VETreeWidget::onSetModelItem( BaseModelItem* pItem )
   {
     ViewItemFactory* pFactory = ViewItemFactory::GetInstance();
     pViewLayer = pFactory->createViewItem( pItem );
+
+    connect(
+      pViewLayer,
+      SIGNAL(refreshViewport()),
+      this,
+      SLOT(emitRefreshViewport())
+      );
   }
   else
     pViewLayer = 0;
@@ -603,6 +610,13 @@ void VETreeWidget::onTreeWidgetItemExpanded( QTreeWidgetItem *_treeWidgetItem )
     for (int i = 0; i < childViewItems.size(); ++i)
     {
       BaseViewItem *childViewItem = childViewItems.at( i );
+      connect(
+        childViewItem,
+        SIGNAL(refreshViewport()),
+        this,
+        SLOT(emitRefreshViewport())
+      );
+      
       createTreeWidgetItem( childViewItem, treeWidgetItem );
       setTabOrder( lastViewItem->getWidget(), childViewItem->getWidget() );
       lastViewItem = childViewItem;
@@ -676,6 +690,11 @@ void VETreeWidget::keyPressEvent(QKeyEvent *event)
     event->ignore();  // [FE-7365]
   else
     QTreeWidget::keyPressEvent(event);
+}
+
+
+void VETreeWidget::emitRefreshViewport() {
+  emit refreshViewport();
 }
 
 //////////////////////////////////////////////////////////////////////////

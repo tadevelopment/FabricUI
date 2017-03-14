@@ -19,7 +19,6 @@ RTValUtil::RTValUtil()
 }
 
 RTVal RTValUtil::klRTValToRTVal(
-  Client client,
   RTVal klRTVal)
 {
   RTVal rtVal;
@@ -37,7 +36,7 @@ RTVal RTValUtil::klRTValToRTVal(
     // Construct a C++ RTVal of type `type`
     // and set its value from the kl RTVal.
     rtVal = RTVal::Construct(
-      client, 
+      klRTVal.getContext(), 
       dataType.toUtf8().constData(), 
       1, 
       &klRTVal);
@@ -54,7 +53,6 @@ RTVal RTValUtil::klRTValToRTVal(
 }
 
 RTVal RTValUtil::rtValToKLRTVal(
-  Client client,
   RTVal rtVal)
 {
   RTVal klRTVal;
@@ -62,7 +60,7 @@ RTVal RTValUtil::rtValToKLRTVal(
   try 
   {
     klRTVal = RTVal::Construct(
-      client, 
+      rtVal.getContext(), 
       "RTVal", 
       1, 
       &rtVal);
@@ -79,7 +77,6 @@ RTVal RTValUtil::rtValToKLRTVal(
 }
 
 QString RTValUtil::rtValToJSON(
-  Client client,
   RTVal rtVal)
 {
   QString res;
@@ -106,8 +103,17 @@ QString RTValUtil::rtValToJSON(
   return res;
 }
 
+QString RTValUtil::klRTValToJSON(
+  RTVal klRTVal)
+{
+  return RTValUtil::rtValToJSON(
+    klRTValToRTVal(
+      klRTVal)
+    );
+}
+
 RTVal RTValUtil::jsonToRTVal(
-  Client client,
+  Context ctxt,
   const QString &json,
   const QString &rtValType)
 {
@@ -116,7 +122,7 @@ RTVal RTValUtil::jsonToRTVal(
   try 
   {
     rtVal = RTVal::Construct(
-      client, 
+      ctxt, 
       rtValType.toUtf8().constData(), 
       0, 
       0);
@@ -141,16 +147,29 @@ RTVal RTValUtil::jsonToRTVal(
   return rtVal;
 }
 
-QString RTValUtil::klRTValToJSON(
-  Client client,
-  RTVal klRTVal)
+RTVal RTValUtil::jsonToKLRTVal(
+  Context ctxt,
+  const QString &json,
+  const QString &rtValType)
 {
-  return RTValUtil::rtValToJSON(
-    client,
-    klRTValToRTVal(
-      client,
-      klRTVal)
-    );
+  RTVal rtVal = RTValUtil::jsonToRTVal(
+    ctxt,
+    json,
+    rtValType);
+  
+  return RTValUtil::rtValToKLRTVal(
+    rtVal);
+}
+
+RTVal RTValUtil::jsonToRTVal(
+  Client client,
+  const QString &json,
+  const QString &rtValType)
+{
+  return jsonToRTVal(
+    client.getContext(),
+    json,
+    rtValType);
 }
 
 RTVal RTValUtil::jsonToKLRTVal(
@@ -158,14 +177,10 @@ RTVal RTValUtil::jsonToKLRTVal(
   const QString &json,
   const QString &rtValType)
 {
-  RTVal rtVal = RTValUtil::jsonToRTVal(
-    client,
+  return jsonToKLRTVal(
+    client.getContext(),
     json,
     rtValType);
-  
-  return RTValUtil::rtValToKLRTVal(
-    client, 
-    rtVal);
 }
 
 inline QString EncodeStringChars(
