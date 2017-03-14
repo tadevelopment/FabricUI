@@ -11,14 +11,14 @@ using namespace FabricUI::DFG;
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
-  , m_backdropAddedToDB( false )
+  , m_staticEntriesAddedToDB( false )
   , m_host( host )
   , m_frame( new QFrame(this) )
   , m_status( new QStatusBar() )
   , m_resultPreview( NULL )
 {
 
-  registerBackdrop();
+  registerStaticEntries();
 
   this->setObjectName( "DFGPresetSearchWidget" );
   this->setWindowFlags( Qt::Popup );
@@ -110,7 +110,7 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
 
 void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 {
-  registerBackdrop();
+  registerStaticEntries();
 
   // Splitting the search string into a char**
   const std::string searchStr = query.getText();
@@ -158,10 +158,14 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 }
 
 const std::string BackdropType = "backdrop";
+const std::string VariableSetType = "setVariable";
+const std::string VariableGetType = "getVariable";
+const char NonPresetPrefix = ':';
+const char VariableSeparator = '_';
 
-void DFGPresetSearchWidget::registerBackdrop()
+void DFGPresetSearchWidget::registerStaticEntries()
 {
-  if( m_backdropAddedToDB || !m_host->isValid() )
+  if( m_staticEntriesAddedToDB || !m_host->isValid() )
     return;
 
   const char* tags[] = {
@@ -170,14 +174,43 @@ void DFGPresetSearchWidget::registerBackdrop()
     "cat:Tidying",
     "cat:UI"
   };
-  m_host->searchDBAddUser( (BackdropType + ":BackDrop").data(), sizeof( tags ) / sizeof( const char* ), tags );
+  m_host->searchDBAddUser(
+    (BackdropType + NonPresetPrefix + "BackDrop").data(),
+    sizeof( tags ) / sizeof( const char* ),
+    tags
+  );
 
-  m_backdropAddedToDB = true;
+  this->registerVariable( "", "" );
+
+  m_staticEntriesAddedToDB = true;
+}
+
+void DFGPresetSearchWidget::registerVariable( const std::string& name, const std::string& type )
+{
+  const std::string nameTag = "name:" + name;
+  const std::string typeTag = "porttype:" + type;
+  const std::string functions[] = { VariableSetType, VariableGetType };
+  for( size_t i = 0; i < sizeof( functions ) / sizeof( std::string ); i++ )
+  {
+    const std::string& functionType = functions[i];
+
+    std::vector<const char*> tags;
+    tags.push_back( "cat:Variable" );
+    tags.push_back( functionType == VariableSetType ? "aka:Set" : "aka:Get" );
+    if( name.size() > 0 )
+      tags.push_back( nameTag.data() );
+    if( type.size() > 0 )
+      tags.push_back( typeTag.data() );
+
+    std::string registeredName = ( functionType + NonPresetPrefix +
+      ( functionType == VariableSetType ? "Set" : "Get" ) + VariableSeparator + name );
+    m_host->searchDBAddUser( registeredName.data(), tags.size(), tags.data() );
+  }
 }
 
 void DFGPresetSearchWidget::onResultValidated( const std::string& result )
 {
-  size_t sep = result.find( ':' );
+  size_t sep = result.find( NonPresetPrefix );
   if( sep == std::string::npos )
     emit selectedPreset( QString::fromStdString( result ) );
   else
@@ -185,6 +218,13 @@ void DFGPresetSearchWidget::onResultValidated( const std::string& result )
     std::string type = result.substr( 0, sep );
     if( type == BackdropType )
       emit selectedBackdrop();
+    else
+    if( type == VariableGetType )
+      emit selectedGetVariable( result.substr( result.rfind( VariableSeparator ) ) );
+    else
+    if( type == VariableSetType )
+      emit selectedSetVariable( result.substr( result.rfind( VariableSeparator ) ) );
+
   }
 }
 

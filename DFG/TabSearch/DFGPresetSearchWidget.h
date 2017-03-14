@@ -34,6 +34,11 @@ namespace FabricUI
       // Emitted when a Preset has been chosen
       void selectedPreset( QString preset );
       void selectedBackdrop();
+      void selectedGetVariable( const std::string name );
+      void selectedSetVariable( const std::string name );
+
+    public slots:
+      void registerVariable( const std::string& name, const std::string& type );
 
     private slots:
       void onQueryChanged( const TabSearch::Query& query );
@@ -43,13 +48,13 @@ namespace FabricUI
       void setPreview( const std::string& preset );
       void close();
       void updateSize();
-      void registerBackdrop();
+      void registerStaticEntries();
 
     private:
 
       // Will the Query persist between 2 invocations ?
       bool m_clearQueryOnClose;
-      bool m_backdropAddedToDB;
+      bool m_staticEntriesAddedToDB;
 
       // Used to query the database
       FabricCore::DFGHost* m_host;
