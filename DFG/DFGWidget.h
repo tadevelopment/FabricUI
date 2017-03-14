@@ -21,6 +21,7 @@
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
 #include <FabricUI/DFG/TabSearch/DFGPresetSearchWidget.h>
 #include <FabricUI/DFG/Dialogs/DFGBaseDialog.h>
+#include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/Actions/BaseAction.h>
 #include <QVBoxLayout>
 
@@ -1019,7 +1020,9 @@ namespace DFG {
 
       void onTriggered()
       {
-        m_dfgWidget->splitFromPreset(m_node->name().c_str());
+        DFGController *UIController = m_dfgWidget->getDFGController();        
+        FabricCore::DFGExec exec  = UIController->getExec().getSubExec(m_node->name().c_str());
+        UIController->getCmdHandler()->dfgDoSplitFromPreset(UIController->getBinding(), m_node->name_QS(), exec);
       }
 
     private:
