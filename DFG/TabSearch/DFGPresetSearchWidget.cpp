@@ -11,6 +11,7 @@ using namespace FabricUI::DFG;
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
+  , m_backdropAddedToDB( false )
   , m_host( host )
   , m_frame( new QFrame(this) )
   , m_status( new QStatusBar() )
@@ -109,6 +110,8 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
 
 void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 {
+  registerBackdrop();
+
   // Splitting the search string into a char**
   const std::string searchStr = query.getText();
 
@@ -158,6 +161,9 @@ const std::string BackdropType = "backdrop";
 
 void DFGPresetSearchWidget::registerBackdrop()
 {
+  if( m_backdropAddedToDB || !m_host->isValid() )
+    return;
+
   const char* tags[] = {
     "name:BackDrop",
     "aka:Layout",
@@ -165,6 +171,8 @@ void DFGPresetSearchWidget::registerBackdrop()
     "cat:UI"
   };
   m_host->searchDBAddUser( (BackdropType + ":BackDrop").data(), sizeof( tags ) / sizeof( const char* ), tags );
+
+  m_backdropAddedToDB = true;
 }
 
 void DFGPresetSearchWidget::onResultValidated( const std::string& result )

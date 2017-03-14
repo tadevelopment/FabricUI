@@ -49,6 +49,7 @@ namespace FabricUI
 
       // Will the Query persist between 2 invocations ?
       bool m_clearQueryOnClose;
+      bool m_backdropAddedToDB;
 
       // Used to query the database
       FabricCore::DFGHost* m_host;
