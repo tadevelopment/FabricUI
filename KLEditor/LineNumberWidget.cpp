@@ -52,26 +52,26 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
   int width = event->rect().width();
   int height = event->rect().height();
 
+  int offset = m_metrics->lineSpacing();
+
 #ifdef FABRIC_OS_LINUX
-  // [andrew 20150907] Font has a leading() value of -1 on Linux which doesn't
-  // line up with the real line spacing seen in the source code widget
-  int lineHeight = m_metrics->height();
-  int offset = lineHeight;
-  if(m_lineOffset == 0)
-    offset += 2;
-  else
-    offset -= 4;
+  if(m_lineOffset != 0)
+    offset -= 5;
 #else
-  int lineHeight = m_metrics->height() + m_metrics->leading() * 2;
-  int offset = lineHeight + 1;
-  if(m_lineOffset == 0)
-    offset -= 1;
-  else
+  if(m_lineOffset != 0)
     offset -= 5;
 #endif
 
   painter.setFont(m_config.lineNumberFont);
   painter.setPen(m_config.lineNumberFontColor);
+
+  // printf("Height: %i\n", m_metrics->height());
+  // printf("Leading: %i\n", m_metrics->leading());
+  // printf("LineSpacing: %i\n", m_metrics->lineSpacing());
+
+  // std::string tempText;
+  // tempText = "0001";
+  // painter.drawText(QPoint(width - 2 - lineWidth, m_metrics->lineSpacing()), tempText.c_str()); // debug
 
   int line = m_lineOffset + 1;
   char buffer[128];
@@ -89,7 +89,7 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
 
     int lineWidth = m_metrics->width(paddingNumber.c_str());
     painter.drawText(QPoint(width - 2 - lineWidth, offset), paddingNumber.c_str());
-    offset += lineHeight;
+    offset += m_metrics->lineSpacing();
     line++;
   }
 
