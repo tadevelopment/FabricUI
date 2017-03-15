@@ -241,6 +241,10 @@ DFGWidget::DFGWidget(
     this, SLOT( onVariableGetterAddedFromTabSearch( const std::string ) )
   );
   QObject::connect(
+    m_tabSearchWidget, SIGNAL( giveFocusToParent() ),
+    this, SLOT( onFocusGivenFromTabSearch() )
+  );
+  QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedSetVariable( const std::string ) ),
     this, SLOT( onVariableSetterAddedFromTabSearch( const std::string ) )
   );
@@ -832,6 +836,11 @@ void DFGWidget::onVariableSetterAddedFromTabSearch( const std::string name )
 void DFGWidget::onVariableGetterAddedFromTabSearch( const std::string name )
 {
   this->getUIController()->cmdAddGet( "get", QString::fromStdString( name ), getTabSearchScenePos() );
+}
+
+void DFGWidget::onFocusGivenFromTabSearch()
+{
+  this->getGraphViewWidget()->setFocus( Qt::OtherFocusReason );
 }
 
 void DFGWidget::updateTabSearchVariables()

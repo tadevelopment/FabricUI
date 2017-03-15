@@ -47,6 +47,10 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     this, SLOT( close() )
   );
   connect(
+    m_resultsView, SIGNAL( presetValidated( const std::string& ) ),
+    this, SIGNAL( giveFocusToParent() )
+  );
+  connect(
     m_resultsView, SIGNAL( tagRequested( const std::string& ) ),
     m_queryEdit, SLOT( requestTag( const std::string& ) )
   );
@@ -101,7 +105,7 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
     case Qt::Key_Down :
       m_resultsView->keyPressEvent( event ); break;
     case Qt::Key_Tab :
-      close();
+      close(); emit giveFocusToParent(); break;
     default:
       Parent::keyPressEvent( event );
   }

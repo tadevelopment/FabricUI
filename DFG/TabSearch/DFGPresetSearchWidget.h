@@ -31,11 +31,13 @@ namespace FabricUI
       bool focusNextPrevChild( bool next ) FTL_OVERRIDE;
 
     signals:
-      // Emitted when a Preset has been chosen
+      // Emitted when a Result (there are different types) has been chosen
       void selectedPreset( QString preset );
       void selectedBackdrop();
       void selectedGetVariable( const std::string name );
       void selectedSetVariable( const std::string name );
+      // Emitted when the widget has completed its actions
+      void giveFocusToParent();
 
     public slots:
       // Will ignore already registered variables

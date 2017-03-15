@@ -174,6 +174,7 @@ namespace DFG {
       void onBackdropAddedFromTabSearch();
       void onVariableSetterAddedFromTabSearch( const std::string name );
       void onVariableGetterAddedFromTabSearch( const std::string name );
+      void onFocusGivenFromTabSearch();
       void onToggleLegacyTabSearch( bool toggled );
       void onReloadStyles();
 
