@@ -53,21 +53,28 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
   int height = event->rect().height();
 
   int offset = m_metrics->lineSpacing();
-
-#ifdef FABRIC_OS_LINUX
+  int extraOffset = 0;
+  
   if(m_lineOffset != 0)
+  {
+#if defined(FABRIC_OS_LINUX)
     offset -= 4;
+#elif defined(FABRIC_OS_DARWIN)
+    offset -= 2;
+    extraOffset = 1;
 #else
-  if(m_lineOffset != 0)
     offset -= 4;
 #endif
+  }
+  else
+  {
+  #if defined(FABRIC_OS_DARWIN)
+    offset += 1;
+  #endif
+  }
 
   painter.setFont(m_config.lineNumberFont);
   painter.setPen(m_config.lineNumberFontColor);
-
-  // printf("Height: %i\n", m_metrics->height());
-  // printf("Leading: %i\n", m_metrics->leading());
-  // printf("LineSpacing: %i\n", m_metrics->lineSpacing());
 
   // std::string tempText;
   // tempText = "0001";
@@ -89,7 +96,7 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
 
     int lineWidth = m_metrics->width(paddingNumber.c_str());
     painter.drawText(QPoint(width - 2 - lineWidth, offset), paddingNumber.c_str());
-    offset += m_metrics->lineSpacing();
+    offset += m_metrics->lineSpacing() + extraOffset;
     line++;
   }
 
