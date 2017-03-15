@@ -6,6 +6,8 @@
 #define FABRICUI_VALUEEDITOR_VELINEEDIT_H
 
 #include <QLineEdit>
+#include <QIntValidator>
+#include <FabricUI/Util/StringUtils.h>
 
 namespace FabricUI {
 namespace ValueEditor {
@@ -30,6 +32,16 @@ public:
     : QLineEdit( text, parent )
   {
     init();
+  }
+
+  void setValidatorInt()
+  {
+    setValidator(new QIntValidator(this));
+  }
+
+  void setValidatorDouble()
+  {
+    setValidator(FabricUI::Util::newDoubleValidator(this));
   }
 
 signals:

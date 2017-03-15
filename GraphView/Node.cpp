@@ -6,6 +6,7 @@
 #include <FabricUI/GraphView/GraphConfig.h>
 #include <FabricUI/GraphView/HighlightEffect.h>
 #include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/NodeLabel.h>
@@ -404,8 +405,76 @@ void Node::reorderPins(QStringList names)
   updatePinLayout();
 }
 
-std::vector<Node*> Node::upStreamNodes(bool sortForPins, std::vector<Node*> rootNodes)
+void Node::getUpStreamNodes_recursive(Node *node, std::vector<Connection *> &connections, std::map<Node *, Node *> &ioVisitedNodes, std::vector<Node *> &ioUpStreamNodes)
 {
+  if (   node == NULL
+      || ioVisitedNodes.find(node) != ioVisitedNodes.end() )
+    return;
+
+  ioVisitedNodes.insert(std::pair<Node *, Node *>(node, node));
+  ioUpStreamNodes.push_back(node);
+
+  for (unsigned int i=0;i<node->pinCount();i++)
+  {
+    Pin *p = node->pin(i);
+    for (size_t j=0;j<connections.size();j++)
+    {
+      ConnectionTarget *src = connections[j]->src();
+      ConnectionTarget *dst = connections[j]->dst();
+      if (src && dst == p)
+      {
+        Node *srcNode = NULL;
+        if      (src->targetType() == TargetType_Pin)           srcNode = ((Pin *)src)->node();
+        else if (src->targetType() == TargetType_InstBlockPort) srcNode = ((InstBlockPort *)src)->node();
+        getUpStreamNodes_recursive(srcNode, connections, ioVisitedNodes, ioUpStreamNodes);
+      }
+    }
+  }
+
+  for (unsigned int k=0;k<node->instBlockCount();k++)
+  {
+    InstBlock *instBlock = node->instBlockAtIndex(k);
+    for (unsigned int i=0;i<instBlock->instBlockPortCount();i++)
+    {
+      InstBlockPort *p = instBlock->instBlockPort(i);
+      for (size_t j=0;j<connections.size();j++)
+      {
+        ConnectionTarget *src = connections[j]->src();
+        ConnectionTarget *dst = connections[j]->dst();
+        if (src && dst == p)
+        {
+          Node *srcNode = NULL;
+          if      (src->targetType() == TargetType_Pin)           srcNode = ((Pin *)src)->node();
+          else if (src->targetType() == TargetType_InstBlockPort) srcNode = ((InstBlockPort *)src)->node();
+          getUpStreamNodes_recursive(srcNode, connections, ioVisitedNodes, ioUpStreamNodes);
+        }
+      }
+    }
+  }
+}
+
+std::vector<Node *> Node::getUpStreamNodes()
+{
+  // init.
+  std::vector<Node *>       upStreamNodes;
+  std::map<Node *, Node *>  visitedNodes;
+  std::vector<Connection *> connections = graph()->connections();
+
+  // do it.
+  getUpStreamNodes_recursive(this, connections, visitedNodes, upStreamNodes);
+
+  // done.
+  return upStreamNodes;
+}
+
+std::vector<Node *> Node::upStreamNodes_deprecated(bool sortForPins, std::vector<Node *> rootNodes)
+{
+  /*
+    [FE-7239] / [.TECHDEBT]
+    This function (and the weird members m_row & co) can be removed once
+    DFGController::relaxNodes() has been entirely rewritten (see FE-3680).
+  */
+
   int maxCol = 0;
 
   std::vector<GraphView::Node*> allNodes = graph()->nodes();
@@ -604,7 +673,7 @@ void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
 
 void Node::selectUpStreamNodes()
 {
-  std::vector<Node*> nodes = upStreamNodes();
+  std::vector<Node *> nodes = getUpStreamNodes();
 
   for ( size_t i = 0; i<nodes.size(); i++ )
     graph()->controller()->selectNode( nodes[i], true );
@@ -613,6 +682,7 @@ void Node::selectUpStreamNodes()
 void Node::updateNodesToMove( bool backdrops )
 {
   m_nodesToMove = graph()->selectedNodes();
+
   if ( backdrops )
   {
     std::vector<Node *> additionalNodes;
@@ -634,6 +704,10 @@ void Node::updateNodesToMove( bool backdrops )
       additionalNodes.end()
     );
   }
+
+  m_nodesToMoveOriginalPos.resize(m_nodesToMove.size());
+  for (size_t i=0;i<m_nodesToMove.size();i++)
+    m_nodesToMoveOriginalPos[i] = m_nodesToMove[i]->topLeftGraphPos();
 }
     
 void Node::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
@@ -749,9 +823,6 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
   {
     if (m_dragging == 1)
     {
-      m_nodesToMoveOriginalPos.resize(m_nodesToMove.size());
-      for (size_t i=0;i<m_nodesToMove.size();i++)
-        m_nodesToMoveOriginalPos[i] = m_nodesToMove[i]->topLeftGraphPos();
       m_dragging = 2;
     }
 

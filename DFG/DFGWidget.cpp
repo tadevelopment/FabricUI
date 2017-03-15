@@ -238,14 +238,7 @@ DFGWidget::DFGWidget(
 
   m_uiController->setHostBindingExec( host, binding, execPath, exec );
 
-  QAction *reloadStylesAction = new QAction( "Reload QSS Styles", this );
-  reloadStylesAction->setShortcut( QKeySequence( "Ctrl+Shift+R" ) );
-  reloadStylesAction->setShortcutContext( Qt::WindowShortcut );
-  connect(
-    reloadStylesAction, SIGNAL(triggered()),
-    this, SLOT(onReloadStyles())
-    );
-  addAction( reloadStylesAction );
+  addAction( new ReloadStyleAction(this, this) );
 }
 
 DFGWidget::~DFGWidget()
@@ -1290,7 +1283,7 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       m_uiController->cmdAddPort(
         newPortName,
         exec.getExecPortType( execPortName.c_str() ),
-        exec.getExecPortResolvedType( execPortName.c_str() ),
+        typeSpec,
         QString(), // portToConnect
         extDep,
         QString::fromUtf8( uiMetadata.c_str() )
