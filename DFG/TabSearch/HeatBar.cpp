@@ -76,7 +76,10 @@ void HeatBar::paintEvent( QPaintEvent *event )
     for( int barI = 0; barI < ( m_percentage * this->nbBars() ); barI++ )
     {
       qreal leftX = r.left() + barI * ( barW + spacingW );
-      qreal rightX = leftX + barW;
+      // Make sure that the spacing between rightX(barI) and
+      // leftX(barI+1) is always rounded to the same int
+      qreal rightX = int( r.left() + (barI+1) * ( barW + spacingW ) ) - int( spacingW );
+
       QRect barR = r;
       barR.setLeft( int( leftX ) ); barR.setRight( int( rightX ) );
       if( !smooth() )
