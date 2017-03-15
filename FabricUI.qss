@@ -1695,7 +1695,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DFGPresetSearchWidget > QFrame *
 {
   font-family: "Roboto";
-  font-size: 8pt;
+  font-size: 12px;
   background-color: #272822;
   padding: 0px;
 }
@@ -1709,10 +1709,10 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #QueryEdit QLineEdit
 {
-  font-size: 12pt;
+  font-size: 18px;
   border-radius: 4px;
   padding: 2px;
-  min-width: 400px;
+  min-width: 500px;
 }
 
 #ResultsView
@@ -1790,7 +1790,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ResultsView *
 {
   font-family: "Roboto";
-  font-size: 8pt;
+  font-size: 12px;
 }
 
 #ResultsView::item:selected
@@ -1801,7 +1801,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #TagView *
 {
   background-color: #444444;
-  font-size: 8pt;
+  font-size: 12px;
 }
 
 #TagView[highlighted="true"] *
