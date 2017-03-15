@@ -185,6 +185,12 @@ void DFGPresetSearchWidget::registerStaticEntries()
   m_staticEntriesAddedToDB = true;
 }
 
+std::string GetVariableRegisteredName( const std::string& name, bool isSet )
+{
+  return ( ( isSet ? VariableSetType : VariableGetType ) + NonPresetPrefix +
+    ( isSet ? "Set" : "Get" ) + VariableSeparator + name );
+}
+
 void DFGPresetSearchWidget::registerVariable( const std::string& name, const std::string& type )
 {
   const std::string nameTag = "name:" + name;
@@ -193,6 +199,9 @@ void DFGPresetSearchWidget::registerVariable( const std::string& name, const std
   for( size_t i = 0; i < sizeof( functions ) / sizeof( std::string ); i++ )
   {
     const std::string& functionType = functions[i];
+    std::string registeredName = GetVariableRegisteredName( name, functionType == VariableSetType );
+    if( m_registeredVariables.find( registeredName ) != m_registeredVariables.end() )
+      continue; // Don't register the same entries several times
 
     std::vector<const char*> tags;
     tags.push_back( "cat:Variable" );
@@ -201,11 +210,20 @@ void DFGPresetSearchWidget::registerVariable( const std::string& name, const std
       tags.push_back( nameTag.data() );
     if( type.size() > 0 )
       tags.push_back( typeTag.data() );
-
-    std::string registeredName = ( functionType + NonPresetPrefix +
-      ( functionType == VariableSetType ? "Set" : "Get" ) + VariableSeparator + name );
     m_host->searchDBAddUser( registeredName.data(), tags.size(), tags.data() );
+
+    m_registeredVariables.insert( registeredName );
   }
+}
+
+void DFGPresetSearchWidget::unregisterVariables()
+{
+  for( std::set<std::string>::const_iterator it = m_registeredVariables.begin();
+    it != m_registeredVariables.end(); it++ )
+  {
+    m_host->searchDBRemoveUser( it->data() );
+  }
+  m_registeredVariables.clear();
 }
 
 void DFGPresetSearchWidget::onResultValidated( const std::string& result )

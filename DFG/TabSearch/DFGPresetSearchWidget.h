@@ -38,7 +38,9 @@ namespace FabricUI
       void selectedSetVariable( const std::string name );
 
     public slots:
+      // Will ignore already registered variables
       void registerVariable( const std::string& name, const std::string& type );
+      void unregisterVariables();
 
     private slots:
       void onQueryChanged( const TabSearch::Query& query );
@@ -58,6 +60,7 @@ namespace FabricUI
 
       // Used to query the database
       FabricCore::DFGHost* m_host;
+      std::set<std::string> m_registeredVariables;
       QFrame* m_frame;
       QStatusBar* m_status;
       TabSearch::QueryEdit* m_queryEdit;
