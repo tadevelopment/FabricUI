@@ -1703,21 +1703,21 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DFGPresetSearchWidget > QFrame
 {
   background-color: #555555;
-  border: 4px solid #333333;
-  padding: 8px;
+  border: 2px solid #333333;
+  padding: 4px;
 }
 
 #QueryEdit QLineEdit
 {
-  font-size: 16pt;
-  border-radius: 8px;
-  padding: 4px;
+  font-size: 12pt;
+  border-radius: 4px;
+  padding: 2px;
+  min-width: 400px;
 }
 
 #ResultsView
 {
-  border-radius: 8px;
-  padding: 4px;
+  border-radius: 4px;
 }
 
 #QueryEdit #TagsEdit #TagView *
@@ -1744,6 +1744,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   qproperty-bgColor: #50626e;
   qproperty-highlightBgColor: #f0f0f0;
+  qproperty-spacing: 6;
 }
 
 #ResultsView #TagsView
@@ -1766,6 +1767,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ResultsView::branch:has-children:open
 {
   border-image: none;
+  padding: 2px;
   image: url(${FABRIC_DIR}/Resources/Icons/DFGOneDown.png);
 }
 
@@ -1785,6 +1787,12 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   margin: 2px 2px 2px 0px;
 }
 
+#ResultsView *
+{
+  font-family: "Roboto";
+  font-size: 8pt;
+}
+
 #ResultsView::item:selected
 {
   background-color: #666666;
@@ -1793,6 +1801,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #TagView *
 {
   background-color: #444444;
+  font-size: 8pt;
 }
 
 #TagView[highlighted="true"] *
@@ -1821,9 +1830,11 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   qproperty-warmPos: 0.33;
   qproperty-nbBars: 10;
   qproperty-smooth: false;
-  qproperty-spacing: 0.3;
+  qproperty-spacing: 0.5;
   background-color: #272822;
-  border: 2px solid #272822;
+  border: 1px solid #272822;
+  min-width: 64px;
+  min-height: 8px;
 }
 
 #DFGPresetSearchWidget QStatusBar,

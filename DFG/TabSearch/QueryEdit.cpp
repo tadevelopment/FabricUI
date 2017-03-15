@@ -479,7 +479,7 @@ void QueryEdit::updateTagsEdit()
   // Put back the widgets (in the right order)
   layout()->addWidget( m_tagsEdit );
   layout()->addWidget( m_textEdit );
-  layout()->setSpacing( m_query.getTags().size() > 0 ? 8 : 0 );
+  layout()->setSpacing( m_query.getTags().size() > 0 ? 4 : 0 );
 }
 
 void QueryEdit::selectAll()

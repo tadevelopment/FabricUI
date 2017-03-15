@@ -25,7 +25,6 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   QVBoxLayout* vlayout = new QVBoxLayout();
 
   m_queryEdit = new TabSearch::QueryEdit( m_host );
-  m_queryEdit->setMinimumWidth( 800 );
   vlayout->addWidget( m_queryEdit );
   connect(
     m_queryEdit, SIGNAL( queryChanged( const TabSearch::Query& ) ),
@@ -72,7 +71,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   );
 
   vlayout->setMargin( 0 );
-  vlayout->setSpacing( 8 );
+  vlayout->setSpacing( 4 );
 
   m_frame->setLayout( vlayout );
 

@@ -84,8 +84,6 @@ public:
     update();
   }
 
-  QSize minimumSizeHint() const FTL_OVERRIDE;
-
 protected:
 
   virtual void paintEvent( QPaintEvent *event );
