@@ -1767,7 +1767,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ResultsView::branch:has-children:open
 {
   border-image: none;
-  padding: 2px;
+  padding: 4px;
   image: url(${FABRIC_DIR}/Resources/Icons/DFGOneDown.png);
 }
 
