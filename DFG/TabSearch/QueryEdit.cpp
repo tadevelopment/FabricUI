@@ -264,6 +264,12 @@ protected:
     m_parent->updateTagHighlight();
   }
 
+  void focusOutEvent( QFocusEvent * e ) FTL_OVERRIDE
+  {
+    Parent::focusOutEvent( e );
+    emit m_parent->lostFocus();
+  }
+
 private:
   QueryEdit* m_parent;
 };

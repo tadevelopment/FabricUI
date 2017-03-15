@@ -107,6 +107,7 @@ namespace FabricUI
         void queryChanged( const TabSearch::Query& query );
         // Emitted when the widget is moving through its TagsEdit
         void selectingTags();
+        void lostFocus();
 
       private slots:
         void onTextChanged( const QString& text );

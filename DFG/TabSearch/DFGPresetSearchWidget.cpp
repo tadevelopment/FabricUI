@@ -30,6 +30,10 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     m_queryEdit, SIGNAL( queryChanged( const TabSearch::Query& ) ),
     this, SLOT( onQueryChanged( const TabSearch::Query& ) )
   );
+  connect(
+    m_queryEdit, SIGNAL( lostFocus() ),
+    this, SLOT( close() )
+  );
 
   m_resultsView = new TabSearch::ResultsView();
   m_resultsView->setFocusProxy( this );
