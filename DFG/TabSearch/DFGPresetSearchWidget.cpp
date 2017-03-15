@@ -4,7 +4,7 @@
 
 #include <FTL/JSONValue.h>
 #include <QFrame>
-#include <QStatusBar>
+#include <QLabel>
 #include <QLayout>
 
 using namespace FabricUI::DFG;
@@ -14,7 +14,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   , m_staticEntriesAddedToDB( false )
   , m_host( host )
   , m_frame( new QFrame(this) )
-  , m_status( new QStatusBar() )
+  , m_status( new QLabel() )
   , m_resultPreview( NULL )
 {
 
@@ -83,6 +83,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 
   m_frame->setLayout( vlayout );
 
+  m_status->setObjectName( "Status" );
   vlayout->addWidget( m_status );
   hidePreview();
   updateSize();
@@ -288,7 +289,7 @@ void DFGPresetSearchWidget::hidePreview()
     m_resultPreview = NULL;
   }
 
-  m_status->clearMessage();
+  m_status->clear();
   m_status->setMaximumHeight( 0 );
   updateSize();
 }
@@ -306,8 +307,7 @@ void DFGPresetSearchWidget::setPreview( const std::string& preset )
       m_queryEdit, SLOT( requestTag( const std::string& ) )
     );
   }
-
-  m_status->showMessage( "INFO: " + QString::fromStdString( preset ) );
+  m_status->setText( "<i>" + QString::fromStdString( preset ) + "</i>" );
   m_status->setMaximumHeight( QWIDGETSIZE_MAX );
   updateSize();
 }

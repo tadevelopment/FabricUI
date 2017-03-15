@@ -10,7 +10,7 @@
 #include "ResultPreview.h"
 
 class QFrame;
-class QStatusBar;
+class QLabel;
 
 namespace FabricUI
 {
@@ -64,7 +64,7 @@ namespace FabricUI
       FabricCore::DFGHost* m_host;
       std::set<std::string> m_registeredVariables;
       QFrame* m_frame;
-      QStatusBar* m_status;
+      QLabel* m_status;
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
       TabSearch::ResultPreview* m_resultPreview;

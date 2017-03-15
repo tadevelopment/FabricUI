@@ -1837,10 +1837,11 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   min-height: 8px;
 }
 
-#DFGPresetSearchWidget QStatusBar,
-#DFGPresetSearchWidget QStatusBar *
+#DFGPresetSearchWidget #Status
 {
   background-color: #555555;
+  padding: 0px;
+  padding-left: 4px;
 }
 
 #PresetView[highlighted="true"] #HeatBar
