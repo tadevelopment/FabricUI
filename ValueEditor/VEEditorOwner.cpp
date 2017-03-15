@@ -66,6 +66,10 @@ void VEEditorOwner::initConnections()
     m_valueEditor, SLOT( onSetModelItem( FabricUI::ValueEditor::BaseModelItem* ) )
     );
   connect(
+    this, SIGNAL( toggleManipulation(bool) ),
+    m_valueEditor, SLOT( emitToggleManipulation(bool) )
+    );
+  connect(
     m_valueEditor, SIGNAL( refreshViewport() ),
     this, SLOT( emitRefreshViewport() )
     );
@@ -100,5 +104,10 @@ void VEEditorOwner::emitReplaceModelRoot(FabricUI::ValueEditor::BaseModelItem* m
 }
 
 void VEEditorOwner::emitRefreshViewport() {
+
   emit refreshViewport();
+}
+
+void VEEditorOwner::emitToggleManipulation(bool toggled) {
+  emit toggleManipulation(toggled);
 }

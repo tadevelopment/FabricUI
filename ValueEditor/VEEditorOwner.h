@@ -55,6 +55,7 @@ namespace FabricUI {
       virtual void onOutputsChanged() {} // Call after each evaluation
       void reloadStyles();
       void emitReplaceModelRoot(FabricUI::ValueEditor::BaseModelItem* model);
+      void emitToggleManipulation(bool toggle);
 
     protected slots:
       virtual void onModelItemInserted( FabricUI::ValueEditor::BaseModelItem* parent, int index, const char* childName );
@@ -73,7 +74,8 @@ namespace FabricUI {
       // Refreshes the viewport, if a klWidget
       // has been activated-deactivated.
       void refreshViewport();
-      
+      void toggleManipulation(bool);
+
     protected:
 
       VETreeWidget* m_valueEditor;

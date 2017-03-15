@@ -124,10 +124,10 @@ class QuitApplicationAction(BaseCanvasWindowAction):
 
 class ToggleManipulationAction(BaseCanvasWindowAction):
 
-    def __init__(self, parent, viewport):
+    def __init__(self, viewport, canvasWindow):
         super(ToggleManipulationAction, self).__init__(
-            parent,     
-            None, 
+            viewport,     
+            canvasWindow, 
             "CanvasWindow.ToggleManipulationAction", 
             "Toggle manipulation", 
             QtGui.QKeySequence(QtCore.Qt.Key_Q),
@@ -135,11 +135,11 @@ class ToggleManipulationAction(BaseCanvasWindowAction):
         
         self.viewport = viewport
         self.setCheckable(True)
-        self.setChecked(self.viewport.isManipulationActive())
+        self.toggled.connect(canvasWindow.valueEditor.emitToggleManipulation)
 
     def onTriggered(self):
         self.viewport.toggleManipulation()
-
+ 
 class GridVisibilityAction(BaseCanvasWindowAction):
 
     def __init__(self, parent, viewport):
@@ -1363,7 +1363,7 @@ class CanvasWindow(QtGui.QMainWindow):
             else:
                 if self.isCanvas:
                     menu.addSeparator()
-                    self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
+                    self.manipAction = ToggleManipulationAction(self.viewport, self)
                     menu.addAction(self.manipAction)
                     menu.addSeparator()
                     self.showHotkeyEditorDialogAction = ShowHotkeyEditorDialogAction(menu, self)

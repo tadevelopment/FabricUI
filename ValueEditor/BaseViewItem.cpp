@@ -149,6 +149,10 @@ void BaseViewItem::setWidgetsOnTreeItem(
   treeWidget->setItemWidget( treeWidgetItem, 1, myWidget );
 }
 
+void BaseViewItem::emitToggleManipulation(bool toggled) {
+  emit toggleManipulation(toggled);
+}
+
 void BaseViewItem::metadataChanged()
 {
 }

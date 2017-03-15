@@ -46,6 +46,11 @@ class AppWidget : public QObject
     /// is updated.
     void refreshViewPort();
 
+  public slots:
+    void onToggleManipulation(
+      bool toggled
+      );
+
   protected slots:
     /// Set the widget visibility.
     void setVisible(
@@ -59,6 +64,7 @@ class AppWidget : public QObject
     BaseViewItem *m_viewItem;
     /// The KL widget.
     FabricCore::RTVal m_klWidget;
+    QCheckBox* m_checkbox;
 };
 
 } // namespace FabricUI 

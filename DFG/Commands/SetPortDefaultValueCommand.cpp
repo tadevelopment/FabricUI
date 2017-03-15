@@ -1,6 +1,5 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include <iostream> 
 #include "SetPortDefaultValueCommand.h"
 #include <FabricUI/Commands/CommandManager.h>
 #include <FabricUI/Util/RTValUtil.h>

@@ -128,6 +128,8 @@ public:
   // the memory is released in the same Dll as it was allocated in
   virtual void deleteMe() {}
 
+  AppWidget * getAppWidget() { return m_appWidget; }
+
 public slots:
 
   // Implement this slot to update the UI to the
@@ -136,6 +138,8 @@ public slots:
   virtual void onModelValueChanged( QVariant const &value ) {}
     
   void emitRefreshViewport() { emit refreshViewport(); }
+  
+  void emitToggleManipulation(bool toggle);
 
 signals:
 
@@ -155,6 +159,8 @@ signals:
   // Refreshes the viewport, if a klWidget
   // has been activated-deactivated.
   void refreshViewport();
+
+  void toggleManipulation(bool);
 };
 
 } // namespace FabricUI 

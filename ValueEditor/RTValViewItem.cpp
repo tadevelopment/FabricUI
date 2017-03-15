@@ -57,13 +57,19 @@ void RTValViewItem::setBaseModelItem( BaseModelItem* item )
         //strcmp( m_val.getTypeNameCStr(), "Vec3" ) == 0 
       )
     )
-    layout->addWidget( 
-      m_appWidget->createKLWidget( 
-        m_val.callMethod("Type", "type", 0, 0)
-      ) 
-    );
+  {
+    QCheckBox *checkbox = m_appWidget->createKLWidget( 
+      m_val.callMethod("Type", "type", 0, 0)
+      );
 
-  layout->addStretch( 2 );
+    if(checkbox)
+    {
+      layout->addWidget(checkbox);
+      layout->addStretch(2);
+
+      m_appWidget->valueChanged(m_val);
+    }
+  }
 
   m_widget->setLayout(layout);
 

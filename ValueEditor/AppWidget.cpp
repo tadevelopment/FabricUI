@@ -15,7 +15,14 @@ using namespace FabricCore;
 AppWidget::AppWidget(
   BaseViewItem *viewItem)
   : m_viewItem(viewItem)
+  , m_checkbox(0)
 {
+  connect(
+    viewItem,
+    SIGNAL(toggleManipulation(bool)),
+    this,
+    SLOT(onToggleManipulation(bool))
+    );
 }
 
 AppWidget::~AppWidget()
@@ -117,21 +124,16 @@ QCheckBox* AppWidget::createKLWidget(
 
     if(cmdArgs.isValid())
     {
-      RTVal widgetArgs[3] =
+      RTVal widgetArgs[2] =
       {
-        drivenDataType,
-        
-        RTVal::ConstructString( 
-          client, 
-          cmdName.toUtf8().constData() ),
-        
+        drivenDataType,  
         cmdArgs
       };
 
       m_klWidget = getAppWidgetRegistry().callMethod(
         "AppWidget",
         "createWidget",
-        3,
+        2,
         widgetArgs
         );
 
@@ -142,18 +144,18 @@ QCheckBox* AppWidget::createKLWidget(
         0
         ).getStringCString();
 
-      QCheckBox* checkbox = new QCheckBox(
+      m_checkbox = new QCheckBox(
         widgetName
         );
 
       QObject::connect(
-        checkbox,
+        m_checkbox,
         SIGNAL(toggled(bool)),
         this,
         SLOT(setVisible(bool))
         );
 
-      return checkbox;
+      return m_checkbox;
     }
   }
 
@@ -232,4 +234,9 @@ void AppWidget::valueChanged(
       e.getDesc_cstr()
       );
   }
+}
+
+void AppWidget::onToggleManipulation(bool toggled) {
+  if(m_checkbox)
+    m_checkbox->setEnabled(toggled);
 }
