@@ -199,6 +199,9 @@ protected:
   // TODO : Refactor the Selection system ?
   void keyPressEvent( QKeyEvent * e ) FTL_OVERRIDE
   {
+    if( e->key() == Qt::Key_Up || e->key() == Qt::Key_Down )
+      return e->ignore(); // Ignore Up/Down arrow keys (used to navigate through words on OSX)
+
     // Undo - Redo
     if( e->matches( QKeySequence::Undo ) )
     {
