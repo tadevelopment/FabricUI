@@ -54,24 +54,24 @@ void LineNumberWidget::paintEvent(QPaintEvent * event)
 
   int offset = m_metrics->lineSpacing();
   int extraOffset = 0;
-  
+
+#if defined(FABRIC_OS_DARWIN)
+  extraOffset = 1;
+    
   if(m_lineOffset != 0)
   {
-#if defined(FABRIC_OS_LINUX)
-    offset -= 4;
-#elif defined(FABRIC_OS_DARWIN)
     offset -= 2;
-    extraOffset = 1;
-#else
-    offset -= 4;
-#endif
   }
   else
   {
-  #if defined(FABRIC_OS_DARWIN)
     offset += 1;
-  #endif
   }
+#else
+  if(m_lineOffset != 0)
+  {
+    offset -= 4;
+  }
+#endif
 
   painter.setFont(m_config.lineNumberFont);
   painter.setPen(m_config.lineNumberFontColor);
