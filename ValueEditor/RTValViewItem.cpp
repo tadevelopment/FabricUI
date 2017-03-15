@@ -18,8 +18,8 @@ RTValViewItem::RTValViewItem( QString name,
                               ItemMetadata* metadata )
   : BaseComplexViewItem( name, metadata )
   , m_val(value)
-  , m_widget(new QWidget())
   , m_label(new QLabel())
+  , m_widget(new QWidget())
 {
   m_widget->setObjectName( "RTValItem" );
 
