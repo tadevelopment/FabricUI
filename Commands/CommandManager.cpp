@@ -163,7 +163,11 @@ void CommandManager::doCommand(
     if(subCmd)
       pushLowCommand(cmd);
     else
+    {
       m_undoStack[m_undoStack.size() - 1].succeeded = true;
+      emit commandPushedCallback(
+        m_undoStack[m_undoStack.size() - 1].topLevelCmd);
+    }
   }
 }
 
@@ -602,9 +606,6 @@ void CommandManager::commandPushed(
   BaseCommand *cmd,
   bool isLowCmd) 
 { 
-  emit commandPushedCallback(
-    cmd,
-    isLowCmd);
 }
 
 QString CommandManager::getStackContent(

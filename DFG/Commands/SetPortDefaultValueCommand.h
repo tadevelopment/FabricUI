@@ -12,10 +12,9 @@ class SetPortDefaultValueCommand : public BaseDFGCommand
 {
   public:
     /**
-      SetPortDefaultValueCommand sets the value of a DFG port.
-
       Args:
       - execPath (String): Absolute path of the DFGExec.
+      - nodeName (String): Name of the node owning the port.
       - portName (String): Name of the port.
       - portValue (RTVal): Value to set, must be of the same that the port type.
       - isUndoable (Boolean): If true, the command is undoable.

@@ -65,28 +65,26 @@ class CommandManagerQtCallback(QtCore.QObject):
         super(CommandManagerQtCallback, self).__init__()
         self.qUndoStack = qUndoStack
         self.scriptEditor = scriptEditor
-        GetCommandManager().commandPushedCallback.connect(self.__onCommandPushed)
+        GetCommandManager().commandPushedCallback.connect(self.__onCommandPushedCallback)
         GetCommandManager().cleared.connect(self.__onCleared)
 
-    def __onCommandPushed(self, cmd, isLowCmd):
+    def __onCommandPushedCallback(self, cmd):
         """ \internal
             Called when a command has been pushed to the manager. 
         """
+        
+        # Create the command wrapper
+        oldEchoStackIndexChanges = self.scriptEditor._echoStackIndexChanges
+        self.scriptEditor._echoStackIndexChanges = False
 
-        if isLowCmd is False:
-            
-            # Create the command wrapper
-            oldEchoStackIndexChanges = self.scriptEditor._echoStackIndexChanges
-            self.scriptEditor._echoStackIndexChanges = False
+        self.qUndoStack.push( self.CommandQtWrapper( cmd.getName() ) )
+        self.scriptEditor._echoStackIndexChanges = oldEchoStackIndexChanges
 
-            self.qUndoStack.push( self.CommandQtWrapper( cmd.getName() ) )
-            self.scriptEditor._echoStackIndexChanges = oldEchoStackIndexChanges
-
-            # Log the command
-            if issubclass(type(cmd), Commands.BaseScriptableCommand):
-                self.scriptEditor.logText( cmd.getDescription() )
-            else:
-                self.scriptEditor.logText( cmd.getName() )
+        # Log the command
+        if issubclass(type(cmd), Commands.BaseScriptableCommand):
+            self.scriptEditor.logText( cmd.getDescription() )
+        else:
+            self.scriptEditor.logText( cmd.getName() )
 
     def __onCleared(self):
         """ \internal

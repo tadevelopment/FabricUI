@@ -121,11 +121,10 @@ class CommandManager : public QObject
     QString getContent();
 
   signals:
-    /// Emitted when a command has 
-    /// been pushed to the stack.
+    /// Emitted when a top command has 
+    /// been succefully pushed to the stack.
     void commandPushedCallback(
-      BaseCommand *cmd,
-      bool isLowCmd
+      BaseCommand *cmd
       );
 
     /// Emitted when the manager is cleared.
