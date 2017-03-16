@@ -1748,7 +1748,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   qproperty-spacing: 6;
 }
 
-#ResultsView #TagsView
+#ResultsView #TagsView,
+#ResultsView::item::has-children
 {
   border-radius: 4px;
   background-color: #444444;
@@ -1797,6 +1798,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ResultsView::item:selected
 {
   background-color: #666666;
+  color: #FFF;
 }
 
 #TagView *
@@ -1805,13 +1807,9 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-size: 12px;
 }
 
-#TagView[highlighted="true"] *
-{
-  color: #FFF;
-  background-color: #666666;
-}
-
-#PresetView[highlighted="true"] *
+#TagView[highlighted="true"] *,
+#PresetView[highlighted="true"] *,
+#ResultsView::item:selected
 {
   color: #FFF;
   background-color: #666666;

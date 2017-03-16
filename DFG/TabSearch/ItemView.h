@@ -30,6 +30,8 @@ namespace FabricUI
         TagView( const std::string& tagName );
         void setScore( double score );
 
+      static std::string DisplayName( const std::string& result );
+
       signals:
         void activated( const std::string& name );
 
@@ -88,6 +90,8 @@ namespace FabricUI
           const std::vector<std::string>& tags = std::vector<std::string>()
         );
         void setScore( double score, double minScore = 0, double maxScore = 1 );
+
+      static std::string DisplayName( const std::string& result );
 
       signals:
         void requestTag( const std::string& tagName );

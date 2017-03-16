@@ -16,6 +16,8 @@
 
 using namespace FabricUI::DFG::TabSearch;
 
+#define USE_CUSTOM_WIDGETS true
+
 struct JSONSerializable
 {
   std::string toEncodedJSON() const
@@ -475,8 +477,22 @@ public:
   int columnCount( const QModelIndex & parent = QModelIndex() ) const FTL_OVERRIDE { return 1; }
   QVariant data( const QModelIndex & index, int role = Qt::DisplayRole ) const FTL_OVERRIDE
   {
-    //return ( index.isValid() && role == Qt::DisplayRole ?
-    //  cast( index )->value.toString() : QVariant() );
+#if !USE_CUSTOM_WIDGETS
+    if( index.isValid() && role == Qt::DisplayRole )
+    {
+      const ModelValue& v = this->cast( index )->value;
+      std::string result;
+      if( v.isPreset() )
+        result = PresetView::DisplayName( v.getPreset().name );
+      else
+      {
+        const Tags& tags = v.getOther();
+        for( Tags::const_iterator it = tags.begin(); it != tags.end(); it++ )
+          result += TagView::DisplayName( it->name ) + " ";
+      }
+      return QString::fromStdString( result );
+    }
+#endif
     return QVariant();
   }
 
@@ -586,7 +602,9 @@ void ResultsView::setResults( const std::string& searchResult, const Query& quer
   m_model->setRoot( BuildResultTree( searchResult, this->minPresetScore, this->maxPresetScore, query ) );
   this->expandAll();
 
+#if USE_CUSTOM_WIDGETS
   replaceViewItems();
+#endif
 
   // Select the first result
   if( !m_model->hasNoResults() )

@@ -18,9 +18,9 @@ void FabricUI::DFG::TabSearch::SetWidgetHighlight( QWidget* w, const bool highli
   w->setStyleSheet( w->styleSheet() );
 }
 
-std::string FormatTagName( const std::string& tagName )
+std::string TagView::DisplayName( const std::string& result )
 {
-  Query::Tag tag = tagName;
+  Query::Tag tag = result;
   // Capitalize the name of the category
   std::string category = tag.cat();
   if( category.size() > 0 )
@@ -37,7 +37,7 @@ TagView::TagView( const std::string& tagName )
 
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );
-  m_button = new QPushButton( QString::fromStdString( FormatTagName( tagName ) ) );
+  m_button = new QPushButton( QString::fromStdString( DisplayName( tagName ) ) );
   lay->addWidget( m_button );
   this->setLayout( lay );
   m_button->setFocusPolicy( Qt::NoFocus );
@@ -113,14 +113,26 @@ void TagArrow::paintEvent( QPaintEvent *e )
   Parent::paintEvent( e );
 }
 
+size_t NameSep( const std::string& result )
+{
+  size_t dotI = result.rfind( '.' );
+  if( dotI == std::string::npos )
+    dotI = result.find( ':' ); // Non-preset results (backdrops, variables, etc...)
+  return dotI;
+}
+
+std::string PresetView::DisplayName( const std::string& result )
+{
+  return result.substr( NameSep( result ) + 1 );
+}
+
+
 PresetView::PresetView( const std::string& presetName, const std::vector<std::string>& tags )
   : m_heatBar( new HeatBar( this ) )
 {
   this->setObjectName( "PresetView" );
 
-  size_t dotI = presetName.rfind( '.' );
-  if( dotI == std::string::npos )
-    dotI = presetName.find( ':' ); // Non-preset results (backdrops, variables, etc...)
+  size_t dotI = NameSep( presetName );
   std::string baseName = presetName.substr( dotI+1 );
   std::string path = presetName.substr( 0, dotI );
   QHBoxLayout* lay = new QHBoxLayout();
