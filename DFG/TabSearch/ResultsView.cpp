@@ -16,7 +16,7 @@
 
 using namespace FabricUI::DFG::TabSearch;
 
-#define USE_CUSTOM_WIDGETS true
+#define USE_CUSTOM_WIDGETS 1
 
 struct JSONSerializable
 {
