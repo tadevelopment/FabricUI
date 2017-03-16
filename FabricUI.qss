@@ -1718,6 +1718,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ResultsView
 {
   border-radius: 4px;
+  max-height: 300px;
 }
 
 #QueryEdit #TagsEdit #TagView *

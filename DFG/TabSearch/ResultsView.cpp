@@ -593,6 +593,7 @@ void ResultsView::setResults( const std::string& searchResult, const Query& quer
     this->setCurrentIndex( m_model->getFirstPreset() );
   else
     emit presetDeselected();
+  this->scrollToTop();
 }
 
 const std::string& ResultsView::getSelectedPreset()

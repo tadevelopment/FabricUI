@@ -256,7 +256,10 @@ void DFGPresetSearchWidget::onResultValidated( const std::string& result )
 
 void DFGPresetSearchWidget::updateSize()
 {
-  m_resultsView->setMinimumHeight( m_resultsView->sizeHint().height() );
+  m_resultsView->setMinimumHeight( std::min(
+    m_resultsView->maximumHeight(),
+    m_resultsView->sizeHint().height()
+  ) );
   m_frame->adjustSize();
   m_frame->adjustSize();
   adjustSize();
