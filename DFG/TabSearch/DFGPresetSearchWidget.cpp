@@ -293,7 +293,7 @@ void DFGPresetSearchWidget::hidePreview()
   }
 
   m_status->clear();
-  m_status->setMaximumHeight( 0 );
+  m_status->hide();
   updateSize();
 }
 
@@ -311,7 +311,7 @@ void DFGPresetSearchWidget::setPreview( const std::string& preset )
     );
   }
   m_status->setText( "<i>" + QString::fromStdString( preset ) + "</i>" );
-  m_status->setMaximumHeight( QWIDGETSIZE_MAX );
+  m_status->show();
   updateSize();
 }
 
