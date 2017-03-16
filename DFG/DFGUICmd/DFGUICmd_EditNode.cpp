@@ -95,8 +95,8 @@ void DFGUICmd_EditNode::invoke(
       for ( FTL::JSONObject::const_iterator it = jo->begin();
         it != jo->end(); ++it )
       {
-        FTL::CStrRef key = it->first;
-        FTL::CStrRef value = it->second->getStringValue();
+        FTL::CStrRef key = it->key();
+        FTL::CStrRef value = it->value()->getStringValue();
         subExec.setMetadata(
           key.c_str(),
           !value.empty()? value.c_str(): NULL,
