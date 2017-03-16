@@ -1692,7 +1692,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
  * TabSearch
  ***************************************************************************/
 
-#DFGPresetSearchWidget > QFrame *
+#DFGPresetSearchWidget *
 {
   font-family: "Roboto";
   font-size: 12px;
@@ -1700,7 +1700,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 0px;
 }
 
-#DFGPresetSearchWidget > QFrame
+#DFGPresetSearchWidget #SearchFrame
 {
   background-color: #555555;
   border: 2px solid #333333;

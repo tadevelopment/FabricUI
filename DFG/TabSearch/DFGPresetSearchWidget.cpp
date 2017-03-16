@@ -13,7 +13,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
   , m_staticEntriesAddedToDB( false )
   , m_host( host )
-  , m_frame( new QFrame(this) )
+  , m_searchFrame( new QFrame(this) )
   , m_status( new QLabel() )
   , m_resultPreview( NULL )
 {
@@ -21,6 +21,8 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   registerStaticEntries();
 
   this->setObjectName( "DFGPresetSearchWidget" );
+  m_searchFrame->setObjectName( "SearchFrame" );
+
   this->setWindowFlags( Qt::Popup );
   QVBoxLayout* vlayout = new QVBoxLayout();
 
@@ -81,7 +83,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   vlayout->setMargin( 0 );
   vlayout->setSpacing( 4 );
 
-  m_frame->setLayout( vlayout );
+  m_searchFrame->setLayout( vlayout );
 
   m_status->setObjectName( "Status" );
   vlayout->addWidget( m_status );
@@ -260,8 +262,8 @@ void DFGPresetSearchWidget::updateSize()
     m_resultsView->maximumHeight(),
     m_resultsView->sizeHint().height()
   ) );
-  m_frame->adjustSize();
-  m_frame->adjustSize();
+  m_searchFrame->adjustSize();
+  m_searchFrame->adjustSize();
   adjustSize();
   adjustSize();
 }
@@ -287,7 +289,7 @@ void DFGPresetSearchWidget::hidePreview()
 {
   if( m_resultPreview != NULL )
   {
-    m_frame->layout()->removeWidget( m_resultPreview );
+    m_searchFrame->layout()->removeWidget( m_resultPreview );
     m_resultPreview->deleteLater();
     m_resultPreview = NULL;
   }
@@ -304,7 +306,7 @@ void DFGPresetSearchWidget::setPreview( const std::string& preset )
   {
     this->hidePreview();
     m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
-    m_frame->layout()->addWidget( m_resultPreview );
+    m_searchFrame->layout()->addWidget( m_resultPreview );
     connect(
       m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
       m_queryEdit, SLOT( requestTag( const std::string& ) )

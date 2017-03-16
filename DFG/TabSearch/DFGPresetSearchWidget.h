@@ -63,7 +63,7 @@ namespace FabricUI
       // Used to query the database
       FabricCore::DFGHost* m_host;
       std::set<std::string> m_registeredVariables;
-      QFrame* m_frame;
+      QFrame* m_searchFrame;
       QLabel* m_status;
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
