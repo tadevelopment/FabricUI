@@ -322,7 +322,7 @@ QStringList SHGLScene::getSceneNamesFromBinding(DFGBinding &binding) {
         FTL::JSONObject const *value = it->value()->cast<FTL::JSONObject>();
         for(FTL::JSONObject::const_iterator jt = value->begin(); jt != value->end(); jt++) 
         {
-          if(QString(jt->second->getStringValue().c_str()) == "SHGLScene")
+          if(jt->value()->getStringValue() == FTL_STR("SHGLScene"))
           {
             if(!sceneNameList.contains(sceneName))
               sceneNameList.append(sceneName);
