@@ -324,7 +324,7 @@ void DFGPEWidget_Elements::onCustomContextMenuRequested( QPoint const &pos )
 
     QAction *duplicateAction = new DuplicateAction(this, &menu, m_plusIcon);
     menu.addAction( duplicateAction );
-    duplicateAction->setEnabled( !m_model->isReadOnly() );
+    duplicateAction->setEnabled( canEdit && !m_model->isReadOnly() );
   }
 
   menu.exec( m_tableWidget->mapToGlobal( pos ) );
