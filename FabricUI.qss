@@ -1783,7 +1783,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-style: inset;
 }
 
-#ResultsView::item
+#ResultsView::item,
+#TagsView
 {
   border-radius: 4px;
   margin: 2px 2px 2px 0px;
