@@ -27,6 +27,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   QVBoxLayout* vlayout = new QVBoxLayout();
 
   m_queryEdit = new TabSearch::QueryEdit( m_host );
+  m_queryEdit->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Fixed ) );
   vlayout->addWidget( m_queryEdit );
   connect(
     m_queryEdit, SIGNAL( queryChanged( const TabSearch::Query& ) ),
