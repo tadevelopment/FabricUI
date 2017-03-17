@@ -5,6 +5,7 @@
 #include <FTL/JSONValue.h>
 #include <QFrame>
 #include <QSCrollArea>
+#include <QPushButton>
 #include <QLabel>
 #include <QLayout>
 
@@ -18,6 +19,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   , m_status( new QLabel() )
   , m_resultPreview( NULL )
   , m_detailsPanel( new QScrollArea() )
+  , m_detailsPanelToggled( true )
 {
 
   registerStaticEntries();
@@ -93,6 +95,17 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   hlayout->addWidget( m_searchFrame );
   this->setLayout( hlayout );
   m_detailsPanel->setFocusPolicy( Qt::NoFocus );
+
+  QPushButton* m_toggleDetailsButton = new QPushButton();
+  m_toggleDetailsButton->setObjectName( "ToggleDetailsPanelButton" );
+  m_toggleDetailsButton->setFocusPolicy( Qt::NoFocus );
+  m_toggleDetailsButton->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Minimum ) );
+  connect(
+    m_toggleDetailsButton, SIGNAL( released() ),
+    this, SLOT( toggleDetailsPanel() )
+  );
+  hlayout->addWidget( m_toggleDetailsButton );
+
   hlayout->addWidget( m_detailsPanel );
 
   m_status->setObjectName( "Status" );
@@ -303,7 +316,7 @@ void DFGPresetSearchWidget::hidePreview()
     m_resultPreview->deleteLater();
     m_resultPreview = NULL;
   }
-  m_detailsPanel->hide();
+  updateDetailsPanelVisibility();
 
   m_status->clear();
   m_status->hide();
@@ -321,11 +334,26 @@ void DFGPresetSearchWidget::setPreview( const std::string& preset )
       m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
       m_queryEdit, SLOT( requestTag( const std::string& ) )
     );
-    m_detailsPanel->show();
+    updateDetailsPanelVisibility();
   }
   m_status->setText( "<i>" + QString::fromStdString( preset ) + "</i>" );
   m_status->show();
   updateSize();
+}
+
+void DFGPresetSearchWidget::updateDetailsPanelVisibility()
+{
+  m_detailsPanel->setVisible( m_detailsPanelToggled && m_resultPreview != NULL );
+  this->updateSize();
+}
+
+void DFGPresetSearchWidget::toggleDetailsPanel( bool toggled )
+{
+  if( toggled != m_detailsPanelToggled )
+  {
+    m_detailsPanelToggled = toggled;
+    updateDetailsPanelVisibility();
+  }
 }
 
 void DFGPresetSearchWidget::close()

@@ -1848,3 +1848,15 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   background-color: #272822;
 }
+
+#ToggleDetailsPanelButton
+{
+  border-style: inset;
+  width: 4px;
+  background-color: #555555;
+}
+
+#ToggleDetailsPanelButton:hover
+{
+  background-color: white;
+}

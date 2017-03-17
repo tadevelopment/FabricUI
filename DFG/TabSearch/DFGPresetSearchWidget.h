@@ -54,6 +54,9 @@ namespace FabricUI
       void close();
       void updateSize();
       void registerStaticEntries();
+      void updateDetailsPanelVisibility();
+      void toggleDetailsPanel( bool toggled );
+      void toggleDetailsPanel() { toggleDetailsPanel( !m_detailsPanelToggled ); }
 
     private:
 
@@ -70,6 +73,7 @@ namespace FabricUI
       TabSearch::ResultsView* m_resultsView;
       TabSearch::ResultPreview* m_resultPreview;
       QScrollArea* m_detailsPanel;
+      bool m_detailsPanelToggled;
     };
   };
 };
