@@ -5,7 +5,7 @@
 #include "ItemView.h"
 
 #include <FabricCore.h>
-#include <QueryEdit.h>
+#include "QueryEdit.h"
 #include <iostream>
 #include <fstream>
 #include <QLayout>
