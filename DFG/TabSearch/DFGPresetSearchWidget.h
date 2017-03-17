@@ -11,6 +11,7 @@
 
 class QFrame;
 class QLabel;
+class QScrollArea;
 
 namespace FabricUI
 {
@@ -68,6 +69,7 @@ namespace FabricUI
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
       TabSearch::ResultPreview* m_resultPreview;
+      QScrollArea* m_detailsPanel;
     };
   };
 };

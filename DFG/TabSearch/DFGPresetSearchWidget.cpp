@@ -4,6 +4,7 @@
 
 #include <FTL/JSONValue.h>
 #include <QFrame>
+#include <QSCrollArea>
 #include <QLabel>
 #include <QLayout>
 
@@ -13,9 +14,10 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
   , m_staticEntriesAddedToDB( false )
   , m_host( host )
-  , m_searchFrame( new QFrame(this) )
+  , m_searchFrame( new QFrame() )
   , m_status( new QLabel() )
   , m_resultPreview( NULL )
+  , m_detailsPanel( new QScrollArea() )
 {
 
   registerStaticEntries();
@@ -85,6 +87,13 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   vlayout->setSpacing( 4 );
 
   m_searchFrame->setLayout( vlayout );
+  
+  QHBoxLayout* hlayout = new QHBoxLayout();
+  hlayout->setMargin( 0 ); hlayout->setSpacing( 0 );
+  hlayout->addWidget( m_searchFrame );
+  this->setLayout( hlayout );
+  m_detailsPanel->setFocusPolicy( Qt::NoFocus );
+  hlayout->addWidget( m_detailsPanel );
 
   m_status->setObjectName( "Status" );
   vlayout->addWidget( m_status );
@@ -290,10 +299,11 @@ void DFGPresetSearchWidget::hidePreview()
 {
   if( m_resultPreview != NULL )
   {
-    m_searchFrame->layout()->removeWidget( m_resultPreview );
+    m_detailsPanel->setWidget( NULL );
     m_resultPreview->deleteLater();
     m_resultPreview = NULL;
   }
+  m_detailsPanel->hide();
 
   m_status->clear();
   m_status->hide();
@@ -302,16 +312,16 @@ void DFGPresetSearchWidget::hidePreview()
 
 void DFGPresetSearchWidget::setPreview( const std::string& preset )
 {
-  //if( m_resultPreview == NULL || preset != m_resultPreview->getPreset() )
-  if( false ) // HACK : Disabled the Preview
+  if( m_resultPreview == NULL || preset != m_resultPreview->getPreset() )
   {
     this->hidePreview();
     m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
-    m_searchFrame->layout()->addWidget( m_resultPreview );
+    m_detailsPanel->setWidget( m_resultPreview );
     connect(
       m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
       m_queryEdit, SLOT( requestTag( const std::string& ) )
     );
+    m_detailsPanel->show();
   }
   m_status->setText( "<i>" + QString::fromStdString( preset ) + "</i>" );
   m_status->show();
