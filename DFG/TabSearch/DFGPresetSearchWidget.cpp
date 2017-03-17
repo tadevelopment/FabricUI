@@ -135,7 +135,10 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
     case Qt::Key_Down :
       m_resultsView->keyPressEvent( event ); break;
     case Qt::Key_Tab :
-      close(); emit giveFocusToParent(); break;
+      if( event->modifiers().testFlag( Qt::KeyboardModifier::ControlModifier ) )
+        this->toggleDetailsPanel();
+      else
+        close(); emit giveFocusToParent(); break;
     default:
       Parent::keyPressEvent( event );
   }
