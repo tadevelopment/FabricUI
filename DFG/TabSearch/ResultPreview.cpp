@@ -95,19 +95,50 @@ PresetDetails GetDetails(
   return details;
 }
 
+inline QString Bold( const QString& s ) { return "<b>" + s + "</b>"; }
+
+class Section : public QWidget
+{
+  QLabel* m_header;
+
+public:
+  Section( const std::string& name )
+    : m_header( new QLabel() )
+  {
+    this->setObjectName( "Section" );
+    m_header->setObjectName( "Header" );
+
+    this->setLayout( new QVBoxLayout() );
+    this->layout()->setMargin( 0 );
+    this->layout()->setSpacing( 0 );
+    this->layout()->addWidget( m_header );
+
+    m_header->setText( Bold( QString::fromStdString( name ) ) );
+    m_header->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ) );
+  }
+};
+
 ResultPreview::ResultPreview( FabricCore::DFGHost* host )
   : m_host( host )
   , m_name( new QLabel() )
+  , m_description( new QLabel() )
 {
   this->setObjectName( "ResultPreview" );
   m_name->setObjectName( "Name" );
+  m_description->setObjectName( "Description" );
 
   clear();
   QVBoxLayout* lay = new QVBoxLayout();
   lay->setMargin( 0 );
   lay->setAlignment( Qt::AlignTop );
   this->setLayout( lay );
-  this->layout()->addWidget( m_name );
+
+  lay->addWidget( m_name );
+  lay->addWidget( m_description );
+  m_description->setWordWrap( true );
+
+  lay->addWidget( new Section( "Tags" ) );
+  lay->addWidget( new Section( "Ports" ) );
 }
 
 void ResultPreview::clear()
@@ -123,9 +154,12 @@ void ResultPreview::setPreset( const std::string& preset )
 
   m_preset = preset;
   std::string name = m_preset.substr( m_preset.rfind( '.' ) + 1 );
-  m_name->setText( "<b>" + QString::fromStdString( name ) + "</b>" );
+  m_name->setText( Bold( QString::fromStdString( name ) ) );
 
   PresetDetails details = GetDetails( getPreset(), m_host );
+  m_description->setText( QString::fromStdString( details.description ) );
+  
+  this->adjustSize();
 }
 
 const std::string& ResultPreview::getPreset() const { return m_preset; }

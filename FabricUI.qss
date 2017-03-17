@@ -1725,13 +1725,20 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ResultPreview
 {
   min-width: 300px;
-  min-height: 100px; /* HACK */
+  max-width: 300px;
   padding: 8px;
 }
 
 #ResultPreview #Name
 {
   font-size: 22px;
+}
+
+#ResultPreview #Section #Header
+{
+  background-color: #444444;
+  padding: 4px;
+  font-size: 14px;
 }
 
 #ResultsView

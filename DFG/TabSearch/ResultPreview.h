@@ -4,7 +4,8 @@
 #define __UI_DFG_TabSearch_ResultPreview__
 
 #include <QFrame>
-#include <QLabel>
+
+class QLabel;
 
 namespace FabricCore
 {
@@ -38,6 +39,7 @@ namespace FabricUI
         FabricCore::DFGHost* m_host;
         std::string m_preset;
         QLabel* m_name;
+        QLabel* m_description;
       };
     }
   };
