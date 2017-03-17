@@ -3,7 +3,8 @@
 #ifndef __UI_DFG_TabSearch_ResultPreview__
 #define __UI_DFG_TabSearch_ResultPreview__
 
-#include <QWidget>
+#include <QFrame>
+#include <QLabel>
 
 namespace FabricCore
 {
@@ -16,20 +17,27 @@ namespace FabricUI
   {
     namespace TabSearch
     {
-      class ResultPreview : public QWidget
+      class ResultPreview : public QFrame
       {
         Q_OBJECT
 
       public:
-        ResultPreview( const std::string& preset, FabricCore::DFGHost* host );
+        ResultPreview( FabricCore::DFGHost* );
         const std::string& getPreset() const;
+        inline bool isEmpty() const { return m_preset == ""; }
+
+      public slots:
+        void setPreset( const std::string& preset );
+        void clear();
 
       signals:
         // Emitted when a Tag has been requested
         void tagRequested( const std::string& tag );
 
       private:
+        FabricCore::DFGHost* m_host;
         std::string m_preset;
+        QLabel* m_name;
       };
     }
   };

@@ -17,7 +17,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   , m_host( host )
   , m_searchFrame( new QFrame() )
   , m_status( new QLabel() )
-  , m_resultPreview( NULL )
+  , m_resultPreview( new TabSearch::ResultPreview( m_host ) )
   , m_detailsPanel( new QScrollArea() )
   , m_detailsPanelToggled( true )
 {
@@ -26,6 +26,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 
   this->setObjectName( "DFGPresetSearchWidget" );
   m_searchFrame->setObjectName( "SearchFrame" );
+  m_detailsPanel->setObjectName( "DetailsPanel" );
 
   this->setWindowFlags( Qt::Popup );
   QVBoxLayout* vlayout = new QVBoxLayout();
@@ -107,6 +108,12 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   hlayout->addWidget( m_toggleDetailsButton );
 
   hlayout->addWidget( m_detailsPanel );
+
+  m_detailsPanel->setWidget( m_resultPreview );
+  connect(
+    m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
+    m_queryEdit, SLOT( requestTag( const std::string& ) )
+  );
 
   m_status->setObjectName( "Status" );
   vlayout->addWidget( m_status );
@@ -313,12 +320,7 @@ bool DFGPresetSearchWidget::focusNextPrevChild( bool next )
 
 void DFGPresetSearchWidget::hidePreview()
 {
-  if( m_resultPreview != NULL )
-  {
-    m_detailsPanel->setWidget( NULL );
-    m_resultPreview->deleteLater();
-    m_resultPreview = NULL;
-  }
+  m_resultPreview->clear();
   updateDetailsPanelVisibility();
 
   m_status->clear();
@@ -328,17 +330,9 @@ void DFGPresetSearchWidget::hidePreview()
 
 void DFGPresetSearchWidget::setPreview( const std::string& preset )
 {
-  if( m_resultPreview == NULL || preset != m_resultPreview->getPreset() )
-  {
-    this->hidePreview();
-    m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
-    m_detailsPanel->setWidget( m_resultPreview );
-    connect(
-      m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
-      m_queryEdit, SLOT( requestTag( const std::string& ) )
-    );
-    updateDetailsPanelVisibility();
-  }
+  m_resultPreview->setPreset( preset );
+  updateDetailsPanelVisibility();
+
   m_status->setText( "<i>" + QString::fromStdString( preset ) + "</i>" );
   m_status->show();
   updateSize();
@@ -346,7 +340,7 @@ void DFGPresetSearchWidget::setPreview( const std::string& preset )
 
 void DFGPresetSearchWidget::updateDetailsPanelVisibility()
 {
-  m_detailsPanel->setVisible( m_detailsPanelToggled && m_resultPreview != NULL );
+  m_detailsPanel->setVisible( m_detailsPanelToggled && !m_resultPreview->isEmpty() );
   this->updateSize();
 }
 

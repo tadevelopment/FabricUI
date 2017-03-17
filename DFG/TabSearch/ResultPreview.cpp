@@ -13,51 +13,35 @@
 using namespace FabricUI::DFG::TabSearch;
 using namespace FabricCore;
 
-ResultPreview::ResultPreview( const std::string& preset, DFGHost* host )
-  : m_preset( preset )
+ResultPreview::ResultPreview( FabricCore::DFGHost* host )
+  : m_host( host )
+  , m_name( new QLabel() )
 {
-  QVBoxLayout* layout = new QVBoxLayout();
+  this->setObjectName( "ResultPreview" );
+  m_name->setObjectName( "Name" );
 
-  String descStr = host->getPresetDesc( preset.data() );
-  FTL::JSONValue* desc = FTL::JSONValue::Decode( std::string( descStr.getCStr(), descStr.getSize() ) );
-  FTL::CStrRef nameStr = desc->cast<FTL::JSONObject>()->getString( "presetName" );
+  clear();
+  QVBoxLayout* lay = new QVBoxLayout();
+  lay->setMargin( 0 );
+  lay->setAlignment( Qt::AlignTop );
+  this->setLayout( lay );
+  this->layout()->addWidget( m_name );
+}
 
-  QFont font;
+void ResultPreview::clear()
+{
+  m_preset = "";
+  m_name->setText( "" );
+}
 
-  // Name
-  {
-    QLabel* label = new QLabel( "<b>" + QString::fromStdString( nameStr ) + "</b>" );
-    font.setPointSize( 16 ); label->setFont( font );
-    layout->addWidget( label );
-  }
+void ResultPreview::setPreset( const std::string& preset )
+{
+  if( m_preset == preset )
+    return;
 
-  // Path
-  {
-    QLabel* label = new QLabel( "<i>" + QString::fromStdString( preset ) + "</i>" );
-    font.setPointSize( 8 ); label->setFont( font );
-    layout->addWidget( label );
-  }
-
-  // Tags
-  {
-    FEC_StringRef tagsStrR = FEC_DFGHostGetPresetTags( host->getFECDFGHostRef(), preset.data() );
-    FTL::StrRef tagsStr( FEC_StringGetCStr( tagsStrR ), FEC_StringGetSize( tagsStrR ) );
-    FTL::JSONValue* tags = FTL::JSONValue::Decode( tagsStr );
-    FTL::JSONArray* tagsA = tags->cast<FTL::JSONArray>();
-
-    for( FTL::JSONArray::const_iterator it = tagsA->begin(); it != tagsA->end(); it++ )
-    {
-      TagView* tagView = new TagView( ( *it )->getStringValue() );
-      connect(
-        tagView, SIGNAL( activated( const std::string& ) ),
-        this, SIGNAL( tagRequested( const std::string& ) )
-      );
-      layout->addWidget( tagView );
-    }
-  }
-
-  layout->setAlignment( Qt::AlignTop );
-  this->setLayout( layout );
+  m_preset = preset;
+  std::string name = m_preset.substr( m_preset.rfind( '.' ) + 1 );
+  m_name->setText( "<b>" + QString::fromStdString( name ) + "</b>" );
 }
 
 const std::string& ResultPreview::getPreset() const { return m_preset; }

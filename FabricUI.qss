@@ -1700,24 +1700,42 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 0px;
 }
 
-#DFGPresetSearchWidget #SearchFrame
+#DFGPresetSearchWidget #SearchFrame,
+#DFGPresetSearchWidget #DetailsPanel
 {
   background-color: #555555;
   border: 2px solid #333333;
   padding: 4px;
 }
 
+#QueryEdit QLineEdit,
+#ResultsView,
+#ResultPreview
+{
+  border-radius: 4px;
+}
+
 #QueryEdit QLineEdit
 {
   font-size: 18px;
-  border-radius: 4px;
   padding: 2px;
   min-width: 500px;
 }
 
+#ResultPreview
+{
+  min-width: 300px;
+  min-height: 100px; /* HACK */
+  padding: 8px;
+}
+
+#ResultPreview #Name
+{
+  font-size: 22px;
+}
+
 #ResultsView
 {
-  border-radius: 4px;
   max-height: 300px;
 }
 
