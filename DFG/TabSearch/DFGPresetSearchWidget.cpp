@@ -3,6 +3,7 @@
 #include "DFGPresetSearchWidget.h"
 
 #include <FTL/JSONValue.h>
+#include <QDebug>
 #include <QFrame>
 #include <QLabel>
 #include <QLayout>
@@ -95,7 +96,8 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
 {
   move( QPoint( 0, 0 ) );
-  move( mapFromGlobal( globalPos ) );
+  m_posAtShow = mapFromGlobal( globalPos );
+  move( m_posAtShow );
 
   emit enabled( true );
   show();
@@ -331,3 +333,35 @@ void DFGPresetSearchWidget::close()
   if( !this->isHidden() )
     this->hide();
 }
+
+void DFGPresetSearchWidget::resizeEvent( QResizeEvent *event )
+{
+  DFGAbstractTabSearchWidget::resizeEvent( event );
+  maybeReposition();
+}
+
+void DFGPresetSearchWidget::showEvent( QShowEvent * event )
+{
+  DFGAbstractTabSearchWidget::showEvent( event );
+  maybeReposition();
+}
+
+void DFGPresetSearchWidget::maybeReposition()
+{
+  if ( QWidget *parent = parentWidget() )
+  {
+    QSize parentSize = parent->size();
+    // qDebug() << "parentSize" << parentSize;
+    QPoint myPos = m_posAtShow;
+    // qDebug() << "myPos before" << myPos;
+    QSize mySize = size();
+    // qDebug() << "mySize" << myPos;
+    if ( myPos.x() + mySize.width() > parentSize.width() )
+      myPos.setX( std::max( 0, parentSize.width() - mySize.width() ) );
+    if ( myPos.y() + mySize.height() > parentSize.height() )
+      myPos.setY( std::max( 0, parentSize.height() - mySize.height() ) );
+    // qDebug() << "myPos before" << myPos;
+    move( myPos );
+  }
+}
+

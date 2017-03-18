@@ -29,6 +29,8 @@ namespace FabricUI
       void keyPressEvent( QKeyEvent *event ) FTL_OVERRIDE;
       void hideEvent( QHideEvent * e ) FTL_OVERRIDE;
       bool focusNextPrevChild( bool next ) FTL_OVERRIDE;
+      void resizeEvent( QResizeEvent * event ) FTL_OVERRIDE;
+      void showEvent( QShowEvent * event ) FTL_OVERRIDE;
 
     signals:
       // Emitted when a Result (there are different types) has been chosen
@@ -54,6 +56,10 @@ namespace FabricUI
       void updateSize();
       void registerStaticEntries();
 
+    protected:
+
+      void maybeReposition();
+
     private:
 
       // Will the Query persist between 2 invocations ?
@@ -68,6 +74,8 @@ namespace FabricUI
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
       TabSearch::ResultPreview* m_resultPreview;
+
+      QPoint m_posAtShow;
     };
   };
 };
