@@ -352,7 +352,11 @@ void DFGPresetSearchWidget::maybeReposition()
   {
     QSize parentSize = parent->size();
     // qDebug() << "parentSize" << parentSize;
-    QPoint myPos = m_posAtShow;
+    QPoint myPos = QPoint(
+      // Don't move the widget when shrinking
+      std::min( m_posAtShow.x(), this->pos().x() ),
+      std::min( m_posAtShow.y(), this->pos().y() )
+    );
     // qDebug() << "myPos before" << myPos;
     QSize mySize = size();
     // qDebug() << "mySize" << myPos;
