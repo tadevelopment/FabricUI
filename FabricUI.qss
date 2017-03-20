@@ -116,8 +116,8 @@ QMainWindow > QDockWidget::title
 QToolTip
 {
   color: #000000;
-  background-color: #b2e0fd;
-  border: 1px solid red;
+  background-color: #B2E0FD;
+  border: 1px;
 }
 
 QMenuBar
