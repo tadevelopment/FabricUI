@@ -113,11 +113,13 @@ class Section : public QWidget
 
   Header* m_header;
   QWidget* m_widget;
+  ResultPreview* m_parent;
 
 public:
-  Section( const std::string& name )
+  Section( const std::string& name, ResultPreview* parent )
     : m_header( new Header( this ) )
     , m_widget( NULL )
+    , m_parent( parent )
   {
     this->setObjectName( "Section" );
     m_header->setObjectName( "Header" );
@@ -148,6 +150,7 @@ void Section::toggleCollapse()
 {
   if( m_widget != NULL )
     m_widget->setVisible( !m_widget->isVisible() );
+  m_parent->adjustSize();
 }
 
 class ResultPreview::PortsView : public QTableWidget
@@ -270,12 +273,12 @@ ResultPreview::ResultPreview( FabricCore::DFGHost* host )
   lay->addWidget( m_description );
   m_description->setWordWrap( true );
 
-  Section* tags = new Section( "Tags" );
+  Section* tags = new Section( "Tags", this );
   m_tagsView = new TagsView( this );
   tags->setWidget( m_tagsView );
   lay->addWidget( tags );
 
-  Section* ports = new Section( "Ports" );
+  Section* ports = new Section( "Ports", this );
   m_portsTable = new PortsView();
   ports->setWidget( m_portsTable );
   lay->addWidget( ports );
