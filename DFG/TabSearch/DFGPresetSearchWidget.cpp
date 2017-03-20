@@ -97,6 +97,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   hlayout->addWidget( m_searchFrame );
   this->setLayout( hlayout );
   m_detailsPanel->setFocusPolicy( Qt::NoFocus );
+  m_detailsPanel->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
   QPushButton* m_toggleDetailsButton = new QPushButton();
   m_toggleDetailsButton->setObjectName( "ToggleDetailsPanelButton" );
