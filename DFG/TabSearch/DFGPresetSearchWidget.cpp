@@ -4,7 +4,7 @@
 
 #include <FTL/JSONValue.h>
 #include <QFrame>
-#include <QSCrollArea>
+#include <QScrollArea>
 #include <QPushButton>
 #include <QLabel>
 #include <QLayout>
@@ -142,7 +142,7 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
     case Qt::Key_Down :
       m_resultsView->keyPressEvent( event ); break;
     case Qt::Key_Tab :
-      if( event->modifiers().testFlag( Qt::KeyboardModifier::ControlModifier ) )
+      if( event->modifiers().testFlag( Qt::ControlModifier ) )
         this->toggleDetailsPanel();
       else
         close(); emit giveFocusToParent(); break;
