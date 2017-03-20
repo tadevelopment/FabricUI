@@ -7,8 +7,6 @@
 #include <FabricCore.h>
 #include "QueryEdit.h"
 #include <iostream>
-#include <QTableWidget>
-#include <QHeaderView>
 #include <QLayout>
 #include <QLabel>
 #include <FTL/JSONValue.h>
@@ -153,34 +151,61 @@ void Section::toggleCollapse()
   m_parent->adjustSize();
 }
 
-class ResultPreview::PortsView : public QTableWidget
+class ResultPreview::PortsView : public QWidget
 {
+  struct PortView : public QWidget
+  {
+    PortView( const Port& port )
+    {
+      this->setObjectName( "PortView" );
+      QHBoxLayout* lay = new QHBoxLayout();
+      lay->setMargin( 0 );
+      lay->setSpacing( 2 );
+      lay->addWidget( new QLabel( QString::fromStdString( port.name ) ) );
+      lay->addWidget( new QLabel( QString::fromStdString( port.type ) ) );
+      this->setLayout( lay );
+    }
+  };
+
+  std::vector<PortView*> m_ports;
+
 public:
 
   PortsView()
   {
-    this->setFocusPolicy( Qt::NoFocus );
-    this->setColumnCount( 2 );
-    QStringList headerLabels;
-    headerLabels.push_back( "Name" ); headerLabels.push_back( "Type" );
-    this->setHorizontalHeaderLabels( headerLabels );
-    this->verticalHeader()->hide();
-    this->setEditTriggers( QAbstractItemView::NoEditTriggers );
+    this->setObjectName( "PortsView" );
+    QVBoxLayout* lay = new QVBoxLayout();
+    lay->setMargin( 0 );
+    lay->setSpacing( 2 );
+    lay->setMargin( 8 );
+    this->setLayout( lay );
+
+    Port headerPort;
+    headerPort.name = "Name";
+    headerPort.type = "Type";
+    PortView* header = new PortView( headerPort );
+    header->setObjectName( "PortsHeader" );
+    this->layout()->addWidget( header );
+  }
+
+  void clear()
+  {
+    for( size_t i = 0; i < m_ports.size(); i++ )
+    {
+      this->layout()->removeWidget( m_ports[i] );
+      m_ports[i]->deleteLater();
+    }
+    m_ports.clear();
   }
 
   void setPorts( const std::vector<Port>& ports )
   {
-    this->setRowCount( ports.size() );
-    for( size_t i = 0; i< ports.size(); i++ )
+    clear();
+    for( size_t i = 0; i < ports.size(); i++ )
     {
-      const Port& p = ports[i];
-      for( size_t j = 0; j < 2; j++ )
-      {
-        QTableWidgetItem* item =
-          new QTableWidgetItem( QString::number( i ) + ";" + QString::number( j ) );
-        this->setItem( i, j, item );
-        item->setData( Qt::DisplayRole, QString::fromStdString( j == 0 ? p.name : p.type ) );
-      }
+      PortView* view = new PortView( ports[i] );
+      m_ports.push_back( view );
+      this->layout()->addWidget( view );
     }
   }
 };

@@ -1901,3 +1901,30 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   margin: 2px;
   padding: 2px;
 }
+
+#ResultPreview #PortsView *
+{
+  padding: 4px;
+}
+
+#ResultPreview #PortsView
+{
+  background-color: #555555;
+  margin: 8px;
+}
+
+#ResultPreview #PortsView #PortView,
+#ResultPreview #PortsView #PortsHeader
+{
+  background-color: #555555;
+}
+
+#ResultPreview #PortsView #PortsHeader *
+{
+  background-color: #444444;
+}
+
+#ResultPreview #PortsView #PortView *
+{
+  background-color: #333333;
+}
