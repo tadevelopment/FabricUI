@@ -186,11 +186,13 @@ class ResultPreview::TagsView : public QWidget
 {
   std::vector<TagView*> m_tags;
   QVBoxLayout* m_layout;
+  ResultPreview* m_preview;
 
 public:
 
-  TagsView()
+  TagsView( ResultPreview* preview )
     : m_layout( new QVBoxLayout() )
+    , m_preview( preview )
   {
     this->setLayout( m_layout );
   }
@@ -207,6 +209,10 @@ public:
     for( size_t i = 0; i < tags.size(); i++ )
     {
       TagView* tagView = new TagView( tags[i] );
+      connect(
+        tagView, SIGNAL( activated( const std::string& ) ),
+        m_preview, SIGNAL( tagRequested( const std::string& ) )
+      );
       m_tags.push_back( tagView );
       m_layout->addWidget( tagView );
     }
@@ -233,7 +239,7 @@ ResultPreview::ResultPreview( FabricCore::DFGHost* host )
   m_description->setWordWrap( true );
 
   Section* tags = new Section( "Tags" );
-  m_tagsView = new TagsView();
+  m_tagsView = new TagsView( this );
   tags->setWidget( m_tagsView );
   lay->addWidget( tags );
 
