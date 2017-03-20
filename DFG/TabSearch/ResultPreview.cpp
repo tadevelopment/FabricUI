@@ -182,9 +182,25 @@ public:
   }
 };
 
+// http://doc.qt.io/qt-4.8/qt-layouts-flowlayout-example.html
+// TODO : Knapsacks optimization problem to minimize the
+// empty spaces ? https://en.wikipedia.org/wiki/Knapsack_problem
 class ResultPreview::TagsView : public QWidget
 {
-  std::vector<TagView*> m_tags;
+  struct Line
+  {
+    std::vector<TagView*> tags;
+    QHBoxLayout* layout;
+    Line() : layout( new QHBoxLayout() ) { layout->setAlignment( Qt::AlignLeft ); }
+    int width() const
+    {
+      int w = 0;
+      for( size_t i = 0; i < tags.size(); i++ )
+        w += tags[i]->sizeHint().width() + layout->spacing();
+      return w;
+    }
+  };
+  std::vector<Line> m_lines;
   QVBoxLayout* m_layout;
   ResultPreview* m_preview;
 
@@ -197,14 +213,22 @@ public:
     this->setLayout( m_layout );
   }
 
+  void clear()
+  {
+    for( size_t i = 0; i < m_lines.size(); i++ )
+    {
+      const Line& line = m_lines[i];
+      m_layout->removeItem( line.layout );
+      for( size_t j = 0; j < line.tags.size(); j++ )
+        line.tags[j]->deleteLater();
+      line.layout->deleteLater();
+    }
+    m_lines.clear();
+  }
+
   void setTags( const std::vector<Query::Tag>& tags )
   {
-    for( size_t i = 0; i < m_tags.size(); i++ )
-    {
-      m_layout->removeWidget( m_tags[i] );
-      m_tags[i]->deleteLater();
-    }
-    m_tags.clear();
+    clear();
 
     for( size_t i = 0; i < tags.size(); i++ )
     {
@@ -213,8 +237,16 @@ public:
         tagView, SIGNAL( activated( const std::string& ) ),
         m_preview, SIGNAL( tagRequested( const std::string& ) )
       );
-      m_tags.push_back( tagView );
-      m_layout->addWidget( tagView );
+      if( m_lines.size() == 0
+        || m_lines[m_lines.size() - 1].width() + tagView->sizeHint().width() > this->width() )
+      {
+        Line line;
+        m_lines.push_back( line );
+        m_layout->addLayout( line.layout );
+      }
+      Line& line = m_lines[m_lines.size() - 1];
+      line.tags.push_back( tagView );
+      line.layout->addWidget( tagView );
     }
   }
 };
