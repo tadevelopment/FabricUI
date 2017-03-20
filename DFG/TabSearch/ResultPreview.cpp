@@ -194,7 +194,11 @@ class ResultPreview::TagsView : public QWidget
   {
     std::vector<TagView*> tags;
     QHBoxLayout* layout;
-    Line() : layout( new QHBoxLayout() ) { layout->setAlignment( Qt::AlignLeft ); }
+    Line() : layout( new QHBoxLayout() ) {
+      layout->setAlignment( Qt::AlignLeft );
+      layout->setSpacing( 2 );
+      layout->setMargin( 0 );
+    }
     int width() const
     {
       int w = 0;
@@ -213,7 +217,11 @@ public:
     : m_layout( new QVBoxLayout() )
     , m_preview( preview )
   {
+    this->setObjectName( "TagsView" );
+
     this->setLayout( m_layout );
+    m_layout->setSpacing( 2 );
+    m_layout->setMargin( 4 );
   }
 
   void clear()
@@ -301,6 +309,7 @@ void ResultPreview::setPreset( const std::string& preset )
 
   PresetDetails details = GetDetails( getPreset(), m_host );
   m_description->setText( QString::fromStdString( details.description ) );
+  m_description->setVisible( !details.description.empty() );
 
   m_tagsView->setTags( details.tags );
 
