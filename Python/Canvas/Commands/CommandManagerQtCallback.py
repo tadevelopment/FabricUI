@@ -8,7 +8,7 @@ from FabricEngine.Canvas.Commands.CommandManager import *
  
 class CommandManagerQtCallback(QtCore.QObject):
 
-    """ CommandManagerQtCallback specializes CommandManagerCallback (C++) 
+    """ CommandManagerQtCallback is connected to the CommandManagerCallback 
         and adds the commands into the Qt undo stack when they are created. 
         When a command is added, it also logs its description.
     """

@@ -61,6 +61,9 @@ class CommandRegistry : public QObject
     /// Gets the registry singleton.
     /// Thows an error if the registry has not been created.
     static CommandRegistry* GetCommandRegistry();
+    
+    /// Checks if the registry has been created.
+    static bool IsInitalized();
 
     /// Registers a C++ CommandFactory.
   	void registerFactory(

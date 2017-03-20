@@ -70,7 +70,10 @@ class CommandManager : public QObject
     /// Gets the manager singleton.
     /// Thows an error if the manager has not been created.
     static CommandManager* GetCommandManager();
-   
+    
+    /// Checks if the manager has been created.
+    static bool IsInitalized();
+
     /// Creates and executes a command (if doCmd == true).
     /// If executed, the command is added to the manager stack.
     /// Throws an exception if an error occurs.
@@ -95,6 +98,9 @@ class CommandManager : public QObject
     /// Throws an exception if an error occurs.
     void redoCommand();
 
+    /// Clears the redo stack.
+    virtual void clearRedoStack();
+
     /// Clears all the commands.
     virtual void clear();
 
@@ -104,6 +110,12 @@ class CommandManager : public QObject
     /// Gets the current index (next command to undo).
     /// If -1 is returns, there is no command to undo.
     int getStackIndex();
+
+    /// Gets the command at index 'index'.
+    /// Returns null if the index is out of ranges.
+    BaseCommand *getCommandAtIndex(
+      int index
+      );
 
     /// Gets the KL comand manager.
     FabricCore::RTVal getKLCommandManager();
@@ -124,7 +136,7 @@ class CommandManager : public QObject
     /// Emitted when a top command has 
     /// been succefully pushed to the stack.
     void commandPushedCallback(
-      BaseCommand *cmd
+      FabricUI::Commands::BaseCommand *
       );
 
     /// Emitted when the manager is cleared.
@@ -153,9 +165,6 @@ class CommandManager : public QObject
       BaseCommand *cmd,
       bool isLowCmd = false
       );
-
-    /// Clears the redo stack.
-    virtual void clearRedoStack();
 
     /// Structure containing a command (top) and
     /// its sub-commands (low) in a flat array.

@@ -94,6 +94,11 @@ CommandManager* CommandManager::GetCommandManager()
   return s_cmdManager;
 }
 
+bool CommandManager::IsInitalized()
+{
+  return s_instanceFlag;
+}
+
 BaseCommand* CommandManager::createCommand(
   const QString &cmdName, 
   const QMap<QString, QString> &args, 
@@ -310,6 +315,19 @@ int CommandManager::count()
 int CommandManager::getStackIndex()
 {
   return int(m_undoStack.size() - 1);
+}
+
+BaseCommand * CommandManager::getCommandAtIndex(
+ int index)
+{
+  if(index >= 0 && index < m_undoStack.size())
+    return m_undoStack[index].topLevelCmd;
+
+  else if (index >= m_undoStack.size() && index < count())
+    return m_redoStack[index - m_undoStack.size()].topLevelCmd;
+
+  else
+    return 0;
 }
 
 RTVal CommandManager::getKLCommandManager()
