@@ -5,6 +5,7 @@
 #include <FTL/JSONValue.h>
 #include <QFrame>
 #include <QScrollArea>
+#include <QScrollBar>
 #include <QPushButton>
 #include <QLabel>
 #include <QLayout>
@@ -331,6 +332,7 @@ void DFGPresetSearchWidget::hidePreview()
 void DFGPresetSearchWidget::setPreview( const std::string& preset )
 {
   m_resultPreview->setPreset( preset );
+  m_detailsPanel->verticalScrollBar()->setValue( 0 );
   updateDetailsPanelVisibility();
 
   m_status->setText( "<i>" + QString::fromStdString( preset ) + "</i>" );
