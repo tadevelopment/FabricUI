@@ -101,12 +101,28 @@ inline QString Bold( const QString& s ) { return "<b>" + s + "</b>"; }
 
 class Section : public QWidget
 {
-  QLabel* m_header;
+  void toggleCollapse();
+
+  struct Header : public QLabel
+  {
+    typedef QLabel Parent;
+
+    Section *m_parent;
+    Header( Section* parent ) : m_parent( parent ) {}
+
+    void mouseReleaseEvent( QMouseEvent *ev ) FTL_OVERRIDE
+    {
+      Parent::mouseReleaseEvent( ev );
+      m_parent->toggleCollapse();
+    }
+  };
+
+  Header* m_header;
   QWidget* m_widget;
 
 public:
   Section( const std::string& name )
-    : m_header( new QLabel() )
+    : m_header( new Header( this ) )
     , m_widget( NULL )
   {
     this->setObjectName( "Section" );
@@ -133,6 +149,12 @@ public:
     this->layout()->addWidget( m_widget );
   }
 };
+
+void Section::toggleCollapse()
+{
+  if( m_widget != NULL )
+    m_widget->setVisible( !m_widget->isVisible() );
+}
 
 class ResultPreview::PortsView : public QTableWidget
 {
@@ -185,12 +207,12 @@ ResultPreview::ResultPreview( FabricCore::DFGHost* host )
   lay->addWidget( m_description );
   m_description->setWordWrap( true );
 
-  lay->addWidget( new Section( "Tags" ) );
-
   Section* ports = new Section( "Ports" );
   m_portsTable = new PortsView();
   ports->setWidget( m_portsTable );
   lay->addWidget( ports );
+
+  lay->addWidget( new Section( "Tags" ) );
 }
 
 void ResultPreview::clear()

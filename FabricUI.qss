@@ -1885,3 +1885,9 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   background-color: white;
 }
+
+#ResultPreview #Section #Header:hover
+{
+  background-color: #FFF;
+  color: #000;
+}
