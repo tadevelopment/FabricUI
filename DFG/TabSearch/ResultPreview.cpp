@@ -182,6 +182,37 @@ public:
   }
 };
 
+class ResultPreview::TagsView : public QWidget
+{
+  std::vector<TagView*> m_tags;
+  QVBoxLayout* m_layout;
+
+public:
+
+  TagsView()
+    : m_layout( new QVBoxLayout() )
+  {
+    this->setLayout( m_layout );
+  }
+
+  void setTags( const std::vector<Query::Tag>& tags )
+  {
+    for( size_t i = 0; i < m_tags.size(); i++ )
+    {
+      m_layout->removeWidget( m_tags[i] );
+      m_tags[i]->deleteLater();
+    }
+    m_tags.clear();
+
+    for( size_t i = 0; i < tags.size(); i++ )
+    {
+      TagView* tagView = new TagView( tags[i] );
+      m_tags.push_back( tagView );
+      m_layout->addWidget( tagView );
+    }
+  }
+};
+
 ResultPreview::ResultPreview( FabricCore::DFGHost* host )
   : m_host( host )
   , m_name( new QLabel() )
@@ -201,12 +232,15 @@ ResultPreview::ResultPreview( FabricCore::DFGHost* host )
   lay->addWidget( m_description );
   m_description->setWordWrap( true );
 
+  Section* tags = new Section( "Tags" );
+  m_tagsView = new TagsView();
+  tags->setWidget( m_tagsView );
+  lay->addWidget( tags );
+
   Section* ports = new Section( "Ports" );
   m_portsTable = new PortsView();
   ports->setWidget( m_portsTable );
   lay->addWidget( ports );
-
-  lay->addWidget( new Section( "Tags" ) );
 }
 
 void ResultPreview::clear()
@@ -226,6 +260,8 @@ void ResultPreview::setPreset( const std::string& preset )
 
   PresetDetails details = GetDetails( getPreset(), m_host );
   m_description->setText( QString::fromStdString( details.description ) );
+
+  m_tagsView->setTags( details.tags );
 
   m_portsTable->setPorts( details.ports );
   

@@ -42,6 +42,8 @@ namespace FabricUI
         QLabel* m_description;
         class PortsView;
         PortsView* m_portsTable;
+        class TagsView;
+        TagsView* m_tagsView;
       };
     }
   };
