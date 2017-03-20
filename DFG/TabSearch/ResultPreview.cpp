@@ -8,6 +8,8 @@
 #include "QueryEdit.h"
 #include <iostream>
 #include <fstream>
+#include <QTableWidget>
+#include <QHeaderView>
 #include <QLayout>
 #include <QLabel>
 #include <FTL/JSONValue.h>
@@ -100,10 +102,12 @@ inline QString Bold( const QString& s ) { return "<b>" + s + "</b>"; }
 class Section : public QWidget
 {
   QLabel* m_header;
+  QWidget* m_widget;
 
 public:
   Section( const std::string& name )
     : m_header( new QLabel() )
+    , m_widget( NULL )
   {
     this->setObjectName( "Section" );
     m_header->setObjectName( "Header" );
@@ -115,6 +119,50 @@ public:
 
     m_header->setText( Bold( QString::fromStdString( name ) ) );
     m_header->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ) );
+  }
+
+  // takes ownership of the widget
+  void setWidget( QWidget* widget )
+  {
+    if( m_widget != NULL )
+    {
+      this->layout()->removeWidget( m_widget );
+      m_widget->deleteLater();
+    }
+    m_widget = widget;
+    this->layout()->addWidget( m_widget );
+  }
+};
+
+class ResultPreview::PortsView : public QTableWidget
+{
+public:
+
+  PortsView()
+  {
+    this->setFocusPolicy( Qt::NoFocus );
+    this->setColumnCount( 2 );
+    QStringList headerLabels;
+    headerLabels.push_back( "Name" ); headerLabels.push_back( "Type" );
+    this->setHorizontalHeaderLabels( headerLabels );
+    this->verticalHeader()->hide();
+    this->setEditTriggers( QAbstractItemView::NoEditTriggers );
+  }
+
+  void setPorts( const std::vector<Port>& ports )
+  {
+    this->setRowCount( ports.size() );
+    for( size_t i = 0; i< ports.size(); i++ )
+    {
+      const Port& p = ports[i];
+      for( size_t j = 0; j < 2; j++ )
+      {
+        QTableWidgetItem* item =
+          new QTableWidgetItem( QString::number( i ) + ";" + QString::number( j ) );
+        this->setItem( i, j, item );
+        item->setData( Qt::DisplayRole, QString::fromStdString( j == 0 ? p.name : p.type ) );
+      }
+    }
   }
 };
 
@@ -138,7 +186,11 @@ ResultPreview::ResultPreview( FabricCore::DFGHost* host )
   m_description->setWordWrap( true );
 
   lay->addWidget( new Section( "Tags" ) );
-  lay->addWidget( new Section( "Ports" ) );
+
+  Section* ports = new Section( "Ports" );
+  m_portsTable = new PortsView();
+  ports->setWidget( m_portsTable );
+  lay->addWidget( ports );
 }
 
 void ResultPreview::clear()
@@ -158,6 +210,8 @@ void ResultPreview::setPreset( const std::string& preset )
 
   PresetDetails details = GetDetails( getPreset(), m_host );
   m_description->setText( QString::fromStdString( details.description ) );
+
+  m_portsTable->setPorts( details.ports );
   
   this->adjustSize();
 }

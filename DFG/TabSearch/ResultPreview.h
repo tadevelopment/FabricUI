@@ -40,6 +40,8 @@ namespace FabricUI
         std::string m_preset;
         QLabel* m_name;
         QLabel* m_description;
+        class PortsView;
+        PortsView* m_portsTable;
       };
     }
   };
