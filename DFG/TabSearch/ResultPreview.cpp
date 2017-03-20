@@ -7,7 +7,6 @@
 #include <FabricCore.h>
 #include "QueryEdit.h"
 #include <iostream>
-#include <fstream>
 #include <QTableWidget>
 #include <QHeaderView>
 #include <QLayout>
@@ -35,30 +34,25 @@ PresetDetails GetDetails(
 )
 {
   PresetDetails details;
-  std::string filePath = host->getPresetImportPathname( preset.data() );
   
   try
   {
-    // Reading the .canvas as a string
-    std::ifstream file( filePath.data() );
-    if( !file.is_open() )
-      std::cerr << "Error : couldn't open preset \"" << filePath << "\"" << std::endl;
-    else
+    // Description of the DFGPreset
     {
-      std::string content = std::string(
-        std::istreambuf_iterator<char>( file ),
-        std::istreambuf_iterator<char>()
-      );
+      FabricCore::String descS = host->getPresetDesc( preset.data() );
 
-      // Parsing the .canvas
-      const FTL::JSONValue* json = FTL::JSONValue::Decode( content.data() );
+      const FTL::JSONValue* json = FTL::JSONValue::Decode( descS.getCStr() );
       const FTL::JSONObject* presetJs = json->cast<FTL::JSONObject>();
+
+      // Description
       if( presetJs->has( "metadata" ) )
       {
         const FTL::JSONObject* metadata = presetJs->getObject( "metadata" );
         if( metadata->has( "uiTooltip" ) )
           details.description = metadata->getString( "uiTooltip" );
       }
+
+      // Ports
       if( presetJs->has( "ports" ) )
       {
         const FTL::JSONArray* ports = presetJs->getArray( "ports" );
