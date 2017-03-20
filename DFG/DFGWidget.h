@@ -9,6 +9,9 @@
 #include <QMenuBar>
 #include <QFileInfo>
 #include <QProxyStyle>
+#include <QVBoxLayout>
+#include <QMessageBox>
+#include <QDesktopServices>
 #include <Commands/CommandStack.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
@@ -22,7 +25,6 @@
 #include <FabricUI/DFG/Dialogs/DFGBaseDialog.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/Actions/BaseAction.h>
-#include <QVBoxLayout>
 
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONEnc.h>
@@ -95,7 +97,8 @@ namespace DFG {
       void onExecPathOrTitleChanged();
       void refreshExtDeps( FTL::CStrRef extDeps );
 
-      void populateMenuBar(QMenuBar * menuBar, bool addFileMenu = true, bool addDCCMenu = false);
+    //void populateMenuBar(QMenuBar *menuBar, bool addFileMenu = true, bool addDCCMenu = false);
+      void populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEditMenu, bool addViewMenu, bool addDCCMenu, bool addHelpMenu);
 
       bool maybeEditNode( FabricUI::GraphView::Node *node );
       bool maybeEditInstBlock( FabricUI::GraphView::InstBlock *instBlock );
@@ -2380,6 +2383,75 @@ namespace DFG {
         m_dfgWidget->onReloadStyles();
       }
 
+    };
+
+    class AboutFabricAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      AboutFabricAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "&About Fabric" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        QString version = FabricCore::GetVersionStr();
+        QMessageBox msg(QMessageBox::Information, "About Fabric",
+          "Fabric Engine version " + version,
+          QMessageBox::NoButton,
+          m_dfgWidget);
+        msg.addButton("Ok", QMessageBox::AcceptRole);
+        msg.exec();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class OpenUrlAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      OpenUrlAction(
+        QObject *parent,
+        QString menuItemName,
+        QString url,
+        bool enable = true )
+        : QAction( parent )
+        , m_url( url )
+      {
+        setText( menuItemName );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        QDesktopServices::openUrl(m_url);
+      }
+
+    private:
+
+      QUrl m_url;
     };
 
 } // namespace DFG
