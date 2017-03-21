@@ -113,6 +113,13 @@ QMainWindow > QDockWidget::title
  * Shared
  ***************************************************************************/
 
+QToolTip
+{
+  color: #000000;
+  background-color: #B2E0FD;
+  border: 1px;
+}
+
 QMenuBar
 {
   color: #FFF;
