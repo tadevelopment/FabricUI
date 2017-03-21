@@ -298,7 +298,7 @@ const char* legacyTabSearchKey = "useLegacyTabSearch";
 
 bool DFGWidget::isUsingLegacyTabSearch() const
 {
-  return getSettings()->value( legacyTabSearchKey, true ).toBool();
+  return getSettings()->value( legacyTabSearchKey, false ).toBool();
 }
 
 void DFGWidget::onToggleLegacyTabSearch( bool toggled )
