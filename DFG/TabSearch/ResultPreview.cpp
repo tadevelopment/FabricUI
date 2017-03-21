@@ -71,9 +71,8 @@ PresetDetails GetDetails(
 
     // Fetching tags from the DFGHost
     {
-      FEC_StringRef tagsStrR = FEC_DFGHostGetPresetTags( host->getFECDFGHostRef(), preset.data() );
-      FTL::StrRef tagsStr( FEC_StringGetCStr( tagsStrR ), FEC_StringGetSize( tagsStrR ) );
-      FTL::JSONValue* tags = FTL::JSONValue::Decode( tagsStr );
+      FabricCore::String tagsStr = host->getPresetTags( preset.data() );
+      FTL::JSONValue* tags = FTL::JSONValue::Decode( tagsStr.getCStr() );
       FTL::JSONArray* tagsA = tags->cast<FTL::JSONArray>();
 
       for( FTL::JSONArray::const_iterator it = tagsA->begin(); it != tagsA->end(); it++ )
