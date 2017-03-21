@@ -143,8 +143,35 @@ struct ArrowedTag
 
 class QueryEdit::TagsEdit : public QWidget
 {
+  // Handles the hovering in order to highlight the arrows
+  class TagViewH : public TagView
+  {
+    typedef TagView Parent;
+    TagsEdit* m_parent;
+    int m_index;
+  public:
+    TagViewH( const std::string& n, TagsEdit* parent, int index )
+      : TagView( n )
+      , m_parent( parent )
+      , m_index( index )
+    {}
+  protected:
+    void enterEvent( QEvent *e ) FTL_OVERRIDE
+    {
+      Parent::enterEvent( e );
+      m_parent->setHoveredTag( m_index );
+    }
+    void leaveEvent( QEvent *e ) FTL_OVERRIDE
+    {
+      Parent::leaveEvent( e );
+      m_parent->setHoveredTag( NoHighlight );
+    }
+  };
+
 public:
   TagsEdit( const Query& query, const QueryController* controller )
+    : m_selectedIndex( NoHighlight )
+    , m_hoveredIndex( NoHighlight )
   {
     QHBoxLayout* m_layout = new QHBoxLayout();
     m_layout->setSpacing( 0 );
@@ -156,7 +183,7 @@ public:
     m_layout->setMargin( tags.size() > 0 ? 4 : 0 );
     for( size_t i = 0; i < tags.size(); i++ )
     {
-      TagView* tagView = new TagView( tags[i] );
+      TagView* tagView = new TagViewH( tags[i], this, i );
       TagArrow* arrow = new TagArrow();
       arrow->setHasRight( i < tags.size() - 1 );
       m_layout->addWidget( tagView );
@@ -171,18 +198,33 @@ public:
 
   void setHighlightedTag( int index )
   {
+    m_selectedIndex = index;
+    updateHighlight();
+  }
+
+private:
+
+  void setHoveredTag( int index )
+  {
+    m_hoveredIndex = index;
+    updateHighlight();
+  }
+
+  void updateHighlight()
+  {
     for( size_t i = 0; i < m_tagViews.size(); i++ )
     {
-      bool highlighted = index == AllHighlighted || int( i ) == index;
+      bool highlighted = m_selectedIndex == AllHighlighted
+        || int( i ) == m_selectedIndex || int( i ) == m_hoveredIndex;
       m_tagViews[i].left->setHighlighted( highlighted );
       m_tagViews[i].right->setLeftHighlighted( highlighted );
       if( i > 0 )
         m_tagViews[i-1].right->setRightHighlighted( highlighted );
     }
   }
-
-private:
   std::vector<ArrowedTag> m_tagViews;
+  int m_selectedIndex;
+  int m_hoveredIndex;
 };
 
 class QueryEdit::TextEdit : public QLineEdit
