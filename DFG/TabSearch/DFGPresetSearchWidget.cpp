@@ -159,6 +159,8 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
         this->toggleDetailsPanel();
       else
         close(); emit giveFocusToParent(); break;
+    case Qt::Key_Escape :
+      close(); emit giveFocusToParent(); break;
     default:
       Parent::keyPressEvent( event );
   }
