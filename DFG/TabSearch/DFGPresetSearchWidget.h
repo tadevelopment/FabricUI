@@ -11,6 +11,7 @@
 
 class QFrame;
 class QLabel;
+class QScrollArea;
 
 namespace FabricUI
 {
@@ -55,6 +56,9 @@ namespace FabricUI
       void close();
       void updateSize();
       void registerStaticEntries();
+      void updateDetailsPanelVisibility();
+      void toggleDetailsPanel( bool toggled );
+      void toggleDetailsPanel() { toggleDetailsPanel( !m_detailsPanelToggled ); }
 
     protected:
 
@@ -74,8 +78,10 @@ namespace FabricUI
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
       TabSearch::ResultPreview* m_resultPreview;
-
       QPoint m_posAtShow;
+      QScrollArea* m_detailsPanel;
+      TabSearch::Toggle* m_toggleDetailsButton;
+      bool m_detailsPanelToggled;
     };
   };
 };

@@ -1700,24 +1700,56 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 0px;
 }
 
-#DFGPresetSearchWidget #SearchFrame
+#DFGPresetSearchWidget #SearchFrame,
+#DFGPresetSearchWidget #DetailsPanel
 {
   background-color: #555555;
   border: 2px solid #333333;
   padding: 4px;
 }
 
+#QueryEdit QLineEdit,
+#ResultsView,
+#ResultPreview
+{
+  border-radius: 4px;
+}
+
 #QueryEdit QLineEdit
 {
   font-size: 18px;
-  border-radius: 4px;
   padding: 2px;
   min-width: 500px;
 }
 
+#ResultPreview
+{
+  min-width: 300px;
+  max-width: 300px;
+  padding: 8px;
+  padding-right: 32px;
+}
+
+#ResultPreview #Name
+{
+  font-size: 22px;
+}
+
+#ResultPreview #Section #Header #Handle
+{
+  min-width: 4px;
+  background-color: #444444;
+}
+
+#ResultPreview #Section #Header #Name
+{
+  background-color: #444444;
+  padding: 4px;
+  font-size: 14px;
+}
+
 #ResultsView
 {
-  border-radius: 4px;
   max-height: 300px;
 }
 
@@ -1735,7 +1767,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #f0f0f0;
 }
 
-#QueryEdit #TagsEdit #TagView QPushButton:hover
+#QueryEdit #TagsEdit #TagView QPushButton:hover,
+#ResultPreview #TagsView #TagView QPushButton:hover
 {
   color: #272822;
   background-color: #f0f0f0;
@@ -1847,4 +1880,66 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #PresetView[highlighted="true"] #HeatBar
 {
   background-color: #272822;
+}
+
+#ToggleDetailsPanelButton
+{
+  min-width: 4px;
+  background-color: #555555;
+  border: 2px solid #333333;
+}
+
+#ToggleDetailsPanelButton #Handle
+{
+  max-height: 32px;
+  background-color: #272822;
+}
+
+#ToggleDetailsPanelButton[hovered="true"],
+#ResultPreview #Section #Header[hovered="true"] #Name
+{
+  background-color: #FFF;
+  color: #000;
+}
+
+#ToggleDetailsPanelButton[toggled="true"] #Handle,
+#ResultPreview #Section #Header[toggled="true"] #Handle
+{
+  background-color: #50626e;
+}
+
+#ResultPreview #TagsView #TagView *
+{
+  border-style: inset;
+  background-color: #50626e;
+  border-radius: 4px;
+  margin: 2px;
+  padding: 2px;
+}
+
+#ResultPreview #PortsView *
+{
+  padding: 4px;
+}
+
+#ResultPreview #PortsView
+{
+  background-color: #555555;
+  margin: 8px;
+}
+
+#ResultPreview #PortsView #PortView,
+#ResultPreview #PortsView #PortsHeader
+{
+  background-color: #555555;
+}
+
+#ResultPreview #PortsView #PortsHeader *
+{
+  background-color: #444444;
+}
+
+#ResultPreview #PortsView #PortView *
+{
+  background-color: #333333;
 }

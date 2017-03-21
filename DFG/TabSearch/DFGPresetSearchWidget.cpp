@@ -5,6 +5,9 @@
 #include <FTL/JSONValue.h>
 #include <QDebug>
 #include <QFrame>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QPushButton>
 #include <QLabel>
 #include <QLayout>
 
@@ -14,15 +17,18 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
   , m_staticEntriesAddedToDB( false )
   , m_host( host )
-  , m_searchFrame( new QFrame(this) )
+  , m_searchFrame( new QFrame() )
   , m_status( new QLabel() )
-  , m_resultPreview( NULL )
+  , m_resultPreview( new TabSearch::ResultPreview( m_host ) )
+  , m_detailsPanel( new QScrollArea() )
+  , m_detailsPanelToggled( true )
 {
 
   registerStaticEntries();
 
   this->setObjectName( "DFGPresetSearchWidget" );
   m_searchFrame->setObjectName( "SearchFrame" );
+  m_detailsPanel->setObjectName( "DetailsPanel" );
 
   this->setWindowFlags( Qt::Popup );
   QVBoxLayout* vlayout = new QVBoxLayout();
@@ -86,6 +92,40 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   vlayout->setSpacing( 4 );
 
   m_searchFrame->setLayout( vlayout );
+  
+  QHBoxLayout* hlayout = new QHBoxLayout();
+  hlayout->setMargin( 0 ); hlayout->setSpacing( 0 );
+  hlayout->addWidget( m_searchFrame );
+  this->setLayout( hlayout );
+  m_detailsPanel->setFocusPolicy( Qt::NoFocus );
+  m_detailsPanel->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+
+  {
+    m_toggleDetailsButton = new TabSearch::Toggle();
+    m_toggleDetailsButton->setObjectName( "ToggleDetailsPanelButton" );
+    m_toggleDetailsButton->setFocusPolicy( Qt::NoFocus );
+    QVBoxLayout* lay = new QVBoxLayout();
+    lay->setMargin( 0 );
+    m_toggleDetailsButton->setLayout( lay );
+    QFrame* handle = new QFrame();
+    handle->setObjectName( "Handle" );
+    m_toggleDetailsButton->layout()->addWidget( handle );
+    m_toggleDetailsButton->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Minimum ) );
+    m_toggleDetailsButton->setToggled( m_detailsPanelToggled );
+    connect(
+      m_toggleDetailsButton, SIGNAL( toggled( bool ) ),
+      this, SLOT( toggleDetailsPanel( bool ) )
+    );
+    hlayout->addWidget( m_toggleDetailsButton );
+  }
+
+  hlayout->addWidget( m_detailsPanel );
+
+  m_detailsPanel->setWidget( m_resultPreview );
+  connect(
+    m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
+    m_queryEdit, SLOT( requestTag( const std::string& ) )
+  );
 
   m_status->setObjectName( "Status" );
   vlayout->addWidget( m_status );
@@ -115,7 +155,10 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
     case Qt::Key_Down :
       m_resultsView->keyPressEvent( event ); break;
     case Qt::Key_Tab :
-      close(); emit giveFocusToParent(); break;
+      if( event->modifiers().testFlag( Qt::ControlModifier ) )
+        this->toggleDetailsPanel();
+      else
+        close(); emit giveFocusToParent(); break;
     default:
       Parent::keyPressEvent( event );
   }
@@ -290,12 +333,8 @@ bool DFGPresetSearchWidget::focusNextPrevChild( bool next )
 
 void DFGPresetSearchWidget::hidePreview()
 {
-  if( m_resultPreview != NULL )
-  {
-    m_searchFrame->layout()->removeWidget( m_resultPreview );
-    m_resultPreview->deleteLater();
-    m_resultPreview = NULL;
-  }
+  m_resultPreview->clear();
+  updateDetailsPanelVisibility();
 
   m_status->clear();
   m_status->hide();
@@ -304,20 +343,29 @@ void DFGPresetSearchWidget::hidePreview()
 
 void DFGPresetSearchWidget::setPreview( const std::string& preset )
 {
-  //if( m_resultPreview == NULL || preset != m_resultPreview->getPreset() )
-  if( false ) // HACK : Disabled the Preview
-  {
-    this->hidePreview();
-    m_resultPreview = new TabSearch::ResultPreview( preset, m_host );
-    m_searchFrame->layout()->addWidget( m_resultPreview );
-    connect(
-      m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
-      m_queryEdit, SLOT( requestTag( const std::string& ) )
-    );
-  }
+  m_resultPreview->setPreset( preset );
+  m_detailsPanel->verticalScrollBar()->setValue( 0 );
+  updateDetailsPanelVisibility();
+
   m_status->setText( "<i>" + QString::fromStdString( preset ) + "</i>" );
   m_status->show();
   updateSize();
+}
+
+void DFGPresetSearchWidget::updateDetailsPanelVisibility()
+{
+  m_detailsPanel->setVisible( m_detailsPanelToggled && !m_resultPreview->isEmpty() );
+  this->updateSize();
+}
+
+void DFGPresetSearchWidget::toggleDetailsPanel( bool toggled )
+{
+  if( toggled != m_detailsPanelToggled )
+  {
+    m_detailsPanelToggled = toggled;
+    m_toggleDetailsButton->setToggled( toggled );
+    updateDetailsPanelVisibility();
+  }
 }
 
 void DFGPresetSearchWidget::close()
