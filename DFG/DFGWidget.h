@@ -28,6 +28,7 @@
 
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONEnc.h>
+#include <FTL/FS.h>
 
 namespace FabricUI {
 namespace DFG {
@@ -2408,13 +2409,35 @@ namespace DFG {
 
       void onTriggered()
       {
-        QString version = FabricCore::GetVersionStr();
-        QMessageBox msg(QMessageBox::Information, "About Fabric",
-          "Fabric Engine version " + version,
+        QMessageBox msgBox(QMessageBox::NoIcon, "About Fabric",
+          "",
           QMessageBox::NoButton,
           m_dfgWidget);
-        msg.addButton("Ok", QMessageBox::AcceptRole);
-        msg.exec();
+
+        msgBox.addButton("Ok", QMessageBox::AcceptRole);
+
+        char *fabricDir = getenv( "FABRIC_DIR" );
+        if ( fabricDir )
+        {
+          std::string logoPath = FTL::PathJoin( fabricDir, "Resources" );
+          FTL::PathAppendEntry( logoPath, "fe_logo.png" );
+          QPixmap pixmap(logoPath.c_str());
+          msgBox.setIconPixmap(pixmap.scaled(pixmap.size() / 2));
+        }
+
+        QString text = "";
+        text += "<br/>";
+        text += "Fabric Engine version " + QString(FabricCore::GetVersionStr());
+        text += "<br/>";
+        text += "<br/>©Copyright 2010-2017 Fabric Software Inc.";
+        text += "<br/>All rights reserved.";
+        text += "<br/>";
+        text += "<br/><a href='http://fabricengine.com/eula/'><font color=#2ab7e5>End User License Agreement (EULA)</font></a>";
+        text += "<br/>";
+        msgBox.setTextFormat(Qt::RichText);
+        msgBox.setText(text);
+
+        msgBox.exec();
       }
 
     private:
