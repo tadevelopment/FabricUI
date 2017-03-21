@@ -436,17 +436,23 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     char const *nodeName = uiNode->name().c_str();
 
     FabricCore::DFGExec instExec;
+    bool instExecCanCreatePreset = false;
     bool instExecCanUpdatePreset = false;
     if ( uiNode->isInstNode() )
     {
       instExec = exec.getSubExec( nodeName );
-      FabricCore::String origPresetGUID = instExec.getOrigPresetGUID();
-      if ( origPresetGUID.getSize() > 0 )
+      if ( !instExec.isPreset() )
       {
-        FabricCore::DFGHost host = exec.getHost();
-        FabricCore::String presetPath =
-          host.getPresetPathForPresetGUID( origPresetGUID.getCStr() );
-        instExecCanUpdatePreset = presetPath.getSize() > 0;
+        instExecCanCreatePreset = true;
+        
+        FabricCore::String origPresetGUID = instExec.getOrigPresetGUID();
+        if ( origPresetGUID.getSize() > 0 )
+        {
+          FabricCore::DFGHost host = exec.getHost();
+          FabricCore::String presetPath =
+            host.getPresetPathForPresetGUID( origPresetGUID.getCStr() );
+          instExecCanUpdatePreset = presetPath.getSize() > 0;
+        }
       }
     }
 
@@ -535,7 +541,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     result->addSeparator();
 
     result->addAction(new UpdatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanUpdatePreset));
-    result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable()));
+    result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanCreatePreset));
     result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
     result->addAction(new ExportGraphAction           (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
     result->addAction(new ImplodeSelectedNodesAction  (dfgWidget, result, dfgWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
@@ -1432,7 +1438,8 @@ static void DFGPresentPresetSaveFailedDialog( QWidget *parent, QString pathname 
     + pathname
     + " cannot be opened for writing.",
     QMessageBox::NoButton,
-    parent);
+    parent
+    );
   msg.addButton( "Ok", QMessageBox::AcceptRole );
   msg.exec();
 }
@@ -1444,7 +1451,8 @@ static void DFGPresetFabricCoreExceptionDialog( QWidget *parent, FabricCore::Exc
     "Fabric Warning", 
     e.getDesc_cstr(),
     QMessageBox::NoButton,
-    parent);
+    parent
+    );
   msg.addButton("Ok", QMessageBox::AcceptRole);
   msg.exec();
 }
@@ -1455,14 +1463,12 @@ void DFGWidget::createPreset( const char *nodeName )
   if ( exec.getNodeType( nodeName ) != FabricCore::DFGNodeType_Inst )
     return;
   FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+  if ( subExec.isPreset() )
+    return;
 
   try
   {
-    FTL::CStrRef defaultPresetName;
-    if ( subExec.isPreset() )
-      defaultPresetName = subExec.getTitle();
-    else
-      defaultPresetName = nodeName;
+    FTL::CStrRef defaultPresetName = nodeName;
 
     FabricCore::DFGHost &host = m_uiController->getHost();
 
@@ -1526,21 +1532,89 @@ void DFGWidget::createPreset( const char *nodeName )
         continue;
       }
 
-      if ( FTL::FSExists( QSTRING_TO_CONST_CHAR_FILE( pathname ) ) )
+      QString presetPath;
+      if ( !presetDirPath.isEmpty() )
+      {
+        presetPath = presetDirPath;
+        presetPath += '.';
+      }
+      presetPath += presetName;
+
+      if ( host.isPresetDir( presetPath.toUtf8().constData() ) )
       {
         QMessageBox msg(
           QMessageBox::Warning,
-          "Fabric Warning",
-            "The file "
-          + pathname
-          + " already exists.\n"
-          + "Are you sure to overwrite the file?",
+          "Fabric Error",
+            "The path '"
+          + presetPath
+          + "' is a preset directory and cannot be overwritten.",
           QMessageBox::NoButton,
           this);
-        msg.addButton( "Cancel", QMessageBox::RejectRole );
         msg.addButton( "Ok", QMessageBox::AcceptRole );
-        if ( msg.exec() != QDialog::Accepted )
-          continue;
+        msg.exec();
+        continue;
+      }
+
+      bool updatePresetGuid = false;
+      if ( host.isPresetFile( presetPath.toUtf8().constData() ) )
+      {
+        FabricCore::String origPresetGUID = subExec.getOrigPresetGUID();
+        FTL::StrRef origPresetGUIDStr(
+          origPresetGUID.getCStr(), origPresetGUID.getSize()
+          );
+
+        FabricCore::String existingPresetGUID =
+          host.getPresetFileGUID( presetPath.toUtf8().constData() );
+        FTL::StrRef existingPresetGUIDStr(
+          existingPresetGUID.getCStr(), existingPresetGUID.getSize()
+          );
+
+        if ( origPresetGUIDStr == existingPresetGUIDStr )
+        {
+          QMessageBox msg(
+            QMessageBox::Warning,
+            "Fabric Warning",
+              "This will overwrite the file '"
+            + pathname
+            + "'!",
+            QMessageBox::NoButton,
+            this
+            );
+          msg.addButton( "Cancel", QMessageBox::RejectRole );
+          QAbstractButton *okButton =
+            msg.addButton( "Ok", QMessageBox::AcceptRole );
+          msg.exec();
+          QAbstractButton *button = msg.clickedButton();
+          if ( button != okButton )
+            continue;
+          updatePresetGuid = true;
+        }
+        else
+        {
+          QMessageBox msg(
+            QMessageBox::Warning,
+            "Fabric Warning",
+              "The preset '"
+            + presetPath
+            + "' already exists."
+            + "\nReuse its preset GUID or create a new one?"
+            + "\nNOTE: This will overwrite the file '"
+            + pathname
+            + "'!",
+            QMessageBox::NoButton,
+            this
+            );
+          msg.addButton( "Cancel", QMessageBox::RejectRole );
+          QAbstractButton *reuseButton =
+            msg.addButton( "Reuse GUID", QMessageBox::YesRole );
+          QAbstractButton *createButton =
+            msg.addButton( "Create New GUID", QMessageBox::NoRole );
+          msg.exec();
+          QAbstractButton *button = msg.clickedButton();
+          if ( button != reuseButton && button != createButton )
+            continue;
+          updatePresetGuid = button == reuseButton;
+        }
       }
 
       pathname =
@@ -1548,7 +1622,7 @@ void DFGWidget::createPreset( const char *nodeName )
           nodeName,
           presetDirPath.toUtf8().constData(),
           presetName.toUtf8().constData(),
-          false // updateOrigPreset
+          updatePresetGuid
           );
       if ( pathname.isEmpty() )
       {

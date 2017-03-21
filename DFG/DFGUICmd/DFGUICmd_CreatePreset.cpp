@@ -148,8 +148,17 @@ QString DFGUICmd_CreatePreset::invoke(
 
   if ( updateOrigPreset )
   {
-    FabricCore::String origPresetGUID = subExec.getOrigPresetGUID();
-    subExec.setPresetGUID( origPresetGUID.getCStr() );
+    std::string presetPath;
+    if ( !presetDirPath.empty() )
+    {
+      presetPath += presetDirPath;
+      presetPath += '.';
+    }
+    presetPath += presetName;
+
+    FabricCore::String presetFileGUID =
+      host.getPresetFileGUID( presetPath.c_str() );
+    subExec.setPresetGUID( presetFileGUID.getCStr() );
     ++coreUndoCount;
   }
 
