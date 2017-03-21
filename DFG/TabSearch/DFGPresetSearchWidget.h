@@ -73,6 +73,7 @@ namespace FabricUI
       TabSearch::ResultsView* m_resultsView;
       TabSearch::ResultPreview* m_resultPreview;
       QScrollArea* m_detailsPanel;
+      TabSearch::Toggle* m_toggleDetailsButton;
       bool m_detailsPanelToggled;
     };
   };

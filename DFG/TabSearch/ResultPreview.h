@@ -4,6 +4,7 @@
 #define __UI_DFG_TabSearch_ResultPreview__
 
 #include <QFrame>
+#include <FTL/Config.h>
 
 class QLabel;
 
@@ -18,6 +19,34 @@ namespace FabricUI
   {
     namespace TabSearch
     {
+      // TODO : is quite generic; we might want to move it elsewhere
+      class Toggle : public QFrame
+      {
+        Q_OBJECT
+
+        typedef QFrame Parent;
+
+      public:
+        Toggle( bool toggled = false );
+
+      public slots:
+        virtual void setToggled( bool toggled );
+
+      signals:
+        void toggled( bool toggled );
+
+      protected slots:
+        virtual void setHovered( bool h );
+
+      protected:
+        void mouseReleaseEvent( QMouseEvent * ) FTL_OVERRIDE;
+        void enterEvent( QEvent * ) FTL_OVERRIDE;
+        void leaveEvent( QEvent * ) FTL_OVERRIDE;
+
+      private:
+        bool m_hovered, m_toggled;
+      };
+
       class ResultPreview : public QFrame
       {
         Q_OBJECT

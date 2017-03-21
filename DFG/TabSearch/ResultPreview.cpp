@@ -9,6 +9,8 @@
 #include <iostream>
 #include <QLayout>
 #include <QLabel>
+#include <QVariant>
+#include <QKeyEvent>
 #include <FTL/JSONValue.h>
 
 using namespace FabricUI::DFG::TabSearch;
@@ -90,6 +92,45 @@ PresetDetails GetDetails(
 }
 
 inline QString Bold( const QString& s ) { return "<b>" + s + "</b>"; }
+
+Toggle::Toggle( bool toggled )
+{
+  setHovered( false );
+  setToggled( false );
+}
+
+void Toggle::setToggled( bool t )
+{
+  m_toggled = t;
+  emit toggled( m_toggled );
+  this->setProperty( "toggled", QVariant( m_toggled ) );
+  this->setStyleSheet( this->styleSheet() );
+}
+
+void Toggle::setHovered( bool h )
+{
+  m_hovered = h;
+  this->setProperty( "hovered", QVariant( m_hovered ) );
+  this->setStyleSheet( this->styleSheet() );
+}
+
+void Toggle::mouseReleaseEvent( QMouseEvent* e )
+{
+  Parent::mouseReleaseEvent( e );
+  setToggled( !m_toggled );
+}
+
+void Toggle::enterEvent( QEvent* e )
+{
+  Parent::enterEvent( e );
+  setHovered( true );
+}
+
+void Toggle::leaveEvent( QEvent* e )
+{
+  Parent::leaveEvent( e );
+  setHovered( false );
+}
 
 class Section : public QWidget
 {

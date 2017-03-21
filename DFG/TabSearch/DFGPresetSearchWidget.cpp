@@ -99,15 +99,24 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   m_detailsPanel->setFocusPolicy( Qt::NoFocus );
   m_detailsPanel->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-  QPushButton* m_toggleDetailsButton = new QPushButton();
-  m_toggleDetailsButton->setObjectName( "ToggleDetailsPanelButton" );
-  m_toggleDetailsButton->setFocusPolicy( Qt::NoFocus );
-  m_toggleDetailsButton->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Minimum ) );
-  connect(
-    m_toggleDetailsButton, SIGNAL( released() ),
-    this, SLOT( toggleDetailsPanel() )
-  );
-  hlayout->addWidget( m_toggleDetailsButton );
+  {
+    m_toggleDetailsButton = new TabSearch::Toggle();
+    m_toggleDetailsButton->setObjectName( "ToggleDetailsPanelButton" );
+    m_toggleDetailsButton->setFocusPolicy( Qt::NoFocus );
+    QVBoxLayout* lay = new QVBoxLayout();
+    lay->setMargin( 0 );
+    m_toggleDetailsButton->setLayout( lay );
+    QFrame* handle = new QFrame();
+    handle->setObjectName( "Handle" );
+    m_toggleDetailsButton->layout()->addWidget( handle );
+    m_toggleDetailsButton->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Minimum ) );
+    m_toggleDetailsButton->setToggled( m_detailsPanelToggled );
+    connect(
+      m_toggleDetailsButton, SIGNAL( toggled( bool ) ),
+      this, SLOT( toggleDetailsPanel( bool ) )
+    );
+    hlayout->addWidget( m_toggleDetailsButton );
+  }
 
   hlayout->addWidget( m_detailsPanel );
 
@@ -352,6 +361,7 @@ void DFGPresetSearchWidget::toggleDetailsPanel( bool toggled )
   if( toggled != m_detailsPanelToggled )
   {
     m_detailsPanelToggled = toggled;
+    m_toggleDetailsButton->setToggled( toggled );
     updateDetailsPanelVisibility();
   }
 }
