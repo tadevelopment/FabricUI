@@ -3,6 +3,7 @@
 //
 
 #include <string>
+#include <iostream>
 #include "KLCommand.h"
 #include "CommandManager.h"
 #include "KLScriptableCommand.h"
@@ -106,6 +107,8 @@ BaseCommand* CommandManager::createCommand(
 {
   try 
   {  
+    std::cout << "CommandManager::createCommand" << cmdName.toUtf8().constData() << std::endl;
+
     BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(cmdName);
     
     if(args.size() > 0) 
@@ -118,6 +121,14 @@ BaseCommand* CommandManager::createCommand(
   }
 
   catch(std::string &e) {
+
+    std::cout << 
+      std::string(
+        QString("Cannot create command '" + 
+        cmdName + "', " + 
+        QString(e.c_str())).toUtf8().constData()
+      ).c_str() << std::endl;
+
     throw(
       std::string(
         QString("Cannot create command '" + 
@@ -539,6 +550,9 @@ void CommandManager::checkCommandArgs(
     while (ite.hasNext()) 
     {
       ite.next();
+      std::cout << "ite.key() " << ite.key().toUtf8().constData() << std::endl;
+      std::cout << "ite.value() " << ite.value().toUtf8().constData() << std::endl;
+
       scriptCommand->setArg(ite.key(), ite.value());
     }
 

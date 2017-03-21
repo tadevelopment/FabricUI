@@ -70,6 +70,10 @@ bool SetPortDefaultValueCommand::doIt()
       "portName"
       ).getStringCString();
 
+    std::cout << "SetPortDefaultValueCommand execPath " << execPath.toUtf8().constData() << std::endl;
+    std::cout << "SetPortDefaultValueCommand nodeName " << nodeName.toUtf8().constData() << std::endl;
+    std::cout << "SetPortDefaultValueCommand portName " << portName.toUtf8().constData() << std::endl;
+
     QString portPath = nodeName + "." + portName;
 
     DFGExec exec = m_dfgController->getBinding().getExec().getSubExec(
@@ -110,6 +114,8 @@ bool SetPortDefaultValueCommand::doIt()
 
   catch(Exception &e)
   {
+    std::cout << "SetPortDefaultValueCommand::doIt: exception: " << e.getDesc_cstr() << std::endl;
+
     printf(
       "SetPortDefaultValueCommand::doIt: exception: %s\n", 
       e.getDesc_cstr());

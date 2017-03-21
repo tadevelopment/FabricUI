@@ -5,6 +5,7 @@
 #ifndef __UI_DFG_COMMAND_REGISTRY_CALLBACK__
 #define __UI_DFG_COMMAND_REGISTRY_CALLBACK__
 
+#include <iostream>
 #include "SetPortDefaultValueCommand.h"
 #include "SetPortsDefaultValuesCommand.h"
 #include <FabricUI/Commands/CommandFactory.h>
@@ -31,6 +32,7 @@ class DFGCommandRegistrationCallback : public QObject
     static void RegisterCommands(
       void *dfgController)
     {
+      std::cout << "DFGCommandRegistrationCallback::RegisterCommands" << std::endl;
       Commands::CommandFactory<SetPortDefaultValueCommand>::RegisterCommand(
         "setPortDefaultValue",
         (void *)dfgController);
