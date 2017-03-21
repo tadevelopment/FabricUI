@@ -435,6 +435,21 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     char const *nodeName = uiNode->name().c_str();
 
+    FabricCore::DFGExec instExec;
+    bool instExecCanUpdatePreset = false;
+    if ( uiNode->isInstNode() )
+    {
+      instExec = exec.getSubExec( nodeName );
+      FabricCore::String origPresetGUID = instExec.getOrigPresetGUID();
+      if ( origPresetGUID.getSize() > 0 )
+      {
+        FabricCore::DFGHost host = exec.getHost();
+        FabricCore::String presetPath =
+          host.getPresetPathForPresetGUID( origPresetGUID.getCStr() );
+        instExecCanUpdatePreset = presetPath.getSize() > 0;
+      }
+    }
+
     bool uiNodeIsInstOrBlockNode = (uiNode->isInstNode() || uiNode->isBlockNode());
     bool uiNodeHasDocUrl         = false;
     if (  !exec.isExecBlock(nodeName)
@@ -519,6 +534,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addSeparator();
 
+    result->addAction(new UpdatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanUpdatePreset));
     result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable()));
     result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
     result->addAction(new ExportGraphAction           (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
@@ -1407,6 +1423,32 @@ void DFGWidget::splitFromPreset( const char *nodeName )
   subExec.maybeSplitFromPreset();
 }
 
+static void DFGPresentPresetSaveFailedDialog( QWidget *parent, QString pathname )
+{
+  QMessageBox msg(
+    QMessageBox::Warning,
+    "Fabric Warning", 
+      "The file "
+    + pathname
+    + " cannot be opened for writing.",
+    QMessageBox::NoButton,
+    parent);
+  msg.addButton( "Ok", QMessageBox::AcceptRole );
+  msg.exec();
+}
+
+static void DFGPresetFabricCoreExceptionDialog( QWidget *parent, FabricCore::Exception &e )
+{
+  QMessageBox msg(
+    QMessageBox::Warning,
+    "Fabric Warning", 
+    e.getDesc_cstr(),
+    QMessageBox::NoButton,
+    parent);
+  msg.addButton("Ok", QMessageBox::AcceptRole);
+  msg.exec();
+}
+
 void DFGWidget::createPreset( const char *nodeName )
 {
   FabricCore::DFGExec &exec = m_uiController->getExec();
@@ -1505,20 +1547,12 @@ void DFGWidget::createPreset( const char *nodeName )
         m_uiController->cmdCreatePreset(
           nodeName,
           presetDirPath.toUtf8().constData(),
-          presetName.toUtf8().constData()
+          presetName.toUtf8().constData(),
+          false // updateOrigPreset
           );
       if ( pathname.isEmpty() )
       {
-        QMessageBox msg(
-          QMessageBox::Warning,
-          "Fabric Warning", 
-            "The file "
-          + pathname
-          + " cannot be opened for writing.",
-          QMessageBox::NoButton,
-          this);
-        msg.addButton( "Ok", QMessageBox::AcceptRole );
-        msg.exec();
+        DFGPresentPresetSaveFailedDialog( this, pathname );
         continue;
       }
 
@@ -1530,15 +1564,45 @@ void DFGWidget::createPreset( const char *nodeName )
   }
   catch ( FabricCore::Exception e )
   {
-    QMessageBox msg(
-      QMessageBox::Warning,
-      "Fabric Warning", 
-      e.getDesc_cstr(),
-      QMessageBox::NoButton,
-      this);
-    msg.addButton("Ok", QMessageBox::AcceptRole);
-    msg.exec();
+    DFGPresetFabricCoreExceptionDialog( this, e );
+  }
+}
+
+void DFGWidget::updateOrigPreset( const char *nodeName )
+{
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+  if ( exec.getNodeType( nodeName ) != FabricCore::DFGNodeType_Inst )
     return;
+  FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+  FabricCore::String origPresetGUID = subExec.getOrigPresetGUID();
+  if ( origPresetGUID.getSize() == 0 )
+    return;
+  FabricCore::DFGHost host = exec.getHost();
+  FabricCore::String presetPath =
+    host.getPresetPathForPresetGUID( origPresetGUID.getCStr() );
+  if ( presetPath.getSize() == 0 )
+    return;
+  FTL::StrRef presetPathStr( presetPath.getCStr(), presetPath.getSize() );
+  std::pair<FTL::StrRef, FTL::StrRef> presetPathSplit =
+    presetPathStr.rsplit( '.' );
+  FTL::StrRef presetDirStr = presetPathSplit.first;
+  FTL::StrRef presetNameStr = presetPathSplit.second;
+
+  try
+  {
+    QString pathname =
+      m_uiController->cmdCreatePreset(
+        nodeName,
+        QString::fromUtf8( presetDirStr.data(), presetDirStr.size() ),
+        QString::fromUtf8( presetNameStr.data(), presetNameStr.size() ),
+        true // updateOrigPreset
+        );
+    if ( pathname.isEmpty() )
+      DFGPresentPresetSaveFailedDialog( this, pathname );
+  }
+  catch ( FabricCore::Exception e )
+  {
+    DFGPresetFabricCoreExceptionDialog( this, e );
   }
 }
 

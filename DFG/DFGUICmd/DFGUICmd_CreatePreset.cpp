@@ -11,7 +11,11 @@ FABRIC_UI_DFG_NAMESPACE_BEGIN
 
 void DFGUICmd_CreatePreset::appendDesc( QString &desc )
 {
-  desc += "Create preset '";
+  if ( m_updateOrigPreset )
+    desc += "Update";
+  else
+    desc += "Create";
+  desc += " preset '";
   desc += m_presetName;
   desc += "' from node ";
   appendDesc_NodeName( m_nodeName, desc );
@@ -24,6 +28,7 @@ void DFGUICmd_CreatePreset::invoke( unsigned &coreUndoCount )
       m_nodeName.toUtf8().constData(),
       m_presetDirPath.toUtf8().constData(),
       m_presetName.toUtf8().constData(),
+      m_updateOrigPreset,
       coreUndoCount
       );
 }
@@ -32,6 +37,7 @@ QString DFGUICmd_CreatePreset::invoke(
   FTL::CStrRef nodeName,
   FTL::CStrRef presetDirPath,
   FTL::CStrRef presetName,
+  bool updateOrigPreset,
   unsigned &coreUndoCount
   )
 {
@@ -137,6 +143,13 @@ QString DFGUICmd_CreatePreset::invoke(
     // Important: set the preset file association BEFORE getting the JSON,
     // as with this association the Core will generate a presetGUID.
     subExec.setImportPathname( pathname.toUtf8().constData() );
+    ++coreUndoCount;
+  }
+
+  if ( updateOrigPreset )
+  {
+    FabricCore::String origPresetGUID = subExec.getOrigPresetGUID();
+    subExec.setPresetGUID( origPresetGUID.getCStr() );
     ++coreUndoCount;
   }
 
