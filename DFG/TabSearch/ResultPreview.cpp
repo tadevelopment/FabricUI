@@ -148,7 +148,7 @@ class Section : public QWidget
       handle->setObjectName( "Handle" );
       lay->addWidget( handle );
       QLabel* label = new QLabel( Bold( QString::fromStdString( text ) ) );
-      label->setTextInteractionFlags( Qt::TextInteractionFlag::NoTextInteraction );
+      label->setTextInteractionFlags( Qt::NoTextInteraction );
       label->setObjectName( "Name" );
       label->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum ) );
       lay->addWidget( label );
