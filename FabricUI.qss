@@ -1830,10 +1830,10 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   qproperty-warmPos: 0.33;
   qproperty-nbBars: 10;
   qproperty-smooth: false;
-  qproperty-spacing: 0.5;
+  qproperty-spacingWidth: 1;
   background-color: #272822;
   border: 1px solid #272822;
-  min-width: 64px;
+  min-width: 69px; /* works best if nbBars * (some integer) + ( nbBars - 1 ) * spacingWidth */
   min-height: 8px;
 }
 

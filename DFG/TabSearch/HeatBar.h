@@ -20,7 +20,7 @@ class HeatBar : public QFrame
   Q_PROPERTY(qreal warmPos READ warmPos WRITE setWarmPos DESIGNABLE true)
   Q_PROPERTY(int nbBars READ nbBars WRITE setNbBars DESIGNABLE true)
   Q_PROPERTY(bool smooth READ smooth WRITE setSmooth DESIGNABLE true)
-  Q_PROPERTY(qreal spacing READ spacing WRITE setSpacing DESIGNABLE true)
+  Q_PROPERTY(int spacingWidth READ spacingWidth WRITE setSpacingWidth DESIGNABLE true)
 
   typedef QFrame Parent;
 
@@ -67,8 +67,8 @@ public:
   void setSmooth( const bool smooth )
   { m_smooth = smooth; update(); }
 
-  qreal spacing() const { return m_spacing; }
-  void setSpacing( const qreal spacing ) { m_spacing = spacing; update(); }
+  int spacingWidth() const { return m_spacingWidth; }
+  void setSpacingWidth( int spacingWidth ) { m_spacingWidth = spacingWidth; update(); }
 
   QColor interpolateColor( const qreal percentage ) const;
 
@@ -97,7 +97,7 @@ private:
   qreal m_percentage;
   int m_nbBars;
   bool m_smooth;
-  qreal m_spacing;
+  int m_spacingWidth;
 };
 
 } // namespace TabSearch

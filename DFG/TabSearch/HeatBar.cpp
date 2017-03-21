@@ -4,6 +4,7 @@
 
 #include "HeatBar.h"
 
+#include <QDebug>
 #include <QPainter>
 
 namespace FabricUI {
@@ -19,7 +20,7 @@ HeatBar::HeatBar( QWidget *parent )
   , m_percentage( 0.5f )
   , m_nbBars( 5 )
   , m_smooth( true )
-  , m_spacing( 0.4 )
+  , m_spacingWidth( 1 )
 {
   this->setObjectName( "HeatBar" );
 
@@ -65,23 +66,17 @@ void HeatBar::paintEvent( QPaintEvent *event )
   }
   else
   {
-    // Math :
-    // r.width() == this->nbBars() * barW + (this->nbBars()-1) * spacingW
-    // spacingW == spacingRatio * barW
-    // i.e.
-    // r.width() == barW * ( this->nbBars() + spacingRatio * (this->nbBars()-1) )
-    qreal spacingRatio = m_spacing;
-    qreal barW = r.width() / ( this->nbBars() + spacingRatio * (this->nbBars()-1) );
-    qreal spacingW = std::max( qreal(1.0), spacingRatio * barW );
+    int totalBarsWidth = r.width() - (this->nbBars() - 1) * m_spacingWidth;
+
+    // qDebug() << "START m_spacingWidth=" << m_spacingWidth;
     for( int barI = 0; barI < ( m_percentage * this->nbBars() ); barI++ )
     {
-      qreal leftX = r.left() + barI * ( barW + spacingW );
-      // Make sure that the spacing between rightX(barI) and
-      // leftX(barI+1) is always rounded to the same int
-      qreal rightX = int( r.left() + (barI+1) * ( barW + spacingW ) ) - int( spacingW );
+      int leftX = r.left() + int( round( qreal(barI) * qreal(totalBarsWidth) / qreal(this->nbBars()) ) ) + barI * m_spacingWidth;
+      int rightX = r.left() + int( round( qreal(barI + 1) * qreal(totalBarsWidth) / qreal(this->nbBars()) ) ) + barI * m_spacingWidth;
+      // qDebug() << "leftX=" << leftX << " rightX=" << rightX;
 
       QRect barR = r;
-      barR.setLeft( int( leftX ) ); barR.setRight( int( rightX ) );
+      barR.setLeft( leftX ); barR.setRight( rightX - 1 );
       if( !smooth() )
         p.fillRect( barR, interpolateColor( ( leftX + rightX ) / ( 2 * r.width() ) ) );
       else
@@ -97,6 +92,7 @@ void HeatBar::paintEvent( QPaintEvent *event )
         p.fillRect( barR, g );
       }
     }
+    // qDebug() << "END";
   }
 
   Parent::paintEvent( event );
