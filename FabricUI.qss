@@ -1735,7 +1735,13 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-size: 22px;
 }
 
-#ResultPreview #Section #Header
+#ResultPreview #Section #Header #Handle
+{
+  min-width: 4px;
+  background-color: #444444;
+}
+
+#ResultPreview #Section #Header #Name
 {
   background-color: #444444;
   padding: 4px;
@@ -1889,20 +1895,17 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #272822;
 }
 
-#ToggleDetailsPanelButton[hovered="true"]
-{
-  background-color: #FFF;
-}
-
-#ToggleDetailsPanelButton[toggled="true"] #Handle
-{
-  background-color: #50626e;
-}
-
-#ResultPreview #Section #Header:hover
+#ToggleDetailsPanelButton[hovered="true"],
+#ResultPreview #Section #Header[hovered="true"] #Name
 {
   background-color: #FFF;
   color: #000;
+}
+
+#ToggleDetailsPanelButton[toggled="true"] #Handle,
+#ResultPreview #Section #Header[toggled="true"] #Handle
+{
+  background-color: #50626e;
 }
 
 #ResultPreview #TagsView #TagView *

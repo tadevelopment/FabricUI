@@ -28,6 +28,7 @@ namespace FabricUI
 
       public:
         Toggle( bool toggled = false );
+        inline bool isToggled() const { return m_toggled; }
 
       public slots:
         virtual void setToggled( bool toggled );

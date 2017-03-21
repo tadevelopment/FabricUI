@@ -134,19 +134,35 @@ void Toggle::leaveEvent( QEvent* e )
 
 class Section : public QWidget
 {
-  void toggleCollapse();
+  void toggleCollapse( bool );
 
-  struct Header : public QLabel
+  struct Header : public Toggle
   {
-    typedef QLabel Parent;
+    typedef Toggle Parent;
 
     Section *m_parent;
-    Header( Section* parent ) : m_parent( parent ) {}
+    Header( Section* parent, const std::string& text ) : m_parent( parent )
+    {
+      QHBoxLayout* lay = new QHBoxLayout();
+      QFrame* handle = new QFrame();
+      handle->setObjectName( "Handle" );
+      lay->addWidget( handle );
+      QLabel* label = new QLabel( Bold( QString::fromStdString( text ) ) );
+      label->setTextInteractionFlags( Qt::TextInteractionFlag::NoTextInteraction );
+      label->setObjectName( "Name" );
+      label->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum ) );
+      lay->addWidget( label );
+      lay->setAlignment( Qt::AlignLeft );
+      lay->setMargin( 0 );
+      lay->setSpacing( 4 );
+      this->setLayout( lay );
+      this->setToggled( true );
+    }
 
     void mouseReleaseEvent( QMouseEvent *ev ) FTL_OVERRIDE
     {
       Parent::mouseReleaseEvent( ev );
-      m_parent->toggleCollapse();
+      m_parent->toggleCollapse( isToggled() );
     }
   };
 
@@ -156,7 +172,7 @@ class Section : public QWidget
 
 public:
   Section( const std::string& name, ResultPreview* parent )
-    : m_header( new Header( this ) )
+    : m_header( new Header( this, name ) )
     , m_widget( NULL )
     , m_parent( parent )
   {
@@ -165,10 +181,9 @@ public:
 
     this->setLayout( new QVBoxLayout() );
     this->layout()->setMargin( 0 );
-    this->layout()->setSpacing( 0 );
+    this->layout()->setSpacing( 2 );
     this->layout()->addWidget( m_header );
 
-    m_header->setText( Bold( QString::fromStdString( name ) ) );
     m_header->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ) );
   }
 
@@ -185,10 +200,10 @@ public:
   }
 };
 
-void Section::toggleCollapse()
+void Section::toggleCollapse( bool toggled )
 {
   if( m_widget != NULL )
-    m_widget->setVisible( !m_widget->isVisible() );
+    m_widget->setVisible( toggled );
   m_parent->adjustSize();
 }
 
