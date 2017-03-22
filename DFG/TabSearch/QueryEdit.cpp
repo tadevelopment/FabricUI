@@ -119,7 +119,7 @@ void QueryController::removeTag( const Query::Tag& tag )
   addAndDoAction( new RemoveTag( tag ) );
 }
 
-void QueryController::setText( const Query::Tag& text )
+void QueryController::setText( const std::string& text )
 {
   if( text != m_query.getText() )
     addAndDoAction( new SetText( text, m_query.getText() ) );

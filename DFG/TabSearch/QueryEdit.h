@@ -24,7 +24,7 @@ namespace FabricUI
       public slots:
         void addTag( const Query::Tag& tag );
         void removeTag( const Query::Tag& tag );
-        void setText( const Query::Tag& text );
+        void setText( const std::string& text );
         void clear();
         void undo();
         void redo();

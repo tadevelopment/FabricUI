@@ -29,7 +29,7 @@ public:
     size_t m_sep;
   public:
     typedef std::string Cat;
-    Tag( const std::string& s ) : std::string( s ), m_sep( s.find( ':' ) ) { assert( m_sep != -1 ); }
+    Tag( const std::string& s ) : std::string( s ), m_sep( s.find( ':' ) ) { assert( m_sep != npos ); }
     inline FTL::StrRef cat() { return FTL::StrRef( data(), m_sep ); }
     inline FTL::StrRef name() { return FTL::StrRef( data() + m_sep + 1, size() - m_sep - 1 ); }
   };
