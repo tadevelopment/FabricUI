@@ -7,6 +7,8 @@
 #include <QFrame>
 #include <FTL/Config.h>
 
+#include "Data.h"
+
 class QLabel;
 class QPushButton;
 

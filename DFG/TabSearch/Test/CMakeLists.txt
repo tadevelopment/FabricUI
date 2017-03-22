@@ -45,6 +45,8 @@ add_executable(
   ../ItemView.h
   ../HeatBar.cpp
   ../HeatBar.h
+  ../Data.cpp
+  ../Data.h
   Moc.cpp
   Main.cpp
   )

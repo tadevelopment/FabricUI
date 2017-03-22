@@ -2,7 +2,7 @@
 
 #include "ItemView.h"
 #include "HeatBar.h"
-#include "QueryEdit.h"
+#include "Data.h"
 
 #include <QLayout>
 #include <QLabel>

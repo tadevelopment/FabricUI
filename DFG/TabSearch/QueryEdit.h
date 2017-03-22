@@ -3,13 +3,12 @@
 #ifndef __UI_DFG_TabSearch_QueryEdit__
 #define __UI_DFG_TabSearch_QueryEdit__
 
+#include "Data.h"
+
 #include <QWidget>
 #include <FTL/Config.h>
 #include <FTL/StrRef.h>
 #include <FabricCore.h>
-#include <assert.h>
-#include <map>
-#include <set>
 
 namespace FabricUI
 {
@@ -17,46 +16,6 @@ namespace FabricUI
   {
     namespace TabSearch
     {
-      // Model
-      struct Query : public QObject
-      {
-        Q_OBJECT
-
-      public:
-
-        class Tag : public std::string
-        {
-          size_t m_sep;
-        public:
-          typedef std::string Cat;
-          Tag( const std::string& s ) : std::string( s ), m_sep( s.find( ':' ) ) { assert( m_sep != -1 ); }
-          inline FTL::StrRef cat() { return FTL::StrRef( data(), m_sep ); }
-          inline FTL::StrRef name() { return FTL::StrRef( data() + m_sep + 1, size() - m_sep - 1 ); }
-        };
-
-        typedef std::vector<Tag> Tags;
-        inline const std::string& getText() const { return m_text; }
-        inline const Tags& getTags() const { return m_orderedTags; }
-        inline bool hasTag( const std::string& tag ) const { return m_tagMap.find( tag ) != m_tagMap.end(); }
-        std::vector< std::pair<size_t,size_t> > getSplitTextIndices() const;
-        std::vector<std::string> getSplitText() const;
-
-      public slots:
-        inline void setText( const std::string& text ) { m_text = text; emit changed(); }
-        void addTag( const std::string& tag );
-        void removeTag( const std::string& tag );
-        void clear();
-
-      signals:
-        void changed();
-
-      private:
-        std::string m_text;
-        Tags m_orderedTags;
-        typedef std::map<std::string, size_t> TagMap;
-        TagMap m_tagMap;
-      };
-
       // Controller : used for Undo/Redo
       class QueryController : public QObject
       {
