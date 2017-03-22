@@ -1721,18 +1721,220 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-bottom-right-radius: 4px;
 }
 
-#QueryEdit QLineEdit,
-#ResultsView
-{
-  border-radius: 4px;
-}
-
 #QueryEdit QLineEdit
 {
   background-color: #272822;
+  border-radius: 4px;
   font-size: 18px;
   padding: 2px;
   min-width: 500px;
+}
+
+#ResultsView
+{
+  background: #272822;
+  border-radius: 4px;
+  font-family: "Roboto";
+  font-size: 12px;
+  max-height: 300px;
+}
+
+#ResultsView::item
+{
+  border-radius: 4px;
+  margin: 2px 2px 2px 0px;
+}
+
+#ResultsView::item:hover
+{
+  background-color: #596D7A;
+}
+
+#ResultsView::item:selected
+{
+  color: #FFF;
+  background-color: #666666;
+}
+
+#ResultsView::item::has-children
+{
+  border-radius: 4px;
+  background-color: #444444;
+}
+
+#ResultsView::item::has-children:selected
+{
+  background-color: #666666;
+}
+
+#ResultsView::item::has-children:hover
+{
+  background-color: #596D7A;
+}
+
+#ResultsView::branch:has-children
+{
+  background-color: #444444;
+  margin: 2px 0px 2px 2px;
+}
+
+#ResultsView::branch:has-children:selected
+{
+  background-color: #666666;
+}
+
+#ResultsView::branch:has-children:hover
+{
+  background-color: #596D7A;
+}
+
+#ResultsView::branch:has-children:open
+{
+  border-image: none;
+  padding: 4px;
+  image: url(${FABRIC_DIR}/Resources/Icons/DFGOneDown.png);
+}
+
+/* !!!! TagsView will be renamed !!!! */
+#ResultsView #TagsView
+{
+  border-radius: 4px;
+  background-color: #444444;
+}
+
+#ResultsView #TagsView[highlighted="true"]
+{
+  background-color: #666666;
+}
+
+#ResultsView #TagsView QPushButton
+{
+  border-style: inset;
+}
+
+#QueryEdit #TagsEdit
+{
+  background-color: #272822;
+  border-radius: 4px;
+}
+
+#QueryEdit #TagsEdit #TagView QPushButton
+{
+  border-style: inset;
+  padding: 0px 4px 0px 4px;
+  margin: 0px;
+  background-color: #50626E;
+}
+
+#QueryEdit #TagsEdit #TagView[highlighted="true"] *
+{
+  color: #272822;
+  background-color: #F0F0F0;
+}
+
+#QueryEdit #TagsEdit #TagView QPushButton:hover
+{
+  color: #272822;
+  background-color: #F0F0F0;
+}
+
+#TagArrow
+{
+  qproperty-bgColor: #50626E;
+  qproperty-highlightBgColor: #F0F0F0;
+  qproperty-spacing: 6;
+}
+
+#TagsView
+{
+  border-radius: 4px;
+  margin: 2px 2px 2px 0px;
+}
+
+#TagView *
+{
+  background-color: #444444;
+  font-size: 12px;
+}
+
+#TagView[highlighted="true"] *
+{
+  color: #FFF;
+  background-color: #666666;
+}
+
+#TagView QPushButton:hover
+{
+  color: #000;
+  background-color: #FFF;
+}
+
+#HeatBar
+{
+  qproperty-coldColor: #27A8DF;
+  qproperty-warmColor: #27A8DF;
+  qproperty-hotColor: #27A8DF;
+  qproperty-warmPos: 0.33;
+  qproperty-nbBars: 10;
+  qproperty-smooth: false;
+  qproperty-spacingWidth: 1;
+  background-color: #272822;
+  border: 1px solid #272822;
+  min-width: 69px; /* works best if nbBars * (some integer) + ( nbBars - 1 ) * spacingWidth */
+  min-height: 8px;
+}
+
+#DFGPresetSearchWidget #Status
+{
+  background-color: #555555;
+  padding: 0px;
+  padding-left: 4px;
+}
+
+#PresetView[highlighted="true"] *
+{
+  color: #FFF;
+  background-color: #666666;
+}
+
+#PresetView[highlighted="true"] #HeatBar
+{
+  background-color: #272822;
+}
+
+#ToggleDetailsPanelButton
+{
+  min-width: 4px;
+  background-color: #555555;
+  border-top: 2px solid #333333;
+  border-bottom: 2px solid #333333;
+  border-right: 2px solid #333333;
+}
+
+#ToggleDetailsPanelButton[hovered="true"]
+{
+  background-color: #666666;
+}
+
+#ToggleDetailsPanelButton #Handle
+{
+  max-height: 32px;
+  background-color: #777777;
+}
+
+#ToggleDetailsPanelButton[hovered="true"] #Handle
+{
+  background-color: #999999;
+}
+
+#ToggleDetailsPanelButton[toggled="true"] #Handle
+{
+  background-color: #50626E;
+}
+
+#ToggleDetailsPanelButton[toggled="true"][hovered="true"] #Handle
+{
+  background-color: #637987;
 }
 
 #ResultPreview
@@ -1762,18 +1964,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-size: 14px;
 }
 
-#ResultsView
-{
-  max-height: 300px;
-}
-
-#QueryEdit #TagsEdit
-{
-  background-color: #272822;
-  border-radius: 4px;
-}
-
-#QueryEdit #TagsEdit #TagView QPushButton,
 #ResultPreview #TagsView #TagView QPushButton
 {
   border-style: inset;
@@ -1782,165 +1972,10 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#QueryEdit #TagsEdit #TagView[highlighted="true"] *
-{
-  color: #272822;
-  background-color: #F0F0F0;
-}
-
-#QueryEdit #TagsEdit #TagView QPushButton:hover,
 #ResultPreview #TagsView #TagView QPushButton:hover
 {
   color: #272822;
   background-color: #F0F0F0;
-}
-
-#TagArrow
-{
-  qproperty-bgColor: #50626E;
-  qproperty-highlightBgColor: #F0F0F0;
-  qproperty-spacing: 6;
-}
-
-#ResultsView
-{
-  background: #272822;
-}
-
-#ResultsView #TagsView,
-#ResultsView::item::has-children
-{
-  border-radius: 4px;
-  background-color: #444444;
-}
-
-#ResultsView::branch:has-children
-{
-  background-color: #444444;
-  margin: 2px 0px 2px 2px;
-}
-
-#ResultsView::branch:has-children:selected
-{
-  background-color: #666666;
-}
-
-#ResultsView::branch:has-children:open
-{
-  border-image: none;
-  padding: 4px;
-  image: url(${FABRIC_DIR}/Resources/Icons/DFGOneDown.png);
-}
-
-#ResultsView #TagsView[highlighted="true"]
-{
-  background-color: #666666;
-}
-
-#ResultsView #TagsView QPushButton
-{
-  border-style: inset;
-}
-
-#ResultsView::item,
-#TagsView
-{
-  border-radius: 4px;
-  margin: 2px 2px 2px 0px;
-}
-
-#ResultsView::item:hover
-{
-  background-color: #596D7A;
-}
-
-#ResultsView
-{
-  font-family: "Roboto";
-  font-size: 12px;
-}
-
-#ResultsView::item:selected
-{
-  background-color: #666666;
-  color: #FFF;
-}
-
-#TagView *
-{
-  background-color: #444444;
-  font-size: 12px;
-}
-
-#TagView[highlighted="true"] *,
-#PresetView[highlighted="true"] *,
-#ResultsView::item:selected
-{
-  color: #FFF;
-  background-color: #666666;
-}
-
-#TagView QPushButton:hover
-{
-  color: #000;
-  background-color: #FFF;
-}
-
-#HeatBar
-{
-  qproperty-coldColor: #27a8df;
-  qproperty-warmColor: #27a8df;
-  qproperty-hotColor: #27a8df;
-  qproperty-warmPos: 0.33;
-  qproperty-nbBars: 10;
-  qproperty-smooth: false;
-  qproperty-spacingWidth: 1;
-  background-color: #272822;
-  border: 1px solid #272822;
-  min-width: 69px; /* works best if nbBars * (some integer) + ( nbBars - 1 ) * spacingWidth */
-  min-height: 8px;
-}
-
-#DFGPresetSearchWidget #Status
-{
-  background-color: #555555;
-  padding: 0px;
-  padding-left: 4px;
-}
-
-#PresetView[highlighted="true"] #HeatBar
-{
-  background-color: #272822;
-}
-
-#ToggleDetailsPanelButton
-{
-  min-width: 4px;
-  background-color: #555555;
-  border-top: 2px solid #333333;
-  border-bottom: 2px solid #333333;
-  border-right: 2px solid #333333;
-}
-
-#ToggleDetailsPanelButton[hovered="true"]
-{
-  background-color: #666;
-}
-
-#ToggleDetailsPanelButton #Handle
-{
-  max-height: 32px;
-  background-color: #50626E;
-}
-
-#ToggleDetailsPanelButton[hovered="true"] #Handle
-{
-  background-color: #596d7a;
-}
-
-#ToggleDetailsPanelButton[toggled="true"] #Handle
-{
-  background-color: #50626E;
 }
 
 #ResultPreview #Section #Header[hovered="true"] #Name
