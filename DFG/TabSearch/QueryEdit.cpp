@@ -23,20 +23,20 @@ struct QueryController::Action
 
 struct AddTag : QueryController::Action
 {
-  AddTag( const std::string& name ) : m_tagName( name ) {}
+  AddTag( const Query::Tag& tag ) : m_tag( tag ) {}
 protected:
-  std::string m_tagName;
-  void undo() FTL_OVERRIDE { m_query->removeTag( m_tagName ); }
-  void redo() FTL_OVERRIDE { m_query->addTag( m_tagName ); }
+  Query::Tag m_tag;
+  void undo() FTL_OVERRIDE { m_query->removeTag( m_tag ); }
+  void redo() FTL_OVERRIDE { m_query->addTag( m_tag ); }
 };
 
 struct RemoveTag : QueryController::Action
 {
-  RemoveTag( const std::string& name ) : m_tagName( name ) {}
+  RemoveTag( const Query::Tag& tag ) : m_tag( tag ) {}
 protected:
-  std::string m_tagName;
-  void undo() FTL_OVERRIDE { m_query->addTag( m_tagName ); }
-  void redo() FTL_OVERRIDE { m_query->removeTag( m_tagName ); }
+  std::string m_tag;
+  void undo() FTL_OVERRIDE { m_query->addTag( m_tag ); }
+  void redo() FTL_OVERRIDE { m_query->removeTag( m_tag ); }
 };
 
 struct SetText : QueryController::Action
@@ -107,19 +107,19 @@ void QueryController::redo()
   }
 }
 
-void QueryController::addTag( const std::string& tag )
+void QueryController::addTag( const Query::Tag& tag )
 {
   if( !m_query.hasTag( tag ) )
     addAndDoAction( new AddTag( tag ) );
 }
 
-void QueryController::removeTag( const std::string& tag )
+void QueryController::removeTag( const Query::Tag& tag )
 {
   assert( m_query.hasTag( tag ) );
   addAndDoAction( new RemoveTag( tag ) );
 }
 
-void QueryController::setText( const std::string& text )
+void QueryController::setText( const Query::Tag& text )
 {
   if( text != m_query.getText() )
     addAndDoAction( new SetText( text, m_query.getText() ) );
@@ -149,7 +149,7 @@ class QueryEdit::TagsEdit : public QWidget
     TagsEdit* m_parent;
     int m_index;
   public:
-    TagViewH( const std::string& n, TagsEdit* parent, int index )
+    TagViewH( const Query::Tag& n, TagsEdit* parent, int index )
       : TagView( n )
       , m_parent( parent )
       , m_index( index )
@@ -189,8 +189,8 @@ public:
       m_layout->addWidget( arrow );
       m_tagViews.push_back( ArrowedTag( tagView, arrow ) );
       connect(
-        tagView, SIGNAL( activated( const std::string& ) ),
-        controller, SLOT( removeTag( const std::string& ) )
+        tagView, SIGNAL( activated( const Query::Tag& ) ),
+        controller, SLOT( removeTag( const Query::Tag& ) )
       );
     }
   }
@@ -393,12 +393,12 @@ void QueryEdit::convertTextToTags()
   m_controller->setText( newText );
 }
 
-void QueryEdit::requestTag( const std::string& tag )
+void QueryEdit::requestTag( const Query::Tag& tag )
 {
   m_controller->addTag( tag );
 }
 
-void QueryEdit::requestTags( const std::vector<std::string>& tags )
+void QueryEdit::requestTags( const std::vector<Query::Tag>& tags )
 {
   for( size_t i = 0; i < tags.size(); i++ )
     m_controller->addTag( tags[i] );

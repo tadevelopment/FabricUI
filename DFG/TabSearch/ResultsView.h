@@ -47,8 +47,8 @@ namespace FabricUI
         // Emitted when a preset has been chosen
         void presetValidated( const std::string& preset );
         // Emitted when a Tag has been requested
-        void tagRequested( const std::string& tag );
-        void tagsRequested( const std::vector<std::string>& tags );
+        void tagRequested( const Query::Tag& tag );
+        void tagsRequested( const std::vector<Query::Tag>& tags );
         // Emitted when moving to a valid selection
         void selectingItems();
 

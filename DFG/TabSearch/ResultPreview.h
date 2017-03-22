@@ -3,8 +3,9 @@
 #ifndef __UI_DFG_TabSearch_ResultPreview__
 #define __UI_DFG_TabSearch_ResultPreview__
 
+#include "Data.h"
+
 #include <QFrame>
-#include <FTL/Config.h>
 
 class QLabel;
 
@@ -63,7 +64,7 @@ namespace FabricUI
 
       signals:
         // Emitted when a Tag has been requested
-        void tagRequested( const std::string& tag );
+        void tagRequested( const Query::Tag& tag );
 
       protected slots:
         void updateSize();

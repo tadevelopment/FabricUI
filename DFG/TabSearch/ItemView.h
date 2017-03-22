@@ -36,13 +36,13 @@ namespace FabricUI
         typedef QWidget Parent;
 
       public:
-        TagView( const std::string& tagName );
+        TagView( const Query::Tag& tag );
         void setScore( double score );
 
-      static std::string DisplayName( const std::string& result );
+      static std::string DisplayName( const Query::Tag& result );
 
       signals:
-        void activated( const std::string& name );
+        void activated( const Query::Tag& tag );
 
       public slots:
         void setHighlighted( bool highlighted );
@@ -51,7 +51,7 @@ namespace FabricUI
         void onActivated();
 
       private:
-        std::string m_name;
+        Query::Tag m_tag;
         QPushButton* m_button;
         bool m_hovered;
         bool m_highlighted;
@@ -96,14 +96,14 @@ namespace FabricUI
       public:
         PresetView(
           const std::string& presetName,
-          const std::vector<std::string>& tags = std::vector<std::string>()
+          const std::vector<Query::Tag>& tags = std::vector<Query::Tag>()
         );
         void setScore( double score, double minScore = 0, double maxScore = 1 );
 
       static std::string DisplayName( const std::string& result );
 
       signals:
-        void requestTag( const std::string& tagName );
+        void requestTag( const Query::Tag& tagName );
 
       public slots:
         void setHighlighted( bool highlighted );

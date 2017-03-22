@@ -18,7 +18,7 @@ void FabricUI::DFG::TabSearch::SetWidgetHighlight( QWidget* w, const bool highli
   w->setStyleSheet( w->styleSheet() );
 }
 
-std::string TagView::DisplayName( const std::string& result )
+std::string TagView::DisplayName( const Query::Tag& result )
 {
   Query::Tag tag = result;
   // Capitalize the name of the category
@@ -28,8 +28,8 @@ std::string TagView::DisplayName( const std::string& result )
   return category + ':' + std::string(tag.name());
 }
 
-TagView::TagView( const std::string& tagName )
-  : m_name( tagName )
+TagView::TagView( const Query::Tag& tag )
+  : m_tag( tag )
   , m_hovered( false )
   , m_highlighted( false )
 {
@@ -37,7 +37,7 @@ TagView::TagView( const std::string& tagName )
 
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );
-  m_button = new QPushButton( ToQString( DisplayName( tagName ) ) );
+  m_button = new QPushButton( ToQString( DisplayName( tag ) ) );
   lay->addWidget( m_button );
   this->setLayout( lay );
   m_button->setFocusPolicy( Qt::NoFocus );
@@ -57,7 +57,7 @@ void TagView::setHighlighted( bool highlighted )
 
 void TagView::onActivated()
 {
-  emit activated( m_name );
+  emit activated( m_tag );
 }
 
 void TagView::setScore( double score )
@@ -127,7 +127,7 @@ std::string PresetView::DisplayName( const std::string& result )
 }
 
 
-PresetView::PresetView( const std::string& presetName, const std::vector<std::string>& tags )
+PresetView::PresetView( const std::string& presetName, const std::vector<Query::Tag>& tags )
   : m_heatBar( new HeatBar( this ) )
 {
   this->setObjectName( "PresetView" );
@@ -157,8 +157,8 @@ PresetView::PresetView( const std::string& presetName, const std::vector<std::st
   {
     TagView* tagView = new TagView( tags[i] );
     connect(
-      tagView, SIGNAL( activated( const std::string& ) ),
-      this, SIGNAL( requestTag( const std::string& ) )
+      tagView, SIGNAL( activated( const Query::Tag& ) ),
+      this, SIGNAL( requestTag( const Query::Tag& ) )
     );
     this->m_tagViews.push_back( tagView );
     this->layout()->addWidget( tagView );

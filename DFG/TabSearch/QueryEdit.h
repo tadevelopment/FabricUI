@@ -22,9 +22,9 @@ namespace FabricUI
         Q_OBJECT
 
       public slots:
-        void addTag( const std::string& tag );
-        void removeTag( const std::string& tag );
-        void setText( const std::string& text );
+        void addTag( const Query::Tag& tag );
+        void removeTag( const Query::Tag& tag );
+        void setText( const Query::Tag& text );
         void clear();
         void undo();
         void redo();
@@ -55,8 +55,8 @@ namespace FabricUI
         ~QueryEdit();
 
       public slots:
-        void requestTag( const std::string& tag );
-        void requestTags( const std::vector<std::string>& tags );
+        void requestTag( const Query::Tag& tag );
+        void requestTags( const std::vector<Query::Tag>& tags );
         void deselectTags();
         void selectAll();
         void clear();

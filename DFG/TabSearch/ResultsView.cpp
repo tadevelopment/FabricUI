@@ -567,7 +567,7 @@ void ResultsView::validateSelection()
   else
   {
     const Tags& tags = m_model->getTags( currentIndex() );
-    std::vector<std::string> names;
+    std::vector<Query::Tag> names;
     for( size_t i = 0; i < tags.size(); i++ )
       names.push_back( tags[i].name );
     emit tagsRequested( names );
@@ -658,8 +658,8 @@ public:
       w->setScore( tags[i].score );
       m_layout->addWidget( w );
       connect(
-        w, SIGNAL( activated( const std::string& ) ),
-        &view, SIGNAL( tagRequested( const std::string& ) )
+        w, SIGNAL( activated( const Query::Tag& ) ),
+        &view, SIGNAL( tagRequested( const Query::Tag& ) )
       );
     }
     m_layout->setMargin( 0 );
@@ -689,7 +689,7 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     if( m_model->isPreset( index ) )
     {
       const Preset& preset = m_model->getPreset( index );
-      std::vector<std::string> tagNames;
+      std::vector<Query::Tag> tagNames;
       if( m_model->hasTags( index )
         && !m_model->hasSingleResult() ) // Don't show Tags if Single Result
       {
@@ -700,8 +700,8 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
       PresetView* w = new PresetView( preset.name, tagNames );
       w->setScore( preset.score, this->minPresetScore, this->maxPresetScore );
       connect(
-        w, SIGNAL( requestTag( const std::string& ) ),
-        this, SIGNAL( tagRequested( const std::string& ) )
+        w, SIGNAL( requestTag( const Query::Tag& ) ),
+        this, SIGNAL( tagRequested( const Query::Tag& ) )
       );
       m_presetViewItems.insert( std::pair<void*,PresetView*>( index.internalPointer(), w ) );
       widget = w;

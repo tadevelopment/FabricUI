@@ -67,12 +67,12 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     this, SIGNAL( giveFocusToParent() )
   );
   connect(
-    m_resultsView, SIGNAL( tagRequested( const std::string& ) ),
-    m_queryEdit, SLOT( requestTag( const std::string& ) )
+    m_resultsView, SIGNAL( tagRequested( const Query::Tag& ) ),
+    m_queryEdit, SLOT( requestTag( const Query::Tag& ) )
   );
   connect(
-    m_resultsView, SIGNAL( tagsRequested( const std::vector<std::string>& ) ),
-    m_queryEdit, SLOT( requestTags( const std::vector<std::string>& ) )
+    m_resultsView, SIGNAL( tagsRequested( const std::vector<Query::Tag>& ) ),
+    m_queryEdit, SLOT( requestTags( const std::vector<Query::Tag>& ) )
   );
   connect(
     m_resultsView, SIGNAL( presetDeselected() ),
@@ -127,8 +127,8 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 
   m_detailsPanel->setWidget( m_resultPreview );
   connect(
-    m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
-    m_queryEdit, SLOT( requestTag( const std::string& ) )
+    m_resultPreview, SIGNAL( tagRequested( const Query::Tag& ) ),
+    m_queryEdit, SLOT( requestTag( const Query::Tag& ) )
   );
 
   // Close action

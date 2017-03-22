@@ -323,8 +323,8 @@ public:
     {
       TagView* tagView = new TagView( tags[i] );
       connect(
-        tagView, SIGNAL( activated( const std::string& ) ),
-        m_preview, SIGNAL( tagRequested( const std::string& ) )
+        tagView, SIGNAL( activated( const Query::Tag& ) ),
+        m_preview, SIGNAL( tagRequested( const Query::Tag& ) )
       );
       if( m_lines.size() == 0
         || m_lines[m_lines.size() - 1].width() + tagView->sizeHint().width() > this->width() )
