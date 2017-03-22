@@ -82,8 +82,8 @@ FTL::CStrRef DFGUICmd_AddInstBlockPort::invoke(
       unsigned index = 0;
       for(;it!=jo->end();it++)
       {
-        metadataKeys[index] = it->first.c_str();
-        metadataValues[index] = it->second->getStringValue().c_str();
+        metadataKeys[index] = it->key().c_str();
+        metadataValues[index] = it->value()->getStringValue().c_str();
         ++index;
       }
     }
