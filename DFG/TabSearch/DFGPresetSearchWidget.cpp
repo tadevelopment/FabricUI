@@ -364,6 +364,9 @@ void DFGPresetSearchWidget::hidePreview()
 
 void DFGPresetSearchWidget::setPreview( const std::string& preset )
 {
+  if( preset.find( NonPresetPrefix ) != std::string::npos )
+    { hidePreview(); return; }
+
   m_resultPreview->setPreset( preset );
   m_detailsPanel->verticalScrollBar()->setValue( 0 );
   updateDetailsPanelVisibility();
