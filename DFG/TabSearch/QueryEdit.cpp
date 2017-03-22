@@ -563,7 +563,7 @@ void QueryEdit::updateTagDBFromHost()
   FTL::JSONObject* dbO = db->cast<FTL::JSONObject>();
   for( FTL::JSONObject::const_iterator it = dbO->begin(); it != dbO->end(); it++ )
   {
-    Query::Tag tag = std::string( it->first );
+    Query::Tag tag = std::string( it->key() );
     Query::Tag::Cat cat = tag.cat();
     if( m_tagDB.find( cat ) == m_tagDB.end() )
       m_tagDB.insert( TagDB::value_type( cat, std::set<Query::Tag>() ) );
