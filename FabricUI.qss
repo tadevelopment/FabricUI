@@ -1849,6 +1849,11 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   margin: 2px 2px 2px 0px;
 }
 
+#ResultsView::item:hover
+{
+  background-color: #596D7A;
+}
+
 #ResultsView
 {
   font-family: "Roboto";
