@@ -101,9 +101,11 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   m_detailsPanel->setFocusPolicy( Qt::NoFocus );
   m_detailsPanel->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
+  QKeySequence toggleDetailsKey = Qt::CTRL + Qt::Key_Tab;
   {
     m_toggleDetailsButton = new TabSearch::Toggle();
     m_toggleDetailsButton->setObjectName( "ToggleDetailsPanelButton" );
+    m_toggleDetailsButton->setToolTip( toggleDetailsKey.toString() );
     m_toggleDetailsButton->setFocusPolicy( Qt::NoFocus );
     QVBoxLayout* lay = new QVBoxLayout();
     lay->setMargin( 0 );
@@ -145,7 +147,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   // Toggle Details
   {
     QAction* toggleDetailsA = new QAction( this );
-    toggleDetailsA->setShortcut( Qt::CTRL + Qt::Key_Tab );
+    toggleDetailsA->setShortcut( toggleDetailsKey );
     connect( toggleDetailsA, SIGNAL( triggered( bool ) ),
       this, SLOT( toggleDetailsPanel() ) );
     this->addAction( toggleDetailsA );
