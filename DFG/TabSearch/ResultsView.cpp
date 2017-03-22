@@ -348,6 +348,8 @@ TmpNode BuildResultTree(
   if ( minPresetScore < maxPresetScore )
     minPresetScore = minPresetScore - 0.05 * (maxPresetScore - minPresetScore);
 
+  delete json;
+
   return rootNode;
 }
 
