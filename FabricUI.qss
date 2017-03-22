@@ -1931,14 +1931,14 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ResultPreview #PortsView
 {
-  background-color: #555555;
+  background-color: #272822;
   margin: 8px;
 }
 
 #ResultPreview #PortsView #PortView,
 #ResultPreview #PortsView #PortsHeader
 {
-  background-color: #555555;
+  background-color: #272822;
 }
 
 #ResultPreview #PortsView #PortsHeader *

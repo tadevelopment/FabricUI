@@ -215,7 +215,7 @@ class ResultPreview::PortsView : public QWidget
       this->setObjectName( "PortView" );
       QHBoxLayout* lay = new QHBoxLayout();
       lay->setMargin( 0 );
-      lay->setSpacing( 2 );
+      lay->setSpacing( 1 );
       lay->addWidget( new QLabel( QString::fromStdString( port.name ) ) );
       lay->addWidget( new QLabel( QString::fromStdString( port.type ) ) );
       this->setLayout( lay );
@@ -230,8 +230,7 @@ public:
   {
     this->setObjectName( "PortsView" );
     QVBoxLayout* lay = new QVBoxLayout();
-    lay->setMargin( 0 );
-    lay->setSpacing( 2 );
+    lay->setSpacing( 1 );
     lay->setMargin( 8 );
     this->setLayout( lay );
 
