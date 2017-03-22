@@ -40,7 +40,7 @@ struct NameAndScore : JSONSerializable
   NameAndScore() {}
   NameAndScore( const std::string& name, const double& score )
     : name( name ), score( score ) {}
-  QString toString() const { return QString::fromStdString( name ) + " [" + QString::number( score ) + "]"; }
+  QString toString() const { return ToQString( name ) + " [" + QString::number( score ) + "]"; }
   FTL::JSONValue* toJSON() const FTL_OVERRIDE
   {
     FTL::JSONObject* obj = new FTL::JSONObject();
@@ -492,7 +492,7 @@ public:
         for( Tags::const_iterator it = tags.begin(); it != tags.end(); it++ )
           result += TagView::DisplayName( it->name ) + " ";
       }
-      return QString::fromStdString( result );
+      return ToQString( result );
     }
 #endif
     return QVariant();
