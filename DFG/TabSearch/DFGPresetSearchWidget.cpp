@@ -51,19 +51,19 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   m_resultsView->setFocusProxy( this );
   vlayout->addWidget( m_resultsView );
   connect(
-    m_resultsView, SIGNAL( presetSelected( const std::string& ) ),
-    this, SLOT( setPreview( const std::string& ) )
+    m_resultsView, SIGNAL( presetSelected( const TabSearch::Result& ) ),
+    this, SLOT( setPreview( const TabSearch::Result& ) )
   );
   connect(
-    m_resultsView, SIGNAL( presetValidated( const std::string& ) ),
-    this, SLOT( onResultValidated( const std::string& ) )
+    m_resultsView, SIGNAL( presetValidated( const TabSearch::Result& ) ),
+    this, SLOT( onResultValidated( const TabSearch::Result& ) )
   );
   connect(
-    m_resultsView, SIGNAL( presetValidated( const std::string& ) ),
+    m_resultsView, SIGNAL( presetValidated( const TabSearch::Result& ) ),
     this, SLOT( close() )
   );
   connect(
-    m_resultsView, SIGNAL( presetValidated( const std::string& ) ),
+    m_resultsView, SIGNAL( presetValidated( const TabSearch::Result& ) ),
     this, SIGNAL( giveFocusToParent() )
   );
   connect(
@@ -303,9 +303,8 @@ void DFGPresetSearchWidget::unregisterVariables()
   m_registeredVariables.clear();
 }
 
-void DFGPresetSearchWidget::onResultValidated( const std::string& resultStr )
+void DFGPresetSearchWidget::onResultValidated( const TabSearch::Result& result )
 {
-  const TabSearch::Result result = resultStr;
   if( result.isPreset() )
     emit selectedPreset( ToQString( result ) );
   else
@@ -361,16 +360,16 @@ void DFGPresetSearchWidget::hidePreview()
   updateSize();
 }
 
-void DFGPresetSearchWidget::setPreview( const std::string& preset )
+void DFGPresetSearchWidget::setPreview( const TabSearch::Result& result )
 {
-  if( !TabSearch::Result( preset ).isPreset() )
+  if( !result.isPreset() )
     { hidePreview(); return; }
 
-  m_resultPreview->setPreset( preset );
+  m_resultPreview->setPreset( result );
   m_detailsPanel->verticalScrollBar()->setValue( 0 );
   updateDetailsPanelVisibility();
 
-  m_status->setText( "<i>" + ToQString( preset ) + "</i>" );
+  m_status->setText( "<i>" + ToQString( result ) + "</i>" );
   m_status->show();
   updateSize();
 }

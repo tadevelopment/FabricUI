@@ -63,6 +63,7 @@ class Result : public std::string
 {
   size_t m_sep;
 public:
+  Result() : m_sep( npos ) {}
   Result( const std::string& s );
   Result( const std::string& type, const std::string& value ); // Non-Preset
   inline bool isPreset() const { return m_sep == npos; }

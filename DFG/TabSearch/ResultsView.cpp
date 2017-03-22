@@ -470,7 +470,7 @@ public:
     if( !child.isValid() )
       return QModelIndex();
     const ModelNode* parent = cast( child )->value.parent;
-    return ( parent == &root ? QModelIndex() : createIndex( parent->value.index, 0, (void*)parent ) );
+    return ( parent == &root ? QModelIndex() : createIndex( int(parent->value.index), 0, (void*)parent ) );
   }
   int rowCount( const QModelIndex & parent = QModelIndex() ) const FTL_OVERRIDE
   {

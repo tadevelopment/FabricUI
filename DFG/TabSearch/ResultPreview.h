@@ -55,11 +55,11 @@ namespace FabricUI
 
       public:
         ResultPreview( FabricCore::DFGHost* );
-        const std::string& getPreset() const;
+        const Result& getPreset() const;
         inline bool isEmpty() const { return m_preset == ""; }
 
       public slots:
-        void setPreset( const std::string& preset );
+        void setPreset( const TabSearch::Result& preset );
         void clear();
 
       signals:
@@ -71,7 +71,7 @@ namespace FabricUI
 
       private:
         FabricCore::DFGHost* m_host;
-        std::string m_preset;
+        Result m_preset;
         QLabel* m_name;
         QLabel* m_description;
         class PortsView;

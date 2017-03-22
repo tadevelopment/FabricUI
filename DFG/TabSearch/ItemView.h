@@ -17,7 +17,7 @@ inline std::string ToStdString( const QString& s )
   const QByteArray utf8 = s.toUtf8();
   return std::string( utf8.data(), utf8.size() );
 }
-inline QString ToQString( const std::string& s ) { return QString::fromUtf8( s.data(), s.size() ); }
+inline QString ToQString( const std::string& s ) { return QString::fromUtf8( s.data(), int(s.size()) ); }
 
 namespace FabricUI
 {
@@ -95,12 +95,12 @@ namespace FabricUI
 
       public:
         PresetView(
-          const std::string& presetName,
+          const Result& presetName,
           const std::vector<Query::Tag>& tags = std::vector<Query::Tag>()
         );
         void setScore( double score, double minScore = 0, double maxScore = 1 );
 
-      static std::string DisplayName( const std::string& result );
+      static std::string DisplayName( const Result& result );
 
       signals:
         void requestTag( const Query::Tag& tagName );

@@ -378,11 +378,11 @@ ResultPreview::ResultPreview( FabricCore::DFGHost* host )
 
 void ResultPreview::clear()
 {
-  m_preset = "";
+  m_preset = Result();
   m_name->setText( "" );
 }
 
-void ResultPreview::setPreset( const std::string& preset )
+void ResultPreview::setPreset( const Result& preset )
 {
   if( m_preset == preset )
     return;
@@ -411,4 +411,4 @@ void ResultPreview::updateSize()
   this->adjustSize();
 }
 
-const std::string& ResultPreview::getPreset() const { return m_preset; }
+const Result& ResultPreview::getPreset() const { return m_preset; }

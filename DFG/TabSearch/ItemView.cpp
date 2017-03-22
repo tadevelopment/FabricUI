@@ -121,13 +121,13 @@ size_t NameSep( const std::string& result )
   return dotI;
 }
 
-std::string PresetView::DisplayName( const std::string& result )
+std::string PresetView::DisplayName( const Result& result )
 {
   return result.substr( NameSep( result ) + 1 );
 }
 
 
-PresetView::PresetView( const std::string& presetName, const std::vector<Query::Tag>& tags )
+PresetView::PresetView( const Result& presetName, const std::vector<Query::Tag>& tags )
   : m_heatBar( new HeatBar( this ) )
 {
   this->setObjectName( "PresetView" );
