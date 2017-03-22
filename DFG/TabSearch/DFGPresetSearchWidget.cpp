@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QFrame>
 #include <QScrollArea>
+#include <QAction>
 #include <QScrollBar>
 #include <QPushButton>
 #include <QLabel>
@@ -100,9 +101,11 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   m_detailsPanel->setFocusPolicy( Qt::NoFocus );
   m_detailsPanel->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
+  QKeySequence toggleDetailsKey = Qt::CTRL + Qt::Key_Tab;
   {
     m_toggleDetailsButton = new TabSearch::Toggle();
     m_toggleDetailsButton->setObjectName( "ToggleDetailsPanelButton" );
+    m_toggleDetailsButton->setToolTip( toggleDetailsKey.toString() );
     m_toggleDetailsButton->setFocusPolicy( Qt::NoFocus );
     QVBoxLayout* lay = new QVBoxLayout();
     lay->setMargin( 0 );
@@ -126,6 +129,29 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     m_resultPreview, SIGNAL( tagRequested( const std::string& ) ),
     m_queryEdit, SLOT( requestTag( const std::string& ) )
   );
+
+  // Close action
+  {
+    QAction* closeAction = new QAction( this );
+    QList<QKeySequence> shortcuts;
+    shortcuts.push_back( Qt::Key_Tab );
+    shortcuts.push_back( Qt::Key_Escape );
+    closeAction->setShortcuts( shortcuts );
+    connect( closeAction, SIGNAL( triggered( bool ) ),
+      this, SIGNAL( giveFocusToParent() ) );
+    connect( closeAction, SIGNAL( triggered( bool ) ),
+      this, SLOT( close() ) );
+    this->addAction( closeAction );
+  }
+
+  // Toggle Details
+  {
+    QAction* toggleDetailsA = new QAction( this );
+    toggleDetailsA->setShortcut( toggleDetailsKey );
+    connect( toggleDetailsA, SIGNAL( triggered( bool ) ),
+      this, SLOT( toggleDetailsPanel() ) );
+    this->addAction( toggleDetailsA );
+  }
 
   m_status->setObjectName( "Status" );
   vlayout->addWidget( m_status );
@@ -154,13 +180,6 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
     case Qt::Key_Up :
     case Qt::Key_Down :
       m_resultsView->keyPressEvent( event ); break;
-    case Qt::Key_Tab :
-      if( event->modifiers().testFlag( Qt::ControlModifier ) )
-        this->toggleDetailsPanel();
-      else
-        close(); emit giveFocusToParent(); break;
-    case Qt::Key_Escape :
-      close(); emit giveFocusToParent(); break;
     default:
       Parent::keyPressEvent( event );
   }
