@@ -131,7 +131,7 @@ void Toggle::leaveEvent( QEvent* e )
   setHovered( false );
 }
 
-class Section : public QWidget
+class ResultPreview::Section : public QWidget
 {
   void toggleCollapse( bool );
 
@@ -199,11 +199,11 @@ public:
   }
 };
 
-void Section::toggleCollapse( bool toggled )
+void ResultPreview::Section::toggleCollapse( bool toggled )
 {
   if( m_widget != NULL )
     m_widget->setVisible( toggled );
-  m_parent->adjustSize();
+  m_parent->updateSize();
 }
 
 class ResultPreview::PortsView : public QWidget
@@ -342,6 +342,12 @@ public:
   }
 };
 
+void ResultPreview::addSection( Section* s )
+{
+  this->layout()->addWidget( s );
+  m_sections.push_back( s );
+}
+
 ResultPreview::ResultPreview( FabricCore::DFGHost* host )
   : m_host( host )
   , m_name( new QLabel() )
@@ -364,12 +370,12 @@ ResultPreview::ResultPreview( FabricCore::DFGHost* host )
   Section* tags = new Section( "Tags", this );
   m_tagsView = new TagsView( this );
   tags->setWidget( m_tagsView );
-  lay->addWidget( tags );
+  this->addSection( tags );
 
   Section* ports = new Section( "Ports", this );
   m_portsTable = new PortsView();
   ports->setWidget( m_portsTable );
-  lay->addWidget( ports );
+  this->addSection( ports );
 }
 
 void ResultPreview::clear()
@@ -394,7 +400,16 @@ void ResultPreview::setPreset( const std::string& preset )
   m_tagsView->setTags( details.tags );
 
   m_portsTable->setPorts( details.ports );
-  
+
+  updateSize();
+}
+
+void ResultPreview::updateSize()
+{
+  m_tagsView->adjustSize();
+  m_portsTable->adjustSize();
+  for( size_t i = 0; i < m_sections.size(); i++ )
+    m_sections[i]->adjustSize();
   this->adjustSize();
 }
 

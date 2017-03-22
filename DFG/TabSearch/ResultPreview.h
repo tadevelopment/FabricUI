@@ -65,6 +65,9 @@ namespace FabricUI
         // Emitted when a Tag has been requested
         void tagRequested( const std::string& tag );
 
+      protected slots:
+        void updateSize();
+
       private:
         FabricCore::DFGHost* m_host;
         std::string m_preset;
@@ -74,6 +77,9 @@ namespace FabricUI
         PortsView* m_portsTable;
         class TagsView;
         TagsView* m_tagsView;
+        class Section;
+        std::vector<Section*> m_sections;
+        void addSection( Section* );
       };
     }
   };
