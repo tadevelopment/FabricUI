@@ -10,6 +10,9 @@
 class QLabel;
 class QPushButton;
 
+inline std::string ToStdString( const QString& s ) { return s.toStdString(); }
+inline QString ToQString( const std::string& s ) { return QString::fromStdString( s ); }
+
 namespace FabricUI
 {
   namespace DFG

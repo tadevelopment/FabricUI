@@ -424,7 +424,7 @@ std::vector<std::string> Query::getSplitText() const
 
 void QueryEdit::onTextChanged( const QString& text )
 {
-  m_controller->setText( text.toStdString() );
+  m_controller->setText( ToStdString( text ) );
   convertTextToTags();
 }
 
@@ -544,7 +544,7 @@ void QueryEdit::onQueryChanged()
 {
   // Update the QLineEdit, while saving the cursor position
   int textCursor = m_textEdit->cursorPosition();
-  m_textEdit->setText( QString::fromStdString( m_query.getText() ) );
+  m_textEdit->setText( ToQString( m_query.getText() ) );
   m_textEdit->setCursorPosition( textCursor );
 
   updateTagsEdit();

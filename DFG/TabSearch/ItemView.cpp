@@ -37,7 +37,7 @@ TagView::TagView( const std::string& tagName )
 
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );
-  m_button = new QPushButton( QString::fromStdString( DisplayName( tagName ) ) );
+  m_button = new QPushButton( ToQString( DisplayName( tagName ) ) );
   lay->addWidget( m_button );
   this->setLayout( lay );
   m_button->setFocusPolicy( Qt::NoFocus );
@@ -140,10 +140,10 @@ PresetView::PresetView( const std::string& presetName, const std::vector<std::st
   lay->setMargin( 0 );
   lay->setContentsMargins( QMargins( 0, 0, 8, 0 ) );
   this->setLayout( lay );
-  QLabel* nameLabel = new QLabel( "<b>" + QString::fromStdString( baseName ) + "</b>" );
+  QLabel* nameLabel = new QLabel( "<b>" + ToQString( baseName ) + "</b>" );
   this->layout()->addWidget( nameLabel );
   nameLabel->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
-  //QLabel* pathLabel = new QLabel( "<i>" + QString::fromStdString( path ) + "</i>" );
+  //QLabel* pathLabel = new QLabel( "<i>" + ToQString( path ) + "</i>" );
   //this->layout()->addWidget( pathLabel );
   if( tags.size() > 0 )
   {

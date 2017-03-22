@@ -146,7 +146,7 @@ class ResultPreview::Section : public QWidget
       QFrame* handle = new QFrame();
       handle->setObjectName( "Handle" );
       lay->addWidget( handle );
-      QLabel* label = new QLabel( Bold( QString::fromStdString( text ) ) );
+      QLabel* label = new QLabel( Bold( ToQString( text ) ) );
       label->setTextInteractionFlags( Qt::NoTextInteraction );
       label->setObjectName( "Name" );
       label->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum ) );
@@ -216,8 +216,8 @@ class ResultPreview::PortsView : public QWidget
       QHBoxLayout* lay = new QHBoxLayout();
       lay->setMargin( 0 );
       lay->setSpacing( 1 );
-      lay->addWidget( new QLabel( QString::fromStdString( port.name ) ) );
-      lay->addWidget( new QLabel( QString::fromStdString( port.type ) ) );
+      lay->addWidget( new QLabel( ToQString( port.name ) ) );
+      lay->addWidget( new QLabel( ToQString( port.type ) ) );
       this->setLayout( lay );
     }
   };
@@ -390,10 +390,10 @@ void ResultPreview::setPreset( const std::string& preset )
 
   m_preset = preset;
   std::string name = m_preset.substr( m_preset.rfind( '.' ) + 1 );
-  m_name->setText( Bold( QString::fromStdString( name ) ) );
+  m_name->setText( Bold( ToQString( name ) ) );
 
   PresetDetails details = GetDetails( getPreset(), m_host );
-  m_description->setText( QString::fromStdString( details.description ) );
+  m_description->setText( ToQString( details.description ) );
   m_description->setVisible( !details.description.empty() );
 
   m_tagsView->setTags( details.tags );

@@ -1,6 +1,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "DFGPresetSearchWidget.h"
+#include "ItemView.h"
 
 #include <FTL/JSONValue.h>
 #include <QDebug>
@@ -307,7 +308,7 @@ void DFGPresetSearchWidget::onResultValidated( const std::string& result )
 {
   size_t sep = result.find( NonPresetPrefix );
   if( sep == std::string::npos )
-    emit selectedPreset( QString::fromStdString( result ) );
+    emit selectedPreset( ToQString( result ) );
   else
   {
     std::string type = result.substr( 0, sep );
@@ -368,7 +369,7 @@ void DFGPresetSearchWidget::setPreview( const std::string& preset )
   m_detailsPanel->verticalScrollBar()->setValue( 0 );
   updateDetailsPanelVisibility();
 
-  m_status->setText( "<i>" + QString::fromStdString( preset ) + "</i>" );
+  m_status->setText( "<i>" + ToQString( preset ) + "</i>" );
   m_status->show();
   updateSize();
 }
