@@ -2429,7 +2429,7 @@ namespace DFG {
         text += "<br/>";
         text += "Fabric Engine version " + QString(FabricCore::GetVersionStr());
         text += "<br/>";
-        text += "<br/>©Copyright 2010-2017 Fabric Software Inc.";
+        text += "<br/>Copyright (c) 2010-2017 Fabric Software Inc.";
         text += "<br/>All rights reserved.";
         text += "<br/>";
         text += "<br/><a href='http://fabricengine.com/eula/'><font color=#2ab7e5>End User License Agreement (EULA)</font></a>";
