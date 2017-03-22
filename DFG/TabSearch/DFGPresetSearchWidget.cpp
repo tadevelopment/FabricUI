@@ -238,7 +238,6 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 const std::string BackdropType = "backdrop";
 const std::string VariableSetType = "setVariable";
 const std::string VariableGetType = "getVariable";
-const char NonPresetPrefix = ':';
 const char VariableSeparator = '_';
 
 void DFGPresetSearchWidget::registerStaticEntries()
@@ -253,7 +252,7 @@ void DFGPresetSearchWidget::registerStaticEntries()
     "cat:UI"
   };
   m_host->searchDBAddUser(
-    (BackdropType + NonPresetPrefix + "BackDrop").data(),
+    TabSearch::Result( BackdropType, "BackDrop" ).data(),
     sizeof( tags ) / sizeof( const char* ),
     tags
   );
@@ -265,7 +264,7 @@ void DFGPresetSearchWidget::registerStaticEntries()
 
 std::string GetVariableRegisteredName( const std::string& name, bool isSet )
 {
-  return ( ( isSet ? VariableSetType : VariableGetType ) + NonPresetPrefix +
+  return TabSearch::Result( ( isSet ? VariableSetType : VariableGetType ),
     ( isSet ? "Set" : "Get" ) + VariableSeparator + name );
 }
 
@@ -304,14 +303,14 @@ void DFGPresetSearchWidget::unregisterVariables()
   m_registeredVariables.clear();
 }
 
-void DFGPresetSearchWidget::onResultValidated( const std::string& result )
+void DFGPresetSearchWidget::onResultValidated( const std::string& resultStr )
 {
-  size_t sep = result.find( NonPresetPrefix );
-  if( sep == std::string::npos )
+  const TabSearch::Result result = resultStr;
+  if( result.isPreset() )
     emit selectedPreset( ToQString( result ) );
   else
   {
-    std::string type = result.substr( 0, sep );
+    const std::string type = result.type();
     if( type == BackdropType )
       emit selectedBackdrop();
     else
@@ -364,7 +363,7 @@ void DFGPresetSearchWidget::hidePreview()
 
 void DFGPresetSearchWidget::setPreview( const std::string& preset )
 {
-  if( preset.find( NonPresetPrefix ) != std::string::npos )
+  if( !TabSearch::Result( preset ).isPreset() )
     { hidePreview(); return; }
 
   m_resultPreview->setPreset( preset );

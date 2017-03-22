@@ -76,3 +76,17 @@ std::vector<std::string> Query::getSplitText() const
   }
   return searchTermsStr;
 }
+
+const char NonPresetSep = ':';
+
+Result::Result( const std::string& s )
+  : std::string( s ), m_sep( s.find( NonPresetSep ) )
+{
+
+}
+
+Result::Result( const std::string& type, const std::string& value )
+  : std::string( type + NonPresetSep + value ), m_sep( type.size() )
+{
+  assert( data()[m_sep] == NonPresetSep );
+}

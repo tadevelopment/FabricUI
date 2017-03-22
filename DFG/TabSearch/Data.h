@@ -57,6 +57,21 @@ private:
   TagMap m_tagMap;
 };
 
+// Can be either a Preset, or another
+// result (with a type and a name)
+class Result : public std::string
+{
+  size_t m_sep;
+public:
+  Result( const std::string& s );
+  Result( const std::string& type, const std::string& value ); // Non-Preset
+  inline bool isPreset() const { return m_sep == npos; }
+  inline FTL::StrRef type() const
+    { assert( !isPreset() ); return FTL::StrRef( data(), m_sep ); }
+  inline FTL::StrRef value() const
+    { assert( !isPreset() ); return FTL::StrRef( data() + m_sep + 1, size() - m_sep - 1 ); }
+};
+
 } // namespace TabSearch
 } // namespace DFG
 } // namespace FabricUI
