@@ -360,17 +360,38 @@ void DFGPresetSearchWidget::hidePreview()
   updateSize();
 }
 
+QString Italic( const QString& s ) { return "<i>" + s + "</i>"; }
+
 void DFGPresetSearchWidget::setPreview( const TabSearch::Result& result )
 {
-  if( !result.isPreset() )
-    { hidePreview(); return; }
+  if( result.isPreset() )
+  {
+    m_resultPreview->setPreset( result );
+    m_detailsPanel->verticalScrollBar()->setValue( 0 );
+    updateDetailsPanelVisibility();
+  }
+  else
+    hidePreview();
 
-  m_resultPreview->setPreset( result );
-  m_detailsPanel->verticalScrollBar()->setValue( 0 );
-  updateDetailsPanelVisibility();
+  {
+    QString status;
+    if( result.isPreset() )
+      status = Italic( ToQString( result ) );
+    else
+    {
+      FTL::StrRef type = result.type();
+      if( type == BackdropType )
+        status = "Add a new Backdrop";
+      else
+      if( type == VariableGetType || type == VariableSetType )
+        status = "Variable : " + Italic( ToQString( result.value() ) );
+      else
+        assert( false );
+    }
+    m_status->setText( status );
+    m_status->show();
+  }
 
-  m_status->setText( "<i>" + ToQString( result ) + "</i>" );
-  m_status->show();
   updateSize();
 }
 
