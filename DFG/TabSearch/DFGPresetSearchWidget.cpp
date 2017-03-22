@@ -358,7 +358,6 @@ void DFGPresetSearchWidget::hidePreview()
   updateDetailsPanelVisibility();
 
   m_status->clear();
-  m_status->hide();
   updateSize();
 }
 
