@@ -1707,12 +1707,17 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 0px;
 }
 
-#DFGPresetSearchWidget #SearchFrame,
-#DFGPresetSearchWidget #DetailsPanel
+#DFGPresetSearchWidget #SearchFrame
 {
   background-color: #555555;
   border: 2px solid #333333;
   padding: 4px;
+}
+
+#DFGPresetSearchWidget #DetailsPanel
+{
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
 #QueryEdit QLineEdit,
@@ -1893,26 +1898,41 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   min-width: 4px;
   background-color: #555555;
-  border: 2px solid #333333;
+  border-top: 2px solid #333333;
+  border-bottom: 2px solid #333333;
+  border-right: 2px solid #333333;
+}
+
+#ToggleDetailsPanelButton[hovered="true"]
+{
+  background-color: #666;
 }
 
 #ToggleDetailsPanelButton #Handle
 {
   max-height: 32px;
-  background-color: #272822;
+  background-color: #50626E;
 }
 
-#ToggleDetailsPanelButton[hovered="true"],
+#ToggleDetailsPanelButton[hovered="true"] #Handle
+{
+  background-color: #596d7a;
+}
+
+#ToggleDetailsPanelButton[toggled="true"] #Handle
+{
+  background-color: #50626E;
+}
+
 #ResultPreview #Section #Header[hovered="true"] #Name
 {
-  background-color: #FFF;
-  color: #000;
+  background-color: #555555;
+  color: #FFFFFF;
 }
 
-#ToggleDetailsPanelButton[toggled="true"] #Handle,
 #ResultPreview #Section #Header[toggled="true"] #Handle
 {
-  background-color: #50626e;
+  background-color: #50626E;
 }
 
 #ResultPreview #TagsView #TagView *
