@@ -72,7 +72,7 @@ void QueryController::addAndDoAction( QueryController::Action* action )
 QueryController::QueryController( Query& query )
   : m_query( query )
 {
-
+  clearStack();
 }
 
 QueryController::~QueryController()
