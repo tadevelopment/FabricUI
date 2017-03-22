@@ -43,7 +43,7 @@ QStringList DFGBindingUtils::getVariableWordsFromBinding(
         it != varsObject->end(); it++
         )
       {
-        FTL::CStrRef key = it->first;
+        FTL::CStrRef key = it->key();
         std::string path = prefixes[i];
 
         if(path.length() > 0)
@@ -60,12 +60,12 @@ QStringList DFGBindingUtils::getVariableWordsFromBinding(
         /// Otherwise, check if the type of the current variable is listed.
         else
         {
-          FTL::JSONObject const *value = it->second->cast<FTL::JSONObject>();
+          FTL::JSONObject const *value = it->value()->cast<FTL::JSONObject>();
           for(FTL::JSONObject::const_iterator jt = value->begin(); jt != value->end(); jt++) 
           {
             for(int j=0; j<varTypes.size(); ++j)
             {
-              if(QString(jt->second->getStringValue().c_str()) == varTypes[j])
+              if(QString(jt->value()->getStringValue().c_str()) == varTypes[j])
                 words.append(path.c_str());
             }
           }
@@ -80,12 +80,12 @@ QStringList DFGBindingUtils::getVariableWordsFromBinding(
         it != subsObject->end(); it++
         )
       {
-        FTL::JSONObject const * subGraph = it->second->maybeCast<FTL::JSONObject>();
+        FTL::JSONObject const * subGraph = it->value()->maybeCast<FTL::JSONObject>();
         if(subGraph)
         {
           std::string path;
           FTL::CStrRef execPath = execPaths[i];
-          FTL::CStrRef graphName = it->first;
+          FTL::CStrRef graphName = it->key();
           if(execPath.size() > 0)
           {
             std::string graphNameStr(graphName);
@@ -106,7 +106,7 @@ QStringList DFGBindingUtils::getVariableWordsFromBinding(
             path = prefixes[i];
             if(path.length() > 0)
               path += ".";
-            path += std::string(it->first);
+            path += it->key();
           }
 
           execPaths.push_back(execPath);

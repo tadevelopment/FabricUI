@@ -29,10 +29,10 @@ unsigned int VariableGroupTreeItem::numChildren()
           it != subsObject->end(); it++
           )
         {
-          FTL::JSONObject const * subGraph = it->second->maybeCast<FTL::JSONObject>();
+          FTL::JSONObject const * subGraph = it->value()->maybeCast<FTL::JSONObject>();
           if(!subGraph)
             continue;
-          names.append(it->first.c_str());
+          names.append(it->key().c_str());
         }      
 
         names.sort();
@@ -56,7 +56,7 @@ unsigned int VariableGroupTreeItem::numChildren()
           it != varsObject->end(); it++
           )
         {
-          FTL::CStrRef key = it->first;
+          FTL::CStrRef key = it->key();
           names.append(key.c_str());
         }
 

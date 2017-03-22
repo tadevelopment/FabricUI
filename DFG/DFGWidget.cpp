@@ -2359,108 +2359,145 @@ void DFGWidget::refreshExtDeps( FTL::CStrRef extDeps )
   m_uiHeader->refreshExtDeps( extDeps );
 }
 
-void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDCCMenu)
+void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEditMenu, bool addViewMenu, bool addDCCMenu, bool addHelpMenu)
 {
+  // File menu.
   // [Julien] FE-5244 : Add Save Graph action to the Canvas widget for DCC Integrations
-  // Don't add the edit menu if called from DCC
-  QMenu *fileMenu = 0;
-  if(addFileMenu) {
+  if (addFileMenu)
+  {
+    QMenu *fileMenu = NULL;
     fileMenu = menuBar->addMenu(tr("&File"));
+
+    // emit the prefix menu entry requests
     emit additionalMenuActionsRequested("File", fileMenu, true);
-    if(fileMenu->actions().count() > 0)
+
+    // add separators if required
+    if (fileMenu->actions().count() > 0)
       fileMenu->addSeparator();
+
     connect( fileMenu, SIGNAL( aboutToShow() ), this, SIGNAL( fileMenuAboutToShow() ) );
+
+    // emit the suffix menu entry requests
+    emit additionalMenuActionsRequested("File", fileMenu, false);
   }
 
-  QMenu *editMenu = menuBar->addMenu(tr("&Edit"));
-  QMenu *viewMenu = menuBar->addMenu(tr("&View"));
+  // Edit menu.
+  if (addEditMenu)
+  {
+    QMenu *editMenu = menuBar->addMenu(tr("&Edit"));
 
-  // emit the prefix menu entry requests
-  emit additionalMenuActionsRequested("Edit", editMenu, true);
-  emit additionalMenuActionsRequested("View", viewMenu, true);
+    // emit the prefix menu entry requests
+    emit additionalMenuActionsRequested("Edit", editMenu, true);
 
-  // add separators if required
-  if(editMenu->actions().count() > 0)
-    editMenu->addSeparator();
-  if(viewMenu->actions().count() > 0)
-    viewMenu->addSeparator();
+    // add separators if required
+    if(editMenu->actions().count() > 0)
+      editMenu->addSeparator();
 
-  // [Fe-6242] DCC menu.
+    // populate.
+    QAction * selectAllNodesAction = new SelectAllNodesAction(this, menuBar);
+    editMenu->addAction(selectAllNodesAction);
+
+    QAction * deselectAllNodesAction = new DeselectAllNodesAction(this, menuBar);
+    editMenu->addAction(deselectAllNodesAction);
+
+    QAction * cutNodesAction = new CutNodesAction(this, menuBar);
+    editMenu->addAction(cutNodesAction);
+
+    QAction * copyNodesAction = new CopyNodesAction(this, menuBar);
+    editMenu->addAction(copyNodesAction);
+
+    QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
+    editMenu->addAction(pasteNodesAction);
+
+    // emit the suffix menu entry requests
+    emit additionalMenuActionsRequested("Edit", editMenu, false);
+  }
+
+  // View menu.
+  if (addViewMenu)
+  {
+    QMenu *viewMenu = menuBar->addMenu(tr("&View"));
+
+    // emit the prefix menu entry requests
+    emit additionalMenuActionsRequested("View", viewMenu, true);
+
+    // add separators if required
+    if(viewMenu->actions().count() > 0)
+      viewMenu->addSeparator();
+
+    // view -> graph view submenu
+    QMenu *graphViewMenu = viewMenu->addMenu(tr("Graph View"));
+
+    QAction * dimLinesAction = graphViewMenu->addAction("Dim Connections");
+    dimLinesAction->setCheckable(true);
+    dimLinesAction->setChecked(m_uiGraph->config().dimConnectionLines);
+    QObject::connect(dimLinesAction, SIGNAL(triggered()), this, SLOT(onToggleDimConnections()));
+
+    QAction * connectionShowTooltipAction = graphViewMenu->addAction("Show Connection Tooltips");
+    connectionShowTooltipAction->setCheckable(true);
+    connectionShowTooltipAction->setChecked(m_uiGraph->config().connectionShowTooltip);
+    QObject::connect(connectionShowTooltipAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionShowTooltip()));
+
+    QAction * highlightConnectionTargetsAction = graphViewMenu->addAction("Highlight Connection Targets");
+    highlightConnectionTargetsAction->setCheckable(true);
+    highlightConnectionTargetsAction->setChecked(m_uiGraph->config().highlightConnectionTargets);
+    QObject::connect(highlightConnectionTargetsAction, SIGNAL(triggered()), this, SLOT(onToggleHighlightConnectionTargets()));
+
+    QAction * connectionDrawAsCurvesAction = graphViewMenu->addAction("Display Connections as Curves");
+    connectionDrawAsCurvesAction->setCheckable(true);
+    connectionDrawAsCurvesAction->setChecked(m_uiGraph->config().connectionDrawAsCurves);
+    QObject::connect(connectionDrawAsCurvesAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionDrawAsCurves()));
+
+    QAction * portsCenteredAction = graphViewMenu->addAction("Side Ports Centered");
+    portsCenteredAction->setCheckable(true);
+    portsCenteredAction->setChecked(m_uiGraph->config().portsCentered);
+    QObject::connect(portsCenteredAction, SIGNAL(triggered()), this, SLOT(onTogglePortsCentered()));
+
+    graphViewMenu->addSeparator();
+
+    QAction * displayGrid = graphViewMenu->addAction("Display Grid");
+    displayGrid->setCheckable(true);
+    displayGrid->setChecked(m_uiGraph->config().mainPanelDrawGrid);
+    QObject::connect(displayGrid, SIGNAL(triggered()), this, SLOT(onToggleDrawGrid()));
+
+    QAction * snapToGrid = graphViewMenu->addAction("Snap to Grid");
+    snapToGrid->setCheckable(true);
+    snapToGrid->setChecked(m_uiGraph->config().mainPanelGridSnap);
+    QObject::connect(snapToGrid, SIGNAL(triggered()), this, SLOT(onToggleSnapToGrid()));
+
+    // emit the suffix menu entry requests
+    emit additionalMenuActionsRequested("View", viewMenu, false);
+  }
+
+  // DCC menu [Fe-6242].
   QMenu *dccMenu = 0;
-  if(addDCCMenu) {
+  if (addDCCMenu)
+  {
     dccMenu = menuBar->addMenu(tr("&DCC"));
+
+    // emit the prefix menu entry requests
     emit additionalMenuActionsRequested("DCC", dccMenu, true);
+
+    // add separators if required
     if(dccMenu->actions().count() > 0)
       dccMenu->addSeparator();
+
+    // emit the suffix menu entry requests
+    emit additionalMenuActionsRequested("View", dccMenu, false);
   }
 
-  // edit menu
-  // [Julien]  When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
-  // http://doc.qt.io/qt-4.8/qaction.html#shortcutContext-prop
-  // http://doc.qt.io/qt-4.8/qt.html#ShortcutContext-enum
-  // http://doc.qt.io/qt-4.8/qkeysequence.html
+  // Help menu.
+  if (addHelpMenu)
+  {
+    QMenu *helpMenu = menuBar->addMenu(tr("&Help"));
 
-  QAction * selectAllNodesAction = new SelectAllNodesAction(this, menuBar);
-  editMenu->addAction(selectAllNodesAction);
-
-  QAction * deselectAllNodesAction = new DeselectAllNodesAction(this, menuBar);
-  editMenu->addAction(deselectAllNodesAction);
-
-  QAction * cutNodesAction = new CutNodesAction(this, menuBar);
-  editMenu->addAction(cutNodesAction);
-
-  QAction * copyNodesAction = new CopyNodesAction(this, menuBar);
-  editMenu->addAction(copyNodesAction);
-
-  QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
-  editMenu->addAction(pasteNodesAction);
-
-  // view -> graph view menu
-
-  QMenu *graphViewMenu = viewMenu->addMenu(tr("Graph View"));
-
-  QAction * dimLinesAction = graphViewMenu->addAction("Dim Connections");
-  dimLinesAction->setCheckable(true);
-  dimLinesAction->setChecked(m_uiGraph->config().dimConnectionLines);
-  QObject::connect(dimLinesAction, SIGNAL(triggered()), this, SLOT(onToggleDimConnections()));
-
-  QAction * connectionShowTooltipAction = graphViewMenu->addAction("Show Connection Tooltips");
-  connectionShowTooltipAction->setCheckable(true);
-  connectionShowTooltipAction->setChecked(m_uiGraph->config().connectionShowTooltip);
-  QObject::connect(connectionShowTooltipAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionShowTooltip()));
-
-  QAction * highlightConnectionTargetsAction = graphViewMenu->addAction("Highlight Connection Targets");
-  highlightConnectionTargetsAction->setCheckable(true);
-  highlightConnectionTargetsAction->setChecked(m_uiGraph->config().highlightConnectionTargets);
-  QObject::connect(highlightConnectionTargetsAction, SIGNAL(triggered()), this, SLOT(onToggleHighlightConnectionTargets()));
-
-  QAction * connectionDrawAsCurvesAction = graphViewMenu->addAction("Display Connections as Curves");
-  connectionDrawAsCurvesAction->setCheckable(true);
-  connectionDrawAsCurvesAction->setChecked(m_uiGraph->config().connectionDrawAsCurves);
-  QObject::connect(connectionDrawAsCurvesAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionDrawAsCurves()));
-
-  QAction * portsCenteredAction = graphViewMenu->addAction("Side Ports Centered");
-  portsCenteredAction->setCheckable(true);
-  portsCenteredAction->setChecked(m_uiGraph->config().portsCentered);
-  QObject::connect(portsCenteredAction, SIGNAL(triggered()), this, SLOT(onTogglePortsCentered()));
-
-  graphViewMenu->addSeparator();
-
-  QAction * displayGrid = graphViewMenu->addAction("Display Grid");
-  displayGrid->setCheckable(true);
-  displayGrid->setChecked(m_uiGraph->config().mainPanelDrawGrid);
-  QObject::connect(displayGrid, SIGNAL(triggered()), this, SLOT(onToggleDrawGrid()));
-
-  QAction * snapToGrid = graphViewMenu->addAction("Snap to Grid");
-  snapToGrid->setCheckable(true);
-  snapToGrid->setChecked(m_uiGraph->config().mainPanelGridSnap);
-  QObject::connect(snapToGrid, SIGNAL(triggered()), this, SLOT(onToggleSnapToGrid()));
-
-  // emit the suffix menu entry requests
-  emit additionalMenuActionsRequested("Edit", editMenu, false);
-  emit additionalMenuActionsRequested("View", viewMenu, false);
-  // [Julien] FE-5244 : Add Save Graph action to the Canvas widget for DCC Integrations  // Don't add the edit menu if called from DCC
-  if(fileMenu) emit additionalMenuActionsRequested("File", fileMenu, false);
+    // populate.
+    helpMenu->addAction(new OpenUrlAction(menuBar, "Canvas User Guide",         "http://docs.fabric-engine.com/FabricEngine/latest/HTML/CanvasUserGuide/index.html#canvasuserguide"));
+    helpMenu->addAction(new OpenUrlAction(menuBar, "Canvas Keyboard Shortcuts", "http://docs.fabric-engine.com/FabricEngine/latest/HTML/CanvasUserGuide/shortcuts.html"));
+    helpMenu->addAction(new OpenUrlAction(menuBar, "KL Programming Guide",      "http://docs.fabric-engine.com/FabricEngine/latest/HTML/KLProgrammingGuide/index.html#klpg"));
+    helpMenu->addSeparator();
+    helpMenu->addAction(new AboutFabricAction(this, menuBar));
+  }
 }
 
 void DFGWidget::onExecChanged()

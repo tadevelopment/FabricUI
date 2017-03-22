@@ -662,7 +662,7 @@ bool DFGController::zoomCanvas(
   float zoom
   )
 {
-  if ( FTL::isnan( zoom ) || FTL::isinf( zoom ) )
+  if ( FTL::IsNaN( zoom ) || FTL::IsInf( zoom ) )
     return false;
 
   try
