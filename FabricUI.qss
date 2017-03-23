@@ -1795,19 +1795,18 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   image: url(${FABRIC_DIR}/Resources/Icons/DFGOneDown.png);
 }
 
-/* !!!! TagsView will be renamed !!!! */
-#ResultsView #TagsView
+#ResultsView #TagContainer
 {
   border-radius: 4px;
   background-color: #444444;
 }
 
-#ResultsView #TagsView[highlighted="true"]
+#ResultsView #TagContainer[highlighted="true"]
 {
   background-color: #666666;
 }
 
-#ResultsView #TagsView QPushButton
+#ResultsView #TagContainer QPushButton
 {
   border-style: inset;
 }

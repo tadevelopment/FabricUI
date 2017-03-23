@@ -599,7 +599,7 @@ void ResultsView::setResults( const std::string& searchResult, const Query& quer
 {
   // The ViewItems will become obsolete since ModelItems will be destroyed
   m_presetViewItems.clear();
-  m_tagsViewItems.clear();
+  m_tagContainerItems.clear();
 
   m_model->setRoot( BuildResultTree( searchResult, this->minPresetScore, this->maxPresetScore, query ) );
   this->expandAll();
@@ -644,13 +644,13 @@ QSize ResultsView::sizeHint() const
   return s;
 }
 
-class ResultsView::TagsView : public QWidget
+class ResultsView::TagContainer : public QWidget
 {
 public:
-  TagsView( const Tags& tags, const ResultsView& view )
+  TagContainer( const Tags& tags, const ResultsView& view )
   {
     m_layout = new QHBoxLayout();
-    setObjectName( "TagsView" );
+    setObjectName( "TagContainer" );
     for( size_t i = 0; i < tags.size(); i++ )
     {
       TagView* w = new TagView( tags[i].name );
@@ -708,8 +708,8 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     }
     else
     {
-      TagsView* w = new TagsView( m_model->getTags( index ), *this );
-      m_tagsViewItems.insert( std::pair<void*, TagsView*>( index.internalPointer(), w ) );
+      TagContainer* w = new TagContainer( m_model->getTags( index ), *this );
+      m_tagContainerItems.insert( std::pair<void*, TagContainer*>( index.internalPointer(), w ) );
       widget = w;
     }
     assert( widget != NULL );
@@ -731,8 +731,8 @@ void ResultsView::updateHighlight( const QModelIndex& index )
   if( preset != m_presetViewItems.end() )
     preset->second->setHighlighted( highlighted );
 
-  TagsViewItems::const_iterator tags = m_tagsViewItems.find( ptr );
-  if( tags != m_tagsViewItems.end() )
+  TagContainerItems::const_iterator tags = m_tagContainerItems.find( ptr );
+  if( tags != m_tagContainerItems.end() )
     tags->second->setHighlighted( highlighted );
 }
 

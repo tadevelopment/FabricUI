@@ -70,9 +70,9 @@ namespace FabricUI
         // The void* is QModelIndex::internalPointer()
         typedef std::map< void*, PresetView* > PresetViewItems;
         PresetViewItems m_presetViewItems;
-        class TagsView;
-        typedef std::map< void*, TagsView* > TagsViewItems;
-        TagsViewItems m_tagsViewItems;
+        class TagContainer;
+        typedef std::map< void*, TagContainer* > TagContainerItems;
+        TagContainerItems m_tagContainerItems;
         double minPresetScore, maxPresetScore;
       };
     }
