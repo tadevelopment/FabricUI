@@ -28,15 +28,18 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 
   registerStaticEntries();
 
+  this->setMinimumWidth( 506 );
+
   this->setObjectName( "DFGPresetSearchWidget" );
   m_searchFrame->setObjectName( "SearchFrame" );
+  m_searchFrame->setMinimumWidth( 500 );
   m_detailsPanel->setObjectName( "DetailsPanel" );
 
   this->setWindowFlags( Qt::Popup );
   QVBoxLayout* vlayout = new QVBoxLayout();
 
   m_queryEdit = new TabSearch::QueryEdit( m_host );
-  m_queryEdit->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Fixed ) );
+  m_queryEdit->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   vlayout->addWidget( m_queryEdit );
   connect(
     m_queryEdit, SIGNAL( queryChanged( const TabSearch::Query& ) ),

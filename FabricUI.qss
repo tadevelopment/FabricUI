@@ -1727,7 +1727,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-radius: 4px;
   font-size: 18px;
   padding: 2px;
-  min-width: 500px;
 }
 
 #ResultsView
