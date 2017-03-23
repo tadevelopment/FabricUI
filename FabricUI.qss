@@ -1889,6 +1889,12 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #555555;
   padding: 0px;
   padding-left: 4px;
+  font-size: 12px;
+}
+
+#PresetView QLabel
+{
+  font-size: 12px;
 }
 
 #PresetView[highlighted="true"] *
@@ -2000,7 +2006,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ResultPreview #PortsView *
 {
-  padding: 4px;
+  font-size: 12px;
 }
 
 #ResultPreview #PortsView
@@ -2017,10 +2023,12 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ResultPreview #PortsView #PortsHeader *
 {
+  padding: 4px;
   background-color: #444444;
 }
 
 #ResultPreview #PortsView #PortView *
 {
+  padding: 4px;
   background-color: #333333;
 }
