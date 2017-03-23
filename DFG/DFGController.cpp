@@ -80,6 +80,8 @@ DFGController::DFGController(
 
   QObject::connect(this, SIGNAL(topoDirty()), this, SLOT(onTopoDirty()));
   QObject::connect(this, SIGNAL(varsChanged()), this, SLOT(onVariablesChanged()));
+  QObject::connect( this, // Changing the Binding implicitly changes its variables
+    SIGNAL( bindingChanged( FabricCore::DFGBinding const & ) ), this, SIGNAL( varsChanged() ) );
 }
 
 DFGController::~DFGController()
