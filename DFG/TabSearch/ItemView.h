@@ -138,6 +138,8 @@ namespace FabricUI
 
       protected:
         void mouseReleaseEvent( QMouseEvent * ) FTL_OVERRIDE;
+        void enterEvent( QEvent * ) FTL_OVERRIDE;
+        void leaveEvent( QEvent * ) FTL_OVERRIDE;
 
       private:
         void init();

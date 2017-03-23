@@ -209,3 +209,17 @@ void Label::init()
 {
   this->setObjectName( "TabSearchLabel" );
 }
+
+void Label::enterEvent( QEvent* e )
+{
+  Parent::enterEvent( e );
+  if( m_isTag )
+    this->setCursor( Qt::PointingHandCursor );
+}
+
+void Label::leaveEvent( QEvent* e )
+{
+  Parent::leaveEvent( e );
+  if( m_isTag )
+    this->unsetCursor();
+}
