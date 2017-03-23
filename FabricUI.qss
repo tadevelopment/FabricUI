@@ -1957,6 +1957,11 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-size: 22px;
 }
 
+#ResultPreview #Description
+{
+  font-size: 14px;
+}
+
 #ResultPreview #Section #Header #Handle
 {
   min-width: 4px;
