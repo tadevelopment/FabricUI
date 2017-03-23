@@ -71,7 +71,6 @@ namespace FabricUI
       private slots:
         void onTextChanged( const QString& text );
         void onQueryChanged();
-        void updateTagsEdit();
         void updateTagHighlight();
 
       private:

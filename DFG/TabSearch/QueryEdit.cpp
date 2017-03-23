@@ -167,17 +167,36 @@ class QueryEdit::TagsEdit : public QWidget
     }
   };
 
-public:
-  TagsEdit( const Query& query, const QueryController* controller )
-    : m_selectedIndex( NoHighlight )
-    , m_hoveredIndex( NoHighlight )
+  void clear()
   {
-    QHBoxLayout* m_layout = new QHBoxLayout();
+    m_selectedIndex = NoHighlight;
+    m_hoveredIndex = NoHighlight;
+    for( std::vector<ArrowedTag>::iterator it = m_tagViews.begin();
+      it != m_tagViews.end(); it++ )
+    {
+      m_layout->removeWidget( it->left );
+      m_layout->removeWidget( it->right );
+      it->left->deleteLater();
+      it->right->deleteLater();
+    }
+    m_tagViews.clear();
+  }
+
+public:
+  TagsEdit( QueryController* controller )
+    : m_controller( controller )
+  {
+    m_layout = new QHBoxLayout();
     m_layout->setSpacing( 0 );
     this->setLayout( m_layout );
     this->setObjectName( "TagsEdit" );
     layout()->setAlignment( Qt::AlignLeft );
+    clear();
+  }
 
+  void setQuery( const Query& query )
+  {
+    clear();
     const Query::Tags& tags = query.getTags();
     m_layout->setMargin( tags.size() > 0 ? 4 : 0 );
     for( size_t i = 0; i < tags.size(); i++ )
@@ -190,9 +209,10 @@ public:
       m_tagViews.push_back( ArrowedTag( tagWidget, arrow ) );
       connect(
         tagWidget, SIGNAL( activated( const Query::Tag& ) ),
-        controller, SLOT( removeTag( const Query::Tag& ) )
+        m_controller, SLOT( removeTag( const Query::Tag& ) )
       );
     }
+    this->setVisible( tags.size() > 0 );
   }
 
   void setHighlightedTag( int index )
@@ -224,6 +244,8 @@ private:
   std::vector<ArrowedTag> m_tagViews;
   int m_selectedIndex;
   int m_hoveredIndex;
+  QHBoxLayout* m_layout;
+  QueryController* m_controller;
 };
 
 class QueryEdit::TextEdit : public QLineEdit
@@ -325,9 +347,11 @@ QueryEdit::QueryEdit( FabricCore::DFGHost* host )
   QVBoxLayout* m_layout = new QVBoxLayout();
   this->setLayout( m_layout );
 
-  m_tagsEdit = new TagsEdit( m_query, m_controller );
+  m_tagsEdit = new TagsEdit( m_controller );
+  m_layout->addWidget( m_tagsEdit );
 
   m_textEdit = new TextEdit( this );
+  m_layout->addWidget( m_textEdit );
   connect(
     m_textEdit, SIGNAL( textChanged( const QString& ) ),
     this, SLOT( onTextChanged( const QString& ) )
@@ -337,6 +361,7 @@ QueryEdit::QueryEdit( FabricCore::DFGHost* host )
     this, SLOT( onQueryChanged() )
   );
   m_layout->setMargin( 0 );
+  m_layout->setSpacing( 4 );
   this->setFocusProxy( m_textEdit );
 
   updateTagDBFromHost();
@@ -444,20 +469,6 @@ void QueryEdit::removeHighlightedTag()
   m_highlightedTag = NoHighlight;
 }
 
-void QueryEdit::updateTagsEdit()
-{
-  // Remove the widgets from the layout
-  layout()->removeWidget( m_tagsEdit );
-  layout()->removeWidget( m_textEdit );
-  // Delete the TagsEdit and create a new one
-  m_tagsEdit->deleteLater();
-  m_tagsEdit = new TagsEdit( m_query, m_controller );
-  // Put back the widgets (in the right order)
-  layout()->addWidget( m_tagsEdit );
-  layout()->addWidget( m_textEdit );
-  layout()->setSpacing( m_query.getTags().size() > 0 ? 4 : 0 );
-}
-
 void QueryEdit::selectAll()
 {
   m_textEdit->selectAll();
@@ -472,7 +483,7 @@ void QueryEdit::onQueryChanged()
   m_textEdit->setText( ToQString( m_query.getText() ) );
   m_textEdit->setCursorPosition( textCursor );
 
-  updateTagsEdit();
+  m_tagsEdit->setQuery( m_query );
   updateTagHighlight();
   emit queryChanged( m_query );
 }
