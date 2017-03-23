@@ -4,10 +4,9 @@
 #define __UI_DFG_TabSearch_DetailsWidget__
 
 #include "Data.h"
+#include "ItemView.h"
 
 #include <QFrame>
-
-class QLabel;
 
 namespace FabricUI
 {
@@ -67,7 +66,7 @@ namespace FabricUI
       private:
         FabricCore::DFGHost* m_host;
         Result m_preset;
-        QLabel* m_name;
+        Label* m_name;
         QLabel* m_description;
         class PortsView;
         PortsView* m_portsTable;

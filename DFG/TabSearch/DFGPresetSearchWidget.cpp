@@ -15,12 +15,48 @@
 
 using namespace FabricUI::DFG;
 
+class DFGPresetSearchWidget::Status : public QWidget
+{
+  DFGPresetSearchWidget* m_parent;
+  std::vector<TabSearch::Label*> m_items;
+
+  inline void addItem( TabSearch::Label* item )
+  {
+    QObject::connect( item, SIGNAL( requestTag( const Query::Tag& ) ),
+      m_parent->m_queryEdit, SLOT( requestTag( const Query::Tag& ) ) );
+    this->layout()->addWidget( item );
+    m_items.push_back( item );
+  }
+
+public:
+  Status( DFGPresetSearchWidget* parent )
+    : m_parent( parent )
+  {
+    this->setObjectName( "Status" );
+    QHBoxLayout* lay = new QHBoxLayout();
+    lay->setAlignment( Qt::AlignLeft );
+    lay->setMargin( 0 );
+    lay->setSpacing( 0 );
+    this->setLayout( lay );
+  }
+  void clear()
+  {
+    for( std::vector<TabSearch::Label*>::const_iterator it = m_items.begin(); it != m_items.end(); it++ )
+    {
+      this->layout()->removeWidget( *it );
+      ( *it )->deleteLater();
+    }
+    m_items.clear();
+  }
+  void setResult( const TabSearch::Result& result );
+};
+
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
   , m_staticEntriesAddedToDB( false )
   , m_host( host )
   , m_searchFrame( new QFrame() )
-  , m_status( new QLabel() )
+  , m_status( new Status( this ) )
   , m_detailsWidget( new TabSearch::DetailsWidget( m_host ) )
   , m_detailsPanel( new QScrollArea() )
   , m_detailsPanelToggled( true )
@@ -157,7 +193,6 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     this->addAction( toggleDetailsA );
   }
 
-  m_status->setObjectName( "Status" );
   vlayout->addWidget( m_status );
   hidePreview();
   updateSize();
@@ -239,8 +274,10 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 }
 
 const std::string BackdropType = "backdrop";
+const TabSearch::Query::Tag BackdropTag = "name:BackDrop";
 const std::string VariableSetType = "setVariable";
 const std::string VariableGetType = "getVariable";
+const TabSearch::Query::Tag VariableTag = "cat:Variable";
 const char VariableSeparator = '_';
 
 void DFGPresetSearchWidget::registerStaticEntries()
@@ -249,7 +286,7 @@ void DFGPresetSearchWidget::registerStaticEntries()
     return;
 
   const char* tags[] = {
-    "name:BackDrop",
+    BackdropTag.data(),
     "aka:Layout",
     "cat:Tidying",
     "cat:UI"
@@ -284,7 +321,7 @@ void DFGPresetSearchWidget::registerVariable( const std::string& name, const std
       continue; // Don't register the same entries several times
 
     std::vector<const char*> tags;
-    tags.push_back( "cat:Variable" );
+    tags.push_back( VariableTag.data() );
     tags.push_back( functionType == VariableSetType ? "aka:Set" : "aka:Get" );
     if( name.size() > 0 )
       tags.push_back( nameTag.data() );
@@ -370,8 +407,6 @@ void DFGPresetSearchWidget::hidePreview()
   updateSize();
 }
 
-QString Italic( const QString& s ) { return "<i>" + s + "</i>"; }
-
 void DFGPresetSearchWidget::setPreview( const TabSearch::Result& result )
 {
   if( result.isPreset() )
@@ -383,26 +418,53 @@ void DFGPresetSearchWidget::setPreview( const TabSearch::Result& result )
   else
     hidePreview();
 
-  {
-    QString status;
-    if( result.isPreset() )
-      status = Italic( ToQString( result ) );
-    else
-    {
-      FTL::StrRef type = result.type();
-      if( type == BackdropType )
-        status = "Add a new Backdrop";
-      else
-      if( type == VariableGetType || type == VariableSetType )
-        status = "Variable : " + Italic( ToQString( result.value() ) );
-      else
-        assert( false );
-    }
-    m_status->setText( status );
-    m_status->show();
-  }
+  m_status->setResult( result );
 
   updateSize();
+}
+
+void DFGPresetSearchWidget::Status::setResult( const TabSearch::Result& result )
+{
+  this->clear();
+  if( result.isPreset() )
+  {
+    std::set<TabSearch::Query::Tag> validTags = TabSearch::GetTags( result, m_parent->m_host );
+
+    QString s = ToQString( result );
+    QStringList parts = s.split( '.', QString::SkipEmptyParts );
+    for( int i = 0; i < parts.size(); i++ )
+    {
+      std::string p = ToStdString( parts[i] );
+      bool isName = ( i == parts.size() - 1 );
+      TabSearch::Query::Tag tag = isName ?
+        TabSearch::Query::Tag( TabSearch::NameCat, p ) :
+        TabSearch::Query::Tag( TabSearch::PathCompCat, p )
+      ;
+      if( validTags.find( tag ) != validTags.end() )
+        this->addItem( new TabSearch::Label( p, tag ) );
+      else
+        this->addItem( new TabSearch::Label( p ) );
+      if( !isName )
+        this->addItem( new TabSearch::Label( "." ) );
+    }
+  }
+  else
+  {
+    FTL::StrRef type = result.type();
+    if( type == BackdropType )
+    {
+      this->addItem( new TabSearch::Label( "Add a new " ) );
+      this->addItem( new TabSearch::Label( "Backdrop", BackdropTag ) );
+    }
+    else
+    if( type == VariableGetType || type == VariableSetType )
+    {
+      this->addItem( new TabSearch::Label( "Variable : ", VariableTag ) );
+      this->addItem( new TabSearch::Label( result.value() ) );
+    }
+    else
+      assert( false ); // Undefined type
+  }
 }
 
 void DFGPresetSearchWidget::updateDetailsPanelVisibility()

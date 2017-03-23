@@ -24,7 +24,7 @@ struct PresetDetails
 {
   std::string description;
   std::vector<Port> ports;
-  std::vector<Query::Tag> tags;
+  std::set<Query::Tag> tags;
 };
 
 PresetDetails GetDetails(
@@ -78,8 +78,6 @@ PresetDetails GetDetails(
 
   return details;
 }
-
-inline QString Bold( const QString& s ) { return "<b>" + s + "</b>"; }
 
 Toggle::Toggle( bool toggled )
 {
@@ -199,14 +197,27 @@ class DetailsWidget::PortsView : public QWidget
 {
   struct PortView : public QWidget
   {
-    PortView( const Port& port )
+    PortView(
+      const Port& port,
+      const Query::Tag& tag = Query::Tag(),
+      DetailsWidget* root = NULL
+    )
     {
       this->setObjectName( "PortView" );
       QHBoxLayout* lay = new QHBoxLayout();
       lay->setMargin( 0 );
       lay->setSpacing( 1 );
       lay->addWidget( new QLabel( ToQString( port.name ) ) );
-      lay->addWidget( new QLabel( ToQString( port.type ) ) );
+      if( tag == Query::Tag() )
+        lay->addWidget( new Label( port.type ) );
+      else
+      {
+        Label* label = new Label( port.type, tag );
+        lay->addWidget( label );
+        if( root != NULL )
+          connect( label, SIGNAL( requestTag( const Query::Tag& ) ),
+            root, SIGNAL( tagRequested( const Query::Tag& ) ) );
+      }
       this->setLayout( lay );
     }
   };
@@ -241,15 +252,26 @@ public:
     m_ports.clear();
   }
 
-  void setPorts( const std::vector<Port>& ports )
+  void setPorts(
+    const std::vector<Port>& ports,
+    std::set<Query::Tag>& tags,
+    DetailsWidget* root
+  )
   {
     clear();
+    std::set<Query::Tag> unusedTags = tags;
     for( size_t i = 0; i < ports.size(); i++ )
     {
-      PortView* view = new PortView( ports[i] );
+      Query::Tag tag( PortTypeCat, ports[i].type );
+      if( tags.find( tag ) != tags.end() )
+        unusedTags.erase( tag );
+      else
+        tag = Query::Tag();
+      PortView* view = new PortView( ports[i], tag, root );
       m_ports.push_back( view );
       this->layout()->addWidget( view );
     }
+    tags = unusedTags;
   }
 };
 
@@ -305,13 +327,13 @@ public:
     m_lines.clear();
   }
 
-  void setTags( const std::vector<Query::Tag>& tags )
+  void setTags( const std::set<Query::Tag>& tags )
   {
     clear();
 
-    for( size_t i = 0; i < tags.size(); i++ )
+    for( std::set<Query::Tag>::const_iterator it = tags.begin(); it != tags.end(); it++ )
     {
-      TagWidget* tagWidget = new TagWidget( tags[i] );
+      TagWidget* tagWidget = new TagWidget( *it );
       connect(
         tagWidget, SIGNAL( activated( const Query::Tag& ) ),
         m_preview, SIGNAL( tagRequested( const Query::Tag& ) )
@@ -338,11 +360,13 @@ void DetailsWidget::addSection( Section* s )
 
 DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
   : m_host( host )
-  , m_name( new QLabel() )
+  , m_name( new Label() )
   , m_description( new QLabel() )
 {
   this->setObjectName( "DetailsWidget" );
   m_name->setObjectName( "Name" );
+  connect( m_name, SIGNAL( requestTag( const Query::Tag& ) ),
+    this, SIGNAL( tagRequested( const Query::Tag& ) ) );
   m_description->setObjectName( "Description" );
 
   clear();
@@ -369,7 +393,7 @@ DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
 void DetailsWidget::clear()
 {
   m_preset = Result();
-  m_name->setText( "" );
+  m_name->set( "" );
 }
 
 void DetailsWidget::setPreset( const Result& preset )
@@ -378,16 +402,48 @@ void DetailsWidget::setPreset( const Result& preset )
     return;
 
   m_preset = preset;
-  std::string name = m_preset.substr( m_preset.rfind( '.' ) + 1 );
-  m_name->setText( Bold( ToQString( name ) ) );
-
   PresetDetails details = GetDetails( getPreset(), m_host );
+
+  // Name
+  {
+    std::string name = m_preset.substr( m_preset.rfind( '.' ) + 1 );
+    Query::Tag tag( NameCat, name );
+    if( details.tags.find( tag ) != details.tags.end() )
+    {
+      m_name->set( Bold( name ), tag );
+      details.tags.erase( tag );
+    }
+    else
+      m_name->set( Bold( name ) );
+  }
+
+  // Description
   m_description->setText( ToQString( details.description ) );
   m_description->setVisible( !details.description.empty() );
 
-  m_tagContainer->setTags( details.tags );
+  // Ports
+  m_portsTable->setPorts( details.ports, details.tags, this );
 
-  m_portsTable->setPorts( details.ports );
+  // Filtering the Tags
+  {
+    std::set<Query::Tag> filtered;
+    for( std::set<Query::Tag>::const_iterator it = details.tags.begin();
+      it != details.tags.end(); it++ )
+    {
+      const Query::Tag& tag = *it;
+      if(
+        tag.cat() != PathCompCat &&
+        tag.cat() != NameCompCat
+      )
+      {
+        filtered.insert( tag );
+      }
+    }
+    details.tags = filtered;
+  }
+
+  // Tags
+  m_tagContainer->setTags( details.tags );
 
   updateSize();
 }

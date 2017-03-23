@@ -5,11 +5,11 @@
 
 #include <QWidget>
 #include <QFrame>
+#include <QLabel>
 #include <FTL/Config.h>
 
 #include "Data.h"
 
-class QLabel;
 class QPushButton;
 
 inline std::string ToStdString( const QString& s )
@@ -18,6 +18,12 @@ inline std::string ToStdString( const QString& s )
   return std::string( utf8.data(), utf8.size() );
 }
 inline QString ToQString( const std::string& s ) { return QString::fromUtf8( s.data(), int(s.size()) ); }
+
+template<typename S>
+inline S Italic( const S& s ) { return "<i>" + s + "</i>"; }
+
+template<typename S>
+inline S Bold( const S& s ) { return "<b>" + s + "</b>"; }
 
 namespace FabricUI
 {
@@ -112,6 +118,31 @@ namespace FabricUI
         // TODO: Interaction
         std::vector<TagWidget*> m_tagWidgets;
         HeatBar* m_heatBar;
+      };
+
+      class Label : public QLabel
+      {
+        Q_OBJECT
+
+        typedef QLabel Parent;
+
+      public:
+        void set( const std::string& text );
+        void set( const std::string& text, const Query::Tag& tag );
+        Label() { init(); set( "" ); }
+        Label( const std::string& text ) { init(); set( text ); };
+        Label( const std::string& text, const Query::Tag& tag ) { init(); set( text, tag ); }
+
+      signals:
+        void requestTag( const Query::Tag& tagName );
+
+      protected:
+        void mouseReleaseEvent( QMouseEvent * ) FTL_OVERRIDE;
+
+      private:
+        void init();
+        bool m_isTag;
+        Query::Tag m_tag;
       };
     }
   };

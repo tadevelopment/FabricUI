@@ -10,7 +10,6 @@
 #include "DetailsWidget.h"
 
 class QFrame;
-class QLabel;
 class QScrollArea;
 
 namespace FabricUI
@@ -74,7 +73,8 @@ namespace FabricUI
       FabricCore::DFGHost* m_host;
       std::set<std::string> m_registeredVariables;
       QFrame* m_searchFrame;
-      QLabel* m_status;
+      class Status;
+      Status* m_status; // Inline info about the selected result, at the bottom
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
       TabSearch::DetailsWidget* m_detailsWidget;

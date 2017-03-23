@@ -181,3 +181,31 @@ void PresetView::setScore( double score, double minScore, double maxScore )
   m_heatBar->setToolTip( QString::number( score ) );
   m_heatBar->setStyleSheet( "color: #000;" );
 }
+
+void Label::set( const std::string& text )
+{
+  m_isTag = false;
+  this->setProperty( "clickable", m_isTag );
+  m_tag = Query::Tag();
+  this->setText( ToQString( text ) );
+}
+
+void Label::set( const std::string& text, const Query::Tag& tag )
+{
+  m_isTag = true;
+  this->setProperty( "clickable", m_isTag );
+  m_tag = tag;
+  this->setText( Italic( ToQString( text ) ) );
+}
+
+void Label::mouseReleaseEvent( QMouseEvent * e )
+{
+  Parent::mouseReleaseEvent( e );
+  if( m_isTag )
+    emit requestTag( m_tag );
+}
+
+void Label::init()
+{
+  this->setObjectName( "TabSearchLabel" );
+}

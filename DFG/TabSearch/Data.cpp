@@ -94,9 +94,9 @@ Result::Result( const std::string& type, const std::string& value )
   assert( data()[m_sep] == NonPresetSep );
 }
 
-std::vector<Query::Tag> FabricUI::DFG::TabSearch::GetTags( const Result& preset, FabricCore::DFGHost* host )
+std::set<Query::Tag> FabricUI::DFG::TabSearch::GetTags( const Result& preset, FabricCore::DFGHost* host )
 {
-  std::vector<Query::Tag> dst;
+  std::set<Query::Tag> dst;
   try
   {
     // Fetching tags from the DFGHost
@@ -106,7 +106,7 @@ std::vector<Query::Tag> FabricUI::DFG::TabSearch::GetTags( const Result& preset,
       FTL::JSONArray* tagsA = tags->cast<FTL::JSONArray>();
 
       for( FTL::JSONArray::const_iterator it = tagsA->begin(); it != tagsA->end(); it++ )
-        dst.push_back( std::string( ( *it )->getStringValue() ) );
+        dst.insert( std::string( ( *it )->getStringValue() ) );
 
       delete tags;
     }

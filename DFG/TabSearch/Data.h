@@ -23,6 +23,11 @@ namespace FabricUI {
 namespace DFG {
 namespace TabSearch {
 
+static const char* NameCat = "name";
+static const char* PortTypeCat = "porttype";
+static const char* PathCompCat = "pathcomp";
+static const char* NameCompCat = "namecomp";
+
 struct Query : public QObject
 {
   Q_OBJECT
@@ -31,12 +36,18 @@ public:
 
   class Tag : public std::string
   {
+    static const char Sep = ':';
     size_t m_sep;
   public:
     typedef std::string Cat;
-    Tag( const std::string& s ) : std::string( s ), m_sep( s.find( ':' ) ) { assert( m_sep != npos ); }
-    inline FTL::StrRef cat() { return FTL::StrRef( data(), m_sep ); }
-    inline FTL::StrRef name() { return FTL::StrRef( data() + m_sep + 1, size() - m_sep - 1 ); }
+    Tag() : std::string(), m_sep( npos ) {}
+    Tag( const std::string& cat, const std::string& name )
+      : std::string( cat + Sep + name ), m_sep( cat.size() ) { assert( ( *this )[m_sep] = Sep ); }
+    Tag( const std::string& s ) : std::string( s ), m_sep( s.find( Sep ) ) { assert( m_sep != npos ); }
+    inline FTL::StrRef cat() const
+      { assert( m_sep != npos ); return FTL::StrRef( data(), m_sep ); }
+    inline FTL::StrRef name() const
+      { assert( m_sep != npos ); return FTL::StrRef( data() + m_sep + 1, size() - m_sep - 1 ); }
   };
 
   typedef std::vector<Tag> Tags;
@@ -78,7 +89,7 @@ public:
     { assert( !isPreset() ); return FTL::StrRef( data() + m_sep + 1, size() - m_sep - 1 ); }
 };
 
-std::vector<Query::Tag> GetTags( const Result& result, FabricCore::DFGHost* host );
+std::set<Query::Tag> GetTags( const Result& result, FabricCore::DFGHost* host );
 
 } // namespace TabSearch
 } // namespace DFG
