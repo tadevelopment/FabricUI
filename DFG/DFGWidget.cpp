@@ -848,6 +848,8 @@ void DFGWidget::updateTabSearchVariables()
   if( isUsingLegacyTabSearch() )
     return;
 
+  m_tabSearchWidget->unregisterVariables();
+
   FabricCore::DFGBinding& binding = this->getUIController()->getBinding();
   QStringList variableNames = DFGBindingUtils::getVariableWordsFromBinding(
     binding,

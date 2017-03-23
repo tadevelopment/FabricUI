@@ -295,12 +295,19 @@ void DFGPresetSearchWidget::registerVariable( const std::string& name, const std
 
 void DFGPresetSearchWidget::unregisterVariables()
 {
+  std::set<std::string> clearedSet;
   for( std::set<std::string>::const_iterator it = m_registeredVariables.begin();
     it != m_registeredVariables.end(); it++ )
   {
-    m_host->searchDBRemoveUser( it->data() );
+    if( ( *it ) != GetVariableRegisteredName( "", true ) &&
+        ( *it ) != GetVariableRegisteredName( "", false ) )
+    {
+      m_host->searchDBRemoveUser( it->data() );
+    }
+    else // Don't unregister static variables
+      clearedSet.insert( *it );
   }
-  m_registeredVariables.clear();
+  m_registeredVariables = clearedSet;
 }
 
 void DFGPresetSearchWidget::onResultValidated( const TabSearch::Result& result )

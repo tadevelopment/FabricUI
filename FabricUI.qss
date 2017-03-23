@@ -1888,6 +1888,12 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #555555;
   padding: 0px;
   padding-left: 4px;
+  font-size: 12px;
+}
+
+#PresetView QLabel
+{
+  font-size: 12px;
 }
 
 #PresetView[highlighted="true"] *
@@ -1950,6 +1956,11 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-size: 22px;
 }
 
+#DetailsWidget #Description
+{
+  font-size: 14px;
+}
+
 #DetailsWidget #Section #Header #Handle
 {
   min-width: 4px;
@@ -1999,7 +2010,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DetailsWidget #PortsView *
 {
-  padding: 4px;
+  font-size: 12px;
 }
 
 #DetailsWidget #PortsView
@@ -2016,10 +2027,12 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DetailsWidget #PortsView #PortsHeader *
 {
+  padding: 4px;
   background-color: #444444;
 }
 
 #DetailsWidget #PortsView #PortView *
 {
+  padding: 4px;
   background-color: #333333;
 }
