@@ -1894,7 +1894,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-size: 12px;
 }
 
-#TabSearchLabel[clickable="true"]:hover
+#TabSearchLabel[clickable="true"]:hover,
+#DetailsWidget #Name[clickable="true"]:hover
 {
   color: #27A8DF;
 }
