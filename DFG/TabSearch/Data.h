@@ -14,6 +14,11 @@
 #include <map>
 #include <set>
 
+namespace FabricCore
+{
+  class DFGHost;
+}
+
 namespace FabricUI {
 namespace DFG {
 namespace TabSearch {
@@ -72,6 +77,8 @@ public:
   inline FTL::StrRef value() const
     { assert( !isPreset() ); return FTL::StrRef( data() + m_sep + 1, size() - m_sep - 1 ); }
 };
+
+std::vector<Query::Tag> GetTags( const Result& result, FabricCore::DFGHost* host );
 
 } // namespace TabSearch
 } // namespace DFG

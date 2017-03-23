@@ -2,6 +2,9 @@
 
 #include "Data.h"
 
+#include <FabricCore.h>
+#include <FTL/JSONValue.h>
+
 using namespace FabricUI::DFG::TabSearch;
 
 void Query::clear()
@@ -89,4 +92,29 @@ Result::Result( const std::string& type, const std::string& value )
   : std::string( type + NonPresetSep + value ), m_sep( type.size() )
 {
   assert( data()[m_sep] == NonPresetSep );
+}
+
+std::vector<Query::Tag> FabricUI::DFG::TabSearch::GetTags( const Result& preset, FabricCore::DFGHost* host )
+{
+  std::vector<Query::Tag> dst;
+  try
+  {
+    // Fetching tags from the DFGHost
+    {
+      FabricCore::String tagsStr = host->getPresetTags( preset.data() );
+      FTL::JSONValue* tags = FTL::JSONValue::Decode( tagsStr.getCStr() );
+      FTL::JSONArray* tagsA = tags->cast<FTL::JSONArray>();
+
+      for( FTL::JSONArray::const_iterator it = tagsA->begin(); it != tagsA->end(); it++ )
+        dst.push_back( std::string( ( *it )->getStringValue() ) );
+
+      delete tags;
+    }
+  }
+  catch( const FTL::JSONException& e )
+  {
+    std::cerr << preset << "; Error : " << e.getDescCStr() << std::endl;
+    assert( false );
+  }
+  return dst;
 }

@@ -67,24 +67,14 @@ PresetDetails GetDetails(
       }
       delete json;
     }
-
-    // Fetching tags from the DFGHost
-    {
-      FabricCore::String tagsStr = host->getPresetTags( preset.data() );
-      FTL::JSONValue* tags = FTL::JSONValue::Decode( tagsStr.getCStr() );
-      FTL::JSONArray* tagsA = tags->cast<FTL::JSONArray>();
-
-      for( FTL::JSONArray::const_iterator it = tagsA->begin(); it != tagsA->end(); it++ )
-        details.tags.push_back( std::string( ( *it )->getStringValue() ) );
-
-      delete tags;
-    }
   }
   catch( const FTL::JSONException& e )
   {
     std::cerr << preset << "; Error : " << e.getDescCStr() << std::endl;
     assert( false );
   }
+
+  details.tags = GetTags( preset, host );
 
   return details;
 }

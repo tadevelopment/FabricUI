@@ -9,11 +9,6 @@
 
 class QLabel;
 
-namespace FabricCore
-{
-  class DFGHost;
-}
-
 namespace FabricUI
 {
   namespace DFG
