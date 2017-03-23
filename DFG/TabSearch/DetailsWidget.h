@@ -76,8 +76,8 @@ namespace FabricUI
         QLabel* m_description;
         class PortsView;
         PortsView* m_portsTable;
-        class TagsView;
-        TagsView* m_tagsView;
+        class TagContainer;
+        TagContainer* m_tagContainer;
         class Section;
         std::vector<Section*> m_sections;
         void addSection( Section* );

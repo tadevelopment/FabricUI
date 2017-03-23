@@ -266,7 +266,7 @@ public:
 // http://doc.qt.io/qt-4.8/qt-layouts-flowlayout-example.html
 // TODO : Knapsacks optimization problem to minimize the
 // empty spaces ? https://en.wikipedia.org/wiki/Knapsack_problem
-class DetailsWidget::TagsView : public QWidget
+class DetailsWidget::TagContainer : public QWidget
 {
   struct Line
   {
@@ -291,11 +291,11 @@ class DetailsWidget::TagsView : public QWidget
 
 public:
 
-  TagsView( DetailsWidget* preview )
+  TagContainer( DetailsWidget* preview )
     : m_layout( new QVBoxLayout() )
     , m_preview( preview )
   {
-    this->setObjectName( "TagsView" );
+    this->setObjectName( "TagContainer" );
 
     this->setLayout( m_layout );
     m_layout->setSpacing( 2 );
@@ -366,8 +366,8 @@ DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
   m_description->setWordWrap( true );
 
   Section* tags = new Section( "Tags", this );
-  m_tagsView = new TagsView( this );
-  tags->setWidget( m_tagsView );
+  m_tagContainer = new TagContainer( this );
+  tags->setWidget( m_tagContainer );
   this->addSection( tags );
 
   Section* ports = new Section( "Ports", this );
@@ -395,7 +395,7 @@ void DetailsWidget::setPreset( const Result& preset )
   m_description->setText( ToQString( details.description ) );
   m_description->setVisible( !details.description.empty() );
 
-  m_tagsView->setTags( details.tags );
+  m_tagContainer->setTags( details.tags );
 
   m_portsTable->setPorts( details.ports );
 
@@ -404,7 +404,7 @@ void DetailsWidget::setPreset( const Result& preset )
 
 void DetailsWidget::updateSize()
 {
-  m_tagsView->adjustSize();
+  m_tagContainer->adjustSize();
   m_portsTable->adjustSize();
   for( size_t i = 0; i < m_sections.size(); i++ )
     m_sections[i]->adjustSize();

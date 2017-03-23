@@ -1964,7 +1964,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-size: 14px;
 }
 
-#DetailsWidget #TagsView #TagView QPushButton
+#DetailsWidget #TagContainer #TagView QPushButton
 {
   border-style: inset;
   padding: 0px 4px 0px 4px;
@@ -1972,7 +1972,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#DetailsWidget #TagsView #TagView QPushButton:hover
+#DetailsWidget #TagContainer #TagView QPushButton:hover
 {
   color: #272822;
   background-color: #F0F0F0;
@@ -1989,7 +1989,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#DetailsWidget #TagsView #TagView *
+#DetailsWidget #TagContainer #TagView *
 {
   border-style: inset;
   background-color: #50626E;
