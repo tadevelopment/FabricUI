@@ -133,9 +133,9 @@ void QueryController::clear()
 
 struct ArrowedTag
 {
-  TagView* left;
+  TagWidget* left;
   TagArrow* right;
-  ArrowedTag( TagView* left, TagArrow* right )
+  ArrowedTag( TagWidget* left, TagArrow* right )
     : left( left ), right( right )
   {}
 };
@@ -143,14 +143,14 @@ struct ArrowedTag
 class QueryEdit::TagsEdit : public QWidget
 {
   // Handles the hovering in order to highlight the arrows
-  class TagViewH : public TagView
+  class TagWidgetH : public TagWidget
   {
-    typedef TagView Parent;
+    typedef TagWidget Parent;
     TagsEdit* m_parent;
     int m_index;
   public:
-    TagViewH( const Query::Tag& n, TagsEdit* parent, int index )
-      : TagView( n )
+    TagWidgetH( const Query::Tag& n, TagsEdit* parent, int index )
+      : TagWidget( n )
       , m_parent( parent )
       , m_index( index )
     {}
@@ -182,14 +182,14 @@ public:
     m_layout->setMargin( tags.size() > 0 ? 4 : 0 );
     for( size_t i = 0; i < tags.size(); i++ )
     {
-      TagView* tagView = new TagViewH( tags[i], this, i );
+      TagWidget* tagWidget = new TagWidgetH( tags[i], this, i );
       TagArrow* arrow = new TagArrow();
       arrow->setHasRight( i < tags.size() - 1 );
-      m_layout->addWidget( tagView );
+      m_layout->addWidget( tagWidget );
       m_layout->addWidget( arrow );
-      m_tagViews.push_back( ArrowedTag( tagView, arrow ) );
+      m_tagViews.push_back( ArrowedTag( tagWidget, arrow ) );
       connect(
-        tagView, SIGNAL( activated( const Query::Tag& ) ),
+        tagWidget, SIGNAL( activated( const Query::Tag& ) ),
         controller, SLOT( removeTag( const Query::Tag& ) )
       );
     }

@@ -490,7 +490,7 @@ public:
       {
         const Tags& tags = v.getOther();
         for( Tags::const_iterator it = tags.begin(); it != tags.end(); it++ )
-          result += TagView::DisplayName( it->name ) + " ";
+          result += TagWidget::DisplayName( it->name ) + " ";
       }
       return ToQString( result );
     }
@@ -653,8 +653,8 @@ public:
     setObjectName( "TagContainer" );
     for( size_t i = 0; i < tags.size(); i++ )
     {
-      TagView* w = new TagView( tags[i].name );
-      m_tagViews.push_back( w );
+      TagWidget* w = new TagWidget( tags[i].name );
+      m_tagWidgets.push_back( w );
       w->setScore( tags[i].score );
       m_layout->addWidget( w );
       connect(
@@ -671,12 +671,12 @@ public:
   void setHighlighted( bool highlighted )
   {
     SetWidgetHighlight( this, highlighted );
-    for( size_t i = 0; i < m_tagViews.size(); i++ )
-      m_tagViews[i]->setHighlighted( highlighted );
+    for( size_t i = 0; i < m_tagWidgets.size(); i++ )
+      m_tagWidgets[i]->setHighlighted( highlighted );
   }
 
 private:
-  std::vector<TagView*> m_tagViews;
+  std::vector<TagWidget*> m_tagWidgets;
   QHBoxLayout* m_layout;
 };
 

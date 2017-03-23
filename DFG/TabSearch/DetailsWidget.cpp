@@ -270,7 +270,7 @@ class DetailsWidget::TagContainer : public QWidget
 {
   struct Line
   {
-    std::vector<TagView*> tags;
+    std::vector<TagWidget*> tags;
     QHBoxLayout* layout;
     Line() : layout( new QHBoxLayout() ) {
       layout->setAlignment( Qt::AlignLeft );
@@ -321,21 +321,21 @@ public:
 
     for( size_t i = 0; i < tags.size(); i++ )
     {
-      TagView* tagView = new TagView( tags[i] );
+      TagWidget* tagWidget = new TagWidget( tags[i] );
       connect(
-        tagView, SIGNAL( activated( const Query::Tag& ) ),
+        tagWidget, SIGNAL( activated( const Query::Tag& ) ),
         m_preview, SIGNAL( tagRequested( const Query::Tag& ) )
       );
       if( m_lines.size() == 0
-        || m_lines[m_lines.size() - 1].width() + tagView->sizeHint().width() > this->width() )
+        || m_lines[m_lines.size() - 1].width() + tagWidget->sizeHint().width() > this->width() )
       {
         Line line;
         m_lines.push_back( line );
         m_layout->addLayout( line.layout );
       }
       Line& line = m_lines[m_lines.size() - 1];
-      line.tags.push_back( tagView );
-      line.layout->addWidget( tagView );
+      line.tags.push_back( tagWidget );
+      line.layout->addWidget( tagWidget );
     }
   }
 };

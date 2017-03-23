@@ -18,7 +18,7 @@ void FabricUI::DFG::TabSearch::SetWidgetHighlight( QWidget* w, const bool highli
   w->setStyleSheet( w->styleSheet() );
 }
 
-std::string TagView::DisplayName( const Query::Tag& result )
+std::string TagWidget::DisplayName( const Query::Tag& result )
 {
   Query::Tag tag = result;
   // Capitalize the name of the category
@@ -28,12 +28,12 @@ std::string TagView::DisplayName( const Query::Tag& result )
   return category + ':' + std::string(tag.name());
 }
 
-TagView::TagView( const Query::Tag& tag )
+TagWidget::TagWidget( const Query::Tag& tag )
   : m_tag( tag )
   , m_hovered( false )
   , m_highlighted( false )
 {
-  this->setObjectName( "TagView" );
+  this->setObjectName( "TagWidget" );
 
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );
@@ -50,17 +50,17 @@ TagView::TagView( const Query::Tag& tag )
   setHighlighted( false );
 }
 
-void TagView::setHighlighted( bool highlighted )
+void TagWidget::setHighlighted( bool highlighted )
 {
   SetWidgetHighlight( this, highlighted );
 }
 
-void TagView::onActivated()
+void TagWidget::onActivated()
 {
   emit activated( m_tag );
 }
 
-void TagView::setScore( double score )
+void TagWidget::setScore( double score )
 {
   this->setToolTip( "Score = " + QString::number( score ) );
 }
@@ -155,13 +155,13 @@ PresetView::PresetView( const Result& presetName, const std::vector<Query::Tag>&
   }
   for( size_t i = 0; i < tags.size(); i++ )
   {
-    TagView* tagView = new TagView( tags[i] );
+    TagWidget* tagWidget = new TagWidget( tags[i] );
     connect(
-      tagView, SIGNAL( activated( const Query::Tag& ) ),
+      tagWidget, SIGNAL( activated( const Query::Tag& ) ),
       this, SIGNAL( requestTag( const Query::Tag& ) )
     );
-    this->m_tagViews.push_back( tagView );
-    this->layout()->addWidget( tagView );
+    this->m_tagWidgets.push_back( tagWidget );
+    this->layout()->addWidget( tagWidget );
   }
   this->layout()->addWidget( m_heatBar );
   this->layout()->setAlignment( m_heatBar, Qt::AlignRight | Qt::AlignVCenter );
@@ -171,8 +171,8 @@ PresetView::PresetView( const Result& presetName, const std::vector<Query::Tag>&
 void PresetView::setHighlighted( bool highlighted )
 {
   SetWidgetHighlight( this, highlighted );
-  for( size_t i = 0; i < m_tagViews.size(); i++ )
-    m_tagViews[i]->setHighlighted( highlighted );
+  for( size_t i = 0; i < m_tagWidgets.size(); i++ )
+    m_tagWidgets[i]->setHighlighted( highlighted );
 }
 
 void PresetView::setScore( double score, double minScore, double maxScore )

@@ -29,14 +29,14 @@ namespace FabricUI
 
       void SetWidgetHighlight( QWidget* w, const bool highlighted );
 
-      class TagView : public QWidget
+      class TagWidget : public QWidget
       {
         Q_OBJECT
 
         typedef QWidget Parent;
 
       public:
-        TagView( const Query::Tag& tag );
+        TagWidget( const Query::Tag& tag );
         void setScore( double score );
 
       static std::string DisplayName( const Query::Tag& result );
@@ -110,7 +110,7 @@ namespace FabricUI
 
       private:
         // TODO: Interaction
-        std::vector<TagView*> m_tagViews;
+        std::vector<TagWidget*> m_tagWidgets;
         HeatBar* m_heatBar;
       };
     }

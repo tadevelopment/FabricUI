@@ -1817,7 +1817,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-radius: 4px;
 }
 
-#QueryEdit #TagsEdit #TagView QPushButton
+#QueryEdit #TagsEdit #TagWidget QPushButton
 {
   border-style: inset;
   padding: 0px 4px 0px 4px;
@@ -1825,13 +1825,13 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#QueryEdit #TagsEdit #TagView[highlighted="true"] *
+#QueryEdit #TagsEdit #TagWidget[highlighted="true"] *
 {
   color: #272822;
   background-color: #F0F0F0;
 }
 
-#QueryEdit #TagsEdit #TagView QPushButton:hover
+#QueryEdit #TagsEdit #TagWidget QPushButton:hover
 {
   color: #272822;
   background-color: #F0F0F0;
@@ -1850,19 +1850,19 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   margin: 2px 2px 2px 0px;
 }
 
-#TagView *
+#TagWidget *
 {
   background-color: #444444;
   font-size: 12px;
 }
 
-#TagView[highlighted="true"] *
+#TagWidget[highlighted="true"] *
 {
   color: #FFF;
   background-color: #666666;
 }
 
-#TagView QPushButton:hover
+#TagWidget QPushButton:hover
 {
   color: #000;
   background-color: #FFF;
@@ -1963,7 +1963,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-size: 14px;
 }
 
-#DetailsWidget #TagContainer #TagView QPushButton
+#DetailsWidget #TagContainer #TagWidget QPushButton
 {
   border-style: inset;
   padding: 0px 4px 0px 4px;
@@ -1971,7 +1971,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#DetailsWidget #TagContainer #TagView QPushButton:hover
+#DetailsWidget #TagContainer #TagWidget QPushButton:hover
 {
   color: #272822;
   background-color: #F0F0F0;
@@ -1988,7 +1988,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#DetailsWidget #TagContainer #TagView *
+#DetailsWidget #TagContainer #TagWidget *
 {
   border-style: inset;
   background-color: #50626E;
