@@ -1,6 +1,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include "ResultPreview.h"
+#include "DetailsWidget.h"
 
 #include "ItemView.h"
 
@@ -130,7 +130,7 @@ void Toggle::leaveEvent( QEvent* e )
   setHovered( false );
 }
 
-class ResultPreview::Section : public QWidget
+class DetailsWidget::Section : public QWidget
 {
   void toggleCollapse( bool );
 
@@ -166,10 +166,10 @@ class ResultPreview::Section : public QWidget
 
   Header* m_header;
   QWidget* m_widget;
-  ResultPreview* m_parent;
+  DetailsWidget* m_parent;
 
 public:
-  Section( const std::string& name, ResultPreview* parent )
+  Section( const std::string& name, DetailsWidget* parent )
     : m_header( new Header( this, name ) )
     , m_widget( NULL )
     , m_parent( parent )
@@ -198,14 +198,14 @@ public:
   }
 };
 
-void ResultPreview::Section::toggleCollapse( bool toggled )
+void DetailsWidget::Section::toggleCollapse( bool toggled )
 {
   if( m_widget != NULL )
     m_widget->setVisible( toggled );
   m_parent->updateSize();
 }
 
-class ResultPreview::PortsView : public QWidget
+class DetailsWidget::PortsView : public QWidget
 {
   struct PortView : public QWidget
   {
@@ -266,7 +266,7 @@ public:
 // http://doc.qt.io/qt-4.8/qt-layouts-flowlayout-example.html
 // TODO : Knapsacks optimization problem to minimize the
 // empty spaces ? https://en.wikipedia.org/wiki/Knapsack_problem
-class ResultPreview::TagsView : public QWidget
+class DetailsWidget::TagsView : public QWidget
 {
   struct Line
   {
@@ -287,11 +287,11 @@ class ResultPreview::TagsView : public QWidget
   };
   std::vector<Line> m_lines;
   QVBoxLayout* m_layout;
-  ResultPreview* m_preview;
+  DetailsWidget* m_preview;
 
 public:
 
-  TagsView( ResultPreview* preview )
+  TagsView( DetailsWidget* preview )
     : m_layout( new QVBoxLayout() )
     , m_preview( preview )
   {
@@ -340,18 +340,18 @@ public:
   }
 };
 
-void ResultPreview::addSection( Section* s )
+void DetailsWidget::addSection( Section* s )
 {
   this->layout()->addWidget( s );
   m_sections.push_back( s );
 }
 
-ResultPreview::ResultPreview( FabricCore::DFGHost* host )
+DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
   : m_host( host )
   , m_name( new QLabel() )
   , m_description( new QLabel() )
 {
-  this->setObjectName( "ResultPreview" );
+  this->setObjectName( "DetailsWidget" );
   m_name->setObjectName( "Name" );
   m_description->setObjectName( "Description" );
 
@@ -376,13 +376,13 @@ ResultPreview::ResultPreview( FabricCore::DFGHost* host )
   this->addSection( ports );
 }
 
-void ResultPreview::clear()
+void DetailsWidget::clear()
 {
   m_preset = Result();
   m_name->setText( "" );
 }
 
-void ResultPreview::setPreset( const Result& preset )
+void DetailsWidget::setPreset( const Result& preset )
 {
   if( m_preset == preset )
     return;
@@ -402,7 +402,7 @@ void ResultPreview::setPreset( const Result& preset )
   updateSize();
 }
 
-void ResultPreview::updateSize()
+void DetailsWidget::updateSize()
 {
   m_tagsView->adjustSize();
   m_portsTable->adjustSize();
@@ -411,4 +411,4 @@ void ResultPreview::updateSize()
   this->adjustSize();
 }
 
-const Result& ResultPreview::getPreset() const { return m_preset; }
+const Result& DetailsWidget::getPreset() const { return m_preset; }

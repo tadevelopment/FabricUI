@@ -21,7 +21,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   , m_host( host )
   , m_searchFrame( new QFrame() )
   , m_status( new QLabel() )
-  , m_resultPreview( new TabSearch::ResultPreview( m_host ) )
+  , m_detailsWidget( new TabSearch::DetailsWidget( m_host ) )
   , m_detailsPanel( new QScrollArea() )
   , m_detailsPanelToggled( true )
 {
@@ -125,9 +125,9 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
 
   hlayout->addWidget( m_detailsPanel );
 
-  m_detailsPanel->setWidget( m_resultPreview );
+  m_detailsPanel->setWidget( m_detailsWidget );
   connect(
-    m_resultPreview, SIGNAL( tagRequested( const Query::Tag& ) ),
+    m_detailsWidget, SIGNAL( tagRequested( const Query::Tag& ) ),
     m_queryEdit, SLOT( requestTag( const Query::Tag& ) )
   );
 
@@ -353,7 +353,7 @@ bool DFGPresetSearchWidget::focusNextPrevChild( bool next )
 
 void DFGPresetSearchWidget::hidePreview()
 {
-  m_resultPreview->clear();
+  m_detailsWidget->clear();
   updateDetailsPanelVisibility();
 
   m_status->clear();
@@ -366,7 +366,7 @@ void DFGPresetSearchWidget::setPreview( const TabSearch::Result& result )
 {
   if( result.isPreset() )
   {
-    m_resultPreview->setPreset( result );
+    m_detailsWidget->setPreset( result );
     m_detailsPanel->verticalScrollBar()->setValue( 0 );
     updateDetailsPanelVisibility();
   }
@@ -397,7 +397,7 @@ void DFGPresetSearchWidget::setPreview( const TabSearch::Result& result )
 
 void DFGPresetSearchWidget::updateDetailsPanelVisibility()
 {
-  m_detailsPanel->setVisible( m_detailsPanelToggled && !m_resultPreview->isEmpty() );
+  m_detailsPanel->setVisible( m_detailsPanelToggled && !m_detailsWidget->isEmpty() );
   this->updateSize();
 }
 

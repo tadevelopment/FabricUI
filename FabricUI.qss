@@ -1937,7 +1937,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #637987;
 }
 
-#ResultPreview
+#DetailsWidget
 {
   background-color: #272822;
   min-width: 300px;
@@ -1946,25 +1946,25 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding-right: 32px;
 }
 
-#ResultPreview #Name
+#DetailsWidget #Name
 {
   font-size: 22px;
 }
 
-#ResultPreview #Section #Header #Handle
+#DetailsWidget #Section #Header #Handle
 {
   min-width: 4px;
   background-color: #444444;
 }
 
-#ResultPreview #Section #Header #Name
+#DetailsWidget #Section #Header #Name
 {
   background-color: #444444;
   padding: 4px;
   font-size: 14px;
 }
 
-#ResultPreview #TagsView #TagView QPushButton
+#DetailsWidget #TagsView #TagView QPushButton
 {
   border-style: inset;
   padding: 0px 4px 0px 4px;
@@ -1972,24 +1972,24 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#ResultPreview #TagsView #TagView QPushButton:hover
+#DetailsWidget #TagsView #TagView QPushButton:hover
 {
   color: #272822;
   background-color: #F0F0F0;
 }
 
-#ResultPreview #Section #Header[hovered="true"] #Name
+#DetailsWidget #Section #Header[hovered="true"] #Name
 {
   background-color: #555555;
   color: #FFFFFF;
 }
 
-#ResultPreview #Section #Header[toggled="true"] #Handle
+#DetailsWidget #Section #Header[toggled="true"] #Handle
 {
   background-color: #50626E;
 }
 
-#ResultPreview #TagsView #TagView *
+#DetailsWidget #TagsView #TagView *
 {
   border-style: inset;
   background-color: #50626E;
@@ -1998,29 +1998,29 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 2px;
 }
 
-#ResultPreview #PortsView *
+#DetailsWidget #PortsView *
 {
   padding: 4px;
 }
 
-#ResultPreview #PortsView
+#DetailsWidget #PortsView
 {
   background-color: #272822;
   margin: 8px;
 }
 
-#ResultPreview #PortsView #PortView,
-#ResultPreview #PortsView #PortsHeader
+#DetailsWidget #PortsView #PortView,
+#DetailsWidget #PortsView #PortsHeader
 {
   background-color: #272822;
 }
 
-#ResultPreview #PortsView #PortsHeader *
+#DetailsWidget #PortsView #PortsHeader *
 {
   background-color: #444444;
 }
 
-#ResultPreview #PortsView #PortView *
+#DetailsWidget #PortsView #PortView *
 {
   background-color: #333333;
 }

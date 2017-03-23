@@ -7,7 +7,7 @@
 
 #include "QueryEdit.h"
 #include "ResultsView.h"
-#include "ResultPreview.h"
+#include "DetailsWidget.h"
 
 class QFrame;
 class QLabel;
@@ -77,7 +77,7 @@ namespace FabricUI
       QLabel* m_status;
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
-      TabSearch::ResultPreview* m_resultPreview;
+      TabSearch::DetailsWidget* m_detailsWidget;
       QPoint m_posAtShow;
       QScrollArea* m_detailsPanel;
       TabSearch::Toggle* m_toggleDetailsButton;

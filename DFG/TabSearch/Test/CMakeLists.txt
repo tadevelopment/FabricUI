@@ -39,8 +39,8 @@ add_executable(
   ../QueryEdit.h
   ../ResultsView.cpp
   ../ResultsView.h
-  ../ResultPreview.cpp
-  ../ResultPreview.h
+  ../DetailsWidget.cpp
+  ../DetailsWidget.h
   ../ItemView.cpp
   ../ItemView.h
   ../HeatBar.cpp

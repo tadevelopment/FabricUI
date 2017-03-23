@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#ifndef __UI_DFG_TabSearch_ResultPreview__
-#define __UI_DFG_TabSearch_ResultPreview__
+#ifndef __UI_DFG_TabSearch_DetailsWidget__
+#define __UI_DFG_TabSearch_DetailsWidget__
 
 #include "Data.h"
 
@@ -49,12 +49,12 @@ namespace FabricUI
         bool m_hovered, m_toggled;
       };
 
-      class ResultPreview : public QFrame
+      class DetailsWidget : public QFrame
       {
         Q_OBJECT
 
       public:
-        ResultPreview( FabricCore::DFGHost* );
+        DetailsWidget( FabricCore::DFGHost* );
         const Result& getPreset() const;
         inline bool isEmpty() const { return m_preset == ""; }
 
@@ -86,4 +86,4 @@ namespace FabricUI
   };
 };
 
-#endif // __UI_DFG_TabSearch_ResultPreview__
+#endif // __UI_DFG_TabSearch_DetailsWidget__
