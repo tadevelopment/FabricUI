@@ -86,6 +86,8 @@ void main( int argc, char** argv )
 
   // TabSearch
   DFGPresetSearchWidget* w = new DFGPresetSearchWidget( &host );
+  w->registerVariable( "TestVar", "AType" );
+  w->registerVariable( "Some.Path.And.A.Var", "Float32" );
   QFile styleSheet( "FabricUI.qss" );
   styleSheet.open( QIODevice::ReadOnly );
   w->setStyleSheet( QTextStream( &styleSheet ).readAll() );

@@ -113,12 +113,12 @@ void TagArrow::paintEvent( QPaintEvent *e )
   Parent::paintEvent( e );
 }
 
-size_t NameSep( const std::string& result )
+size_t NameSep( const Result& result )
 {
-  size_t dotI = result.rfind( '.' );
-  if( dotI == std::string::npos )
-    dotI = result.find( ':' ); // Non-preset results (backdrops, variables, etc...)
-  return dotI;
+  return result.isPreset() ?
+    result.rfind( '.' ) :
+    result.type().size()
+  ;
 }
 
 std::string PresetView::DisplayName( const Result& result )
