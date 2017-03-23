@@ -23,10 +23,10 @@ namespace FabricUI {
 namespace DFG {
 namespace TabSearch {
 
-static const char* NameCat = "name";
-static const char* PortTypeCat = "porttype";
-static const char* PathCompCat = "pathcomp";
-static const char* NameCompCat = "namecomp";
+const std::string NameCat = "name";
+const std::string PortTypeCat = "porttype";
+const std::string PathCompCat = "pathcomp";
+const std::string NameCompCat = "namecomp";
 
 struct Query : public QObject
 {
