@@ -265,7 +265,7 @@ void DFGPresetSearchWidget::registerStaticEntries()
 std::string GetVariableRegisteredName( const std::string& name, bool isSet )
 {
   return TabSearch::Result( ( isSet ? VariableSetType : VariableGetType ),
-    ( isSet ? "Set" : "Get" ) + VariableSeparator + name );
+    std::string( isSet ? "Set" : "Get" ) + VariableSeparator + name );
 }
 
 void DFGPresetSearchWidget::registerVariable( const std::string& name, const std::string& type )
