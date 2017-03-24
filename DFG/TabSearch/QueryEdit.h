@@ -84,7 +84,16 @@ namespace FabricUI
         FabricCore::DFGHost* m_host;
         bool m_tagDBWInitialized;
         void updateTagDBFromHost();
-        typedef std::map< Query::Tag::Cat, std::set<Query::Tag> > TagDB;
+
+        // Case insensitive comparer for tags
+        struct CaseInsCmp {
+          // TODO : make it a native Query::Tag operator ?
+          bool operator() ( const std::string& a, const std::string& b ) const
+            { return ( stricmp( a.data(), b.data() ) < 0 ); }
+        };
+
+        typedef std::set< Query::Tag, CaseInsCmp > TagSet;
+        typedef std::map< Query::Tag::Cat, TagSet, CaseInsCmp > TagDB;
         TagDB m_tagDB;
         void convertTextToTags();
 
