@@ -20,9 +20,6 @@ inline std::string ToStdString( const QString& s )
 inline QString ToQString( const std::string& s ) { return QString::fromUtf8( s.data(), int(s.size()) ); }
 
 template<typename S>
-inline S Italic( const S& s ) { return "<i>" + s + "</i>"; }
-
-template<typename S>
 inline S Bold( const S& s ) { return "<b>" + s + "</b>"; }
 
 namespace FabricUI

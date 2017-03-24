@@ -197,7 +197,7 @@ void Label::set( const std::string& text, const Query::Tag& tag )
   this->setProperty( "clickable", m_isTag );
   this->setStyleSheet( this->styleSheet() );
   m_tag = tag;
-  this->setText( Italic( ToQString( text ) ) );
+  this->setText( ToQString( text ) );
 }
 
 void Label::mouseReleaseEvent( QMouseEvent * e )
