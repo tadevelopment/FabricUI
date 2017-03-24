@@ -1701,8 +1701,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGPresetSearchWidget
 {
-  font-family: "Roboto";
-  font-size: 12px;
+  font: 12px "Roboto";
   background-color: #272822;
   padding: 0px;
 }
@@ -1725,7 +1724,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   background-color: #272822;
   border-radius: 4px;
-  font-size: 18px;
+  font: 18px "Roboto";
   padding: 2px;
 }
 
@@ -1733,8 +1732,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   background: #272822;
   border-radius: 4px;
-  font-family: "Roboto";
-  font-size: 12px;
+  font: 12px "Roboto";
   max-height: 300px;
 }
 
@@ -1852,7 +1850,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #TagWidget *
 {
   background-color: #444444;
-  font-size: 12px;
+  font: 12px "Roboto";
 }
 
 #TagWidget[highlighted="true"] *
@@ -1889,7 +1887,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGPresetSearchWidget #Status #TabSearchLabel
 {
-  font-size: 12px;
+  font: 12px "Roboto";
 }
 
 #TabSearchLabel[clickable="true"]
@@ -1905,7 +1903,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #PresetView QLabel
 {
-  font-size: 12px;
+  font: 12px "Roboto";
 }
 
 #PresetView[highlighted="true"] *
@@ -2024,7 +2022,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DetailsWidget #PortsView *
 {
-  font-size: 12px;
+  font: 12px "Roboto";
 }
 
 #DetailsWidget #PortsView
