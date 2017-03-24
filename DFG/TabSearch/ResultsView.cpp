@@ -627,23 +627,6 @@ void ResultsView::keyPressEvent( QKeyEvent * event )
   Parent::keyPressEvent( event );
 }
 
-QSize ResultsView::sizeHint() const
-{
-  QSize s = Parent::sizeHint();
-  int height = 0;
-  if( model()->rowCount() > 0 )
-  {
-    // Getting the last item
-    QModelIndex index = model()->index( model()->rowCount() - 1, 0 );
-    while( model()->rowCount( index ) > 0 )
-      index = model()->index( model()->rowCount( index ) - 1, 0, index );
-    height = visualRect( index ).bottom() + 1;
-    height += contentsMargins().bottom() + contentsMargins().top();
-  }
-  s.setHeight( std::max( height, 0 ) );
-  return s;
-}
-
 class ResultsView::TagContainer : public QWidget
 {
 public:

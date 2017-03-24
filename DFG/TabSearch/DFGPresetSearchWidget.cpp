@@ -38,6 +38,8 @@ public:
     lay->setMargin( 0 );
     lay->setSpacing( 0 );
     this->setLayout( lay );
+    this->setMinimumHeight( 18 );
+    this->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   }
   void clear()
   {
@@ -69,6 +71,9 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   this->setObjectName( "DFGPresetSearchWidget" );
   m_searchFrame->setObjectName( "SearchFrame" );
   m_searchFrame->setMinimumWidth( 500 );
+  m_searchFrame->setMinimumHeight( 300 );
+  m_searchFrame->setMaximumHeight( 300 );
+  m_searchFrame->resize( 500, 300 );
   m_detailsPanel->setObjectName( "DetailsPanel" );
 
   this->setWindowFlags( Qt::Popup );
