@@ -51,6 +51,20 @@ void BaseRTValScriptableCommand::declareArg(
   setArgType(key, type);
 }
  
+QString BaseRTValScriptableCommand::getArgType(
+  const QString &key)
+{
+  if(m_argSpecs.count(key) == 0) 
+    throw(
+      std::string(
+        "BaseRTValScriptableCommand::getArgType, error no arg named " + 
+        std::string(key.toUtf8().constData())
+      )
+    );
+
+  return m_argSpecs[key].type;
+}
+
 void BaseRTValScriptableCommand::setArgType(
   const QString &key, 
   const QString &type) 
@@ -59,7 +73,7 @@ void BaseRTValScriptableCommand::setArgType(
     throw(
       std::string(
         "BaseRTValScriptableCommand::setArgType, error no arg named " + 
-        std::string(type.toUtf8().constData())
+        std::string(key.toUtf8().constData())
       )
     );
 

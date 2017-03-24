@@ -41,6 +41,11 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
       FabricCore::RTVal defaultValue
       );
 
+    /// Gets the type of the argument.
+    QString getArgType(
+      const QString &key
+      );
+
     /// Sets the type of an argument.
     /// Used the the arg type is known
     /// when the command is executed.

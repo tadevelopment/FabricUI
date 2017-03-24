@@ -19,8 +19,9 @@ class BaseScriptableCommand : public BaseCommand
     is identified by a key. 
 
     Because the arguments have to be set from any app/DCCs, the args values
-    are passed as QString only. However, the QString class provides helpers
-    to cast QString to basic types, see http://doc.qt.io/qt-4.8/qstring.html.
+    are passed as QString only. The QString class provides helpers to cast  
+    QString to basic types, see http://doc.qt.io/qt-4.8/qstring.html.
+
     Another possibility is to use JSON format, see KLScriptableCommand.
   */
 

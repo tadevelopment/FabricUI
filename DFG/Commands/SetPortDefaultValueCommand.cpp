@@ -70,10 +70,6 @@ bool SetPortDefaultValueCommand::doIt()
       "portName"
       ).getStringCString();
 
-    std::cout << "SetPortDefaultValueCommand execPath " << execPath.toUtf8().constData() << std::endl;
-    std::cout << "SetPortDefaultValueCommand nodeName " << nodeName.toUtf8().constData() << std::endl;
-    std::cout << "SetPortDefaultValueCommand portName " << portName.toUtf8().constData() << std::endl;
-
     QString portPath = nodeName + "." + portName;
 
     DFGExec exec = m_dfgController->getBinding().getExec().getSubExec(
@@ -83,7 +79,7 @@ bool SetPortDefaultValueCommand::doIt()
     DFGExec nodeExec = exec.getSubExec(
       nodeName.toUtf8().constData()
       );
-    
+ 
     // Sets the type of the arg here because 
     // we did not know the RTVal type before.
     setArgType(
@@ -91,7 +87,7 @@ bool SetPortDefaultValueCommand::doIt()
       nodeExec.getPortTypeSpec(
         portName.toUtf8().constData()
       ));
-
+ 
     RTVal portVal = getArgAsRTVal(
       "portValue"
       );
@@ -108,7 +104,7 @@ bool SetPortDefaultValueCommand::doIt()
 
     if(isUndoable)
 		  ++m_coreCmdCount;
-
+ 
     return true;
   }
 
