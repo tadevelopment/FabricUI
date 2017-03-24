@@ -401,11 +401,13 @@ void QueryEdit::convertTextToTags()
       Query::Tag tag = text;
       if( m_tagDB.find( tag.cat() ) != m_tagDB.end() )
       {
-        const std::set<Query::Tag>& catTags = m_tagDB[tag.cat()];
+        const TagSet& catTags = m_tagDB[tag.cat()];
         if( catTags.find( tag ) != catTags.end() && !m_query.hasTag( tag ) )
         {
           isTag = true;
-          m_controller->addTag( tag );
+          // the text entered might have the wrong case
+          Query::Tag dbName = *( catTags.find( tag ) );
+          m_controller->addTag( dbName );
         }
       }
     }
@@ -502,7 +504,7 @@ void QueryEdit::updateTagDBFromHost()
     Query::Tag tag = std::string( it->key() );
     Query::Tag::Cat cat = tag.cat();
     if( m_tagDB.find( cat ) == m_tagDB.end() )
-      m_tagDB.insert( TagDB::value_type( cat, std::set<Query::Tag>() ) );
+      m_tagDB.insert( TagDB::value_type( cat, TagSet() ) );
     m_tagDB[cat].insert( tag );
   }
   delete db;
