@@ -318,11 +318,11 @@ QStringList SHGLScene::getSceneNamesFromBinding(DFGBinding &binding) {
     {
       for(FTL::JSONObject::const_iterator it = varsObject->begin(); it != varsObject->end(); it++)
       {
-        QString sceneName(it->first.c_str());
-        FTL::JSONObject const *value = it->second->cast<FTL::JSONObject>();
+        QString sceneName(it->key().c_str());
+        FTL::JSONObject const *value = it->value()->cast<FTL::JSONObject>();
         for(FTL::JSONObject::const_iterator jt = value->begin(); jt != value->end(); jt++) 
         {
-          if(QString(jt->second->getStringValue().c_str()) == "SHGLScene")
+          if(jt->value()->getStringValue() == FTL_STR("SHGLScene"))
           {
             if(!sceneNameList.contains(sceneName))
               sceneNameList.append(sceneName);
