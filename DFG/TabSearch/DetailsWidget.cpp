@@ -364,20 +364,24 @@ DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
   , m_description( new QLabel() )
 {
   this->setObjectName( "DetailsWidget" );
+
   m_name->setObjectName( "Name" );
   connect( m_name, SIGNAL( requestTag( const Query::Tag& ) ),
     this, SIGNAL( tagRequested( const Query::Tag& ) ) );
   m_description->setObjectName( "Description" );
+  m_description->setAlignment( Qt::AlignTop );
+  m_description->setWordWrap( true );
+  m_description->setMinimumWidth( 300 );
 
   clear();
   QVBoxLayout* lay = new QVBoxLayout();
+  lay->setSizeConstraint( QLayout::SetMinAndMaxSize );
   lay->setMargin( 0 );
   lay->setAlignment( Qt::AlignTop );
   this->setLayout( lay );
 
   lay->addWidget( m_name );
   lay->addWidget( m_description );
-  m_description->setWordWrap( true );
 
   Section* tags = new Section( "Tags", this );
   m_tagContainer = new TagContainer( this );
@@ -419,7 +423,6 @@ void DetailsWidget::setPreset( const Result& preset )
 
   // Description
   m_description->setText( ToQString( details.description ) );
-  m_description->setVisible( !details.description.empty() );
 
   // Ports
   m_portsTable->setPorts( details.ports, details.tags, this );

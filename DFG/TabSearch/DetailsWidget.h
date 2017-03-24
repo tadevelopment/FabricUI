@@ -43,7 +43,7 @@ namespace FabricUI
         bool m_hovered, m_toggled;
       };
 
-      class DetailsWidget : public QFrame
+      class DetailsWidget : public QWidget
       {
         Q_OBJECT
 
