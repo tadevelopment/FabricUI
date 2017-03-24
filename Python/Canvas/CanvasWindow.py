@@ -619,8 +619,12 @@ class CanvasWindow(QtGui.QMainWindow):
     def _initMenus(self):
         """Initializes all menus for the application."""
 
-        # Main Menu Bar
-        self.dfgWidget.populateMenuBar(self.menuBar())
+        # add the "File", "Edit" and "View" menus.
+        self.dfgWidget.populateMenuBar(self.menuBar(), True, True, True, False, False)
+
+        # add the "window" menu.
+        # note: this menu is specific to the .exe and .py
+        #       standalones which is why it is done here.
         windowMenu = self.menuBar().addMenu('&Window')
 
         # Toggle DFG Dock Widget Action
@@ -672,6 +676,9 @@ class CanvasWindow(QtGui.QMainWindow):
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
         Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
         windowMenu.addAction( toggleAction )
+
+        # add the "Help" menu.
+        self.dfgWidget.populateMenuBar(self.menuBar(), False, False, False, False, True)
  
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested by manipulators

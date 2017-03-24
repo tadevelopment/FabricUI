@@ -41,7 +41,7 @@ void DFGCombinedWidget::initMenu() {
     this, SLOT(onAdditionalMenuActionsRequested(QString, QMenu *, bool))
     );
 
-  m_dfgWidget->populateMenuBar(m_menuBar, false, true);
+  m_dfgWidget->populateMenuBar(m_menuBar, false /* addFileMenu */, true /* addEditMenu */, true /* ddViewMenu */, true /* addDCCMenu */, true /* addHelpMenu */);
 }
 
 void DFGCombinedWidget::initTreeView() {

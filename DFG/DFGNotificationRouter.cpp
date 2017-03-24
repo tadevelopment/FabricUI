@@ -700,8 +700,8 @@ void DFGNotificationRouter::onGraphSet()
       for ( FTL::JSONObject::const_iterator it = connectionsObject->begin();
         it != connectionsObject->end(); ++it )
       {
-        FTL::CStrRef srcPath = it->first;
-        FTL::JSONArray const *dstsArray = it->second->cast<FTL::JSONArray>();
+        FTL::CStrRef srcPath = it->key();
+        FTL::JSONArray const *dstsArray = it->value()->cast<FTL::JSONArray>();
         for ( FTL::JSONArray::const_iterator it = dstsArray->begin();
           it != dstsArray->end(); ++it )
         {
@@ -721,8 +721,8 @@ void DFGNotificationRouter::onGraphSet()
       for ( FTL::JSONObject::const_iterator it = metadatasObject->begin();
         it != metadatasObject->end(); ++it )
       {
-        FTL::CStrRef key = it->first;
-        FTL::CStrRef value = it->second->getStringValue();
+        FTL::CStrRef key = it->key();
+        FTL::CStrRef value = it->value()->getStringValue();
         onExecMetadataChanged( key, value );
       }
     }
@@ -874,8 +874,8 @@ void DFGNotificationRouter::onNodeInserted(
     for ( FTL::JSONObject::const_iterator it = metadataJSONObject->begin();
       it != metadataJSONObject->end(); ++it )
     {
-      FTL::CStrRef key = it->first;
-      FTL::CStrRef value = it->second->cast<FTL::JSONString>()->getValue();
+      FTL::CStrRef key = it->key();
+      FTL::CStrRef value = it->value()->cast<FTL::JSONString>()->getValue();
       onNodeMetadataChanged(nodeName, key, value);
     }
   }
@@ -913,8 +913,8 @@ void DFGNotificationRouter::onExecBlockInserted(
     for ( FTL::JSONObject::const_iterator it = metadata->begin();
       it != metadata->end(); ++it )
     {
-      FTL::CStrRef key = it->first;
-      FTL::CStrRef value = it->second->cast<FTL::JSONString>()->getValue();
+      FTL::CStrRef key = it->key();
+      FTL::CStrRef value = it->value()->cast<FTL::JSONString>()->getValue();
       onExecBlockMetadataChanged( blockName, key, value );
     }
   }

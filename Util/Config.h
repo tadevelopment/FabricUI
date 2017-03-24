@@ -13,6 +13,8 @@
 #include <QFont>
 #include <QString>
 
+#include <map>
+
 namespace FabricUI
 {
   namespace Util

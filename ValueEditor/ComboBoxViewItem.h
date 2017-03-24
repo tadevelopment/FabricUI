@@ -6,6 +6,7 @@
 #define FABRICUI_VALUEEDITOR_COMBOBOXVIEWITEM_H
 
 #include "BaseViewItem.h"
+#include <FabricCore.h>
 
 
 namespace FabricUI {
@@ -26,7 +27,14 @@ public:
     );
   static const int Priority;
 
-  ComboBoxViewItem(QString const &name, QVariant const &v, ItemMetadata* metadata, bool isString );
+  ComboBoxViewItem(
+    QString const &name,
+    QVariant const &v,
+    ItemMetadata* metadata,
+    bool isString,
+    bool isRotationOrder = false,
+    FabricCore::Context contextForRotationOrder = FabricCore::Context()
+    );
   ~ComboBoxViewItem();
 
   virtual void metadataChanged( );
@@ -37,11 +45,16 @@ public:
 
   void deleteMe() { delete this; }
 
+  // void setIsRotationOrder(bool value);
+  // bool isRotationOrder() const;
+
 private:
 
   QWidget *m_widget;
   ComboBox* m_comboBox;
   bool m_isString;
+  bool m_isRotationOrder;
+  FabricCore::Context m_contextForRotationOrder;
 
 private slots:
   void entrySelected(int index);
