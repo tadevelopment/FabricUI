@@ -87,9 +87,17 @@ namespace FabricUI
 
         // Case insensitive comparer for tags
         struct CaseInsCmp {
+          inline int cmp( const std::string& a, const std::string& b ) const
+          {
+            for( size_t i = 0; i < a.size() && i < b.size(); i++ )
+              if( tolower( a[i] ) != tolower( b[i]) )
+                return tolower( a[i] ) < tolower( b[i]) ? 1 : -1;
+            return a.size() == b.size() ? 0 :
+              a.size() < b.size() ? 1 : -1;
+          }
           // TODO : make it a native Query::Tag operator ?
-          bool operator() ( const std::string& a, const std::string& b ) const
-            { return ( stricmp( a.data(), b.data() ) < 0 ); }
+          inline bool operator() ( const std::string& a, const std::string& b ) const
+            { return ( cmp( a, b ) < 0 ); }
         };
 
         typedef std::set< Query::Tag, CaseInsCmp > TagSet;
