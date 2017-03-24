@@ -1885,12 +1885,10 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DFGPresetSearchWidget #Status
 {
   background-color: #555555;
-  padding-left: 4px;
 }
 
 #DFGPresetSearchWidget #Status #TabSearchLabel
 {
-  padding: 0px;
   font-size: 12px;
 }
 
