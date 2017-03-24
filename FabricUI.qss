@@ -1966,6 +1966,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DetailsWidget #Name
 {
   font-size: 22px;
+  font-weight: bold;
 }
 
 #DetailsWidget #Description
@@ -1984,6 +1985,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #444444;
   padding: 4px;
   font-size: 14px;
+  font-weight: bold;
 }
 
 #DetailsWidget #TagContainer #TagWidget QPushButton

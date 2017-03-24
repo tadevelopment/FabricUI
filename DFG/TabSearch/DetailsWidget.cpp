@@ -129,11 +129,12 @@ class DetailsWidget::Section : public QWidget
     Section *m_parent;
     Header( Section* parent, const std::string& text ) : m_parent( parent )
     {
+      this->setObjectName( "Header" );
       QHBoxLayout* lay = new QHBoxLayout();
       QFrame* handle = new QFrame();
       handle->setObjectName( "Handle" );
       lay->addWidget( handle );
-      QLabel* label = new QLabel( Bold( ToQString( text ) ) );
+      QLabel* label = new QLabel( ToQString( text ) );
       label->setTextInteractionFlags( Qt::NoTextInteraction );
       label->setObjectName( "Name" );
       label->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum ) );
@@ -163,7 +164,6 @@ public:
     , m_parent( parent )
   {
     this->setObjectName( "Section" );
-    m_header->setObjectName( "Header" );
 
     this->setLayout( new QVBoxLayout() );
     this->layout()->setMargin( 0 );
@@ -410,11 +410,11 @@ void DetailsWidget::setPreset( const Result& preset )
     Query::Tag tag( NameCat, name );
     if( details.tags.find( tag ) != details.tags.end() )
     {
-      m_name->set( Bold( name ), tag );
+      m_name->set( name, tag );
       details.tags.erase( tag );
     }
     else
-      m_name->set( Bold( name ) );
+      m_name->set( name );
   }
 
   // Description
