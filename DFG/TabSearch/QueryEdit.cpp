@@ -265,6 +265,9 @@ protected:
     if( e->key() == Qt::Key_Up || e->key() == Qt::Key_Down )
       return e->ignore(); // Ignore Up/Down arrow keys (used to navigate through words on OSX)
 
+    if( e->key() == Qt::Key_Space )
+    { m_parent->convertTextToTags(); }
+
     // Undo - Redo
     if( e->matches( QKeySequence::Undo ) )
     {
@@ -375,7 +378,6 @@ QueryEdit::~QueryEdit()
 void QueryEdit::onTextChanged( const QString& text )
 {
   m_controller->setText( ToStdString( text ) );
-  convertTextToTags();
 }
 
 void QueryEdit::convertTextToTags()
@@ -395,8 +397,7 @@ void QueryEdit::convertTextToTags()
     const std::string text = previousText.substr( start, end - start );
 
     bool isTag = false;
-    if( text.find( ':' ) != std::string::npos
-      && end != previousText.size() ) // Ignore tags while they are being written
+    if( text.find( ':' ) != std::string::npos )
     {
       Query::Tag tag = text;
       if( m_tagDB.find( tag.cat() ) != m_tagDB.end() )
