@@ -1644,6 +1644,19 @@ void DFGWidget::createPreset( const char *nodeName )
 
 void DFGWidget::updateOrigPreset( const char *nodeName )
 {
+  QMessageBox msgBox(
+    QMessageBox::Warning,
+    "Fabric Engine",
+    "",
+    QMessageBox::NoButton,
+    this);
+
+  msgBox.setText( "Do you want to update the original preset?" );
+  msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No);
+  msgBox.setDefaultButton( QMessageBox::Yes );
+  if (msgBox.exec() == QMessageBox::No)
+      return;
+
   FabricCore::DFGExec &exec = m_uiController->getExec();
   if ( exec.getNodeType( nodeName ) != FabricCore::DFGNodeType_Inst )
     return;
