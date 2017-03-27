@@ -9,6 +9,9 @@
 #include <QMenuBar>
 #include <QFileInfo>
 #include <QProxyStyle>
+#include <QVBoxLayout>
+#include <QMessageBox>
+#include <QDesktopServices>
 #include <Commands/CommandStack.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
@@ -22,10 +25,10 @@
 #include <FabricUI/DFG/Dialogs/DFGBaseDialog.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/Actions/BaseAction.h>
-#include <QVBoxLayout>
 
 #include <FTL/OwnedPtr.h>
 #include <FTL/JSONEnc.h>
+#include <FTL/FS.h>
 
 namespace FabricUI {
 namespace DFG {
@@ -95,7 +98,8 @@ namespace DFG {
       void onExecPathOrTitleChanged();
       void refreshExtDeps( FTL::CStrRef extDeps );
 
-      void populateMenuBar(QMenuBar * menuBar, bool addFileMenu = true, bool addDCCMenu = false);
+    //void populateMenuBar(QMenuBar *menuBar, bool addFileMenu = true, bool addDCCMenu = false);
+      void populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEditMenu, bool addViewMenu, bool addDCCMenu, bool addHelpMenu);
 
       bool maybeEditNode( FabricUI::GraphView::Node *node );
       bool maybeEditInstBlock( FabricUI::GraphView::InstBlock *instBlock );
@@ -2415,6 +2419,97 @@ namespace DFG {
         m_dfgWidget->onReloadStyles();
       }
 
+    };
+
+    class AboutFabricAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      AboutFabricAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "&About Fabric" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        QMessageBox msgBox(QMessageBox::NoIcon, "About Fabric",
+          "",
+          QMessageBox::NoButton,
+          m_dfgWidget);
+
+        msgBox.addButton("Ok", QMessageBox::AcceptRole);
+
+        char *fabricDir = getenv( "FABRIC_DIR" );
+        if ( fabricDir )
+        {
+          std::string logoPath = FTL::PathJoin( fabricDir, "Resources" );
+          FTL::PathAppendEntry( logoPath, "fe_logo.png" );
+          QPixmap pixmap(logoPath.c_str());
+          msgBox.setIconPixmap(pixmap.scaled(pixmap.size() / 2));
+        }
+
+        QString text = "";
+        text += "<br/>";
+        text += "Fabric Engine version " + QString(FabricCore::GetVersionStr());
+        text += "<br/>";
+        text += "<br/>Copyright (c) 2010-2017 Fabric Software Inc.";
+        text += "<br/>All rights reserved.";
+        text += "<br/>";
+        text += "<br/><a href='http://fabricengine.com/eula/'><font color=#2ab7e5>End User License Agreement (EULA)</font></a>";
+        text += "<br/>";
+        msgBox.setTextFormat(Qt::RichText);
+        msgBox.setText(text);
+
+        msgBox.exec();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class OpenUrlAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      OpenUrlAction(
+        QObject *parent,
+        QString menuItemName,
+        QString url,
+        bool enable = true )
+        : QAction( parent )
+        , m_url( url )
+      {
+        setText( menuItemName );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        QDesktopServices::openUrl(m_url);
+      }
+
+    private:
+
+      QUrl m_url;
     };
 
 } // namespace DFG

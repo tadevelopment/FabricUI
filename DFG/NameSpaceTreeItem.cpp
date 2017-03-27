@@ -44,10 +44,10 @@ unsigned int NameSpaceTreeItem::numChildren()
     for ( FTL::JSONObject::const_iterator it = membersObject->begin();
       it != membersObject->end(); ++it )
     {
-      FTL::CStrRef name = it->first;
+      FTL::CStrRef name = it->key();
 
       FTL::JSONObject const *memberObject =
-        it->second->cast<FTL::JSONObject>();
+        it->value()->cast<FTL::JSONObject>();
 
       FTL::CStrRef objectType =
         memberObject->getString( FTL_STR("objectType") );
