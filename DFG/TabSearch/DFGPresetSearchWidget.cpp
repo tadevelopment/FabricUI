@@ -140,6 +140,8 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   m_searchFrame->setLayout( vlayout );
   
   QHBoxLayout* hlayout = new QHBoxLayout();
+  hlayout->setAlignment( Qt::AlignLeft );
+  hlayout->setSizeConstraint( QLayout::SetFixedSize );
   hlayout->setMargin( 0 ); hlayout->setSpacing( 0 );
   hlayout->addWidget( m_searchFrame );
   this->setLayout( hlayout );
@@ -376,6 +378,7 @@ void DFGPresetSearchWidget::onResultValidated( const TabSearch::Result& result )
 
 void DFGPresetSearchWidget::updateSize()
 {
+  /*
   m_resultsView->setMinimumHeight( std::min(
     m_resultsView->maximumHeight(),
     m_resultsView->sizeHint().height()
@@ -384,6 +387,7 @@ void DFGPresetSearchWidget::updateSize()
   m_searchFrame->adjustSize();
   adjustSize();
   adjustSize();
+  */
 }
 
 void DFGPresetSearchWidget::validateSelection()
