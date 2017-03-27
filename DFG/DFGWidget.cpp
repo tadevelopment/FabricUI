@@ -2413,6 +2413,17 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
 
     // emit the suffix menu entry requests
     emit additionalMenuActionsRequested("Edit", editMenu, false);
+
+    editMenu->addSeparator();
+    
+    QAction * toggleLecyTabSearchAction = new QAction( "Use legacy TabSearch widget", this );
+    toggleLecyTabSearchAction->setCheckable( true );
+    QObject::connect(
+      toggleLecyTabSearchAction, SIGNAL( triggered( bool ) ),
+      this, SLOT( onToggleLegacyTabSearch( bool ) )
+    );
+    toggleLecyTabSearchAction->setChecked( this->isUsingLegacyTabSearch() );
+    editMenu->addAction( toggleLecyTabSearchAction );
   }
 
   // View menu.

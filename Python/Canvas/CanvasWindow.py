@@ -273,7 +273,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.recentFilesAction = []
         self.quitAction = None
         self.manipAction = None
-        self.toggleLegacyTabSearchAction = None
         self.setGridVisibleAction = None
         self.resetCameraAction = None
         self.clearLogAction = None
@@ -1261,8 +1260,6 @@ class CanvasWindow(QtGui.QMainWindow):
             self.quitAction.blockSignals(enabled)
         if self.manipAction:
             self.manipAction.blockSignals(enabled)
-        if self.toggleLegacyTabSearchAction:
-            self.toggleLegacyTabSearchAction.blockSignals(enabled)
         if self.setGridVisibleAction:
             self.setGridVisibleAction.blockSignals(enabled)
         if self.resetCameraAction:
@@ -1335,14 +1332,6 @@ class CanvasWindow(QtGui.QMainWindow):
                     menu.addSeparator()
                     self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
                     menu.addAction(self.manipAction)
-
-                    self.toggleLegacyTabSearchAction = QtGui.QAction(
-                      "Use legacy TabSearch widget", self.dfgWidget)
-                    self.toggleLegacyTabSearchAction.setCheckable(True)
-                    self.toggleLegacyTabSearchAction.triggered.connect(
-                      lambda: self.dfgWidget.onToggleLegacyTabSearch( self.toggleLegacyTabSearchAction.isChecked() ) )
-                    self.toggleLegacyTabSearchAction.setChecked( self.dfgWidget.isUsingLegacyTabSearch() )
-                    menu.addAction(self.toggleLegacyTabSearchAction)
 
         elif name == 'View':
             if prefix:
