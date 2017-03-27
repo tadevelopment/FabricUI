@@ -14,6 +14,7 @@ from FabricEngine.Canvas.LogWidget import LogWidget
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.PythonHighlighter import PythonHighlighter
 from FabricEngine.FabricUI import DFG, Actions
+from FabricEngine.Canvas.Commands.CommandRegistry import *
 
 class LogStd:
 
@@ -536,6 +537,11 @@ class ScriptEditor(QtGui.QWidget):
             code = self.cmd.textCursor().selectedText().replace(u"\u2029", "\n")
         else:
             code = self.cmd.toPlainText()
+
+        # Synchronize the KL-C++ registry so KL commands 
+        # can be created with 'named-arg' syntax. 
+        CommandRegistry.GetCommandRegistry().synchronizeKL();
+
         self.exec_(code)
 
     def eval(self, code):
