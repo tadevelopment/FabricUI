@@ -77,6 +77,13 @@ PresetTreeWidget::PresetTreeWidget(
   {
     TreeView::TreeItem *item = m_treeModel->item("Fabric");
     if (item)   m_treeModel->removeItem(item);
+    
+    // remove "Kraken" and "KrakenForCanvas" entries in the tree.
+    TreeView::TreeItem *krakenItem = m_treeModel->item("Kraken");
+    if (krakenItem)   m_treeModel->removeItem(krakenItem);
+
+    TreeView::TreeItem *krakenCanvasItem = m_treeModel->item("KrakenForCanvas");
+    if (krakenCanvasItem)   m_treeModel->removeItem(krakenCanvasItem);
   }
 
   // remove "Variables" from the tree.
