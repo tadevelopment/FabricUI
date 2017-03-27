@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <string>
 #include "KLCommand.h"
 #include "CommandManager.h"
 #include "KLScriptableCommand.h"
@@ -136,20 +135,16 @@ void KLScriptableCommand::setArg(
       CommandManager::GetCommandManager()->getFabricClient(), 
       key.toUtf8().constData());
 
-    RTVal klRTVal = m_klCmd.callMethod(
-      "RTVal", 
-      "getArg", 
-      1, 
-      &keyVal);
+    // Get the type of the arg stored by the KL RTVal.
+    QString rtValType = m_klCmd.callMethod(
+      "String",
+      "getArgType",
+      1,
+      &keyVal
+      ).getStringCString();
 
-    // Get the type of the arg stored by the KL RTVal
-    QString rtValType = klRTVal.callMethod(
-      "String", 
-      "type", 
-      0, 
-      0).getStringCString();
-
-    klRTVal = Util::RTValUtil::jsonToKLRTVal(
+    // Get the argument from its JSON description.
+    RTVal klRTVal = Util::RTValUtil::jsonToKLRTVal(
       CommandManager::GetCommandManager()->getFabricClient(),
       json,
       rtValType);
