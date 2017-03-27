@@ -193,9 +193,11 @@ inline QString EncodeStringChars(
       ++it)
   {
     if ( *it == '\"' ) result += "\\\"";
-    else if ( *it == '\r' ) result += "\\r";
-    else if ( *it == '\n' ) result += "\\n";
-    else if ( *it == '\t' ) result += "\\t";
+    // Don't pollute with newlines, ...
+    // Not ncesseray to parse the JSON.
+    else if ( *it == '\r' ) result += "";//\\r";
+    else if ( *it == '\n' ) result += "";//"\\n";
+    else if ( *it == '\t' ) result += "";//"\\t";
     else if ( *it == '\\' ) result += "\\\\";
     else result += *it;
   }
