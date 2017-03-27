@@ -18,6 +18,7 @@ from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
+from FabricEngine.Canvas.Tools.ToolEditorDialog import *
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -196,6 +197,19 @@ class ShowHotkeyEditorDialogAction(BaseCanvasWindowAction):
     def onTriggered(self):
         self.canvasWindow.onShowHotkeyEditorDialog()
 
+class ShowToolEditorDialogAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, canvasWindow):
+        super(ShowToolEditorDialogAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.ShowToolEditorDialogAction", 
+            "Tool editor", 
+            QtGui.QKeySequence(QtCore.Qt.Key_T))
+ 
+    def onTriggered(self):
+        self.canvasWindow.onShowToolEditorDialog()
+
 class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
 
@@ -296,6 +310,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.clearLogAction = None
         self.blockCompilationsAction = None
         self.showHotkeyEditorDialogAction = None
+        self.showToolEditorDialogAction = None
 
         self.windowTitle = 'Fabric Engine - Canvas'
         self.lastFileName = ''
@@ -420,6 +435,7 @@ class CanvasWindow(QtGui.QMainWindow):
         """
         CreateCommandManager(self.client)
         self.hotkeyEditor = HotkeyEditorDialog(self)
+        self.toolEditor = ToolEditorDialog(self)
 
         self.qUndoStack = QtGui.QUndoStack()
         self.qUndoView = QtGui.QUndoView(self.qUndoStack)
@@ -1035,6 +1051,10 @@ class CanvasWindow(QtGui.QMainWindow):
         if self.hotkeyEditor.exec_() != QtGui.QDialog.Accepted:
             return;
 
+    def onShowToolEditorDialog(self):
+        if self.toolEditor.exec_() != QtGui.QDialog.Accepted:
+            return;
+
     def execNewGraph(self, skip_save=False):
         """Callback Executed when a key or menu command has requested a new graph.
 
@@ -1308,6 +1328,8 @@ class CanvasWindow(QtGui.QMainWindow):
             self.blockCompilationsAction.blockSignals(enabled)
         if self.showHotkeyEditorDialogAction:
             self.showHotkeyEditorDialogAction.blockSignals(enabled)
+        if self.showToolEditorDialogAction:
+            self.showToolEditorDialogAction.blockSignals(enabled)
 
     def openRecentFile(self):
         action = self.sender()
@@ -1375,7 +1397,9 @@ class CanvasWindow(QtGui.QMainWindow):
                     menu.addSeparator()
                     self.showHotkeyEditorDialogAction = ShowHotkeyEditorDialogAction(menu, self)
                     menu.addAction(self.showHotkeyEditorDialogAction)
-
+                    self.showToolEditorDialogAction = ShowToolEditorDialogAction(menu, self)
+                    menu.addAction(self.showToolEditorDialogAction)
+                    
         elif name == 'View':
             if prefix:
 
