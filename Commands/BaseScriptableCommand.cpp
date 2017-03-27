@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <stdio.h>
 #include "BaseScriptableCommand.h"
 
 using namespace FabricUI;
