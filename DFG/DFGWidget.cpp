@@ -1440,7 +1440,7 @@ static void DFGPresentPresetSaveFailedDialog( QWidget *parent, QString pathname 
     QMessageBox::NoButton,
     parent
     );
-  msg.addButton( "Ok", QMessageBox::AcceptRole );
+  msg.addButton( "OK", QMessageBox::AcceptRole );
   msg.exec();
 }
 
@@ -1453,7 +1453,7 @@ static void DFGPresetFabricCoreExceptionDialog( QWidget *parent, FabricCore::Exc
     QMessageBox::NoButton,
     parent
     );
-  msg.addButton("Ok", QMessageBox::AcceptRole);
+  msg.addButton("OK", QMessageBox::AcceptRole);
   msg.exec();
 }
 
@@ -1493,7 +1493,7 @@ void DFGWidget::createPreset( const char *nodeName )
           "You need to provide a valid name and pick a valid location!",
           QMessageBox::NoButton,
           this);
-        msg.addButton("Ok", QMessageBox::AcceptRole);
+        msg.addButton("OK", QMessageBox::AcceptRole);
         msg.exec();
         continue;
       }
@@ -1505,7 +1505,7 @@ void DFGWidget::createPreset( const char *nodeName )
           "You can't save a preset into a factory path (below Fabric).",
           QMessageBox::NoButton,
           this);
-        msg.addButton("Ok", QMessageBox::AcceptRole);
+        msg.addButton("OK", QMessageBox::AcceptRole);
         msg.exec();
         continue;
       }
@@ -1527,7 +1527,7 @@ void DFGWidget::createPreset( const char *nodeName )
           + "' does not have an associated path and so the preset cannot be saved.",
           QMessageBox::NoButton,
           this);
-        msg.addButton( "Ok", QMessageBox::AcceptRole );
+        msg.addButton( "OK", QMessageBox::AcceptRole );
         msg.exec();
         continue;
       }
@@ -1550,7 +1550,7 @@ void DFGWidget::createPreset( const char *nodeName )
           + "' is a preset directory and cannot be overwritten.",
           QMessageBox::NoButton,
           this);
-        msg.addButton( "Ok", QMessageBox::AcceptRole );
+        msg.addButton( "OK", QMessageBox::AcceptRole );
         msg.exec();
         continue;
       }
@@ -1574,15 +1574,15 @@ void DFGWidget::createPreset( const char *nodeName )
           QMessageBox msg(
             QMessageBox::Warning,
             "Fabric Warning",
-              "This will overwrite the file '"
+              "Are you sure you want to overwrite the file '"
             + pathname
-            + "'!",
+            + "'?",
             QMessageBox::NoButton,
             this
             );
           msg.addButton( "Cancel", QMessageBox::RejectRole );
           QAbstractButton *okButton =
-            msg.addButton( "Ok", QMessageBox::AcceptRole );
+            msg.addButton( "Yes", QMessageBox::AcceptRole );
           msg.exec();
           QAbstractButton *button = msg.clickedButton();
           if ( button != okButton )
@@ -1651,7 +1651,7 @@ void DFGWidget::updateOrigPreset( const char *nodeName )
     QMessageBox::NoButton,
     this);
 
-  msgBox.setText( "Do you want to update the original preset?" );
+  msgBox.setText( "Are you sure you want to update the original preset?" );
   msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No);
   msgBox.setDefaultButton( QMessageBox::Yes );
   if (msgBox.exec() == QMessageBox::No)
@@ -2086,7 +2086,7 @@ bool DFGWidget::checkForUnsaved()
       this);
 
     msg.addButton("Save Now", QMessageBox::AcceptRole);
-    msg.addButton("Ok", QMessageBox::NoRole);
+    msg.addButton("OK", QMessageBox::NoRole);
     msg.addButton("Cancel", QMessageBox::RejectRole);
 
     msg.exec();
