@@ -2343,6 +2343,8 @@ void DFGWidget::onEditSelectedNodeProperties()
 
 QSettings * DFGWidget::getSettings()
 {
+  if( g_settings == NULL )
+    g_settings = new QSettings();
   return g_settings;
 }
 
