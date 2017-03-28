@@ -181,10 +181,10 @@ BaseViewItem* ComboBoxViewItem::CreateItem(
       );
   }
 
-  bool isString = RTVariant::canConvert( value, QVariant::String );
   if ( metaData != NULL &&
        metaData->has("uiCombo") )
   {
+    bool isString = RTVariant::canConvert( value, QVariant::String );
     if ( RTVariant::canConvert( value, QVariant::Int ) ||
          RTVariant::canConvert( value, QVariant::UInt ) || 
          isString )
