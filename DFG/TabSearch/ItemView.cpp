@@ -62,7 +62,7 @@ void TagWidget::onActivated()
 
 void TagWidget::setScore( double score )
 {
-  this->setToolTip( "Score = " + QString::number( score ) );
+  //this->setToolTip( "Score = " + QString::number( score ) );
 }
 
 TagArrow::TagArrow()
@@ -178,8 +178,6 @@ void PresetView::setHighlighted( bool highlighted )
 void PresetView::setScore( double score, double minScore, double maxScore )
 {
   m_heatBar->set( score, minScore, maxScore );
-  m_heatBar->setToolTip( QString::number( score ) );
-  m_heatBar->setStyleSheet( "color: #000;" );
 }
 
 void Label::set( const std::string& text )
