@@ -1739,8 +1739,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ResultsView::item
 {
-  border-radius: 4px;
-  margin: 2px 2px 2px 0px;
+  margin: 0;
+  padding: 4px 2px;
 }
 
 #ResultsView::item:hover
@@ -1748,24 +1748,19 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #596D7A;
 }
 
-#ResultsView::item:selected
-{
-  color: #FFF;
-  background-color: #666666;
-}
-
 #ResultsView::item::has-children
 {
-  border-radius: 4px;
   background-color: #444444;
 }
 
-#ResultsView::item::has-children:selected
+#ResultsView::item::has-children:selected,
+#ResultsView::item::!has-children:selected
 {
   background-color: #666666;
 }
 
-#ResultsView::item::has-children:hover
+#ResultsView::item::has-children:hover,
+#ResultsView::item::!has-children:hover
 {
   background-color: #596D7A;
 }
@@ -1776,41 +1771,29 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   image: none;
 }
 
-#ResultsView::branch:selected
-{
-  background-color: #272822;
-}
-
-#ResultsView::branch:has-children
-{
-  background-color: #444444;
-  margin: 2px 0px 2px 2px;
-}
-
-#ResultsView::branch:has-children:selected
-{
-  background-color: #666666;
-}
-
-#ResultsView::branch:has-children:hover
-{
-  background-color: #596D7A;
-}
-
-#ResultsView #TagContainer
-{
-  border-radius: 4px;
-  background-color: #444444;
-}
-
-#ResultsView #TagContainer[highlighted="true"]
-{
-  background-color: #666666;
-}
-
 #ResultsView #TagContainer QPushButton
 {
-  border-style: inset;
+  background-color: #272822;
+  border: 0;
+  border-radius: 2px;
+  color: #FFFFFF;
+  margin: 1px 4px 1px 4px;
+  padding: 2px;
+  min-height: 14px;
+  text-align: left;
+}
+
+#ResultsView #TagContainer QPushButton:hover
+{
+  background-color: #475661;
+  color: #FFFFFF;
+}
+
+#ResultsView #TagContainer QPushButton:pressed
+{
+  background-color: #7590A1;
+  margin-top: 3px;
+  margin-left: 6px;
 }
 
 #QueryEdit #TagsEdit
@@ -1819,18 +1802,18 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-radius: 4px;
 }
 
+#QueryEdit #TagsEdit #TagWidget[highlighted="true"] *
+{
+  color: #272822;
+  background-color: #F0F0F0;
+}
+
 #QueryEdit #TagsEdit #TagWidget QPushButton
 {
   border-style: inset;
   padding: 0px 4px 0px 4px;
   margin: 0px;
   background-color: #50626E;
-}
-
-#QueryEdit #TagsEdit #TagWidget[highlighted="true"] *
-{
-  color: #272822;
-  background-color: #F0F0F0;
 }
 
 #QueryEdit #TagsEdit #TagWidget QPushButton:hover
@@ -1909,12 +1892,12 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #PresetView QLabel
 {
   font: 12px "Roboto";
+  margin-left: 2px;
 }
 
 #PresetView[highlighted="true"] *
 {
-  color: #FFF;
-  background-color: #666666;
+  color: #FFFFFF;
 }
 
 #PresetView[highlighted="true"] #HeatBar
