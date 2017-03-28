@@ -539,6 +539,7 @@ ResultsView::ResultsView()
 {
   this->setObjectName( "ResultsView" );
   setItemsExpandable( false );
+  setRootIsDecorated( false );
   setModel( m_model );
   this->setHeaderHidden( true );
   connect(
