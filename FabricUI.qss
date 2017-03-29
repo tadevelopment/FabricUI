@@ -1777,7 +1777,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ResultsView #TagContainer #TagWidget QPushButton
 {
-  border: 0;
   border-radius: 2px;
   color: #FFFFFF;
   margin: 1px 4px 1px 4px;
@@ -1872,6 +1871,20 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #FFF;
 }
 
+#TagWidget QPushButton
+{
+  border: none;
+  border-left: 4px solid #000;
+}
+/* Categories are defined in Core/DFG/DFGTag.cpp */
+#TagWidget[tagCat="ext"] QPushButton { border-left-color: #0FF; }
+#TagWidget[tagCat="cat"] QPushButton { border-left-color: #FF0; }
+#TagWidget[tagCat="name"] QPushButton { border-left-color: #FF0; }
+#TagWidget[tagCat="namecomp"] QPushButton { border-left-color: #F0F; }
+#TagWidget[tagCat="aka"] QPushButton { border-left-color: #F00; }
+#TagWidget[tagCat="porttype"] QPushButton { border-left-color: #0FF; }
+#TagWidget[tagCat="pathcomp"] QPushButton { border-left-color: #F0F; }
+
 #HeatBar
 {
   qproperty-coldColor: #27A8DF;
@@ -1916,7 +1929,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #PresetView #TagWidget QPushButton
 {
-  border-style: none;
   border-radius: 2px;
   padding: 2px;
 }

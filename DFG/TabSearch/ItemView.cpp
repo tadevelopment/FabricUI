@@ -48,6 +48,7 @@ TagWidget::TagWidget( const Query::Tag& tag )
   m_button->setFocusPolicy( Qt::NoFocus );
 
   this->setToolTip( ToQString( FormattedCat( tag ) ) );
+  this->setProperty( "tagCat", ToQString( tag.cat() ) );
 
   connect(
     m_button, SIGNAL( released() ),
