@@ -1735,17 +1735,21 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-radius: 4px;
   font: 12px "Roboto";
   max-height: 300px;
+  padding: 2px;
 }
 
 #ResultsView::item
 {
-  margin: 0;
-  padding: 4px 2px;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  height: 22px;
+  margin: 1px 0px 1px 0px;
+  padding: 0px;
 }
 
 #ResultsView::item:hover
 {
-  background-color: #596D7A;
+  background-color: #555555;
 }
 
 #ResultsView::item::has-children
@@ -1762,7 +1766,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #ResultsView::item::has-children:hover,
 #ResultsView::item::!has-children:hover
 {
-  background-color: #596D7A;
+  background-color: #666666;
 }
 
 #ResultsView::branch
@@ -1771,9 +1775,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   image: none;
 }
 
-#ResultsView #TagContainer QPushButton
+#ResultsView #TagContainer #TagWidget QPushButton
 {
-  background-color: #272822;
   border: 0;
   border-radius: 2px;
   color: #FFFFFF;
@@ -1783,10 +1786,26 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   text-align: left;
 }
 
-#ResultsView #TagContainer QPushButton:hover
+#ResultsView #TagContainer #TagWidget[highlighted="true"] QPushButton,
+#ResultsView #TagContainer #TagWidget[highlighted="false"] QPushButton:!hover
 {
-  background-color: #475661;
+  background-color: rgba(0,0,0,100);
+}
+
+#ResultsView #TagContainer #TagWidget QPushButton:hover:hover,
+#ResultsView #TagContainer #TagWidget QPushButton:hover:!pressed
+{
+  background-color: #999999;
   color: #FFFFFF;
+}
+
+#ResultsView #TagContainer #TagWidget QPushButton:hover:pressed
+{
+  border-style: inset;
+  margin-top: 3px;
+  margin-left: 6px;
+  padding-top: 2px;
+  padding-left: 2px;
 }
 
 #ResultsView #TagContainer QPushButton:pressed
@@ -1895,9 +1914,32 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   margin-left: 2px;
 }
 
-#PresetView[highlighted="true"] *
+#PresetView #TagWidget QPushButton
 {
+  border-style: none;
+  border-radius: 2px;
+  padding: 2px;
+}
+
+#PresetView #TagWidget QPushButton:!hover
+{
+  background-color: rgba(75,75,75,255);
+}
+
+#PresetView #TagWidget QPushButton:hover
+{
+  background-color: #999999;
   color: #FFFFFF;
+}
+
+#PresetView #TagWidget QPushButton:pressed
+{
+  background-color: #B3B3B3;
+  border-style: inset;
+  margin-top: 1px;
+  margin-left: 1px;
+  padding-top: 4px;
+  padding-left: 4px;
 }
 
 #PresetView[highlighted="true"] #HeatBar
