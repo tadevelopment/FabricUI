@@ -1821,7 +1821,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-radius: 4px;
 }
 
-#QueryEdit #TagsEdit #TagWidget[highlighted="true"] *
+#QueryEdit #TagsEdit #TagWidget[highlighted="true"] QPushButton
 {
   color: #272822;
   background-color: #F0F0F0;
@@ -1854,13 +1854,13 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   margin: 2px 2px 2px 0px;
 }
 
-#TagWidget *
+#TagWidget QPushButton
 {
   background-color: #444444;
   font: 12px "Roboto";
 }
 
-#TagWidget[highlighted="true"] *
+#TagWidget[highlighted="true"] QPushButton
 {
   color: #FFF;
   background-color: #666666;
@@ -2044,7 +2044,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#DetailsWidget #TagContainer #TagWidget *
+#DetailsWidget #TagContainer #TagWidget QPushButton
 {
   border-style: inset;
   background-color: #50626E;
