@@ -142,17 +142,9 @@ PresetView::PresetView( const Result& presetName, const std::vector<Query::Tag>&
   this->setLayout( lay );
   QLabel* nameLabel = new QLabel( "<b>" + ToQString( baseName ) + "</b>" );
   this->layout()->addWidget( nameLabel );
+  this->layout()->setAlignment( nameLabel, Qt::AlignLeft );
   nameLabel->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum ) );
-  //QLabel* pathLabel = new QLabel( "<i>" + ToQString( path ) + "</i>" );
-  //this->layout()->addWidget( pathLabel );
-  if( tags.size() > 0 )
-  {
-    QWidget* emptySpace = new QWidget();
-    int separtorW = 32;
-    emptySpace->setMinimumWidth( separtorW );
-    emptySpace->setMaximumWidth( separtorW );
-    lay->addWidget( emptySpace );
-  }
+
   for( size_t i = 0; i < tags.size(); i++ )
   {
     TagWidget* tagWidget = new TagWidget( tags[i] );
@@ -164,7 +156,6 @@ PresetView::PresetView( const Result& presetName, const std::vector<Query::Tag>&
     this->layout()->addWidget( tagWidget );
   }
   this->layout()->addWidget( m_heatBar );
-  this->layout()->setAlignment( m_heatBar, Qt::AlignRight | Qt::AlignVCenter );
   setHighlighted( false );
 }
 
