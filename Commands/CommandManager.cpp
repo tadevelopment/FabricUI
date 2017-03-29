@@ -426,7 +426,7 @@ void CommandManager::synchronizeKL()
         klCmdCount--;
 
         // Create and execute the C++ command.
-        createCommand(cmdName, args);
+        CommandManager::createCommand(cmdName, args);
       }
 
       // KL commands have actually been 

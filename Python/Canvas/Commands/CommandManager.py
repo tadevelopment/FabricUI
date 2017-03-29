@@ -48,8 +48,10 @@ class CommandManager(Commands.CommandManager_Python):
         """
 
         super(CommandManager, self).__init__(client)
-        # There is no "new" is python, so we need to own the commands created in Python.
-        # They are refered by the CommandManager undo-redo stacks. 
+        # There is no "new" is python, so we need to own the commands 
+        # created in Python. They are refered by the CommandManager 
+        #   undo-redo stacks. 
+        self.client = client
         self.__flatCommandsStack = []
 
     def createCommand(self, cmdName, args = {}, doCmd = True):
@@ -58,36 +60,114 @@ class CommandManager(Commands.CommandManager_Python):
         """
 
         try:
-            # Be sure that all the args are stings.
-            self.__checkArgsType(args);
-
             cmd = GetCommandRegistry().createCommand(cmdName)
                   
             if len(args) > 0:
-              self.checkCommandArgs(cmd, args)
+                # Be sure that all the args are strings.
+                args = self.__castArgsType(cmd, args)
+                self.checkCommandArgs(cmd, args)
 
             if doCmd :
-              self.doCommand(cmd)
+                self.doCommand(cmd)
 
             return cmd
 
         except Exception as e:    
             raise Exception(e)
 
-    def __checkArgsType(self, args):
+    def __castArgsType(self, cmd, inputArgs):
         """ \internal
-            Verify that the args keys and values are strings. 
+            Casts the inputs arguments of the command into String args. 
         """
 
-        for key, value in args.iteritems():
+        if not issubclass(type(cmd), Commands.BaseScriptableCommand):
+            raise Exception("CommandManager.__castArgsType, error: Command '" +
+                            str(cmd.getName()) + "' is not scriptable" )
 
-            if not issubclass(type(key), str) and not issubclass(type(key), unicode):
-                raise Exception("CommandManager.__checkArgsType, error: arg[" + str(key) + "] " +
-                                "must be a string, not a " + str(type(key)) )
+        # Check if it's a BaseRTValScriptableCommand.
+        isRTValScriptCommand = issubclass(type(cmd), Commands.BaseRTValScriptableCommand)
 
-            if not issubclass(type(value), str) and not issubclass(type(value), unicode):
-                raise Exception("CommandManager.__checkArgsType, error: arg[" + str(key) + "] " +
-                                "value must be a string, not a " + str(type(value)) )
+        strArgs = {}
+ 
+        for key, value in inputArgs.iteritems():
+
+            # Check that the key is valid.
+            if key not in cmd.getArgs():
+                raise Exception(
+                    "CommandManager.__castArgsType, error: arg '" + 
+                    str(key) + "' doesn't exist" )
+
+            # Get the type of the input arg.
+            inputArgType = type(value)
+
+            # Check if it's a string.
+            isInputArgTypeStr = issubclass(inputArgType, str) or issubclass(inputArgType, unicode)
+
+            # BaseScriptableCommand.
+            # All the arguments shall be strings.
+            if not isRTValScriptCommand and not isInputArgTypeStr:
+                raise Exception(
+                    "CommandManager.__castArgsType, error: arg '" + 
+                    str(key) + "' must be a string, not a " + 
+                    str(type(value)) 
+                    )
+
+            # BaseRTValScriptableCommand.
+            # The args are RTVal represented in JSON. The args 
+            # types are knowed so the input args can be casted. 
+            elif isRTValScriptCommand:
+                   
+                try:
+                    # The input arg is a RTVal -> cast it to JSON.
+                    # Construct a dumb RTVal to compare the python
+                    # object type --> find a better way.
+                    if inputArgType == type(self.client.RT.types.UInt32()):
+                        value = value.getJSONStr()
+
+                    # The arg is Python. If the input arg is a string and the
+                    # cmd arg is not, assume the input arg is already the JSON. 
+                    # Otherwise we create the JSON from the pyton value.
+                    else:
+                        
+                        # Get the KL RTVal type.
+                        rtValType = cmd.getArgType(key)
+
+                        isArgStr = rtValType == "String"
+
+                        if not (isInputArgTypeStr and not isArgStr):
+
+                            castArg = True
+
+                            # Check if the string has quotes.
+                            # If so, we assume that it's already a JSON
+                            if isInputArgTypeStr and isArgStr and len(value) > 0:
+                                first =  value[0] == "'" or value[0] == "\"" 
+                                last =  value[len(value)-1] == "'" or value[len(value)-1] == "\"" 
+                                castArg = not first and not last
+
+                            if castArg:
+                                # Get the python RTVal object.
+                                pyRTValType = getattr(self.client.RT.types, rtValType)
+
+                                # Check if the python type 
+                                # can be casted as a RTVal.
+                                if pyRTValType().getSimpleType() is None:
+                                    raise Exception("Can't cast python '" + str(inputArgType) + 
+                                        "' to rtVal '" + str(rtValType) + "'")
+                                
+                                # Construct the python RTVal and sets 
+                                # its value from the python value.
+                                rtVal = pyRTValType(value)   
+
+                                # Get the JSON        
+                                value = rtVal.getJSONStr()   
+                               
+                except Exception as e:    
+                    raise Exception("CommandManager.__castArgsType, error: " + str(e) )
+        
+            strArgs[key] = value
+
+        return strArgs
 
     def doCommand(self, cmd):
         """ Implementation of CommandManager.

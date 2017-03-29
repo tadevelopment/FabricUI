@@ -55,36 +55,10 @@ bool KLScriptableCommand::redoIt()
 QString KLScriptableCommand::getArg(
   const QString &key) 
 {
-  if(key.isEmpty()) 
-    throw(
-      std::string(
-        "KLScriptableCommand::getArg, error getting arg: key not specified")
+  return Util::RTValUtil::klRTValToJSON(
+    getArgAsRTVal(
+      key)
     );
-
-  try 
-  {
-    RTVal keyVal = RTVal::ConstructString(
-      CommandManager::GetCommandManager()->getFabricClient(), 
-      key.toUtf8().constData());
-
-    RTVal klRTVal = m_klCmd.callMethod(
-      "RTVal", 
-      "getArg", 
-      1, 
-      &keyVal);
-
-    return Util::RTValUtil::klRTValToJSON(
-      klRTVal);
-  }
-
-  catch(Exception &e)
-  {
-    printf(
-      "KLScriptableCommand::getArg: exception: %s\n", 
-      e.getDesc_cstr());
-  }
-
-  return "";
 }
 
 QMap<QString, QString> KLScriptableCommand::getArgs() 
@@ -181,6 +155,76 @@ void KLScriptableCommand::setArg(
         strError.toUtf8().constData()
       )
     );
+}
+
+QString KLScriptableCommand::getArgType(
+  const QString &key)
+{
+  QString res;
+
+  try 
+  {
+    RTVal keyVal = RTVal::ConstructString(
+      CommandManager::GetCommandManager()->getFabricClient(), 
+      key.toUtf8().constData());
+
+    res = m_klCmd.callMethod(
+      "String", 
+      "getArgType", 
+      1, 
+      &keyVal
+      ).getStringCString();
+  }
+
+  catch(Exception &e)
+  {
+    printf(
+      "KLScriptableCommand::getArgType: exception: %s\n", 
+      e.getDesc_cstr());
+  }
+  
+  return res;
+}
+
+void KLScriptableCommand::setArgType(
+  const QString &key, 
+  const QString &type) 
+{
+  // Does nothing
+}
+
+RTVal KLScriptableCommand::getArgAsRTVal( 
+  const QString &key)
+{
+  RTVal klRTVal;
+
+  if(key.isEmpty()) 
+    throw(
+      std::string(
+        "KLScriptableCommand::getArgAsRTVal, error getting arg: key not specified")
+    );
+
+  try 
+  {
+    RTVal keyVal = RTVal::ConstructString(
+      CommandManager::GetCommandManager()->getFabricClient(), 
+      key.toUtf8().constData());
+
+    klRTVal = m_klCmd.callMethod(
+      "RTVal", 
+      "getArg", 
+      1, 
+      &keyVal);
+  }
+
+  catch(Exception &e)
+  {
+    printf(
+      "KLScriptableCommand::getArgAsRTVal: exception: %s\n", 
+      e.getDesc_cstr());
+  }
+
+  return klRTVal;
 }
 
 void KLScriptableCommand::validateSetArgs()
