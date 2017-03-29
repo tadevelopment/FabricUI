@@ -92,7 +92,7 @@ class CommandManager(Commands.CommandManager_Python):
         for key, value in inputArgs.iteritems():
 
             # Check that the key is valid.
-            if key not in cmd.getArgs():
+            if not cmd.hasArg(key):
                 raise Exception(
                     "CommandManager.__castArgsType, error: arg '" + 
                     str(key) + "' doesn't exist" )
