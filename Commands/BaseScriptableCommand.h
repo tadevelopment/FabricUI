@@ -37,6 +37,7 @@ class BaseScriptableCommand : public BaseCommand
       const QString &defaultValue = QString()
       );
 
+    /// Checks if a command has an arg.
     virtual bool hasArg(
       const QString &key 
       );
