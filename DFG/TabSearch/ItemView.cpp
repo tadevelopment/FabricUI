@@ -18,13 +18,18 @@ void FabricUI::DFG::TabSearch::SetWidgetHighlight( QWidget* w, const bool highli
   w->setStyleSheet( w->styleSheet() );
 }
 
-std::string TagWidget::DisplayName( const Query::Tag& result )
+inline std::string FormattedCat( const Query::Tag& tag )
 {
-  Query::Tag tag = result;
   // Capitalize the name of the category
   std::string category = tag.cat();
   if( category.size() > 0 )
     category[0] = toupper( category[0] );
+  return category;
+}
+
+std::string TagWidget::DisplayName( const Query::Tag& tag )
+{
+  const std::string category = FormattedCat( tag );
   return category + ':' + std::string(tag.name());
 }
 
@@ -37,10 +42,12 @@ TagWidget::TagWidget( const Query::Tag& tag )
 
   QHBoxLayout* lay = new QHBoxLayout();
   lay->setMargin( 0 );
-  m_button = new QPushButton( ToQString( DisplayName( tag ) ) );
+  m_button = new QPushButton( ToQString( tag.name() ) );
   lay->addWidget( m_button );
   this->setLayout( lay );
   m_button->setFocusPolicy( Qt::NoFocus );
+
+  this->setToolTip( ToQString( FormattedCat( tag ) ) );
 
   connect(
     m_button, SIGNAL( released() ),
