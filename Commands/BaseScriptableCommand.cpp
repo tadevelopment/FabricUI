@@ -32,9 +32,7 @@ void BaseScriptableCommand::declareArg(
   spec.optional = optional;
   spec.defaultValue = defaultValue;
   m_argSpecs.insert(key, spec);
-
-  if(!defaultValue.isEmpty()) 
-    setArg(key, defaultValue);
+  setArg(key, !defaultValue.isEmpty() ? defaultValue : "");
 }
 
 QString BaseScriptableCommand::getArg(
@@ -47,7 +45,7 @@ QMap<QString, QString> BaseScriptableCommand::getArgs()
 {
   return m_args; 
 }
- 
+
 void BaseScriptableCommand::setArg(
   const QString &key, 
   const QString &value) 
@@ -95,32 +93,6 @@ void BaseScriptableCommand::validateSetArgs()
       );
     }
   }
-}
-
-QString BaseScriptableCommand::getDescription() 
-{
-  QString text = "Commands.";
-  text += getName();
- 
-  QMap<QString, QString> args = getArgs();
-  if( args.size() > 0 )
-  {
-    int count = 0;
-    QMapIterator<QString, QString> ite(args);
-
-    text += "(";
-    while (ite.hasNext()) 
-    {
-      ite.next();
-      text += ite.key();
-      text += ":";
-      text += ite.value();
-      text += (count < args.size() - 1) ? ", " : ")";
-      count ++;
-    }
-  }
-
-  return text;
 }
 
 QString BaseScriptableCommand::getArgsDescription() 

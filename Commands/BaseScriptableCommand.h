@@ -58,11 +58,6 @@ class BaseScriptableCommand : public BaseCommand
     /// Throws an error if not.
     virtual void validateSetArgs();
 
-    /// Gets a description of the command
-    /// logged in the script-editor:
-    /// cmdName(arg1:val1, arg2:val2, ...)
-    virtual QString getDescription();
-
     /// Gets a decription of the arguments.
     /// Used for debugging.
     virtual QString getArgsDescription();

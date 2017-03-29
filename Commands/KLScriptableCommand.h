@@ -131,6 +131,22 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
       const QString &jsonRTVal
       );
 
+    /// Implementation of BaseRTValScriptableCommand.
+    virtual QString getArgType(
+      const QString &key
+      );
+
+    /// Implementation of BaseRTValScriptableCommand.
+    virtual void setArgType(
+      const QString &key, 
+      const QString &type
+      );
+    
+    /// Implementation of BaseRTValScriptableCommand.
+    virtual FabricCore::RTVal getArgAsRTVal( 
+      const QString &key 
+      );
+
     /// Implementation of BaseScriptableCommand.
     virtual void validateSetArgs();
 

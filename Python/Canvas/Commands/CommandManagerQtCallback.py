@@ -68,23 +68,112 @@ class CommandManagerQtCallback(QtCore.QObject):
         GetCommandManager().commandPushedCallback.connect(self.__onCommandPushedCallback)
         GetCommandManager().cleared.connect(self.__onCleared)
 
+    def __encodeJSONChars(self, string):
+        result = ""
+
+        for ch in string:
+            if ch == "\"":
+                result += "'"
+
+            elif ch == "\\":
+                result += "\\\\"
+
+            elif ch == "\r" or ch == "\n"  or ch == "\t":
+                result += ""
+                
+            else:
+                result += ch
+
+        result = result.replace(" ", "")
+
+        return result
+    
+    def __encodeJSON(self, string):
+        return "\"" + self.__encodeJSONChars(string) + "\""
+
+    def __encodeJSONs(self, strings):
+        result = "\""
+        for i in range(0, len(strings)):
+            if i > 0:
+                result += "|"
+            result += self.__encodeJSONChars(strings[i])
+        result += "\""
+        return result
+
+    def __getCommandDescription(self, cmd):
+        """ \internal
+            Gets a description of the command,
+            logged in the scrip-editor. 
+        """
+
+        desc = cmd.getName()
+
+        # Check if it's a BaseRTValScriptableCommand.
+        if issubclass(type(cmd), Commands.BaseScriptableCommand):
+            try:
+                args = cmd.getArgs()
+     
+                # Check if it's a BaseRTValScriptableCommand.
+                isRTValScriptCommand = issubclass(type(cmd), Commands.BaseRTValScriptableCommand)
+
+                desc += "("
+                    
+                count = 0
+                for key, value in args.iteritems():
+                    desc += str(key) 
+                    desc += "="
+
+                    # BaseScriptableCommand.
+                    # All arguments are strings.
+                    if not isRTValScriptCommand:
+                        desc += str(value)
+
+                    # BaseRTValScriptableCommand.
+                    else:
+                        # Get the KL RTVal type.
+                        rtValType = cmd.getArgType(key)
+
+                        # Get the python RTVal object.
+                        pyRTValType = getattr(GetCommandManager().client.RT.types, rtValType)
+
+                        if pyRTValType == "String":
+                            desc += str(pyRTValType(value).getSimpleType())
+
+                        # Check if the RTVal type can be casted in Python.
+                        elif pyRTValType().getSimpleType() is not None:
+                            value = cmd.getArgAsRTVal(key)
+                            desc += str(pyRTValType(value).getSimpleType())
+                            
+                        # JSON
+                        else:
+                            desc += self.__encodeJSON(str(value))
+
+                    if count < len(args) - 1:
+                        desc += ", "
+                        count += 1   
+
+                desc += ")"
+
+                             
+            except Exception as e:    
+                raise Exception("CommandManagerQtCallback.__getCommandDescription, error: " + str(e) )
+        
+        return desc
+
     def __onCommandPushedCallback(self, cmd):
         """ \internal
             Called when a command has been pushed to the manager. 
         """
         
-        # Create the command wrapper
+        # Create the command wrapper.
         oldEchoStackIndexChanges = self.scriptEditor._echoStackIndexChanges
         self.scriptEditor._echoStackIndexChanges = False
-
         self.qUndoStack.push( self.CommandQtWrapper( cmd.getName() ) )
         self.scriptEditor._echoStackIndexChanges = oldEchoStackIndexChanges
 
-        # Log the command
-        if issubclass(type(cmd), Commands.BaseScriptableCommand):
-            self.scriptEditor.logText( cmd.getDescription() )
-        else:
-            self.scriptEditor.logText( cmd.getName() )
+        # Log the commands.
+        self.scriptEditor.logText( 
+            "Commands." + self.__getCommandDescription(cmd) )
 
     def __onCleared(self):
         """ \internal

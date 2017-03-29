@@ -15,7 +15,7 @@ from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.PythonHighlighter import PythonHighlighter
 from FabricEngine.FabricUI import DFG, Actions
 from FabricEngine.Canvas.Commands.CommandRegistry import *
-
+ 
 class LogStd:
 
     def __init__(self, log):
@@ -346,6 +346,7 @@ class ScriptEditor(QtGui.QWidget):
             "newScript": self.newScript,
             "loadScript": self.loadScript,
             "bindingUtils": DFG.DFGBindingUtils(),
+            "Commands" : sys.modules["Commands"]
             }
          
         self.dfgLogWidget = dfgLogWidget

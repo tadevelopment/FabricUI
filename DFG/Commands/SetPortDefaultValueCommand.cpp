@@ -26,7 +26,7 @@ SetPortDefaultValueCommand::SetPortDefaultValueCommand()
     "String",
     false);
 
- 	declareArg(
+ 	BaseScriptableCommand::declareArg(
     "portValue",
     false);
 

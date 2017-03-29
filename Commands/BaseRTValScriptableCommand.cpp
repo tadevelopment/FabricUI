@@ -57,7 +57,7 @@ QString BaseRTValScriptableCommand::getArgType(
   if(m_argSpecs.count(key) == 0) 
     throw(
       std::string(
-        "BaseRTValScriptableCommand::getArgType, error no arg named " + 
+        "BaseRTValScriptableCommand::getArgType, error no arg named " +
         std::string(key.toUtf8().constData())
       )
     );
@@ -117,32 +117,4 @@ QMap<QString, RTVal> BaseRTValScriptableCommand::getArgsAsRTVal()
   }
 
   return res;
-}
-
-QString BaseRTValScriptableCommand::getDescription() 
-{
-  QString text = "Commands.";
-  text += getName();
-
-  QMap<QString, QString> args = getArgs();
-  if( args.size() > 0 )
-  {
-    int count = 0;
-    QMapIterator<QString, QString> ite(args);
-
-    text += "(";
-    while (ite.hasNext()) 
-    {
-      ite.next();
-      text += ite.key();
-      text += "=";
-      text += Util::RTValUtil::EncodeString( ite.value() ); 
-      text += (count < args.size() - 1) 
-        ? ", " 
-        : ")";
-      count ++;
-    }
-  }
-
-  return text;
 }
