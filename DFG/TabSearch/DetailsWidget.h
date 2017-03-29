@@ -8,6 +8,8 @@
 
 #include <QFrame>
 
+class QTextEdit;
+
 namespace FabricUI
 {
   namespace DFG
@@ -67,7 +69,8 @@ namespace FabricUI
         FabricCore::DFGHost* m_host;
         Result m_preset;
         Label* m_name;
-        QLabel* m_description;
+        typedef QTextEdit Description;
+        Description* m_description;
         class PortsView;
         PortsView* m_portsTable;
         class TagContainer;

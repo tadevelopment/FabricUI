@@ -2001,6 +2001,9 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   font-family: "Roboto";
   font-size: 12px;
+  border: none;
+  background-color: #272822;
+  padding-right: 32px;
 }
 
 #DetailsWidget #Section #Header #Handle
