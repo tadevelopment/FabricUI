@@ -426,7 +426,7 @@ void DetailsWidget::setPreset( const Result& preset )
 
   // Description
   m_description->setText( ToQString( details.description ) );
-  m_description->setFixedHeight( m_description->document()->size().height() );
+  m_description->setFixedHeight( int( m_description->document()->size().height() ) );
 
   // Ports
   m_portsTable->setPorts( details.ports, details.tags, this );
