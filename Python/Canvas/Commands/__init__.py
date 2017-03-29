@@ -1,5 +1,7 @@
 __all__ = [
   	'CommandManager',
     'CommandRegistry',
-    'CommandManagerQtCallback'
+    'CommandManagerQtCallback',
+    'CommandListTableWidget'
+    'CommandListDialog'
 ]

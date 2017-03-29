@@ -69,8 +69,8 @@ class HotkeyEditorDialog(QtGui.QDialog):
         self.setStyleSheet(LoadFabricStyleSheet('FabricUI.qss'))
 
         # !!!! To change
-        self.setMinimumHeight(800)
-        self.setMinimumWidth(1200)
+        self.setMinimumHeight(400)
+        self.setMinimumWidth(600)
         self.adjustSize()
  
     def __onFilterItems(self):
