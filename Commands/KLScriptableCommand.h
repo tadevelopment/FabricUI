@@ -118,6 +118,11 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
     virtual QString getHelp();
 
     /// Implementation of BaseScriptableCommand.
+    virtual bool hasArg(
+      const QString &key 
+      );
+    
+    /// Implementation of BaseScriptableCommand.
     virtual QMap<QString, QString> getArgs();
 
     /// Implementation of BaseScriptableCommand.

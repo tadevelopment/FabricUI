@@ -61,6 +61,35 @@ QString KLScriptableCommand::getArg(
     );
 }
 
+bool KLScriptableCommand::hasArg(
+  const QString &key) 
+{
+  bool res = false;
+
+  try 
+  {
+    RTVal keyVal = RTVal::ConstructString(
+      CommandManager::GetCommandManager()->getFabricClient(), 
+      key.toUtf8().constData());
+
+    res = m_klCmd.callMethod(
+      "Boolean",
+      "hasArg",
+      1,
+      &keyVal
+      ).getBoolean();
+  }
+
+  catch(Exception &e)
+  {
+    printf(
+      "KLScriptableCommand::hasArg: exception: %s\n", 
+      e.getDesc_cstr());
+  }
+
+  return res;
+}
+
 QMap<QString, QString> KLScriptableCommand::getArgs() 
 {
   QMap<QString, QString> res;

@@ -32,7 +32,15 @@ void BaseScriptableCommand::declareArg(
   spec.optional = optional;
   spec.defaultValue = defaultValue;
   m_argSpecs.insert(key, spec);
-  setArg(key, !defaultValue.isEmpty() ? defaultValue : "");
+
+  if(!defaultValue.isEmpty())
+    setArg(key, defaultValue);
+}
+
+bool BaseScriptableCommand::hasArg(
+  const QString &key)
+{
+  return (m_argSpecs.count(key) > 0);
 }
 
 QString BaseScriptableCommand::getArg(
