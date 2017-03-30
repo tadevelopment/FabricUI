@@ -258,26 +258,27 @@ public:
     m_ports.clear();
   }
 
-  void setPorts(
+  // Returns the tags it used
+  std::set<Query::Tag> setPorts(
     const std::vector<Port>& ports,
-    std::set<Query::Tag>& tags,
+    const std::set<Query::Tag>& tags,
     DetailsWidget* root
   )
   {
     clear();
-    std::set<Query::Tag> unusedTags = tags;
+    std::set<Query::Tag> usedTags;
     for( size_t i = 0; i < ports.size(); i++ )
     {
       Query::Tag tag( PortTypeCat, ports[i].type );
       if( tags.find( tag ) != tags.end() )
-        unusedTags.erase( tag );
+        usedTags.insert( tag );
       else
         tag = Query::Tag();
       PortView* view = new PortView( ports[i], tag, root );
       m_ports.push_back( view );
       this->layout()->addWidget( view );
     }
-    tags = unusedTags;
+    return usedTags;
   }
 };
 
@@ -467,16 +468,23 @@ void DetailsWidget::setPreset( const Result& preset )
       ports[it->execPortType].push_back( *it );
 
     // Adding each category to its section
+    std::set<Query::Tag> unusedTags = details.tags;
     for( PortMap::const_iterator it = ports.begin(); it != ports.end(); it++ )
     {
       if( m_portsTables.find( it->first ) != m_portsTables.end() )
-        m_portsTables[it->first]->setPorts( it->second, details.tags, this );
+      {
+        std::set<Query::Tag> usedTags =
+          m_portsTables[it->first]->setPorts( it->second, details.tags, this );
+        for( std::set<Query::Tag>::const_iterator it = usedTags.begin(); it != usedTags.end(); it++ )
+          unusedTags.erase( *it );
+      }
       else
       {
         std::cerr << "DetailsWidget::setPreset : Undefined ExecPortType " << it->first << std::endl;
         assert( false );
       }
     }
+    details.tags = unusedTags;
   }
 
   // Filtering the Tags
