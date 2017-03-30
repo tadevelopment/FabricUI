@@ -16,9 +16,13 @@
 using namespace FabricUI::DFG::TabSearch;
 using namespace FabricCore;
 
+static const size_t ExecPortTypeNb = 3;
+static const std::string ExecPortTypes[ExecPortTypeNb] = { "In", "IO", "Out" };
+
 struct Port
 {
   std::string type, name;
+  std::string execPortType;
 };
 
 struct PresetDetails
@@ -63,6 +67,7 @@ PresetDetails GetDetails(
           if( portJs->has( "typeSpec" ) )
             port.type = portJs->getString( "typeSpec" );
           port.name = portJs->getString( "name" );
+          port.execPortType = portJs->getString( "execPortType" );
           details.ports.push_back( port );
         }
       }
@@ -391,10 +396,15 @@ DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
   tags->setWidget( m_tagContainer );
   this->addSection( tags );
 
-  Section* ports = new Section( "Ports", this );
-  m_portsTable = new PortsView();
-  ports->setWidget( m_portsTable );
-  this->addSection( ports );
+  for( size_t i = 0; i < ExecPortTypeNb; i++ )
+  {
+    const std::string& execPortType = ExecPortTypes[i];
+    Section* ports = new Section( execPortType + " Ports", this );
+    PortsView* portsTable = new PortsView();
+    ports->setWidget( portsTable );
+    this->addSection( ports );
+    m_portsTables.insert( PortsViews::value_type( execPortType, portsTable ) );
+  }
 }
 
 void DetailsWidget::clear()
@@ -449,7 +459,25 @@ void DetailsWidget::setPreset( const Result& preset )
   m_description->setFixedHeight( int( m_description->document()->size().height() ) );
 
   // Ports
-  m_portsTable->setPorts( details.ports, details.tags, this );
+  {
+    // Gathering Ports into ExecPortType categories
+    typedef std::map<std::string, std::vector<Port> > PortMap;
+    PortMap ports;
+    for( std::vector<Port>::const_iterator it = details.ports.begin(); it != details.ports.end(); it++ )
+      ports[it->execPortType].push_back( *it );
+
+    // Adding each category to its section
+    for( PortMap::const_iterator it = ports.begin(); it != ports.end(); it++ )
+    {
+      if( m_portsTables.find( it->first ) != m_portsTables.end() )
+        m_portsTables[it->first]->setPorts( it->second, details.tags, this );
+      else
+      {
+        std::cerr << "DetailsWidget::setPreset : Undefined ExecPortType " << it->first << std::endl;
+        assert( false );
+      }
+    }
+  }
 
   // Filtering the Tags
   {
@@ -478,7 +506,6 @@ void DetailsWidget::setPreset( const Result& preset )
 void DetailsWidget::updateSize()
 {
   m_tagContainer->adjustSize();
-  m_portsTable->adjustSize();
   for( size_t i = 0; i < m_sections.size(); i++ )
     m_sections[i]->adjustSize();
   this->adjustSize();

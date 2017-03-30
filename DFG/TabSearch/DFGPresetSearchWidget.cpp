@@ -75,6 +75,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   m_searchFrame->setMaximumHeight( 300 );
   m_searchFrame->resize( 500, 300 );
   m_detailsPanel->setObjectName( "DetailsPanel" );
+  m_detailsPanel->setMaximumHeight( m_searchFrame->maximumHeight() );
 
   this->setWindowFlags( Qt::Popup );
   QVBoxLayout* vlayout = new QVBoxLayout();
