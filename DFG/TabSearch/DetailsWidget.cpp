@@ -8,6 +8,7 @@
 #include <iostream>
 #include <QLayout>
 #include <QLabel>
+#include <QTextEdit>
 #include <QVariant>
 #include <QKeyEvent>
 #include <FTL/JSONValue.h>
@@ -361,7 +362,7 @@ void DetailsWidget::addSection( Section* s )
 DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
   : m_host( host )
   , m_name( new Label() )
-  , m_description( new QLabel() )
+  , m_description( new Description() )
 {
   this->setObjectName( "DetailsWidget" );
 
@@ -370,7 +371,9 @@ DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
     this, SIGNAL( tagRequested( const Query::Tag& ) ) );
   m_description->setObjectName( "Description" );
   m_description->setAlignment( Qt::AlignTop );
-  m_description->setWordWrap( true );
+  m_description->setReadOnly( true );
+  m_description->setEnabled( false );
+  m_description->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
   m_description->setMinimumWidth( 300 );
 
   clear();
@@ -423,6 +426,7 @@ void DetailsWidget::setPreset( const Result& preset )
 
   // Description
   m_description->setText( ToQString( details.description ) );
+  m_description->setFixedHeight( int( m_description->document()->size().height() ) );
 
   // Ports
   m_portsTable->setPorts( details.ports, details.tags, this );
