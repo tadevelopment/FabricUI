@@ -298,11 +298,20 @@ void DFGPresetSearchWidget::registerStaticEntries()
     "cat:Tidying",
     "cat:UI"
   };
-  m_host->searchDBAddUser(
-    TabSearch::Result( BackdropType, "BackDrop" ).data(),
-    sizeof( tags ) / sizeof( const char* ),
-    tags
-  );
+
+  try
+  {
+    m_host->searchDBAddUser(
+      TabSearch::Result( BackdropType, "BackDrop" ).data(),
+      sizeof( tags ) / sizeof( const char* ),
+      tags
+    );
+  }
+  catch( const FabricCore::Exception& e )
+  {
+    std::cerr << "DFGPresetSearchWidget::registerStaticEntries : " << e.getDesc_cstr() << std::endl;
+    assert( false );
+  }
 
   this->registerVariable( "", "" );
 
@@ -334,7 +343,16 @@ void DFGPresetSearchWidget::registerVariable( const std::string& name, const std
       tags.push_back( nameTag.data() );
     if( type.size() > 0 )
       tags.push_back( typeTag.data() );
-    m_host->searchDBAddUser( registeredName.data(), tags.size(), tags.data() );
+
+    try
+    {
+      m_host->searchDBAddUser( registeredName.data(), tags.size(), tags.data() );
+    }
+    catch( const FabricCore::Exception& e )
+    {
+      std::cerr << "DFGPresetSearchWidget::registerVariable : " << e.getDesc_cstr() << std::endl;
+      assert( false );
+    }
 
     m_registeredVariables.insert( registeredName );
   }
