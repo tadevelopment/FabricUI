@@ -18,6 +18,11 @@ class HotkeyEditorDialog(QtGui.QDialog):
 
         super(HotkeyEditorDialog, self).__init__(canvasWindow) 
         
+         # qss
+        self.setWindowTitle('Hotkey Editor')
+        self.setObjectName('HotkeyEditorDialog')
+        self.setStyleSheet(LoadFabricStyleSheet('FabricUI.qss'))
+
         # Controls
         comboBoxLabel = QtGui.QLabel('Set')
         self.__comboBox = QtGui.QComboBox(self)
@@ -63,11 +68,7 @@ class HotkeyEditorDialog(QtGui.QDialog):
         layout.addWidget(self.hotkeyTableWidget)
         self.setLayout(layout)
 
-        # qss
-        self.setWindowTitle('Hotkey Editor')
-        self.setObjectName('HotkeyEditorDialog')
-        self.setStyleSheet(LoadFabricStyleSheet('FabricUI.qss'))
-
+       
         # !!!! To change
         self.setMinimumHeight(400)
         self.setMinimumWidth(600)

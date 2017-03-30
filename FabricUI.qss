@@ -1791,3 +1791,62 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding-right: 4px;
   color: #FFFFFF;
 }
+
+/****************************************************************************
+ * CommandEditorDialog
+ ***************************************************************************/
+ 
+#CommandEditorDialog QToolButton
+{
+  color: #FFFFFF;
+  border: 0;
+  border-radius: 3px;
+  padding: 4px;
+  margin: 4px;
+  background-color: #2F2F2F;
+}
+
+#CommandEditorDialog QToolButton::disabled
+{
+  background-color: #444;
+  color: #6D6D6D;
+}
+
+#CommandEditorDialog QToolButton::checked
+{
+  background-color: #176580;
+}
+
+#CommandEditorDialog QToolButton::checked:hover
+{
+  background-color: #1C7A99;
+}
+
+#CommandEditorDialog QToolButton:hover
+{
+  background-color: #50626E;
+}
+
+#CommandEditorDialog QToolButton::pressed
+{
+  border-style: inset;
+  margin-top: 6px;
+  margin-left: 6px;
+
+  background-color: #50626E;
+}
+
+#CommandTableWidget
+{
+  border-top: 1px solid #2B2B2B;
+  border-right: 1px solid #484848;
+  border-bottom: 1px solid #484848;
+  border-left: 1px solid #2B2B2B;
+}
+
+#CommandEditorDialog QLabel
+{
+  padding-left: 4px;
+  color: #FFFFFF;
+}
+

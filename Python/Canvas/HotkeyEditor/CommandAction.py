@@ -24,7 +24,7 @@ class CommandAction(Actions.BaseAction):
         
         super(CommandAction, self).init(
             cmdName, 
-            cmdName, 
+            tooltip, 
             shortcut, 
             QtCore.Qt.ApplicationShortcut,
             True,

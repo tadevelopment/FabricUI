@@ -127,12 +127,12 @@ bool SetPortsDefaultValuesCommand::doIt()
 QString SetPortsDefaultValuesCommand::getHelp()
 {
   QString help;
-  help +=  "Sets the value of a DFG port.\n";
+  help +=  "Sets the values of several DFG ports.\n";
   help +=  "Arguments:\n";
   help +=  "- execPath (String): Absolute path of the DFGExec.\n";
   help +=  "- nodeName (String): Name of the node owning the port.\n";
-  help +=  "- portName (String): Name of the port.\n";
-  help +=  "- portValue (RTVal): Value to set, must be of the same that the port type.\n";
+  help +=  "- portNameList (String[]): Name of the ports.\n";
+  help +=  "- portValueList (RTVal[]): Values to set, must be of the same type than the port.\n";
   help +=  "- isUndoable (Boolean): If true, the command is undoable.";
   return help;
 }

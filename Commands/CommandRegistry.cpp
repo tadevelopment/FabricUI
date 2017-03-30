@@ -3,11 +3,11 @@
 //
 
 #include <string>
-#include <typeinfo>
 #include "KLCommand.h"
 #include "CommandFactory.h"
 #include "CommandRegistry.h"
 #include "KLScriptableCommand.h"
+#include <FabricUI/Util/TypeInfo.h>
 
 using namespace FabricUI;
 using namespace Commands;
@@ -73,7 +73,8 @@ CommandRegistry* CommandRegistry::GetCommandRegistry()
 {
   if(!s_instanceFlag)
     throw(
-      std::string("CommandRegistry::CommandRegistry, the registry is null")
+      std::string(
+        "CommandRegistry::CommandRegistry, the registry is null")
     );
 
   return s_cmdRegistry;
@@ -87,10 +88,30 @@ void CommandRegistry::registerFactory(
   {
     m_registeredCmdFactories[cmdName] = factory;
 
+    // Get the name of the cmd class.
+    // --> FactoryClassName<CmdClassName>
+    QString factoryName = Util::type(
+      *factory
+      );
+
+    int firstIndex = factoryName.indexOf(
+      "<"
+      );
+
+    int lastIndex = factoryName.lastIndexOf(
+      ">"
+      );
+
+    QString cmdClassName = factoryName.mid(
+      firstIndex+1,
+      lastIndex-(firstIndex+1)
+      );
+
     commandRegistered(
       cmdName,
-      typeid(*factory).name(),
-      COMMAND_CPP);
+      cmdClassName,
+      COMMAND_CPP
+      );
   }
 }
 
@@ -121,8 +142,8 @@ BaseCommand* CommandRegistry::createCommand(
     throw( 
       std::string(
         QString(
-          "CommandRegistry::createCommand, cannot create command, '" + 
-          cmdName + "' is not registered"
+          "CommandRegistry::createCommand, cannot create command '" + 
+          cmdName + "', it's not registered"
         ).toUtf8().constData() 
       )
     );

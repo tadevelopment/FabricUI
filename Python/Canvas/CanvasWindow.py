@@ -16,6 +16,7 @@ from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.Commands.CommandManager import *
+from FabricEngine.Canvas.Commands.CommandEditorDialog import *
 from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
 
@@ -192,9 +193,29 @@ class ShowHotkeyEditorDialogAction(BaseCanvasWindowAction):
             "CanvasWindow.ShowHotkeyEditorDialogAction", 
             "Hotkey editor", 
             QtGui.QKeySequence(QtCore.Qt.Key_K))
- 
+        
+        self.setToolTip(
+            "Edit all the registered actions \n" +
+            "to associate a shortcut."
+            )
+
     def onTriggered(self):
         self.canvasWindow.onShowHotkeyEditorDialog()
+
+class ShowCommandEditorDialogAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, canvasWindow):
+        super(ShowCommandEditorDialogAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.ShowCommandEditorDialogAction", 
+            "Command editor", 
+            QtGui.QKeySequence(QtCore.Qt.Key_J))
+         
+        self.setToolTip("Display all the registered commands")
+
+    def onTriggered(self):
+        self.canvasWindow.onShowCommandEditorDialog()
 
 class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
@@ -296,6 +317,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.clearLogAction = None
         self.blockCompilationsAction = None
         self.showHotkeyEditorDialogAction = None
+        self.showCommandEditorDialogAction = None
 
         self.windowTitle = 'Fabric Engine - Canvas'
         self.lastFileName = ''
@@ -419,7 +441,8 @@ class CanvasWindow(QtGui.QMainWindow):
 
         """
         CreateCommandManager(self.client)
-        self.hotkeyEditor = HotkeyEditorDialog(self)
+        self.hotkeyEditorDialog = HotkeyEditorDialog(self)
+        self.cmdEditorDialog = CommandEditorDialog(self)
 
         self.qUndoStack = QtGui.QUndoStack()
         self.qUndoView = QtGui.QUndoView(self.qUndoStack)
@@ -1032,9 +1055,13 @@ class CanvasWindow(QtGui.QMainWindow):
         dfgController.savePrefs()
 
     def onShowHotkeyEditorDialog(self):
-        if self.hotkeyEditor.exec_() != QtGui.QDialog.Accepted:
+        if self.hotkeyEditorDialog.exec_() != QtGui.QDialog.Accepted:
             return;
 
+    def onShowCommandEditorDialog(self):
+        if self.cmdEditorDialog.exec_() != QtGui.QDialog.Accepted:
+            return;
+ 
     def execNewGraph(self, skip_save=False):
         """Callback Executed when a key or menu command has requested a new graph.
 
@@ -1308,6 +1335,8 @@ class CanvasWindow(QtGui.QMainWindow):
             self.blockCompilationsAction.blockSignals(enabled)
         if self.showHotkeyEditorDialogAction:
             self.showHotkeyEditorDialogAction.blockSignals(enabled)
+        if self.showCommandEditorDialogAction:
+            self.showCommandEditorDialogAction.blockSignals(enabled)
 
     def openRecentFile(self):
         action = self.sender()
@@ -1372,9 +1401,14 @@ class CanvasWindow(QtGui.QMainWindow):
                     menu.addSeparator()
                     self.manipAction = ToggleManipulationAction(self.viewport, self)
                     menu.addAction(self.manipAction)
+
                     menu.addSeparator()
-                    self.showHotkeyEditorDialogAction = ShowHotkeyEditorDialogAction(menu, self)
-                    menu.addAction(self.showHotkeyEditorDialogAction)
+
+                    editorMenu = menu.addMenu("Editors")
+                    self.showHotkeyEditorDialogAction = ShowHotkeyEditorDialogAction(editorMenu, self)
+                    editorMenu.addAction(self.showHotkeyEditorDialogAction)
+                    self.showCommandEditorDialogAction = ShowCommandEditorDialogAction(editorMenu, self)
+                    editorMenu.addAction(self.showCommandEditorDialogAction)
 
         elif name == 'View':
             if prefix:

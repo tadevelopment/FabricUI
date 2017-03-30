@@ -183,11 +183,16 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             tooltip = cmd.getHelp()
             isScriptable = issubclass(type(cmd), Commands.BaseScriptableCommand)
 
+            # If the commmand has args, it cannot
+            # be associated to a shortcut, return.
+            if isScriptable:
+                return
+
             # Add the action to the canvasWindow so it's available.
             # Actions of hidden widgets are not triggered.
             self.canvasWindow.addAction(
                 CommandAction(
-                    self, cmdName, QtGui.QKeySequence(), tooltip, isScriptable))
+                    self, cmdName, QtGui.QKeySequence(), tooltip, False))
  
     def __onActionRegistered(self, actionName, action):
         """ \internal.
