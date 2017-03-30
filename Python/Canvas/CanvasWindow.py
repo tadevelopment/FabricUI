@@ -19,6 +19,7 @@ from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Commands.CommandEditorDialog import *
 from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
+from FabricEngine.Canvas.Tools.ToolEditorDialog import *
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -200,7 +201,8 @@ class ShowHotkeyEditorDialogAction(BaseCanvasWindowAction):
             )
 
     def onTriggered(self):
-        self.canvasWindow.onShowHotkeyEditorDialog()
+        if self.canvasWindow.hotkeyEditorDialog.exec_() != QtGui.QDialog.Accepted:
+            return;
 
 class ShowCommandEditorDialogAction(BaseCanvasWindowAction):
 
@@ -212,10 +214,27 @@ class ShowCommandEditorDialogAction(BaseCanvasWindowAction):
             "Command editor", 
             QtGui.QKeySequence(QtCore.Qt.Key_J))
          
-        self.setToolTip("Display all the registered commands")
+        self.setToolTip("Display all the registered commands.")
 
     def onTriggered(self):
-        self.canvasWindow.onShowCommandEditorDialog()
+        if self.canvasWindow.cmdEditorDialog.exec_() != QtGui.QDialog.Accepted:
+            return;
+
+class ShowToolEditorDialogAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, canvasWindow):
+        super(ShowToolEditorDialogAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.ShowToolEditorDialogAction", 
+            "Tool editor", 
+            QtGui.QKeySequence(QtCore.Qt.Key_L))
+         
+        self.setToolTip("Display all the registered tools")
+
+    def onTriggered(self):
+        if self.canvasWindow.toolEditorDialog.exec_() != QtGui.QDialog.Accepted:
+            return;
 
 class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
@@ -318,6 +337,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.blockCompilationsAction = None
         self.showHotkeyEditorDialogAction = None
         self.showCommandEditorDialogAction = None
+        self.showToolEditorDialogAction = None
+
 
         self.windowTitle = 'Fabric Engine - Canvas'
         self.lastFileName = ''
@@ -443,6 +464,7 @@ class CanvasWindow(QtGui.QMainWindow):
         CreateCommandManager(self.client)
         self.hotkeyEditorDialog = HotkeyEditorDialog(self)
         self.cmdEditorDialog = CommandEditorDialog(self)
+        self.toolEditorDialog = ToolEditorDialog(self)
 
         self.qUndoStack = QtGui.QUndoStack()
         self.qUndoView = QtGui.QUndoView(self.qUndoStack)
@@ -1054,14 +1076,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
         dfgController.savePrefs()
 
-    def onShowHotkeyEditorDialog(self):
-        if self.hotkeyEditorDialog.exec_() != QtGui.QDialog.Accepted:
-            return;
-
-    def onShowCommandEditorDialog(self):
-        if self.cmdEditorDialog.exec_() != QtGui.QDialog.Accepted:
-            return;
- 
     def execNewGraph(self, skip_save=False):
         """Callback Executed when a key or menu command has requested a new graph.
 
@@ -1337,6 +1351,8 @@ class CanvasWindow(QtGui.QMainWindow):
             self.showHotkeyEditorDialogAction.blockSignals(enabled)
         if self.showCommandEditorDialogAction:
             self.showCommandEditorDialogAction.blockSignals(enabled)
+        if self.showToolEditorDialogAction:
+            self.showToolEditorDialogAction.blockSignals(enabled)
 
     def openRecentFile(self):
         action = self.sender()
@@ -1409,6 +1425,8 @@ class CanvasWindow(QtGui.QMainWindow):
                     editorMenu.addAction(self.showHotkeyEditorDialogAction)
                     self.showCommandEditorDialogAction = ShowCommandEditorDialogAction(editorMenu, self)
                     editorMenu.addAction(self.showCommandEditorDialogAction)
+                    self.showToolEditorDialogAction = ShowToolEditorDialogAction(editorMenu, self)
+                    editorMenu.addAction(self.showToolEditorDialogAction)
 
         elif name == 'View':
             if prefix:
