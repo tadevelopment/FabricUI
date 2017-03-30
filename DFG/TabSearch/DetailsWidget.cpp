@@ -415,6 +415,26 @@ void DetailsWidget::setPreset( const Result& preset )
   {
     std::string name = m_preset.substr( m_preset.rfind( '.' ) + 1 );
     Query::Tag tag( NameCat, name );
+
+    // Wrapping too long strings
+    {
+      int maxWidth = int( 0.8 * this->width() ); // Hack : harcoded margin value
+      QFontMetrics nameMetrics = m_name->fontMetrics();
+      QString txt = ToQString( name );
+      QString wrapped;
+      while( !txt.isEmpty() )
+      {
+        int i = 0;
+        while( i < txt.size() && nameMetrics.width( txt, i ) < maxWidth )
+          i++;
+        wrapped += txt.left( i );
+        if( i != txt.size() )
+          wrapped += "-\n";
+        txt = txt.right( txt.size() - i );
+      }
+      name = ToStdString( wrapped );
+    }
+
     if( details.tags.find( tag ) != details.tags.end() )
     {
       m_name->set( name, tag );
