@@ -205,6 +205,11 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   updateSize();
 }
 
+DFGPresetSearchWidget::~DFGPresetSearchWidget()
+{
+  this->unregisterVariables();
+}
+
 void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
 {
   move( QPoint( 0, 0 ) );
@@ -298,11 +303,22 @@ void DFGPresetSearchWidget::registerStaticEntries()
     "cat:Tidying",
     "cat:UI"
   };
-  m_host->searchDBAddUser(
-    TabSearch::Result( BackdropType, "BackDrop" ).data(),
-    sizeof( tags ) / sizeof( const char* ),
-    tags
-  );
+
+  try
+  {
+    TabSearch::Result backdropResult( BackdropType, "BackDrop" );
+    if( !m_host->searchDBHasUser( backdropResult.data() ) )
+      m_host->searchDBAddUser(
+        backdropResult.data(),
+        sizeof( tags ) / sizeof( const char* ),
+        tags
+      );
+  }
+  catch( const FabricCore::Exception& e )
+  {
+    std::cerr << "DFGPresetSearchWidget::registerStaticEntries : " << e.getDesc_cstr() << std::endl;
+    assert( false );
+  }
 
   this->registerVariable( "", "" );
 
@@ -324,7 +340,8 @@ void DFGPresetSearchWidget::registerVariable( const std::string& name, const std
   {
     const std::string& functionType = functions[i];
     std::string registeredName = GetVariableRegisteredName( name, functionType == VariableSetType );
-    if( m_registeredVariables.find( registeredName ) != m_registeredVariables.end() )
+    if( m_registeredVariables.find( registeredName ) != m_registeredVariables.end() ||
+        m_host->searchDBHasUser( registeredName.data() ) )
       continue; // Don't register the same entries several times
 
     std::vector<const char*> tags;
@@ -334,7 +351,16 @@ void DFGPresetSearchWidget::registerVariable( const std::string& name, const std
       tags.push_back( nameTag.data() );
     if( type.size() > 0 )
       tags.push_back( typeTag.data() );
-    m_host->searchDBAddUser( registeredName.data(), tags.size(), tags.data() );
+
+    try
+    {
+      m_host->searchDBAddUser( registeredName.data(), tags.size(), tags.data() );
+    }
+    catch( const FabricCore::Exception& e )
+    {
+      std::cerr << "DFGPresetSearchWidget::registerVariable : " << e.getDesc_cstr() << std::endl;
+      assert( false );
+    }
 
     m_registeredVariables.insert( registeredName );
   }
@@ -342,19 +368,21 @@ void DFGPresetSearchWidget::registerVariable( const std::string& name, const std
 
 void DFGPresetSearchWidget::unregisterVariables()
 {
-  std::set<std::string> clearedSet;
   for( std::set<std::string>::const_iterator it = m_registeredVariables.begin();
     it != m_registeredVariables.end(); it++ )
   {
-    if( ( *it ) != GetVariableRegisteredName( "", true ) &&
-        ( *it ) != GetVariableRegisteredName( "", false ) )
+    try
     {
       m_host->searchDBRemoveUser( it->data() );
     }
-    else // Don't unregister static variables
-      clearedSet.insert( *it );
+    catch( const FabricCore::Exception& e )
+    {
+      std::cerr << "DFGPresetSearchWidget::unregisterVariables : " << e.getDesc_cstr() << std::endl;
+      assert( false );
+    }
   }
-  m_registeredVariables = clearedSet;
+  m_registeredVariables.clear();
+  m_staticEntriesAddedToDB = false;
 }
 
 void DFGPresetSearchWidget::onResultValidated( const TabSearch::Result& result )

@@ -24,6 +24,7 @@ namespace FabricUI
 
     public:
       DFGPresetSearchWidget( FabricCore::DFGHost* host );
+      ~DFGPresetSearchWidget();
 
       void showForSearch( QPoint globalPos ) FTL_OVERRIDE;
       void keyPressEvent( QKeyEvent *event ) FTL_OVERRIDE;
