@@ -205,6 +205,11 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   updateSize();
 }
 
+DFGPresetSearchWidget::~DFGPresetSearchWidget()
+{
+  this->unregisterVariables();
+}
+
 void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
 {
   move( QPoint( 0, 0 ) );
@@ -363,19 +368,21 @@ void DFGPresetSearchWidget::registerVariable( const std::string& name, const std
 
 void DFGPresetSearchWidget::unregisterVariables()
 {
-  std::set<std::string> clearedSet;
   for( std::set<std::string>::const_iterator it = m_registeredVariables.begin();
     it != m_registeredVariables.end(); it++ )
   {
-    if( ( *it ) != GetVariableRegisteredName( "", true ) &&
-        ( *it ) != GetVariableRegisteredName( "", false ) )
+    try
     {
       m_host->searchDBRemoveUser( it->data() );
     }
-    else // Don't unregister static variables
-      clearedSet.insert( *it );
+    catch( const FabricCore::Exception& e )
+    {
+      std::cerr << "DFGPresetSearchWidget::unregisterVariables : " << e.getDesc_cstr() << std::endl;
+      assert( false );
+    }
   }
-  m_registeredVariables = clearedSet;
+  m_registeredVariables.clear();
+  m_staticEntriesAddedToDB = false;
 }
 
 void DFGPresetSearchWidget::onResultValidated( const TabSearch::Result& result )
