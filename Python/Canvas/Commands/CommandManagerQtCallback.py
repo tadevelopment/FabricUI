@@ -136,7 +136,7 @@ class CommandManagerQtCallback(QtCore.QObject):
                         # Get the python RTVal object.
                         pyRTValType = getattr(GetCommandManager().client.RT.types, rtValType)
 
-                        if pyRTValType == "String":
+                        if rtValType == "String":
                             desc += str(pyRTValType(value).getSimpleType())
 
                         # Check if the RTVal type can be casted in Python.
