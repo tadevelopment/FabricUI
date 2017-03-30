@@ -490,7 +490,24 @@ QMenu *DFGWidget::nodeContextMenuCallback(
           FabricCore::DFGHost host = exec.getHost();
           FabricCore::String presetPath =
             host.getPresetPathForPresetGUID( origPresetGUID.getCStr() );
+
           instExecCanUpdatePreset = presetPath.getSize() > 0;
+          if(instExecCanUpdatePreset)
+          {
+            // if we are supposed to hide the fabric dir
+            bool hideFabricDir = true;
+            const char * hideFabricDirStr = getenv("FABRIC_CANVAS_UPDATE_BUILTIN_PRESETS");
+            if(hideFabricDirStr != NULL)
+              hideFabricDir = (FTL::StrRef(hideFabricDirStr) == "0");
+
+            // let's disable the update preset action if the preset is below the fabric_dir
+            if(hideFabricDir)
+            {
+              FTL::CStrRef presetPathRef = presetPath.getCStr();
+              if(presetPathRef.startswith("Fabric."))
+                instExecCanUpdatePreset = false;
+            }
+          }
         }
       }
     }
