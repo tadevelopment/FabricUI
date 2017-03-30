@@ -128,7 +128,7 @@ class ToggleManipulationAction(BaseCanvasWindowAction):
             "CanvasWindow.ToggleManipulationAction", 
             "Toggle manipulation", 
             QtGui.QKeySequence(QtCore.Qt.Key_Q),
-            QtCore.Qt.WindowShortcut)
+            QtCore.Qt.WidgetWithChildrenShortcut)
         
         self.viewport = viewport
         self.setCheckable(True)
@@ -1331,6 +1331,7 @@ class CanvasWindow(QtGui.QMainWindow):
                 if self.isCanvas:
                     menu.addSeparator()
                     self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
+                    self.viewport.addAction(self.manipAction)
                     menu.addAction(self.manipAction)
 
         elif name == 'View':
