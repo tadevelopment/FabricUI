@@ -65,6 +65,18 @@ void TagWidget::setScore( double score )
   //this->setToolTip( "Score = " + QString::number( score ) );
 }
 
+void TagWidget::enterEvent( QEvent* e )
+{
+  Parent::enterEvent( e );
+  this->setCursor( Qt::PointingHandCursor );
+}
+
+void TagWidget::leaveEvent( QEvent* e )
+{
+  Parent::leaveEvent( e );
+  this->unsetCursor();
+}
+
 TagArrow::TagArrow()
   : m_spacing(8)
   , m_leftHighlighted( false )

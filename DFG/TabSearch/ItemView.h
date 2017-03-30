@@ -47,6 +47,10 @@ namespace FabricUI
       public slots:
         void setHighlighted( bool highlighted );
 
+      protected:
+        void enterEvent( QEvent * ) FTL_OVERRIDE;
+        void leaveEvent( QEvent * ) FTL_OVERRIDE;
+
       private slots:
         void onActivated();
 
