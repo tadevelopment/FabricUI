@@ -311,7 +311,7 @@ public:
 
     this->setLayout( m_layout );
     m_layout->setSpacing( 2 );
-    m_layout->setMargin( 4 );
+    m_layout->setMargin( 8 );
   }
 
   void clear()
