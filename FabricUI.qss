@@ -1841,13 +1841,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #F0F0F0;
 }
 
-#TagArrow
-{
-  qproperty-bgColor: #50626E;
-  qproperty-highlightBgColor: #F0F0F0;
-  qproperty-spacing: 6;
-}
-
 #TagsView
 {
   border-radius: 4px;

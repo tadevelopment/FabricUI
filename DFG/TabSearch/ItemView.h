@@ -57,38 +57,6 @@ namespace FabricUI
         bool m_highlighted;
       };
 
-      class TagArrow : public QFrame
-      {
-        Q_OBJECT
-        Q_PROPERTY(QColor bgColor READ bgColor WRITE setBgColor DESIGNABLE true)
-        Q_PROPERTY(QColor highlightBgColor READ highlightBgColor WRITE setHighlightBgColor DESIGNABLE true)
-        Q_PROPERTY(int spacing READ spacing WRITE setSpacing DESIGNABLE true)
-
-        typedef QFrame Parent;
-        
-      public:
-
-        TagArrow();
-
-        inline const QColor bgColor() const { return m_bgColor; }
-        inline void setBgColor( const QColor& c ) { m_bgColor = c; update(); }
-        inline const QColor highlightBgColor() const { return m_bgColor; }
-        inline void setHighlightBgColor( const QColor& c ) { m_highlightBgColor = c; update(); }
-        inline int spacing() const { return m_spacing; }
-        inline void setSpacing( int s ) { m_spacing = s; update(); }
-
-        void paintEvent( QPaintEvent * ) FTL_OVERRIDE;
-
-        inline void setLeftHighlighted( bool hl ) { m_leftHighlighted = hl; update(); }
-        inline void setRightHighlighted( bool hl ) { m_rightHighlighted = hl; update(); }
-        inline void setHasRight( bool hr ) { m_hasRight = hr; update(); }
-
-      private:
-        int m_spacing;
-        bool m_leftHighlighted, m_hasRight, m_rightHighlighted;
-        QColor m_bgColor, m_highlightBgColor;
-      };
-
       class PresetView : public QWidget
       {
         Q_OBJECT
