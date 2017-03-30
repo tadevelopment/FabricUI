@@ -152,7 +152,8 @@ public:
     FabricCore::DFGExec const &exec,
     QString nodeName,
     QString presetDirPath,
-    QString presetName
+    QString presetName,
+    bool updateOrigPreset
     );
 
   virtual QString dfgDoEditPort(

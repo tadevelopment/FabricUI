@@ -21,8 +21,23 @@ DFGSavePresetDialog::DFGSavePresetDialog(
   , m_dfgController( dfgController )
 {
   setObjectName( "DFGSavePresetDialog" );
-  setWindowTitle("Create Preset");
-  m_presetTree = new PresetTreeWidget(dfgController, dfgConfig, true, false, true, true, true, false);
+  setWindowTitle( "Create New Preset" );
+
+  bool hideFabricDir = true;
+  const char * hideFabricDirStr = getenv("FABRIC_CANVAS_UPDATE_BUILTIN_PRESETS");
+  if(hideFabricDirStr != NULL)
+    hideFabricDir = (FTL::StrRef(hideFabricDirStr) == "0");
+  
+  m_presetTree = new PresetTreeWidget(
+    dfgController,
+    dfgConfig,
+    true, // showsPresets
+    false, // showSearch
+    hideFabricDir, // hideFabricDir
+    true, // hideVariablesDir
+    true, // hideWriteProtectedDirs
+    false // setupContextMenu
+    );
 
   addInput(m_presetTree, "location");
   m_nameEdit = new QLineEdit(name, this);
