@@ -301,11 +301,13 @@ void DFGPresetSearchWidget::registerStaticEntries()
 
   try
   {
-    m_host->searchDBAddUser(
-      TabSearch::Result( BackdropType, "BackDrop" ).data(),
-      sizeof( tags ) / sizeof( const char* ),
-      tags
-    );
+    TabSearch::Result backdropResult( BackdropType, "BackDrop" );
+    if( !m_host->searchDBHasUser( backdropResult.data() ) )
+      m_host->searchDBAddUser(
+        backdropResult.data(),
+        sizeof( tags ) / sizeof( const char* ),
+        tags
+      );
   }
   catch( const FabricCore::Exception& e )
   {
@@ -333,7 +335,8 @@ void DFGPresetSearchWidget::registerVariable( const std::string& name, const std
   {
     const std::string& functionType = functions[i];
     std::string registeredName = GetVariableRegisteredName( name, functionType == VariableSetType );
-    if( m_registeredVariables.find( registeredName ) != m_registeredVariables.end() )
+    if( m_registeredVariables.find( registeredName ) != m_registeredVariables.end() ||
+        m_host->searchDBHasUser( registeredName.data() ) )
       continue; // Don't register the same entries several times
 
     std::vector<const char*> tags;
