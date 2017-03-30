@@ -322,19 +322,46 @@ TmpNode BuildResultTree(
   for( size_t i = 0; i < resultsJson->size(); i++ )
   {
     const FTL::JSONArray* result = resultsJson->getArray( i );
-    const FTL::JSONArray* tags = result->getArray( 2 );
+    const FTL::JSONArray* tagsJs = result->getArray( 2 );
     TmpNode* node = &rootNode;
-    for( size_t j = 0; j < tags->size(); j++ )
+
+    // Gathering the Tags from the results
     {
-      const FTL::JSONObject* tagO = tags->getObject( j );
-      const std::string tagName = tagO->getString( "tag" );
-      if( queryTags.find( tagName ) != queryTags.end() )
-        continue; // Ignore tags from the Query
-      node = &AddTag( *node, Tag(
-        tagName,
-        tagO->getFloat64( "weight" )
-      ) );
+      std::vector<Tag> tags;
+      // Making sure that we don't add twice the same tags
+      // TODO : is the SearchDB really supposed to return them twice ?
+      std::map<std::string, size_t> tagMap;
+
+      for( size_t j = 0; j < tagsJs->size(); j++ )
+      {
+        const FTL::JSONObject* tagO = tagsJs->getObject( j );
+        const std::string tagName = tagO->getString( "tag" );
+        const double tagScore = tagO->getFloat64( "weight" );
+
+        if( queryTags.find( tagName ) != queryTags.end() )
+          continue; // Ignore tags from the Query
+
+        // Don't add the tags twice
+        if( tagMap.find( tagName ) == tagMap.end() )
+        {
+          // New tag : insert it
+          tagMap.insert( std::pair<std::string, size_t>( tagName, tags.size() ) );
+          tags.push_back( Tag( tagName, tagScore ) );
+        }
+        else
+        {
+          Tag& tag = tags[tagMap[tagName]];
+          // Keep the highest score
+          tag.score = std::max( tag.score, tagScore );
+        }
+      }
+
+      // Adding the tags to the tree
+      for( size_t j = 0; j < tags.size(); j++ )
+        node = &AddTag( *node, tags[j] ); // Current branch
     }
+
+    // Adding the preset as a leaf
     double presetScore = result->getFloat64( 1 );
     TmpNode newItem; newItem.value.setPreset( Preset(
       result->getString( 0 ),
