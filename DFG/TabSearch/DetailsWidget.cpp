@@ -164,6 +164,17 @@ class DetailsWidget::Section : public QWidget
   DetailsWidget* m_parent;
 
 public:
+
+  class SectionWidget : public QWidget
+  {
+    Section* m_section;
+  public:
+    SectionWidget() : m_section( NULL ) {}
+    void setSection( Section* s ) { m_section = s; }
+  protected:
+    void setSectionVisibility( bool visible ) { assert( m_section != NULL ); m_section->setVisible( visible ); }
+  };
+
   Section( const std::string& name, DetailsWidget* parent )
     : m_header( new Header( this, name ) )
     , m_widget( NULL )
@@ -180,7 +191,7 @@ public:
   }
 
   // takes ownership of the widget
-  void setWidget( QWidget* widget )
+  void setWidget( SectionWidget* widget )
   {
     if( m_widget != NULL )
     {
@@ -188,6 +199,7 @@ public:
       m_widget->deleteLater();
     }
     m_widget = widget;
+    widget->setSection( this );
     this->layout()->addWidget( m_widget );
   }
 };
@@ -199,7 +211,7 @@ void DetailsWidget::Section::toggleCollapse( bool toggled )
   m_parent->updateSize();
 }
 
-class DetailsWidget::PortsView : public QWidget
+class DetailsWidget::PortsView : public DetailsWidget::Section::SectionWidget
 {
   struct PortView : public QWidget
   {
@@ -278,6 +290,9 @@ public:
       m_ports.push_back( view );
       this->layout()->addWidget( view );
     }
+
+    setSectionVisibility( ports.size() > 0 );
+
     return usedTags;
   }
 };
@@ -285,7 +300,7 @@ public:
 // http://doc.qt.io/qt-4.8/qt-layouts-flowlayout-example.html
 // TODO : Knapsacks optimization problem to minimize the
 // empty spaces ? https://en.wikipedia.org/wiki/Knapsack_problem
-class DetailsWidget::TagContainer : public QWidget
+class DetailsWidget::TagContainer : public DetailsWidget::Section::SectionWidget
 {
   struct Line
   {
@@ -356,6 +371,8 @@ public:
       line.tags.push_back( tagWidget );
       line.layout->addWidget( tagWidget );
     }
+
+    setSectionVisibility( tags.size() > 0 );
   }
 };
 
@@ -380,7 +397,7 @@ DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
   m_description->setReadOnly( true );
   m_description->setEnabled( false );
   m_description->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-  m_description->setMinimumWidth( 300 );
+  m_name->setMinimumWidth( 300 );
 
   clear();
   QVBoxLayout* lay = new QVBoxLayout();
@@ -458,6 +475,7 @@ void DetailsWidget::setPreset( const Result& preset )
   // Description
   m_description->setText( ToQString( details.description ) );
   m_description->setFixedHeight( int( m_description->document()->size().height() ) );
+  m_description->setVisible( details.description.size() > 0 );
 
   // Ports
   {
