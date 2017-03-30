@@ -223,8 +223,35 @@ DFGWidget::DFGWidget(
   layout->addWidget( splitter );
   setLayout( layout );
 
-  m_tabSearchWidget = new DFGTabSearchWidget(this, m_dfgConfig);
+  m_legacyTabSearchWidget = new DFGTabSearchWidget( this, m_dfgConfig );
+  m_legacyTabSearchWidget->hide();
+  m_tabSearchWidget = new DFGPresetSearchWidget( &getDFGController()->getHost() );
+  m_tabSearchWidget->setParent( this );
   m_tabSearchWidget->hide();
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedPreset( QString ) ),
+    this, SLOT( onPresetAddedFromTabSearch( QString ) )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedBackdrop() ),
+    this, SLOT( onBackdropAddedFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
+    this, SLOT( onVariableGetterAddedFromTabSearch( const std::string ) )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( giveFocusToParent() ),
+    this, SLOT( onFocusGivenFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedSetVariable( const std::string ) ),
+    this, SLOT( onVariableSetterAddedFromTabSearch( const std::string ) )
+  );
+  QObject::connect(
+    getUIController(), SIGNAL( varsChanged() ),
+    this, SLOT( updateTabSearchVariables() )
+  );
 
   QObject::connect(
     m_uiHeader, SIGNAL(goUpPressed()),
@@ -267,15 +294,27 @@ DFGController * DFGWidget::getUIController()
   return m_uiController.get();
 }
 
-DFGTabSearchWidget * DFGWidget::getTabSearchWidget()
+const char* legacyTabSearchKey = "useLegacyTabSearch";
+
+bool DFGWidget::isUsingLegacyTabSearch() const
 {
+  return getSettings()->value( legacyTabSearchKey, false ).toBool();
+}
+
+void DFGWidget::onToggleLegacyTabSearch( bool toggled )
+{
+  getSettings()->setValue( legacyTabSearchKey, toggled );
+}
+
+DFGAbstractTabSearchWidget * DFGWidget::getTabSearchWidget()
+{
+  if( this->isUsingLegacyTabSearch() )
+    return m_legacyTabSearchWidget;
   return m_tabSearchWidget;
 }
 
-DFGGraphViewWidget * DFGWidget::getGraphViewWidget()
-{
-  return m_uiGraphViewWidget;
-}
+DFGGraphViewWidget * DFGWidget::getGraphViewWidget() { return m_uiGraphViewWidget; }
+const DFGGraphViewWidget * DFGWidget::getGraphViewWidget() const { return m_uiGraphViewWidget; }
 
 DFGExecHeaderWidget * DFGWidget::getHeaderWidget()
 {
@@ -783,8 +822,73 @@ void DFGWidget::tabSearch()
     if (getUIController()->validPresetSplit())
     {
       QPoint pos = getGraphViewWidget()->lastEventPos();
+      m_tabSearchPos = pos;
       pos = getGraphViewWidget()->mapToGlobal(pos);
       getTabSearchWidget()->showForSearch(pos);
+    }
+  }
+}
+
+QPointF DFGWidget::getTabSearchScenePos() const
+{
+  return this->getGraphViewWidget()->graph()->itemGroup()->mapFromScene( m_tabSearchPos );
+}
+
+void DFGWidget::onPresetAddedFromTabSearch( QString preset )
+{
+  this->getUIController()->cmdAddInstFromPreset(
+    preset,
+    getTabSearchScenePos()
+  );
+}
+
+void DFGWidget::onBackdropAddedFromTabSearch()
+{
+  this->getUIController()->cmdAddBackDrop(
+    "backdrop",
+    getTabSearchScenePos()
+  );
+}
+
+void DFGWidget::onVariableSetterAddedFromTabSearch( const std::string name )
+{
+  this->getUIController()->cmdAddSet( "set", QString::fromStdString( name ), getTabSearchScenePos() );
+}
+
+void DFGWidget::onVariableGetterAddedFromTabSearch( const std::string name )
+{
+  this->getUIController()->cmdAddGet( "get", QString::fromStdString( name ), getTabSearchScenePos() );
+}
+
+void DFGWidget::onFocusGivenFromTabSearch()
+{
+  this->getGraphViewWidget()->setFocus( Qt::OtherFocusReason );
+}
+
+void DFGWidget::updateTabSearchVariables()
+{
+  if( isUsingLegacyTabSearch() )
+    return;
+
+  m_tabSearchWidget->unregisterVariables();
+
+  FabricCore::DFGBinding& binding = this->getUIController()->getBinding();
+  QStringList variableNames = DFGBindingUtils::getVariableWordsFromBinding(
+    binding,
+    this->getUIController()->getExecPath()
+  );
+  for( QStringList::const_iterator it = variableNames.begin(); it != variableNames.end(); it++ )
+  {
+    try
+    {
+      const std::string varName = it->toUtf8().constData();
+      const std::string varType =
+        binding.getExec().getVarValue( varName.data() ).getTypeNameCStr();
+      m_tabSearchWidget->registerVariable( varName, varType );
+    }
+    catch( const FabricCore::Exception& e )
+    {
+      std::cerr << e.getDesc_cstr() << std::endl;
     }
   }
 }
@@ -2397,6 +2501,8 @@ void DFGWidget::onEditSelectedNodeProperties()
 
 QSettings * DFGWidget::getSettings()
 {
+  if( g_settings == NULL )
+    g_settings = new QSettings();
   return g_settings;
 }
 
@@ -2467,6 +2573,17 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
 
     // emit the suffix menu entry requests
     emit additionalMenuActionsRequested("Edit", editMenu, false);
+
+    editMenu->addSeparator();
+    
+    QAction * toggleLecyTabSearchAction = new QAction( "Use legacy TabSearch widget", this );
+    toggleLecyTabSearchAction->setCheckable( true );
+    QObject::connect(
+      toggleLecyTabSearchAction, SIGNAL( triggered( bool ) ),
+      this, SLOT( onToggleLegacyTabSearch( bool ) )
+    );
+    toggleLecyTabSearchAction->setChecked( this->isUsingLegacyTabSearch() );
+    editMenu->addAction( toggleLecyTabSearchAction );
   }
 
   // View menu.

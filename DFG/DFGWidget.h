@@ -22,6 +22,7 @@
 #include <FabricUI/DFG/DFGKLEditorWidget.h>
 #include <FabricUI/DFG/DFGNotificationRouter.h>
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
+#include <FabricUI/DFG/TabSearch/DFGPresetSearchWidget.h>
 #include <FabricUI/DFG/Dialogs/DFGBaseDialog.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/Actions/BaseAction.h>
@@ -85,8 +86,9 @@ namespace DFG {
       GraphView::Graph * getUIGraph();
       DFGKLEditorWidget * getKLEditor();
       DFGController * getUIController();
-      DFGTabSearchWidget * getTabSearchWidget();
+      DFGAbstractTabSearchWidget * getTabSearchWidget();
       DFGGraphViewWidget * getGraphViewWidget();
+      const DFGGraphViewWidget * getGraphViewWidget() const;
       DFGExecHeaderWidget * getHeaderWidget();
       DFGErrorsWidget *getErrorsWidget() const
         { return m_errorsWidget; }
@@ -107,6 +109,7 @@ namespace DFG {
       void reloadStyles();
 
       void tabSearch();
+      bool isUsingLegacyTabSearch() const;
       void emitNodeInspectRequested(FabricUI::GraphView::Node *);
 
       void createPort( FabricUI::GraphView::PortType portType );
@@ -172,6 +175,12 @@ namespace DFG {
       void onEditSelectedNode();
       void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);
+      void onPresetAddedFromTabSearch( QString preset );
+      void onBackdropAddedFromTabSearch();
+      void onVariableSetterAddedFromTabSearch( const std::string name );
+      void onVariableGetterAddedFromTabSearch( const std::string name );
+      void onFocusGivenFromTabSearch();
+      void onToggleLegacyTabSearch( bool toggled );
       void onReloadStyles();
 
     private slots:
@@ -188,6 +197,7 @@ namespace DFG {
         int line,
         int column
         );
+      void updateTabSearchVariables();
 
     private:
 
@@ -206,6 +216,7 @@ namespace DFG {
       bool maybePopExec( std::string &nodeName );
 
       bool checkForUnsaved();
+      QPointF getTabSearchScenePos() const;
 
       DFGGraphViewWidget * m_uiGraphViewWidget;
       DFGExecHeaderWidget * m_uiHeader;
@@ -215,7 +226,9 @@ namespace DFG {
       DFGNotificationRouter * m_router;
       DFGKLEditorWidget * m_klEditor;
       DFGExecBlockEditorWidget *m_execBlockEditorWidget;
-      DFGTabSearchWidget * m_tabSearchWidget;
+      QPoint m_tabSearchPos;
+      DFGTabSearchWidget * m_legacyTabSearchWidget;
+      DFGPresetSearchWidget * m_tabSearchWidget;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGConfig m_dfgConfig;
 

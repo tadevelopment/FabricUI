@@ -1332,6 +1332,7 @@ class CanvasWindow(QtGui.QMainWindow):
                     menu.addSeparator()
                     self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
                     menu.addAction(self.manipAction)
+
         elif name == 'View':
             if prefix:
 

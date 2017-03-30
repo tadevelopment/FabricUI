@@ -98,10 +98,8 @@ void Graph::initialize()
   setLayout(layout);
 }
 
-QGraphicsWidget * Graph::itemGroup()
-{
-  return m_mainPanel->itemGroup();
-}
+QGraphicsWidget * Graph::itemGroup() { return m_mainPanel->itemGroup(); }
+const QGraphicsWidget * Graph::itemGroup() const { return m_mainPanel->itemGroup(); }
 
 bool Graph::hasSidePanels() const
 {
