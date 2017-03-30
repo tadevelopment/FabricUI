@@ -1777,11 +1777,12 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #ResultsView #TagContainer #TagWidget QPushButton
 {
-  border-radius: 2px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
   color: #FFFFFF;
   margin: 1px 4px 1px 4px;
-  padding: 2px;
   min-height: 14px;
+  padding: 2px;
   text-align: left;
 }
 
@@ -1856,34 +1857,31 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #TagWidget QPushButton
 {
   background-color: #444444;
+  border: none;
+  border-left: 2px solid #000;
   font: 12px "Roboto";
 }
 
 #TagWidget[highlighted="true"] QPushButton
 {
-  color: #FFF;
   background-color: #666666;
+  color: #FFF;
 }
 
 #TagWidget QPushButton:hover
 {
-  color: #000;
   background-color: #FFF;
+  color: #000;
 }
 
-#TagWidget QPushButton
-{
-  border: none;
-  border-left: 4px solid #000;
-}
 /* Categories are defined in Core/DFG/DFGTag.cpp */
-#TagWidget[tagCat="ext"] QPushButton { border-left-color: #0FF; }
-#TagWidget[tagCat="cat"] QPushButton { border-left-color: #FF0; }
-#TagWidget[tagCat="name"] QPushButton { border-left-color: #FF0; }
-#TagWidget[tagCat="namecomp"] QPushButton { border-left-color: #F0F; }
-#TagWidget[tagCat="aka"] QPushButton { border-left-color: #F00; }
-#TagWidget[tagCat="porttype"] QPushButton { border-left-color: #0FF; }
-#TagWidget[tagCat="pathcomp"] QPushButton { border-left-color: #F0F; }
+#TagWidget[tagCat="ext"] QPushButton { border-left-color: #00BFBF; }
+#TagWidget[tagCat="cat"] QPushButton { border-left-color: #BF00BF; }
+#TagWidget[tagCat="name"] QPushButton { border-left-color: #27A8DF; }
+#TagWidget[tagCat="namecomp"] QPushButton { border-left-color: #bfb900; }
+#TagWidget[tagCat="aka"] QPushButton { border-left-color: #BF0000; }
+#TagWidget[tagCat="porttype"] QPushButton { border-left-color: #06BF12; }
+#TagWidget[tagCat="pathcomp"] QPushButton { border-left-color: #CC6600; }
 
 #HeatBar
 {
@@ -1929,7 +1927,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #PresetView #TagWidget QPushButton
 {
-  border-radius: 2px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
   padding: 2px;
 }
 
@@ -2031,14 +2030,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-weight: bold;
 }
 
-#DetailsWidget #TagContainer #TagWidget QPushButton
-{
-  border-style: inset;
-  padding: 0px 4px 0px 4px;
-  margin: 0px;
-  background-color: #50626E;
-}
-
 #DetailsWidget #TagContainer #TagWidget QPushButton:hover
 {
   color: #272822;
@@ -2058,9 +2049,9 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DetailsWidget #TagContainer #TagWidget QPushButton
 {
-  border-style: inset;
   background-color: #50626E;
-  border-radius: 4px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
   margin: 2px;
   padding: 2px;
 }
