@@ -253,7 +253,8 @@ namespace FabricUI
       QString cmdCreatePreset(
         QString nodeName,
         QString presetDirPath,
-        QString presetName
+        QString presetName,
+        bool updateOrigPreset
         );
 
       QString cmdEditPort(

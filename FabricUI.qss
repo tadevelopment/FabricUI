@@ -1701,8 +1701,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGPresetSearchWidget
 {
-  font: 12px "Roboto";
   background-color: #272822;
+  font: 12px "Roboto";
   padding: 0px;
 }
 
@@ -1725,6 +1725,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   background-color: #272822;
   border-radius: 4px;
+  color: #FFFFFF;
   font: 18px "Roboto";
   padding: 2px;
 }
@@ -1773,6 +1774,11 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   border-image: none;
   image: none;
+}
+
+#ResultsView::branch:selected
+{
+  background-color: #272822;
 }
 
 #ResultsView #TagContainer #TagWidget QPushButton
@@ -1830,6 +1836,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #QueryEdit #TagsEdit #TagWidget QPushButton
 {
   border-style: inset;
+  color: #FFFFFF;
   padding: 0px 4px 0px 4px;
   margin: 0px;
   background-color: #50626E;
@@ -1901,12 +1908,19 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font: 12px "Roboto";
 }
 
-#TabSearchLabel[clickable="true"]
+#DFGPresetSearchWidget #Status #TabSearchLabel[clickable="false"]
 {
   font-style: italic;
+  color: #FFFFFF;
 }
 
-#TabSearchLabel[clickable="true"]:hover,
+#DFGPresetSearchWidget #Status #TabSearchLabel[clickable="true"]
+{
+  font-style: italic;
+  color: #FFFFFF;
+}
+
+#DFGPresetSearchWidget #Status #TabSearchLabel[clickable="true"]:hover,
 #DetailsWidget #Name[clickable="true"]:hover
 {
   color: #27A8DF;
@@ -1914,14 +1928,18 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #PresetView QLabel
 {
+  color: #FFFFFF;
   font: 12px "Roboto";
   margin-left: 2px;
 }
 
 #PresetView #TagWidget QPushButton
 {
+  border-style: none;
+  border-radius: 2px;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
+  color: #FFFFFF;
   padding: 2px;
 }
 
@@ -1991,48 +2009,63 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #272822;
   min-width: 300px;
   max-width: 300px;
-  padding: 8px;
-  padding-right: 32px;
 }
 
 #DetailsWidget #Name
 {
+  color: #FFFFFF;
   font-size: 22px;
   font-weight: bold;
 }
 
 #DetailsWidget #Description
 {
+  color: #FFFFFF;
   font-family: "Roboto";
   font-size: 12px;
+  border: none;
+  background-color: #272822;
+  padding-right: 32px;
 }
 
 #DetailsWidget #Section #Header #Handle
 {
+  background-color: #444444;
+  color: #FFFFFF;
   font-family: "Roboto";
   min-width: 4px;
-  background-color: #444444;
 }
 
 #DetailsWidget #Section #Header #Name
 {
-  font-family: "Roboto";
   background-color: #444444;
+  color: #FFFFFF;
+  font-family: "Roboto";
   padding: 4px;
   font-size: 14px;
   font-weight: bold;
 }
 
+#DetailsWidget #TagContainer #TagWidget QPushButton
+{
+  background-color: #50626E;
+  border: 0;
+  border-radius: 2px;
+  color: #FFFFFF;
+  margin: 0px;
+  padding: 0px 4px 0px 4px;
+}
+
 #DetailsWidget #TagContainer #TagWidget QPushButton:hover
 {
-  color: #272822;
   background-color: #F0F0F0;
+  color: #272822;
 }
 
 #DetailsWidget #Section #Header[hovered="true"] #Name
 {
-  background-color: #555555;
   color: #FFFFFF;
+  background-color: #555555;
 }
 
 #DetailsWidget #Section #Header[toggled="true"] #Handle
@@ -2045,6 +2078,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
+  color: #FFFFFF;
   margin: 2px;
   padding: 2px;
 }
@@ -2057,23 +2091,51 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DetailsWidget #PortsView
 {
   background-color: #272822;
-  margin: 8px;
 }
 
 #DetailsWidget #PortsView #PortView,
 #DetailsWidget #PortsView #PortsHeader
 {
   background-color: #272822;
+  color: #FFFFFF;
 }
 
 #DetailsWidget #PortsView #PortsHeader *
 {
-  padding: 4px;
   background-color: #444444;
+  padding: 4px;
 }
 
 #DetailsWidget #PortsView #PortView *
 {
-  padding: 4px;
   background-color: #333333;
+  padding: 4px;
+}
+
+#DetailsWidget #PortsView #PortView QLabel,
+#DetailsWidget #PortsView #PortsHeader QLabel
+{
+  color: #FFFFFF;
+}
+
+#DetailsWidget #PortsView #PortView #TabSearchLabel
+{
+  font: 12px "Roboto";
+}
+
+#DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="false"]
+{
+  font-style: italic;
+  color: #FFFFFF;
+}
+
+#DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="true"]
+{
+  font-style: italic;
+  color: #FFFFFF;
+}
+
+#DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="true"]:hover
+{
+  color: #27A8DF;
 }

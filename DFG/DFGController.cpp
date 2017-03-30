@@ -1889,7 +1889,8 @@ QString DFGController::cmdAddPort(
 QString DFGController::cmdCreatePreset(
   QString nodeName,
   QString presetDirPath,
-  QString presetName
+  QString presetName,
+  bool updateOrigPreset
   )
 {
   return m_cmdHandler->dfgDoCreatePreset(
@@ -1898,7 +1899,8 @@ QString DFGController::cmdCreatePreset(
     getExec(),
     nodeName,
     presetDirPath,
-    presetName
+    presetName,
+    updateOrigPreset
     );
 }
 

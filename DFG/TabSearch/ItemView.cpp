@@ -73,6 +73,18 @@ void TagWidget::setScore( double score )
   //this->setToolTip( "Score = " + QString::number( score ) );
 }
 
+void TagWidget::enterEvent( QEvent* e )
+{
+  Parent::enterEvent( e );
+  this->setCursor( Qt::PointingHandCursor );
+}
+
+void TagWidget::leaveEvent( QEvent* e )
+{
+  Parent::leaveEvent( e );
+  this->unsetCursor();
+}
+
 size_t NameSep( const Result& result )
 {
   return result.isPreset() ?
@@ -85,7 +97,6 @@ std::string PresetView::DisplayName( const Result& result )
 {
   return result.substr( NameSep( result ) + 1 );
 }
-
 
 PresetView::PresetView( const Result& presetName, const std::vector<Query::Tag>& tags )
   : m_heatBar( new HeatBar( this ) )

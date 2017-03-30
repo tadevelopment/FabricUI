@@ -122,6 +122,7 @@ namespace DFG {
       void openPresetDoc( const char *nodeName );
       void splitFromPreset( const char *nodeName );
       void createPreset( const char *nodeName );
+      void updateOrigPreset( const char *nodeName );
       void exportGraph( const char *nodeName );
       void explodeNode( const char *nodeName );
 
@@ -1021,7 +1022,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_node( node )
       {
-        setText( "Split from preset" );
+        setText( "Split From Preset" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -1057,7 +1058,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_node( node )
       {
-        setText( "Create preset" );
+        setText( "Create New Preset" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -1068,6 +1069,40 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->createPreset(m_node->name().c_str());
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
+    };
+
+    class UpdatePresetAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      UpdatePresetAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Update Original Preset" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->updateOrigPreset(m_node->name().c_str());
       }
 
     private:

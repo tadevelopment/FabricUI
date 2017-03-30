@@ -8,6 +8,7 @@
 #include <iostream>
 #include <QLayout>
 #include <QLabel>
+#include <QTextEdit>
 #include <QVariant>
 #include <QKeyEvent>
 #include <FTL/JSONValue.h>
@@ -311,7 +312,7 @@ public:
 
     this->setLayout( m_layout );
     m_layout->setSpacing( 2 );
-    m_layout->setMargin( 4 );
+    m_layout->setMargin( 8 );
   }
 
   void clear()
@@ -361,7 +362,7 @@ void DetailsWidget::addSection( Section* s )
 DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
   : m_host( host )
   , m_name( new Label() )
-  , m_description( new QLabel() )
+  , m_description( new Description() )
 {
   this->setObjectName( "DetailsWidget" );
 
@@ -370,7 +371,9 @@ DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
     this, SIGNAL( tagRequested( const Query::Tag& ) ) );
   m_description->setObjectName( "Description" );
   m_description->setAlignment( Qt::AlignTop );
-  m_description->setWordWrap( true );
+  m_description->setReadOnly( true );
+  m_description->setEnabled( false );
+  m_description->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
   m_description->setMinimumWidth( 300 );
 
   clear();
@@ -412,6 +415,26 @@ void DetailsWidget::setPreset( const Result& preset )
   {
     std::string name = m_preset.substr( m_preset.rfind( '.' ) + 1 );
     Query::Tag tag( NameCat, name );
+
+    // Wrapping too long strings
+    {
+      int maxWidth = int( 0.8 * this->width() ); // Hack : harcoded margin value
+      QFontMetrics nameMetrics = m_name->fontMetrics();
+      QString txt = ToQString( name );
+      QString wrapped;
+      while( !txt.isEmpty() )
+      {
+        int i = 0;
+        while( i < txt.size() && nameMetrics.width( txt, i ) < maxWidth )
+          i++;
+        wrapped += txt.left( i );
+        if( i != txt.size() )
+          wrapped += "-\n";
+        txt = txt.right( txt.size() - i );
+      }
+      name = ToStdString( wrapped );
+    }
+
     if( details.tags.find( tag ) != details.tags.end() )
     {
       m_name->set( name, tag );
@@ -423,6 +446,7 @@ void DetailsWidget::setPreset( const Result& preset )
 
   // Description
   m_description->setText( ToQString( details.description ) );
+  m_description->setFixedHeight( int( m_description->document()->size().height() ) );
 
   // Ports
   m_portsTable->setPorts( details.ports, details.tags, this );
