@@ -220,8 +220,11 @@ protected:
     }
 
     // Select all Tags only if the text is already all selected
-    if( e->matches( QKeySequence::SelectAll ) && selectedText() == text() )
-      m_parent->m_highlightedTag = AllHighlighted;
+    if( e->matches( QKeySequence::SelectAll ) )
+      if( selectedText() == text() )
+        m_parent->m_highlightedTag = AllHighlighted;
+      else
+        m_parent->m_highlightedTag = NoHighlight;
 
     if( m_parent->m_highlightedTag == AllHighlighted
       && ( e->key() == Qt::Key_Left || e->key() == Qt::Key_Right ) )
