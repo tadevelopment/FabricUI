@@ -229,10 +229,12 @@ protected:
       m_parent->m_highlightedTag = NoHighlight;
     }
 
+    bool navigatingTags = ( cursorPosition() == 0 || e->modifiers().testFlag( Qt::AltModifier ) );
     if( e->key() == Qt::Key_Backspace )
     {
       int highlitedTag = m_parent->m_highlightedTag; // Selection might change after the text has changed
-      Parent::keyPressEvent( e );
+      if( highlitedTag == NoHighlight || highlitedTag == AllHighlighted )
+        Parent::keyPressEvent( e ); // Deleting text
       m_parent->m_highlightedTag = highlitedTag;
 
       if( m_parent->m_highlightedTag == NoHighlight && cursorPosition() == 0 )
@@ -246,7 +248,7 @@ protected:
     }
     else
     // Navigating in the Tags with the arrow keys
-    if( cursorPosition() == 0 && e->key() == Qt::Key_Right )
+    if( navigatingTags && e->key() == Qt::Key_Right )
     {
       if( m_parent->m_highlightedTag == NoHighlight )
         Parent::keyPressEvent( e ); // If no selected Tag, move in the Text
@@ -254,7 +256,7 @@ protected:
         m_parent->m_highlightedTag++;
     }
     else
-    if( cursorPosition() == 0 && e->key() == Qt::Key_Left )
+    if( navigatingTags && e->key() == Qt::Key_Left )
     {
       if( m_parent->m_highlightedTag == NoHighlight )
         m_parent->m_highlightedTag = int(m_parent->m_query.getTags().size()) - 1;
@@ -381,8 +383,7 @@ void QueryEdit::updateTagHighlight()
   // If the TextCursor is not at the beginning
   // or if we overflowed the number of tags :
   // remove the highlight
-  if( ( m_textEdit->cursorPosition() > 0 && m_highlightedTag != AllHighlighted )
-      || m_highlightedTag >= int(m_query.getTags().size()) )
+  if( m_highlightedTag >= int(m_query.getTags().size()) )
     m_highlightedTag = NoHighlight;
 
   m_tagsEdit->setHighlightedTag( m_highlightedTag );
