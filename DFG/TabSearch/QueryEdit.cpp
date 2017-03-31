@@ -365,15 +365,15 @@ void QueryEdit::convertTextToTags()
     const std::string text = previousText.substr( start, end - start );
 
     bool isTag = false;
-    if( text.find( ':' ) != std::string::npos )
+    if( Query::Tag::IsTag( text ) )
     {
+      isTag = true;
       Query::Tag tag = text;
       if( m_tagDB.find( tag.cat() ) != m_tagDB.end() )
       {
         const TagSet& catTags = m_tagDB[tag.cat()];
         if( catTags.find( tag ) != catTags.end() && !m_query.hasTag( tag ) )
         {
-          isTag = true;
           // the text entered might have the wrong case
           Query::Tag dbName = *( catTags.find( tag ) );
           m_controller->addTag( dbName );
