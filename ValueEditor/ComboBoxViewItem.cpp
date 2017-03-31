@@ -12,10 +12,19 @@
 
 using namespace FabricUI::ValueEditor;
 
-ComboBoxViewItem::ComboBoxViewItem( QString const &name, QVariant const &v, ItemMetadata* metadata, bool isString )
+ComboBoxViewItem::ComboBoxViewItem(
+  QString const &name,
+  QVariant const &v,
+  ItemMetadata* metadata,
+  bool isString,
+  bool isRotationOrder,
+  FabricCore::Context contextForRotationOrder
+  )
   : BaseViewItem(name, metadata)
   , m_comboBox(NULL)
   , m_isString(isString)
+  , m_isRotationOrder(isRotationOrder)
+  , m_contextForRotationOrder( contextForRotationOrder )
 {
   m_comboBox = new ComboBox;
 
@@ -42,30 +51,43 @@ ComboBoxViewItem::~ComboBoxViewItem()
 
 void ComboBoxViewItem::metadataChanged()
 {
-  const char* str = m_metadata.getString( "uiCombo" );
-  if (str == NULL)
-    return;
-
-  std::string uiComboStr = str;
-  if (uiComboStr.size() > 0)
+  if ( m_isRotationOrder )
   {
-    if (uiComboStr[0] == '(')
-      uiComboStr = uiComboStr.substr( 1 );
-    if (uiComboStr[uiComboStr.size() - 1] == ')')
-      uiComboStr = uiComboStr.substr( 0, uiComboStr.size() - 1 );
-
-    QStringList parts = QString( uiComboStr.c_str() ).split( ',' );
-    // Push options to UI combobox
     m_comboBox->clear();
-    for (int i = 0; i < parts.size(); i++)
-    {
-      QString itemStr = parts[i].trimmed();
-      if (itemStr.startsWith( "\"" ))
-        itemStr.remove( 0, 1 );
-      if (itemStr.endsWith( "\"" ) )
-        itemStr.chop( 1 );
+    m_comboBox->addItem( "zyx" );
+    m_comboBox->addItem( "xzy" );
+    m_comboBox->addItem( "yxz" );
+    m_comboBox->addItem( "yzx" );
+    m_comboBox->addItem( "xyz" );
+    m_comboBox->addItem( "zxy" );
+  }
+  else
+  {
+    const char* str = m_metadata.getString( "uiCombo" );
+    if (str == NULL)
+      return;
 
-      m_comboBox->addItem( itemStr );
+    std::string uiComboStr = str;
+    if (uiComboStr.size() > 0)
+    {
+      if (uiComboStr[0] == '(')
+        uiComboStr = uiComboStr.substr( 1 );
+      if (uiComboStr[uiComboStr.size() - 1] == ')')
+        uiComboStr = uiComboStr.substr( 0, uiComboStr.size() - 1 );
+
+      QStringList parts = QString( uiComboStr.c_str() ).split( ',' );
+      // Push options to UI combobox
+      m_comboBox->clear();
+      for (int i = 0; i < parts.size(); i++)
+      {
+        QString itemStr = parts[i].trimmed();
+        if (itemStr.startsWith( "\"" ))
+          itemStr.remove( 0, 1 );
+        if (itemStr.endsWith( "\"" ) )
+          itemStr.chop( 1 );
+
+        m_comboBox->addItem( itemStr );
+      }
     }
   }
 }
@@ -82,6 +104,12 @@ void ComboBoxViewItem::onModelValueChanged( QVariant const &v )
     int index = m_comboBox->findText( getQVariantRTValValue<QString>(v) );
     m_comboBox->setCurrentIndex( index );
   }
+  else if( m_isRotationOrder )
+  {
+    FabricCore::RTVal rtVal = v.value<FabricCore::RTVal>();
+    FabricCore::RTVal orderRTVal = rtVal.getMemberRef( 0 );
+    m_comboBox->setCurrentIndex( orderRTVal.getSInt32() );
+  }
   else
   {
     m_comboBox->setCurrentIndex( getQVariantRTValValue<int>(v) );
@@ -95,6 +123,33 @@ void ComboBoxViewItem::entrySelected(int index)
     emit viewValueChanged(
       QVariant::fromValue<QString>( m_comboBox->itemText( index ) )
       );
+  }
+  else if ( m_isRotationOrder )
+  {
+    try
+    {
+      FabricCore::RTVal indexAsRTVal =
+        FabricCore::RTVal::ConstructSInt32(
+          m_contextForRotationOrder,
+          index
+          );
+
+      FabricCore::RTVal rtVal =
+        FabricCore::RTVal::Construct(
+          m_contextForRotationOrder,
+          "RotationOrder",
+          1,
+          &indexAsRTVal
+          );
+
+      emit viewValueChanged(
+        QVariant::fromValue<FabricCore::RTVal>( rtVal )
+        );
+    }
+    catch ( FabricCore::Exception e )
+    {
+      std::cerr << e.getDesc_cstr() << '\n';
+    }
   }
   else
   {
@@ -112,6 +167,20 @@ BaseViewItem* ComboBoxViewItem::CreateItem(
   ItemMetadata* metaData
   )
 {
+  FabricCore::RTVal rtVal = value.value<FabricCore::RTVal>();
+  if ( rtVal.isValid()
+    && rtVal.hasType( "RotationOrder" ) )
+  {
+    return new ComboBoxViewItem(
+      name,
+      value,
+      metaData,
+      false, // isString
+      true, // isRotationOrder
+      rtVal.getContext()
+      );
+  }
+
   if ( metaData != NULL &&
        metaData->has("uiCombo") )
   {
@@ -123,6 +192,7 @@ BaseViewItem* ComboBoxViewItem::CreateItem(
       return new ComboBoxViewItem( name, value, metaData, isString );
     }
   }
+
   return 0;
 }
 

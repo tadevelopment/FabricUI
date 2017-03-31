@@ -11,6 +11,7 @@
 #endif
 
 #include <stdlib.h>
+#include <math.h>
 
 using namespace FabricUI::GraphView;
 
@@ -21,6 +22,7 @@ GraphViewWidget::GraphViewWidget(
   )
   : QGraphicsView(parent)
   , m_altWasHeldAtLastMousePress( false )
+  , m_uiGraphZoomBeforeQuickZoom( 0.0f )
 {
   setRenderHint(QPainter::Antialiasing);
   // setRenderHint(QPainter::HighQualityAntialiasing);
@@ -33,8 +35,6 @@ GraphViewWidget::GraphViewWidget(
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-
-  setBackgroundBrush(config.mainPanelBackgroundColor);
 
   setViewportUpdateMode(SmartViewportUpdate);
 
@@ -110,6 +110,8 @@ void GraphViewWidget::mousePressEvent(QMouseEvent * event)
 void GraphViewWidget::mouseMoveEvent(QMouseEvent * event)
 {
   m_lastEventPos = event->pos();
+  if (getUiGraphZoomBeforeQuickZoom() > 0)
+    update();
   QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -164,6 +166,79 @@ bool GraphViewWidget::focusNextPrevChild(bool next)
 {
   // avoid focus switching
   return false;
+}
+
+void GraphViewWidget::drawBackground(QPainter *painter, const QRectF &exposedRect)
+{
+  // prepare.
+  painter->save();
+  GraphView::MainPanel   *mainPanel = graph()->mainPanel();
+  GraphView::GraphConfig &config    = graph()->config();
+  std::vector<QLineF>    &lines     = m_lines;
+  QRectF rect = this->rect();
+  rect.setLeft(graph()->sidePanel(GraphView::PortType_Output)->rect().right());
+
+  // fill the background.
+  if (getUiGraphZoomBeforeQuickZoom() > 0)
+  {
+    painter->fillRect(rect, config.mainPanelHotkeyZoomBackgroundColor);
+
+    QPointF pos = lastEventPos();
+    QSizeF size = mainPanel->canvasZoom() * rect.size() / getUiGraphZoomBeforeQuickZoom();
+    QRectF zoomRect;
+    zoomRect.setRect(pos.x() - 0.5f * size.width() , pos.y() - 0.5f * size.height(), size.width(), size.height());
+
+    QPainterPath path;
+    path.addRoundedRect(zoomRect, 5, 5);
+    QPen pen(config.mainPanelHotkeyZoomBorderColor, 1.5f, Qt::DashLine);
+    painter->setPen(pen);
+    painter->fillPath(path, config.mainPanelBackgroundColor);
+    painter->drawPath(path);
+  }
+  else
+  {
+    painter->fillRect(rect, config.mainPanelBackgroundColor);
+  }
+
+  // draw the grid.
+  if (config.mainPanelDrawGrid)
+  {
+    // get the view's pan and zoom.
+    QPointF pan  = mainPanel->canvasPan();
+    qreal   zoom = mainPanel->canvasZoom();
+
+    // draw the grid lines.
+    qreal gridStepMin = config.mainPanelGridSpan / 4;
+    qreal gridStepMax = config.mainPanelGridSpan;
+    for (int pass=0;pass<2;pass++)
+    {
+      qreal gridStep = zoom * (pass == 0 ? 1 : 10) * config.mainPanelGridSpan;
+      if (gridStep > gridStepMin)
+      {
+        lines.clear();
+        qreal x = rect.left() + fmod(pan.rx(), gridStep);
+        qreal y = rect.top()  + fmod(pan.ry(), gridStep);
+        for (;x<rect.right(); x+=gridStep)  lines.push_back(QLineF(x, rect.top(), x, rect.bottom()));
+        for (;y<rect.bottom();y+=gridStep)  lines.push_back(QLineF(rect.left(), y, rect.right(), y));
+
+        // calculate the pen width for the lines
+        // based on the grid step: the smaller
+        // the grid step the thinner the width.
+        qreal penWidth = config.mainPanelGridPen.widthF();
+        if (gridStep < gridStepMax)
+          penWidth *= 0.5 * (gridStep - gridStepMin) / (gridStepMax - gridStepMin);
+        else if (gridStep < 10 * gridStepMax)
+          penWidth *= 0.5 + 0.5 * (gridStep - gridStepMax) / (10 * gridStepMax - gridStepMax);
+
+        // draw lines.
+        painter->setPen(QPen(config.mainPanelGridPen.color(), penWidth));
+        painter->drawLines(lines.data(), lines.size());
+      }
+    }
+  }
+
+  // clean up.
+  painter->restore();
 }
 
 GraphViewScene::GraphViewScene( Graph * graph ) {

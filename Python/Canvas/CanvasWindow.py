@@ -10,7 +10,7 @@ import sys
 
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core, FabricUI, Util
-from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine
+from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine, Actions
 from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
@@ -22,6 +22,164 @@ class CanvasWindowEventFilter(QtCore.QObject):
         super(CanvasWindowEventFilter, self).__init__()
         self.window = window
 
+class BaseCanvasWindowAction(Actions.BaseAction):
+
+    def __init__(self,
+        parent,
+        canvasWindow, 
+        name, 
+        text, 
+        shortcut = QtGui.QKeySequence(), 
+        context = QtCore.Qt.ApplicationShortcut):
+
+        self.canvasWindow = canvasWindow
+
+        super(BaseCanvasWindowAction, self).__init__(
+            parent, 
+            name, 
+            text, 
+            shortcut, 
+            context)
+
+class NewGraphAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(NewGraphAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.NewGraphAction", 
+            "New Graph", 
+            QtGui.QKeySequence.New)
+        
+    def onTriggered(self):
+        self.canvasWindow.execNewGraph()
+
+class LoadGraphAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(LoadGraphAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.LoadGraphAction", 
+            "Load Graph", 
+            QtGui.QKeySequence.Open)
+        
+    def onTriggered(self):
+        self.canvasWindow.onLoadGraph()
+
+class ImportGraphAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(ImportGraphAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.ImportGraphAction", 
+            "Import Graph", 
+            QtGui.QKeySequence('Ctrl+I'))
+        
+    def onTriggered(self):
+        self.canvasWindow.onImportGraphAsNode()
+
+class SaveGraphAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(SaveGraphAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.SaveGraphAction", 
+            "Save Graph", 
+            QtGui.QKeySequence.Save)
+        
+    def onTriggered(self):
+        self.canvasWindow.onSaveGraph()
+
+class SaveGraphAsAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(SaveGraphAsAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.SaveGraphAsAction", 
+            "Save Graph As", 
+            QtGui.QKeySequence.SaveAs)
+        
+    def onTriggered(self):
+        self.canvasWindow.onSaveGraphAs()
+
+class QuitApplicationAction(BaseCanvasWindowAction):
+ 
+    def __init__(self, parent, canvasWindow):
+        super(QuitApplicationAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.QuitApplicationAction", 
+            "Quit", 
+            QtGui.QKeySequence.Quit)
+    
+    def onTriggered(self):
+        self.canvasWindow.close()
+
+class ToggleManipulationAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, viewport):
+        super(ToggleManipulationAction, self).__init__(
+            parent,     
+            None, 
+            "CanvasWindow.ToggleManipulationAction", 
+            "Toggle manipulation", 
+            QtGui.QKeySequence(QtCore.Qt.Key_Q),
+            QtCore.Qt.WidgetWithChildrenShortcut)
+        
+        self.viewport = viewport
+        self.setCheckable(True)
+        self.setChecked(self.viewport.isManipulationActive())
+
+    def onTriggered(self):
+        self.viewport.toggleManipulation()
+
+class GridVisibilityAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, viewport):
+        super(GridVisibilityAction, self).__init__(
+            parent,     
+            None, 
+            "CanvasWindow.GridVisibilityAction", 
+            "&Display Grid", 
+            QtGui.QKeySequence(QtCore.Qt.Key_G),
+            QtCore.Qt.WidgetWithChildrenShortcut)
+        
+        self.toggled.connect(viewport.setGridVisible)
+        self.setCheckable(True)
+        self.setChecked(viewport.isGridVisible())
+
+class ResetCameraAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, viewport):
+        super(ResetCameraAction, self).__init__(
+            parent,     
+            None, 
+            "CanvasWindow.ResetCameraAction", 
+            "&Reset Camera", 
+            QtGui.QKeySequence(QtCore.Qt.Key_R),
+            QtCore.Qt.WidgetWithChildrenShortcut)
+        
+        self.triggered.connect(viewport.resetCamera)
+       
+class BlockGraphCompilationAction(BaseCanvasWindowAction):
+
+    def __init__(self, canvasWindow):
+        super(BlockGraphCompilationAction, self).__init__(
+            None,     
+            canvasWindow, 
+            "CanvasWindow.BlockGraphCompilationAction", 
+            "Disable graph compilations", 
+            QtGui.QKeySequence(QtCore.Qt.SHIFT  + QtCore.Qt.CTRL + QtCore.Qt.Key_Return),
+            QtCore.Qt.WidgetWithChildrenShortcut)
+        
+        self.setCheckable(True)
+        self.setChecked(False)
+        self.toggled.connect(self.canvasWindow.setBlockCompilations)
+   
 class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
 
@@ -109,7 +267,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.redoAction = None
         self.newGraphAction = None
         self.loadGraphAction = None
-        self.importGraphAsNodeAction = None
+        self.importGraphAction = None
         self.saveGraphAction = None
         self.saveGraphAsAction = None
         self.recentFilesAction = []
@@ -250,6 +408,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
                                        self.mainBinding, '', graph, self.astManager,
                                        self.dfguiCommandHandler, self.config)
+        self.dfgWidget.fileMenuAboutToShow.connect(self.updateRecentFileActions)
         self.scriptEditor.setDFGControllerGlobal(self.dfgWidget.getDFGController())
 
         tabSearchWidget = self.dfgWidget.getTabSearchWidget()
@@ -421,31 +580,42 @@ class CanvasWindow(QtGui.QMainWindow):
         self.scriptEditor.titleDataChanged.connect(scriptEditorTitleDataChanged)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.scriptEditorDock, QtCore.Qt.Vertical)
 
+    def onTriggered(self):
+        self.scriptEditor.newScript()
+
     def _initMenus(self):
         """Initializes all menus for the application."""
 
-        # Main Menu Bar
-        self.dfgWidget.populateMenuBar(self.menuBar())
+        # add the "File", "Edit" and "View" menus.
+        self.dfgWidget.populateMenuBar(self.menuBar(), True, True, True, False, False)
+
+        # add the "window" menu.
+        # note: this menu is specific to the .exe and .py
+        #       standalones which is why it is done here.
         windowMenu = self.menuBar().addMenu('&Window')
 
         # Toggle DFG Dock Widget Action
         toggleAction = self.dfgDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_1)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.dfgDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Explorer Dock Widget Action
         toggleAction = self.treeDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_2)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.treeDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Value Editor Dock Widget Action
         toggleAction = self.valueEditorDockWidget.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_3)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.valueEditorDockWidget.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Timeline Dock Widget Action
         toggleAction = self.timeLineDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_4)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.timeLineDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         windowMenu.addSeparator()
@@ -453,22 +623,29 @@ class CanvasWindow(QtGui.QMainWindow):
         # Toggle Undo Dock Widget Action
         toggleAction = self.undoDockWidget.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_5)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.undoDockWidget.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Log Dock Widget Action
         toggleAction = self.logDockWidget.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_6)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.logDockWidget.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Script Editor Dock Widget Action
         toggleAction = self.scriptEditorDock.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_7)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.scriptEditorDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
         # Toggle Rendering Options Widget Action
         toggleAction = self.renderingOptionsDockWidget.toggleViewAction()
         toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
+        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
         windowMenu.addAction( toggleAction )
+
+        # add the "Help" menu.
+        self.dfgWidget.populateMenuBar(self.menuBar(), False, False, False, False, True)
 
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested by manipulators
@@ -520,6 +697,10 @@ class CanvasWindow(QtGui.QMainWindow):
         if type(files) is not list:
           files = [files]           
 
+        # Convert paths to abspath, to make sure that they collide
+        filePath = os.path.abspath( filePath )
+        files = [ os.path.abspath( file ) for file in files ]       
+
         # Try to remove the entry if it is already in the list
         try:
             files.remove(filePath)
@@ -528,6 +709,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         # Insert the entry first in the list
         files.insert(0, filePath)
+
         # Update the list and crop it to maxRecentFiles
         self.settings.setValue('mainWindow/recentFiles', files[:self.maxRecentFiles])
 
@@ -538,9 +720,17 @@ class CanvasWindow(QtGui.QMainWindow):
         if type(files) is not list:
           files = [files]                   
 
+        # Only keep files that still exist
+        files = [ f for f in files if os.path.exists( f ) ]               
+
         if len(self.recentFilesAction) >0:
             for i,filepath in enumerate(files):
-                text = "&%d %s" % (i + 1, filepath)
+                maxLen = 90
+                displayedFilepath = filepath
+                if len(displayedFilepath) > maxLen :
+                    # crop the filepath in the middle if it is too long
+                    displayedFilepath = displayedFilepath[:maxLen/2] + "..." + displayedFilepath[-maxLen/2:]
+                text = str(i + 1) + " " + displayedFilepath
                 self.recentFilesAction[i].setText(text)
                 self.recentFilesAction[i].setData(filepath)
                 self.recentFilesAction[i].setVisible(True)
@@ -582,6 +772,7 @@ class CanvasWindow(QtGui.QMainWindow):
             tl_loopMode = dfgExec.getMetadata("timeline_loopMode")
             tl_simulationMode = dfgExec.getMetadata("timeline_simMode")
             tl_current = dfgExec.getMetadata("timeline_current")
+            tl_timerFps = dfgExec.getMetadata("timeline_timerFps")
 
             if len(tl_start) > 0 and len(tl_end) > 0:
                 self.timeLine.setTimeRange(int(tl_start), int(tl_end))
@@ -598,6 +789,9 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.timeLine.setSimulationMode(int(tl_simulationMode))
             else:
                 self.timeLine.setSimulationMode(0)
+
+            if len(tl_timerFps) > 0:
+                self.timeLine.setTimerFromFps(float(tl_timerFps))
 
             camera_mat44 = dfgExec.getMetadata("camera_mat44")
             camera_focalDistance = dfgExec.getMetadata("camera_focalDistance")
@@ -932,9 +1126,10 @@ class CanvasWindow(QtGui.QMainWindow):
                           False)
         graph.setMetadata("timeline_loopMode", str(self.timeLine.loopMode()),
                           False)
-        graph.setMetadata("timeline_simMode",
-                          str(self.timeLine.simulationMode()), False)
-
+        graph.setMetadata("timeline_simMode", str(self.timeLine.simulationMode()), 
+                          False)
+        graph.setMetadata("timeline_timerFps", str(self.timeLine.getFps()), 
+                          False)
         try:
             camera = self.viewport.getCamera()
             mat44 = camera.getMat44('Mat44')
@@ -1055,8 +1250,8 @@ class CanvasWindow(QtGui.QMainWindow):
             self.newGraphAction.blockSignals(enabled)
         if self.loadGraphAction:
             self.loadGraphAction.blockSignals(enabled)
-        if self.importGraphAsNodeAction:
-            self.importGraphAsNodeAction.blockSignals(enabled)
+        if self.importGraphAction:
+            self.importGraphAction.blockSignals(enabled)
         if self.saveGraphAction:
             self.saveGraphAction.blockSignals(enabled)
         if self.saveGraphAsAction:
@@ -1093,16 +1288,11 @@ class CanvasWindow(QtGui.QMainWindow):
 
         if name == 'File':
             if prefix:
-                self.newGraphAction = QtGui.QAction('New Graph', menu)
-                self.newGraphAction.setShortcut(QtGui.QKeySequence.New)
-                self.loadGraphAction = QtGui.QAction('Load Graph...', menu)
-                self.loadGraphAction.setShortcut(QtGui.QKeySequence.Open)
-                self.importGraphAsNodeAction = QtGui.QAction('Import Graph...', menu)
-                self.importGraphAsNodeAction.setShortcut(QtGui.QKeySequence('Ctrl+I'))
-                self.saveGraphAction = QtGui.QAction('Save Graph', menu)
-                self.saveGraphAction.setShortcut(QtGui.QKeySequence.Save)
-                self.saveGraphAsAction = QtGui.QAction('Save Graph As...', menu)
-                self.saveGraphAsAction.setShortcut(QtGui.QKeySequence.SaveAs)
+                self.newGraphAction = NewGraphAction(menu, self)
+                self.loadGraphAction = LoadGraphAction(menu, self)
+                self.importGraphAction = ImportGraphAction(menu, self)
+                self.saveGraphAction = SaveGraphAction(menu, self)
+                self.saveGraphAsAction = SaveGraphAsAction(menu, self)
 
                 for i in range(self.maxRecentFiles):
                     self.recentFilesAction.append(QtGui.QAction(menu))
@@ -1111,7 +1301,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
                 menu.addAction(self.newGraphAction)
                 menu.addAction(self.loadGraphAction)
-                menu.addAction(self.importGraphAsNodeAction)
+                menu.addAction(self.importGraphAction)
                 menu.addAction(self.saveGraphAction)
                 menu.addAction(self.saveGraphAsAction)
                 self.separator = menu.addSeparator()
@@ -1120,71 +1310,44 @@ class CanvasWindow(QtGui.QMainWindow):
                     menu.addAction(self.recentFilesAction[i])
 
                 self.updateRecentFileActions()
-
-                self.newGraphAction.triggered.connect(self.execNewGraph)
-                self.loadGraphAction.triggered.connect(self.onLoadGraph)
-                self.importGraphAsNodeAction.triggered.connect(self.onImportGraphAsNode)
-                self.saveGraphAction.triggered.connect(self.onSaveGraph)
-                self.saveGraphAsAction.triggered.connect(self.onSaveGraphAs)
+  
             else:
                 menu.addSeparator()
-                self.quitAction = QtGui.QAction('Quit', menu)
-                self.quitAction.setShortcut(QtGui.QKeySequence.Quit)
+                self.quitAction = QuitApplicationAction(menu, self)
                 menu.addAction(self.quitAction)
 
-                self.quitAction.triggered.connect(self.close)
         elif name == 'Edit':
             if prefix:
                 self.undoAction = self.qUndoStack.createUndoAction(self)
                 self.undoAction.setShortcut(QtGui.QKeySequence.Undo)
+                Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.undoAction", self.undoAction)
                 menu.addAction(self.undoAction)
+                
                 self.redoAction = self.qUndoStack.createRedoAction(self)
                 self.redoAction.setShortcut(QtGui.QKeySequence.Redo)
+                Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.redoAction", self.redoAction)
                 menu.addAction(self.redoAction)
             else:
                 if self.isCanvas:
                     menu.addSeparator()
-                    self.manipAction = QtGui.QAction(
-                        'Toggle manipulation', self.viewport)
-                    self.manipAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Q))
-                    self.manipAction.setShortcutContext(
-                        QtCore.Qt.WidgetWithChildrenShortcut)
-                    self.manipAction.setCheckable(True)
-                    self.manipAction.setChecked(
-                        self.viewport.isManipulationActive())
-                    self.manipAction.triggered.connect(
-                        self.viewport.toggleManipulation)
+                    self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
                     self.viewport.addAction(self.manipAction)
                     menu.addAction(self.manipAction)
+
         elif name == 'View':
             if prefix:
 
                 if self.isCanvas:
-                    self.setGridVisibleAction = QtGui.QAction('&Display Grid', self.viewport)
-                    self.setGridVisibleAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_G))
-                    self.setGridVisibleAction.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-                    self.setGridVisibleAction.setCheckable(True)
-                    self.setGridVisibleAction.setChecked(self.viewport.isGridVisible())
-                    self.setGridVisibleAction.toggled.connect(self.viewport.setGridVisible)
+                    self.setGridVisibleAction = GridVisibilityAction(self.viewport, self.viewport)
                     self.viewport.addAction(self.setGridVisibleAction)
 
-                    self.resetCameraAction = QtGui.QAction('&Reset Camera', self.viewport)
-                    self.resetCameraAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_R))
-                    self.resetCameraAction.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-                    self.resetCameraAction.triggered.connect(self.viewport.resetCamera)
+                    self.resetCameraAction = ResetCameraAction(self.viewport, self.viewport)
                     self.viewport.addAction(self.resetCameraAction)
 
                 self.clearLogAction = QtGui.QAction('&Clear Log Messages', None)
                 self.clearLogAction.triggered.connect(self.logWidget.clear)
 
-                self.blockCompilationsAction = QtGui.QAction(
-                    'Disable graph compilations', None)
-                self.blockCompilationsAction.setCheckable(True)
-                self.blockCompilationsAction.setChecked(False)
-                self.blockCompilationsAction.setShortcut(QtCore.Qt.SHIFT  + QtCore.Qt.CTRL + QtCore.Qt.Key_Return );
-
-                self.blockCompilationsAction.toggled.connect(
-                    self.setBlockCompilations)
+                self.blockCompilationsAction = BlockGraphCompilationAction(self)
 
                 if self.isCanvas:
                     menu.addAction(self.setGridVisibleAction)

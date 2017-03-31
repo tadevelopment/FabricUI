@@ -91,12 +91,14 @@ GraphConfig::GraphConfig()
   // If the default value is changed, it should also be updated there (see FabricUI/Util/Config.cpp)
   GET_PARAMETER( mainPanelBackgroundColor, QColor(68, 68, 68, 255) );
 
-  GET_PARAMETER( mainPanelDrawGrid, false );
-  GET_PARAMETER( mainPanelGridSpanS, 30 );
-  GET_PARAMETER( mainPanelGridSpanL, 300 );
+  GET_PARAMETER( mainPanelHotkeyZoomBackgroundColor, QColor(56, 56, 56, 255) );
+  GET_PARAMETER( mainPanelHotkeyZoomBorderColor, QColor(255, 255, 255, 160) );
 
-  GET_PARAMETER( mainPanelGridPenS, QPen(QColor(44, 44, 44, 255), 0.5) );
-  GET_PARAMETER( mainPanelGridPenL, QPen(QColor(40, 40, 40, 255), 1.0) );
+  GET_PARAMETER( mainPanelDrawGrid, true );
+  GET_PARAMETER( mainPanelGridSpan, 30 );
+  GET_PARAMETER( mainPanelGridSnap, false );
+  GET_PARAMETER( mainPanelGridSnapSize, 10 );
+  GET_PARAMETER( mainPanelGridPen, QPen(QColor(55, 55, 55, 255), 1.0) );
 
   GET_PARAMETER( mainPanelBackGroundPanFixed, true );
   
@@ -159,20 +161,21 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( pinHoverPen, QPen(nodeFontHighlightColor, 1.5) );
   GET_PARAMETER( pinRadius, 5.5f );
   GET_PARAMETER( pinLabelSpacing, 2.0f );
-  GET_PARAMETER( pinInputUsesFullCircle, false );
-  GET_PARAMETER( pinOutputUsesFullCircle, true );
+  GET_PARAMETER( pinDisplayAsFullCircle, false );
   GET_PARAMETER( pinClickableDistance, 30.0f );
 
   GET_PARAMETER( dimConnectionLines, true );
   GET_PARAMETER( connectionUsePinColor, true );
+  GET_PARAMETER( connectionShowTooltip, true );
+  GET_PARAMETER( highlightConnectionTargets, true );
   GET_PARAMETER( connectionNodePortColorRatio, 0.75 );
   GET_PARAMETER( connectionColor, QColor(130, 130, 130) );
   GET_PARAMETER( connectionDefaultPen, QPen(connectionColor, 1.5) );
   GET_PARAMETER( connectionExposePen, QPen(connectionColor, 1.5) );
   GET_PARAMETER( connectionExposeRadius, 50.0 );
   GET_PARAMETER( connectionHoverPen, QPen(QColor(170, 170, 170), 2.0, Qt::SolidLine) );
-  GET_PARAMETER( connectionFixedTangentLength, 10.0f );
-  GET_PARAMETER( connectionPercentualTangentLength, 45.0f );
+  GET_PARAMETER( connectionClickableDistance, 4.0f );
+  GET_PARAMETER( connectionDrawAsCurves, true );
   GET_PARAMETER( portsCentered, true );
 
   GET_PARAMETER( sidePanelBackgroundColor, nodeDefaultColor );

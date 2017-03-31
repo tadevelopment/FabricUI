@@ -406,7 +406,8 @@ QString DFGUICmdHandler_QUndo::dfgDoCreatePreset(
   FabricCore::DFGExec const &exec,
   QString nodeName,
   QString presetDirPath,
-  QString presetName
+  QString presetName,
+  bool updateOrigPreset
   )
 {
   DFGUICmd_CreatePreset *cmd =
@@ -416,7 +417,8 @@ QString DFGUICmdHandler_QUndo::dfgDoCreatePreset(
       exec,
       nodeName,
       presetDirPath,
-      presetName
+      presetName,
+      updateOrigPreset
       );
   m_qUndoStack->push( new WrappedCommand( cmd ) );
   return cmd->getPathname();

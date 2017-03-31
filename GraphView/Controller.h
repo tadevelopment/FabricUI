@@ -51,6 +51,13 @@ namespace FabricUI
       virtual bool beginInteraction();
       virtual bool endInteraction();
 
+      virtual std::string gvcDoCopy(
+        ) = 0;
+
+      virtual void gvcDoPaste(
+        bool mapPositionToMouseCursor = true
+        ) = 0;
+
       virtual bool gvcDoRemoveNodes(
         FTL::ArrayRef<GraphView::Node *> nodes
         ) = 0;
@@ -97,7 +104,9 @@ namespace FabricUI
 
       virtual void gvcDoMoveNodes(
         std::vector<Node *> const &nodes,
+        std::vector<QPointF> const &nodesOriginalPos,
         QPointF delta,
+        float gridSnapSize,
         bool allowUndo
         ) = 0;
 
@@ -122,6 +131,8 @@ namespace FabricUI
       virtual bool frameAndFitNodes( FTL::ArrayRef<Node *> nodes );
       virtual bool frameSelectedNodes();
       virtual bool frameAllNodes();
+      virtual bool nodesAreVisible( FTL::ArrayRef<Node *> nodes );
+      virtual bool allNodesAreVisible();
       virtual bool canConnectTo(
         char const *pathA,
         char const *pathB,

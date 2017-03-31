@@ -2,20 +2,17 @@
 #define __TIMELINEWIDGET_H__
 
 #include <QWidget>
-#include <QGLWidget>
-#include <QContextMenuEvent>
-#include <QMenu>
-#include <QHBoxLayout>
+#include <QMouseEvent>
 #include <QTimer>
 #include <QTime>
+#include <QList>
 
 #include <QDoubleSpinBox>
 #include <QSlider>
 #include <QPushButton>
 #include <QComboBox>
+#include <FabricUI/Actions/BaseAction.h>
 
-#include <map>
-#include <set>
 #include <ctime>
 
 namespace FabricUI
@@ -197,8 +194,14 @@ namespace FabricUI
         /// start or stop the playback ( act as a switch on the playing state )
         void onPlayButtonToggled( bool checked );
         
+        /// start the playback
+        void play();
+
         /// stop the playback
         void pause();
+
+        /// toogle the playback
+        void togglePlayback();
 
         /// set the frame to the start of the current time slider range
         void goToStartFrame();
@@ -268,6 +271,244 @@ namespace FabricUI
         QComboBox * m_frameRateComboBox;
         QComboBox * m_loopModeComBox;
         QComboBox * m_simModeComBox;
+    };
+
+    // FE-5724 
+    class BaseTimeLineAction : public Actions::BaseAction
+    {
+      Q_OBJECT
+
+      public:
+        BaseTimeLineAction(
+          TimeLineWidget *timeLine,
+          const QString &name, 
+          const QString &text = "", 
+          QKeySequence shortcut = QKeySequence(),
+          Qt::ShortcutContext context = Qt::ApplicationShortcut,
+          bool enable = true)
+          : Actions::BaseAction( 
+            timeLine
+            , name 
+            , text 
+            , shortcut 
+            , context
+            , enable)
+          , m_timeLine(timeLine)
+        {
+        }
+
+        virtual ~BaseTimeLineAction()
+        {
+        }
+
+      protected:
+        TimeLineWidget *m_timeLine;
+
+    };
+
+    class TogglePlaybackAction : public BaseTimeLineAction
+    {
+      Q_OBJECT
+
+      public:
+        TogglePlaybackAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::TogglePlaybackAction"
+            , "Toggle playback" 
+            , QKeySequence("Ctrl+Space" ) 
+            , Qt::ApplicationShortcut
+            , enable)
+        {
+        }
+
+        virtual ~TogglePlaybackAction()
+        {
+        }
+
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->togglePlayback();
+        }
+
+    };
+
+    class PlayAction : public BaseTimeLineAction
+    {
+      Q_OBJECT
+
+      public:
+        PlayAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::PlayAction"
+            , "Play" 
+            , QKeySequence("Ctrl+Up" ) 
+            , Qt::ApplicationShortcut
+            , enable)
+        {
+        }
+
+        virtual ~PlayAction()
+        {
+        }
+
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->play();
+        }
+    };
+
+    class PauseAction : public BaseTimeLineAction
+    {
+      Q_OBJECT
+
+      public:
+        PauseAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::PauseAction"
+            , "Pause" 
+            , QKeySequence("Ctrl+Down" ) 
+            , Qt::ApplicationShortcut
+            , enable)
+        {
+        }
+
+        virtual ~PauseAction()
+        {
+        }
+
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->pause();
+        }
+    };
+
+    class GoToNextFrameAction : public BaseTimeLineAction
+    {
+      Q_OBJECT
+
+      public:
+        GoToNextFrameAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::GoToNextFrameAction"
+            , "Go to next Frame" 
+            , QKeySequence("Ctrl+Right" ) 
+            , Qt::ApplicationShortcut
+            , enable)
+        {
+        }
+
+        virtual ~GoToNextFrameAction()
+        {
+        }
+        
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->goToNextFrame();
+        }
+    };
+
+    class GoToPreviousFrameAction : public BaseTimeLineAction
+    {
+      Q_OBJECT
+
+      public:
+        GoToPreviousFrameAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::GoToPreviousFrameAction"
+            , "Go to previous Frame" 
+            , QKeySequence("Ctrl+Left" ) 
+            , Qt::ApplicationShortcut
+            , enable)
+        {
+        }
+
+        virtual ~GoToPreviousFrameAction()
+        {
+        }
+        
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->goToPreviousFrame();
+        }
+    };
+
+    class GoToEndFrameAction : public BaseTimeLineAction
+    {
+      Q_OBJECT
+
+      public:
+        GoToEndFrameAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::GoToEndFrameAction"
+            , "Go to end Frame" 
+            , QKeySequence("Ctrl+End" ) 
+            , Qt::ApplicationShortcut
+            , enable)
+        {
+        }
+
+        virtual ~GoToEndFrameAction()
+        {
+        }
+
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->goToEndFrame();
+        }
+
+    };
+
+    class GoToStartFrameAction : public BaseTimeLineAction
+    {
+      Q_OBJECT
+
+      public:
+        GoToStartFrameAction(
+          TimeLineWidget *timeLine,
+          bool enable = true )
+          : BaseTimeLineAction( 
+            timeLine
+            , "TimeLineWidget::GoToStartFrameAction"
+            , "Go to start Frame" 
+            , QKeySequence("Ctrl+Home" ) 
+            , Qt::ApplicationShortcut
+            , enable)
+        {
+        }
+
+        virtual ~GoToStartFrameAction()
+        {
+        }
+        
+      private slots:
+        virtual void onTriggered()
+        {
+          m_timeLine->goToStartFrame();
+        }
 
     };
   };

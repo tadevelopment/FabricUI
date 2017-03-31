@@ -32,7 +32,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QColorDialog>
-#include <QCursor>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSplitter>
@@ -158,6 +157,14 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(new DeleteNodes2Action              (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodeAction          (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodePropertiesAction(this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new ConnectionInsertPresetAction    (this, m_uiGraphViewWidget,
+                                                                      NULL,
+                                                                      "Fabric.Compounds.Debug.LabeledReport",
+                                                                      "value",
+                                                                      "value",
+                                                                      QCursor::pos(),
+                                                                      QKeySequence(Qt::Key_R),
+                                                                      "label"));
 
   m_klEditor =
     new DFGKLEditorWidget(
@@ -216,8 +223,35 @@ DFGWidget::DFGWidget(
   layout->addWidget( splitter );
   setLayout( layout );
 
-  m_tabSearchWidget = new DFGTabSearchWidget(this, m_dfgConfig);
+  m_legacyTabSearchWidget = new DFGTabSearchWidget( this, m_dfgConfig );
+  m_legacyTabSearchWidget->hide();
+  m_tabSearchWidget = new DFGPresetSearchWidget( &getDFGController()->getHost() );
+  m_tabSearchWidget->setParent( this );
   m_tabSearchWidget->hide();
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedPreset( QString ) ),
+    this, SLOT( onPresetAddedFromTabSearch( QString ) )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedBackdrop() ),
+    this, SLOT( onBackdropAddedFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
+    this, SLOT( onVariableGetterAddedFromTabSearch( const std::string ) )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( giveFocusToParent() ),
+    this, SLOT( onFocusGivenFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedSetVariable( const std::string ) ),
+    this, SLOT( onVariableSetterAddedFromTabSearch( const std::string ) )
+  );
+  QObject::connect(
+    getUIController(), SIGNAL( varsChanged() ),
+    this, SLOT( updateTabSearchVariables() )
+  );
 
   QObject::connect(
     m_uiHeader, SIGNAL(goUpPressed()),
@@ -231,14 +265,7 @@ DFGWidget::DFGWidget(
 
   m_uiController->setHostBindingExec( host, binding, execPath, exec );
 
-  QAction *reloadStylesAction = new QAction( "Reload QSS Styles", this );
-  reloadStylesAction->setShortcut( QKeySequence( "Ctrl+Shift+R" ) );
-  reloadStylesAction->setShortcutContext( Qt::WindowShortcut );
-  connect(
-    reloadStylesAction, SIGNAL(triggered()),
-    this, SLOT(onReloadStyles())
-    );
-  addAction( reloadStylesAction );
+  addAction( new ReloadStyleAction(this, this) );
 }
 
 DFGWidget::~DFGWidget()
@@ -267,15 +294,27 @@ DFGController * DFGWidget::getUIController()
   return m_uiController.get();
 }
 
-DFGTabSearchWidget * DFGWidget::getTabSearchWidget()
+const char* legacyTabSearchKey = "useLegacyTabSearch";
+
+bool DFGWidget::isUsingLegacyTabSearch() const
 {
+  return getSettings()->value( legacyTabSearchKey, false ).toBool();
+}
+
+void DFGWidget::onToggleLegacyTabSearch( bool toggled )
+{
+  getSettings()->setValue( legacyTabSearchKey, toggled );
+}
+
+DFGAbstractTabSearchWidget * DFGWidget::getTabSearchWidget()
+{
+  if( this->isUsingLegacyTabSearch() )
+    return m_legacyTabSearchWidget;
   return m_tabSearchWidget;
 }
 
-DFGGraphViewWidget * DFGWidget::getGraphViewWidget()
-{
-  return m_uiGraphViewWidget;
-}
+DFGGraphViewWidget * DFGWidget::getGraphViewWidget() { return m_uiGraphViewWidget; }
+const DFGGraphViewWidget * DFGWidget::getGraphViewWidget() const { return m_uiGraphViewWidget; }
 
 DFGExecHeaderWidget * DFGWidget::getHeaderWidget()
 {
@@ -435,6 +474,44 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     char const *nodeName = uiNode->name().c_str();
 
+    FabricCore::DFGExec instExec;
+    bool instExecCanCreatePreset = false;
+    bool instExecCanUpdatePreset = false;
+    if ( uiNode->isInstNode() )
+    {
+      instExec = exec.getSubExec( nodeName );
+      if ( !instExec.isPreset() )
+      {
+        instExecCanCreatePreset = true;
+        
+        FabricCore::String origPresetGUID = instExec.getOrigPresetGUID();
+        if ( origPresetGUID.getSize() > 0 )
+        {
+          FabricCore::DFGHost host = exec.getHost();
+          FabricCore::String presetPath =
+            host.getPresetPathForPresetGUID( origPresetGUID.getCStr() );
+
+          instExecCanUpdatePreset = presetPath.getSize() > 0;
+          if(instExecCanUpdatePreset)
+          {
+            // if we are supposed to hide the fabric dir
+            bool hideFabricDir = true;
+            const char * hideFabricDirStr = getenv("FABRIC_CANVAS_UPDATE_BUILTIN_PRESETS");
+            if(hideFabricDirStr != NULL)
+              hideFabricDir = (FTL::StrRef(hideFabricDirStr) == "0");
+
+            // let's disable the update preset action if the preset is below the fabric_dir
+            if(hideFabricDir)
+            {
+              FTL::CStrRef presetPathRef = presetPath.getCStr();
+              if(presetPathRef.startswith("Fabric."))
+                instExecCanUpdatePreset = false;
+            }
+          }
+        }
+      }
+    }
+
     bool uiNodeIsInstOrBlockNode = (uiNode->isInstNode() || uiNode->isBlockNode());
     bool uiNodeHasDocUrl         = false;
     if (  !exec.isExecBlock(nodeName)
@@ -519,7 +596,8 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addSeparator();
 
-    result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable()));
+    result->addAction(new UpdatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanUpdatePreset));
+    result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanCreatePreset));
     result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
     result->addAction(new ExportGraphAction           (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
     result->addAction(new ImplodeSelectedNodesAction  (dfgWidget, result, dfgWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
@@ -602,6 +680,77 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   return menu;
 }
 
+QMenu *DFGWidget::connectionContextMenuCallback(
+  FabricUI::GraphView::Connection *connection,
+  void *userData
+  )
+{
+  DFGWidget * dfgWidget = (DFGWidget*)userData;
+
+  QMenu *result = new QMenu(connection->scene()->views()[0]);
+
+  result->addAction(new ConnectionRemoveAction(dfgWidget, connection, result, dfgWidget->isEditable()));
+
+  result->addSeparator();
+
+  QMenu *selectMenu = result->addMenu(tr("Select"));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, true,  false));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, false, true));
+  selectMenu->addAction(new ConnectionSelectSourceAndTargetAction(dfgWidget, connection, selectMenu, true, true,  true));
+
+  result->addSeparator();
+
+  QMenu *insertPresetMenu = result->addMenu(tr("Insert Preset"));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection, 
+                                                               "Fabric.Core.Func.Report",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, result, connection,
+                                                               "Fabric.Compounds.Debug.LabeledReport",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(Qt::Key_R),
+                                                               "label",
+                                                               dfgWidget->isEditable()));
+
+  insertPresetMenu->addSeparator();
+
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
+                                                               "Fabric.Core.Data.Cache",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+
+  insertPresetMenu->addSeparator();
+
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
+                                                               "Fabric.Compounds.Data.PassIn",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+  insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection,
+                                                               "Fabric.Compounds.Data.PassIO",
+                                                               "value",
+                                                               "value",
+                                                               QCursor::pos(),
+                                                               QKeySequence(),
+                                                               "",
+                                                               dfgWidget->isEditable()));
+
+  return result;
+}
+
 QMenu *DFGWidget::sidePanelContextMenuCallback(
   FabricUI::GraphView::SidePanel* panel,
   void* userData
@@ -632,11 +781,25 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
 
   result->addSeparator();
 
-  bool canAddTimelinePort = (   editable
-                             && portType == FabricUI::GraphView::PortType_Output
-                             && exec.getExecPath().getLength() == 0
-                             && graph->ports("timeline").size() == 0 );
-  result->addAction( new CreateTimelinePortAction( graphWidget, result, canAddTimelinePort ) );
+
+  QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
+  timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );
+  {
+    QString portname[4] = {"timeline", "timelineStart", "timelineEnd", "timelineFramerate"};
+    bool canAddTimelinePort[4];
+    bool canAddAllTimelinePorts = false;
+    for (int i=0;i<4;i++)
+    {
+      canAddTimelinePort[i] = (   editable
+                               && portType == FabricUI::GraphView::PortType_Output
+                               && exec.getExecPath().getLength() == 0
+                               && graph->ports(portname[i].toUtf8().data()).size() == 0 );
+      canAddAllTimelinePorts |= canAddTimelinePort[i];
+      timelinePortsMenu->addAction( new CreateTimelinePortAction( graphWidget, timelinePortsMenu, i, canAddTimelinePort[i] ) );
+    }
+    timelinePortsMenu->addSeparator();
+    timelinePortsMenu->addAction( new CreateAllTimelinePortsAction( graphWidget, timelinePortsMenu, true /* createOnlyMissingPorts */, canAddAllTimelinePorts ) );
+  }
 
   result->addSeparator();
   
@@ -676,8 +839,73 @@ void DFGWidget::tabSearch()
     if (getUIController()->validPresetSplit())
     {
       QPoint pos = getGraphViewWidget()->lastEventPos();
+      m_tabSearchPos = pos;
       pos = getGraphViewWidget()->mapToGlobal(pos);
       getTabSearchWidget()->showForSearch(pos);
+    }
+  }
+}
+
+QPointF DFGWidget::getTabSearchScenePos() const
+{
+  return this->getGraphViewWidget()->graph()->itemGroup()->mapFromScene( m_tabSearchPos );
+}
+
+void DFGWidget::onPresetAddedFromTabSearch( QString preset )
+{
+  this->getUIController()->cmdAddInstFromPreset(
+    preset,
+    getTabSearchScenePos()
+  );
+}
+
+void DFGWidget::onBackdropAddedFromTabSearch()
+{
+  this->getUIController()->cmdAddBackDrop(
+    "backdrop",
+    getTabSearchScenePos()
+  );
+}
+
+void DFGWidget::onVariableSetterAddedFromTabSearch( const std::string name )
+{
+  this->getUIController()->cmdAddSet( "set", QString::fromStdString( name ), getTabSearchScenePos() );
+}
+
+void DFGWidget::onVariableGetterAddedFromTabSearch( const std::string name )
+{
+  this->getUIController()->cmdAddGet( "get", QString::fromStdString( name ), getTabSearchScenePos() );
+}
+
+void DFGWidget::onFocusGivenFromTabSearch()
+{
+  this->getGraphViewWidget()->setFocus( Qt::OtherFocusReason );
+}
+
+void DFGWidget::updateTabSearchVariables()
+{
+  if( isUsingLegacyTabSearch() )
+    return;
+
+  m_tabSearchWidget->unregisterVariables();
+
+  FabricCore::DFGBinding& binding = this->getUIController()->getBinding();
+  QStringList variableNames = DFGBindingUtils::getVariableWordsFromBinding(
+    binding,
+    this->getUIController()->getExecPath()
+  );
+  for( QStringList::const_iterator it = variableNames.begin(); it != variableNames.end(); it++ )
+  {
+    try
+    {
+      const std::string varName = it->toUtf8().constData();
+      const std::string varType =
+        binding.getExec().getVarValue( varName.data() ).getTypeNameCStr();
+      m_tabSearchWidget->registerVariable( varName, varType );
+    }
+    catch( const FabricCore::Exception& e )
+    {
+      std::cerr << e.getDesc_cstr() << std::endl;
     }
   }
 }
@@ -693,7 +921,7 @@ void DFGWidget::createNewBlockNode( QPoint const &globalPos )
 
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag( Qt::ControlModifier );
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New block", text, m_dfgConfig, true); 
     if(dialog.exec() != QDialog::Accepted)
@@ -729,7 +957,7 @@ void DFGWidget::createNewGraphNode( QPoint const &globalPos )
   QString text = "graph";
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New Empty Graph", text, m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
@@ -783,7 +1011,7 @@ void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
 
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New Empty Function", text, m_dfgConfig, true);
     if(dialog.exec() != QDialog::Accepted)
@@ -795,8 +1023,6 @@ void DFGWidget::createNewFunctionNode( QPoint const &globalPos )
       return; }
   }
 
-  m_uiController->beginInteraction();
-
   static const FTL::CStrRef initialCode = FTL_STR("\
 dfgEntry {\n\
   // result = a + b;\n\
@@ -807,11 +1033,6 @@ dfgEntry {\n\
       QString::fromUtf8( initialCode.c_str() ),
       m_uiGraphViewWidget->mapToGraph( globalPos )
       );
-  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
-  {
-    maybeEditNode( uiNode );
-  }
-  m_uiController->endInteraction();
 }
 
 void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
@@ -820,7 +1041,7 @@ void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
 
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
-  if (!isCTRL)
+  if (isCTRL)
   {
     DFGGetStringDialog dialog(this, "New Backdrop", text, m_dfgConfig, false);
     if(dialog.exec() != QDialog::Accepted)
@@ -1045,6 +1266,9 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
     FabricCore::Client &client = m_uiController->getClient();
     FabricCore::DFGExec &exec = m_uiController->getExec();
 
+    Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
+    bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
+
     DFGEditPortDialog dialog(
       this,
       client,
@@ -1119,12 +1343,15 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       expandMetadataSection = true;
     }
 
-    dialog.setSectionCollapsed("metadata", !expandMetadataSection);
+    dialog.setSectionCollapsed("Metadata", !expandMetadataSection);
 
-    emit portEditDialogCreated(&dialog);
+    if (!duplicatePort || isCTRL)
+    {
+      emit portEditDialogCreated(&dialog);
 
-    if(dialog.exec() != QDialog::Accepted)
-      return;
+      if(dialog.exec() != QDialog::Accepted)
+        return;
+    }
 
     emit portEditDialogInvoked(&dialog, NULL);
 
@@ -1199,7 +1426,7 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       m_uiController->cmdAddPort(
         newPortName,
         exec.getExecPortType( execPortName.c_str() ),
-        exec.getExecPortResolvedType( execPortName.c_str() ),
+        typeSpec,
         QString(), // portToConnect
         extDep,
         QString::fromUtf8( uiMetadata.c_str() )
@@ -1269,7 +1496,7 @@ void DFGWidget::movePortsToEnd( bool moveInputs )
 
 void DFGWidget::implodeSelectedNodes( bool displayDialog )
 {
-  QString text = "graph";
+  QString text = "imploded_nodes";
 
   if (displayDialog)
   {
@@ -1323,20 +1550,46 @@ void DFGWidget::splitFromPreset( const char *nodeName )
   subExec.maybeSplitFromPreset();
 }
 
+static void DFGPresentPresetSaveFailedDialog( QWidget *parent, QString pathname )
+{
+  QMessageBox msg(
+    QMessageBox::Warning,
+    "Fabric Warning", 
+      "The file "
+    + pathname
+    + " cannot be opened for writing.",
+    QMessageBox::NoButton,
+    parent
+    );
+  msg.addButton( "OK", QMessageBox::AcceptRole );
+  msg.exec();
+}
+
+static void DFGPresetFabricCoreExceptionDialog( QWidget *parent, FabricCore::Exception &e )
+{
+  QMessageBox msg(
+    QMessageBox::Warning,
+    "Fabric Warning", 
+    e.getDesc_cstr(),
+    QMessageBox::NoButton,
+    parent
+    );
+  msg.addButton("OK", QMessageBox::AcceptRole);
+  msg.exec();
+}
+
 void DFGWidget::createPreset( const char *nodeName )
 {
   FabricCore::DFGExec &exec = m_uiController->getExec();
   if ( exec.getNodeType( nodeName ) != FabricCore::DFGNodeType_Inst )
     return;
   FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+  if ( subExec.isPreset() )
+    return;
 
   try
   {
-    FTL::CStrRef defaultPresetName;
-    if ( subExec.isPreset() )
-      defaultPresetName = subExec.getTitle();
-    else
-      defaultPresetName = nodeName;
+    FTL::CStrRef defaultPresetName = nodeName;
 
     FabricCore::DFGHost &host = m_uiController->getHost();
 
@@ -1361,7 +1614,7 @@ void DFGWidget::createPreset( const char *nodeName )
           "You need to provide a valid name and pick a valid location!",
           QMessageBox::NoButton,
           this);
-        msg.addButton("Ok", QMessageBox::AcceptRole);
+        msg.addButton("OK", QMessageBox::AcceptRole);
         msg.exec();
         continue;
       }
@@ -1373,7 +1626,7 @@ void DFGWidget::createPreset( const char *nodeName )
           "You can't save a preset into a factory path (below Fabric).",
           QMessageBox::NoButton,
           this);
-        msg.addButton("Ok", QMessageBox::AcceptRole);
+        msg.addButton("OK", QMessageBox::AcceptRole);
         msg.exec();
         continue;
       }
@@ -1395,46 +1648,106 @@ void DFGWidget::createPreset( const char *nodeName )
           + "' does not have an associated path and so the preset cannot be saved.",
           QMessageBox::NoButton,
           this);
-        msg.addButton( "Ok", QMessageBox::AcceptRole );
+        msg.addButton( "OK", QMessageBox::AcceptRole );
         msg.exec();
         continue;
       }
 
-      if ( FTL::FSExists( QSTRING_TO_CONST_CHAR_FILE( pathname ) ) )
+      QString presetPath;
+      if ( !presetDirPath.isEmpty() )
+      {
+        presetPath = presetDirPath;
+        presetPath += '.';
+      }
+      presetPath += presetName;
+
+      if ( host.isPresetDir( presetPath.toUtf8().constData() ) )
       {
         QMessageBox msg(
           QMessageBox::Warning,
-          "Fabric Warning",
-            "The file "
-          + pathname
-          + " already exists.\n"
-          + "Are you sure to overwrite the file?",
+          "Fabric Error",
+            "The path '"
+          + presetPath
+          + "' is a preset directory and cannot be overwritten.",
           QMessageBox::NoButton,
           this);
-        msg.addButton( "Cancel", QMessageBox::RejectRole );
-        msg.addButton( "Ok", QMessageBox::AcceptRole );
-        if ( msg.exec() != QDialog::Accepted )
-          continue;
+        msg.addButton( "OK", QMessageBox::AcceptRole );
+        msg.exec();
+        continue;
+      }
+
+      bool updatePresetGuid = false;
+      if ( host.isPresetFile( presetPath.toUtf8().constData() ) )
+      {
+        FabricCore::String origPresetGUID = subExec.getOrigPresetGUID();
+        FTL::StrRef origPresetGUIDStr(
+          origPresetGUID.getCStr(), origPresetGUID.getSize()
+          );
+
+        FabricCore::String existingPresetGUID =
+          host.getPresetFileGUID( presetPath.toUtf8().constData() );
+        FTL::StrRef existingPresetGUIDStr(
+          existingPresetGUID.getCStr(), existingPresetGUID.getSize()
+          );
+
+        if ( origPresetGUIDStr == existingPresetGUIDStr )
+        {
+          QMessageBox msg(
+            QMessageBox::Warning,
+            "Fabric Warning",
+              "Are you sure you want to overwrite the file '"
+            + pathname
+            + "'?",
+            QMessageBox::NoButton,
+            this
+            );
+          msg.addButton( "Cancel", QMessageBox::RejectRole );
+          QAbstractButton *okButton =
+            msg.addButton( "Yes", QMessageBox::AcceptRole );
+          msg.exec();
+          QAbstractButton *button = msg.clickedButton();
+          if ( button != okButton )
+            continue;
+          updatePresetGuid = true;
+        }
+        else
+        {
+          QMessageBox msg(
+            QMessageBox::Warning,
+            "Fabric Warning",
+              "The preset '"
+            + presetPath
+            + "' already exists."
+            + "\nReuse its preset GUID or create a new one?"
+            + "\nNOTE: This will overwrite the file '"
+            + pathname
+            + "'!",
+            QMessageBox::NoButton,
+            this
+            );
+          msg.addButton( "Cancel", QMessageBox::RejectRole );
+          QAbstractButton *reuseButton =
+            msg.addButton( "Reuse GUID", QMessageBox::YesRole );
+          QAbstractButton *createButton =
+            msg.addButton( "Create New GUID", QMessageBox::NoRole );
+          msg.exec();
+          QAbstractButton *button = msg.clickedButton();
+          if ( button != reuseButton && button != createButton )
+            continue;
+          updatePresetGuid = button == reuseButton;
+        }
       }
 
       pathname =
         m_uiController->cmdCreatePreset(
           nodeName,
           presetDirPath.toUtf8().constData(),
-          presetName.toUtf8().constData()
+          presetName.toUtf8().constData(),
+          updatePresetGuid
           );
       if ( pathname.isEmpty() )
       {
-        QMessageBox msg(
-          QMessageBox::Warning,
-          "Fabric Warning", 
-            "The file "
-          + pathname
-          + " cannot be opened for writing.",
-          QMessageBox::NoButton,
-          this);
-        msg.addButton( "Ok", QMessageBox::AcceptRole );
-        msg.exec();
+        DFGPresentPresetSaveFailedDialog( this, pathname );
         continue;
       }
 
@@ -1446,15 +1759,58 @@ void DFGWidget::createPreset( const char *nodeName )
   }
   catch ( FabricCore::Exception e )
   {
-    QMessageBox msg(
-      QMessageBox::Warning,
-      "Fabric Warning", 
-      e.getDesc_cstr(),
-      QMessageBox::NoButton,
-      this);
-    msg.addButton("Ok", QMessageBox::AcceptRole);
-    msg.exec();
+    DFGPresetFabricCoreExceptionDialog( this, e );
+  }
+}
+
+void DFGWidget::updateOrigPreset( const char *nodeName )
+{
+  QMessageBox msgBox(
+    QMessageBox::Warning,
+    "Fabric Engine",
+    "",
+    QMessageBox::NoButton,
+    this);
+
+  msgBox.setText( "Are you sure you want to update the original preset?" );
+  msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No);
+  msgBox.setDefaultButton( QMessageBox::Yes );
+  if (msgBox.exec() == QMessageBox::No)
+      return;
+
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+  if ( exec.getNodeType( nodeName ) != FabricCore::DFGNodeType_Inst )
     return;
+  FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+  FabricCore::String origPresetGUID = subExec.getOrigPresetGUID();
+  if ( origPresetGUID.getSize() == 0 )
+    return;
+  FabricCore::DFGHost host = exec.getHost();
+  FabricCore::String presetPath =
+    host.getPresetPathForPresetGUID( origPresetGUID.getCStr() );
+  if ( presetPath.getSize() == 0 )
+    return;
+  FTL::StrRef presetPathStr( presetPath.getCStr(), presetPath.getSize() );
+  std::pair<FTL::StrRef, FTL::StrRef> presetPathSplit =
+    presetPathStr.rsplit( '.' );
+  FTL::StrRef presetDirStr = presetPathSplit.first;
+  FTL::StrRef presetNameStr = presetPathSplit.second;
+
+  try
+  {
+    QString pathname =
+      m_uiController->cmdCreatePreset(
+        nodeName,
+        QString::fromUtf8( presetDirStr.data(), presetDirStr.size() ),
+        QString::fromUtf8( presetNameStr.data(), presetNameStr.size() ),
+        true // updateOrigPreset
+        );
+    if ( pathname.isEmpty() )
+      DFGPresentPresetSaveFailedDialog( this, pathname );
+  }
+  catch ( FabricCore::Exception e )
+  {
+    DFGPresetFabricCoreExceptionDialog( this, e );
   }
 }
 
@@ -1507,7 +1863,7 @@ void DFGWidget::exportGraph( const char *nodeName )
     lastPresetFolder += "/" + title;
   }
 
-  QString filter = "DFG Preset (*.canvas)";
+  QString filter = "Canvas Preset (*.canvas)";
   QString filePath = QFileDialog::getSaveFileName(this, "Export graph", lastPresetFolder, filter, &filter);
   if(filePath.length() == 0)
     return;
@@ -1585,7 +1941,6 @@ void DFGWidget::explodeNode( const char *nodeName )
 
 void DFGWidget::keyPressEvent(QKeyEvent * event)
 {
-  // qDebug() << "DFGWidget::keyPressEvent";
   Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
   if ( event->key() == Qt::Key_Z
     && !keyMod.testFlag(Qt::ShiftModifier)
@@ -1595,21 +1950,28 @@ void DFGWidget::keyPressEvent(QKeyEvent * event)
   {
     event->accept();
 
-    FTL::CStrRef uiGraphZoomStr =
-      m_uiController->getExec().getMetadata( "uiGraphZoom" );
-    FTL::JSONStrWithLoc jsonStrWithLoc( uiGraphZoomStr );
-    FTL::OwnedPtr<FTL::JSONValue const> jsonValue(
-      FTL::JSONValue::Decode( jsonStrWithLoc )
-      );
-    if ( jsonValue )
+    if (   getUIGraph()->nodes().size() == 0
+        || m_uiController->allNodesAreVisible() )
     {
-      FTL::JSONObject const *jsonObject = jsonValue->cast<FTL::JSONObject>();
-      m_uiGraphZoomBeforeQuickZoom =
-        jsonObject->getFloat64( FTL_STR("value") );
+      m_uiGraphZoomBeforeQuickZoom = -1;
+      getGraphViewWidget()->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
     }
-    // qDebug() << "m_uiGraphZoomBeforeQuickZoom " << m_uiGraphZoomBeforeQuickZoom;
-
-    m_uiController->frameAllNodes();
+    else
+    {
+      FTL::CStrRef uiGraphZoomStr =
+        m_uiController->getExec().getMetadata( "uiGraphZoom" );
+      FTL::JSONStrWithLoc jsonStrWithLoc( uiGraphZoomStr );
+      FTL::OwnedPtr<FTL::JSONValue const> jsonValue(
+        FTL::JSONValue::Decode( jsonStrWithLoc )
+        );
+      if ( jsonValue )
+      {
+        FTL::JSONObject const *jsonObject = jsonValue->cast<FTL::JSONObject>();
+        m_uiGraphZoomBeforeQuickZoom = jsonObject->getFloat64( FTL_STR("value") );
+        getGraphViewWidget()->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
+      }
+      m_uiController->frameAllNodes();
+    }
 
     return;
   }
@@ -1624,41 +1986,46 @@ Ty clamp( Ty const &v, Ty const &lo, Ty const &hi )
 
 void DFGWidget::keyReleaseEvent(QKeyEvent * event)
 {
-  // qDebug() << "DFGWidget::keyReleaseEvent";
   if ( event->key() == Qt::Key_Z
     && !event->isAutoRepeat()
     && m_uiGraphZoomBeforeQuickZoom != 0 )
   {
     event->accept();
 
-    QPoint globalPos = QCursor::pos();
-    // qDebug() << "globalPos " << globalPos;
     GraphView::GraphViewWidget *graphViewWidget = getGraphViewWidget();
-    QRect graphViewWidgetRect = graphViewWidget->geometry();
-    QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
-    // [pz 20160724] Constraint point to widget geometry
-    graphViewWidgetPos = QPoint(
-      clamp(
-        graphViewWidgetPos.x(),
-        graphViewWidgetRect.left(),
-        graphViewWidgetRect.right()
-        ),
-      clamp(
-        graphViewWidgetPos.y(),
-        graphViewWidgetRect.top(),
-        graphViewWidgetRect.bottom()
-        )
-      );
-    // qDebug() << "graphViewWidgetPos " << graphViewWidgetPos;
-    QPointF scenePos = graphViewWidget->mapToScene( graphViewWidgetPos );
-    // qDebug() << "scenePos " << scenePos;
-    GraphView::Graph *graph = graphViewWidget->graph();
-    GraphView::MainPanel *mainPanel = graph->mainPanel();
-    QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
-    // qDebug() << "mainPanelPos " << mainPanelPos;
-    mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
+    if (m_uiGraphZoomBeforeQuickZoom > 0)
+    {
+      QPoint globalPos = QCursor::pos();
+      QRect graphViewWidgetRect = graphViewWidget->geometry();
+      QPoint graphViewWidgetPos = graphViewWidget->mapFromGlobal( globalPos );
+      // [pz 20160724] Constraint point to widget geometry
+      graphViewWidgetPos = QPoint(
+        clamp(
+          graphViewWidgetPos.x(),
+          graphViewWidgetRect.left(),
+          graphViewWidgetRect.right()
+          ),
+        clamp(
+          graphViewWidgetPos.y(),
+          graphViewWidgetRect.top(),
+          graphViewWidgetRect.bottom()
+          )
+        );
+      QPointF scenePos = graphViewWidget->mapToScene( graphViewWidgetPos );
+      GraphView::Graph *graph = graphViewWidget->graph();
+      GraphView::MainPanel *mainPanel = graph->mainPanel();
+      QPointF mainPanelPos = mainPanel->mapFromScene( scenePos );
+      mainPanel->performZoom( m_uiGraphZoomBeforeQuickZoom, mainPanelPos );
+
+      // center Canvas pan.
+      QPointF center = graphViewWidgetRect.center() - graphViewWidgetPos;
+      QPointF newPan = mainPanel->canvasPan() + center;
+      mainPanel->setCanvasPan(newPan);
+    }
 
     m_uiGraphZoomBeforeQuickZoom = 0;
+    graphViewWidget->setUiGraphZoomBeforeQuickZoom( m_uiGraphZoomBeforeQuickZoom );
+    graphViewWidget->update();
 
     return;
   }
@@ -1725,8 +2092,31 @@ void DFGWidget::onToggleDimConnections()
   std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
   for(size_t i=0;i<connections.size();i++)
     connections[i]->update();
-  // [Julien] FE-5264 Sets the dimConnectionLines property to the settings
   if(getSettings()) getSettings()->setValue( "DFGWidget/dimConnectionLines", m_uiGraph->config().dimConnectionLines );
+}
+
+void DFGWidget::onToggleConnectionShowTooltip()
+{
+  m_uiGraph->config().connectionShowTooltip = !m_uiGraph->config().connectionShowTooltip;
+  std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
+  for(size_t i=0;i<connections.size();i++)
+    connections[i]->enableToolTip(m_uiGraph->config().connectionShowTooltip);
+  if(getSettings()) getSettings()->setValue( "DFGWidget/connectionShowTooltip", m_uiGraph->config().connectionShowTooltip );
+}
+
+void DFGWidget::onToggleHighlightConnectionTargets()
+{
+  m_uiGraph->config().highlightConnectionTargets = !m_uiGraph->config().highlightConnectionTargets;
+  if(getSettings()) getSettings()->setValue( "DFGWidget/highlightConnectionTargets", m_uiGraph->config().highlightConnectionTargets );
+}
+
+void DFGWidget::onToggleConnectionDrawAsCurves()
+{
+  m_uiGraph->config().connectionDrawAsCurves = !m_uiGraph->config().connectionDrawAsCurves;
+  std::vector<GraphView::Connection *> connections = m_uiGraph->connections();
+  for(size_t i=0;i<connections.size();i++)
+    connections[i]->dependencyMoved();
+  if(getSettings()) getSettings()->setValue( "DFGWidget/connectionDrawAsCurves", m_uiGraph->config().connectionDrawAsCurves );
 }
 
 void DFGWidget::onTogglePortsCentered()
@@ -1734,8 +2124,20 @@ void DFGWidget::onTogglePortsCentered()
   m_uiGraph->config().portsCentered = !m_uiGraph->config().portsCentered;
   m_uiGraph->sidePanel(GraphView::PortType_Input)->updateItemGroupScroll();  
   m_uiGraph->sidePanel(GraphView::PortType_Output)->updateItemGroupScroll();  
-  // [Julien] FE-5264 Sets the onTogglePortsCentered property to the settings
   if(getSettings()) getSettings()->setValue( "DFGWidget/portsCentered", m_uiGraph->config().portsCentered );
+}
+
+void DFGWidget::onToggleDrawGrid()
+{
+  m_uiGraph->config().mainPanelDrawGrid = !m_uiGraph->config().mainPanelDrawGrid;
+  m_uiGraph->update();
+  if(getSettings()) getSettings()->setValue( "DFGWidget/mainPanelDrawGrid", m_uiGraph->config().mainPanelDrawGrid );
+}
+
+void DFGWidget::onToggleSnapToGrid()
+{
+  m_uiGraph->config().mainPanelGridSnap = !m_uiGraph->config().mainPanelGridSnap;
+  if(getSettings()) getSettings()->setValue( "DFGWidget/mainPanelGridSnap", m_uiGraph->config().mainPanelGridSnap );
 }
 
 bool DFGWidget::maybeEditNode(
@@ -1805,7 +2207,7 @@ bool DFGWidget::checkForUnsaved()
       this);
 
     msg.addButton("Save Now", QMessageBox::AcceptRole);
-    msg.addButton("Ok", QMessageBox::NoRole);
+    msg.addButton("OK", QMessageBox::NoRole);
     msg.addButton("Cancel", QMessageBox::RejectRole);
 
     msg.exec();
@@ -2116,6 +2518,8 @@ void DFGWidget::onEditSelectedNodeProperties()
 
 QSettings * DFGWidget::getSettings()
 {
+  if( g_settings == NULL )
+    g_settings = new QSettings();
   return g_settings;
 }
 
@@ -2134,76 +2538,156 @@ void DFGWidget::refreshExtDeps( FTL::CStrRef extDeps )
   m_uiHeader->refreshExtDeps( extDeps );
 }
 
-void DFGWidget::populateMenuBar(QMenuBar * menuBar, bool addFileMenu, bool addDCCMenu)
+void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEditMenu, bool addViewMenu, bool addDCCMenu, bool addHelpMenu)
 {
+  // File menu.
   // [Julien] FE-5244 : Add Save Graph action to the Canvas widget for DCC Integrations
-  // Don't add the edit menu if called from DCC
-  QMenu *fileMenu = 0;
-  if(addFileMenu) {
+  if (addFileMenu)
+  {
+    QMenu *fileMenu = NULL;
     fileMenu = menuBar->addMenu(tr("&File"));
+
+    // emit the prefix menu entry requests
     emit additionalMenuActionsRequested("File", fileMenu, true);
-    if(fileMenu->actions().count() > 0)
+
+    // add separators if required
+    if (fileMenu->actions().count() > 0)
       fileMenu->addSeparator();
+
+    connect( fileMenu, SIGNAL( aboutToShow() ), this, SIGNAL( fileMenuAboutToShow() ) );
+
+    // emit the suffix menu entry requests
+    emit additionalMenuActionsRequested("File", fileMenu, false);
   }
 
-  QMenu *editMenu = menuBar->addMenu(tr("&Edit"));
-  QMenu *viewMenu = menuBar->addMenu(tr("&View"));
+  // Edit menu.
+  if (addEditMenu)
+  {
+    QMenu *editMenu = menuBar->addMenu(tr("&Edit"));
 
-  // emit the prefix menu entry requests
-  emit additionalMenuActionsRequested("Edit", editMenu, true);
-  emit additionalMenuActionsRequested("View", viewMenu, true);
+    // emit the prefix menu entry requests
+    emit additionalMenuActionsRequested("Edit", editMenu, true);
 
-  // add separators if required
-  if(editMenu->actions().count() > 0)
+    // add separators if required
+    if(editMenu->actions().count() > 0)
+      editMenu->addSeparator();
+
+    // populate.
+    QAction * selectAllNodesAction = new SelectAllNodesAction(this, menuBar);
+    editMenu->addAction(selectAllNodesAction);
+
+    QAction * deselectAllNodesAction = new DeselectAllNodesAction(this, menuBar);
+    editMenu->addAction(deselectAllNodesAction);
+
+    QAction * cutNodesAction = new CutNodesAction(this, menuBar);
+    editMenu->addAction(cutNodesAction);
+
+    QAction * copyNodesAction = new CopyNodesAction(this, menuBar);
+    editMenu->addAction(copyNodesAction);
+
+    QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
+    editMenu->addAction(pasteNodesAction);
+
+    // emit the suffix menu entry requests
+    emit additionalMenuActionsRequested("Edit", editMenu, false);
+
     editMenu->addSeparator();
-  if(viewMenu->actions().count() > 0)
-    viewMenu->addSeparator();
+    
+    QAction * toggleLecyTabSearchAction = new QAction( "Use legacy TabSearch widget", this );
+    toggleLecyTabSearchAction->setCheckable( true );
+    QObject::connect(
+      toggleLecyTabSearchAction, SIGNAL( triggered( bool ) ),
+      this, SLOT( onToggleLegacyTabSearch( bool ) )
+    );
+    toggleLecyTabSearchAction->setChecked( this->isUsingLegacyTabSearch() );
+    editMenu->addAction( toggleLecyTabSearchAction );
+  }
 
-  // [Fe-6242] DCC menu.
+  // View menu.
+  if (addViewMenu)
+  {
+    QMenu *viewMenu = menuBar->addMenu(tr("&View"));
+
+    // emit the prefix menu entry requests
+    emit additionalMenuActionsRequested("View", viewMenu, true);
+
+    // add separators if required
+    if(viewMenu->actions().count() > 0)
+      viewMenu->addSeparator();
+
+    // view -> graph view submenu
+    QMenu *graphViewMenu = viewMenu->addMenu(tr("Graph View"));
+
+    QAction * dimLinesAction = graphViewMenu->addAction("Dim Connections");
+    dimLinesAction->setCheckable(true);
+    dimLinesAction->setChecked(m_uiGraph->config().dimConnectionLines);
+    QObject::connect(dimLinesAction, SIGNAL(triggered()), this, SLOT(onToggleDimConnections()));
+
+    QAction * connectionShowTooltipAction = graphViewMenu->addAction("Show Connection Tooltips");
+    connectionShowTooltipAction->setCheckable(true);
+    connectionShowTooltipAction->setChecked(m_uiGraph->config().connectionShowTooltip);
+    QObject::connect(connectionShowTooltipAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionShowTooltip()));
+
+    QAction * highlightConnectionTargetsAction = graphViewMenu->addAction("Highlight Connection Targets");
+    highlightConnectionTargetsAction->setCheckable(true);
+    highlightConnectionTargetsAction->setChecked(m_uiGraph->config().highlightConnectionTargets);
+    QObject::connect(highlightConnectionTargetsAction, SIGNAL(triggered()), this, SLOT(onToggleHighlightConnectionTargets()));
+
+    QAction * connectionDrawAsCurvesAction = graphViewMenu->addAction("Display Connections as Curves");
+    connectionDrawAsCurvesAction->setCheckable(true);
+    connectionDrawAsCurvesAction->setChecked(m_uiGraph->config().connectionDrawAsCurves);
+    QObject::connect(connectionDrawAsCurvesAction, SIGNAL(triggered()), this, SLOT(onToggleConnectionDrawAsCurves()));
+
+    QAction * portsCenteredAction = graphViewMenu->addAction("Side Ports Centered");
+    portsCenteredAction->setCheckable(true);
+    portsCenteredAction->setChecked(m_uiGraph->config().portsCentered);
+    QObject::connect(portsCenteredAction, SIGNAL(triggered()), this, SLOT(onTogglePortsCentered()));
+
+    graphViewMenu->addSeparator();
+
+    QAction * displayGrid = graphViewMenu->addAction("Display Grid");
+    displayGrid->setCheckable(true);
+    displayGrid->setChecked(m_uiGraph->config().mainPanelDrawGrid);
+    QObject::connect(displayGrid, SIGNAL(triggered()), this, SLOT(onToggleDrawGrid()));
+
+    QAction * snapToGrid = graphViewMenu->addAction("Snap to Grid");
+    snapToGrid->setCheckable(true);
+    snapToGrid->setChecked(m_uiGraph->config().mainPanelGridSnap);
+    QObject::connect(snapToGrid, SIGNAL(triggered()), this, SLOT(onToggleSnapToGrid()));
+
+    // emit the suffix menu entry requests
+    emit additionalMenuActionsRequested("View", viewMenu, false);
+  }
+
+  // DCC menu [Fe-6242].
   QMenu *dccMenu = 0;
-  if(addDCCMenu) {
+  if (addDCCMenu)
+  {
     dccMenu = menuBar->addMenu(tr("&DCC"));
+
+    // emit the prefix menu entry requests
     emit additionalMenuActionsRequested("DCC", dccMenu, true);
+
+    // add separators if required
     if(dccMenu->actions().count() > 0)
       dccMenu->addSeparator();
+
+    // emit the suffix menu entry requests
+    emit additionalMenuActionsRequested("View", dccMenu, false);
   }
 
-  // edit menu
-  // [Julien]  When using shortcut in Qt, set the flag WidgetWithChildrenShortcut so the shortcut is specific to the widget
-  // http://doc.qt.io/qt-4.8/qaction.html#shortcutContext-prop
-  // http://doc.qt.io/qt-4.8/qt.html#ShortcutContext-enum
-  // http://doc.qt.io/qt-4.8/qkeysequence.html
+  // Help menu.
+  if (addHelpMenu)
+  {
+    QMenu *helpMenu = menuBar->addMenu(tr("&Help"));
 
-  QAction * selectAllNodesAction = new SelectAllNodesAction(this, menuBar);
-  editMenu->addAction(selectAllNodesAction);
-
-  QAction * deselectAllNodesAction = new DeselectAllNodesAction(this, menuBar);
-  editMenu->addAction(deselectAllNodesAction);
-
-  QAction * cutNodesAction = new CutNodesAction(this, menuBar);
-  editMenu->addAction(cutNodesAction);
-
-  QAction * copyNodesAction = new CopyNodesAction(this, menuBar);
-  editMenu->addAction(copyNodesAction);
-
-  QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
-  editMenu->addAction(pasteNodesAction);
-
-  // view menu
-  QAction * dimLinesAction = viewMenu->addAction("Dim Connections");
-  dimLinesAction->setCheckable(true);
-  dimLinesAction->setChecked(m_uiGraph->config().dimConnectionLines);
-  QObject::connect(dimLinesAction, SIGNAL(triggered()), this, SLOT(onToggleDimConnections()));
-  QAction * portsCenteredAction = viewMenu->addAction("Side Ports Centered");
-  portsCenteredAction->setCheckable(true);
-  portsCenteredAction->setChecked(m_uiGraph->config().portsCentered);
-  QObject::connect(portsCenteredAction, SIGNAL(triggered()), this, SLOT(onTogglePortsCentered()));
-
-  // emit the suffix menu entry requests
-  emit additionalMenuActionsRequested("Edit", editMenu, false);
-  emit additionalMenuActionsRequested("View", viewMenu, false);
-  // [Julien] FE-5244 : Add Save Graph action to the Canvas widget for DCC Integrations  // Don't add the edit menu if called from DCC
-  if(fileMenu) emit additionalMenuActionsRequested("File", fileMenu, false);
+    // populate.
+    helpMenu->addAction(new OpenUrlAction(menuBar, "Canvas User Guide",         "http://docs.fabric-engine.com/FabricEngine/latest/HTML/CanvasUserGuide/index.html#canvasuserguide"));
+    helpMenu->addAction(new OpenUrlAction(menuBar, "Canvas Keyboard Shortcuts", "http://docs.fabric-engine.com/FabricEngine/latest/HTML/CanvasUserGuide/shortcuts.html"));
+    helpMenu->addAction(new OpenUrlAction(menuBar, "KL Programming Guide",      "http://docs.fabric-engine.com/FabricEngine/latest/HTML/KLProgrammingGuide/index.html#klpg"));
+    helpMenu->addSeparator();
+    helpMenu->addAction(new AboutFabricAction(this, menuBar));
+  }
 }
 
 void DFGWidget::onExecChanged()
@@ -2241,6 +2725,8 @@ void DFGWidget::onExecChanged()
     {
       m_uiGraph->config().dimConnectionLines = getSettings()->value( "DFGWidget/dimConnectionLines").toBool();
       m_uiGraph->config().portsCentered = getSettings()->value( "DFGWidget/portsCentered").toBool();
+      m_uiGraph->config().mainPanelDrawGrid = getSettings()->value( "DFGWidget/mainPanelDrawGrid").toBool();
+      m_uiGraph->config().mainPanelGridSnap = getSettings()->value( "DFGWidget/mainPanelGridSnap").toBool();
     }
     m_uiGraph->initialize();
 
@@ -2252,6 +2738,7 @@ void DFGWidget::onExecChanged()
     m_uiGraph->setNodeContextMenuCallback( &nodeContextMenuCallback, this );
     m_uiGraph->setPortContextMenuCallback( &portContextMenuCallback, this );
     m_uiGraph->setFixedPortContextMenuCallback( &fixedPortContextMenuCallback, this );
+    m_uiGraph->setConnectionContextMenuCallback( &connectionContextMenuCallback, this );
     m_uiGraph->setSidePanelContextMenuCallback( &sidePanelContextMenuCallback, this );
 
     if ( !m_uiController->getExecBlockName().empty() )

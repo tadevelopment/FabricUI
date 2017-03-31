@@ -11,6 +11,7 @@
 #include <FTL/StrRef.h>
 #include <QIcon>
 #include <QWidget>
+#include <FabricUI/Actions/BaseAction.h>
 
 class QTableWidget;
 
@@ -85,6 +86,100 @@ private:
   QIcon m_errorIcon;
   QIcon m_warningIcon;
 };
+
+class BaseDFGErrorWidgetAction : public Actions::BaseAction
+{
+  Q_OBJECT
+
+public:
+
+  BaseDFGErrorWidgetAction(
+    DFGErrorsWidget *dfgErrorsWidget,
+    QObject *parent,
+    const QString &name, 
+    const QString &text = "", 
+    QKeySequence shortcut = QKeySequence(),
+    Qt::ShortcutContext context = Qt::ApplicationShortcut)
+    : Actions::BaseAction( 
+      parent
+      , name 
+      , text 
+      , shortcut 
+      , context)
+    , m_dfgErrorsWidget( dfgErrorsWidget )
+  {
+  }
+
+  virtual ~BaseDFGErrorWidgetAction()
+  {
+  }
+
+protected:
+
+  DFGErrorsWidget *m_dfgErrorsWidget;
+};
+
+class DismissSelectionAction : public BaseDFGErrorWidgetAction
+{
+  Q_OBJECT
+
+public:
+
+  DismissSelectionAction(
+    DFGErrorsWidget *dfgErrorsWidget,
+    QObject *parent)
+    : BaseDFGErrorWidgetAction( 
+      dfgErrorsWidget
+      , parent
+      , "BaseDFGErrorWidget::DismissSelectionAction" 
+      , "Dismiss Selected")
+  {
+  }
+
+  virtual ~DismissSelectionAction()
+  {
+  }
+
+  private slots:
+
+    virtual void onTriggered()
+    {
+      m_dfgErrorsWidget->onDismissSelected();
+    }
+};
+
+class CopySelectionAction : public BaseDFGErrorWidgetAction
+{
+  Q_OBJECT
+
+public:
+
+  CopySelectionAction(
+    DFGErrorsWidget *dfgErrorsWidget,
+    QObject *parent)
+    : BaseDFGErrorWidgetAction( 
+      dfgErrorsWidget
+      , parent
+      , "BaseDFGErrorWidget::CopySelectionAction" 
+      , "Copy Selected" 
+      , QKeySequence(Qt::CTRL + Qt::Key_C) 
+      , Qt::WidgetWithChildrenShortcut)
+  {
+  }
+
+  virtual ~CopySelectionAction()
+  {
+  }
+
+private slots:
+
+  virtual void onTriggered()
+  {
+    m_dfgErrorsWidget->onCopySelected();
+  }
+
+};
+
 
 } // namespace DFG
 } // namespace FabricUI

@@ -16,7 +16,19 @@ namespace FabricUI
   {
     class DFGWidget;
 
-    class DFGTabSearchWidget : public QWidget 
+    class DFGAbstractTabSearchWidget : public QWidget
+    {
+      Q_OBJECT
+
+    public:
+      virtual void showForSearch( QPoint globalPos ) = 0;
+
+    signals :
+      void enabled( bool );
+
+    };
+
+    class DFGTabSearchWidget : public DFGAbstractTabSearchWidget 
     {
       Q_OBJECT
 

@@ -28,11 +28,13 @@ namespace FabricUI
       QColor headerFontColor;
 
       QColor mainPanelBackgroundColor;
+      QColor mainPanelHotkeyZoomBackgroundColor;
+      QColor mainPanelHotkeyZoomBorderColor;
       bool mainPanelDrawGrid;
-      int mainPanelGridSpanS;
-      int mainPanelGridSpanL;
-      QPen mainPanelGridPenS;
-      QPen mainPanelGridPenL;
+      int mainPanelGridSpan;
+      bool mainPanelGridSnap;
+      int mainPanelGridSnapSize;
+      QPen mainPanelGridPen;
       bool mainPanelBackGroundPanFixed;
 
       QColor sidePanelBackgroundColor;
@@ -84,8 +86,7 @@ namespace FabricUI
       QColor pinFontHighlightColor;
       float pinRadius;
       float pinLabelSpacing;
-      bool pinInputUsesFullCircle;
-      bool pinOutputUsesFullCircle;
+      bool pinDisplayAsFullCircle;
       float pinClickableDistance;
       
       float instBlockMinWidth;
@@ -96,11 +97,13 @@ namespace FabricUI
       QPen connectionExposePen;
       float connectionExposeRadius;
       QPen connectionHoverPen;
-      float connectionFixedTangentLength;
-      float connectionPercentualTangentLength;
       QColor connectionColor;
       bool connectionUsePinColor;
+      bool connectionShowTooltip;
+      bool highlightConnectionTargets;
       float connectionNodePortColorRatio;
+      float connectionClickableDistance;
+      bool connectionDrawAsCurves;
       bool portsCentered;
 
       QColor selectionRectColor;

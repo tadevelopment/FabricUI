@@ -12,6 +12,8 @@
 #include <QTextBrowser>
 #include <QVBoxLayout>
 
+#include <FabricUI/Util/LoadFabricStyleSheet.h>
+
 class LicenseOkDialog : public QDialog
 {
   Q_OBJECT
@@ -23,6 +25,10 @@ public:
     setModal( true );
     setWindowTitle( "Fabric Licensing" );
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    QString styleSheet = LoadFabricStyleSheet( "FabricUI.qss" );
+    if ( !styleSheet.isEmpty() )
+      setStyleSheet( styleSheet );
 
     setLayout( new QVBoxLayout() );
 

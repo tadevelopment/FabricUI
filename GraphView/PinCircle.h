@@ -50,7 +50,6 @@ namespace FabricUI
       PortType portType() const;
       bool isInputPortType() const;
       bool isOutputPortType() const;
-      virtual void setClipping(bool state);
       virtual void setDaisyChainCircleVisible(bool state);
 
       void onHoverEnter();

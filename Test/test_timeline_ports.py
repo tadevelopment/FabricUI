@@ -1,6 +1,7 @@
 # Returns the output of the test
 def main() :
   from PySide import QtCore
+  from FabricEngine import Core
   from FabricEngine.Canvas.CanvasWindow import CanvasWindow
   from FabricEngine.FabricUI import Application
 

@@ -55,6 +55,7 @@ namespace FabricUI
         { return m_config; }
 
       QGraphicsWidget * itemGroup();
+      const QGraphicsWidget * itemGroup() const;
 
       Controller *controller()
         { return m_controller; }

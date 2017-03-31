@@ -80,6 +80,8 @@ DFGController::DFGController(
 
   QObject::connect(this, SIGNAL(topoDirty()), this, SLOT(onTopoDirty()));
   QObject::connect(this, SIGNAL(varsChanged()), this, SLOT(onVariablesChanged()));
+  QObject::connect( this, // Changing the Binding implicitly changes its variables
+    SIGNAL( bindingChanged( FabricCore::DFGBinding const & ) ), this, SIGNAL( varsChanged() ) );
 }
 
 DFGController::~DFGController()
@@ -301,6 +303,18 @@ bool DFGController::validPresetSplit() const
   // }
 
   return false;
+}
+
+std::string DFGController::gvcDoCopy()
+{
+  return copy();
+}
+
+void DFGController::gvcDoPaste(
+  bool mapPositionToMouseCursor
+  )
+{
+  cmdPaste( mapPositionToMouseCursor );
 }
 
 bool DFGController::gvcDoRemoveNodes(
@@ -650,7 +664,7 @@ bool DFGController::zoomCanvas(
   float zoom
   )
 {
-  if ( FTL::isnan( zoom ) || FTL::isinf( zoom ) )
+  if ( FTL::IsNaN( zoom ) || FTL::IsInf( zoom ) )
     return false;
 
   try
@@ -731,7 +745,7 @@ bool DFGController::relaxNodes(QStringList paths)
   if(rootNodes.size() == 0)
     return false;
 
-  std::vector<GraphView::Node*> nodes = rootNodes[0]->upStreamNodes(true, rootNodes);
+  std::vector<GraphView::Node*> nodes = rootNodes[0]->upStreamNodes_deprecated(true, rootNodes);
   if(nodes.size() <= 1)
     return false;
 
@@ -976,7 +990,7 @@ void DFGController::selectNodes(QList<QString> nodeNames) {
   }
 }
 
-void DFGController::cmdPaste()
+void DFGController::cmdPaste(bool mapPositionToMouseCursor)
 {
   if(!validPresetSplit())
     return;
@@ -987,8 +1001,22 @@ void DFGController::cmdPaste()
     QString textToPaste = clipboard->text();
     if ( !textToPaste.isEmpty() )
     {
-      QPointF pos =
-        m_dfgWidget->getGraphViewWidget()->mapToGraph( QCursor::pos() );
+      QPointF pos(0, 0);
+      if ( mapPositionToMouseCursor )
+      {
+        pos = m_dfgWidget->getGraphViewWidget()->mapToGraph( QCursor::pos() );
+      }
+      else
+      {
+        // use average top left node positions as pos.
+        std::vector<FabricUI::GraphView::Node *> nodes = m_dfgWidget->getGraphViewWidget()->graph()->selectedNodes();
+        if ( nodes.size() > 0 )
+        {
+          for (size_t i=0;i<nodes.size();i++)
+            pos += nodes[i]->topLeftGraphPos();
+          pos /= (float)nodes.size();
+        }
+      }
 
       // paste.
       QList<QString> pastedNodes =
@@ -1307,6 +1335,23 @@ void DFGController::cmdSetArgValue(
       value.copy()
       );
   }
+}
+
+void DFGController::cmdSetPortDefaultValue(
+  QString portPath,
+  FabricCore::RTVal const &value
+  )
+{
+  if(!validPresetSplit())
+    return;
+
+  m_cmdHandler->dfgDoSetPortDefaultValue(
+    getBinding(),
+    getExecPath_QS(),
+    getExec(),
+    portPath,
+    value.copy()
+    );
 }
 
 void DFGController::cmdSetRefVarPath(
@@ -1844,7 +1889,8 @@ QString DFGController::cmdAddPort(
 QString DFGController::cmdCreatePreset(
   QString nodeName,
   QString presetDirPath,
-  QString presetName
+  QString presetName,
+  bool updateOrigPreset
   )
 {
   return m_cmdHandler->dfgDoCreatePreset(
@@ -1853,7 +1899,8 @@ QString DFGController::cmdCreatePreset(
     getExec(),
     nodeName,
     presetDirPath,
-    presetName
+    presetName,
+    updateOrigPreset
     );
 }
 
@@ -1961,37 +2008,65 @@ QList<QString> DFGController::cmdExplodeNode(
 
 void DFGController::gvcDoMoveNodes(
   std::vector<GraphView::Node *> const &nodes,
+  std::vector<QPointF> const &nodesOriginalPos,
   QPointF delta,
+  float gridSnapSize,
   bool allowUndo
   )
 {
+  if (   nodes.size() == 0
+      || nodes.size() != nodesOriginalPos.size() )
+    return;
+
+  if (nodes.size() > 1 && gridSnapSize > 0)
+  {
+    // if two or more nodes are being moved
+    // then we apply the grid snapping to the
+    // delta instead of applying it to each
+    // node.
+    delta.setX( gridSnapSize * qRound(delta.rx() / gridSnapSize) );
+    delta.setY( gridSnapSize * qRound(delta.ry() / gridSnapSize) );
+    gridSnapSize = 0;
+  }
+
   if ( allowUndo )
   {
     QStringList nodeNames;
     QList<QPointF> newTopLeftPoss;
     nodeNames.reserve( nodes.size() );
     newTopLeftPoss.reserve( nodes.size() );
+    int i = 0;
     for ( std::vector<GraphView::Node *>::const_iterator it = nodes.begin();
-      it != nodes.end(); ++it )
+      it != nodes.end(); ++it, ++i )
     {
       GraphView::Node *node = *it;
       FTL::CStrRef nodeName = node->name();
       nodeNames.append( QString::fromUtf8( nodeName.data(), nodeName.size() ) );
-      newTopLeftPoss.append( node->topLeftGraphPos() + delta );
+      QPointF newPos = nodesOriginalPos[i] + delta;
+      if (gridSnapSize > 0)
+      {
+        newPos.setX( gridSnapSize * qRound(newPos.rx() / gridSnapSize) );
+        newPos.setY( gridSnapSize * qRound(newPos.ry() / gridSnapSize) );
+      }
+      newTopLeftPoss.append( newPos );
     }
-
+    
     cmdMoveNodes( nodeNames, newTopLeftPoss );
   }
   else
   {
+    int i = 0;
     for ( std::vector<GraphView::Node *>::const_iterator it = nodes.begin();
-      it != nodes.end(); ++it )
+      it != nodes.end(); ++it, ++i )
     {
       GraphView::Node *node = *it;
       FTL::CStrRef nodeName = node->name();
-
-      QPointF newPos = node->topLeftGraphPos() + delta;
-
+      QPointF newPos = nodesOriginalPos[i] + delta;
+      if (gridSnapSize > 0)
+      {
+        newPos.setX( gridSnapSize * qRound(newPos.rx() / gridSnapSize) );
+        newPos.setY( gridSnapSize * qRound(newPos.ry() / gridSnapSize) );
+      }
       std::string newPosJSON;
       {
         FTL::JSONEnc<> enc( newPosJSON );

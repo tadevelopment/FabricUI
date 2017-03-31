@@ -13,7 +13,6 @@
 #include <QVariant>
 #include <QHBoxLayout>
 #include <QSlider>
-#include <QIntValidator>
 
 #include <FabricUI/Util/UIRange.h>
 #include <FTL/AutoSet.h>
@@ -41,14 +40,14 @@ IntSliderViewItem::IntSliderViewItem(
   int value = getQVariantRTValValue<int>(variant);
 
   // correct the softrange
-  if(value < m_slider->minimum())
-    m_slider->setMinimum(value);
-  if(value > m_slider->maximum())
-    m_slider->setMaximum(value);
+  if(value < m_slider->min())
+    m_slider->setResolution(value, m_slider->max());
+  if(value > m_slider->max())
+    m_slider->setResolution(m_slider->min(), value);
 
-  m_lineEdit->setValidator(new QIntValidator(m_lineEdit));
+  m_lineEdit->setValidatorInt();
   m_lineEdit->setText( QString::number( value ) );
-  m_slider->setValue( value );
+  m_slider->setIntegerValue( value );
 
   QHBoxLayout *layout = new QHBoxLayout;
   layout->setContentsMargins( 0, 0, 0, 0 );
@@ -70,8 +69,8 @@ IntSliderViewItem::IntSliderViewItem(
     this, SLOT( onSliderPressed() )
     );
   connect(
-    m_slider, SIGNAL( valueChanged( int ) ),
-    this, SLOT( onValueChanged( int ) )
+    m_slider, SIGNAL( integerValueChanged( int ) ),
+    this, SLOT( onIntegerValueChanged( int ) )
     );
   connect(
     m_slider, SIGNAL( sliderReleased() ),
@@ -91,16 +90,49 @@ QWidget *IntSliderViewItem::getWidget()
 void IntSliderViewItem::onModelValueChanged( QVariant const &v )
 {
   FTL::AutoSet<bool> settingValue(m_isSettingValue, true);
+
   int value = getQVariantRTValValue<int>(v);
 
   // correct the softrange
-  if(value < m_slider->minimum())
-    m_slider->setMinimum(value);
-  if(value > m_slider->maximum())
-    m_slider->setMaximum(value);
+  if(value < m_slider->min())
+    m_slider->setResolution(value, m_slider->max());
+  if(value > m_slider->max())
+    m_slider->setResolution(m_slider->min(), value);
 
-  m_slider->setValue( value );
+  m_slider->setIntegerValue( value, false );
   m_lineEdit->setText( QString::number( value ) );
+}
+
+void IntSliderViewItem::metadataChanged()
+{
+  // metadata should be like this:
+  // uiRange: "(0, 200)"
+  // uiHardRange: "(0, 500)"
+
+  if ( !FabricUI::DecodeUIRange(
+    m_metadata.getString( "uiRange" ),
+    m_softMinimum,
+    m_softMaximum
+    ) )
+  {
+    m_softMinimum = 0;
+    m_softMaximum = 100;
+  }
+
+  if ( !FabricUI::DecodeUIRange(
+    m_metadata.getString( "uiHardRange" ),
+    m_hardMinimum,
+    m_hardMaximum
+    ) )
+  {
+    m_hardMinimum = -INT_MAX;
+    m_hardMaximum = +INT_MAX;
+  }
+
+  m_softMinimum = std::max( m_softMinimum, m_hardMinimum );
+  m_softMaximum = std::min( m_softMaximum, m_hardMaximum );
+
+  m_slider->setResolution( m_softMinimum, m_softMaximum );
 }
 
 void IntSliderViewItem::onLineEditTextModified( QString text )
@@ -114,13 +146,13 @@ void IntSliderViewItem::onLineEditTextModified( QString text )
     );
 
   // correct the softrange
-  if(value < m_slider->minimum())
-    m_slider->setMinimum(value);
-  if(value > m_slider->maximum())
-    m_slider->setMaximum(value);
+  if(value < m_slider->min())
+    m_slider->setResolution(value, m_slider->max());
+  if(value > m_slider->max())
+    m_slider->setResolution(m_slider->min(), value);
 
-  if ( value != m_slider->value() )
-    m_slider->setValue( value );
+  if ( value != m_slider->integerValue() )
+    m_slider->setIntegerValue( value, true /* emitSignal */  );
   else
     m_lineEdit->setText( QString::number( value ) );
 }
@@ -130,7 +162,7 @@ void IntSliderViewItem::onSliderPressed()
   emit interactionBegin();
 }
 
-void IntSliderViewItem::onValueChanged( int value )
+void IntSliderViewItem::onIntegerValueChanged( int value )
 {
   if(m_isSettingValue)
     return;
@@ -141,40 +173,6 @@ void IntSliderViewItem::onValueChanged( int value )
 void IntSliderViewItem::onSliderReleased()
 {
   emit interactionEnd( true );
-}
-
-void IntSliderViewItem::metadataChanged()
-{
-  m_slider->setRange( m_softMinimum, m_softMaximum );
-
-  // metadata should be like this:
-  // uiRange: "(0, 200)"
-  // uiHardRange: "(0, 500)"
-
-  m_hardMinimum = INT_MIN;
-  m_hardMaximum = INT_MAX;
-  FTL::CStrRef hardRangeCStr = m_metadata.getString( "uiHardRange" );
-  bool decodedHard =
-    FabricUI::DecodeUIRange( hardRangeCStr, m_hardMinimum, m_hardMaximum );
-
-  m_softMinimum = 0;
-  m_softMaximum = 100;
-  FTL::CStrRef softRangeCStr = m_metadata.getString( "uiRange" );
-  bool decodedSoft =
-    FabricUI::DecodeUIRange( softRangeCStr, m_softMinimum, m_softMaximum );
-
-  if ( decodedHard && !decodedSoft )
-  {
-    m_softMinimum = m_hardMinimum;
-    m_softMaximum = m_hardMaximum;
-  }
-  else
-  {
-    m_softMinimum = std::max( m_softMinimum, m_hardMinimum );
-    m_softMaximum = std::min( m_softMaximum, m_hardMaximum );
-  }
-
-  m_slider->setRange( m_softMinimum, m_softMaximum );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -188,9 +186,9 @@ BaseViewItem* IntSliderViewItem::CreateItem(
   if (metaData == NULL)
     return NULL;
 
-  if ( RTVariant::isType<int>( value )
-    || RTVariant::isType<unsigned>( value ) )
+  if ( RTVariant::isType<int>( value ) || RTVariant::isType<unsigned>( value ) )
   {
+    // We can only create the UI if we have a defined Min & Max
     if (metaData->has( "uiRange" ) || metaData->has( "uiHardRange" ))
     {
       IntSliderViewItem* item = new IntSliderViewItem( name, value, metaData );

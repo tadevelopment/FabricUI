@@ -3,16 +3,20 @@
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
+#include <QPainterPathStroker>
 
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
+#include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Port.h>
 
 #include <algorithm>
 #include <cstdlib>
+#include <math.h>
 
 using namespace FabricUI::GraphView;
 
@@ -32,33 +36,79 @@ Connection::Connection(
   , m_aboutToBeDeleted( false )
   , m_hasSelectedTarget( false )
 {
-  m_isExposedConnection =    m_src->targetType() == TargetType_Port
-                          || m_src->targetType() == TargetType_FixedPort
-                          || m_src->targetType() == TargetType_ProxyPort
-                          || m_dst->targetType() == TargetType_Port
-                          || m_dst->targetType() == TargetType_FixedPort
-                          || m_dst->targetType() == TargetType_ProxyPort;
+  bool isExposedConnectionSrc = (   m_src->targetType() == TargetType_Port
+                                 || m_src->targetType() == TargetType_FixedPort
+                                 || m_src->targetType() == TargetType_ProxyPort );
+  bool isExposedConnectionDst = (   m_dst->targetType() == TargetType_Port
+                                 || m_dst->targetType() == TargetType_FixedPort
+                                 || m_dst->targetType() == TargetType_ProxyPort );
 
-  if(m_isExposedConnection)
-  {
-    m_defaultPen = m_graph->config().connectionExposePen;
-  }
-  else
-  {
-    m_defaultPen = m_graph->config().connectionDefaultPen;
-  }
-  m_hoverPen = m_graph->config().connectionHoverPen;
+  m_isExposedConnection = (   isExposedConnectionSrc
+                           || isExposedConnectionDst );
 
-  m_clipRadius = m_graph->config().connectionExposeRadius;
+  m_tooltip = "<p style='white-space:pre'>";
+  {
+    QString srcPortName;
+    QString srcPortParent;
+    QString srcPortDataType;
+    QString dstPortName;
+    QString dstPortParent;
+    QString dstPortDataType;
+    for (int i=0;i<2;i++)
+    {
+      ConnectionTarget *target       = (i == 0 ? src             : dst);
+      QString          &portName     = (i == 0 ? srcPortName     : dstPortName);
+      QString          &portParent   = (i == 0 ? srcPortParent   : dstPortParent);
+      QString          &portDataType = (i == 0 ? srcPortDataType : dstPortDataType);
+      switch (target->targetType())
+      {
+        case TargetType_Pin:
+        {
+          Pin &t = *(Pin *)target;
+          if (!t.name()    .empty())  portName     = t.name().c_str();
+          if (!t.dataType().empty())  portDataType = t.dataType().c_str();
+          portParent = t.node()->name_QS() + QString(".");
+        } break;
+        case TargetType_Port:
+        {
+          Port &t = *(Port *)target;
+          if (!t.name()    .empty())  portName     = t.name().c_str();
+          if (!t.dataType().empty())  portDataType = t.dataType().c_str();
+        } break;
+        case TargetType_InstBlockPort:
+        {
+          InstBlockPort &t = *(InstBlockPort *)target;
+          if (!t.name()    .empty())  portName     = t.name().c_str();
+          if (!t.dataType().empty())  portDataType = t.dataType().c_str();
+          portParent = t.instBlock()->node()->name_QS() + QString(".") + t.instBlock()->name_QS() + QString(".");
+        } break;
+        default:
+          break;
+      };
+    }
+    if (srcPortName    .isEmpty())  srcPortName     = "unknown";
+    if (srcPortDataType.isEmpty())  srcPortDataType = "unknown";
+    if (dstPortName    .isEmpty())  dstPortName     = "unknown";
+    if (dstPortDataType.isEmpty())  dstPortDataType = "unknown";
+    m_tooltip += " " + srcPortParent + "<font color=#0000aa>" + srcPortName + "</font> (<font color=#003300>" + srcPortDataType + "</font>)";
+    m_tooltip += "  >  ";
+    m_tooltip += dstPortParent + "<font color=#0000aa>" + dstPortName + "</font> (<font color=#003300>" + dstPortDataType + "</font>)" + " ";
+    m_tooltip += "<p/>";
+  }
+  enableToolTip(m_graph->config().connectionShowTooltip);
+
+  if(m_isExposedConnection)   m_defaultPen = m_graph->config().connectionExposePen;
+  else                        m_defaultPen = m_graph->config().connectionDefaultPen;
+  m_hoverPen       = m_graph->config().connectionHoverPen;
+  m_clipRadius     = m_graph->config().connectionExposeRadius;
+  m_shapePathWidth = qMax(1.0f, qMin(20.0f, m_graph->config().connectionClickableDistance));
 
   QColor color = m_graph->config().connectionColor;
   if(m_graph->config().connectionUsePinColor || forceUseOfPinColor)
   {
     for(int i=0;i<2;i++)
     {
-      ConnectionTarget * target = src;
-      if(i>0)
-        target = dst;
+      ConnectionTarget *target = (i == 0 ? src : dst);
 
       if(target->targetType() == TargetType_Pin)
       {
@@ -89,14 +139,18 @@ Connection::Connection(
     mainPanel, SIGNAL(geometryChanged()),
     this, SLOT(dependencyMoved())
     );
-  QObject::connect(
-    mainPanel, SIGNAL(canvasZoomChanged(float)),
-    this, SLOT(dependencyMoved())
-    );
-  QObject::connect(
-    mainPanel, SIGNAL(canvasPanChanged(QPointF)),
-    this, SLOT(dependencyMoved())
-    );
+
+  if (m_isExposedConnection)
+  {
+    QObject::connect(
+      mainPanel, SIGNAL(canvasZoomChanged(float)),
+      this, SLOT(dependencyMoved())
+      );
+    QObject::connect(
+      mainPanel, SIGNAL(canvasPanChanged(QPointF)),
+      this, SLOT(dependencyMoved())
+      );
+  }
 
   for(int i=0;i<2;i++)
   {
@@ -141,6 +195,8 @@ Connection::Connection(
           instBlockPort, SIGNAL(inCircleScenePositionChanged()),
           this, SLOT(dependencyMoved())
           );
+      Node * node = instBlockPort->instBlock()->node();
+      QObject::connect(node, SIGNAL(selectionChanged(FabricUI::GraphView::Node *, bool)), this, SLOT(dependencySelected()));
     }
     else if(target->targetType() == TargetType_MouseGrabber)
     {
@@ -164,6 +220,20 @@ Connection::Connection(
 
 Connection::~Connection()
 {
+  for (int i=0;i<2;i++)
+  {
+    ConnectionTarget *target = (i == 0 ? m_src : m_dst);
+    if (target->targetType() == TargetType_Pin)
+    {
+      Pin &t = *(Pin *)target;
+      t.node()->setConnectionHighlighted(false);
+    }
+    if (target->targetType() == TargetType_InstBlockPort)
+    {
+      InstBlockPort &t = *(InstBlockPort *)target;
+      t.instBlock()->node()->setConnectionHighlighted(false);
+    }
+  }
 }
 
 void Connection::setColor(QColor color)
@@ -214,14 +284,58 @@ void Connection::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
   m_hovered = true;
   setPen(m_hoverPen);
+
+  if (graph()->config().highlightConnectionTargets)
+  {
+    for (int i=0;i<2;i++)
+    {
+      ConnectionTarget *target = (i == 0 ? m_src : m_dst);
+      if (target->targetType() == TargetType_Pin)
+      {
+        Pin &t = *(Pin *)target;
+        t.node()->setConnectionHighlighted(m_hovered);
+      }
+      if (target->targetType() == TargetType_InstBlockPort)
+      {
+        InstBlockPort &t = *(InstBlockPort *)target;
+        t.instBlock()->node()->setConnectionHighlighted(m_hovered);
+      }
+    }
+  }
+
   QGraphicsPathItem::hoverEnterEvent(event);
+
+  if (graph()->config().highlightConnectionTargets)
+    graph()->update();
 }
 
 void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
   m_hovered = false;
   setPen(m_defaultPen);
+
+  if (graph()->config().highlightConnectionTargets)
+  {
+    for (int i=0;i<2;i++)
+    {
+      ConnectionTarget *target = (i == 0 ? m_src : m_dst);
+      if (target->targetType() == TargetType_Pin)
+      {
+        Pin &t = *(Pin *)target;
+        t.node()->setConnectionHighlighted(m_hovered);
+      }
+      if (target->targetType() == TargetType_InstBlockPort)
+      {
+        InstBlockPort &t = *(InstBlockPort *)target;
+        t.instBlock()->node()->setConnectionHighlighted(m_hovered);
+      }
+    }
+  }
+
   QGraphicsPathItem::hoverLeaveEvent(event);
+
+  if (graph()->config().highlightConnectionTargets)
+    graph()->update();
 }
 
 void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
@@ -341,41 +455,163 @@ void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
   }
 }
 
+QPainterPath Connection::shape() const
+{
+  return m_shapePath;
+}
+
 void Connection::dependencyMoved()
 {
-  QPointF currSrcPoint = srcPoint();
-  QPointF currDstPoint = dstPoint();
-  float tangentLength = computeTangentLength();
+  QPointF srcPnt = srcPoint();
+  QPointF dstPnt = dstPoint();
 
-  // painter->setRenderHint(QPainter::Antialiasing,true);
-  // painter->setRenderHint(QPainter::HighQualityAntialiasing,true);
+  // create and set the path that is
+  // used by the paint() function.
+  {
+    QPainterPath path;
 
-  QPainterPath path;
-  path.moveTo(currSrcPoint);
+    qreal x = 0.5 * (dstPnt.x() - srcPnt.x());
 
-  path.cubicTo(
-      currSrcPoint + QPointF(tangentLength, 0), 
-      currDstPoint - QPointF(tangentLength, 0), 
-      currDstPoint
-  );
+    if (   m_graph->config().connectionDrawAsCurves
+        || m_isExposedConnection )
+    {
+      if (srcPnt.x() < dstPnt.x())
+      {
+        path.moveTo ( srcPnt );
+        path.cubicTo( srcPnt + QPointF( + x, 0 ),
+                      dstPnt + QPointF( - x, 0 ),
+                      dstPnt );
+      }
+      else
+      {
+        path.moveTo( srcPnt );
+        path.lineTo( dstPnt );
+      }
+    }
+    else
+    {
+      path.moveTo( srcPnt );
+      path.lineTo( srcPnt + QPointF( + x, 0 ) );
+      path.lineTo( dstPnt + QPointF( - x, 0 ) );
+      path.lineTo( dstPnt );
+    }
+    
+    setPath(path);
+  }
 
-  // we draw the curve the other way as well to
-  // ensure that the polygon is closed in the top left.
-  // not doing this results in an open polygon, which 
-  // make the hover area for the curve very big.
-  path.cubicTo(
-      currDstPoint - QPointF(tangentLength, 0), 
-      currSrcPoint + QPointF(tangentLength, 0), 
-      currSrcPoint
-  );
+  // create and set the path that is used
+  // as the QGraphicsPathItem's shape.
+  {
+    QPainterPath path;
 
-  setPath(path);
+    qreal w = m_shapePathWidth;
+    qreal x = 0.5 * (dstPnt.x() - srcPnt.x());
 
-  if(m_isExposedConnection)
+    if (   m_graph->config().connectionDrawAsCurves
+        || m_isExposedConnection )
+    {
+      if (srcPnt.x() < dstPnt.x())
+      {
+        if (srcPnt.y() < dstPnt.y())
+        {
+          path.moveTo ( srcPnt + QPointF(       0, + w ) );
+          path.cubicTo( srcPnt + QPointF( + x - w, + w ),
+                        dstPnt + QPointF( - x - w, + w ),
+                        dstPnt + QPointF(       0, + w ) );
+          path.lineTo ( dstPnt + QPointF(       0, - w ) );
+          path.cubicTo( dstPnt + QPointF( - x + w, - w ),
+                        srcPnt + QPointF( + x + w, - w ),
+                        srcPnt + QPointF(       0, - w ) );
+        }
+        else
+        {
+          path.moveTo ( srcPnt + QPointF(       0, + w ) );
+          path.cubicTo( srcPnt + QPointF( + x + w, + w ),
+                        dstPnt + QPointF( - x + w, + w ),
+                        dstPnt + QPointF(       0, + w ) );
+          path.lineTo ( dstPnt + QPointF(       0, - w ) );
+          path.cubicTo( dstPnt + QPointF( - x - w, - w ),
+                        srcPnt + QPointF( + x - w, - w ),
+                        srcPnt + QPointF(       0, - w ) );
+        }
+      }
+      else
+      {
+        QPointF s( dstPnt.y() - srcPnt.y(), -(dstPnt.x() - srcPnt.x()) );
+        qreal len = sqrt(s.x() * s.x() + s.y() * s.y());
+        if (len > 0)
+        {
+          s *= w / len;
+
+          path.moveTo( srcPnt + s );
+          path.lineTo( dstPnt + s );
+          path.lineTo( dstPnt - s );
+          path.lineTo( srcPnt - s );
+        }
+      }
+    }
+    else
+    {
+      if (srcPnt.x() < dstPnt.x())
+      {
+        if (srcPnt.y() < dstPnt.y())
+        {
+          path.moveTo( srcPnt + QPointF(       0, + w ) );
+          path.lineTo( srcPnt + QPointF( + x - w, + w ) );
+          path.lineTo( dstPnt + QPointF( - x - w, + w ) );
+          path.lineTo( dstPnt + QPointF(       0, + w ) );
+          path.lineTo( dstPnt + QPointF(       0, - w ) );
+          path.lineTo( dstPnt + QPointF( - x + w, - w ) );
+          path.lineTo( srcPnt + QPointF( + x + w, - w ) );
+          path.lineTo( srcPnt + QPointF(       0, - w ) );
+        }
+        else
+        {
+          path.moveTo( srcPnt + QPointF(       0, + w ) );
+          path.lineTo( srcPnt + QPointF( + x + w, + w ) );
+          path.lineTo( dstPnt + QPointF( - x + w, + w ) );
+          path.lineTo( dstPnt + QPointF(       0, + w ) );
+          path.lineTo( dstPnt + QPointF(       0, - w ) );
+          path.lineTo( dstPnt + QPointF( - x - w, - w ) );
+          path.lineTo( srcPnt + QPointF( + x - w, - w ) );
+          path.lineTo( srcPnt + QPointF(       0, - w ) );
+        }
+      }
+      else
+      {
+        if (srcPnt.y() < dstPnt.y())
+        {
+          path.moveTo( srcPnt + QPointF(       0, - w ) );
+          path.lineTo( srcPnt + QPointF( + x - w, - w ) );
+          path.lineTo( dstPnt + QPointF( - x - w, - w ) );
+          path.lineTo( dstPnt + QPointF(       0, - w ) );
+          path.lineTo( dstPnt + QPointF(       0, + w ) );
+          path.lineTo( dstPnt + QPointF( - x + w, + w ) );
+          path.lineTo( srcPnt + QPointF( + x + w, + w ) );
+          path.lineTo( srcPnt + QPointF(       0, + w ) );
+        }
+        else
+        {
+          path.moveTo( srcPnt + QPointF(       0, - w ) );
+          path.lineTo( srcPnt + QPointF( + x + w, - w ) );
+          path.lineTo( dstPnt + QPointF( - x + w, - w ) );
+          path.lineTo( dstPnt + QPointF(       0, - w ) );
+          path.lineTo( dstPnt + QPointF(       0, + w ) );
+          path.lineTo( dstPnt + QPointF( - x - w, + w ) );
+          path.lineTo( srcPnt + QPointF( + x - w, + w ) );
+          path.lineTo( srcPnt + QPointF(       0, + w ) );
+        }
+      }
+    }
+
+    m_shapePath = path;
+  }
+
+  if (m_isExposedConnection)
   {
     m_clipPath = QPainterPath();
-    m_clipPath.addEllipse(currSrcPoint, m_clipRadius, m_clipRadius);
-    m_clipPath.addEllipse(currDstPoint, m_clipRadius, m_clipRadius);
+    m_clipPath.addEllipse(srcPnt, m_clipRadius, m_clipRadius);
+    m_clipPath.addEllipse(dstPnt, m_clipRadius, m_clipRadius);
   }
 }
 
@@ -383,34 +619,26 @@ void Connection::dependencySelected()
 {
   bool oldHasSelectedTarget = m_hasSelectedTarget;
   m_hasSelectedTarget = false;
-
-  if(m_src->targetType() == TargetType_Pin)
+  if (m_src->targetType() == TargetType_Pin)
   {
-    Node * node = ((Pin*)m_src)->node();
+    Node *node = ((Pin *)m_src)->node();
     m_hasSelectedTarget = m_hasSelectedTarget || node->selected();
   }
-  if(m_dst->targetType() == TargetType_Pin)
+  if (m_src->targetType() == TargetType_InstBlockPort)
   {
-    Node * node = ((Pin*)m_dst)->node();
+    Node *node = ((InstBlockPort *)m_src)->instBlock()->node();
     m_hasSelectedTarget = m_hasSelectedTarget || node->selected();
   }
-
+  if (m_dst->targetType() == TargetType_Pin)
+  {
+    Node *node = ((Pin *)m_dst)->node();
+    m_hasSelectedTarget = m_hasSelectedTarget || node->selected();
+  }
+  if (m_dst->targetType() == TargetType_InstBlockPort)
+  {
+    Node *node = ((InstBlockPort *)m_dst)->instBlock()->node();
+    m_hasSelectedTarget = m_hasSelectedTarget || node->selected();
+  }
   if ( m_hasSelectedTarget != oldHasSelectedTarget )
     update();
-}
-
-float Connection::computeTangentLength() const
-{
-  QPointF currSrcPoint = srcPoint();
-  QPointF currDstPoint = dstPoint();
-
-  // if the connection points are on the wrong
-  // sides, we need to scale up the boundingRect
-  float tangentLength = 0.0f;
-  if(currSrcPoint.x() < currDstPoint.x())
-  {
-    tangentLength = m_graph->config().connectionFixedTangentLength;
-    tangentLength += m_graph->config().connectionPercentualTangentLength * 0.01 * (currDstPoint.x() - currSrcPoint.x());
-  }
-  return tangentLength;
 }

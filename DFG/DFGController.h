@@ -111,6 +111,13 @@ namespace FabricUI
 
       // Parent virtual functions
 
+      virtual std::string gvcDoCopy(
+        );
+
+      virtual void gvcDoPaste(
+        bool mapPositionToMouseCursor = true
+        );
+
       virtual bool gvcDoRemoveNodes(
         FTL::ArrayRef<GraphView::Node *> nodes
         );
@@ -157,7 +164,9 @@ namespace FabricUI
 
       virtual void gvcDoMoveNodes(
         std::vector<GraphView::Node *> const &nodes,
+        std::vector<QPointF> const &nodesOriginalPos,
         QPointF delta,
+        float gridSnapSize,
         bool allowUndo
         );
 
@@ -244,7 +253,8 @@ namespace FabricUI
       QString cmdCreatePreset(
         QString nodeName,
         QString presetDirPath,
-        QString presetName
+        QString presetName,
+        bool updateOrigPreset
         );
 
       QString cmdEditPort(
@@ -312,10 +322,15 @@ namespace FabricUI
 
       void cmdCut();
 
-      void cmdPaste();
+      void cmdPaste(bool mapPositionToMouseCursor = true);
 
       void cmdSetArgValue(
         QString argName,
+        FabricCore::RTVal const &value
+        );
+
+      void cmdSetPortDefaultValue(
+        QString portPath,
         FabricCore::RTVal const &value
         );
 

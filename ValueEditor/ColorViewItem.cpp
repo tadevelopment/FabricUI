@@ -83,6 +83,9 @@ ColorViewItem::ColorViewItem(
   m_specCombo->setObjectName( "VERight" );
   m_specCombo->addItem( tr( "RGB" ) );
   m_specCombo->addItem( tr( "HSV" ) );
+  if ( FTL::StrRef(m_metadata.getString(META_FORMAT)) == FTL_STR("HSV") )
+  { m_spec = QColor::Hsv;
+    m_specCombo->setCurrentIndex( IDX_HSV ); }
   connect(
     m_specCombo, SIGNAL( currentIndexChanged( const QString& ) ),
     this, SLOT( formatChanged( const QString& ) )
@@ -333,7 +336,7 @@ void ColorViewItem::metadataChanged()
 void ColorViewItem::pickColor()
 {
   QColor color = toQColor();
-  QColorDialog qcd( color, NULL );
+  QColorDialog qcd( color, this->m_widget->parentWidget() );
   qcd.setOption(
     QColorDialog::ShowAlphaChannel,
     !m_colorRTVal.hasType( "RGB" )

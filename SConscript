@@ -4,19 +4,26 @@
 
 import os, subprocess
 Import(
-  'buildOS',
+  'allServicesLibFiles',
   'buildArch',
+  'buildOS',
   'buildType',
-  'parentEnv',
-  'fabricFlags',
-  'qtFlags',
-  'qtMOC',
-  'uiLibPrefix',
-  'qtDir',
-  'stageDir',
-  'pythonConfigs',
+  'capiSharedFiles',
   'capiSharedLibFlags',
   'corePythonModuleFiles',
+  'dfgSamples',
+  'extraDFGPresets',
+  'fabricFlags',
+  'feLogoPNG',
+  'parentEnv',
+  'pythonConfigs',
+  'qtDir',
+  'qtFlags',
+  'qtInstalledLibs',
+  'qtMOC',
+  'splitSearchFiles',
+  'stageDir',
+  'uiLibPrefix',
   )
 
 if buildOS == 'Windows' and buildType == 'Debug':
@@ -115,6 +122,8 @@ env.MergeFlags(qtFlags)
 
 dirs = [
   'Util',
+  'Actions',
+  'Dialog',
   'Style',
   'Viewports',
   'KLEditor',
@@ -129,6 +138,7 @@ dirs = [
   'DFG/DFGUICmd',
   'DFG/Dialogs',
   'DFG/PortEditor',
+  'DFG/TabSearch',
  
   'SceneHub',
   'SceneHub/TreeView',
@@ -296,6 +306,7 @@ if uiLibPrefix == 'ui':
         diffFile,
         shibokenDir.File('fabricui.xml'),
         shibokenDir.File('fabricui_core.xml'),
+        shibokenDir.File('fabricui_actions.xml'),
         shibokenDir.File('fabricui_dfg.xml'),
         shibokenDir.File('fabricui_viewports.xml'),
         shibokenDir.File('fabricui_util.xml'),
@@ -335,6 +346,7 @@ if uiLibPrefix == 'ui':
     pysideEnv.Append(CPPPATH = [
         pysideEnv.Dir('Util').srcnode(),
         pysideEnv.Dir('Menus').srcnode(),
+        pysideEnv.Dir('Actions').srcnode(),
         pysideEnv.Dir('DFG').srcnode(),
         pysideEnv.Dir('DFG/DFGUICmd').srcnode(),
         pysideEnv.Dir('GraphView').srcnode(),
@@ -529,6 +541,15 @@ if uiLibPrefix == 'ui':
       
   pysideEnv.Alias('pysideGen', pysideGens)
   pysideEnv.Alias('pyside', installedPySideLibs)
-  pysideEnv.Alias('canvas.py', installedPySideLibs)
+  pysideEnv.Alias('canvas.py', [
+    installedPySideLibs,
+    capiSharedFiles,
+    extraDFGPresets,
+    splitSearchFiles,
+    dfgSamples,
+    qtInstalledLibs,
+    allServicesLibFiles,
+    feLogoPNG,
+    ])
 
 Return('uiFiles')

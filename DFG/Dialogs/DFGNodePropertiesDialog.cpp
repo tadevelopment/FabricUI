@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <QLayout>
-#include <QDoubleValidator>
 #include <QTimer>
 
 #include "DFGNodePropertiesDialog.h"
@@ -22,6 +21,7 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
 , m_nodeName(nodeName)
 , m_controller(controller)
 {
+  setObjectName( "DFGNodePropertiesDialog" );
   setWindowTitle("Node Properties");
 
   m_presetNameLabel = NULL;
@@ -125,17 +125,17 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
   }
 
   if ( m_presetNameLabel )
-    addInput( m_presetNameLabel, "preset name", "properties" );
+    addInput( m_presetNameLabel, "Preset Name", "Properties" );
   if ( m_presetImportPathname )
-    addInput( m_presetImportPathname, "preset filepath", "properties" );
+    addInput( m_presetImportPathname, "Preset File Path", "Properties" );
   if ( m_textEdit )
-    addInput( m_textEdit, "text", "properties" );
-  addInput( m_nameEdit, "node name", "properties" );
-  addInput( m_toolTipEdit, "tooltip", "properties" );
-  addInput( m_docUrlEdit, "doc url", "properties" );
-  addInput( m_nodeColorButton, "node color", "properties" );
-  addInput( m_textColorButton, "text color", "properties" );
-  addInput( m_allowHeaderColorCheckBox, "custom header color", "properties" );
+    addInput( m_textEdit, "Text", "Properties" );
+  addInput( m_nameEdit, "Node Name", "Properties" );
+  addInput( m_toolTipEdit, "Tooltip", "Properties" );
+  addInput( m_docUrlEdit, "Doc Url", "Properties" );
+  addInput( m_nodeColorButton, "Node Color", "Properties" );
+  addInput( m_textColorButton, "Text Color", "Properties" );
+  addInput( m_allowHeaderColorCheckBox, "Custom Header Color", "Properties" );
     
   // [Julien] FE-5188, FE-5276
   if(setAlphaNum) alphaNumicStringOnly();
@@ -254,7 +254,7 @@ void DFGNodePropertiesDialog::onAllowHeaderColorCheckBoxClicked()
         m_headerColorButton, SIGNAL(clicked()),
         this, SLOT(onHeaderColorButtonClicked())
         );
-      addInput(m_headerColorButton, "header color", "properties");
+      addInput(m_headerColorButton, "Header Color", "Properties");
     }
     else if ( !!m_headerColorButton
       && !m_allowHeaderColorCheckBox->isChecked() )
