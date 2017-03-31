@@ -1817,13 +1817,23 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #272822;
 }
 
-#ResultsView #TagContainer #TagWidget[highlighted="true"] QPushButton,
+#ResultsView #TagContainer #TagWidget[highlighted="true"] QPushButton
+{
+  background-color: #999999;
+  color: #FFFFFF;
+}
+
 #ResultsView #TagContainer #TagWidget[highlighted="false"] QPushButton
 {
   background-color: rgba(0,0,0,100);
 }
 
-#ResultsView #TagContainer #TagWidget[highlighted="true"] QPushButton:hover,
+#ResultsView #TagContainer #TagWidget[highlighted="true"] QPushButton:hover
+{
+  background-color: #B2B2B2;
+  color: #FFFFFF;
+}
+
 #ResultsView #TagContainer #TagWidget[highlighted="false"] QPushButton:hover
 {
   background-color: #999999;
@@ -1834,6 +1844,12 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   background-color: #272822;
   border-radius: 4px;
+}
+
+#QueryEdit #TagsEdit #TagWidget[highlighted="true"] QPushButton
+{
+  color: #272822;
+  background-color: #F0F0F0;
 }
 
 #TagsView
