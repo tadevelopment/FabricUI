@@ -307,6 +307,10 @@ QueryEdit::QueryEdit( FabricCore::DFGHost* host )
     &m_query, SIGNAL( changed() ),
     this, SLOT( onQueryChanged() )
   );
+  connect(
+    m_textEdit, SIGNAL( cursorPositionChanged( int, int ) ),
+    this, SLOT( deselectTags() )
+  );
   m_layout->setMargin( 0 );
   m_layout->setSpacing( 4 );
   this->setFocusProxy( m_textEdit );
