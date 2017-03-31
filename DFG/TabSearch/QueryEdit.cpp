@@ -131,53 +131,15 @@ void QueryController::clear()
   m_query.clear();
 }
 
-struct ArrowedTag
-{
-  TagWidget* left;
-  TagArrow* right;
-  ArrowedTag( TagWidget* left, TagArrow* right )
-    : left( left ), right( right )
-  {}
-};
-
 class QueryEdit::TagsEdit : public QWidget
 {
-  // Handles the hovering in order to highlight the arrows
-  class TagWidgetH : public TagWidget
-  {
-    typedef TagWidget Parent;
-    TagsEdit* m_parent;
-    int m_index;
-  public:
-    TagWidgetH( const Query::Tag& n, TagsEdit* parent, int index )
-      : TagWidget( n )
-      , m_parent( parent )
-      , m_index( index )
-    {}
-  protected:
-    void enterEvent( QEvent *e ) FTL_OVERRIDE
-    {
-      Parent::enterEvent( e );
-      m_parent->setHoveredTag( m_index );
-    }
-    void leaveEvent( QEvent *e ) FTL_OVERRIDE
-    {
-      Parent::leaveEvent( e );
-      m_parent->setHoveredTag( NoHighlight );
-    }
-  };
-
   void clear()
   {
-    m_selectedIndex = NoHighlight;
-    m_hoveredIndex = NoHighlight;
-    for( std::vector<ArrowedTag>::iterator it = m_tagViews.begin();
+    for( std::vector<TagWidget*>::iterator it = m_tagViews.begin();
       it != m_tagViews.end(); it++ )
     {
-      m_layout->removeWidget( it->left );
-      m_layout->removeWidget( it->right );
-      it->left->deleteLater();
-      it->right->deleteLater();
+      m_layout->removeWidget( *it );
+      ( *it )->deleteLater();
     }
     m_tagViews.clear();
   }
@@ -187,7 +149,7 @@ public:
     : m_controller( controller )
   {
     m_layout = new QHBoxLayout();
-    m_layout->setSpacing( 0 );
+    m_layout->setSpacing( 4 );
     this->setLayout( m_layout );
     this->setObjectName( "TagsEdit" );
     layout()->setAlignment( Qt::AlignLeft );
@@ -201,12 +163,9 @@ public:
     m_layout->setMargin( tags.size() > 0 ? 4 : 0 );
     for( size_t i = 0; i < tags.size(); i++ )
     {
-      TagWidget* tagWidget = new TagWidgetH( tags[i], this, i );
-      TagArrow* arrow = new TagArrow();
-      arrow->setHasRight( i < tags.size() - 1 );
+      TagWidget* tagWidget = new TagWidget( tags[i] );
       m_layout->addWidget( tagWidget );
-      m_layout->addWidget( arrow );
-      m_tagViews.push_back( ArrowedTag( tagWidget, arrow ) );
+      m_tagViews.push_back( tagWidget );
       connect(
         tagWidget, SIGNAL( activated( const Query::Tag& ) ),
         m_controller, SLOT( removeTag( const Query::Tag& ) )
@@ -217,33 +176,13 @@ public:
 
   void setHighlightedTag( int index )
   {
-    m_selectedIndex = index;
-    updateHighlight();
-  }
-
-private:
-
-  void setHoveredTag( int index )
-  {
-    m_hoveredIndex = index;
-    updateHighlight();
-  }
-
-  void updateHighlight()
-  {
     for( size_t i = 0; i < m_tagViews.size(); i++ )
     {
-      bool highlighted = m_selectedIndex == AllHighlighted
-        || int( i ) == m_selectedIndex || int( i ) == m_hoveredIndex;
-      m_tagViews[i].left->setHighlighted( highlighted );
-      m_tagViews[i].right->setLeftHighlighted( highlighted );
-      if( i > 0 )
-        m_tagViews[i-1].right->setRightHighlighted( highlighted );
+      bool highlighted = index == AllHighlighted || int( i ) == index;
+      m_tagViews[i]->setHighlighted( highlighted );
     }
   }
-  std::vector<ArrowedTag> m_tagViews;
-  int m_selectedIndex;
-  int m_hoveredIndex;
+  std::vector<TagWidget*> m_tagViews;
   QHBoxLayout* m_layout;
   QueryController* m_controller;
 };
