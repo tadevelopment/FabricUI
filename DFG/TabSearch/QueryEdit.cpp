@@ -253,8 +253,13 @@ protected:
     // Navigating in the Tags with the arrow keys
     if( navigatingTags && e->key() == Qt::Key_Right )
     {
-      if( m_parent->m_highlightedTag == NoHighlight )
-        Parent::keyPressEvent( e ); // If no selected Tag, move in the Text
+      if( m_parent->m_highlightedTag == NoHighlight ) // If no Tag is selected
+      {
+        if( e->modifiers().testFlag( Qt::AltModifier ) && m_parent->m_query.getTags().size() > 0 ) // Alt
+          m_parent->m_highlightedTag = 0; // Select the left-most tag
+        else
+          Parent::keyPressEvent( e ); // Move in the Text
+      }
       else
         m_parent->m_highlightedTag++;
     }
@@ -267,6 +272,9 @@ protected:
       // stop at the leftmost tag (since -1 is reserved)
       if( m_parent->m_highlightedTag > 0 )
         m_parent->m_highlightedTag--;
+      else
+      if( m_parent->m_highlightedTag == 0 )
+        m_parent->m_highlightedTag = NoHighlight;
     }
     else
       Parent::keyPressEvent( e );
