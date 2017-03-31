@@ -532,6 +532,8 @@ void DetailsWidget::setPreset( const Result& preset )
 void DetailsWidget::updateSize()
 {
   m_tagContainer->adjustSize();
+  for( PortsViews::iterator it = m_portsTables.begin(); it != m_portsTables.end(); it++ )
+    it->second->adjustSize();
   for( size_t i = 0; i < m_sections.size(); i++ )
     m_sections[i]->adjustSize();
   this->adjustSize();
