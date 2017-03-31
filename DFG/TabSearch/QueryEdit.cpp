@@ -367,16 +367,19 @@ void QueryEdit::convertTextToTags()
     bool isTag = false;
     if( Query::Tag::IsTag( text ) )
     {
-      isTag = true;
       Query::Tag tag = text;
       if( m_tagDB.find( tag.cat() ) != m_tagDB.end() )
       {
         const TagSet& catTags = m_tagDB[tag.cat()];
-        if( catTags.find( tag ) != catTags.end() && !m_query.hasTag( tag ) )
+        if( catTags.find( tag ) != catTags.end() )
         {
-          // the text entered might have the wrong case
-          Query::Tag dbName = *( catTags.find( tag ) );
-          m_controller->addTag( dbName );
+          isTag = true;
+          if( !m_query.hasTag( tag ) )
+          {
+            // the text entered might have the wrong case
+            Query::Tag dbName = *( catTags.find( tag ) );
+            m_controller->addTag( dbName );
+          }
         }
       }
     }
