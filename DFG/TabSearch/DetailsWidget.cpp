@@ -16,9 +16,13 @@
 using namespace FabricUI::DFG::TabSearch;
 using namespace FabricCore;
 
+static const size_t ExecPortTypeNb = 3;
+static const std::string ExecPortTypes[ExecPortTypeNb] = { "In", "IO", "Out" };
+
 struct Port
 {
   std::string type, name;
+  std::string execPortType;
 };
 
 struct PresetDetails
@@ -63,6 +67,7 @@ PresetDetails GetDetails(
           if( portJs->has( "typeSpec" ) )
             port.type = portJs->getString( "typeSpec" );
           port.name = portJs->getString( "name" );
+          port.execPortType = portJs->getString( "execPortType" );
           details.ports.push_back( port );
         }
       }
@@ -159,6 +164,17 @@ class DetailsWidget::Section : public QWidget
   DetailsWidget* m_parent;
 
 public:
+
+  class SectionWidget : public QWidget
+  {
+    Section* m_section;
+  public:
+    SectionWidget() : m_section( NULL ) {}
+    void setSection( Section* s ) { m_section = s; }
+  protected:
+    void setSectionVisibility( bool visible ) { assert( m_section != NULL ); m_section->setVisible( visible ); }
+  };
+
   Section( const std::string& name, DetailsWidget* parent )
     : m_header( new Header( this, name ) )
     , m_widget( NULL )
@@ -175,7 +191,7 @@ public:
   }
 
   // takes ownership of the widget
-  void setWidget( QWidget* widget )
+  void setWidget( SectionWidget* widget )
   {
     if( m_widget != NULL )
     {
@@ -183,6 +199,7 @@ public:
       m_widget->deleteLater();
     }
     m_widget = widget;
+    widget->setSection( this );
     this->layout()->addWidget( m_widget );
   }
 };
@@ -194,7 +211,7 @@ void DetailsWidget::Section::toggleCollapse( bool toggled )
   m_parent->updateSize();
 }
 
-class DetailsWidget::PortsView : public QWidget
+class DetailsWidget::PortsView : public DetailsWidget::Section::SectionWidget
 {
   struct PortView : public QWidget
   {
@@ -253,33 +270,37 @@ public:
     m_ports.clear();
   }
 
-  void setPorts(
+  // Returns the tags it used
+  std::set<Query::Tag> setPorts(
     const std::vector<Port>& ports,
-    std::set<Query::Tag>& tags,
+    const std::set<Query::Tag>& tags,
     DetailsWidget* root
   )
   {
     clear();
-    std::set<Query::Tag> unusedTags = tags;
+    std::set<Query::Tag> usedTags;
     for( size_t i = 0; i < ports.size(); i++ )
     {
       Query::Tag tag( PortTypeCat, ports[i].type );
       if( tags.find( tag ) != tags.end() )
-        unusedTags.erase( tag );
+        usedTags.insert( tag );
       else
         tag = Query::Tag();
       PortView* view = new PortView( ports[i], tag, root );
       m_ports.push_back( view );
       this->layout()->addWidget( view );
     }
-    tags = unusedTags;
+
+    setSectionVisibility( ports.size() > 0 );
+
+    return usedTags;
   }
 };
 
 // http://doc.qt.io/qt-4.8/qt-layouts-flowlayout-example.html
 // TODO : Knapsacks optimization problem to minimize the
 // empty spaces ? https://en.wikipedia.org/wiki/Knapsack_problem
-class DetailsWidget::TagContainer : public QWidget
+class DetailsWidget::TagContainer : public DetailsWidget::Section::SectionWidget
 {
   struct Line
   {
@@ -350,6 +371,8 @@ public:
       line.tags.push_back( tagWidget );
       line.layout->addWidget( tagWidget );
     }
+
+    setSectionVisibility( tags.size() > 0 );
   }
 };
 
@@ -374,7 +397,7 @@ DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
   m_description->setReadOnly( true );
   m_description->setEnabled( false );
   m_description->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-  m_description->setMinimumWidth( 300 );
+  m_name->setMinimumWidth( 300 );
 
   clear();
   QVBoxLayout* lay = new QVBoxLayout();
@@ -391,10 +414,15 @@ DetailsWidget::DetailsWidget( FabricCore::DFGHost* host )
   tags->setWidget( m_tagContainer );
   this->addSection( tags );
 
-  Section* ports = new Section( "Ports", this );
-  m_portsTable = new PortsView();
-  ports->setWidget( m_portsTable );
-  this->addSection( ports );
+  for( size_t i = 0; i < ExecPortTypeNb; i++ )
+  {
+    const std::string& execPortType = ExecPortTypes[i];
+    Section* ports = new Section( execPortType + " Ports", this );
+    PortsView* portsTable = new PortsView();
+    ports->setWidget( portsTable );
+    this->addSection( ports );
+    m_portsTables.insert( PortsViews::value_type( execPortType, portsTable ) );
+  }
 }
 
 void DetailsWidget::clear()
@@ -447,9 +475,35 @@ void DetailsWidget::setPreset( const Result& preset )
   // Description
   m_description->setText( ToQString( details.description ) );
   m_description->setFixedHeight( int( m_description->document()->size().height() ) );
+  m_description->setVisible( details.description.size() > 0 );
 
   // Ports
-  m_portsTable->setPorts( details.ports, details.tags, this );
+  {
+    // Gathering Ports into ExecPortType categories
+    typedef std::map<std::string, std::vector<Port> > PortMap;
+    PortMap ports;
+    for( std::vector<Port>::const_iterator it = details.ports.begin(); it != details.ports.end(); it++ )
+      ports[it->execPortType].push_back( *it );
+
+    // Adding each category to its section
+    std::set<Query::Tag> unusedTags = details.tags;
+    for( PortMap::const_iterator it = ports.begin(); it != ports.end(); it++ )
+    {
+      if( m_portsTables.find( it->first ) != m_portsTables.end() )
+      {
+        std::set<Query::Tag> usedTags =
+          m_portsTables[it->first]->setPorts( it->second, details.tags, this );
+        for( std::set<Query::Tag>::const_iterator it = usedTags.begin(); it != usedTags.end(); it++ )
+          unusedTags.erase( *it );
+      }
+      else
+      {
+        std::cerr << "DetailsWidget::setPreset : Undefined ExecPortType " << it->first << std::endl;
+        assert( false );
+      }
+    }
+    details.tags = unusedTags;
+  }
 
   // Filtering the Tags
   {
@@ -478,7 +532,8 @@ void DetailsWidget::setPreset( const Result& preset )
 void DetailsWidget::updateSize()
 {
   m_tagContainer->adjustSize();
-  m_portsTable->adjustSize();
+  for( PortsViews::iterator it = m_portsTables.begin(); it != m_portsTables.end(); it++ )
+    it->second->adjustSize();
   for( size_t i = 0; i < m_sections.size(); i++ )
     m_sections[i]->adjustSize();
   this->adjustSize();

@@ -72,7 +72,8 @@ namespace FabricUI
         typedef QTextEdit Description;
         Description* m_description;
         class PortsView;
-        PortsView* m_portsTable;
+        typedef std::map<std::string, PortsView*> PortsViews;
+        PortsViews m_portsTables;
         class TagContainer;
         TagContainer* m_tagContainer;
         class Section;
