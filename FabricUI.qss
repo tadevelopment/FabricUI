@@ -1835,17 +1835,27 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #QueryEdit #TagsEdit #TagWidget QPushButton
 {
-  border-style: inset;
+  background-color: #4B4B4B;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
   color: #FFFFFF;
-  padding: 0px 4px 0px 4px;
-  margin: 0px;
-  background-color: #50626E;
+  margin: 2px;
+  padding: 2px;
 }
 
 #QueryEdit #TagsEdit #TagWidget QPushButton:hover
 {
-  color: #272822;
   background-color: #F0F0F0;
+  color: #272822;
+}
+
+#QueryEdit #TagsEdit #TagWidget QPushButton:pressed
+{
+  background-color: #B3B3B3;
+  margin-top: 3px;
+  margin-left: 3px;
+  padding-top: 3px;
+  padding-left: 3px;
 }
 
 #TagsView
@@ -1856,7 +1866,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #TagWidget QPushButton
 {
-  background-color: #444444;
+  background-color: #4B4B4B;
   border: none;
   border-left: 2px solid #000;
   font: 12px "Roboto";
@@ -1935,11 +1945,11 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #PresetView #TagWidget QPushButton
 {
-  border-style: none;
-  border-radius: 2px;
+  background-color: #4B4B4B;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
   color: #FFFFFF;
+  margin: 2px;
   padding: 2px;
 }
 
@@ -1950,18 +1960,17 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #PresetView #TagWidget QPushButton:hover
 {
-  background-color: #999999;
-  color: #FFFFFF;
+  background-color: #F0F0F0;
+  color: #272822;
 }
 
 #PresetView #TagWidget QPushButton:pressed
 {
   background-color: #B3B3B3;
-  border-style: inset;
-  margin-top: 1px;
-  margin-left: 1px;
-  padding-top: 4px;
-  padding-left: 4px;
+  margin-top: 3px;
+  margin-left: 3px;
+  padding-top: 3px;
+  padding-left: 3px;
 }
 
 #PresetView[highlighted="true"] #HeatBar
@@ -2048,18 +2057,27 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DetailsWidget #TagContainer #TagWidget QPushButton
 {
-  background-color: #50626E;
-  border: 0;
-  border-radius: 2px;
+  background-color: #4B4B4B;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
   color: #FFFFFF;
-  margin: 0px;
-  padding: 0px 4px 0px 4px;
+  margin: 2px;
+  padding: 2px;
 }
 
 #DetailsWidget #TagContainer #TagWidget QPushButton:hover
 {
   background-color: #F0F0F0;
   color: #272822;
+}
+
+#DetailsWidget #TagContainer #TagWidget QPushButton:pressed
+{
+  background-color: #B3B3B3;
+  margin-top: 3px;
+  margin-left: 3px;
+  padding-top: 3px;
+  padding-left: 3px;
 }
 
 #DetailsWidget #Section #Header[hovered="true"] #Name
@@ -2071,16 +2089,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DetailsWidget #Section #Header[toggled="true"] #Handle
 {
   background-color: #50626E;
-}
-
-#DetailsWidget #TagContainer #TagWidget QPushButton
-{
-  background-color: #50626E;
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
-  color: #FFFFFF;
-  margin: 2px;
-  padding: 2px;
 }
 
 #DetailsWidget #PortsView *
