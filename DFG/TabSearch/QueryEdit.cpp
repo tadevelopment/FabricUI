@@ -233,6 +233,11 @@ protected:
     }
 
     bool navigatingTags = ( cursorPosition() == 0 || e->modifiers().testFlag( Qt::AltModifier ) );
+
+    if( ( e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return ) && isWritingTag() )
+      // This will also accept the Event, and it won't be passed to the ResultsView
+      m_parent->convertTextToTags();
+    else
     if( e->key() == Qt::Key_Backspace )
     {
       int highlitedTag = m_parent->m_highlightedTag; // Selection might change after the text has changed
@@ -289,6 +294,13 @@ protected:
   }
 
 private:
+  bool isWritingTag() const
+  {
+    const std::vector<std::string> split = m_parent->m_query.getSplitText();
+    if( split.size() == 0 )
+      return false;
+    return Query::Tag::IsTag( split[split.size() - 1] );
+  }
   QueryEdit* m_parent;
 };
 
