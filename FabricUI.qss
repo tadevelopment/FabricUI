@@ -341,7 +341,6 @@ QDialog QTableView
 QDialog QTableView::item
 {
   padding: 2px;
-  color: white;
 }
 
 QDialog QTableView::item:hover
@@ -1793,10 +1792,10 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 }
 
 /****************************************************************************
- * CommandEditorDialog
+ * ToolEditorDialog
  ***************************************************************************/
  
-#CommandEditorDialog QToolButton
+#ToolEditorDialog QToolButton
 {
   color: #FFFFFF;
   border: 0;
@@ -1806,28 +1805,28 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #2F2F2F;
 }
 
-#CommandEditorDialog QToolButton::disabled
+#ToolEditorDialog QToolButton::disabled
 {
   background-color: #444;
   color: #6D6D6D;
 }
 
-#CommandEditorDialog QToolButton::checked
+#ToolEditorDialog QToolButton::checked
 {
   background-color: #176580;
 }
 
-#CommandEditorDialog QToolButton::checked:hover
+#ToolEditorDialog QToolButton::checked:hover
 {
   background-color: #1C7A99;
 }
 
-#CommandEditorDialog QToolButton:hover
+#ToolEditorDialog QToolButton:hover
 {
   background-color: #50626E;
 }
 
-#CommandEditorDialog QToolButton::pressed
+#ToolEditorDialog QToolButton::pressed
 {
   border-style: inset;
   margin-top: 6px;
@@ -1836,7 +1835,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#CommandTableWidget
+#ToolTableWidget
 {
   border-top: 1px solid #2B2B2B;
   border-right: 1px solid #484848;
@@ -1844,9 +1843,18 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   border-left: 1px solid #2B2B2B;
 }
 
-#CommandEditorDialog QLabel
+#ToolTableWidget QPushButton
+{
+  background: #484848;
+}
+
+#ToolTableWidget QCheckBox
+{
+  background: #484848;
+}
+
+#ToolEditorDialog QLabel
 {
   padding-left: 4px;
   color: #FFFFFF;
 }
-

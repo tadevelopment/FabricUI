@@ -7,7 +7,7 @@ from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import Actions, Commands
 from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.HotkeyEditor.CommandAction import CommandAction
-from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetActionItem import HotkeyTableWidgetActionItem
+from FabricEngine.Canvas.HotkeyEditor.HotKeyTableWidgetItems import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetItemDelegate import HotkeyTableWidgetItemDelegate
 
 class HotkeyTableWidget(QtGui.QTableWidget):
@@ -28,6 +28,9 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         the file to override its shortcut.
     """
 
+    stateIsDirty = QtCore.Signal(bool, bool)
+    editingItem = QtCore.Signal(bool)
+ 
     def __init__(self, parent, canvasWindow):
         """ Initializes the HotkeyTableWidget.
             
@@ -36,6 +39,9 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             - canvasWindow: A reference the canvasWindow.
         """
         super(HotkeyTableWidget, self).__init__(parent)
+
+        self.isDirty = False 
+        self.isFileDirty = False 
 
         # shortcuts saving.
         self.filename = None
@@ -60,29 +66,29 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         GetCommandRegistry().commandRegisteredCallback.connect(self.__onCommandRegistered)
  
         # Construct the item-delegate
-        itemDelegate = HotkeyTableWidgetItemDelegate()
+        itemDelegate = HotkeyTableWidgetItemDelegate(self)
         itemDelegate.keyPressed.connect(self.__onSetItemKeySequence)
         self.setItemDelegate(itemDelegate)
 
         # Two coloums: [actionName, shortcut]
         self.setColumnCount(2)
-        self.setHorizontalHeaderItem(0, QtGui.QTableWidgetItem('Action'))
+        self.setHorizontalHeaderItem(0, QtGui.QTableWidgetItem('Name'))
         self.setHorizontalHeaderItem(1, QtGui.QTableWidgetItem('Shortcut'))
-        
+ 
         self.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.setDragEnabled(False)
-        self.setTabKeyNavigation(False)
         self.setSortingEnabled(True)
         self.verticalHeader().setVisible(False)
         self.horizontalHeader().setStretchLastSection(True)
 
         # qss
         self.setObjectName('HotkeyTableWidget')
-  
+
     def __getCurrentShortcutItem(self):
         """ \internal.
             Gets the current shortcut item
         """
+        print "self.currentColumn() " + str(self.currentColumn())
         if self.currentColumn() == self.columnCount()-1:
             return self.item(self.currentRow(), self.currentColumn())
 
@@ -121,13 +127,24 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         """ Implementation of QtGui.QTableWidget.
             Directly edit the item to simulate a double-click.
         """
+        self.setCurrentItem(None)
         super(HotkeyTableWidget, self).mousePressEvent(event)
+        
         item = self.__getCurrentShortcutItem()
         if item is not None:
+            self.editingItem.emit(True)
             self.editItem(item)
+        else:
+            self.editingItem.emit(False)
 
     def mouseDoubleClickEvent(self, event):
         """ Implementation of QtGui.QTableWidget.
+            Do nothing.
+        """
+        pass
+
+    def keyboardSearch(self, search):
+        """ Implementation of QtGui.QAbstractItemView.
             Do nothing.
         """
         pass
@@ -140,8 +157,14 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         rowCount = self.rowCount() 
         self.insertRow(rowCount)
         
+        # Check if the action is editable
+        isEditable = True
+        if issubclass(type(action), Actions.BaseAction):
+            isEditable = action.isEditable()
+
         # 1. Action item
-        item = HotkeyTableWidgetActionItem(actionName, action.toolTip()) 
+        tooltip = action.toolTip()
+        item = ActionTableWidgetItem(actionName, action.toolTip(), isEditable) 
         self.setItem(rowCount, 0, item)
 
         # 2. Shortcut item
@@ -153,21 +176,11 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         else:
             shortcut = action.shortcut().toString(QtGui.QKeySequence.NativeText)
 
-        # Check if we can edit the action is editable
-        isEditable = True
-        if issubclass(type(action), Actions.BaseAction):
-            isEditable = action.isEditable()
-
-        item = QtGui.QTableWidgetItem(shortcut)
-        if not isEditable:
-            item.setFlags(QtCore.Qt.NoItemFlags)
-          
+        isActionGlobal = self.__isActionContextGlobal(action) 
+        item = ShorcutTableWidgetItem(shortcut, isEditable, isActionGlobal)          
         self.setItem(rowCount, 1, item)
 
-        # Hack to refresh the view correctly.
-        self.setVisible(False)
         self.resizeColumnsToContents()
-        self.setVisible(True)
 
     def __onCommandRegistered(self, cmdName, cmdType, implType):
         """ \internal.
@@ -180,19 +193,15 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             # Must construct the command to get the tooltip
             cmd = GetCommandRegistry().createCommand(cmdName)
             
-            tooltip = cmd.getHelp()
+            tooltip = "Command, " + cmdType+ "[" + implType + "]\n\n"
+            tooltip += cmd.getHelp()
             isScriptable = issubclass(type(cmd), Commands.BaseScriptableCommand)
-
-            # If the commmand has args, it cannot
-            # be associated to a shortcut, return.
-            if isScriptable:
-                return
 
             # Add the action to the canvasWindow so it's available.
             # Actions of hidden widgets are not triggered.
             self.canvasWindow.addAction(
                 CommandAction(
-                    self, cmdName, QtGui.QKeySequence(), tooltip, False))
+                    self, cmdName, QtGui.QKeySequence(), tooltip, isScriptable))
  
     def __onActionRegistered(self, actionName, action):
         """ \internal.
@@ -206,9 +215,9 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             self.__createNewRow(actionName, action)
         
         # To update the item tool tip.
-        hotkeyTableWidgetActionItem = self.__getActionItem(actionName)
-        if hotkeyTableWidgetActionItem:
-            action.changed.connect(hotkeyTableWidgetActionItem.onActionChanged)
+        actionTableWidgetItem = self.__getActionItem(actionName)
+        if actionTableWidgetItem:
+            action.changed.connect(actionTableWidgetItem.onActionChanged)
 
     def __onActionUnregistered(self, actionName):
         """ \internal.
@@ -224,7 +233,15 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             if item:
                 self.removeRow(item.row())
 
-    def __canShortcutBeUsed(self, actionName, shortcut):
+    def __isActionContextGlobal(self, action):
+        """ \internal.
+            Check if the action' context is global:
+            WindowShortcut or ApplicationShortcut. 
+        """
+        return (action.shortcutContext() == QtCore.Qt.WindowShortcut or  
+                action.shortcutContext() == QtCore.Qt.ApplicationShortcut) 
+
+    def __isShortcutBeUsed(self, actionName, shortcut):
         """ \internal.
             Check if the command named `actionName` can use the shorcut.
             If true, returns None. If none, returns the name of the 
@@ -234,37 +251,34 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             - actionName: The action that wants to use the shorcut.
             - shortcut: The shortcut to use.
         """
-        actionRegistry = Actions.ActionRegistry.GetActionRegistry()
-        otherWithShortcut = actionRegistry.isShortcutUsed(shortcut)
-        otherWithShortcutName = actionRegistry.getActionName(otherWithShortcut)
  
-        if otherWithShortcut and otherWithShortcutName not in self.__changedActionDic:
-            action = actionRegistry.getAction(actionName) 
+        actionRegistry = Actions.ActionRegistry.GetActionRegistry()
+        otherActionList = actionRegistry.isShortcutUsed(shortcut)
 
-            # Check if the current action or the one having the shortcut already is global.
-            isActionGlobal = (action.shortcutContext() == QtCore.Qt.WindowShortcut or  
-                             action.shortcutContext() == QtCore.Qt.ApplicationShortcut) 
+        for otherActionName, shortcut_ in self.__changedActionDic.iteritems():
+            if shortcut_ == shortcut:
+                otherActionList.append(actionRegistry.getAction(otherActionName))
+        
+        if actionName in otherActionList:
+            otherActionName.remve(actionName)
 
-            isOtherWithShortcutGlobal = (otherWithShortcut.shortcutContext() == QtCore.Qt.WindowShortcut or  
-                             otherWithShortcut.shortcutContext() == QtCore.Qt.ApplicationShortcut)
+        action = actionRegistry.getAction(actionName) 
+        isActionContextGlobal = self.__isActionContextGlobal(action) 
 
+        for otherAction in otherActionList:
+            otherActionName = actionRegistry.getActionName(otherAction)
+       
+            isOtherActionContextGlobal = self.__isActionContextGlobal(otherAction) 
+ 
             # If both actions are local (to their widget),
             # check if they have the same parent.
             sharedSameParent = False
-            if not isActionGlobal and not isOtherWithShortcutGlobal:
-                sharedSameParent = otherWithShortcut.parentWidget() == action.parentWidget()
+            if not isOtherActionContextGlobal and not isActionContextGlobal:
+                sharedSameParent = otherAction.parentWidget() == action.parentWidget()
+  
+            if isOtherActionContextGlobal or isActionContextGlobal or sharedSameParent:
+                return otherActionName
  
-            return otherWithShortcutName
-          
-        elif not otherWithShortcut and otherWithShortcutName in self.__changedActionDic:
-            return otherWithShortcutName
-
-        else:
-            # Lists of changed items
-            for actionName_, shortcut_ in self.__changedActionDic.iteritems():
-                if shortcut_ == shortcut:
-                    return actionName_
-
         return None
 
     def __onSetItemKeySequence(self, keySequence):
@@ -274,9 +288,32 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         """
         item = self.__getCurrentShortcutItem()
         if item is not None:
-            self.__setIemsKeySequence(item, keySequence)
+            self.__setItemKeySequence(item, keySequence)
+            return True
+        return False
 
-    def __setIemsKeySequence(self, item, keySequence, force = False):
+    def __setStateIsDirty(self, dirty):
+        self.isDirty = dirty
+        self.stateIsDirty.emit(self.isDirty, self.isFileDirty)
+
+    def __setFileStateIsDirty(self, dirty):
+        self.isFileDirty = dirty
+        self.stateIsDirty.emit(self.isDirty, self.isFileDirty)
+
+    def __setItemKeySequenceAndShortcut(self, item, actionName, keySequence = None, shortcut = None):
+        """ \internal.
+        """
+        if shortcut:
+            item.setText(shortcut)
+            self.__changedActionDic[actionName] = keySequence
+        
+        else:
+            item.setText('')
+            self.__changedActionDic[actionName] = QtGui.QKeySequence()
+
+        self.__setStateIsDirty(True)
+
+    def __setItemKeySequence(self, item, keySequence, force = False):
         """ \internal.
             Sets the keySequence to the item. If another items/actions 
             used the keySequence already, a warning is displayed and 
@@ -292,7 +329,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
                 keySequence != QtGui.QKeySequence('Backspace') ):
 
             shortcut = keySequence.toString(QtGui.QKeySequence.NativeText)
-            actionName_ = self.__canShortcutBeUsed(actionName, keySequence)
+            actionName_ = self.__isShortcutBeUsed(actionName, keySequence)
                 
             if actionName_ and not force:
                 message = QtGui.QMessageBox()
@@ -300,13 +337,11 @@ class HotkeyTableWidget(QtGui.QTableWidget):
                     ' already used by ' + str(actionName_))
 
             elif not actionName_ or force:
-                item.setText(shortcut)
-                self.__changedActionDic[actionName] = keySequence
-
+                self.__setItemKeySequenceAndShortcut(item, actionName, keySequence, shortcut)
+        
         else:
-            item.setText('')
-            self.__changedActionDic[actionName] = QtGui.QKeySequence()
-
+            self.__setItemKeySequenceAndShortcut(item, actionName)
+        
     def filterItems(self, query, show = 'All'):
         """ \internal.
             Filters the items according the actions' names or shorcuts.
@@ -355,11 +390,18 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             else:
                 self.setRowHidden(i, True)
 
-    def acceptShortcutChanges(self):
+    def __resetChangedActionDic(self):
+        """ \internal.
+        """
+        self.__changedActionDic = {}
+        self.__setStateIsDirty(False)
+
+    def acceptShortcutChanges(self, fileStateIsDirty = True):
         """ \internal.
             Accepts the changes. Sets the actions shortcuts 
             from the items text.
         """
+
         actionRegistry = Actions.ActionRegistry.GetActionRegistry()
 
         for actionName, keySequence in self.__changedActionDic.iteritems():
@@ -367,22 +409,53 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             # actions registered as `actionName`.
             actionRegistry.setShortcut(actionName, keySequence)
 
-        self.__changedActionDic = {}
+        self.__resetChangedActionDic()
+        self.__setFileStateIsDirty(fileStateIsDirty)
 
     def rejectShortcutChanges(self):
         """ \internal.
             Rejects the changes. Sets the items text from
             the actions shortcuts. 
         """
-        actionRegistry = Actions.ActionRegistry.GetActionRegistry()
 
-        for actionName in self.__changedActionDic:
-            keySequence = actionRegistry.getShortcut(actionName)
-            item = self.__getShorcutItem(actionName)
-            if item:
-                item.setText(keySequence.toString(QtGui.QKeySequence.NativeText))
+        hasChanged = len(self.__changedActionDic) > 0
 
-        self.__changedActionDic = {} 
+        if hasChanged:
+            actionRegistry = Actions.ActionRegistry.GetActionRegistry()
+
+            for actionName in self.__changedActionDic:
+                keySequence = actionRegistry.getShortcut(actionName)
+                item = self.__getShorcutItem(actionName)
+                if item:
+                    item.setText(keySequence.toString(QtGui.QKeySequence.NativeText))
+
+            self.__resetChangedActionDic()
+ 
+    def __checkIfSaveNeeded(self):
+        """ \internal.
+            Check if the changes needs to be saved.
+        """
+
+        if len(self.__changedActionDic) > 0:
+            msgBox = QtGui.QMessageBox(
+                QtGui.QMessageBox.Warning, 
+                'Hotkey editor', 
+                'Changes not saved',
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel,
+                self
+                );
+            msgBox.setInformativeText("Do you want to save your changes?")
+            
+            msgBox.setDefaultButton(QtGui.QMessageBox.Yes)
+            ret = msgBox.exec_()
+
+            if ret == QtGui.QMessageBox.Yes:
+                self.saveActions()
+
+            elif ret == QtGui.QMessageBox.Cancel:
+                return True
+
+        return False
 
     def openActions(self):
         """ \internal.
@@ -390,9 +463,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             that override the current actions' shortcuts (if matched). Report 
             a warning if changes have niot been saved.
         """
-        if len(self.__changedActionDic) > 0:
-            message = QtGui.QMessageBox()
-            message.warning(self, 'Hotkey editor', 'Changes not saved')
+        if self.__checkIfSaveNeeded():
             return False
 
         lastDir = str(self.canvasWindow.settings.value("hotkeyEditor/lastFolder"))
@@ -420,9 +491,9 @@ class HotkeyTableWidget(QtGui.QTableWidget):
                         shortcut = shortcutList[0]
                         
                     if shortcut != item.text():
-                        self.__setIemsKeySequence(item, QtGui.QKeySequence(shortcut), True)
+                        self.__setItemKeySequence(item, QtGui.QKeySequence(shortcut), True)
 
-            self.acceptShortcutChanges()
+            self.acceptShortcutChanges(False)
             return True
 
     def saveActions(self):
@@ -434,7 +505,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         if not self.filename and not self.saveActionsAs():
             return
 
-        self.acceptShortcutChanges()
+        self.acceptShortcutChanges(False)
 
         actionRegistry = Actions.ActionRegistry.GetActionRegistry()
 
@@ -456,14 +527,23 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             Saves in a new json file a list of pair 
             {actionName, shortcut} of the current actions. 
         """
+
+        ext = ".json"
         fname = self.filename
         
         if not fname:
             fname = str(self.canvasWindow.settings.value("hotkeyEditor/lastFolder"))
-        fname, _ = QtGui.QFileDialog.getSaveFileName(self, "Save Hotkey file", fname, "*.json")
-        
+        fname, _ = QtGui.QFileDialog.getSaveFileName(self, "Save Hotkey file", fname, str("*" + ext))
+            
         if not fname:
             return False
+
+        # Pyside QFileDialog bug on linux.
+        # Extension is not added by default.
+        if not fname.endswith(ext):
+            fname += ext
+
+        print "saveActionsAs " + str(fname)
 
         self.canvasWindow.settings.setValue("hotkeyEditor/lastFolder", os.path.dirname(fname))
         self.filename = fname

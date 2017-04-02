@@ -33,14 +33,14 @@ class ToolTableWidget(QtGui.QTableWidget):
         self.setColumnCount(3)
         self.setHorizontalHeaderItem(0, QtGui.QTableWidgetItem('Name'))
         self.setHorizontalHeaderItem(1, QtGui.QTableWidgetItem('Visible'))
-        self.setHorizontalHeaderItem(2, QtGui.QTableWidgetItem('Truc2'))
+        self.setHorizontalHeaderItem(2, QtGui.QTableWidgetItem('Edit'))
 
-        self.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.setDragEnabled(False)
         self.setTabKeyNavigation(False)
         self.setSortingEnabled(True)
         self.verticalHeader().setVisible(False)
         self.horizontalHeader().setStretchLastSection(True)
+        self.setSelectionMode(QtGui.QAbstractItemView.NoSelection);
 
         # qss
         self.setObjectName('ToolTableWidget')
@@ -74,8 +74,15 @@ class ToolTableWidget(QtGui.QTableWidget):
                 self.__createNewRow(toolName)
                 print "toolName " + str(toolName)
 
-
         self.toolManagerVersion = version
+
+    def __setCellWidget(self, row, column, widget):
+        pWidget = QtGui.QWidget()
+        pLayout = QtGui.QHBoxLayout(pWidget)
+        pLayout.addWidget(widget)
+        pLayout.setContentsMargins(0, 0, 0, 0)
+        pWidget.setLayout(pLayout)
+        self.setCellWidget(row, column, pWidget)
 
     def __createNewRow(self, toolName):
         """ \internal.
@@ -91,20 +98,8 @@ class ToolTableWidget(QtGui.QTableWidget):
         item.setFlags(QtCore.Qt.NoItemFlags)
         self.setItem(rowCount, 0, item)
         
-        # # Class item
-        # item = QtGui.QTableWidgetItem(cmdType) 
-        # item.setFlags(QtCore.Qt.NoItemFlags)
-        # self.setItem(rowCount, 1, item)
-        
-        # # Type item
-        # item = QtGui.QTableWidgetItem(implType) 
-        # item.setFlags(QtCore.Qt.NoItemFlags)
-        # self.setItem(rowCount, 2, item)
-
-        # Hack to refresh the view correctly.
-        # self.setVisible(False)
-        # self.resizeColumnsToContents()
-        # self.setVisible(True)
+        self.__setCellWidget(rowCount, 1, QtGui.QCheckBox(''))
+        self.__setCellWidget(rowCount, 2, QtGui.QPushButton('-'))
   
     def filterItems(self, query):
         """ \internal.

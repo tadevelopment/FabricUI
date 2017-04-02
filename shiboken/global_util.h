@@ -7,3 +7,4 @@
 #include <FabricUI/Util/StringUtil.h>
 #include <FabricUI/Util/Config.h>
 #include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Util/LoadPixmap.h>

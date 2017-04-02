@@ -16,7 +16,6 @@ from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.Commands.CommandManager import *
-from FabricEngine.Canvas.Commands.CommandEditorDialog import *
 from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
 from FabricEngine.Canvas.Tools.ToolEditorDialog import *
@@ -204,22 +203,6 @@ class ShowHotkeyEditorDialogAction(BaseCanvasWindowAction):
         if self.canvasWindow.hotkeyEditorDialog.exec_() != QtGui.QDialog.Accepted:
             return;
 
-class ShowCommandEditorDialogAction(BaseCanvasWindowAction):
-
-    def __init__(self, parent, canvasWindow):
-        super(ShowCommandEditorDialogAction, self).__init__(
-            parent,     
-            canvasWindow, 
-            "CanvasWindow.ShowCommandEditorDialogAction", 
-            "Command editor", 
-            QtGui.QKeySequence(QtCore.Qt.Key_J))
-         
-        self.setToolTip("Display all the registered commands.")
-
-    def onTriggered(self):
-        if self.canvasWindow.cmdEditorDialog.exec_() != QtGui.QDialog.Accepted:
-            return;
-
 class ShowToolEditorDialogAction(BaseCanvasWindowAction):
 
     def __init__(self, parent, canvasWindow):
@@ -336,7 +319,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.clearLogAction = None
         self.blockCompilationsAction = None
         self.showHotkeyEditorDialogAction = None
-        self.showCommandEditorDialogAction = None
         self.showToolEditorDialogAction = None
 
 
@@ -463,7 +445,6 @@ class CanvasWindow(QtGui.QMainWindow):
         """
         CreateCommandManager(self.client)
         self.hotkeyEditorDialog = HotkeyEditorDialog(self)
-        self.cmdEditorDialog = CommandEditorDialog(self)
         self.toolEditorDialog = ToolEditorDialog(self)
 
         self.qUndoStack = QtGui.QUndoStack()
@@ -1349,8 +1330,6 @@ class CanvasWindow(QtGui.QMainWindow):
             self.blockCompilationsAction.blockSignals(enabled)
         if self.showHotkeyEditorDialogAction:
             self.showHotkeyEditorDialogAction.blockSignals(enabled)
-        if self.showCommandEditorDialogAction:
-            self.showCommandEditorDialogAction.blockSignals(enabled)
         if self.showToolEditorDialogAction:
             self.showToolEditorDialogAction.blockSignals(enabled)
 
@@ -1423,8 +1402,6 @@ class CanvasWindow(QtGui.QMainWindow):
                     editorMenu = menu.addMenu("Editors")
                     self.showHotkeyEditorDialogAction = ShowHotkeyEditorDialogAction(editorMenu, self)
                     editorMenu.addAction(self.showHotkeyEditorDialogAction)
-                    self.showCommandEditorDialogAction = ShowCommandEditorDialogAction(editorMenu, self)
-                    editorMenu.addAction(self.showCommandEditorDialogAction)
                     self.showToolEditorDialogAction = ShowToolEditorDialogAction(editorMenu, self)
                     editorMenu.addAction(self.showToolEditorDialogAction)
 

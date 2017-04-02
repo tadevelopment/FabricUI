@@ -86,9 +86,11 @@ int ActionRegistry::getRegistrationCount(
   return m_registeredActions[actionName].count();
 }
 
-QAction* ActionRegistry::isShortcutUsed(
+QList<QAction*> ActionRegistry::isShortcutUsed(
   QKeySequence shortcut) const
 {
+  QList<QAction*> res;
+
   QMapIterator<QString, QSet< QAction * > > ite(m_registeredActions);
   while (ite.hasNext()) 
   {
@@ -97,14 +99,17 @@ QAction* ActionRegistry::isShortcutUsed(
     QSetIterator<  QAction * > i(ite.value());
     QAction *action = i.next();
     if(action->shortcut() == shortcut)
-      return action;
+      res.append(action);
   }
-  return 0;
+
+  return res;
 }
 
-QAction* ActionRegistry::isShortcutUsed(
+QList<QAction*> ActionRegistry::isShortcutUsed(
   const QList<QKeySequence> &shortcuts) const
 {
+  QList<QAction*> res;
+
   QMapIterator<QString, QSet< QAction * > > ite(m_registeredActions);
   while (ite.hasNext()) 
   {
@@ -113,9 +118,10 @@ QAction* ActionRegistry::isShortcutUsed(
     QSetIterator<  QAction * > i(ite.value());
     QAction *action = i.next();
     if(action->shortcuts() == shortcuts)
-      return action;
+      res.append(action);
   }
-  return 0;
+  
+  return res;
 }
 
 void ActionRegistry::setShortcut(

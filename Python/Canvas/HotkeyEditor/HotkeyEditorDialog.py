@@ -2,6 +2,7 @@
 # Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 #
 
+import os
 from PySide import QtGui
 from FabricEngine.FabricUI import Actions
 from FabricEngine.Canvas.HotkeyEditor.HotKeyEditorActions import *
@@ -18,7 +19,9 @@ class HotkeyEditorDialog(QtGui.QDialog):
 
         super(HotkeyEditorDialog, self).__init__(canvasWindow) 
         
-         # qss
+        self.baseTitle = "Hotkey Editor"  
+       
+        # qss
         self.setWindowTitle('Hotkey Editor')
         self.setObjectName('HotkeyEditorDialog')
         self.setStyleSheet(LoadFabricStyleSheet('FabricUI.qss'))
@@ -42,15 +45,21 @@ class HotkeyEditorDialog(QtGui.QDialog):
         ctrlLayout.addWidget(self.__comboBox)
         
         # HotkeyTableWidget
-        self.hotkeyTableWidget = HotkeyTableWidget(self, canvasWindow)
+        self.hotkeyTableWidget = HotkeyTableWidget(
+            self, 
+            canvasWindow)
+
+        self.hotkeyTableWidget.stateIsDirty.connect(
+            self.updateTitle)
  
         # Toolbar
         openHotkeyFileAction = OpenHotkeyFileAction(self)
         saveHotkeyFileAction = SaveHotkeyFileAction(self)
         saveHotkeyFileAsAction = SaveHotkeyFileAsAction(self)
-
         acceptActionChanges = AcceptActionChanges(self)
         rejectActionChanges = RejectActionChanges(self)
+        AcceptActionChangesAndExit(self)
+        RejectActionChangesAndExit(self)
 
         toolBar = QtGui.QToolBar()
         toolBar.addAction(openHotkeyFileAction)
@@ -68,30 +77,36 @@ class HotkeyEditorDialog(QtGui.QDialog):
         layout.addWidget(self.hotkeyTableWidget)
         self.setLayout(layout)
 
-       
         # !!!! To change
         self.setMinimumHeight(400)
         self.setMinimumWidth(600)
         self.adjustSize()
- 
+    
+    def updateTitle(self, isDirty = False, isFileDirty = False): 
+        
+        dirtyText = ''
+        if isDirty:
+            dirtyText = "*"
+
+        fileName = self.hotkeyTableWidget.filename
+        if fileName:
+            baseName = os.path.basename(fileName)
+            fileDirtyText = ''
+            if isFileDirty:
+                fileDirtyText = "*"
+            self.setWindowTitle(self.baseTitle + dirtyText + ' : ' + baseName + fileDirtyText)
+        
+        else:
+            self.setWindowTitle(self.baseTitle + dirtyText)
+
     def __onFilterItems(self):
         """ \internal.
             Filter the actions.
         """
-        self.hotkeyTableWidget.filterItems(self.__lineEdit.text(), self.__comboBox.currentText())
+        self.hotkeyTableWidget.filterItems(
+            self.__lineEdit.text(), 
+            self.__comboBox.currentText())
 
-    def accept(self):
-        """ \internal.
-            Implementation of QtGui.QDialog.
-        """
-        self.hotkeyTableWidget.acceptShortcutChanges()
-        super(HotkeyEditorDialog, self).accept()
-
-    def reject(self):
-        """ \internal.
-            Implementation of QtGui.QDialog.
-        """
+    def closeEvent(self, event):
         self.hotkeyTableWidget.rejectShortcutChanges()
-
-        super(HotkeyEditorDialog, self).reject()
- 
+        super(HotkeyEditorDialog, self).closeEvent(event)
