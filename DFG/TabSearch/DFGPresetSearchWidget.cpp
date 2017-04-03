@@ -19,6 +19,7 @@ class DFGPresetSearchWidget::Status : public QWidget
 {
   DFGPresetSearchWidget* m_parent;
   std::vector<TabSearch::Label*> m_items;
+  TabSearch::Result m_result;
 
   inline void addItem( TabSearch::Label* item )
   {
@@ -50,7 +51,14 @@ public:
     }
     m_items.clear();
   }
-  void setResult( const TabSearch::Result& result );
+  void setDisplayedResult( const TabSearch::Result& );
+  void setResult( const TabSearch::Result& result )
+  {
+    m_result = result;
+    setDisplayedResult( m_result );
+  }
+  void hoveredResultSet( const TabSearch::Result& result ) { setDisplayedResult( result ); }
+  void hoveredResultClear() { setDisplayedResult( m_result ); }
 };
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
@@ -468,7 +476,7 @@ void DFGPresetSearchWidget::setPreview( const TabSearch::Result& result )
   updateSize();
 }
 
-void DFGPresetSearchWidget::Status::setResult( const TabSearch::Result& result )
+void DFGPresetSearchWidget::Status::setDisplayedResult( const TabSearch::Result& result )
 {
   this->clear();
   if( result.isPreset() )
@@ -530,12 +538,12 @@ void DFGPresetSearchWidget::toggleDetailsPanel( bool toggled )
 
 void DFGPresetSearchWidget::onResultMouseEntered( const TabSearch::Result& result )
 {
-  std::cout << result << std::endl;
+  m_status->hoveredResultSet( result );
 }
 
 void DFGPresetSearchWidget::onResultMouseLeft()
 {
-  std::cout << "left" << std::endl;
+  m_status->hoveredResultClear();
 }
 
 void DFGPresetSearchWidget::close()
