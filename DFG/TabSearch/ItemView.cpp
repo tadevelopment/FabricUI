@@ -85,6 +85,37 @@ void TagWidget::leaveEvent( QEvent* e )
   this->unsetCursor();
 }
 
+void TagWidget::connectToQuery( const Query& query )
+{
+  connect(
+    &query, SIGNAL( changed( const Query& ) ),
+    this, SLOT( onQueryChanged( const Query& ) )
+  );
+  onQueryChanged( query );
+}
+
+void Label::connectToQuery( const Query& query )
+{
+  connect(
+    &query, SIGNAL( changed( const Query& ) ),
+    this, SLOT( onQueryChanged( const Query& ) )
+  );
+  onQueryChanged( query );
+}
+
+void TagWidget::onQueryChanged( const Query& query )
+{
+  m_button->setDisabled( query.hasTag( m_tag ) );
+  this->setProperty( "used", query.hasTag(m_tag) );
+  this->setStyleSheet( this->styleSheet() );
+}
+
+void Label::onQueryChanged( const Query& query )
+{
+  this->setProperty( "used", this->m_isTag && query.hasTag( m_tag ) );
+  this->setStyleSheet( this->styleSheet() );
+}
+
 size_t NameSep( const Result& result )
 {
   return result.isPreset() ?

@@ -448,7 +448,7 @@ void DFGPresetSearchWidget::setPreview( const TabSearch::Result& result )
 {
   if( result.isPreset() )
   {
-    m_detailsWidget->setPreset( result );
+    m_detailsWidget->setPreset( result, m_queryEdit->query() );
     m_detailsPanel->verticalScrollBar()->setValue( 0 );
     updateDetailsPanelVisibility();
   }
@@ -478,7 +478,11 @@ void DFGPresetSearchWidget::Status::setResult( const TabSearch::Result& result )
         TabSearch::Query::Tag( TabSearch::PathCompCat, p )
       ;
       if( validTags.find( tag ) != validTags.end() )
-        this->addItem( new TabSearch::Label( p, tag ) );
+      {
+        TabSearch::Label* label = new TabSearch::Label( p, tag );
+        label->connectToQuery( m_parent->m_queryEdit->query() );
+        this->addItem( label );
+      }
       else
         this->addItem( new TabSearch::Label( p ) );
       if( !isName )

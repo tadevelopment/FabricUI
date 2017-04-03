@@ -44,6 +44,9 @@ namespace FabricUI
       signals:
         void activated( const Query::Tag& tag );
 
+      public:
+        void connectToQuery( const Query& );
+
       public slots:
         void setHighlighted( bool highlighted );
 
@@ -53,6 +56,7 @@ namespace FabricUI
 
       private slots:
         void onActivated();
+        void onQueryChanged( const Query& );
 
       private:
         Query::Tag m_tag;
@@ -98,6 +102,7 @@ namespace FabricUI
         Label() { init(); set( "" ); }
         Label( const std::string& text ) { init(); set( text ); };
         Label( const std::string& text, const Query::Tag& tag ) { init(); set( text, tag ); }
+        void connectToQuery( const Query& );
 
       signals:
         void requestTag( const Query::Tag& tagName );
@@ -106,6 +111,9 @@ namespace FabricUI
         void mouseReleaseEvent( QMouseEvent * ) FTL_OVERRIDE;
         void enterEvent( QEvent * ) FTL_OVERRIDE;
         void leaveEvent( QEvent * ) FTL_OVERRIDE;
+
+      private slots:
+        void onQueryChanged( const Query& );
 
       private:
         void init();

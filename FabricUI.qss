@@ -2057,3 +2057,16 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   color: #27A8DF;
 }
+
+#DetailsWidget #TagWidget[used="true"] QPushButton
+{
+  color: #888;
+  background-color: #000;
+}
+
+#DFGPresetSearchWidget #Status #TabSearchLabel[clickable="true"][used="true"],
+#DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="true"][used="true"],
+#DetailsWidget #Name[clickable="true"][used="true"]
+{
+  color: #888;
+}
