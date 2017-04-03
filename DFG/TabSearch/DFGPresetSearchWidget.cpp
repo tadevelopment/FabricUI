@@ -267,7 +267,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   {
     std::vector<std::string> filteredTerms;
     for( size_t i = 0; i < searchTermsStr.size(); i++ )
-      if( searchTermsStr[i].find( ':' ) == std::string::npos )
+      if( !TabSearch::Query::Tag::IsTag( searchTermsStr[i] ) )
         filteredTerms.push_back( searchTermsStr[i] );
     searchTermsStr = filteredTerms;
   }
