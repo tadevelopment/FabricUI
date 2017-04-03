@@ -61,6 +61,7 @@ namespace FabricUI
       void toggleDetailsPanel() { toggleDetailsPanel( !m_detailsPanelToggled ); }
       void onResultMouseEntered( const TabSearch::Result& );
       void onResultMouseLeft();
+      void onErrorMessage( const std::string& );
 
     protected:
 

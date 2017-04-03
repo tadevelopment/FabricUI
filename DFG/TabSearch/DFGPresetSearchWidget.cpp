@@ -19,7 +19,8 @@ class DFGPresetSearchWidget::Status : public QWidget
 {
   DFGPresetSearchWidget* m_parent;
   std::vector<TabSearch::Label*> m_items;
-  TabSearch::Result m_result;
+  TabSearch::Result m_result, m_hoveredResult;
+  std::string m_errorMessage;
 
   inline void addItem( TabSearch::Label* item )
   {
@@ -28,6 +29,8 @@ class DFGPresetSearchWidget::Status : public QWidget
     this->layout()->addWidget( item );
     m_items.push_back( item );
   }
+
+  void updateDisplay();
 
 public:
   Status( DFGPresetSearchWidget* parent )
@@ -52,14 +55,25 @@ public:
     m_items.clear();
   }
   void setDisplayedResult( const TabSearch::Result& );
-  void setResult( const TabSearch::Result& result )
-  {
-    m_result = result;
-    setDisplayedResult( m_result );
-  }
-  void hoveredResultSet( const TabSearch::Result& result ) { setDisplayedResult( result ); }
-  void hoveredResultClear() { setDisplayedResult( m_result ); }
+  void setResult( const TabSearch::Result& result ) { m_result = result; updateDisplay(); }
+  void hoveredResultSet( const TabSearch::Result& result ) { m_hoveredResult = result; updateDisplay(); }
+  void hoveredResultClear() { hoveredResultSet( TabSearch::Result() ); }
+  void setErrorMessage( const std::string& message ) { m_errorMessage = message; updateDisplay(); }
 };
+
+void DFGPresetSearchWidget::Status::updateDisplay()
+{
+  if( !m_hoveredResult.empty() )
+    setDisplayedResult( m_hoveredResult );
+  else
+  if( !m_errorMessage.empty() )
+  {
+    this->clear();
+    this->addItem( new TabSearch::Label( m_errorMessage ) );
+  }
+  else
+    setDisplayedResult( m_result );
+}
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
@@ -98,6 +112,10 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   connect(
     m_queryEdit, SIGNAL( lostFocus() ),
     this, SLOT( close() )
+  );
+  connect(
+    m_queryEdit, SIGNAL( errorMessage( const std::string& ) ),
+    this, SLOT( onErrorMessage( const std::string& ) )
   );
 
   m_resultsView = new TabSearch::ResultsView();
@@ -544,6 +562,11 @@ void DFGPresetSearchWidget::onResultMouseEntered( const TabSearch::Result& resul
 void DFGPresetSearchWidget::onResultMouseLeft()
 {
   m_status->hoveredResultClear();
+}
+
+void DFGPresetSearchWidget::onErrorMessage( const std::string& message )
+{
+  m_status->setErrorMessage( message );
 }
 
 void DFGPresetSearchWidget::close()

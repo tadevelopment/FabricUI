@@ -356,6 +356,7 @@ void QueryEdit::convertTextToTags()
     updateTagDBFromHost();
     m_tagDBWInitialized = true;
   }
+  emit errorMessage( "" );
 
   std::vector< std::pair<size_t, size_t> > indices = m_query.getSplitTextIndices();
   std::string previousText = m_query.getText(), newText = "";
@@ -382,7 +383,12 @@ void QueryEdit::convertTextToTags()
             m_controller->addTag( dbName );
           }
         }
+        else
+          emit errorMessage( std::string( "Undefined tag name \"") + std::string( tag.name() )
+            + "\" for the category \"" + std::string( tag.cat() ) + ":\"" );
       }
+      else
+        emit errorMessage( std::string( "Undefined tag category \"" ) + std::string( tag.cat() ) + ":\"" );
     }
     if( !isTag )
       newText += previousText.substr( offset, end - offset );
