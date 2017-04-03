@@ -721,6 +721,7 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         return self.evalCmdWithArgs(
             "splitFromPreset",
             [
+                UICmdHandler.encodeString(exec_.getExecPath()),
                 UICmdHandler.encodeString(execPath),
                 ]
             )
