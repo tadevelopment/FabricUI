@@ -379,6 +379,11 @@ void PresetTreeWidget::onExpandToAndSelectItem(QString presetPath) {
           m_treeView->scrollTo(modelIndex);
         }
       }
+
+      // Can happen if the preset
+      // explorer is not displayed.
+      else
+        break;
     }
   }
 }
