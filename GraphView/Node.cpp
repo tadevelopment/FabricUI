@@ -40,7 +40,7 @@ Node::Node(
   , m_bubble( NULL )
   , m_header( NULL )
   , m_mainWidget( NULL )
-  , m_mightSelectUpstreamNodesOnDrag( false )
+  , m_mightOnlyMoveUpstreamNodesOnDrag( false )
   , m_duplicateNodesOnDrag( false )
   , m_canEdit( false )
   , m_isHighlighted( false )
@@ -679,37 +679,59 @@ void Node::selectUpStreamNodes()
     graph()->controller()->selectNode( nodes[i], true );
 }
 
-void Node::updateNodesToMove( bool backdrops )
+void Node::updateNodesToMove( bool backdrops, bool onlyUpstreamNodes )
 {
-  m_nodesToMove = graph()->selectedNodes();
-
-  if ( backdrops )
+  if (onlyUpstreamNodes)
   {
-    std::vector<Node *> additionalNodes;
+    m_nodesToMove = getUpStreamNodes();
+  }
+  else
+  {
+    m_nodesToMove = graph()->selectedNodes();
 
-    for ( std::vector<Node *>::const_iterator it = m_nodesToMove.begin();
-      it != m_nodesToMove.end(); ++it )
+    if ( backdrops )
     {
-      Node *node = *it;
-      if ( node->isBackDropNode() )
-      {
-        BackDropNode *backDropNode = static_cast<BackDropNode *>( node );
-        backDropNode->appendOverlappingNodes( additionalNodes );
-      }
-    }
+      std::vector<Node *> additionalNodes;
 
-    m_nodesToMove.insert(
-      m_nodesToMove.end(),
-      additionalNodes.begin(),
-      additionalNodes.end()
-    );
+      for ( std::vector<Node *>::const_iterator it = m_nodesToMove.begin();
+        it != m_nodesToMove.end(); ++it )
+      {
+        Node *node = *it;
+        if ( node->isBackDropNode() )
+        {
+          BackDropNode *backDropNode = static_cast<BackDropNode *>( node );
+          backDropNode->appendOverlappingNodes( additionalNodes );
+        }
+      }
+
+      m_nodesToMove.insert(
+        m_nodesToMove.end(),
+        additionalNodes.begin(),
+        additionalNodes.end()
+      );
+    }
   }
 
   m_nodesToMoveOriginalPos.resize(m_nodesToMove.size());
   for (size_t i=0;i<m_nodesToMove.size();i++)
     m_nodesToMoveOriginalPos[i] = m_nodesToMove[i]->topLeftGraphPos();
 }
-    
+
+void Node::storeCurrentSelection()
+{
+  m_previousSelectedNodes.clear();
+  std::vector<Node *> nodes = graph()->selectedNodes();
+  for (size_t i=0;i<nodes.size();i++)
+    m_previousSelectedNodes.insert(nodes[i]);
+}
+
+void Node::restorePreviousSelection()
+{
+  std::vector<Node *> nodes = graph()->nodes();
+  for (size_t i=0;i<nodes.size();i++)
+    nodes[i]->setSelected( m_previousSelectedNodes.find(nodes[i]) != m_previousSelectedNodes.end() );
+}
+
 void Node::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
 {
   QMenu * menu = graph()->getNodeContextMenu( this );
@@ -725,6 +747,8 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 {
   if( MainPanel::filterMousePressEvent( event ) )
     return false;
+
+  storeCurrentSelection();
 
   // backdrops may only respond to clicks in the header.
   if (isBackDropNode())
@@ -759,7 +783,7 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
       }
     }
 
-    m_mightSelectUpstreamNodesOnDrag = false;
+    m_mightOnlyMoveUpstreamNodesOnDrag = false;
     m_duplicateNodesOnDrag = false;
     bool clearSelection = false;
     if (button == Qt::LeftButton)
@@ -774,8 +798,7 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
       {
         if ( selected() )
           hitNode->selectUpStreamNodes();
-        else
-          m_mightSelectUpstreamNodesOnDrag = true;
+        m_mightOnlyMoveUpstreamNodesOnDrag = true;
       }
       else if (modifiers.testFlag( Qt::ControlModifier))
       {
@@ -809,7 +832,7 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
       graph()->controller()->selectNode(hitNode, false);
     }
 
-    updateNodesToMove( !modifiers.testFlag( Qt::ShiftModifier ) );
+    updateNodesToMove( !modifiers.testFlag( Qt::ShiftModifier ), false );
 
     return true;
   }
@@ -826,17 +849,17 @@ bool Node::onMouseMove( const QGraphicsSceneMouseEvent *event )
       m_dragging = 2;
     }
 
-    if ( m_mightSelectUpstreamNodesOnDrag )
+    if ( m_mightOnlyMoveUpstreamNodesOnDrag )
     {
-      selectUpStreamNodes();
-      updateNodesToMove( false );
-      m_mightSelectUpstreamNodesOnDrag = false;
+      updateNodesToMove( false, true );
+      restorePreviousSelection();
+      m_mightOnlyMoveUpstreamNodesOnDrag = false;
     }
     else if ( m_duplicateNodesOnDrag )
     {
       graph()->controller()->gvcDoCopy();
       graph()->controller()->gvcDoPaste( false /* mapToGraph */ );
-      updateNodesToMove( false );
+      updateNodesToMove( false, false );
       m_duplicateNodesOnDrag = false;
     }
 
