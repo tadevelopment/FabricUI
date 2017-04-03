@@ -2475,7 +2475,7 @@ namespace DFG {
 
         QString text = "";
         text += "<br/>";
-        text += "Fabric Engine version " + QString(FabricCore::GetVersionStr());
+        text += "Fabric Engine version " + QString(FabricCore::GetVersionWithBuildInfoStr());
         text += "<br/>";
         text += "<br/>Copyright (c) 2010-2017 Fabric Software Inc.";
         text += "<br/>All rights reserved.";
