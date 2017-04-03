@@ -347,9 +347,10 @@ QueryEdit::~QueryEdit()
 void QueryEdit::onTextChanged( const QString& text )
 {
   m_controller->setText( ToStdString( text ) );
+  this->convertTextToTags( false );
 }
 
-void QueryEdit::convertTextToTags()
+void QueryEdit::convertTextToTags( bool apply )
 {
   if( !m_tagDBWInitialized )
   {
@@ -380,7 +381,8 @@ void QueryEdit::convertTextToTags()
           {
             // the text entered might have the wrong case
             Query::Tag dbName = *( catTags.find( tag ) );
-            m_controller->addTag( dbName );
+            if( apply )
+              m_controller->addTag( dbName );
           }
         }
         else
@@ -396,7 +398,8 @@ void QueryEdit::convertTextToTags()
     offset = end;
   }
   newText += previousText.substr( offset, previousText.size() - offset );
-  m_controller->setText( newText );
+  if( apply )
+    m_controller->setText( newText );
 }
 
 void QueryEdit::requestTag( const Query::Tag& tag )

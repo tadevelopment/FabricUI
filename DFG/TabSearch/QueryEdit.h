@@ -104,7 +104,8 @@ namespace FabricUI
         typedef std::set< Query::Tag, CaseInsCmp > TagSet;
         typedef std::map< Query::Tag::Cat, TagSet, CaseInsCmp > TagDB;
         TagDB m_tagDB;
-        void convertTextToTags();
+        // Will convert the text if "apply" is true, otherwise will just display errors
+        void convertTextToTags( bool apply = true );
 
         static const int NoHighlight = -1;
         static const int AllHighlighted = -2;
