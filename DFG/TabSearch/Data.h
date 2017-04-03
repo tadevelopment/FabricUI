@@ -23,10 +23,14 @@ namespace FabricUI {
 namespace DFG {
 namespace TabSearch {
 
+// Mirrors the definition from Core/DFG/DFGTag.cpp
+const std::string ExtCat = "ext";
+const std::string CatCat = "cat";
 const std::string NameCat = "name";
+const std::string NameCompCat = "namecomp";
+const std::string AkaCat = "aka";
 const std::string PortTypeCat = "porttype";
 const std::string PathCompCat = "pathcomp";
-const std::string NameCompCat = "namecomp";
 
 struct Query : public QObject
 {

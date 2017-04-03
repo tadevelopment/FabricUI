@@ -561,8 +561,9 @@ public:
   }
 };
 
-ResultsView::ResultsView()
+ResultsView::ResultsView( FabricCore::DFGHost* host )
   : m_model( new Model() )
+  , m_host( host )
 {
   this->setObjectName( "ResultsView" );
   setItemsExpandable( false );
@@ -692,16 +693,54 @@ private:
 };
 
 std::vector<Query::Tag> GetTagsToDisplay(
+  FabricCore::DFGHost* host,
   const Result& result, // Result on the left of the Tags
   const Tags& resultTags, // Tags returned for this result and query
   std::set<Query::Tag>& parentTags, // Parent tags in the tree
   const Query& query
 )
 {
-  std::vector<Query::Tag> tags;
-  for( Tags::const_iterator it = resultTags.begin(); it != resultTags.end(); it++ )
-    tags.push_back( Query::Tag( it->name ) );
-  return tags;
+  // Gathering all the tags
+  std::set<Query::Tag> tags;
+  {
+    if( result.isPreset() )
+      tags = GetTags( result, host );
+    for( Tags::const_iterator it = resultTags.begin(); it != resultTags.end(); it++ )
+      tags.insert( Query::Tag( it->name ) );
+  }
+  // Removing the tags from the Query or the Parent Tags
+  {
+    std::set<Query::Tag> filteredTags;
+    for( std::set<Query::Tag>::const_iterator it = tags.begin(); it != tags.end(); it++ )
+      if( parentTags.find( *it ) == parentTags.end() && !query.hasTag( *it ) )
+        filteredTags.insert( *it );
+    tags = filteredTags;
+  }
+  std::vector<Query::Tag> dst;
+  // Adding Tags, sorted by Category
+  {
+    static const size_t nbCategories = 3;
+    static const std::string categories[nbCategories] = {
+      ExtCat,
+      AkaCat,
+      CatCat
+    };
+    // Putting each tag in its category
+    std::map<std::string, std::set<Query::Tag> > tagMap;
+    for( std::set<Query::Tag>::const_iterator it = tags.begin(); it != tags.end(); it++ )
+      tagMap[it->cat()].insert( *it );
+    for( size_t c = 0; c < nbCategories; c++ )
+    {
+      const std::set<Query::Tag>& catTags = tagMap[categories[c]];
+      for( std::set<Query::Tag>::const_iterator it = catTags.begin(); it != catTags.end(); it++ )
+        dst.push_back( *it );
+    }
+  }
+  // Only keep the 3 best tags
+  static const size_t nbTagsToKeep = 3;
+  if( dst.size() > nbTagsToKeep )
+    dst.resize( nbTagsToKeep );
+  return dst;
 }
 
 void ResultsView::replaceViewItems( const Query& query, const QModelIndex& index )
@@ -714,7 +753,7 @@ void ResultsView::replaceViewItems( const Query& query, const QModelIndex& index
     {
       const Preset& preset = m_model->getPreset( index );
       std::vector<Query::Tag> tagNames;
-      if( !m_model->hasSingleResult() ) // Don't show Tags if Single Result
+      //if( !m_model->hasSingleResult() ) // Don't show Tags if Single Result
       {
         const Result result = m_model->getPreset( index ).name;
         Tags resultTags;
@@ -738,6 +777,7 @@ void ResultsView::replaceViewItems( const Query& query, const QModelIndex& index
         }
 
         tagNames = GetTagsToDisplay(
+          m_host,
           result,
           resultTags,
           parentTags,

@@ -92,7 +92,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     this, SLOT( close() )
   );
 
-  m_resultsView = new TabSearch::ResultsView();
+  m_resultsView = new TabSearch::ResultsView( m_host );
   m_resultsView->setFocusProxy( this );
   vlayout->addWidget( m_resultsView );
   connect(

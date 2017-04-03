@@ -24,7 +24,7 @@ namespace FabricUI
         typedef QTreeView Parent;
 
       public:
-        ResultsView();
+        ResultsView( FabricCore::DFGHost* );
         ~ResultsView();
         void keyPressEvent( QKeyEvent * ) FTL_OVERRIDE;
 
@@ -65,6 +65,7 @@ namespace FabricUI
         const std::string& getSelectedPreset();
         class Model;
         Model* m_model;
+        FabricCore::DFGHost* m_host;
 
         // The void* is QModelIndex::internalPointer()
         typedef std::map< void*, PresetView* > PresetViewItems;
