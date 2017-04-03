@@ -577,6 +577,11 @@ ResultsView::ResultsView()
     this, SIGNAL( doubleClicked( const QModelIndex & ) ),
     this, SLOT( validateSelection() )
   );
+  this->setMouseTracking( true );
+  connect(
+    this, SIGNAL( entered( const QModelIndex & ) ),
+    this, SLOT( onEntered( const QModelIndex & ) )
+  );
   this->setEditTriggers( QAbstractItemView::NoEditTriggers );
 }
 
@@ -600,6 +605,17 @@ void ResultsView::validateSelection()
       names.push_back( tags[i].name );
     emit tagsRequested( names );
   }
+}
+
+void ResultsView::onEntered( const QModelIndex& index )
+{
+  if( m_model->isPreset( index ) )
+    emit this->mouseEnteredPreset( Result( this->m_model->getPreset( index ).name ) );
+}
+
+void ResultsView::leaveEvent( QEvent *event )
+{
+  emit this->mouseLeftPreset();
 }
 
 void ResultsView::currentChanged( const QModelIndex &current, const QModelIndex &previous )
@@ -691,6 +707,32 @@ private:
   QHBoxLayout* m_layout;
 };
 
+// Handling the hovering
+class ResultsView::PresetViewItem : public FabricUI::DFG::TabSearch::PresetView
+{
+  typedef FabricUI::DFG::TabSearch::PresetView Parent;
+
+  ResultsView* m_view;
+
+public:
+  PresetViewItem( const Result& preset, const std::vector<Query::Tag>& tags, ResultsView* view )
+    : Parent( preset, tags )
+    , m_view( view )
+  {}
+
+  void enterEvent( QEvent *event ) FTL_OVERRIDE
+  {
+    Parent::enterEvent( event );
+    emit m_view->mouseEnteredPreset( m_result );
+  }
+
+  void leaveEvent( QEvent *event ) FTL_OVERRIDE
+  {
+    Parent::leaveEvent( event );
+    emit m_view->mouseLeftPreset();
+  }
+};
+
 void ResultsView::replaceViewItems( const QModelIndex& index )
 {
   // Setting a QWidget accordingly
@@ -708,13 +750,13 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
         for( size_t i = 0; i < presetTags.size(); i++ )
           tagNames.push_back( presetTags[i].name );
       }
-      PresetView* w = new PresetView( preset.name, tagNames );
+      PresetViewItem* w = new PresetViewItem( preset.name, tagNames, this );
       w->setScore( preset.score, this->minPresetScore, this->maxPresetScore );
       connect(
         w, SIGNAL( requestTag( const Query::Tag& ) ),
         this, SIGNAL( tagRequested( const Query::Tag& ) )
       );
-      m_presetViewItems.insert( std::pair<void*,PresetView*>( index.internalPointer(), w ) );
+      m_presetViewItems.insert( std::pair<void*,PresetViewItem*>( index.internalPointer(), w ) );
       widget = w;
     }
     else

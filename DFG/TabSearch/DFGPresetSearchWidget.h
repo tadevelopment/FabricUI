@@ -59,6 +59,8 @@ namespace FabricUI
       void updateDetailsPanelVisibility();
       void toggleDetailsPanel( bool toggled );
       void toggleDetailsPanel() { toggleDetailsPanel( !m_detailsPanelToggled ); }
+      void onResultMouseEntered( const TabSearch::Result& );
+      void onResultMouseLeft();
 
     protected:
 

@@ -123,6 +123,14 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     m_resultsView, SIGNAL( presetDeselected() ),
     this, SLOT( hidePreview() )
   );
+  connect(
+    m_resultsView, SIGNAL( mouseEnteredPreset( const TabSearch::Result& ) ),
+    this, SLOT( onResultMouseEntered( const TabSearch::Result& ) )
+  );
+  connect(
+    m_resultsView, SIGNAL( mouseLeftPreset() ),
+    this, SLOT( onResultMouseLeft() )
+  );
 
   // Selecting elements (the selection must be exclusive to either
   // the ResultsView or the QueryEdit
@@ -518,6 +526,16 @@ void DFGPresetSearchWidget::toggleDetailsPanel( bool toggled )
     m_toggleDetailsButton->setToggled( toggled );
     updateDetailsPanelVisibility();
   }
+}
+
+void DFGPresetSearchWidget::onResultMouseEntered( const TabSearch::Result& result )
+{
+  std::cout << result << std::endl;
+}
+
+void DFGPresetSearchWidget::onResultMouseLeft()
+{
+  std::cout << "left" << std::endl;
 }
 
 void DFGPresetSearchWidget::close()

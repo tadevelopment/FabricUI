@@ -50,14 +50,20 @@ namespace FabricUI
         void tagsRequested( const std::vector<Query::Tag>& tags );
         // Emitted when moving to a valid selection
         void selectingItems();
+        void mouseEnteredPreset( const TabSearch::Result& result );
+        void mouseLeftPreset();
 
       protected slots:
       
         void currentChanged( const QModelIndex &, const QModelIndex & ) FTL_OVERRIDE;
 
+      protected:
+        void leaveEvent( QEvent * ) FTL_OVERRIDE;
+
       private slots:
 
         void updateHighlight( const QModelIndex& );
+        void onEntered( const QModelIndex & );
         void onSelectionChanged();
 
       private:
@@ -67,7 +73,8 @@ namespace FabricUI
         Model* m_model;
 
         // The void* is QModelIndex::internalPointer()
-        typedef std::map< void*, PresetView* > PresetViewItems;
+        class PresetViewItem;
+        typedef std::map< void*, PresetViewItem* > PresetViewItems;
         PresetViewItems m_presetViewItems;
         class TagContainer;
         typedef std::map< void*, TagContainer* > TagContainerItems;
