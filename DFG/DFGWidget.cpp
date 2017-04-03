@@ -2587,20 +2587,6 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
 
     QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
     editMenu->addAction(pasteNodesAction);
-
-    // emit the suffix menu entry requests
-    emit additionalMenuActionsRequested("Edit", editMenu, false);
-
-    editMenu->addSeparator();
-    
-    QAction * toggleLecyTabSearchAction = new QAction( "Use legacy TabSearch widget", this );
-    toggleLecyTabSearchAction->setCheckable( true );
-    QObject::connect(
-      toggleLecyTabSearchAction, SIGNAL( triggered( bool ) ),
-      this, SLOT( onToggleLegacyTabSearch( bool ) )
-    );
-    toggleLecyTabSearchAction->setChecked( this->isUsingLegacyTabSearch() );
-    editMenu->addAction( toggleLecyTabSearchAction );
   }
 
   // View menu.
@@ -2654,6 +2640,16 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
     snapToGrid->setCheckable(true);
     snapToGrid->setChecked(m_uiGraph->config().mainPanelGridSnap);
     QObject::connect(snapToGrid, SIGNAL(triggered()), this, SLOT(onToggleSnapToGrid()));
+
+    graphViewMenu->addSeparator();
+    
+    QAction * toggleLecyTabSearchAction = graphViewMenu->addAction("Use legacy TabSearch");
+    toggleLecyTabSearchAction->setCheckable( true );
+    QObject::connect(
+      toggleLecyTabSearchAction, SIGNAL( triggered( bool ) ),
+      this, SLOT( onToggleLegacyTabSearch( bool ) )
+    );
+    toggleLecyTabSearchAction->setChecked( this->isUsingLegacyTabSearch() );
 
     // emit the suffix menu entry requests
     emit additionalMenuActionsRequested("View", viewMenu, false);
