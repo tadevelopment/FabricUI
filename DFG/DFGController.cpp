@@ -81,6 +81,8 @@ DFGController::DFGController(
 
   QObject::connect(this, SIGNAL(topoDirty()), this, SLOT(onTopoDirty()));
   QObject::connect(this, SIGNAL(varsChanged()), this, SLOT(onVariablesChanged()));
+  QObject::connect( this, // Changing the Binding implicitly changes its variables
+    SIGNAL( bindingChanged( FabricCore::DFGBinding const & ) ), this, SIGNAL( varsChanged() ) );
 }
 
 DFGController::~DFGController()
@@ -1899,7 +1901,8 @@ QString DFGController::cmdAddPort(
 QString DFGController::cmdCreatePreset(
   QString nodeName,
   QString presetDirPath,
-  QString presetName
+  QString presetName,
+  bool updateOrigPreset
   )
 {
   return m_cmdHandler->dfgDoCreatePreset(
@@ -1908,7 +1911,8 @@ QString DFGController::cmdCreatePreset(
     getExec(),
     nodeName,
     presetDirPath,
-    presetName
+    presetName,
+    updateOrigPreset
     );
 }
 

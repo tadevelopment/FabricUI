@@ -80,14 +80,17 @@ void FilepathViewItem::onModelValueChanged( QVariant const &v )
   m_edit->setText( ToQString(v) );
 }
 
+QString FilepathViewItem::m_lastFolder = QString();
+
 void FilepathViewItem::doBrowse()
 {
   QString fileName = QFileDialog::getOpenFileName( m_widget,
                                            tr( "Open File" ), 
-                                           QString(), 
+                                           m_lastFolder, 
                                            m_filter);
   if (!fileName.isEmpty())
   {
+    m_lastFolder = fileName;
     // Update the string widget
     m_edit->setText( fileName );
     // Update the model

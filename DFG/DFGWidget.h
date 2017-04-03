@@ -22,6 +22,7 @@
 #include <FabricUI/DFG/DFGKLEditorWidget.h>
 #include <FabricUI/DFG/DFGNotificationRouter.h>
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
+#include <FabricUI/DFG/TabSearch/DFGPresetSearchWidget.h>
 #include <FabricUI/DFG/Dialogs/DFGBaseDialog.h>
 #include <FabricUI/DFG/DFGUICmdHandler.h>
 #include <FabricUI/Actions/BaseAction.h>
@@ -85,8 +86,9 @@ namespace DFG {
       GraphView::Graph * getUIGraph();
       DFGKLEditorWidget * getKLEditor();
       DFGController * getUIController();
-      DFGTabSearchWidget * getTabSearchWidget();
+      DFGAbstractTabSearchWidget * getTabSearchWidget();
       DFGGraphViewWidget * getGraphViewWidget();
+      const DFGGraphViewWidget * getGraphViewWidget() const;
       DFGExecHeaderWidget * getHeaderWidget();
       DFGErrorsWidget *getErrorsWidget() const
         { return m_errorsWidget; }
@@ -107,6 +109,7 @@ namespace DFG {
       void reloadStyles();
 
       void tabSearch();
+      bool isUsingLegacyTabSearch() const;
       void emitNodeInspectRequested(FabricUI::GraphView::Node *);
 
       void createPort( FabricUI::GraphView::PortType portType );
@@ -119,6 +122,7 @@ namespace DFG {
       void openPresetDoc( const char *nodeName );
       void splitFromPreset( const char *nodeName );
       void createPreset( const char *nodeName );
+      void updateOrigPreset( const char *nodeName );
       void exportGraph( const char *nodeName );
       void explodeNode( const char *nodeName );
 
@@ -171,6 +175,12 @@ namespace DFG {
       void onEditSelectedNode();
       void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);
+      void onPresetAddedFromTabSearch( QString preset );
+      void onBackdropAddedFromTabSearch();
+      void onVariableSetterAddedFromTabSearch( const std::string name );
+      void onVariableGetterAddedFromTabSearch( const std::string name );
+      void onFocusGivenFromTabSearch();
+      void onToggleLegacyTabSearch( bool toggled );
       void onReloadStyles();
 
     private slots:
@@ -187,6 +197,7 @@ namespace DFG {
         int line,
         int column
         );
+      void updateTabSearchVariables();
 
     private:
 
@@ -205,6 +216,7 @@ namespace DFG {
       bool maybePopExec( std::string &nodeName );
 
       bool checkForUnsaved();
+      QPointF getTabSearchScenePos() const;
 
       DFGGraphViewWidget * m_uiGraphViewWidget;
       DFGExecHeaderWidget * m_uiHeader;
@@ -214,7 +226,9 @@ namespace DFG {
       DFGNotificationRouter * m_router;
       DFGKLEditorWidget * m_klEditor;
       DFGExecBlockEditorWidget *m_execBlockEditorWidget;
-      DFGTabSearchWidget * m_tabSearchWidget;
+      QPoint m_tabSearchPos;
+      DFGTabSearchWidget * m_legacyTabSearchWidget;
+      DFGPresetSearchWidget * m_tabSearchWidget;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGConfig m_dfgConfig;
 
@@ -1008,7 +1022,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_node( node )
       {
-        setText( "Split from preset" );
+        setText( "Split From Preset" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -1044,7 +1058,7 @@ namespace DFG {
         , m_dfgWidget( dfgWidget )
         , m_node( node )
       {
-        setText( "Create preset" );
+        setText( "Create New Preset" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -1055,6 +1069,40 @@ namespace DFG {
       void onTriggered()
       {
         m_dfgWidget->createPreset(m_node->name().c_str());
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+      GraphView::Node *m_node;
+    };
+
+    class UpdatePresetAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      UpdatePresetAction(
+        DFGWidget *dfgWidget,
+        GraphView::Node *node,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+        , m_node( node )
+      {
+        setText( "Update Original Preset" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->updateOrigPreset(m_node->name().c_str());
       }
 
     private:
@@ -2405,6 +2453,11 @@ namespace DFG {
         setEnabled( enable );
       }
 
+      void invokeOnTriggered()
+      {
+        onTriggered();
+      }
+
     private slots:
 
       void onTriggered()
@@ -2427,7 +2480,7 @@ namespace DFG {
 
         QString text = "";
         text += "<br/>";
-        text += "Fabric Engine version " + QString(FabricCore::GetVersionStr());
+        text += "Fabric Engine version " + QString(FabricCore::GetVersionWithBuildInfoStr());
         text += "<br/>";
         text += "<br/>Copyright (c) 2010-2017 Fabric Software Inc.";
         text += "<br/>All rights reserved.";

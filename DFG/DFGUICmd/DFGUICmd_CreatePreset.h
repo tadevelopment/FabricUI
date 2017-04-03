@@ -18,7 +18,8 @@ public:
     FabricCore::DFGExec const &exec,
     QString nodeName,
     QString presetDirPath,
-    QString presetName
+    QString presetName,
+    bool updateOrigPreset
     )
     : DFGUICmd_Exec(
       binding,
@@ -28,6 +29,7 @@ public:
     , m_nodeName( nodeName.trimmed() )
     , m_presetDirPath( presetDirPath.trimmed() )
     , m_presetName( presetName.trimmed() )
+    , m_updateOrigPreset( updateOrigPreset )
     {}
 
   static FTL::CStrRef CmdName()
@@ -46,6 +48,7 @@ protected:
     FTL::CStrRef nodeName,
     FTL::CStrRef presetDirPath,
     FTL::CStrRef presetName,
+    bool updateOrigPreset,
     unsigned &coreUndoCount
     );
 
@@ -54,6 +57,7 @@ private:
   QString m_nodeName;
   QString m_presetDirPath;
   QString m_presetName;
+  bool m_updateOrigPreset;
 
   QString m_pathname;
 };

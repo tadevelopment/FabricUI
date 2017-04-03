@@ -530,7 +530,10 @@ class CanvasWindow(QtGui.QMainWindow):
     def _initLog(self):
         """Initializes the DFGLogWidget."""
         self.logWidget = DFG.DFGLogWidget(self.config)
-      
+        self.qUndoView = QtGui.QUndoView(self.qUndoStack)
+        self.qUndoView.setObjectName('DFGHistoryWidget')
+        self.qUndoView.setEmptyLabel("New Graph")
+
     def _initTimeLine(self):
         """Initializes the TimeLineWidget.
 
@@ -1395,6 +1398,7 @@ class CanvasWindow(QtGui.QMainWindow):
                 if self.isCanvas:
                     menu.addSeparator()
                     self.manipAction = ToggleManipulationAction(self.viewport, self)
+                    self.viewport.addAction(self.manipAction)
                     menu.addAction(self.manipAction)
 
                     menu.addSeparator()
