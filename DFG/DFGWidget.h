@@ -2453,6 +2453,11 @@ namespace DFG {
         setEnabled( enable );
       }
 
+      void invokeOnTriggered()
+      {
+        onTriggered();
+      }
+
     private slots:
 
       void onTriggered()
