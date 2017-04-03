@@ -291,7 +291,7 @@ const TabSearch::Query::Tag BackdropTag = std::string("name:BackDrop");
 const std::string VariableSetType = "setVariable";
 const std::string VariableGetType = "getVariable";
 const TabSearch::Query::Tag VariableTag = std::string("cat:Variable");
-const char VariableSeparator = '_';
+const char VariableSeparator = '.';
 
 void DFGPresetSearchWidget::registerStaticEntries()
 {
