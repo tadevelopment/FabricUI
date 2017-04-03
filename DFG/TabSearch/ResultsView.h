@@ -61,7 +61,7 @@ namespace FabricUI
         void onSelectionChanged();
 
       private:
-        void replaceViewItems( const QModelIndex& parent = QModelIndex() );
+        void replaceViewItems( const Query&, const QModelIndex& parent = QModelIndex() );
         const std::string& getSelectedPreset();
         class Model;
         Model* m_model;

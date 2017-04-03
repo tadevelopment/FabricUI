@@ -633,7 +633,7 @@ void ResultsView::setResults( const std::string& searchResult, const Query& quer
   this->expandAll();
 
 #if USE_CUSTOM_WIDGETS
-  replaceViewItems();
+  replaceViewItems( query );
 #endif
 
   // Select the first result
@@ -691,7 +691,20 @@ private:
   QHBoxLayout* m_layout;
 };
 
-void ResultsView::replaceViewItems( const QModelIndex& index )
+std::vector<Query::Tag> GetTagsToDisplay(
+  const Result& result, // Result on the left of the Tags
+  const Tags& resultTags, // Tags returned for this result and query
+  std::set<Query::Tag>& parentTags, // Parent tags in the tree
+  const Query& query
+)
+{
+  std::vector<Query::Tag> tags;
+  for( Tags::const_iterator it = resultTags.begin(); it != resultTags.end(); it++ )
+    tags.push_back( Query::Tag( it->name ) );
+  return tags;
+}
+
+void ResultsView::replaceViewItems( const Query& query, const QModelIndex& index )
 {
   // Setting a QWidget accordingly
   if( index.isValid() )
@@ -701,12 +714,35 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     {
       const Preset& preset = m_model->getPreset( index );
       std::vector<Query::Tag> tagNames;
-      if( m_model->hasTags( index )
-        && !m_model->hasSingleResult() ) // Don't show Tags if Single Result
+      if( !m_model->hasSingleResult() ) // Don't show Tags if Single Result
       {
-        const Tags& presetTags = m_model->getTags( index );
-        for( size_t i = 0; i < presetTags.size(); i++ )
-          tagNames.push_back( presetTags[i].name );
+        const Result result = m_model->getPreset( index ).name;
+        Tags resultTags;
+        if( m_model->hasTags( index ) )
+          resultTags = m_model->getTags( index );
+        std::set<Query::Tag> parentTags;
+
+        // Getting the parent tags in the tree
+        QModelIndex parent = index;
+        while( true )
+        {
+          parent = m_model->parent( parent );
+          if( !parent.isValid() )
+            break;
+          if( m_model->hasTags( parent ) )
+          {
+            const Tags& tags = m_model->getTags( parent );
+            for( Tags::const_iterator it = tags.begin(); it != tags.end(); it++ )
+              parentTags.insert( Query::Tag( it->name ) );
+          }
+        }
+
+        tagNames = GetTagsToDisplay(
+          result,
+          resultTags,
+          parentTags,
+          query
+        );
       }
       PresetView* w = new PresetView( preset.name, tagNames );
       w->setScore( preset.score, this->minPresetScore, this->maxPresetScore );
@@ -730,7 +766,7 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
 
   // Applying recursively to the children
   for( int i = 0; i < model()->rowCount( index ); i++ )
-    replaceViewItems( model()->index( i, 0, index ) );
+    replaceViewItems( query, model()->index( i, 0, index ) );
 }
 
 void ResultsView::updateHighlight( const QModelIndex& index )
