@@ -70,6 +70,16 @@ class DFGPresetSearchWidget::Status : public QWidget
   void updateDisplay();
   void setMessage( const std::string& message ) { clear(); this->addItem( new TabSearch::Label( message ) ); }
   void setErrorStyle( bool error ) { this->setProperty( "error", error ); this->setStyleSheet( this->styleSheet() ); }
+  void clear()
+  {
+    for( std::vector<TabSearch::Label*>::const_iterator it = m_items.begin(); it != m_items.end(); it++ )
+    {
+      this->layout()->removeWidget( *it );
+      ( *it )->deleteLater();
+    }
+    m_items.clear();
+  }
+  void setDisplayedResult( const TabSearch::Result& );
 
 public:
   Status( DFGPresetSearchWidget* parent )
@@ -84,16 +94,6 @@ public:
     this->setMinimumHeight( 18 );
     this->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   }
-  void clear()
-  {
-    for( std::vector<TabSearch::Label*>::const_iterator it = m_items.begin(); it != m_items.end(); it++ )
-    {
-      this->layout()->removeWidget( *it );
-      ( *it )->deleteLater();
-    }
-    m_items.clear();
-  }
-  void setDisplayedResult( const TabSearch::Result& );
   void setResult( const TabSearch::Result& result ) { m_result = result; updateDisplay(); }
   void hoveredResultSet( const TabSearch::Result& result ) { m_hoveredResult = result; updateDisplay(); }
   void hoveredResultClear() { hoveredResultSet( TabSearch::Result() ); }
