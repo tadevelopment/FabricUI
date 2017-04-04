@@ -220,19 +220,30 @@ protected:
     }
 
     // Select all Tags only if the text is already all selected
-    if( e->matches( QKeySequence::SelectAll ) && selectedText() == text() )
-      m_parent->m_highlightedTag = AllHighlighted;
-
+    if( e->matches( QKeySequence::SelectAll ) )
+    {
+      if( selectedText() == text() )
+        m_parent->m_highlightedTag = AllHighlighted;
+      else
+        m_parent->m_highlightedTag = NoHighlight;
+    }
     if( m_parent->m_highlightedTag == AllHighlighted
       && ( e->key() == Qt::Key_Left || e->key() == Qt::Key_Right ) )
     {
       m_parent->m_highlightedTag = NoHighlight;
     }
 
+    bool navigatingTags = ( cursorPosition() == 0 || e->modifiers().testFlag( Qt::AltModifier ) );
+
+    if( ( e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return ) && isWritingTag() )
+      // This will also accept the Event, and it won't be passed to the ResultsView
+      m_parent->convertTextToTags();
+    else
     if( e->key() == Qt::Key_Backspace )
     {
       int highlitedTag = m_parent->m_highlightedTag; // Selection might change after the text has changed
-      Parent::keyPressEvent( e );
+      if( highlitedTag == NoHighlight || highlitedTag == AllHighlighted )
+        Parent::keyPressEvent( e ); // Deleting text
       m_parent->m_highlightedTag = highlitedTag;
 
       if( m_parent->m_highlightedTag == NoHighlight && cursorPosition() == 0 )
@@ -246,15 +257,20 @@ protected:
     }
     else
     // Navigating in the Tags with the arrow keys
-    if( cursorPosition() == 0 && e->key() == Qt::Key_Right )
+    if( navigatingTags && e->key() == Qt::Key_Right )
     {
-      if( m_parent->m_highlightedTag == NoHighlight )
-        Parent::keyPressEvent( e ); // If no selected Tag, move in the Text
+      if( m_parent->m_highlightedTag == NoHighlight ) // If no Tag is selected
+      {
+        if( e->modifiers().testFlag( Qt::AltModifier ) && m_parent->m_query.getTags().size() > 0 ) // Alt
+          m_parent->m_highlightedTag = 0; // Select the left-most tag
+        else
+          Parent::keyPressEvent( e ); // Move in the Text
+      }
       else
         m_parent->m_highlightedTag++;
     }
     else
-    if( cursorPosition() == 0 && e->key() == Qt::Key_Left )
+    if( navigatingTags && e->key() == Qt::Key_Left )
     {
       if( m_parent->m_highlightedTag == NoHighlight )
         m_parent->m_highlightedTag = int(m_parent->m_query.getTags().size()) - 1;
@@ -262,6 +278,9 @@ protected:
       // stop at the leftmost tag (since -1 is reserved)
       if( m_parent->m_highlightedTag > 0 )
         m_parent->m_highlightedTag--;
+      else
+      if( m_parent->m_highlightedTag == 0 )
+        m_parent->m_highlightedTag = NoHighlight;
     }
     else
       Parent::keyPressEvent( e );
@@ -276,6 +295,13 @@ protected:
   }
 
 private:
+  bool isWritingTag() const
+  {
+    const std::vector<std::string> split = m_parent->m_query.getSplitText();
+    if( split.size() == 0 )
+      return false;
+    return Query::Tag::IsTag( split[split.size() - 1] );
+  }
   QueryEdit* m_parent;
 };
 
@@ -302,6 +328,10 @@ QueryEdit::QueryEdit( FabricCore::DFGHost* host )
     &m_query, SIGNAL( changed() ),
     this, SLOT( onQueryChanged() )
   );
+  connect(
+    m_textEdit, SIGNAL( cursorPositionChanged( int, int ) ),
+    this, SLOT( deselectTags() )
+  );
   m_layout->setMargin( 0 );
   m_layout->setSpacing( 4 );
   this->setFocusProxy( m_textEdit );
@@ -317,15 +347,17 @@ QueryEdit::~QueryEdit()
 void QueryEdit::onTextChanged( const QString& text )
 {
   m_controller->setText( ToStdString( text ) );
+  this->convertTextToTags( false );
 }
 
-void QueryEdit::convertTextToTags()
+void QueryEdit::convertTextToTags( bool apply )
 {
   if( !m_tagDBWInitialized )
   {
     updateTagDBFromHost();
     m_tagDBWInitialized = true;
   }
+  emit logClear();
 
   std::vector< std::pair<size_t, size_t> > indices = m_query.getSplitTextIndices();
   std::string previousText = m_query.getText(), newText = "";
@@ -336,20 +368,30 @@ void QueryEdit::convertTextToTags()
     const std::string text = previousText.substr( start, end - start );
 
     bool isTag = false;
-    if( text.find( ':' ) != std::string::npos )
+    if( Query::Tag::IsTag( text ) )
     {
       Query::Tag tag = text;
       if( m_tagDB.find( tag.cat() ) != m_tagDB.end() )
       {
         const TagSet& catTags = m_tagDB[tag.cat()];
-        if( catTags.find( tag ) != catTags.end() && !m_query.hasTag( tag ) )
+        if( catTags.find( tag ) != catTags.end() )
         {
           isTag = true;
-          // the text entered might have the wrong case
-          Query::Tag dbName = *( catTags.find( tag ) );
-          m_controller->addTag( dbName );
+          if( !m_query.hasTag( tag ) )
+          {
+            // the text entered might have the wrong case
+            Query::Tag dbName = *( catTags.find( tag ) );
+            if( apply )
+              m_controller->addTag( dbName );
+            emit logInstruction( "Press Enter or Space to add the Tag \"" + tag + "\"" );
+          }
         }
+        else
+          emit logError( std::string( "Undefined tag name \"") + std::string( tag.name() )
+            + "\" for the category \"" + std::string( tag.cat() ) + ":\"" );
       }
+      else
+        emit logError( std::string( "Undefined tag category \"" ) + std::string( tag.cat() ) + ":\"" );
     }
     if( !isTag )
       newText += previousText.substr( offset, end - offset );
@@ -357,7 +399,8 @@ void QueryEdit::convertTextToTags()
     offset = end;
   }
   newText += previousText.substr( offset, previousText.size() - offset );
-  m_controller->setText( newText );
+  if( apply )
+    m_controller->setText( newText );
 }
 
 void QueryEdit::requestTag( const Query::Tag& tag )
@@ -381,8 +424,7 @@ void QueryEdit::updateTagHighlight()
   // If the TextCursor is not at the beginning
   // or if we overflowed the number of tags :
   // remove the highlight
-  if( ( m_textEdit->cursorPosition() > 0 && m_highlightedTag != AllHighlighted )
-      || m_highlightedTag >= int(m_query.getTags().size()) )
+  if( m_highlightedTag >= int(m_query.getTags().size()) )
     m_highlightedTag = NoHighlight;
 
   m_tagsEdit->setHighlightedTag( m_highlightedTag );

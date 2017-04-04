@@ -59,6 +59,12 @@ namespace FabricUI
       void updateDetailsPanelVisibility();
       void toggleDetailsPanel( bool toggled );
       void toggleDetailsPanel() { toggleDetailsPanel( !m_detailsPanelToggled ); }
+      void onResultMouseEntered( const TabSearch::Result& );
+      void onResultMouseLeft();
+      // TODO: use an Enum argument instead of several signals ?
+      void onLogError( const std::string& );
+      void onLogInstruction( const std::string& );
+      void onLogClear();
 
     protected:
 
