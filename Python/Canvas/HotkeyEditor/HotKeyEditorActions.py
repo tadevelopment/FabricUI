@@ -14,7 +14,7 @@ class BaseHotkeyEditorAction(Actions.BaseAction):
         self.name = name
         self.hotkeyEditor = hotkeyEditor
         self.hotkeyEditor.addAction(self)
-        self.hotkeyEditor.hotkeyTableWidget.editingItem.connect(self.__onEditingItem)
+        self.hotkeyEditor.hotkeyTable.editingItem.connect(self.__onEditingItem)
 
         super(BaseHotkeyEditorAction, self).init(
             name, 
@@ -39,9 +39,8 @@ class OpenHotkeyFileAction(BaseHotkeyEditorAction):
         self.setToolTip('Open file')
         
     def onTriggered(self):
-        if self.hotkeyEditor.hotkeyTableWidget.openActions():
-            self.hotkeyEditor.updateTitle()
-
+        self.hotkeyEditor.hotkeyTable.manager.openActions()
+ 
 class SaveHotkeyFileAction(BaseHotkeyEditorAction):
  
     def __init__(self, hotkeyEditor):
@@ -54,7 +53,7 @@ class SaveHotkeyFileAction(BaseHotkeyEditorAction):
         self.setToolTip('Save file')
         
     def onTriggered(self):
-        self.hotkeyEditor.hotkeyTableWidget.saveActions()
+        self.hotkeyEditor.hotkeyTable.manager.saveActions()
  
 class SaveHotkeyFileAsAction(BaseHotkeyEditorAction):
  
@@ -68,21 +67,7 @@ class SaveHotkeyFileAsAction(BaseHotkeyEditorAction):
         self.setToolTip('Save file as')
         
     def onTriggered(self):
-        self.hotkeyEditor.hotkeyTableWidget.saveActionsAs()
- 
-class AcceptActionChanges(BaseHotkeyEditorAction):
- 
-    def __init__(self, hotkeyEditor):
-        super(AcceptActionChanges, self).__init__(
-            hotkeyEditor, 
-            "HotkeyEditor.AcceptActionChanges", 
-            "Ok", 
-            QtGui.QKeySequence("Return"))
-
-        self.setToolTip('Accept the changes')
-        
-    def onTriggered(self):
-        self.hotkeyEditor.hotkeyTableWidget.acceptShortcutChanges()
+        self.hotkeyEditor.hotkeyTable.manager.saveActionsAs()
  
 class AcceptActionChangesAndExit(BaseHotkeyEditorAction):
  
@@ -91,27 +76,13 @@ class AcceptActionChangesAndExit(BaseHotkeyEditorAction):
             hotkeyEditor, 
             "HotkeyEditor.AcceptActionChangesAndExit", 
             "Ok", 
-            QtGui.QKeySequence("Shift+Return"))
+            QtGui.QKeySequence("Return"))
 
         self.setToolTip('Accept the changes and close the dialog')
         
     def onTriggered(self):
-        self.hotkeyEditor.hotkeyTableWidget.acceptShortcutChanges()
+        self.hotkeyEditor.hotkeyTable.manager.acceptShortcutChanges()
         self.hotkeyEditor.accept()
-
-class RejectActionChanges(BaseHotkeyEditorAction):
- 
-    def __init__(self, hotkeyEditor):
-        super(RejectActionChanges, self).__init__(
-            hotkeyEditor, 
-            "HotkeyEditor.RejectActionChanges", 
-            "Cancel", 
-            QtGui.QKeySequence("Escape"))
-
-        self.setToolTip('Reject the changes')
-        
-    def onTriggered(self):
-        self.hotkeyEditor.hotkeyTableWidget.rejectShortcutChanges()
  
 class RejectActionChangesAndExit(BaseHotkeyEditorAction):
  
@@ -120,10 +91,39 @@ class RejectActionChangesAndExit(BaseHotkeyEditorAction):
             hotkeyEditor, 
             "HotkeyEditor.RejectActionChangesAndExit", 
             "Cancel", 
-            QtGui.QKeySequence("Shift+Escape"))
+            QtGui.QKeySequence("Escape"))
 
         self.setToolTip('Reject the changes and close the dialog')
         
     def onTriggered(self):
-        self.hotkeyEditor.hotkeyTableWidget.rejectShortcutChanges()
+        self.hotkeyEditor.hotkeyTable.manager.rejectShortcutChanges()
         self.hotkeyEditor.reject()
+
+class UndoActionChanges(BaseHotkeyEditorAction):
+ 
+    def __init__(self, hotkeyEditor):
+        super(UndoActionChanges, self).__init__(
+            hotkeyEditor, 
+            "HotkeyEditor.UndoActionChanges", 
+            "Cancel", 
+            QtGui.QKeySequence("Ctrl+Z"))
+
+        self.setToolTip('Undo the changes.')
+        
+    def onTriggered(self):
+        self.hotkeyEditor.hotkeyTable.qUndoStack.undo()
+ 
+class RedoActionChanges(BaseHotkeyEditorAction):
+ 
+    def __init__(self, hotkeyEditor):
+        super(RedoActionChanges, self).__init__(
+            hotkeyEditor, 
+            "HotkeyEditor.RedoActionChanges", 
+            "Cancel", 
+            QtGui.QKeySequence("Ctrl+Shift+Z"))
+
+        self.setToolTip('Redo the changes.')
+        
+    def onTriggered(self):
+        self.hotkeyEditor.hotkeyTable.qUndoStack.redo()
+ 

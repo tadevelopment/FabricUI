@@ -37,10 +37,11 @@ class HotkeyTableWidgetItemDelegate(QtGui.QStyledItemDelegate):
 
         if target is self.editor:
             if event.type() == QtCore.QEvent.KeyPress:
+                
                 # Gets the sequence from the event.
                 keySequence = GetQKeySequenceFromQKeyEvent(event)
                 if keySequence is not None:
-                     self.keyPressed.emit(keySequence)
+                    self.keyPressed.emit(keySequence)
                 return True  
 
             if event.type() == QtCore.QEvent.MouseButtonPress:

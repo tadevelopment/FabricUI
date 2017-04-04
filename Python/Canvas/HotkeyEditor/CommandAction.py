@@ -12,7 +12,7 @@ class CommandAction(Actions.BaseAction):
         The action has
     """
 
-    def __init__(self, parent, cmdName, shortcut, tooltip, isScriptable):
+    def __init__(self, parent, cmdName, implType, shortcut, tooltip, isScriptable):
         """ Initializes a CommandAction.
             Arguments:
             - parent: A reference to the parent
@@ -21,6 +21,8 @@ class CommandAction(Actions.BaseAction):
             - tooltip: Action's tooltip
         """
         super(CommandAction, self).__init__(parent)
+        
+        self.implType = implType
         
         super(CommandAction, self).init(
             cmdName, 

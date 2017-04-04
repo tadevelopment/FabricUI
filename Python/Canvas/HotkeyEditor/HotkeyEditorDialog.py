@@ -3,12 +3,31 @@
 #
 
 import os
-from PySide import QtGui
+from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import Actions
 from FabricEngine.Canvas.HotkeyEditor.HotKeyEditorActions import *
-from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidget import HotkeyTableWidget
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
-  
+from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidget import HotkeyTableWidget
+    
+class HotkeyLineEdit(QtGui.QLineEdit):
+
+    updateFocus = QtCore.Signal(bool)
+
+    def __init__(self, parent):
+        super(HotkeyLineEdit, self).__init__(parent)
+
+    def focusInEvent(self, event):
+        """ Implementation of QtGui.QLineEdit.
+        """
+        super(HotkeyLineEdit, self).focusInEvent(event) 
+        self.updateFocus.emit(True)
+
+    def focusOutEvent(self, event):
+        """ Implementation of QtGui.QLineEdit.
+        """
+        super(HotkeyLineEdit, self).focusOutEvent(event) 
+        self.updateFocus.emit(False)
+
 class HotkeyEditorDialog(QtGui.QDialog):
 
     def __init__(self, canvasWindow):
@@ -26,40 +45,53 @@ class HotkeyEditorDialog(QtGui.QDialog):
         self.setObjectName('HotkeyEditorDialog')
         self.setStyleSheet(LoadFabricStyleSheet('FabricUI.qss'))
 
+       # HotkeyTableWidget
+        self.hotkeyTable = HotkeyTableWidget(
+            self, 
+            canvasWindow
+            )
+
+        self.hotkeyTable.manager.stateIsDirty.connect(
+            self.onUpdate
+            )
+
         # Controls
         comboBoxLabel = QtGui.QLabel('Set')
-        self.__comboBox = QtGui.QComboBox(self)
-        self.__comboBox.addItem('All')
-        self.__comboBox.addItem('Actions')
-        self.__comboBox.addItem('Commands')
-        self.__comboBox.currentIndexChanged.connect(self.__onFilterItems)
+        self.__itemComboBox = QtGui.QComboBox(self)
+        self.__itemComboBox.addItem('All')
+        self.__itemComboBox.addItem('Acts')
+        self.__itemComboBox.addItem('Cmds')
+        self.__itemComboBox.currentIndexChanged.connect(self.__onFilterItems)
+
+        checkBoxLabel = QtGui.QLabel('Edit.')
+        self.__editComboBox = QtGui.QComboBox(self)
+        self.__editComboBox.addItem('All')
+        self.__editComboBox.addItem('Yes')
+        self.__editComboBox.addItem('No')
+        self.__editComboBox.currentIndexChanged.connect(self.__onFilterItems)
 
         lineEditLabel =  QtGui.QLabel('Search')
-        self.__lineEdit = QtGui.QLineEdit(self)
+        lineEditLabel.setToolTip("Trie")
+        self.__lineEdit = HotkeyLineEdit(self)
+        self.__lineEdit.updateFocus.connect(self.hotkeyTable.onEmitEditingItem)
         self.__lineEdit.textChanged.connect(self.__onFilterItems)
 
         ctrlLayout = QtGui.QHBoxLayout()
         ctrlLayout.addWidget(lineEditLabel)
         ctrlLayout.addWidget(self.__lineEdit)
         ctrlLayout.addWidget(comboBoxLabel)
-        ctrlLayout.addWidget(self.__comboBox)
-        
-        # HotkeyTableWidget
-        self.hotkeyTableWidget = HotkeyTableWidget(
-            self, 
-            canvasWindow)
-
-        self.hotkeyTableWidget.stateIsDirty.connect(
-            self.updateTitle)
+        ctrlLayout.addWidget(self.__itemComboBox)
+        ctrlLayout.addWidget(checkBoxLabel)
+        ctrlLayout.addWidget(self.__editComboBox)
  
         # Toolbar
         openHotkeyFileAction = OpenHotkeyFileAction(self)
         saveHotkeyFileAction = SaveHotkeyFileAction(self)
         saveHotkeyFileAsAction = SaveHotkeyFileAsAction(self)
-        acceptActionChanges = AcceptActionChanges(self)
-        rejectActionChanges = RejectActionChanges(self)
-        AcceptActionChangesAndExit(self)
-        RejectActionChangesAndExit(self)
+        acceptActionChanges = AcceptActionChangesAndExit(self)
+        rejectActionChanges = RejectActionChangesAndExit(self)
+        UndoActionChanges(self)
+        RedoActionChanges(self)
 
         toolBar = QtGui.QToolBar()
         toolBar.addAction(openHotkeyFileAction)
@@ -74,39 +106,41 @@ class HotkeyEditorDialog(QtGui.QDialog):
         layout.setContentsMargins(0,0,0,0)
         layout.addWidget(toolBar)
         layout.addLayout(ctrlLayout)
-        layout.addWidget(self.hotkeyTableWidget)
+        layout.addWidget(self.hotkeyTable)
         self.setLayout(layout)
 
         # !!!! To change
-        self.setMinimumHeight(400)
-        self.setMinimumWidth(600)
+        self.setMinimumHeight(350)
+        self.setMinimumWidth(550)
         self.adjustSize()
     
-    def updateTitle(self, isDirty = False, isFileDirty = False): 
+    def onUpdate(self, isDirty, clear): 
         
         dirtyText = ''
         if isDirty:
             dirtyText = "*"
 
-        fileName = self.hotkeyTableWidget.filename
+        fileName = self.hotkeyTable.manager.filename
         if fileName:
             baseName = os.path.basename(fileName)
-            fileDirtyText = ''
-            if isFileDirty:
-                fileDirtyText = "*"
-            self.setWindowTitle(self.baseTitle + dirtyText + ' : ' + baseName + fileDirtyText)
+            self.setWindowTitle(self.baseTitle + ' : ' + baseName + dirtyText)
         
         else:
             self.setWindowTitle(self.baseTitle + dirtyText)
+
+        if clear:
+            self.hotkeyTable.qUndoStack.clear()
 
     def __onFilterItems(self):
         """ \internal.
             Filter the actions.
         """
-        self.hotkeyTableWidget.filterItems(
+
+        self.hotkeyTable.filterItems(
             self.__lineEdit.text(), 
-            self.__comboBox.currentText())
+            self.__editComboBox.currentIndex(),
+            self.__itemComboBox.currentIndex())
 
     def closeEvent(self, event):
-        self.hotkeyTableWidget.rejectShortcutChanges()
+        self.hotkeyTable.manager.rejectShortcutChanges()
         super(HotkeyEditorDialog, self).closeEvent(event)
