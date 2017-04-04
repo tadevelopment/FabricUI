@@ -31,6 +31,7 @@ class DFGPresetSearchWidget::Status : public QWidget
   }
 
   void updateDisplay();
+  void setErrorStyle( bool error ) { this->setProperty( "error", error ); this->setStyleSheet( this->styleSheet() ); }
 
 public:
   Status( DFGPresetSearchWidget* parent )
@@ -63,12 +64,14 @@ public:
 
 void DFGPresetSearchWidget::Status::updateDisplay()
 {
+  this->setErrorStyle( false );
   if( !m_hoveredResult.empty() )
     setDisplayedResult( m_hoveredResult );
   else
   if( !m_errorMessage.empty() )
   {
     this->clear();
+    this->setErrorStyle( true );
     this->addItem( new TabSearch::Label( m_errorMessage ) );
   }
   else
