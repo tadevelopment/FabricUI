@@ -1923,7 +1923,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DFGPresetSearchWidget #Status #TabSearchLabel[clickable="false"]
 {
   color: #FFFFFF;
-  font-style: italic;
 }
 
 #DFGPresetSearchWidget #Status #TabSearchLabel[clickable="true"]
@@ -2081,7 +2080,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="false"]
 {
   color: #FFFFFF;
-  font-style: italic;
 }
 
 #DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="true"]
