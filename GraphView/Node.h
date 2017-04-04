@@ -18,6 +18,7 @@
 #include <FabricUI/GraphView/GraphicItemTypes.h>
 #include <FabricUI/GraphView/Connection.h>
 
+#include <set>
 #include <vector>
 
 namespace FabricUI
@@ -242,7 +243,9 @@ namespace FabricUI
       void updatePinLayout();
       void updateHighlighting( QPointF cursorPos );
       void selectUpStreamNodes();
-      void updateNodesToMove( bool backdrops );
+      void updateNodesToMove( bool backdrops, bool onlyUpstreamNodes );
+      void storeCurrentSelection();
+      void restorePreviousSelection();
 
       // used by NodeHeader / NodeHeaderButton / NodeLabel
       bool onMousePress( const QGraphicsSceneMouseEvent *event );
@@ -280,10 +283,11 @@ namespace FabricUI
       QGraphicsLinearLayout * m_pinsLayout;
       bool m_selected;
       int m_dragging;
-      bool m_mightSelectUpstreamNodesOnDrag;
+      bool m_mightOnlyMoveUpstreamNodesOnDrag;
       bool m_duplicateNodesOnDrag;
       Qt::MouseButton m_dragButton;
       QPointF m_mouseDownPos;
+      std::set<Node *> m_previousSelectedNodes;
       std::vector<Node *> m_nodesToMove;
       std::vector<QPointF> m_nodesToMoveOriginalPos;
 
