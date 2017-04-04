@@ -36,6 +36,22 @@ static const Hint Hints[NbHints] = {
   Hint( "You can removed filtered Tags by clicking on them", 1.0 )
 };
 
+const std::string& GetRandomHint()
+{
+  double scoreSum = 0;
+  for( size_t i = 0; i < NbHints; i++ )
+    scoreSum += Hints[i].score;
+  double randV = ( rand() * scoreSum ) / RAND_MAX;
+  scoreSum = 0;
+  for( size_t i = 0; i < NbHints; i++ )
+  {
+    scoreSum += Hints[i].score;
+    if( scoreSum > randV )
+      return Hints[i].message;
+  }
+  assert( false ); return std::string();
+}
+
 class DFGPresetSearchWidget::Status : public QWidget
 {
   DFGPresetSearchWidget* m_parent;
@@ -96,7 +112,10 @@ void DFGPresetSearchWidget::Status::updateDisplay()
     this->setMessage( m_errorMessage );
   }
   else
+  if( !m_result.empty() )
     setDisplayedResult( m_result );
+  else
+    this->setMessage( GetRandomHint() );
 }
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
@@ -497,7 +516,7 @@ void DFGPresetSearchWidget::hidePreview()
   m_detailsWidget->clear();
   updateDetailsPanelVisibility();
 
-  m_status->clear();
+  m_status->setResult( std::string() ); // Clear
   updateSize();
 }
 
