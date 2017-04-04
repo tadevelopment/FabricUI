@@ -357,7 +357,7 @@ void QueryEdit::convertTextToTags( bool apply )
     updateTagDBFromHost();
     m_tagDBWInitialized = true;
   }
-  emit errorMessage( "" );
+  emit logClear();
 
   std::vector< std::pair<size_t, size_t> > indices = m_query.getSplitTextIndices();
   std::string previousText = m_query.getText(), newText = "";
@@ -383,14 +383,15 @@ void QueryEdit::convertTextToTags( bool apply )
             Query::Tag dbName = *( catTags.find( tag ) );
             if( apply )
               m_controller->addTag( dbName );
+            emit logInstruction( "Press Enter or Space to add the Tag \"" + tag + "\"" );
           }
         }
         else
-          emit errorMessage( std::string( "Undefined tag name \"") + std::string( tag.name() )
+          emit logError( std::string( "Undefined tag name \"") + std::string( tag.name() )
             + "\" for the category \"" + std::string( tag.cat() ) + ":\"" );
       }
       else
-        emit errorMessage( std::string( "Undefined tag category \"" ) + std::string( tag.cat() ) + ":\"" );
+        emit logError( std::string( "Undefined tag category \"" ) + std::string( tag.cat() ) + ":\"" );
     }
     if( !isTag )
       newText += previousText.substr( offset, end - offset );

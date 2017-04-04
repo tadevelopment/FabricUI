@@ -57,7 +57,7 @@ class DFGPresetSearchWidget::Status : public QWidget
   DFGPresetSearchWidget* m_parent;
   std::vector<TabSearch::Label*> m_items;
   TabSearch::Result m_result, m_hoveredResult;
-  std::string m_errorMessage;
+  std::string m_logError, m_logMessage;
   bool m_hintsEnabled;
 
   inline void addItem( TabSearch::Label* item )
@@ -99,7 +99,8 @@ public:
   void setResult( const TabSearch::Result& result ) { m_result = result; updateDisplay(); }
   void hoveredResultSet( const TabSearch::Result& result ) { m_hoveredResult = result; updateDisplay(); }
   void hoveredResultClear() { hoveredResultSet( TabSearch::Result() ); }
-  void setErrorMessage( const std::string& message ) { m_errorMessage = message; updateDisplay(); }
+  void setLogError( const std::string& message ) { m_logError = message; updateDisplay(); }
+  void setLogInstruction( const std::string& message ) { m_logMessage = message; updateDisplay(); }
   void setHintsEnabled( bool enabled ) { m_hintsEnabled = enabled; updateDisplay(); }
 };
 
@@ -109,14 +110,20 @@ void DFGPresetSearchWidget::Status::updateDisplay()
   if( !m_hoveredResult.empty() )
     setDisplayedResult( m_hoveredResult );
   else
-  if( !m_errorMessage.empty() )
+  if( !m_logError.empty() )
   {
     this->setMessageType( "error" );
-    this->setMessage( m_errorMessage );
+    this->setMessage( m_logError );
   }
   else
   if( !m_result.empty() )
     setDisplayedResult( m_result );
+  else
+  if( !m_logMessage.empty() )
+  {
+    this->setMessageType( "instruction" );
+    this->setMessage( m_logMessage );
+  }
   else
   if( m_hintsEnabled )
   {
@@ -166,8 +173,16 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     this, SLOT( close() )
   );
   connect(
-    m_queryEdit, SIGNAL( errorMessage( const std::string& ) ),
-    this, SLOT( onErrorMessage( const std::string& ) )
+    m_queryEdit, SIGNAL( logError( const std::string& ) ),
+    this, SLOT( onLogError( const std::string& ) )
+  );
+  connect(
+    m_queryEdit, SIGNAL( logInstruction( const std::string& ) ),
+    this, SLOT( onLogInstruction( const std::string& ) )
+  );
+  connect(
+    m_queryEdit, SIGNAL( logClear() ),
+    this, SLOT( onLogClear() )
   );
 
   m_resultsView = new TabSearch::ResultsView();
@@ -616,9 +631,20 @@ void DFGPresetSearchWidget::onResultMouseLeft()
   m_status->hoveredResultClear();
 }
 
-void DFGPresetSearchWidget::onErrorMessage( const std::string& message )
+void DFGPresetSearchWidget::onLogError( const std::string& message )
 {
-  m_status->setErrorMessage( message );
+  m_status->setLogError( message );
+}
+
+void DFGPresetSearchWidget::onLogInstruction( const std::string& message )
+{
+  m_status->setLogInstruction( message );
+}
+
+void DFGPresetSearchWidget::onLogClear()
+{
+  m_status->setLogError( std::string() );
+  m_status->setLogInstruction( std::string() );
 }
 
 void DFGPresetSearchWidget::close()

@@ -67,7 +67,9 @@ namespace FabricUI
         // Emitted when the widget is moving through its TagsEdit
         void selectingTags();
         void lostFocus();
-        void errorMessage( const std::string& message );
+        void logError( const std::string& );
+        void logInstruction( const std::string& );
+        void logClear();
 
       private slots:
         void onTextChanged( const QString& text );
