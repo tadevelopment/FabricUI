@@ -80,7 +80,10 @@ DFGController::DFGController(
 
   QObject::connect(this, SIGNAL(topoDirty()), this, SLOT(onTopoDirty()));
   QObject::connect(this, SIGNAL(varsChanged()), this, SLOT(onVariablesChanged()));
-  QObject::connect(this, SIGNAL(dirty()), this, SIGNAL(varsChangedImplicitly()) );
+
+  QObject::connect(this, SIGNAL(dirty()), this, SIGNAL(varsChangedImplicitly()));
+  QObject::connect(this, SIGNAL(topoDirty()), this, SIGNAL(varsChangedImplicitly()));
+  QObject::connect(this, SIGNAL(varsChanged()), this, SIGNAL(varsChangedImplicitly()));
 }
 
 DFGController::~DFGController()
