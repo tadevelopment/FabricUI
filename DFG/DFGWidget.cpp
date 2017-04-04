@@ -2587,6 +2587,9 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
 
     QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
     editMenu->addAction(pasteNodesAction);
+
+    // emit the prefix menu entry requests
+    emit additionalMenuActionsRequested("Edit", editMenu, false);
   }
 
   // View menu.
