@@ -49,7 +49,7 @@ const std::string& GetRandomHint()
     if( scoreSum > randV )
       return Hints[i].message;
   }
-  assert( false ); return std::string();
+  assert( false ); return Hints[0].message;
 }
 
 class DFGPresetSearchWidget::Status : public QWidget
