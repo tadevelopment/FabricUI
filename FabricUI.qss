@@ -1742,6 +1742,43 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 0px;
 }
 
+#DFGPresetSearchWidget QScrollBar:vertical
+{
+  width: 10px;
+  margin: 0px;
+}
+
+#DFGPresetSearchWidget QScrollBar::handle:vertical
+{
+  height: 0;
+}
+
+#DFGPresetSearchWidget QScrollBar::add-line:vertical
+{
+  height: 0;
+  border: none;
+  background: none;
+}
+
+#DFGPresetSearchWidget QScrollBar::sub-line:vertical
+{
+  height: 0;
+  border: none;
+  background: none;
+}
+
+#DFGPresetSearchWidget QScrollBar::up-arrow:vertical 
+{
+  border-image: none;
+  image: none;
+}
+
+#DFGPresetSearchWidget QScrollBar::down-arrow:vertical
+{
+  border-image: none;
+  image: none;
+}
+
 #DFGPresetSearchWidget #SearchFrame
 {
   background-color: #555555;
