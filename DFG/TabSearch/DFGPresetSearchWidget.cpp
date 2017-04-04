@@ -32,7 +32,7 @@ static const Hint Hints[NbHints] = {
   Hint( "You can toggle the details panel with " + ToStdString( ToggleDetailsKey.toString() ), 2.0 ),
   Hint( "You can mouse over a Tag to see its category", 1.0 ),
   Hint( "You can add Tags by clicking on them (in the results or the the details panel)", 1.0 ),
-  Hint( "You can move through Tags with Alt + Arrow", 2.0 ),
+  Hint( "You can move through Tags with Alt + Arrows", 2.0 ),
   Hint( "You can remove filtered Tags by clicking on them", 1.0 )
 };
 
