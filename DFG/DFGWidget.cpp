@@ -2643,7 +2643,7 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
 
     graphViewMenu->addSeparator();
     
-    QAction * toggleLecyTabSearchAction = graphViewMenu->addAction("Use legacy TabSearch");
+    QAction * toggleLecyTabSearchAction = graphViewMenu->addAction("Use Legacy TabSearch");
     toggleLecyTabSearchAction->setCheckable( true );
     QObject::connect(
       toggleLecyTabSearchAction, SIGNAL( triggered( bool ) ),
