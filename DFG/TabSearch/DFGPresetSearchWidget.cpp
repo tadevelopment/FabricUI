@@ -15,6 +15,27 @@
 
 using namespace FabricUI::DFG;
 
+static const QKeySequence ToggleDetailsKey = Qt::CTRL + Qt::Key_Tab;
+
+static const size_t NbHints = 7;
+struct Hint
+{
+  std::string message;
+  double score; // How likely is it to be displayed ?
+  Hint( const std::string& message, const double score )
+    : message( message ), score( score )
+  {}
+};
+static const Hint Hints[NbHints] = {
+  Hint( "You can add several words to the search", 1.0 ),
+  Hint( "You can filter the search with Tags by writing them (like ext:Geometry or cat:Math)", 3.0 ),
+  Hint( "You can toggle the details panel with " + ToStdString( ToggleDetailsKey.toString() ), 2.0 ),
+  Hint( "You can mouse over a Tag to see its category", 1.0 ),
+  Hint( "You can add Tags by clicking on them (in the results or the the details panel)", 1.0 ),
+  Hint( "You can move through Tags with Alt + Arrow", 2.0 ),
+  Hint( "You can removed filtered Tags by clicking on them", 1.0 )
+};
+
 class DFGPresetSearchWidget::Status : public QWidget
 {
   DFGPresetSearchWidget* m_parent;
@@ -31,6 +52,7 @@ class DFGPresetSearchWidget::Status : public QWidget
   }
 
   void updateDisplay();
+  void setMessage( const std::string& message ) { clear(); this->addItem( new TabSearch::Label( m_errorMessage ) ); }
   void setErrorStyle( bool error ) { this->setProperty( "error", error ); this->setStyleSheet( this->styleSheet() ); }
 
 public:
@@ -70,9 +92,8 @@ void DFGPresetSearchWidget::Status::updateDisplay()
   else
   if( !m_errorMessage.empty() )
   {
-    this->clear();
     this->setErrorStyle( true );
-    this->addItem( new TabSearch::Label( m_errorMessage ) );
+    this->setMessage( m_errorMessage );
   }
   else
     setDisplayedResult( m_result );
@@ -186,11 +207,10 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   m_detailsPanel->setFocusPolicy( Qt::NoFocus );
   m_detailsPanel->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-  QKeySequence toggleDetailsKey = Qt::CTRL + Qt::Key_Tab;
   {
     m_toggleDetailsButton = new TabSearch::Toggle();
     m_toggleDetailsButton->setObjectName( "ToggleDetailsPanelButton" );
-    m_toggleDetailsButton->setToolTip( toggleDetailsKey.toString() );
+    m_toggleDetailsButton->setToolTip( ToggleDetailsKey.toString() );
     m_toggleDetailsButton->setFocusPolicy( Qt::NoFocus );
     QVBoxLayout* lay = new QVBoxLayout();
     lay->setMargin( 0 );
@@ -232,7 +252,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   // Toggle Details
   {
     QAction* toggleDetailsA = new QAction( this );
-    toggleDetailsA->setShortcut( toggleDetailsKey );
+    toggleDetailsA->setShortcut( ToggleDetailsKey );
     connect( toggleDetailsA, SIGNAL( triggered( bool ) ),
       this, SLOT( toggleDetailsPanel() ) );
     this->addAction( toggleDetailsA );
