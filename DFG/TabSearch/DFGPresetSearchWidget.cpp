@@ -68,7 +68,7 @@ class DFGPresetSearchWidget::Status : public QWidget
   }
 
   void updateDisplay();
-  void setMessage( const std::string& message ) { clear(); this->addItem( new TabSearch::Label( m_errorMessage ) ); }
+  void setMessage( const std::string& message ) { clear(); this->addItem( new TabSearch::Label( message ) ); }
   void setErrorStyle( bool error ) { this->setProperty( "error", error ); this->setStyleSheet( this->styleSheet() ); }
 
 public:
