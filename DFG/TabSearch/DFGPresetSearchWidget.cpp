@@ -69,7 +69,7 @@ class DFGPresetSearchWidget::Status : public QWidget
 
   void updateDisplay();
   void setMessage( const std::string& message ) { clear(); this->addItem( new TabSearch::Label( message ) ); }
-  void setErrorStyle( bool error ) { this->setProperty( "error", error ); this->setStyleSheet( this->styleSheet() ); }
+  void setMessageType( const char * type ) { this->setProperty( "type", QString(type) ); this->setStyleSheet( this->styleSheet() ); }
   void clear()
   {
     for( std::vector<TabSearch::Label*>::const_iterator it = m_items.begin(); it != m_items.end(); it++ )
@@ -102,20 +102,23 @@ public:
 
 void DFGPresetSearchWidget::Status::updateDisplay()
 {
-  this->setErrorStyle( false );
+  this->setMessageType( "" );
   if( !m_hoveredResult.empty() )
     setDisplayedResult( m_hoveredResult );
   else
   if( !m_errorMessage.empty() )
   {
-    this->setErrorStyle( true );
+    this->setMessageType( "error" );
     this->setMessage( m_errorMessage );
   }
   else
   if( !m_result.empty() )
     setDisplayedResult( m_result );
   else
+  {
+    this->setMessageType( "hint" );
     this->setMessage( GetRandomHint() );
+  }
 }
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )

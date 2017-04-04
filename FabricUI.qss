@@ -1878,9 +1878,14 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #555555;
 }
 
-#DFGPresetSearchWidget #Status[error="true"]
+#DFGPresetSearchWidget #Status[type="error"]
 {
   background-color: rgba(255,100,0,50);
+}
+
+#DFGPresetSearchWidget #Status[type="hint"] #TabSearchLabel[clickable="false"]
+{
+  color: #BBB;
 }
 
 #DFGPresetSearchWidget #Status #TabSearchLabel
