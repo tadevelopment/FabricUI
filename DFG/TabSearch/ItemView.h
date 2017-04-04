@@ -80,6 +80,9 @@ namespace FabricUI
       public slots:
         void setHighlighted( bool highlighted );
 
+      protected:
+        Result m_result;
+
       private:
         // TODO: Interaction
         std::vector<TagWidget*> m_tagWidgets;

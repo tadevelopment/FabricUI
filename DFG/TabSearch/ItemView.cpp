@@ -99,7 +99,8 @@ std::string PresetView::DisplayName( const Result& result )
 }
 
 PresetView::PresetView( const Result& presetName, const std::vector<Query::Tag>& tags )
-  : m_heatBar( new HeatBar( this ) )
+  : m_result( presetName )
+  , m_heatBar( new HeatBar( this ) )
 {
   this->setObjectName( "PresetView" );
 

@@ -44,6 +44,7 @@ public:
     size_t m_sep;
   public:
     typedef std::string Cat;
+    inline static bool IsTag( const std::string& s ) { return s.find( Sep ) != std::string::npos; }
     Tag() : std::string(), m_sep( npos ) {}
     Tag( const std::string& cat, const std::string& name )
       : std::string( cat + Sep + name ), m_sep( cat.size() ) { assert( ( *this )[m_sep] = Sep ); }
