@@ -752,8 +752,8 @@ std::vector<Query::Tag> GetTagsToDisplay(
         dst.push_back( *it );
     }
   }
-  // Only keep the 3 best tags
-  static const size_t nbTagsToKeep = 3;
+  // Only keep the "nbTagsToKeep" best tags
+  static const size_t nbTagsToKeep = 2;
   if( dst.size() > nbTagsToKeep )
     dst.resize( nbTagsToKeep );
   return dst;
