@@ -116,14 +116,14 @@ void DFGPresetSearchWidget::Status::updateDisplay()
     this->setMessage( m_logError );
   }
   else
-  if( !m_result.empty() )
-    setDisplayedResult( m_result );
-  else
   if( !m_logMessage.empty() )
   {
     this->setMessageType( "instruction" );
     this->setMessage( m_logMessage );
   }
+  else
+  if( !m_result.empty() )
+    setDisplayedResult( m_result );
   else
   if( m_hintsEnabled )
   {
