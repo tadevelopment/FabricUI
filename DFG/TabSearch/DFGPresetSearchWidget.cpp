@@ -340,6 +340,7 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
 void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 {
   registerStaticEntries();
+  emit requestVariableUpdate();
 
   // Splitting the search string into a char**
   const std::string searchStr = query.getText();

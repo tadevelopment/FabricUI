@@ -454,6 +454,9 @@ namespace FabricUI
       void execChanged();
 
       void varsChanged();
+      // Emitted whenever variables might have changed (even if implicitly, because of 
+      // a new graph, for example)
+      void varsChangedImplicitly();
       void argsChanged();
       void argInserted( int index, const char* name, const char* type );
       void argTypeChanged( int index, const char* name, const char* type );

@@ -39,6 +39,7 @@ namespace FabricUI
       void selectedBackdrop();
       void selectedGetVariable( const std::string name );
       void selectedSetVariable( const std::string name );
+      void requestVariableUpdate();
       // Emitted when the widget has completed its actions
       void giveFocusToParent();
 

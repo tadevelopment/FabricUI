@@ -59,6 +59,7 @@ DFGWidget::DFGWidget(
   , m_uiGraph( 0 )
   , m_router( 0 )
   , m_manager( manager )
+  , m_tabSearchVariablesDirty( true )
   , m_dfgConfig( dfgConfig )
   , m_isEditable( false )
   , m_uiGraphZoomBeforeQuickZoom( 0 )
@@ -249,8 +250,12 @@ DFGWidget::DFGWidget(
     this, SLOT( onVariableSetterAddedFromTabSearch( const std::string ) )
   );
   QObject::connect(
-    getUIController(), SIGNAL( varsChanged() ),
-    this, SLOT( updateTabSearchVariables() )
+    getUIController(), SIGNAL( varsChangedImplicitly() ),
+    this, SLOT( tabSearchVariablesSetDirty() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( requestVariableUpdate() ),
+    this, SLOT( tabSearchVariablesUpdate() )
   );
 
   QObject::connect(
@@ -882,9 +887,9 @@ void DFGWidget::onFocusGivenFromTabSearch()
   this->getGraphViewWidget()->setFocus( Qt::OtherFocusReason );
 }
 
-void DFGWidget::updateTabSearchVariables()
+void DFGWidget::tabSearchVariablesUpdate()
 {
-  if( isUsingLegacyTabSearch() )
+  if( !m_tabSearchVariablesDirty )
     return;
 
   m_tabSearchWidget->unregisterVariables();
@@ -908,6 +913,8 @@ void DFGWidget::updateTabSearchVariables()
       std::cerr << e.getDesc_cstr() << std::endl;
     }
   }
+
+  m_tabSearchVariablesDirty = false;
 }
 
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)
