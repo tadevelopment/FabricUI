@@ -340,7 +340,6 @@ void DFGPresetSearchWidget::keyPressEvent( QKeyEvent *event )
 void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 {
   registerStaticEntries();
-  emit requestVariableUpdate();
 
   // Splitting the search string into a char**
   const std::string searchStr = query.getText();
@@ -386,6 +385,11 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   m_resultsView->setResults( jsonStrR, query );
 
   updateSize();
+}
+
+void DFGPresetSearchWidget::updateResults()
+{
+  this->onQueryChanged( m_queryEdit->query() );
 }
 
 const std::string BackdropType = "backdrop";

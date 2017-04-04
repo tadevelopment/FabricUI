@@ -53,6 +53,7 @@ namespace FabricUI
       public:
         QueryEdit( FabricCore::DFGHost* host );
         ~QueryEdit();
+        inline const Query& query() const { return m_query; }
 
       public slots:
         void requestTag( const Query::Tag& tag );

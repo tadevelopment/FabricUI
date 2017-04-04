@@ -253,10 +253,6 @@ DFGWidget::DFGWidget(
     getUIController(), SIGNAL( varsChangedImplicitly() ),
     this, SLOT( tabSearchVariablesSetDirty() )
   );
-  QObject::connect(
-    m_tabSearchWidget, SIGNAL( requestVariableUpdate() ),
-    this, SLOT( tabSearchVariablesUpdate() )
-  );
 
   QObject::connect(
     m_uiHeader, SIGNAL(goUpPressed()),
@@ -846,6 +842,7 @@ void DFGWidget::tabSearch()
       QPoint pos = getGraphViewWidget()->lastEventPos();
       m_tabSearchPos = pos;
       pos = getGraphViewWidget()->mapToGlobal(pos);
+      tabSearchVariablesUpdate();
       getTabSearchWidget()->showForSearch(pos);
     }
   }
@@ -887,6 +884,13 @@ void DFGWidget::onFocusGivenFromTabSearch()
   this->getGraphViewWidget()->setFocus( Qt::OtherFocusReason );
 }
 
+void DFGWidget::tabSearchVariablesSetDirty()
+{
+  m_tabSearchVariablesDirty = true;
+  if( m_tabSearchWidget->isVisible() )
+    tabSearchVariablesUpdate();
+}
+
 void DFGWidget::tabSearchVariablesUpdate()
 {
   if( !m_tabSearchVariablesDirty )
@@ -915,6 +919,8 @@ void DFGWidget::tabSearchVariablesUpdate()
   }
 
   m_tabSearchVariablesDirty = false;
+
+  m_tabSearchWidget->updateResults();
 }
 
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)

@@ -39,7 +39,6 @@ namespace FabricUI
       void selectedBackdrop();
       void selectedGetVariable( const std::string name );
       void selectedSetVariable( const std::string name );
-      void requestVariableUpdate();
       // Emitted when the widget has completed its actions
       void giveFocusToParent();
 
@@ -47,6 +46,7 @@ namespace FabricUI
       // Will ignore already registered variables
       void registerVariable( const std::string& name, const std::string& type );
       void unregisterVariables();
+      void updateResults();
 
     private slots:
       void onQueryChanged( const TabSearch::Query& query );

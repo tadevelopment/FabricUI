@@ -197,7 +197,7 @@ namespace DFG {
         int line,
         int column
         );
-      inline void tabSearchVariablesSetDirty() { m_tabSearchVariablesDirty = true; }
+      void tabSearchVariablesSetDirty();
       void tabSearchVariablesUpdate();
 
     private:
