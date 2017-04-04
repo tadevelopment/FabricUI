@@ -58,6 +58,7 @@ class DFGPresetSearchWidget::Status : public QWidget
   std::vector<TabSearch::Label*> m_items;
   TabSearch::Result m_result, m_hoveredResult;
   std::string m_errorMessage;
+  bool m_hintsEnabled;
 
   inline void addItem( TabSearch::Label* item )
   {
@@ -84,6 +85,7 @@ class DFGPresetSearchWidget::Status : public QWidget
 public:
   Status( DFGPresetSearchWidget* parent )
     : m_parent( parent )
+    , m_hintsEnabled( true )
   {
     this->setObjectName( "Status" );
     QHBoxLayout* lay = new QHBoxLayout();
@@ -98,6 +100,7 @@ public:
   void hoveredResultSet( const TabSearch::Result& result ) { m_hoveredResult = result; updateDisplay(); }
   void hoveredResultClear() { hoveredResultSet( TabSearch::Result() ); }
   void setErrorMessage( const std::string& message ) { m_errorMessage = message; updateDisplay(); }
+  void setHintsEnabled( bool enabled ) { m_hintsEnabled = enabled; updateDisplay(); }
 };
 
 void DFGPresetSearchWidget::Status::updateDisplay()
@@ -115,10 +118,13 @@ void DFGPresetSearchWidget::Status::updateDisplay()
   if( !m_result.empty() )
     setDisplayedResult( m_result );
   else
+  if( m_hintsEnabled )
   {
     this->setMessageType( "hint" );
     this->setMessage( GetRandomHint() );
   }
+  else
+    clear();
 }
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
@@ -360,6 +366,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
 
   hidePreview();
+  m_status->setHintsEnabled( query.getTags().size() == 0 && query.getText().empty() );
   m_resultsView->setResults( jsonStrR, query );
 
   updateSize();
