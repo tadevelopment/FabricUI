@@ -355,7 +355,8 @@ TmpNode BuildResultTree(
   double& minPresetScore,
   double& maxPresetScore,
   const Query& query,
-  const double compactness = 0.1
+  // TODO : is this parameter useful, or is 0 always the best value ?
+  const double compactness = 0.0
 )
 {
   const FTL::JSONValue* json = FTL::JSONValue::Decode( searchResult.c_str() );
