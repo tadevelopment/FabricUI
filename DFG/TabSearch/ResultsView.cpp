@@ -735,11 +735,13 @@ std::vector<Query::Tag> GetTagsToDisplay(
   std::vector<Query::Tag> dst;
   // Adding Tags, sorted by Category
   {
-    static const size_t nbCategories = 3;
+    static const size_t nbCategories = 5;
     static const std::string categories[nbCategories] = {
       ExtCat,
       AkaCat,
-      CatCat
+      CatCat,
+      PathCompCat,
+      PortTypeCat
     };
     // Putting each tag in its category
     std::map<std::string, std::set<Query::Tag> > tagMap;
