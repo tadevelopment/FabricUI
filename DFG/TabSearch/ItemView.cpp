@@ -107,16 +107,16 @@ void Label::connectToQuery( const Query& query )
 
 void TagWidget::onQueryChanged( const Query& query )
 {
-  m_button->setDisabled( query.hasTag( m_tag ) );
   m_isDisabled = query.hasTag( m_tag );
-  this->setProperty( "used", query.hasTag(m_tag) );
+  m_button->setDisabled( m_isDisabled );
+  this->setProperty( "used", m_isDisabled );
   this->setStyleSheet( this->styleSheet() );
 }
 
 void Label::onQueryChanged( const Query& query )
 {
-  m_isDisabled = query.hasTag( m_tag );
-  this->setProperty( "used", this->m_isTag && query.hasTag( m_tag ) );
+  m_isDisabled = this->m_isTag && query.hasTag( m_tag );
+  this->setProperty( "used", m_isDisabled );
   this->setStyleSheet( this->styleSheet() );
 }
 
