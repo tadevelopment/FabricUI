@@ -178,16 +178,21 @@ protected:
   }
 };
 
-typedef std::map<std::string, size_t> Indexes;
+typedef std::map<std::string, std::vector<size_t> > Indexes;
 struct TagAndMap : JSONSerializable
 {
 private:
   Tag m_tag;
   bool m_hasTag;
 public:
-  // Map from the name of to the index of a child
+  // Map from the name of the Tag to children indexes
   Indexes tagIndexes;
-  TagAndMap() : m_hasTag( false ) {}
+  // Score of the best Preset in the children
+  double bestPresetScore;
+  TagAndMap()
+    : m_hasTag( false )
+    , bestPresetScore( 0 )
+  {}
   void setTag( const Tag& tag ) { m_hasTag = true; m_tag = tag; }
   inline const Tag& getTag() const { assert( m_hasTag ); return m_tag; }
   inline const bool hasTag() const { return m_hasTag; }
@@ -200,21 +205,71 @@ public:
 
 // First step : Temporary tree used to gather results by Tag
 typedef Node< PresetAnd< TagAndMap > > TmpNode;
-TmpNode& AddTag( TmpNode& t, const Tag& tag )
+TmpNode& AddTag(
+  TmpNode& t,
+  const Tag& tag,
+  const double presetScore,
+  const double compactness
+)
 {
   const std::string& key = tag.name;
   if( t.value.isUndefined() )
-    t.value.setOther( TagAndMap() );
+  {
+    TagAndMap tam;
+    tam.bestPresetScore = presetScore;
+    t.value.setOther( tam );
+  }
   Indexes& indexes = t.value.getOther().tagIndexes;
-  if( indexes.find( key ) == indexes.end() )
+
+  // If this Tag was already added, try to find a good enough spot
+  if( indexes.find( key ) != indexes.end() )
+  {
+    // If this Tag was already added, search for an entry
+    // with a similar presetScore
+    const std::vector<size_t>& children = indexes[key];
+    for( std::vector<size_t>::const_iterator it = children.begin(); it != children.end(); it++ )
+    {
+      TmpNode& child = t.children[*it];
+      if( child.value.hasOther() )
+      {
+        // If the score is close enough, add the Preset there
+        // Compactness is in [0;1] : a value of 1 will avoid repetitions as much as possible
+        // and a value of 0 will keep the results ordered by score
+        if( presetScore >= ( 1 - compactness ) * child.value.getOther().bestPresetScore )
+          return child;
+      }
+    }
+  }
+
+  // If no spot was found, but the last Tag matches, add it there
+  // (it only works because we add results in Score order)
+  if( t.children.size() > 0 )
+  {
+    TmpNode& lastChild = t.children[t.children.size() - 1];
+    if( lastChild.value.hasOther() )
+    {
+      const TagAndMap& tag = lastChild.value.getOther();
+      if( tag.hasTag() && tag.getTag().name == key )
+        return lastChild;
+    }
+  }
+
+  // Else, add the Tag as a new branch
   {
     // If this is a new tag, add it as a child
-    indexes.insert( Indexes::value_type( key, t.children.size() ) );
+    if( indexes.find( key ) == indexes.end() )
+      indexes.insert( Indexes::value_type( key, std::vector<size_t>() ) );
+    indexes[key].push_back( t.children.size() );
+
     TagAndMap tam; tam.setTag( tag );
+    tam.bestPresetScore = presetScore;
     TmpNode newItem; newItem.value.setOther( tam );
     t.children.push_back( newItem );
   }
-  return t.children[indexes[key]];
+
+  // Return the last branch
+  const std::vector<size_t> indexesForTag = indexes[key];
+  return t.children[indexesForTag[indexesForTag.size()-1]];
 }
 
 // Second step : Reducing the tree by fusioning consecutive nodes
@@ -299,7 +354,9 @@ TmpNode BuildResultTree(
   const std::string& searchResult,
   double& minPresetScore,
   double& maxPresetScore,
-  const Query& query
+  const Query& query,
+  // TODO : is this parameter useful, or is 0 always the best value ?
+  const double compactness = 0.0
 )
 {
   const FTL::JSONValue* json = FTL::JSONValue::Decode( searchResult.c_str() );
@@ -323,6 +380,7 @@ TmpNode BuildResultTree(
   {
     const FTL::JSONArray* result = resultsJson->getArray( i );
     const FTL::JSONArray* tagsJs = result->getArray( 2 );
+    double presetScore = result->getFloat64( 1 );
     TmpNode* node = &rootNode;
 
     // Gathering the Tags from the results
@@ -358,11 +416,10 @@ TmpNode BuildResultTree(
 
       // Adding the tags to the tree
       for( size_t j = 0; j < tags.size(); j++ )
-        node = &AddTag( *node, tags[j] ); // Current branch
+        node = &AddTag( *node, tags[j], presetScore, compactness ); // Current branch
     }
 
     // Adding the preset as a leaf
-    double presetScore = result->getFloat64( 1 );
     TmpNode newItem; newItem.value.setPreset( Preset(
       result->getString( 0 ),
       presetScore

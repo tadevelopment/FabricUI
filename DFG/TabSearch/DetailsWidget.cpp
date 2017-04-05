@@ -218,7 +218,8 @@ class DetailsWidget::PortsView : public DetailsWidget::Section::SectionWidget
     PortView(
       const Port& port,
       const Query::Tag& tag = Query::Tag(),
-      DetailsWidget* root = NULL
+      DetailsWidget* root = NULL,
+      const Query* query = NULL
     )
     {
       this->setObjectName( "PortView" );
@@ -231,6 +232,8 @@ class DetailsWidget::PortsView : public DetailsWidget::Section::SectionWidget
       else
       {
         Label* label = new Label( port.type, tag );
+        if( query != NULL )
+          label->connectToQuery( *query );
         lay->addWidget( label );
         if( root != NULL )
           connect( label, SIGNAL( requestTag( const Query::Tag& ) ),
@@ -274,7 +277,8 @@ public:
   std::set<Query::Tag> setPorts(
     const std::vector<Port>& ports,
     const std::set<Query::Tag>& tags,
-    DetailsWidget* root
+    DetailsWidget* root,
+    const Query& query
   )
   {
     clear();
@@ -286,7 +290,7 @@ public:
         usedTags.insert( tag );
       else
         tag = Query::Tag();
-      PortView* view = new PortView( ports[i], tag, root );
+      PortView* view = new PortView( ports[i], tag, root, &query );
       m_ports.push_back( view );
       this->layout()->addWidget( view );
     }
@@ -349,13 +353,14 @@ public:
     m_lines.clear();
   }
 
-  void setTags( const std::set<Query::Tag>& tags )
+  void setTags( const std::set<Query::Tag>& tags, const Query& query )
   {
     clear();
 
     for( std::set<Query::Tag>::const_iterator it = tags.begin(); it != tags.end(); it++ )
     {
       TagWidget* tagWidget = new TagWidget( *it );
+      tagWidget->connectToQuery( query );
       connect(
         tagWidget, SIGNAL( activated( const Query::Tag& ) ),
         m_preview, SIGNAL( tagRequested( const Query::Tag& ) )
@@ -431,7 +436,7 @@ void DetailsWidget::clear()
   m_name->set( "" );
 }
 
-void DetailsWidget::setPreset( const Result& preset )
+void DetailsWidget::setPreset( const Result& preset, const Query& query )
 {
   if( m_preset == preset )
     return;
@@ -467,6 +472,7 @@ void DetailsWidget::setPreset( const Result& preset )
     {
       m_name->set( name, tag );
       details.tags.erase( tag );
+      m_name->connectToQuery( query );
     }
     else
       m_name->set( name );
@@ -492,7 +498,7 @@ void DetailsWidget::setPreset( const Result& preset )
       if( m_portsTables.find( it->first ) != m_portsTables.end() )
       {
         std::set<Query::Tag> usedTags =
-          m_portsTables[it->first]->setPorts( it->second, details.tags, this );
+          m_portsTables[it->first]->setPorts( it->second, details.tags, this, query );
         for( std::set<Query::Tag>::const_iterator it = usedTags.begin(); it != usedTags.end(); it++ )
           unusedTags.erase( *it );
       }
@@ -526,7 +532,7 @@ void DetailsWidget::setPreset( const Result& preset )
   */
 
   // Tags
-  m_tagContainer->setTags( details.tags );
+  m_tagContainer->setTags( details.tags, query );
 
   updateSize();
 }
