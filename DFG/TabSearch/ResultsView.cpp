@@ -797,8 +797,7 @@ std::vector<Query::Tag> GetTagsToDisplay(
       ExtCat,
       AkaCat,
       CatCat,
-      PathCompCat,
-      PortTypeCat
+      PathCompCat
     };
     // Putting each tag in its category
     std::map<std::string, std::set<Query::Tag> > tagMap;
