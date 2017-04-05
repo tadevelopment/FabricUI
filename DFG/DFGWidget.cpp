@@ -855,10 +855,17 @@ QPointF DFGWidget::getTabSearchScenePos() const
 
 void DFGWidget::onPresetAddedFromTabSearch( QString preset )
 {
-  this->getUIController()->cmdAddInstFromPreset(
+  QString addedPreset = this->getUIController()->cmdAddInstFromPreset(
     preset,
     getTabSearchScenePos()
   );
+  if( !addedPreset.isEmpty() )
+  {
+    // Select the Preset
+    this->getGraphViewWidget()->graph()->clearSelection();
+    if( GraphView::Node *uiNode = this->getGraphViewWidget()->graph()->node( addedPreset ) )
+      uiNode->setSelected( true );
+  }
 }
 
 void DFGWidget::onBackdropAddedFromTabSearch()
