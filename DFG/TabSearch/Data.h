@@ -57,8 +57,9 @@ public:
   inline bool hasTag( const std::string& tag ) const { return m_tagMap.find( tag ) != m_tagMap.end(); }
   std::vector< std::pair<size_t, size_t> > getSplitTextIndices() const;
   std::vector<std::string> getSplitText() const;
+  Query() { connect( this, SIGNAL( changed( const Query& ) ), this, SIGNAL( changed() ) ); }
 
-  public slots:
+public slots:
   inline void setText( const std::string& text ) { m_text = text; emit changed(); }
   void addTag( const std::string& tag );
   void removeTag( const std::string& tag );
@@ -66,6 +67,7 @@ public:
 
 signals:
   void changed();
+  void changed( const Query& );
 
 private:
   std::string m_text;

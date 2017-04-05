@@ -44,6 +44,9 @@ namespace FabricUI
       signals:
         void activated( const Query::Tag& tag );
 
+      public:
+        void connectToQuery( const Query& );
+
       public slots:
         void setHighlighted( bool highlighted );
 
@@ -53,12 +56,14 @@ namespace FabricUI
 
       private slots:
         void onActivated();
+        void onQueryChanged( const Query& );
 
       private:
         Query::Tag m_tag;
         QPushButton* m_button;
         bool m_hovered;
         bool m_highlighted;
+        bool m_isDisabled;
       };
 
       class PresetView : public QWidget
@@ -101,6 +106,7 @@ namespace FabricUI
         Label() { init(); set( "" ); }
         Label( const std::string& text ) { init(); set( text ); };
         Label( const std::string& text, const Query::Tag& tag ) { init(); set( text, tag ); }
+        void connectToQuery( const Query& );
 
       signals:
         void requestTag( const Query::Tag& tagName );
@@ -110,9 +116,13 @@ namespace FabricUI
         void enterEvent( QEvent * ) FTL_OVERRIDE;
         void leaveEvent( QEvent * ) FTL_OVERRIDE;
 
+      private slots:
+        void onQueryChanged( const Query& );
+
       private:
         void init();
         bool m_isTag;
+        bool m_isDisabled;
         Query::Tag m_tag;
       };
     }
