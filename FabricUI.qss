@@ -1735,6 +1735,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #TagWidget[tagCat="porttype"] QPushButton { border-left-color: #06BF12; }
 #TagWidget[tagCat="pathcomp"] QPushButton { border-left-color: #CC6600; }
 
+/* Define colors for dimmed / disabled state */
 #TagWidget[tagCat="ext"][used="true"] QPushButton { border-left-color: #208080; }
 #TagWidget[tagCat="cat"][used="true"] QPushButton { border-left-color: #7F2080; }
 #TagWidget[tagCat="name"][used="true"] QPushButton { border-left-color: #42839E; }
