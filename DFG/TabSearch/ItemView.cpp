@@ -37,6 +37,7 @@ TagWidget::TagWidget( const Query::Tag& tag )
   : m_tag( tag )
   , m_hovered( false )
   , m_highlighted( false )
+  , m_isDisabled( false )
 {
   this->setObjectName( "TagWidget" );
 
@@ -204,6 +205,7 @@ void Label::mouseReleaseEvent( QMouseEvent * e )
 
 void Label::init()
 {
+  m_isDisabled = false;
   this->setObjectName( "TabSearchLabel" );
 }
 
