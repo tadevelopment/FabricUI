@@ -76,7 +76,8 @@ void TagWidget::setScore( double score )
 void TagWidget::enterEvent( QEvent* e )
 {
   Parent::enterEvent( e );
-  this->setCursor( Qt::PointingHandCursor );
+  if( !m_isDisabled )
+    this->setCursor( Qt::PointingHandCursor );
 }
 
 void TagWidget::leaveEvent( QEvent* e )
@@ -106,12 +107,14 @@ void Label::connectToQuery( const Query& query )
 void TagWidget::onQueryChanged( const Query& query )
 {
   m_button->setDisabled( query.hasTag( m_tag ) );
+  m_isDisabled = query.hasTag( m_tag );
   this->setProperty( "used", query.hasTag(m_tag) );
   this->setStyleSheet( this->styleSheet() );
 }
 
 void Label::onQueryChanged( const Query& query )
 {
+  m_isDisabled = query.hasTag( m_tag );
   this->setProperty( "used", this->m_isTag && query.hasTag( m_tag ) );
   this->setStyleSheet( this->styleSheet() );
 }
@@ -207,7 +210,7 @@ void Label::init()
 void Label::enterEvent( QEvent* e )
 {
   Parent::enterEvent( e );
-  if( m_isTag )
+  if( m_isTag && !m_isDisabled )
     this->setCursor( Qt::PointingHandCursor );
 }
 

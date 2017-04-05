@@ -63,6 +63,7 @@ namespace FabricUI
         QPushButton* m_button;
         bool m_hovered;
         bool m_highlighted;
+        bool m_isDisabled;
       };
 
       class PresetView : public QWidget
@@ -121,6 +122,7 @@ namespace FabricUI
       private:
         void init();
         bool m_isTag;
+        bool m_isDisabled;
         Query::Tag m_tag;
       };
     }
