@@ -506,6 +506,7 @@ void DetailsWidget::setPreset( const Result& preset )
   }
 
   // Filtering the Tags
+  /*
   {
     std::set<Query::Tag> filtered;
     for( std::set<Query::Tag>::const_iterator it = details.tags.begin();
@@ -522,6 +523,7 @@ void DetailsWidget::setPreset( const Result& preset )
     }
     details.tags = filtered;
   }
+  */
 
   // Tags
   m_tagContainer->setTags( details.tags );
