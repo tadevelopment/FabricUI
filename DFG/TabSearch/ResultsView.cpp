@@ -754,6 +754,20 @@ std::vector<Query::Tag> GetTagsToDisplay(
         dst.push_back( *it );
     }
   }
+
+  // Remove Tags with the same names
+  {
+    std::set<std::string> names;
+    std::vector<Query::Tag> filteredTags;
+    for( std::vector<Query::Tag>::const_iterator it = dst.begin(); it != dst.end(); it++ )
+      if( names.find( it->name() ) == names.end() )
+      {
+        names.insert( it->name() );
+        filteredTags.push_back( *it );
+      }
+    dst = filteredTags;
+  }
+
   // Only keep the "nbTagsToKeep" best tags
   static const size_t nbTagsToKeep = 2;
   if( dst.size() > nbTagsToKeep )
