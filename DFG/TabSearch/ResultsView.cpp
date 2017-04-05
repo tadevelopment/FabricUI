@@ -789,6 +789,16 @@ std::vector<Query::Tag> GetTagsToDisplay(
         filteredTags.insert( *it );
     tags = filteredTags;
   }
+
+  // HACK : Special rule to remove specific Tags
+  // instead, we should give a low rank to these Tags, so that they
+  // are implicitly not displayed
+  {
+    Query::Tag toRemove = Query::Tag( PathCompCat, "Exts" );
+    if( tags.find( toRemove ) != tags.end() )
+      tags.erase( toRemove );
+  }
+
   std::vector<Query::Tag> dst;
   // Adding Tags, sorted by Category
   {
