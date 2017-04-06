@@ -387,6 +387,11 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   updateSize();
 }
 
+void DFGPresetSearchWidget::updateResults()
+{
+  this->onQueryChanged( m_queryEdit->query() );
+}
+
 const std::string BackdropType = "backdrop";
 const TabSearch::Query::Tag BackdropTag = std::string("name:BackDrop");
 const std::string VariableSetType = "setVariable";

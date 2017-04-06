@@ -197,7 +197,8 @@ namespace DFG {
         int line,
         int column
         );
-      void updateTabSearchVariables();
+      void tabSearchVariablesSetDirty();
+      void tabSearchVariablesUpdate();
 
     private:
 
@@ -229,6 +230,7 @@ namespace DFG {
       QPoint m_tabSearchPos;
       DFGTabSearchWidget * m_legacyTabSearchWidget;
       DFGPresetSearchWidget * m_tabSearchWidget;
+      bool m_tabSearchVariablesDirty;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGConfig m_dfgConfig;
 

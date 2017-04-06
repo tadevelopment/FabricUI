@@ -58,6 +58,7 @@ DFGWidget::DFGWidget(
   , m_errorsWidget( 0 )
   , m_uiGraph( 0 )
   , m_router( 0 )
+  , m_tabSearchVariablesDirty( true )
   , m_manager( manager )
   , m_dfgConfig( dfgConfig )
   , m_isEditable( false )
@@ -249,8 +250,8 @@ DFGWidget::DFGWidget(
     this, SLOT( onVariableSetterAddedFromTabSearch( const std::string ) )
   );
   QObject::connect(
-    getUIController(), SIGNAL( varsChanged() ),
-    this, SLOT( updateTabSearchVariables() )
+    getUIController(), SIGNAL( varsChangedImplicitly() ),
+    this, SLOT( tabSearchVariablesSetDirty() )
   );
 
   QObject::connect(
@@ -841,6 +842,7 @@ void DFGWidget::tabSearch()
       QPoint pos = getGraphViewWidget()->lastEventPos();
       m_tabSearchPos = pos;
       pos = getGraphViewWidget()->mapToGlobal(pos);
+      tabSearchVariablesUpdate();
       getTabSearchWidget()->showForSearch(pos);
     }
   }
@@ -889,9 +891,16 @@ void DFGWidget::onFocusGivenFromTabSearch()
   this->getGraphViewWidget()->setFocus( Qt::OtherFocusReason );
 }
 
-void DFGWidget::updateTabSearchVariables()
+void DFGWidget::tabSearchVariablesSetDirty()
 {
-  if( isUsingLegacyTabSearch() )
+  m_tabSearchVariablesDirty = true;
+  if( m_tabSearchWidget->isVisible() )
+    tabSearchVariablesUpdate();
+}
+
+void DFGWidget::tabSearchVariablesUpdate()
+{
+  if( !m_tabSearchVariablesDirty )
     return;
 
   m_tabSearchWidget->unregisterVariables();
@@ -915,6 +924,10 @@ void DFGWidget::updateTabSearchVariables()
       std::cerr << e.getDesc_cstr() << std::endl;
     }
   }
+
+  m_tabSearchVariablesDirty = false;
+
+  m_tabSearchWidget->updateResults();
 }
 
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)

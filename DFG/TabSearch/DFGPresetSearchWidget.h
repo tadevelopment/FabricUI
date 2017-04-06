@@ -46,6 +46,7 @@ namespace FabricUI
       // Will ignore already registered variables
       void registerVariable( const std::string& name, const std::string& type );
       void unregisterVariables();
+      void updateResults();
 
     private slots:
       void onQueryChanged( const TabSearch::Query& query );
