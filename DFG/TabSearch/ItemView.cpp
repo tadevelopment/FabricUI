@@ -185,6 +185,7 @@ void Label::set( const std::string& text )
   this->setStyleSheet( this->styleSheet() );
   m_tag = Query::Tag();
   this->setText( ToQString( text ) );
+  this->setToolTip( "" );
 }
 
 void Label::set( const std::string& text, const Query::Tag& tag )
@@ -194,6 +195,7 @@ void Label::set( const std::string& text, const Query::Tag& tag )
   this->setStyleSheet( this->styleSheet() );
   m_tag = tag;
   this->setText( ToQString( text ) );
+  this->setToolTip( ToQString( TagWidget::DisplayName( m_tag ) ) );
 }
 
 void Label::mouseReleaseEvent( QMouseEvent * e )
