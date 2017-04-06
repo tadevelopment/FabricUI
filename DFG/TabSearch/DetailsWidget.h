@@ -55,7 +55,7 @@ namespace FabricUI
         inline bool isEmpty() const { return m_preset == ""; }
 
       public slots:
-        void setPreset( const TabSearch::Result& preset );
+        void setPreset( const TabSearch::Result& preset, const Query& );
         void clear();
 
       signals:

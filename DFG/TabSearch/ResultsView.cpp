@@ -178,16 +178,21 @@ protected:
   }
 };
 
-typedef std::map<std::string, size_t> Indexes;
+typedef std::map<std::string, std::vector<size_t> > Indexes;
 struct TagAndMap : JSONSerializable
 {
 private:
   Tag m_tag;
   bool m_hasTag;
 public:
-  // Map from the name of to the index of a child
+  // Map from the name of the Tag to children indexes
   Indexes tagIndexes;
-  TagAndMap() : m_hasTag( false ) {}
+  // Score of the best Preset in the children
+  double bestPresetScore;
+  TagAndMap()
+    : m_hasTag( false )
+    , bestPresetScore( 0 )
+  {}
   void setTag( const Tag& tag ) { m_hasTag = true; m_tag = tag; }
   inline const Tag& getTag() const { assert( m_hasTag ); return m_tag; }
   inline const bool hasTag() const { return m_hasTag; }
@@ -200,21 +205,71 @@ public:
 
 // First step : Temporary tree used to gather results by Tag
 typedef Node< PresetAnd< TagAndMap > > TmpNode;
-TmpNode& AddTag( TmpNode& t, const Tag& tag )
+TmpNode& AddTag(
+  TmpNode& t,
+  const Tag& tag,
+  const double presetScore,
+  const double compactness
+)
 {
   const std::string& key = tag.name;
   if( t.value.isUndefined() )
-    t.value.setOther( TagAndMap() );
+  {
+    TagAndMap tam;
+    tam.bestPresetScore = presetScore;
+    t.value.setOther( tam );
+  }
   Indexes& indexes = t.value.getOther().tagIndexes;
-  if( indexes.find( key ) == indexes.end() )
+
+  // If this Tag was already added, try to find a good enough spot
+  if( indexes.find( key ) != indexes.end() )
+  {
+    // If this Tag was already added, search for an entry
+    // with a similar presetScore
+    const std::vector<size_t>& children = indexes[key];
+    for( std::vector<size_t>::const_iterator it = children.begin(); it != children.end(); it++ )
+    {
+      TmpNode& child = t.children[*it];
+      if( child.value.hasOther() )
+      {
+        // If the score is close enough, add the Preset there
+        // Compactness is in [0;1] : a value of 1 will avoid repetitions as much as possible
+        // and a value of 0 will keep the results ordered by score
+        if( presetScore >= ( 1 - compactness ) * child.value.getOther().bestPresetScore )
+          return child;
+      }
+    }
+  }
+
+  // If no spot was found, but the last Tag matches, add it there
+  // (it only works because we add results in Score order)
+  if( t.children.size() > 0 )
+  {
+    TmpNode& lastChild = t.children[t.children.size() - 1];
+    if( lastChild.value.hasOther() )
+    {
+      const TagAndMap& tag = lastChild.value.getOther();
+      if( tag.hasTag() && tag.getTag().name == key )
+        return lastChild;
+    }
+  }
+
+  // Else, add the Tag as a new branch
   {
     // If this is a new tag, add it as a child
-    indexes.insert( Indexes::value_type( key, t.children.size() ) );
+    if( indexes.find( key ) == indexes.end() )
+      indexes.insert( Indexes::value_type( key, std::vector<size_t>() ) );
+    indexes[key].push_back( t.children.size() );
+
     TagAndMap tam; tam.setTag( tag );
+    tam.bestPresetScore = presetScore;
     TmpNode newItem; newItem.value.setOther( tam );
     t.children.push_back( newItem );
   }
-  return t.children[indexes[key]];
+
+  // Return the last branch
+  const std::vector<size_t> indexesForTag = indexes[key];
+  return t.children[indexesForTag[indexesForTag.size()-1]];
 }
 
 // Second step : Reducing the tree by fusioning consecutive nodes
@@ -299,7 +354,9 @@ TmpNode BuildResultTree(
   const std::string& searchResult,
   double& minPresetScore,
   double& maxPresetScore,
-  const Query& query
+  const Query& query,
+  // TODO : is this parameter useful, or is 0 always the best value ?
+  const double compactness = 0.0
 )
 {
   const FTL::JSONValue* json = FTL::JSONValue::Decode( searchResult.c_str() );
@@ -323,6 +380,7 @@ TmpNode BuildResultTree(
   {
     const FTL::JSONArray* result = resultsJson->getArray( i );
     const FTL::JSONArray* tagsJs = result->getArray( 2 );
+    double presetScore = result->getFloat64( 1 );
     TmpNode* node = &rootNode;
 
     // Gathering the Tags from the results
@@ -358,11 +416,10 @@ TmpNode BuildResultTree(
 
       // Adding the tags to the tree
       for( size_t j = 0; j < tags.size(); j++ )
-        node = &AddTag( *node, tags[j] ); // Current branch
+        node = &AddTag( *node, tags[j], presetScore, compactness ); // Current branch
     }
 
     // Adding the preset as a leaf
-    double presetScore = result->getFloat64( 1 );
     TmpNode newItem; newItem.value.setPreset( Preset(
       result->getString( 0 ),
       presetScore
@@ -561,8 +618,9 @@ public:
   }
 };
 
-ResultsView::ResultsView()
+ResultsView::ResultsView( FabricCore::DFGHost* host )
   : m_model( new Model() )
+  , m_host( host )
 {
   this->setObjectName( "ResultsView" );
   setItemsExpandable( false );
@@ -576,6 +634,11 @@ ResultsView::ResultsView()
   connect(
     this, SIGNAL( doubleClicked( const QModelIndex & ) ),
     this, SLOT( validateSelection() )
+  );
+  this->setMouseTracking( true );
+  connect(
+    this, SIGNAL( entered( const QModelIndex & ) ),
+    this, SLOT( onEntered( const QModelIndex & ) )
   );
   this->setEditTriggers( QAbstractItemView::NoEditTriggers );
 }
@@ -600,6 +663,17 @@ void ResultsView::validateSelection()
       names.push_back( tags[i].name );
     emit tagsRequested( names );
   }
+}
+
+void ResultsView::onEntered( const QModelIndex& index )
+{
+  if( m_model->isPreset( index ) )
+    emit this->mouseEnteredPreset( Result( this->m_model->getPreset( index ).name ) );
+}
+
+void ResultsView::leaveEvent( QEvent *event )
+{
+  emit this->mouseLeftPreset();
 }
 
 void ResultsView::currentChanged( const QModelIndex &current, const QModelIndex &previous )
@@ -633,7 +707,7 @@ void ResultsView::setResults( const std::string& searchResult, const Query& quer
   this->expandAll();
 
 #if USE_CUSTOM_WIDGETS
-  replaceViewItems();
+  replaceViewItems( query );
 #endif
 
   // Select the first result
@@ -691,7 +765,109 @@ private:
   QHBoxLayout* m_layout;
 };
 
-void ResultsView::replaceViewItems( const QModelIndex& index )
+std::vector<Query::Tag> GetTagsToDisplay(
+  FabricCore::DFGHost* host,
+  const Result& result, // Result on the left of the Tags
+  const Tags& resultTags, // Tags returned for this result and query
+  std::set<Query::Tag>& parentTags, // Parent tags in the tree
+  const Query& query
+)
+{
+  // Gathering all the tags
+  std::set<Query::Tag> tags;
+  {
+    if( result.isPreset() )
+      tags = GetTags( result, host );
+    for( Tags::const_iterator it = resultTags.begin(); it != resultTags.end(); it++ )
+      tags.insert( Query::Tag( it->name ) );
+  }
+  // Removing the tags from the Query or the Parent Tags
+  {
+    std::set<Query::Tag> filteredTags;
+    for( std::set<Query::Tag>::const_iterator it = tags.begin(); it != tags.end(); it++ )
+      if( parentTags.find( *it ) == parentTags.end() && !query.hasTag( *it ) )
+        filteredTags.insert( *it );
+    tags = filteredTags;
+  }
+
+  // HACK : Special rule to remove specific Tags
+  // instead, we should give a low rank to these Tags, so that they
+  // are implicitly not displayed
+  {
+    Query::Tag toRemove = Query::Tag( PathCompCat, "Exts" );
+    if( tags.find( toRemove ) != tags.end() )
+      tags.erase( toRemove );
+  }
+
+  std::vector<Query::Tag> dst;
+  // Adding Tags, sorted by Category
+  {
+    static const size_t nbCategories = 5;
+    static const std::string categories[nbCategories] = {
+      ExtCat,
+      AkaCat,
+      CatCat,
+      PathCompCat
+    };
+    // Putting each tag in its category
+    std::map<std::string, std::set<Query::Tag> > tagMap;
+    for( std::set<Query::Tag>::const_iterator it = tags.begin(); it != tags.end(); it++ )
+      tagMap[it->cat()].insert( *it );
+    for( size_t c = 0; c < nbCategories; c++ )
+    {
+      const std::set<Query::Tag>& catTags = tagMap[categories[c]];
+      for( std::set<Query::Tag>::const_iterator it = catTags.begin(); it != catTags.end(); it++ )
+        dst.push_back( *it );
+    }
+  }
+
+  // Remove Tags with the same names
+  {
+    std::set<std::string> names;
+    std::vector<Query::Tag> filteredTags;
+    for( std::vector<Query::Tag>::const_iterator it = dst.begin(); it != dst.end(); it++ )
+      if( names.find( it->name() ) == names.end() )
+      {
+        names.insert( it->name() );
+        filteredTags.push_back( *it );
+      }
+    dst = filteredTags;
+  }
+
+  // Only keep the "nbTagsToKeep" best tags
+  static const size_t nbTagsToKeep = 2;
+  if( dst.size() > nbTagsToKeep )
+    dst.resize( nbTagsToKeep );
+  return dst;
+}
+
+// Handling the hovering
+class ResultsView::PresetViewItem : public FabricUI::DFG::TabSearch::PresetView
+{
+  typedef FabricUI::DFG::TabSearch::PresetView Parent;
+
+  ResultsView* m_view;
+
+public:
+  PresetViewItem( const Result& preset, const std::vector<Query::Tag>& tags, ResultsView* view )
+    : Parent( preset, tags )
+    , m_view( view )
+  {}
+
+  void enterEvent( QEvent *event ) FTL_OVERRIDE
+  {
+    Parent::enterEvent( event );
+    emit m_view->mouseEnteredPreset( m_result );
+  }
+
+  void leaveEvent( QEvent *event ) FTL_OVERRIDE
+  {
+    Parent::leaveEvent( event );
+    emit m_view->mouseLeftPreset();
+  }
+};
+
+void ResultsView::replaceViewItems( const Query& query, const QModelIndex& index )
 {
   // Setting a QWidget accordingly
   if( index.isValid() )
@@ -701,20 +877,44 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
     {
       const Preset& preset = m_model->getPreset( index );
       std::vector<Query::Tag> tagNames;
-      if( m_model->hasTags( index )
-        && !m_model->hasSingleResult() ) // Don't show Tags if Single Result
+      //if( !m_model->hasSingleResult() ) // Don't show Tags if Single Result
       {
-        const Tags& presetTags = m_model->getTags( index );
-        for( size_t i = 0; i < presetTags.size(); i++ )
-          tagNames.push_back( presetTags[i].name );
+        const Result result = m_model->getPreset( index ).name;
+        Tags resultTags;
+        if( m_model->hasTags( index ) )
+          resultTags = m_model->getTags( index );
+        std::set<Query::Tag> parentTags;
+
+        // Getting the parent tags in the tree
+        QModelIndex parent = index;
+        while( true )
+        {
+          parent = m_model->parent( parent );
+          if( !parent.isValid() )
+            break;
+          if( m_model->hasTags( parent ) )
+          {
+            const Tags& tags = m_model->getTags( parent );
+            for( Tags::const_iterator it = tags.begin(); it != tags.end(); it++ )
+              parentTags.insert( Query::Tag( it->name ) );
+          }
+        }
+
+        tagNames = GetTagsToDisplay(
+          m_host,
+          result,
+          resultTags,
+          parentTags,
+          query
+        );
       }
-      PresetView* w = new PresetView( preset.name, tagNames );
+      PresetViewItem* w = new PresetViewItem( preset.name, tagNames, this );
       w->setScore( preset.score, this->minPresetScore, this->maxPresetScore );
       connect(
         w, SIGNAL( requestTag( const Query::Tag& ) ),
         this, SIGNAL( tagRequested( const Query::Tag& ) )
       );
-      m_presetViewItems.insert( std::pair<void*,PresetView*>( index.internalPointer(), w ) );
+      m_presetViewItems.insert( std::pair<void*,PresetViewItem*>( index.internalPointer(), w ) );
       widget = w;
     }
     else
@@ -730,7 +930,7 @@ void ResultsView::replaceViewItems( const QModelIndex& index )
 
   // Applying recursively to the children
   for( int i = 0; i < model()->rowCount( index ); i++ )
-    replaceViewItems( model()->index( i, 0, index ) );
+    replaceViewItems( query, model()->index( i, 0, index ) );
 }
 
 void ResultsView::updateHighlight( const QModelIndex& index )

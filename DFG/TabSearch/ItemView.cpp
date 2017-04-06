@@ -37,6 +37,7 @@ TagWidget::TagWidget( const Query::Tag& tag )
   : m_tag( tag )
   , m_hovered( false )
   , m_highlighted( false )
+  , m_isDisabled( false )
 {
   this->setObjectName( "TagWidget" );
 
@@ -76,13 +77,47 @@ void TagWidget::setScore( double score )
 void TagWidget::enterEvent( QEvent* e )
 {
   Parent::enterEvent( e );
-  this->setCursor( Qt::PointingHandCursor );
+  if( !m_isDisabled )
+    this->setCursor( Qt::PointingHandCursor );
 }
 
 void TagWidget::leaveEvent( QEvent* e )
 {
   Parent::leaveEvent( e );
   this->unsetCursor();
+}
+
+void TagWidget::connectToQuery( const Query& query )
+{
+  connect(
+    &query, SIGNAL( changed( const Query& ) ),
+    this, SLOT( onQueryChanged( const Query& ) )
+  );
+  onQueryChanged( query );
+}
+
+void Label::connectToQuery( const Query& query )
+{
+  connect(
+    &query, SIGNAL( changed( const Query& ) ),
+    this, SLOT( onQueryChanged( const Query& ) )
+  );
+  onQueryChanged( query );
+}
+
+void TagWidget::onQueryChanged( const Query& query )
+{
+  m_isDisabled = query.hasTag( m_tag );
+  m_button->setDisabled( m_isDisabled );
+  this->setProperty( "used", m_isDisabled );
+  this->setStyleSheet( this->styleSheet() );
+}
+
+void Label::onQueryChanged( const Query& query )
+{
+  m_isDisabled = this->m_isTag && query.hasTag( m_tag );
+  this->setProperty( "used", m_isDisabled );
+  this->setStyleSheet( this->styleSheet() );
 }
 
 size_t NameSep( const Result& result )
@@ -99,7 +134,8 @@ std::string PresetView::DisplayName( const Result& result )
 }
 
 PresetView::PresetView( const Result& presetName, const std::vector<Query::Tag>& tags )
-  : m_heatBar( new HeatBar( this ) )
+  : m_result( presetName )
+  , m_heatBar( new HeatBar( this ) )
 {
   this->setObjectName( "PresetView" );
 
@@ -169,13 +205,14 @@ void Label::mouseReleaseEvent( QMouseEvent * e )
 
 void Label::init()
 {
+  m_isDisabled = false;
   this->setObjectName( "TabSearchLabel" );
 }
 
 void Label::enterEvent( QEvent* e )
 {
   Parent::enterEvent( e );
-  if( m_isTag )
+  if( m_isTag && !m_isDisabled )
     this->setCursor( Qt::PointingHandCursor );
 }
 

@@ -15,10 +15,50 @@
 
 using namespace FabricUI::DFG;
 
+static const QKeySequence ToggleDetailsKey = Qt::CTRL + Qt::Key_Tab;
+
+static const size_t NbHints = 7;
+struct Hint
+{
+  std::string message;
+  double score; // How likely is it to be displayed ?
+  Hint( const std::string& message, const double score )
+    : message( message ), score( score )
+  {}
+};
+static const Hint Hints[NbHints] = {
+  Hint( "You can add several words to the search", 1.0 ),
+  Hint( "You can filter the search with Tags by writing them (like ext:Geometry or cat:Math)", 3.0 ),
+  Hint( "You can toggle the details panel with " + ToStdString( ToggleDetailsKey.toString() ), 2.0 ),
+  Hint( "You can mouse over a Tag to see its category", 1.0 ),
+  Hint( "You can add Tags by clicking on them (in the results or the the details panel)", 1.0 ),
+  Hint( "You can move through Tags with Alt + Arrows", 2.0 ),
+  Hint( "You can remove filtered Tags by clicking on them", 1.0 )
+};
+
+const std::string& GetRandomHint()
+{
+  double scoreSum = 0;
+  for( size_t i = 0; i < NbHints; i++ )
+    scoreSum += Hints[i].score;
+  double randV = ( rand() * scoreSum ) / RAND_MAX;
+  scoreSum = 0;
+  for( size_t i = 0; i < NbHints; i++ )
+  {
+    scoreSum += Hints[i].score;
+    if( scoreSum > randV )
+      return Hints[i].message;
+  }
+  assert( false ); return Hints[0].message;
+}
+
 class DFGPresetSearchWidget::Status : public QWidget
 {
   DFGPresetSearchWidget* m_parent;
   std::vector<TabSearch::Label*> m_items;
+  TabSearch::Result m_result, m_hoveredResult;
+  std::string m_logError, m_logMessage;
+  bool m_hintsEnabled;
 
   inline void addItem( TabSearch::Label* item )
   {
@@ -28,9 +68,24 @@ class DFGPresetSearchWidget::Status : public QWidget
     m_items.push_back( item );
   }
 
+  void updateDisplay();
+  void setMessage( const std::string& message ) { clear(); this->addItem( new TabSearch::Label( message ) ); }
+  void setMessageType( const char * type ) { this->setProperty( "type", QString(type) ); this->setStyleSheet( this->styleSheet() ); }
+  void clear()
+  {
+    for( std::vector<TabSearch::Label*>::const_iterator it = m_items.begin(); it != m_items.end(); it++ )
+    {
+      this->layout()->removeWidget( *it );
+      ( *it )->deleteLater();
+    }
+    m_items.clear();
+  }
+  void setDisplayedResult( const TabSearch::Result& );
+
 public:
   Status( DFGPresetSearchWidget* parent )
     : m_parent( parent )
+    , m_hintsEnabled( true )
   {
     this->setObjectName( "Status" );
     QHBoxLayout* lay = new QHBoxLayout();
@@ -41,17 +96,43 @@ public:
     this->setMinimumHeight( 18 );
     this->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   }
-  void clear()
-  {
-    for( std::vector<TabSearch::Label*>::const_iterator it = m_items.begin(); it != m_items.end(); it++ )
-    {
-      this->layout()->removeWidget( *it );
-      ( *it )->deleteLater();
-    }
-    m_items.clear();
-  }
-  void setResult( const TabSearch::Result& result );
+  void setResult( const TabSearch::Result& result ) { m_result = result; updateDisplay(); }
+  void hoveredResultSet( const TabSearch::Result& result ) { m_hoveredResult = result; updateDisplay(); }
+  void hoveredResultClear() { hoveredResultSet( TabSearch::Result() ); }
+  void setLogError( const std::string& message ) { m_logError = message; updateDisplay(); }
+  void setLogInstruction( const std::string& message ) { m_logMessage = message; updateDisplay(); }
+  void setHintsEnabled( bool enabled ) { m_hintsEnabled = enabled; updateDisplay(); }
 };
+
+void DFGPresetSearchWidget::Status::updateDisplay()
+{
+  this->setMessageType( "" );
+  if( !m_hoveredResult.empty() )
+    setDisplayedResult( m_hoveredResult );
+  else
+  if( !m_logError.empty() )
+  {
+    this->setMessageType( "error" );
+    this->setMessage( m_logError );
+  }
+  else
+  if( !m_logMessage.empty() )
+  {
+    this->setMessageType( "instruction" );
+    this->setMessage( m_logMessage );
+  }
+  else
+  if( !m_result.empty() )
+    setDisplayedResult( m_result );
+  else
+  if( m_hintsEnabled )
+  {
+    this->setMessageType( "hint" );
+    this->setMessage( GetRandomHint() );
+  }
+  else
+    clear();
+}
 
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
@@ -91,8 +172,20 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     m_queryEdit, SIGNAL( lostFocus() ),
     this, SLOT( close() )
   );
+  connect(
+    m_queryEdit, SIGNAL( logError( const std::string& ) ),
+    this, SLOT( onLogError( const std::string& ) )
+  );
+  connect(
+    m_queryEdit, SIGNAL( logInstruction( const std::string& ) ),
+    this, SLOT( onLogInstruction( const std::string& ) )
+  );
+  connect(
+    m_queryEdit, SIGNAL( logClear() ),
+    this, SLOT( onLogClear() )
+  );
 
-  m_resultsView = new TabSearch::ResultsView();
+  m_resultsView = new TabSearch::ResultsView( m_host );
   m_resultsView->setFocusProxy( this );
   vlayout->addWidget( m_resultsView );
   connect(
@@ -123,6 +216,14 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     m_resultsView, SIGNAL( presetDeselected() ),
     this, SLOT( hidePreview() )
   );
+  connect(
+    m_resultsView, SIGNAL( mouseEnteredPreset( const TabSearch::Result& ) ),
+    this, SLOT( onResultMouseEntered( const TabSearch::Result& ) )
+  );
+  connect(
+    m_resultsView, SIGNAL( mouseLeftPreset() ),
+    this, SLOT( onResultMouseLeft() )
+  );
 
   // Selecting elements (the selection must be exclusive to either
   // the ResultsView or the QueryEdit
@@ -149,11 +250,10 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   m_detailsPanel->setFocusPolicy( Qt::NoFocus );
   m_detailsPanel->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-  QKeySequence toggleDetailsKey = Qt::CTRL + Qt::Key_Tab;
   {
     m_toggleDetailsButton = new TabSearch::Toggle();
     m_toggleDetailsButton->setObjectName( "ToggleDetailsPanelButton" );
-    m_toggleDetailsButton->setToolTip( toggleDetailsKey.toString() );
+    m_toggleDetailsButton->setToolTip( ToggleDetailsKey.toString() );
     m_toggleDetailsButton->setFocusPolicy( Qt::NoFocus );
     QVBoxLayout* lay = new QVBoxLayout();
     lay->setMargin( 0 );
@@ -195,7 +295,7 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   // Toggle Details
   {
     QAction* toggleDetailsA = new QAction( this );
-    toggleDetailsA->setShortcut( toggleDetailsKey );
+    toggleDetailsA->setShortcut( ToggleDetailsKey );
     connect( toggleDetailsA, SIGNAL( triggered( bool ) ),
       this, SLOT( toggleDetailsPanel() ) );
     this->addAction( toggleDetailsA );
@@ -251,7 +351,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   {
     std::vector<std::string> filteredTerms;
     for( size_t i = 0; i < searchTermsStr.size(); i++ )
-      if( searchTermsStr[i].find( ':' ) == std::string::npos )
+      if( !TabSearch::Query::Tag::IsTag( searchTermsStr[i] ) )
         filteredTerms.push_back( searchTermsStr[i] );
     searchTermsStr = filteredTerms;
   }
@@ -281,6 +381,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
 
   hidePreview();
+  m_status->setHintsEnabled( query.getTags().size() == 0 && query.getText().empty() );
   m_resultsView->setResults( jsonStrR, query );
 
   updateSize();
@@ -440,7 +541,7 @@ void DFGPresetSearchWidget::hidePreview()
   m_detailsWidget->clear();
   updateDetailsPanelVisibility();
 
-  m_status->clear();
+  m_status->setResult( std::string() ); // Clear
   updateSize();
 }
 
@@ -448,7 +549,7 @@ void DFGPresetSearchWidget::setPreview( const TabSearch::Result& result )
 {
   if( result.isPreset() )
   {
-    m_detailsWidget->setPreset( result );
+    m_detailsWidget->setPreset( result, m_queryEdit->query() );
     m_detailsPanel->verticalScrollBar()->setValue( 0 );
     updateDetailsPanelVisibility();
   }
@@ -460,7 +561,7 @@ void DFGPresetSearchWidget::setPreview( const TabSearch::Result& result )
   updateSize();
 }
 
-void DFGPresetSearchWidget::Status::setResult( const TabSearch::Result& result )
+void DFGPresetSearchWidget::Status::setDisplayedResult( const TabSearch::Result& result )
 {
   this->clear();
   if( result.isPreset() )
@@ -478,7 +579,11 @@ void DFGPresetSearchWidget::Status::setResult( const TabSearch::Result& result )
         TabSearch::Query::Tag( TabSearch::PathCompCat, p )
       ;
       if( validTags.find( tag ) != validTags.end() )
-        this->addItem( new TabSearch::Label( p, tag ) );
+      {
+        TabSearch::Label* label = new TabSearch::Label( p, tag );
+        label->connectToQuery( m_parent->m_queryEdit->query() );
+        this->addItem( label );
+      }
       else
         this->addItem( new TabSearch::Label( p ) );
       if( !isName )
@@ -518,6 +623,32 @@ void DFGPresetSearchWidget::toggleDetailsPanel( bool toggled )
     m_toggleDetailsButton->setToggled( toggled );
     updateDetailsPanelVisibility();
   }
+}
+
+void DFGPresetSearchWidget::onResultMouseEntered( const TabSearch::Result& result )
+{
+  m_status->hoveredResultSet( result );
+}
+
+void DFGPresetSearchWidget::onResultMouseLeft()
+{
+  m_status->hoveredResultClear();
+}
+
+void DFGPresetSearchWidget::onLogError( const std::string& message )
+{
+  m_status->setLogError( message );
+}
+
+void DFGPresetSearchWidget::onLogInstruction( const std::string& message )
+{
+  m_status->setLogInstruction( message );
+}
+
+void DFGPresetSearchWidget::onLogClear()
+{
+  m_status->setLogError( std::string() );
+  m_status->setLogInstruction( std::string() );
 }
 
 void DFGPresetSearchWidget::close()

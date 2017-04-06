@@ -23,10 +23,14 @@ namespace FabricUI {
 namespace DFG {
 namespace TabSearch {
 
+// Mirrors the definition from Core/DFG/DFGTag.cpp
+const std::string ExtCat = "ext";
+const std::string CatCat = "cat";
 const std::string NameCat = "name";
+const std::string NameCompCat = "namecomp";
+const std::string AkaCat = "aka";
 const std::string PortTypeCat = "porttype";
 const std::string PathCompCat = "pathcomp";
-const std::string NameCompCat = "namecomp";
 
 struct Query : public QObject
 {
@@ -40,6 +44,7 @@ public:
     size_t m_sep;
   public:
     typedef std::string Cat;
+    inline static bool IsTag( const std::string& s ) { return s.find( Sep ) != std::string::npos; }
     Tag() : std::string(), m_sep( npos ) {}
     Tag( const std::string& cat, const std::string& name )
       : std::string( cat + Sep + name ), m_sep( cat.size() ) { assert( ( *this )[m_sep] = Sep ); }
@@ -56,8 +61,9 @@ public:
   inline bool hasTag( const std::string& tag ) const { return m_tagMap.find( tag ) != m_tagMap.end(); }
   std::vector< std::pair<size_t, size_t> > getSplitTextIndices() const;
   std::vector<std::string> getSplitText() const;
+  Query() { connect( this, SIGNAL( changed( const Query& ) ), this, SIGNAL( changed() ) ); }
 
-  public slots:
+public slots:
   inline void setText( const std::string& text ) { m_text = text; emit changed(); }
   void addTag( const std::string& tag );
   void removeTag( const std::string& tag );
@@ -65,6 +71,7 @@ public:
 
 signals:
   void changed();
+  void changed( const Query& );
 
 private:
   std::string m_text;

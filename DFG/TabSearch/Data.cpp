@@ -12,7 +12,7 @@ void Query::clear()
   m_orderedTags.clear();
   m_tagMap.clear();
   m_text.clear();
-  emit changed();
+  emit changed( *this );
 }
 
 void Query::addTag( const std::string& tag )
@@ -21,7 +21,7 @@ void Query::addTag( const std::string& tag )
   {
     m_tagMap.insert( TagMap::value_type( tag, m_orderedTags.size() ) );
     m_orderedTags.push_back( tag );
-    emit changed();
+    emit changed( *this );
   }
 }
 
@@ -41,7 +41,7 @@ void Query::removeTag( const std::string& tag )
       }
     m_orderedTags = newTags;
     m_tagMap = newMap;
-    emit changed();
+    emit changed( *this );
   }
   else
     assert( false );

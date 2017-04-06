@@ -1730,10 +1730,19 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #TagWidget[tagCat="ext"] QPushButton { border-left-color: #00BFBF; }
 #TagWidget[tagCat="cat"] QPushButton { border-left-color: #BF00BF; }
 #TagWidget[tagCat="name"] QPushButton { border-left-color: #27A8DF; }
-#TagWidget[tagCat="namecomp"] QPushButton { border-left-color: #bfb900; }
+#TagWidget[tagCat="namecomp"] QPushButton { border-left-color: #BFB900; }
 #TagWidget[tagCat="aka"] QPushButton { border-left-color: #BF0000; }
 #TagWidget[tagCat="porttype"] QPushButton { border-left-color: #06BF12; }
 #TagWidget[tagCat="pathcomp"] QPushButton { border-left-color: #CC6600; }
+
+/* Define colors for dimmed / disabled state */
+#TagWidget[tagCat="ext"][used="true"] QPushButton { border-left-color: #208080; }
+#TagWidget[tagCat="cat"][used="true"] QPushButton { border-left-color: #7F2080; }
+#TagWidget[tagCat="name"][used="true"] QPushButton { border-left-color: #42839E; }
+#TagWidget[tagCat="namecomp"][used="true"] QPushButton { border-left-color: #807C20; }
+#TagWidget[tagCat="aka"][used="true"] QPushButton { border-left-color: #802020; }
+#TagWidget[tagCat="porttype"][used="true"] QPushButton { border-left-color: #1D8024; }
+#TagWidget[tagCat="pathcomp"][used="true"] QPushButton { border-left-color: #8C5823; }
 
 #DFGPresetSearchWidget
 {
@@ -1915,6 +1924,21 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #555555;
 }
 
+#DFGPresetSearchWidget #Status[type="error"]
+{
+  background-color: rgba(255,100,0,50);
+}
+
+#DFGPresetSearchWidget #Status[type="instruction"]
+{
+  background-color: rgba(0,255,100,50);
+}
+
+#DFGPresetSearchWidget #Status[type="hint"] #TabSearchLabel[clickable="false"]
+{
+  color: #BBB;
+}
+
 #DFGPresetSearchWidget #Status #TabSearchLabel
 {
   font: 12px "Roboto";
@@ -2091,6 +2115,19 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="true"]:hover
 {
   color: #27A8DF;
+}
+
+#DetailsWidget #TagWidget[used="true"] QPushButton
+{
+  color: #888;
+  background-color: #3B3B3B;
+}
+
+#DFGPresetSearchWidget #Status #TabSearchLabel[clickable="true"][used="true"],
+#DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="true"][used="true"],
+#DetailsWidget #Name[clickable="true"][used="true"]
+{
+  color: #888;
 }
 
 /****************************************************************************
