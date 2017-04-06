@@ -219,6 +219,19 @@ class ShowToolEditorDialogAction(BaseCanvasWindowAction):
         if self.canvasWindow.toolEditorDialog.exec_() != QtGui.QDialog.Accepted:
             return;
 
+class ShowToolEditorDialogAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, canvasWindow):
+        super(ShowToolEditorDialogAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.ShowToolEditorDialogAction", 
+            "Tool editor", 
+            QtGui.QKeySequence(QtCore.Qt.Key_T))
+ 
+    def onTriggered(self):
+        self.canvasWindow.onShowToolEditorDialog()
+
 class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
 
