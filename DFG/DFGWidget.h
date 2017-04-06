@@ -177,6 +177,7 @@ namespace DFG {
       void onRevealPresetInExplorer(const char* nodeName);
       void onPresetAddedFromTabSearch( QString preset );
       void onBackdropAddedFromTabSearch();
+      void onVariableCreationRequestedFromTabSearch();
       void onVariableSetterAddedFromTabSearch( const std::string name );
       void onVariableGetterAddedFromTabSearch( const std::string name );
       void onFocusGivenFromTabSearch();

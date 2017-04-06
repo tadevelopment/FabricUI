@@ -238,6 +238,10 @@ DFGWidget::DFGWidget(
     this, SLOT( onBackdropAddedFromTabSearch() )
   );
   QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedCreateNewVariable() ),
+    this, SLOT( onVariableCreationRequestedFromTabSearch() )
+  );
+  QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
     this, SLOT( onVariableGetterAddedFromTabSearch( const std::string ) )
   );
@@ -848,6 +852,16 @@ void DFGWidget::tabSearch()
   }
 }
 
+inline void MaybeSelectNode( GraphView::Graph* graph, const QString& node )
+{
+  if( !node.isEmpty() )
+  {
+    graph->clearSelection();
+    if( GraphView::Node *uiNode = graph->node( node ) )
+      uiNode->setSelected( true );
+  }
+}
+
 QPointF DFGWidget::getTabSearchScenePos() const
 {
   return this->getGraphViewWidget()->graph()->itemGroup()->mapFromScene( m_tabSearchPos );
@@ -859,13 +873,7 @@ void DFGWidget::onPresetAddedFromTabSearch( QString preset )
     preset,
     getTabSearchScenePos()
   );
-  if( !addedPreset.isEmpty() )
-  {
-    // Select the Preset
-    this->getGraphViewWidget()->graph()->clearSelection();
-    if( GraphView::Node *uiNode = this->getGraphViewWidget()->graph()->node( addedPreset ) )
-      uiNode->setSelected( true );
-  }
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), addedPreset );
 }
 
 void DFGWidget::onBackdropAddedFromTabSearch()
@@ -876,14 +884,53 @@ void DFGWidget::onBackdropAddedFromTabSearch()
   );
 }
 
+void DFGWidget::onVariableCreationRequestedFromTabSearch()
+{
+  DFGNewVariableDialog dialog(
+    this,
+    this->getDFGController()->getClient(),
+    this->getDFGController()->getBinding(),
+    this->getDFGController()->getExecPath()
+  );
+
+  if( dialog.exec() != QDialog::Accepted )
+    return;
+
+
+  QString name = dialog.name();
+  QString dataType = dialog.dataType();
+  QString extension = dialog.extension();
+
+  if( name.isEmpty() )
+  {
+    this->getDFGController()->log( "Warning: no variable created (empty name)." );
+    return;
+  }
+  if( dataType.isEmpty() )
+  {
+    this->getDFGController()->log( "Warning: no variable created (empty type)." );
+    return;
+  }
+
+  QString node = this->getDFGController()->cmdAddVar(
+    name.toUtf8().constData(),
+    dataType.toUtf8().constData(),
+    extension.toUtf8().constData(),
+    getTabSearchScenePos()
+  );
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), node );
+}
+
 void DFGWidget::onVariableSetterAddedFromTabSearch( const std::string name )
 {
-  this->getUIController()->cmdAddSet( "set", QString::fromStdString( name ), getTabSearchScenePos() );
+  QString node = this->getUIController()->cmdAddSet( "set", QString::fromStdString( name ), getTabSearchScenePos() );
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), node );
 }
 
 void DFGWidget::onVariableGetterAddedFromTabSearch( const std::string name )
 {
-  this->getUIController()->cmdAddGet( "get", QString::fromStdString( name ), getTabSearchScenePos() );
+  QString node = this->getUIController()->cmdAddGet( "get", QString::fromStdString( name ), getTabSearchScenePos() );
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), node );
 }
 
 void DFGWidget::onFocusGivenFromTabSearch()
