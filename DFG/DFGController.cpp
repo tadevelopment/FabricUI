@@ -1469,7 +1469,6 @@ void DFGController::onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderB
 void DFGController::onVariablesChanged()
 {
   m_presetDictsUpToDate = false;
-  updatePresetPathDB();
 }
 
 void DFGController::onBindingDirty()
