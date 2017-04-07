@@ -36,6 +36,7 @@ PresetTreeWidget::PresetTreeWidget(
   )
   : m_dfgController( dfgController )
   , m_showsPresets( showsPresets )
+  , m_modelDirty( true )
 {
   setObjectName( "DFGPresetTreeWidget" );
 
@@ -156,6 +157,19 @@ void PresetTreeWidget::setBinding(
   )
 {
   refresh();
+}
+
+void PresetTreeWidget::setModelDirty()
+{
+  m_modelDirty = true;
+  this->update();
+}
+
+void PresetTreeWidget::paintEvent( QPaintEvent * e )
+{
+  if( m_modelDirty )
+    this->refresh();
+  QWidget::paintEvent( e );
 }
 
 void PresetTreeWidget::refresh()
@@ -289,6 +303,8 @@ void PresetTreeWidget::refresh()
 
     m_treeView->expandAll();
   }
+
+  m_modelDirty = false;
 }
 
 void PresetTreeWidget::onCustomContextMenuRequested(QPoint globalPos, FabricUI::TreeView::TreeItem * item)
