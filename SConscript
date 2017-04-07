@@ -132,6 +132,7 @@ dirs = [
   'TreeView',
   'ValueEditor_Legacy',
   'ValueEditor',
+  'OptionsEditor',
   'GraphView',
   'GraphView/Commands',
   'DFG',

@@ -2,11 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef FABRICUI_VALUEEDITOR_VIEWPORTOPTIONSEDITOR_H
-#define FABRICUI_VALUEEDITOR_VIEWPORTOPTIONSEDITOR_H
+#ifndef __UI_VIEWPORT_OPTION_EDITOR_H
+#define __UI_VIEWPORT_OPTION_EDITOR_H
 
 #include <FabricCore.h>
-#include <FabricUI/ValueEditor/VETreeWidget.h>
+#include <FabricUI/OptionsEditor/BaseOptionsEditor.h>
 
 #include <QSettings>
 #include <QUndoStack>
@@ -14,30 +14,24 @@
 namespace FabricUI {
 namespace Viewports {
 
-  class ViewportOptionsEditor : public FabricUI::ValueEditor::VETreeWidget
-  {
-    Q_OBJECT
-
-    class ViewportOptionModel;
-    class ViewportOptionsDictModel;
-
-    QSettings m_settings;
-    QUndoStack& m_undoStack;
-    ViewportOptionsDictModel* m_model;
-    FabricCore::RTVal drawContext;
+class ViewportOptionsEditor : public Bases::BaseOptionsEditor
+{
+  Q_OBJECT
 
   public:
-    ViewportOptionsEditor( FabricCore::Client& client, QUndoStack& undoStack );
-    virtual ~ViewportOptionsEditor();
+    ViewportOptionsEditor( 
+      FabricCore::Client& client, 
+      QUndoStack& undoStack 
+      );
 
   public slots:
-    void updateOptions();
+    virtual void updateOptions();
 
-  signals:
-    /// When the value of one option has changed
-    void valueChanged() const;
-  };
-}
-}
+  private:
+    FabricCore::RTVal m_drawContext;
+};
 
-#endif // FABRICUI_VALUEEDITOR_VIEWPORTOPTIONSEDITOR_H
+} // namespace Viewports
+} // namespace FabricUI
+
+#endif // __UI_VIEWPORT_OPTION_EDITOR_H
