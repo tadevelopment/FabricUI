@@ -27,13 +27,13 @@ class ToolEditorDialog(QtGui.QDialog):
         ctrlLayout.addWidget(self.__lineEdit)
 
         # ToolTableWidget
-        self.cmdListTableWidget = ToolTableWidget(self, canvasWindow)
+        self.toolTableWidget = ToolTableWidget(self, canvasWindow)
     
         # All 
         layout = QtGui.QVBoxLayout()
         layout.setContentsMargins(0,0,0,0)
         layout.addLayout(ctrlLayout)
-        layout.addWidget(self.cmdListTableWidget)
+        layout.addWidget(self.toolTableWidget)
         self.setLayout(layout)
 
         # qss
@@ -50,4 +50,4 @@ class ToolEditorDialog(QtGui.QDialog):
         """ \internal.
             Filter the actions.
         """
-        self.cmdListTableWidget.filterItems(self.__lineEdit.text())
+        self.toolTableWidget.filterItems(self.__lineEdit.text())

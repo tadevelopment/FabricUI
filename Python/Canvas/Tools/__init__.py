@@ -1,4 +1,6 @@
 __all__ = [
   	'ToolTableWidget',
-  	'ToolEditorDialog',
+  	'ToolOptionsModel',
+  	'ToolOptionsEditor',
+  	'ToolEditorDialog'
 ]

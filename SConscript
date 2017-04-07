@@ -517,6 +517,7 @@ if uiLibPrefix == 'ui':
     pythonDir = [
       'Canvas',
       'Canvas/HotkeyEditor',
+      'Canvas/Tools',
       'Canvas/Commands'
     ]
 

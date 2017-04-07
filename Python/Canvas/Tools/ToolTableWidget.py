@@ -57,23 +57,24 @@ class ToolTableWidget(QtGui.QTableWidget):
         toolList = self.toolManager.drawnWidgets
         return toolList.get('BaseWidget', index)
 
+    def __resetTableContent(self):
+        self.clearContents()
+        self.setRowCount(0)
+
     def onRefresh(self):
         version = self.toolManager.getVersion('UInt32').getSimpleType()
 
         if version != self.toolManagerVersion:
-            self.clearContents()
-
-            toolCount = self.__getToolCount()
-            print "toolCount " + str(toolCount)
-
-            for i in range(0, toolCount):
+        
+            self.__resetTableContent()
+             
+            for i in range(0, self.__getToolCount()):
                 tool = self.__getToolAtIndex(i)
                 toolName = tool.getName('String').getSimpleType()
                 isVisible = tool.isVisible('Boolean').getSimpleType()
 
                 self.__createNewRow(toolName)
-                print "toolName " + str(toolName)
-
+ 
         self.toolManagerVersion = version
 
     def __setCellWidget(self, row, column, widget):

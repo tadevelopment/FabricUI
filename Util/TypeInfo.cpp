@@ -4,13 +4,13 @@
 
 #include "TypeInfo.h"
 
+using namespace FabricUI;
+using namespace Util;
+
 #ifdef __GNUG__
 #include <cstdlib>
 #include <memory>
 #include <cxxabi.h>
-
-using namespace FabricUI;
-using namespace Util;
 
 struct handle 
 {
