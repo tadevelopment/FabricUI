@@ -141,7 +141,7 @@ class ToggleManipulationAction(BaseCanvasWindowAction):
 
     def onTriggered(self):
         self.viewport.toggleManipulation()
- 
+
 class GridVisibilityAction(BaseCanvasWindowAction):
 
     def __init__(self, parent, viewport):
@@ -153,6 +153,7 @@ class GridVisibilityAction(BaseCanvasWindowAction):
             QtGui.QKeySequence(QtCore.Qt.Key_G),
             QtCore.Qt.WidgetWithChildrenShortcut)
         
+        viewport.addAction(self)
         self.toggled.connect(viewport.setGridVisible)
         self.setCheckable(True)
         self.setChecked(viewport.isGridVisible())
@@ -168,6 +169,7 @@ class ResetCameraAction(BaseCanvasWindowAction):
             QtGui.QKeySequence(QtCore.Qt.Key_R),
             QtCore.Qt.WidgetWithChildrenShortcut)
         
+        viewport.addAction(self)
         self.triggered.connect(viewport.resetCamera)
        
 class BlockGraphCompilationAction(BaseCanvasWindowAction):
@@ -181,10 +183,11 @@ class BlockGraphCompilationAction(BaseCanvasWindowAction):
             QtGui.QKeySequence(QtCore.Qt.SHIFT  + QtCore.Qt.CTRL + QtCore.Qt.Key_Return),
             QtCore.Qt.WidgetWithChildrenShortcut)
         
+        self.canvasWindow.addAction(self)
         self.setCheckable(True)
         self.setChecked(False)
         self.toggled.connect(self.canvasWindow.setBlockCompilations)
-   
+
 class ShowHotkeyEditorDialogAction(BaseCanvasWindowAction):
 
     def __init__(self, parent, canvasWindow):
@@ -1396,7 +1399,7 @@ class CanvasWindow(QtGui.QMainWindow):
             else:
                 if self.isCanvas:
                     menu.addSeparator()
-                    self.manipAction = ToggleManipulationAction(self.viewport, self)
+                    self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
                     menu.addAction(self.manipAction)
 
                     menu.addSeparator()
