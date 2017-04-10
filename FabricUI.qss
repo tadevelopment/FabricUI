@@ -2061,7 +2061,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626E;
 }
 
-#DetailsWidget #PortsView *
+#DetailsWidget #PortsView QLabel
 {
   font: 12px "Roboto";
 }
@@ -2078,13 +2078,13 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   color: #FFFFFF;
 }
 
-#DetailsWidget #PortsView #PortsHeader *
+#DetailsWidget #PortsView #PortsHeader > *
 {
   background-color: #444444;
   padding: 4px;
 }
 
-#DetailsWidget #PortsView #PortView *
+#DetailsWidget #PortsView #PortView > *
 {
   background-color: #333333;
   padding: 4px;

@@ -81,8 +81,9 @@ DFGController::DFGController(
 
   QObject::connect(this, SIGNAL(topoDirty()), this, SLOT(onTopoDirty()));
   QObject::connect(this, SIGNAL(varsChanged()), this, SLOT(onVariablesChanged()));
-  QObject::connect( this, // Changing the Binding implicitly changes its variables
-    SIGNAL( bindingChanged( FabricCore::DFGBinding const & ) ), this, SIGNAL( varsChanged() ) );
+
+  QObject::connect(this, SIGNAL(topoDirty()), this, SIGNAL(varsChangedImplicitly()));
+  QObject::connect(this, SIGNAL(varsChanged()), this, SIGNAL(varsChangedImplicitly()));
 }
 
 DFGController::~DFGController()
@@ -1479,7 +1480,6 @@ void DFGController::onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderB
 void DFGController::onVariablesChanged()
 {
   m_presetDictsUpToDate = false;
-  updatePresetPathDB();
 }
 
 void DFGController::onBindingDirty()

@@ -387,8 +387,15 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
   updateSize();
 }
 
+void DFGPresetSearchWidget::updateResults()
+{
+  this->onQueryChanged( m_queryEdit->query() );
+}
+
 const std::string BackdropType = "backdrop";
 const TabSearch::Query::Tag BackdropTag = std::string("name:BackDrop");
+const std::string NewVariableType = "newVariable";
+const TabSearch::Query::Tag NewVariableTag = std::string( "name:NewVariable" );
 const std::string VariableSetType = "setVariable";
 const std::string VariableGetType = "getVariable";
 const TabSearch::Query::Tag VariableTag = std::string("cat:Variable");
@@ -399,11 +406,17 @@ void DFGPresetSearchWidget::registerStaticEntries()
   if( m_staticEntriesAddedToDB || !m_host->isValid() )
     return;
 
-  const char* tags[] = {
+  const char* backdropTags[] = {
     BackdropTag.data(),
     "aka:Layout",
     "cat:Tidying",
     "cat:UI"
+  };
+
+  const char* newVariableTags[] = {
+    NewVariableTag.data(),
+    VariableTag.data(),
+    "aka:Var"
   };
 
   try
@@ -412,8 +425,16 @@ void DFGPresetSearchWidget::registerStaticEntries()
     if( !m_host->searchDBHasUser( backdropResult.data() ) )
       m_host->searchDBAddUser(
         backdropResult.data(),
-        sizeof( tags ) / sizeof( const char* ),
-        tags
+        sizeof( backdropTags ) / sizeof( const char* ),
+        backdropTags
+      );
+
+    TabSearch::Result newVariableResult( NewVariableType, "New Variable" );
+    if( !m_host->searchDBHasUser( newVariableResult.data() ) )
+      m_host->searchDBAddUser(
+        newVariableResult.data(),
+        sizeof( newVariableTags ) / sizeof( const char* ),
+        newVariableTags
       );
   }
   catch( const FabricCore::Exception& e )
@@ -496,6 +517,9 @@ void DFGPresetSearchWidget::onResultValidated( const TabSearch::Result& result )
     const std::string type = result.type();
     if( type == BackdropType )
       emit selectedBackdrop();
+    else
+    if( type == NewVariableType )
+      emit selectedCreateNewVariable();
     else
     if( type == VariableGetType )
       emit selectedGetVariable( result.substr( result.find( VariableSeparator )+1 ) );
@@ -597,6 +621,12 @@ void DFGPresetSearchWidget::Status::setDisplayedResult( const TabSearch::Result&
     {
       this->addItem( new TabSearch::Label( "Add a new " ) );
       this->addItem( new TabSearch::Label( "Backdrop", BackdropTag ) );
+    }
+    else
+    if( type == NewVariableType )
+    {
+      this->addItem( new TabSearch::Label( "Create a " ) );
+      this->addItem( new TabSearch::Label( "new variable", NewVariableTag ) );
     }
     else
     if( type == VariableGetType || type == VariableSetType )

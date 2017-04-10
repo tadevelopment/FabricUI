@@ -177,6 +177,7 @@ namespace DFG {
       void onRevealPresetInExplorer(const char* nodeName);
       void onPresetAddedFromTabSearch( QString preset );
       void onBackdropAddedFromTabSearch();
+      void onVariableCreationRequestedFromTabSearch();
       void onVariableSetterAddedFromTabSearch( const std::string name );
       void onVariableGetterAddedFromTabSearch( const std::string name );
       void onFocusGivenFromTabSearch();
@@ -197,7 +198,8 @@ namespace DFG {
         int line,
         int column
         );
-      void updateTabSearchVariables();
+      void tabSearchVariablesSetDirty();
+      void tabSearchVariablesUpdate();
 
     private:
 
@@ -229,6 +231,7 @@ namespace DFG {
       QPoint m_tabSearchPos;
       DFGTabSearchWidget * m_legacyTabSearchWidget;
       DFGPresetSearchWidget * m_tabSearchWidget;
+      bool m_tabSearchVariablesDirty;
       FabricServices::ASTWrapper::KLASTManager * m_manager;
       DFGConfig m_dfgConfig;
 

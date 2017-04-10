@@ -58,6 +58,7 @@ DFGWidget::DFGWidget(
   , m_errorsWidget( 0 )
   , m_uiGraph( 0 )
   , m_router( 0 )
+  , m_tabSearchVariablesDirty( true )
   , m_manager( manager )
   , m_dfgConfig( dfgConfig )
   , m_isEditable( false )
@@ -163,7 +164,7 @@ DFGWidget::DFGWidget(
                                                                       "value",
                                                                       "value",
                                                                       QCursor::pos(),
-                                                                      QKeySequence(Qt::Key_R),
+                                                                      QKeySequence(),
                                                                       "label"));
 
   m_klEditor =
@@ -237,6 +238,10 @@ DFGWidget::DFGWidget(
     this, SLOT( onBackdropAddedFromTabSearch() )
   );
   QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedCreateNewVariable() ),
+    this, SLOT( onVariableCreationRequestedFromTabSearch() )
+  );
+  QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
     this, SLOT( onVariableGetterAddedFromTabSearch( const std::string ) )
   );
@@ -249,8 +254,8 @@ DFGWidget::DFGWidget(
     this, SLOT( onVariableSetterAddedFromTabSearch( const std::string ) )
   );
   QObject::connect(
-    getUIController(), SIGNAL( varsChanged() ),
-    this, SLOT( updateTabSearchVariables() )
+    getUIController(), SIGNAL( varsChangedImplicitly() ),
+    this, SLOT( tabSearchVariablesSetDirty() )
   );
 
   QObject::connect(
@@ -714,7 +719,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "value",
                                                                "value",
                                                                QCursor::pos(),
-                                                               QKeySequence(Qt::Key_R),
+                                                               QKeySequence(),
                                                                "label",
                                                                dfgWidget->isEditable()));
 
@@ -841,8 +846,19 @@ void DFGWidget::tabSearch()
       QPoint pos = getGraphViewWidget()->lastEventPos();
       m_tabSearchPos = pos;
       pos = getGraphViewWidget()->mapToGlobal(pos);
+      tabSearchVariablesUpdate();
       getTabSearchWidget()->showForSearch(pos);
     }
+  }
+}
+
+inline void MaybeSelectNode( GraphView::Graph* graph, const QString& node )
+{
+  if( !node.isEmpty() )
+  {
+    graph->clearSelection();
+    if( GraphView::Node *uiNode = graph->node( node ) )
+      uiNode->setSelected( true );
   }
 }
 
@@ -857,13 +873,7 @@ void DFGWidget::onPresetAddedFromTabSearch( QString preset )
     preset,
     getTabSearchScenePos()
   );
-  if( !addedPreset.isEmpty() )
-  {
-    // Select the Preset
-    this->getGraphViewWidget()->graph()->clearSelection();
-    if( GraphView::Node *uiNode = this->getGraphViewWidget()->graph()->node( addedPreset ) )
-      uiNode->setSelected( true );
-  }
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), addedPreset );
 }
 
 void DFGWidget::onBackdropAddedFromTabSearch()
@@ -874,14 +884,53 @@ void DFGWidget::onBackdropAddedFromTabSearch()
   );
 }
 
+void DFGWidget::onVariableCreationRequestedFromTabSearch()
+{
+  DFGNewVariableDialog dialog(
+    this,
+    this->getDFGController()->getClient(),
+    this->getDFGController()->getBinding(),
+    this->getDFGController()->getExecPath()
+  );
+
+  if( dialog.exec() != QDialog::Accepted )
+    return;
+
+
+  QString name = dialog.name();
+  QString dataType = dialog.dataType();
+  QString extension = dialog.extension();
+
+  if( name.isEmpty() )
+  {
+    this->getDFGController()->log( "Warning: no variable created (empty name)." );
+    return;
+  }
+  if( dataType.isEmpty() )
+  {
+    this->getDFGController()->log( "Warning: no variable created (empty type)." );
+    return;
+  }
+
+  QString node = this->getDFGController()->cmdAddVar(
+    name.toUtf8().constData(),
+    dataType.toUtf8().constData(),
+    extension.toUtf8().constData(),
+    getTabSearchScenePos()
+  );
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), node );
+}
+
 void DFGWidget::onVariableSetterAddedFromTabSearch( const std::string name )
 {
-  this->getUIController()->cmdAddSet( "set", QString::fromStdString( name ), getTabSearchScenePos() );
+  QString node = this->getUIController()->cmdAddSet( "set", QString::fromStdString( name ), getTabSearchScenePos() );
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), node );
 }
 
 void DFGWidget::onVariableGetterAddedFromTabSearch( const std::string name )
 {
-  this->getUIController()->cmdAddGet( "get", QString::fromStdString( name ), getTabSearchScenePos() );
+  QString node = this->getUIController()->cmdAddGet( "get", QString::fromStdString( name ), getTabSearchScenePos() );
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), node );
 }
 
 void DFGWidget::onFocusGivenFromTabSearch()
@@ -889,9 +938,16 @@ void DFGWidget::onFocusGivenFromTabSearch()
   this->getGraphViewWidget()->setFocus( Qt::OtherFocusReason );
 }
 
-void DFGWidget::updateTabSearchVariables()
+void DFGWidget::tabSearchVariablesSetDirty()
 {
-  if( isUsingLegacyTabSearch() )
+  m_tabSearchVariablesDirty = true;
+  if( m_tabSearchWidget->isVisible() )
+    tabSearchVariablesUpdate();
+}
+
+void DFGWidget::tabSearchVariablesUpdate()
+{
+  if( !m_tabSearchVariablesDirty )
     return;
 
   m_tabSearchWidget->unregisterVariables();
@@ -915,6 +971,10 @@ void DFGWidget::updateTabSearchVariables()
       std::cerr << e.getDesc_cstr() << std::endl;
     }
   }
+
+  m_tabSearchVariablesDirty = false;
+
+  m_tabSearchWidget->updateResults();
 }
 
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)

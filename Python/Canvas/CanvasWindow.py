@@ -125,18 +125,19 @@ class QuitApplicationAction(BaseCanvasWindowAction):
 
 class ToggleManipulationAction(BaseCanvasWindowAction):
 
-    def __init__(self, viewport, canvasWindow):
+    def __init__(self, parent, viewport):
         super(ToggleManipulationAction, self).__init__(
-            viewport,     
-            canvasWindow, 
+            parent,     
+            None, 
             "CanvasWindow.ToggleManipulationAction", 
             "Toggle manipulation", 
             QtGui.QKeySequence(QtCore.Qt.Key_Q),
             QtCore.Qt.WidgetWithChildrenShortcut)
         
+        viewport.addAction(self)
         self.viewport = viewport
         self.setCheckable(True)
-        self.toggled.connect(canvasWindow.valueEditor.emitToggleManipulation)
+        self.setChecked(self.viewport.isManipulationActive())
 
     def onTriggered(self):
         self.viewport.toggleManipulation()
@@ -487,7 +488,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.treeWidget = DFG.PresetTreeWidget(controller, self.config, True, False, False, False, False, True)
         self.dfgWidget.newPresetSaved.connect(self.treeWidget.refresh)
         self.dfgWidget.revealPresetInExplorer.connect(self.treeWidget.onExpandToAndSelectItem)
-        controller.varsChanged.connect(self.treeWidget.refresh)
+        # FE-8381 : Removed variables from the PresetTreeWidget
+        #controller.varsChanged.connect(self.treeWidget.setModelDirty)
         controller.dirty.connect(self.onDirty)
         controller.topoDirty.connect(self.onTopoDirty)
 
@@ -1395,7 +1397,6 @@ class CanvasWindow(QtGui.QMainWindow):
                 if self.isCanvas:
                     menu.addSeparator()
                     self.manipAction = ToggleManipulationAction(self.viewport, self)
-                    self.viewport.addAction(self.manipAction)
                     menu.addAction(self.manipAction)
 
                     menu.addSeparator()
@@ -1411,14 +1412,10 @@ class CanvasWindow(QtGui.QMainWindow):
 
                 if self.isCanvas:
                     self.setGridVisibleAction = GridVisibilityAction(self.viewport, self.viewport)
-                    self.viewport.addAction(self.setGridVisibleAction)
-
                     self.resetCameraAction = ResetCameraAction(self.viewport, self.viewport)
-                    self.viewport.addAction(self.resetCameraAction)
 
                 self.clearLogAction = QtGui.QAction('&Clear Log Messages', None)
                 self.clearLogAction.triggered.connect(self.logWidget.clear)
-
                 self.blockCompilationsAction = BlockGraphCompilationAction(self)
 
                 if self.isCanvas:

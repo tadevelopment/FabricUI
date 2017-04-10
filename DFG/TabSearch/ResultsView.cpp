@@ -824,6 +824,13 @@ std::vector<Query::Tag> GetTagsToDisplay(
   // Remove Tags with the same names
   {
     std::set<std::string> names;
+    {
+      // Adding the Parent and Query Tags to the names
+      for( std::set<Query::Tag>::const_iterator it = parentTags.begin(); it != parentTags.end(); it++ )
+        names.insert( it->name() );
+      for( std::vector<Query::Tag>::const_iterator it = query.getTags().begin(); it != query.getTags().end(); it++ )
+        names.insert( it->name() );
+    }
     std::vector<Query::Tag> filteredTags;
     for( std::vector<Query::Tag>::const_iterator it = dst.begin(); it != dst.end(); it++ )
       if( names.find( it->name() ) == names.end() )
