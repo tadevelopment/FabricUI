@@ -99,4 +99,3 @@ void OptionsDictModel::resetToDefault()
     it->second->resetToDefault();
   }
 }
- 
