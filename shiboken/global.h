@@ -145,6 +145,7 @@
 #include <FabricUI/SceneHub/ValueEditor/SHVEEditorOwner.h>
 #include <FabricUI/SceneHub/ValueEditor/SHOptionsEditor.h>
 #include <FabricUI/Viewports/ManipulationTool.h>
+#include "global_optionseditor.h"
 #include <FabricUI/Viewports/ViewportOptionsEditor.h>
 #include <FabricServices/ASTWrapper/KLASTManager.h>
 #include <FabricUI/Util/GetFilenameForFileURL.h>

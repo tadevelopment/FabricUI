@@ -5,25 +5,29 @@
 #ifndef __UI_BASE_OPTION_MODEL__
 #define __UI_BASE_OPTION_MODEL__
 
-#include <string>
 #include <QSettings>
 #include <FabricCore.h>
 #include "BaseOptionsEditor.h"
 #include <FabricUI/ValueEditor/BaseModelItem.h>
 
 namespace FabricUI {
-namespace Bases {
+namespace OptionsEditor {
 
-// Model for an RTVal option
-class OptionsModel : public ValueEditor::BaseModelItem {
-
+class OptionsModel : public ValueEditor::BaseModelItem 
+{
+  /**
+    OptionsModel specializes ValueEditor::BaseModelItem.
+    It defines a model for a single option (RTVal)
+  */  
+  Q_OBJECT
+  
   public:
     OptionsModel(
-      const std::string name,
+      const QString &name,
       FabricCore::RTVal value,
       QSettings* settings,
-      const std::string namePath,
-      BaseOptionsEditor& editor
+      const QString &namePath,
+      BaseOptionsEditor* editor
     );
 
     virtual ~OptionsModel();
@@ -31,6 +35,7 @@ class OptionsModel : public ValueEditor::BaseModelItem {
     /// Implementation of BaseModelItem
     virtual QVariant getValue();
 
+    /// Sets the model value without commit.
     void setValue(
       QVariant value
     );
@@ -55,39 +60,42 @@ class OptionsModel : public ValueEditor::BaseModelItem {
     struct OptionUndoCommand : QUndoCommand {
 
       const QVariant m_previous, m_next;
-      OptionsModel& m_model;
+      OptionsModel* m_model;
 
       OptionUndoCommand(
-        const QString text,
-        const QVariant previous,
-        const QVariant next,
-        OptionsModel& model
-      ) : QUndoCommand( text ),
-        m_previous( previous ),
-        m_next( next ),
-        m_model( model )
+        const QString &text,
+        const QVariant &previous,
+        const QVariant &next,
+        OptionsModel* model) 
+        : QUndoCommand( text )
+        ,  m_previous( previous )
+        ,  m_next( next )
+        ,  m_model( model )
       {}
 
       void undo() {
-        m_model.setValue( m_previous );
+        m_model->setValue( m_previous );
       }
 
       void redo() {
-        m_model.setValue( m_next );
+        m_model->setValue( m_next );
       }
     };
 
-    const std::string m_name;
-    const std::string m_namePath;
+    /// Name of the option.
+    QString m_name;
+    /// Path of the option.
+    QString m_namePath;
     /// Current value
     FabricCore::RTVal m_val; 
-    FabricCore::RTVal m_originalValue; 
     /// Value before applying the QSettings
+    FabricCore::RTVal m_originalValue; 
     QSettings* m_settings;
-    BaseOptionsEditor& m_editor;
+    /// Pointer to the editor.
+    BaseOptionsEditor* m_editor;
 };
 
-} // namespace Bases
+} // namespace OptionsEditor 
 } // namespace FabricUI
 
 #endif // __UI_BASE_OPTION_MODEL__

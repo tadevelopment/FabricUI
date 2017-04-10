@@ -5,29 +5,30 @@
 #ifndef __UI_VIEWPORT_OPTION_EDITOR_H
 #define __UI_VIEWPORT_OPTION_EDITOR_H
 
-#include <FabricCore.h>
-#include <FabricUI/OptionsEditor/BaseOptionsEditor.h>
-
 #include <QSettings>
 #include <QUndoStack>
+#include <FabricCore.h>
+#include <FabricUI/OptionsEditor/BaseOptionsEditor.h>
 
 namespace FabricUI {
 namespace Viewports {
 
-class ViewportOptionsEditor : public Bases::BaseOptionsEditor
+class ViewportOptionsEditor : public OptionsEditor::BaseOptionsEditor
 {
-  Q_OBJECT
-
   public:
     ViewportOptionsEditor( 
-      FabricCore::Client& client, 
-      QUndoStack& undoStack 
+      FabricCore::Client client, 
+      QUndoStack* undoStack,
+      QSettings *settings
       );
+
+    virtual ~ViewportOptionsEditor();
 
   public slots:
     virtual void updateOptions();
 
   private:
+    QSettings *m_settings;
     FabricCore::RTVal m_drawContext;
 };
 

@@ -7,12 +7,14 @@
 
 using namespace FabricUI;
 using namespace Viewports;
-using namespace Bases;
+using namespace OptionsEditor;
 
 ViewportOptionsEditor::ViewportOptionsEditor( 
-  FabricCore::Client& client, 
-  QUndoStack& undoStack )
-  : Bases::BaseOptionsEditor(client, undoStack)
+  FabricCore::Client client, 
+  QUndoStack* undoStack,
+  QSettings *settings)
+  : BaseOptionsEditor(undoStack)
+  , m_settings(settings)
 {
   try
   {
@@ -28,20 +30,24 @@ ViewportOptionsEditor::ViewportOptionsEditor(
   }
 }
 
+ViewportOptionsEditor::~ViewportOptionsEditor()
+{
+}
+
 // Currently destroying and rebuilding the whole tree :
 // we might want to do incremental updates, to keep the state of the items
 void ViewportOptionsEditor::updateOptions() {
 
-  Bases::BaseOptionsEditor::updateOptions();
+  BaseOptionsEditor::updateOptions();
 
   FabricCore::RTVal dict = m_drawContext.maybeGetMember("viewportParams");
 
   m_model = new OptionsDictModel(
     "Rendering Options",
     dict,
-    &m_settings,
+    m_settings,
     "",
-    *this
+    this
   );
 
   this->onSetModelItem(m_model);

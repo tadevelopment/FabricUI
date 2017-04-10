@@ -5,55 +5,69 @@
 #ifndef __UI_BASE_OPTION_DICT_MODEL__
 #define __UI_BASE_OPTION_DICT_MODEL__
 
-#include <string>
 #include <QSettings>
 #include <FabricCore.h>
 #include "BaseOptionsEditor.h"
 #include <FabricUI/ValueEditor/BaseModelItem.h>
 
 namespace FabricUI {
-namespace Bases {
+namespace OptionsEditor {
 
-// Models a dictionary of Options : RTVal[String]
-class OptionsDictModel : public ValueEditor::BaseModelItem {
-
+class OptionsDictModel : public ValueEditor::BaseModelItem 
+{
+  /**
+    OptionsDictModel specializes ValueEditor::BaseModelItem and gather
+    OptionsModels in a key-value pair dictionary [key (String), value(RTVal)].
+  */  
+  Q_OBJECT
+  
   public:
     OptionsDictModel(
-      const std::string name,
+      const QString &name,
       FabricCore::RTVal dict,
       QSettings* settings,
-      const std::string namePath,
-      BaseOptionsEditor& editor
+      const QString &namePath,
+      BaseOptionsEditor* editor
       );
 
     virtual ~OptionsDictModel();
 
+    /// Implementation of BaseModelItem
     virtual FTL::CStrRef getName();
 
+    /// Implementation of BaseModelItem
     virtual int getNumChildren();
 
+    /// Implementation of BaseModelItem
     virtual BaseModelItem* getChild(
       FTL::StrRef childName, 
       bool doCreate
       );
 
+    /// Implementation of BaseModelItem
     virtual BaseModelItem* getChild(
       int index, 
       bool doCreate
       );
     
+    /// Implementation of BaseModelItem
     virtual bool hasDefault();
     
+    /// Implementation of BaseModelItem
     virtual void resetToDefault();
 
   protected:
-    const std::string m_name;
-    const std::string m_namePath;
-    std::map<std::string, BaseModelItem*> m_children;
-    std::vector<std::string> m_keys;
+    /// Name of the dictionary.
+    QString m_name;
+    /// Path of the dictionary.
+    QString m_namePath;
+    /// Dictionary [key, value]
+    std::map<QString, BaseModelItem*> m_children;
+    /// Lists of the options' key.
+    std::vector<QString> m_keys;
 };
 
-} // namespace Bases
+} // namespace OptionsEditor 
 } // namespace FabricUI
 
 #endif // __UI_BASE_OPTION_DICT_MODEL__

@@ -5,50 +5,50 @@
 #ifndef __UI_BASE_OPTIONE_DITOR__
 #define __UI_BASE_OPTIONE_DITOR__
 
-#include <string>
-#include <QSettings>
 #include <QUndoStack>
-#include <FabricCore.h>
 #include <FabricUI/ValueEditor/VETreeWidget.h>
 
 namespace FabricUI {
-namespace Bases {
+namespace OptionsEditor {
 
 class OptionsModel;
 class OptionsDictModel;
 
 class BaseOptionsEditor : public ValueEditor::VETreeWidget
 {
+  /**
+    BaseOptionsEditor specializesValueEditor::VETreeWidget to edit
+    the content of OptionsDictModel dictionary.
+  */  
   Q_OBJECT
 
   public:
     BaseOptionsEditor( 
-      FabricCore::Client& client, 
-      QUndoStack& undoStack 
+      QUndoStack *undoStack 
       );
 
     virtual ~BaseOptionsEditor();
 
-    /// 
+    /// Emit valueChanged
     void emitValueChanged();
 
     /// Gets a reference to the undo stack.
-    QUndoStack& getUndoStack();
+    QUndoStack* getUndoStack();
     
   public slots:
+    /// Update when the dictionary content changed.
     virtual void updateOptions();
 
   signals:
-    /// When the value of one option has changed
-    void valueChanged() const;
+    /// Emited when the value of one option has changed.
+    void valueChanged();
 
   protected:
-    QSettings m_settings;
-    QUndoStack& m_undoStack;
+    QUndoStack *m_undoStack;
     OptionsDictModel* m_model;
 };
 
-} // namespace Bases
+} // namespace OptionsEditor 
 } // namespace FabricUI
 
 #endif // __UI_BASE_OPTIONE_DITOR__

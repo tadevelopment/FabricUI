@@ -6,17 +6,17 @@
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 
 using namespace FabricUI;
-using namespace Bases;
+using namespace OptionsEditor;
 using namespace ValueEditor;
 
 const char namePath_Separator = '/';
 
 OptionsModel::OptionsModel(
-  const std::string name,
+  const QString &name,
   FabricCore::RTVal value,
   QSettings* settings,
-  const std::string namePath,
-  BaseOptionsEditor& editor) 
+  const QString &namePath,
+  BaseOptionsEditor* editor) 
   : BaseModelItem()
   , m_name(name)
   , m_namePath(namePath + namePath_Separator + name)
@@ -26,17 +26,17 @@ OptionsModel::OptionsModel(
   , m_editor(editor)
 {
   // Fetching the value from the QSettings
-  if (m_settings->contains(m_namePath.data())) 
+  if (m_settings->contains(m_namePath)) 
   {
     QString settingsValue = m_settings->value( 
-      m_namePath.data() 
+      m_namePath 
       ).value<QString>();
 
     m_val.setJSON( 
       settingsValue.toUtf8().data() 
       );
 
-    m_editor.emitValueChanged();
+    m_editor->emitValueChanged();
   }
 }
 
@@ -52,7 +52,6 @@ QVariant OptionsModel::getValue()
 void OptionsModel::setValue(
   QVariant value) 
 {
-
   // RTVariant::toRTVal might change the pointer in ioVal,
   // so we copy it to make sure that m_val will always point to the same place
   FabricCore::RTVal m_valCopy = m_val.clone();
@@ -60,10 +59,10 @@ void OptionsModel::setValue(
   m_val.assign( m_valCopy );
 
   // Storing the value in the Settings
-  m_settings->setValue( m_namePath.data(), QString( m_val.getJSON().getStringCString() ));
+  m_settings->setValue( m_namePath, QString( m_val.getJSON().getStringCString() ));
 
   // Updating the UI
-  m_editor.emitValueChanged();
+  m_editor->emitValueChanged();
   emitModelValueChanged( getValue() );
 }
 
@@ -78,12 +77,12 @@ void OptionsModel::setValue(
   setValue( value );
 
   if( commit ) {
-    m_editor.getUndoStack().push(
+    m_editor->getUndoStack()->push(
       new OptionUndoCommand(
-        "Changed the option \"" + QString::fromUtf8( m_namePath.data(), m_namePath.size() ) + "\"",
+        QString("Changed the option \"" + m_namePath + "\""),
         previousValue,
         value,
-        *this
+        this
       )
     );
   }
@@ -102,5 +101,5 @@ void OptionsModel::resetToDefault()
 
 FTL::CStrRef OptionsModel::getName() 
 { 
-  return m_name; 
+  return m_name.toUtf8().constData(); 
 }

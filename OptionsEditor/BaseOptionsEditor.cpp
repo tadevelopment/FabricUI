@@ -3,20 +3,17 @@
 //
 
 #include "OptionsModel.h"
-#include "BaseOptionsEditor.h"
 #include "OptionsDictModel.h"
-
+#include "BaseOptionsEditor.h"
 #include <FabricUI/ValueEditor/BaseModelItem.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 
 using namespace FabricUI;
-using namespace Bases;
+using namespace OptionsEditor;
  
 BaseOptionsEditor::BaseOptionsEditor( 
-  FabricCore::Client& client, 
-  QUndoStack& undoStack )
+  QUndoStack * undoStack )
   : VETreeWidget()
-  , m_settings()
   , m_undoStack(undoStack)
   , m_model(NULL)
 {
@@ -33,7 +30,7 @@ void BaseOptionsEditor::emitValueChanged()
   emit valueChanged();
 }
 
-QUndoStack& BaseOptionsEditor::getUndoStack()
+QUndoStack* BaseOptionsEditor::getUndoStack()
 {
   return m_undoStack;
 }

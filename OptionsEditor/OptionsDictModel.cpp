@@ -6,17 +6,17 @@
 #include "OptionsDictModel.h"
 
 using namespace FabricUI;
-using namespace Bases;
+using namespace OptionsEditor ;
 using namespace ValueEditor;
 
 const char namePath_Separator = '/';
 
 OptionsDictModel::OptionsDictModel(
-  const std::string name,
+  const QString &name,
   FabricCore::RTVal dict,
   QSettings* settings,
-  const std::string namePath,
-  BaseOptionsEditor& editor) 
+  const QString &namePath,
+  BaseOptionsEditor* editor) 
   : m_name(name)
   , m_namePath(namePath + namePath_Separator + name)
 {
@@ -60,13 +60,13 @@ OptionsDictModel::OptionsDictModel(
 
 OptionsDictModel::~OptionsDictModel() 
 {
-  for (std::map<std::string, BaseModelItem*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
+  for (std::map<QString, BaseModelItem*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
     delete it->second;
   }
 }
 
 FTL::CStrRef OptionsDictModel::getName() { 
-  return m_name; 
+  return m_name.toUtf8().constData(); 
 }
 
 int OptionsDictModel::getNumChildren() 
@@ -78,7 +78,7 @@ BaseModelItem* OptionsDictModel::getChild(
   FTL::StrRef childName, 
   bool doCreate) 
 { 
-  return m_children[childName]; 
+  return m_children[childName.data()]; 
 }
 
 BaseModelItem* OptionsDictModel::getChild(
@@ -95,7 +95,7 @@ bool OptionsDictModel::hasDefault()
 
 void OptionsDictModel::resetToDefault() 
 {
-  for (std::map<std::string, BaseModelItem*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
+  for (std::map<QString, BaseModelItem*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
     it->second->resetToDefault();
   }
 }
