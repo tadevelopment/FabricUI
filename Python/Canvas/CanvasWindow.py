@@ -432,7 +432,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.treeWidget = DFG.PresetTreeWidget(controller, self.config, True, False, False, False, False, True)
         self.dfgWidget.newPresetSaved.connect(self.treeWidget.refresh)
         self.dfgWidget.revealPresetInExplorer.connect(self.treeWidget.onExpandToAndSelectItem)
-        controller.varsChanged.connect(self.treeWidget.setModelDirty)
+        # FE-8381 : Removed variables from the PresetTreeWidget
+        #controller.varsChanged.connect(self.treeWidget.setModelDirty)
         controller.dirty.connect(self.onDirty)
         controller.topoDirty.connect(self.onTopoDirty)
 

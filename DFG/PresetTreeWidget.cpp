@@ -88,11 +88,11 @@ PresetTreeWidget::PresetTreeWidget(
   }
 
   // remove "Variables" from the tree.
-  if (hideVariablesDir)
-  {
-    TreeView::TreeItem *item = m_treeModel->item("Variables");
-    if (item)   m_treeModel->removeItem(item);
-  }
+  // if (hideVariablesDir)
+  // {
+  //   TreeView::TreeItem *item = m_treeModel->item("Variables");
+  //   if (item)   m_treeModel->removeItem(item);
+  // }
 
   // remove inexisting / write-protected folders from the tree.
   if (hideWriteProtectedDirs)
@@ -102,7 +102,7 @@ PresetTreeWidget::PresetTreeWidget(
     {
       TreeView::TreeItem *item = m_treeModel->item(i);
       if (item && item->path() != "Fabric"
-               && item->path() != "Variables")
+              /* && item->path() != "Variables"*/)
       {
         FTL::StrRef path = host.getPresetImportPathname(item->path().c_str());
         if ( !path.empty() )
@@ -218,7 +218,8 @@ void PresetTreeWidget::refresh()
     }
 
     // also add the variable list item
-    m_treeModel->addItem( new VariableListTreeItem( binding ) );
+    // FE-8381 : Removed variables from the PresetTreeWidget
+    //m_treeModel->addItem( new VariableListTreeItem( binding ) );
 
     for(std::map<std::string, std::string>::iterator it=nameSpaceLookup.begin();it!=nameSpaceLookup.end();it++)
     {
