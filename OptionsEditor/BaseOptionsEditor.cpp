@@ -3,6 +3,7 @@
 //
 
 #include "BaseOptionsEditor.h"
+#include "OptionsDictModel.h"
 
 using namespace FabricUI;
 using namespace OptionsEditor;
