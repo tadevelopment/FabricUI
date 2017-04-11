@@ -341,9 +341,6 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 {
   registerStaticEntries();
 
-  // Splitting the search string into a char**
-  const std::string searchStr = query.getText();
-
   std::vector<std::string> searchTermsStr = query.getSplitText();
 
   // Remove tags (i.e. terms that contain ':') because they should be
