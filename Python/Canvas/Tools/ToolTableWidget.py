@@ -3,10 +3,35 @@
 #
 
 from PySide import QtGui
-from FabricEngine import Core
 from FabricEngine.Canvas.Utils import *
-from FabricEngine.FabricUI import Commands
-from FabricEngine.Canvas.Commands.CommandRegistry import *
+from FabricEngine.Canvas.Tools.ToolOptionsEditor import *
+
+class ToolPushButton(QtGui.QPushButton):
+    """ ToolPushButton specializes QTableWidgetItem.
+    """
+    
+    def __init__(self, text, tool, undoStack, settings):
+        """ Initializes the ToolPushButton.
+        """
+        
+        super(ToolPushButton, self).__init__(
+            text
+            )
+
+        self.toolOptionsEditorDialog = ToolOptionsEditorDialog(
+            self,
+            tool, 
+            undoStack, 
+            settings
+            )
+        
+        self.pressed.connect(
+            self.__onPressed
+            )
+
+    def __onPressed(self):
+        if self.toolOptionsEditorDialog.exec_() != QtGui.QDialog.Accepted:
+            return; 
 
 class ToolTableWidget(QtGui.QTableWidget):
 
@@ -70,10 +95,7 @@ class ToolTableWidget(QtGui.QTableWidget):
              
             for i in range(0, self.__getToolCount()):
                 tool = self.__getToolAtIndex(i)
-                toolName = tool.getName('String').getSimpleType()
-                isVisible = tool.isVisible('Boolean').getSimpleType()
-
-                self.__createNewRow(toolName)
+                self.__createNewRow(tool)
  
         self.toolManagerVersion = version
 
@@ -85,52 +107,58 @@ class ToolTableWidget(QtGui.QTableWidget):
         pWidget.setLayout(pLayout)
         self.setCellWidget(row, column, pWidget)
 
-    def __createNewRow(self, toolName):
+    def __createNewRow(self, tool):
         """ \internal.
             Create a new row: [name, class, type] items.
         """
+
+        #isVisible = tool.isVisible('Boolean').getSimpleType()
 
         rowCount = self.rowCount() 
         self.insertRow(rowCount)
         
         # Name item
+        toolName = tool.getName('String').getSimpleType()
         item = QtGui.QTableWidgetItem(toolName) 
-        #item.setToolTip(cmd.getHelp())
         item.setFlags(QtCore.Qt.NoItemFlags)
         self.setItem(rowCount, 0, item)
         
         self.__setCellWidget(rowCount, 1, QtGui.QCheckBox(''))
-        self.__setCellWidget(rowCount, 2, QtGui.QPushButton('-'))
+
+        button = ToolPushButton(
+            '-',
+            tool,
+            self.canvasWindow.qUndoStack,
+            self.canvasWindow.settings
+            )
+
+        self.__setCellWidget(
+            rowCount, 
+            2, 
+            button
+            )
   
     def filterItems(self, query):
         """ \internal.
-            Filters the items according the commands' names, classes or types.
-            To filter by class, use '#' before the query.  
-            To filter by type, use '@' before the query.  
+            Filters the item.
         """
         searchByClass = False
-        if len(query):
-            searchByClass = query[0] == '#'
+        # if len(query):
+        #     searchByClass = query[0] == '#'
 
-        searchByType = False
-        if len(query):
-            searchByType = query[0] == '@'
+        # searchByType = False
+        # if len(query):
+        #     searchByType = query[0] == '@'
    
-        regex = CreateSearchRegex(query) 
+        # regex = CreateSearchRegex(query) 
 
-        for i in range(0, self.rowCount()):
+        # for i in range(0, self.rowCount()):
 
-            # Checks the action's name/shortcut matches.
-            cmdName = self.item(i, 0).text()
-            cmdType = self.item(i, 1).text()
-            implType = self.item(i, 2).text()
+        #     # Checks the action's name/shortcut matches.
+        #     cmdName = self.item(i, 0).text()
+        #     cmdType = self.item(i, 1).text()
+        #     implType = self.item(i, 2).text()
 
-            if  (   (searchByClass and not searchByType and regex.search(cmdType.lower()) ) or 
-                    (not searchByClass and searchByType and regex.search(implType.lower()) ) or 
-                    (not searchByClass and not searchByType and  regex.search(cmdName.lower()) ) ):
-
-                isCommand = GetCommandRegistry().isCommandRegistered(cmdName)
-                self.setRowHidden(i, False)
-                 
-            else:
-                self.setRowHidden(i, True)
+        #     if  (   (searchByClass and not searchByType and regex.search(cmdType.lower()) ) or 
+        #             (not searchByClass and searchByType and regex.search(implType.lower()) ) or 
+        #             (not searchByClass and not searchByType and  regex.search(cmdName.lower()) ) ):

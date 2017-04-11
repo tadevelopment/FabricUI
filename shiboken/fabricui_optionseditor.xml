@@ -1,0 +1,10 @@
+<?xml  version="1.0"?>
+<typesystem package="FabricUI">
+  <namespace-type name="FabricUI"  generate="no">
+    <namespace-type name="OptionsEditor"  generate="yes">
+      <object-type name="OptionsModel" copyable="false"/>
+      <object-type name="OptionsDictModel" copyable="false"/>
+      <object-type name="BaseOptionsEditor" copyable="false"/>
+	</namespace-type>
+  </namespace-type>
+</typesystem>

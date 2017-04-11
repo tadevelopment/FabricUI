@@ -35,6 +35,7 @@
     <load-typesystem name="fabricui_actions.xml" generate="yes"/>
     <load-typesystem name="fabricui_modelitems.xml" generate="yes"/>
     <load-typesystem name="fabricui_valueeditor.xml" generate="yes"/>
+    <load-typesystem name="fabricui_optionseditor.xml" generate="yes"/>
     <load-typesystem name="fabricui_scenehub.xml" generate="yes"/>
 
     <namespace-type name="_Test" generate="yes">

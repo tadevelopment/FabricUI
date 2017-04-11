@@ -447,11 +447,12 @@ class CanvasWindow(QtGui.QMainWindow):
         The UICmdHandler handles the interaction between the UI and the client.
 
         """
+        self.qUndoStack = QtGui.QUndoStack()
+
         CreateCommandManager(self.client)
         self.hotkeyEditorDialog = HotkeyEditorDialog(self)
         self.toolEditorDialog = ToolEditorDialog(self)
 
-        self.qUndoStack = QtGui.QUndoStack()
         self.qUndoView = QtGui.QUndoView(self.qUndoStack)
         self.qUndoView.setObjectName('DFGHistoryWidget')
         self.qUndoView.setEmptyLabel("New Graph")
@@ -510,7 +511,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
-        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor( self.client, self.qUndoStack )
+        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor( self.client, self.qUndoStack, self.settings )
         # When the rendering options of the viewport have changed, redraw
         self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
         # Once the Viewport has been setup (and filled its option values), update the options menu
