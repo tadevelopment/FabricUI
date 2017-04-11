@@ -6,37 +6,35 @@
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 
 using namespace FabricUI;
-using namespace OptionsEditor;
 using namespace ValueEditor;
+using namespace OptionsEditor;
 
 const char namePath_Separator = '/';
 
 OptionsModel::OptionsModel(
-  const QString &name,
+  const std::string &name,
   FabricCore::RTVal value,
   QSettings* settings,
-  const QString &namePath,
-  BaseOptionsEditor* editor) 
+  const std::string &namePath) 
   : BaseModelItem()
   , m_name(name)
   , m_namePath(namePath + namePath_Separator + name)
   , m_val(value)
   , m_originalValue(value.clone())
   , m_settings(settings)
-  , m_editor(editor)
 {
   // Fetching the value from the QSettings
-  if (m_settings->contains(m_namePath)) 
+  if (m_settings->contains(m_namePath.data())) 
   {
     QString settingsValue = m_settings->value( 
-      m_namePath 
+      m_namePath.data() 
       ).value<QString>();
 
     m_val.setJSON( 
       settingsValue.toUtf8().data() 
       );
 
-    m_editor->emitValueChanged();
+    emit valueChanged();
   }
 }
 
@@ -59,10 +57,10 @@ void OptionsModel::setValue(
   m_val.assign( m_valCopy );
 
   // Storing the value in the Settings
-  m_settings->setValue( m_namePath, QString( m_val.getJSON().getStringCString() ));
+  m_settings->setValue( m_namePath.data(), QString( m_val.getJSON().getStringCString() ));
 
   // Updating the UI
-  m_editor->emitValueChanged();
+  emit valueChanged();
   emitModelValueChanged( getValue() );
 }
 
@@ -76,15 +74,16 @@ void OptionsModel::setValue(
 
   setValue( value );
 
-  if( commit ) {
-    m_editor->getUndoStack()->push(
-      new OptionUndoCommand(
-        QString("Changed the option \"" + m_namePath + "\""),
-        previousValue,
-        value,
-        this
-      )
+  if( commit ) 
+  {
+    QUndoCommand * cmd = new OptionUndoCommand(
+      "Changed the option \"" + QString(m_namePath.data()) + "\"",
+      previousValue,
+      value,
+      this
     );
+
+    emit valueCommitted(cmd);
   }
 }
 
@@ -95,11 +94,10 @@ bool OptionsModel::hasDefault()
 
 void OptionsModel::resetToDefault() 
 {
-
   setValue( toVariant( m_originalValue ), true, getValue() );
 }
 
 FTL::CStrRef OptionsModel::getName() 
 { 
-  return m_name.toUtf8().constData(); 
+  return m_name; 
 }

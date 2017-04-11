@@ -6,16 +6,16 @@
 #include "OptionsDictModel.h"
 
 using namespace FabricUI;
-using namespace OptionsEditor ;
 using namespace ValueEditor;
+using namespace OptionsEditor;
 
 const char namePath_Separator = '/';
 
 OptionsDictModel::OptionsDictModel(
-  const QString &name,
+  const std::string &name,
   FabricCore::RTVal dict,
   QSettings* settings,
-  const QString &namePath,
+  const std::string &namePath,
   BaseOptionsEditor* editor) 
   : m_name(name)
   , m_namePath(namePath + namePath_Separator + name)
@@ -47,9 +47,22 @@ OptionsDictModel::OptionsDictModel(
         key.getStringCString(),
         value,
         settings,
-        m_namePath,
-        editor
+        m_namePath
       );
+
+      QObject::connect(
+        item,
+        SIGNAL(valueChanged()),
+        editor,
+        SLOT(onValueChanged())
+        );
+
+      QObject::connect(
+        item,
+        SIGNAL(valueCommitted(QUndoCommand *)),
+        editor,
+        SLOT(onValueCommitted(QUndoCommand *))
+        );
     }
 
     m_children[key.getStringCString()] = item;
@@ -60,13 +73,13 @@ OptionsDictModel::OptionsDictModel(
 
 OptionsDictModel::~OptionsDictModel() 
 {
-  for (std::map<QString, BaseModelItem*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
+  for (std::map<std::string, BaseModelItem*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
     delete it->second;
   }
 }
 
 FTL::CStrRef OptionsDictModel::getName() { 
-  return m_name.toUtf8().constData(); 
+  return m_name; 
 }
 
 int OptionsDictModel::getNumChildren() 
@@ -95,7 +108,7 @@ bool OptionsDictModel::hasDefault()
 
 void OptionsDictModel::resetToDefault() 
 {
-  for (std::map<QString, BaseModelItem*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
+  for (std::map<std::string, BaseModelItem*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
     it->second->resetToDefault();
   }
 }

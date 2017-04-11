@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_BASE_OPTION_DICT_MODEL__
-#define __UI_BASE_OPTION_DICT_MODEL__
+#ifndef __UI_OPTION_DICT_MODEL__
+#define __UI_OPTION_DICT_MODEL__
 
 #include <QSettings>
 #include <FabricCore.h>
@@ -17,16 +17,16 @@ class OptionsDictModel : public ValueEditor::BaseModelItem
 {
   /**
     OptionsDictModel specializes ValueEditor::BaseModelItem and gather
-    OptionsModels in a key-value pair dictionary [key (String), value(RTVal)].
+    OptionsModels in a key-value pair dictionary [key(String), value(RTVal)].
   */  
   Q_OBJECT
   
   public:
     OptionsDictModel(
-      const QString &name,
+      const std::string &name,
       FabricCore::RTVal dict,
       QSettings* settings,
-      const QString &namePath,
+      const std::string &namePath,
       BaseOptionsEditor* editor
       );
 
@@ -58,16 +58,16 @@ class OptionsDictModel : public ValueEditor::BaseModelItem
 
   protected:
     /// Name of the dictionary.
-    QString m_name;
+    std::string m_name;
     /// Path of the dictionary.
-    QString m_namePath;
+    std::string m_namePath;
     /// Dictionary [key, value]
-    std::map<QString, BaseModelItem*> m_children;
+    std::map<std::string, BaseModelItem*> m_children;
     /// Lists of the options' key.
-    std::vector<QString> m_keys;
+    std::vector<std::string> m_keys;
 };
 
 } // namespace OptionsEditor 
 } // namespace FabricUI
 
-#endif // __UI_BASE_OPTION_DICT_MODEL__
+#endif // __UI_OPTION_DICT_MODEL__
