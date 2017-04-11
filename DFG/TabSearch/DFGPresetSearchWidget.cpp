@@ -370,9 +370,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
     requiredTags[i] = queryTags[i].data();
 
   // Querying the DataBase of presets
-  FabricCore::DFGHost* host = m_host;
-  FEC_StringRef jsonStr = FEC_DFGHostSearchPresets(
-    host->getFECDFGHostRef(),
+  FabricCore::String json = m_host->searchPresets(
     searchTerms.size(),
     searchTerms.data(),
     requiredTags.size(),
@@ -380,11 +378,11 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
     0,
     16
   );
-  FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
+  std::string jsonStr( json.getCStr(), json.getSize() );
 
   hidePreview();
   m_status->setHintsEnabled( query.getTags().size() == 0 && query.getText().empty() );
-  m_resultsView->setResults( jsonStrR, query );
+  m_resultsView->setResults( jsonStr, query );
 
   updateSize();
 }
