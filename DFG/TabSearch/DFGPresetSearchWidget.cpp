@@ -349,7 +349,12 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
     std::vector<std::string> filteredTerms;
     for( size_t i = 0; i < searchTermsStr.size(); i++ )
       if( !TabSearch::Query::Tag::IsTag( searchTermsStr[i] ) )
-        filteredTerms.push_back( searchTermsStr[i] );
+      {
+        // Converting the string to Latin1 because Core/DFGHost::searchPresets
+        // currently only supports encodings with 1 byte per char
+        std::string searchTerm = ToLatin1( searchTermsStr[i] );
+        filteredTerms.push_back( searchTerm );
+      }
     searchTermsStr = filteredTerms;
   }
 
