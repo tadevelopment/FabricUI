@@ -134,6 +134,50 @@ void DFGPresetSearchWidget::Status::updateDisplay()
     clear();
 }
 
+class DFGPresetSearchWidget::MoveHandle : public QFrame
+{
+  typedef QFrame Parent;
+
+  DFGPresetSearchWidget* m_parent;
+  QPoint m_lastPos;
+
+public:
+  MoveHandle( DFGPresetSearchWidget* parent )
+    : QFrame( parent )
+    , m_parent( parent )
+  {
+    this->setObjectName( "MoveHandle" );
+    this->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ) );
+  }
+  
+protected:
+
+  void enterEvent( QEvent* e ) FTL_OVERRIDE
+  {
+    Parent::enterEvent( e );
+    this->setCursor( Qt::PointingHandCursor );
+  }
+
+  void leaveEvent( QEvent* e ) FTL_OVERRIDE
+  {
+    Parent::leaveEvent( e );
+    this->unsetCursor();
+  }
+
+  void mousePressEvent( QMouseEvent * e ) FTL_OVERRIDE
+  {
+    m_lastPos = e->globalPos();
+  }
+
+  void mouseMoveEvent( QMouseEvent * e ) FTL_OVERRIDE
+  {
+    QPoint mousePos = e->globalPos();
+    m_parent->move( m_parent->pos() + mousePos - m_lastPos );
+    m_parent->maybeReposition();
+    m_lastPos = mousePos;
+  }
+};
+
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
   , m_staticEntriesAddedToDB( false )
@@ -246,7 +290,6 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   hlayout->setSizeConstraint( QLayout::SetFixedSize );
   hlayout->setMargin( 0 ); hlayout->setSpacing( 0 );
   hlayout->addWidget( m_searchFrame );
-  this->setLayout( hlayout );
   m_detailsPanel->setFocusPolicy( Qt::NoFocus );
   m_detailsPanel->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
@@ -301,6 +344,15 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     this->addAction( toggleDetailsA );
   }
 
+  // Layout containing most of the TabSearch, and its MoveHandle
+  QVBoxLayout* moveableLay = new QVBoxLayout();
+  moveableLay->addWidget( new MoveHandle( this ) );
+  moveableLay->addLayout( hlayout );
+  moveableLay->setMargin( 0 );
+  moveableLay->setSpacing( 0 );
+  moveableLay->setSizeConstraint( QLayout::SetFixedSize );
+  this->setLayout( moveableLay );
+
   vlayout->addWidget( m_status );
   hidePreview();
   updateSize();
@@ -314,8 +366,7 @@ DFGPresetSearchWidget::~DFGPresetSearchWidget()
 void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
 {
   move( QPoint( 0, 0 ) );
-  m_posAtShow = mapFromGlobal( globalPos );
-  move( m_posAtShow );
+  move( mapFromGlobal( globalPos ) );
 
   emit enabled( true );
   show();
@@ -711,21 +762,11 @@ void DFGPresetSearchWidget::maybeReposition()
 {
   if ( QWidget *parent = parentWidget() )
   {
-    QSize parentSize = parent->size();
-    // qDebug() << "parentSize" << parentSize;
-    QPoint myPos = QPoint(
-      // Don't move the widget when shrinking
-      std::min( m_posAtShow.x(), this->pos().x() ),
-      std::min( m_posAtShow.y(), this->pos().y() )
-    );
-    // qDebug() << "myPos before" << myPos;
-    QSize mySize = size();
-    // qDebug() << "mySize" << myPos;
-    if ( myPos.x() + mySize.width() > parentSize.width() )
-      myPos.setX( std::max( 0, parentSize.width() - mySize.width() ) );
-    if ( myPos.y() + mySize.height() > parentSize.height() )
-      myPos.setY( std::max( 0, parentSize.height() - mySize.height() ) );
-    // qDebug() << "myPos before" << myPos;
+    QPoint myPos = this->pos();
+    // The order of std::max and std::min is important ! Because if the Parent is too
+    // small for the widget, we want to give priority to the top left (rather than the bottom right)
+    myPos.setX( std::max( 0, std::min( myPos.x(), parent->width() - this->width() ) ) );
+    myPos.setY( std::max( 0, std::min( myPos.y(), parent->height() - this->height() ) ) );
     move( myPos );
   }
 }
