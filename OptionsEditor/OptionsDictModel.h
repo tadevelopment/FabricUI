@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_BASE_OPTION_DICT_MODEL__
-#define __UI_BASE_OPTION_DICT_MODEL__
+#ifndef __UI_OPTION_DICT_MODEL__
+#define __UI_OPTION_DICT_MODEL__
 
 #include <QSettings>
 #include <FabricCore.h>
@@ -17,7 +17,7 @@ class OptionsDictModel : public ValueEditor::BaseModelItem
 {
   /**
     OptionsDictModel specializes ValueEditor::BaseModelItem and gather
-    OptionsModels in a key-value pair dictionary [key (String), value(RTVal)].
+    OptionsModels in a key-value pair dictionary [key(String), value(RTVal)].
   */  
   Q_OBJECT
   
@@ -70,4 +70,4 @@ class OptionsDictModel : public ValueEditor::BaseModelItem
 } // namespace OptionsEditor 
 } // namespace FabricUI
 
-#endif // __UI_BASE_OPTION_DICT_MODEL__
+#endif // __UI_OPTION_DICT_MODEL__

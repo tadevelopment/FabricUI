@@ -17,8 +17,8 @@ class OptionsDictModel;
 class BaseOptionsEditor : public ValueEditor::VETreeWidget
 {
   /**
-    BaseOptionsEditor specializesValueEditor::VETreeWidget to edit
-    the content of OptionsDictModel dictionary.
+    BaseOptionsEditor specializes ValueEditor::VETreeWidget
+     to edit the content of OptionsDictModel dictionary.
   */  
   Q_OBJECT
 
@@ -29,15 +29,15 @@ class BaseOptionsEditor : public ValueEditor::VETreeWidget
 
     virtual ~BaseOptionsEditor();
 
-    /// Emit valueChanged
-    void emitValueChanged();
-
-    /// Gets a reference to the undo stack.
-    QUndoStack* getUndoStack();
-    
   public slots:
     /// Update when the dictionary content changed.
     virtual void updateOptions();
+
+    /// Update when a dictionary value changed.
+    void onValueChanged();
+
+    /// Update when a dictionary value is committed.
+    void onValueCommitted(QUndoCommand *);
 
   signals:
     /// Emited when the value of one option has changed.

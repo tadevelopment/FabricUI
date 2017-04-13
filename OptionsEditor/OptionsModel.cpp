@@ -6,8 +6,8 @@
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 
 using namespace FabricUI;
-using namespace OptionsEditor;
 using namespace ValueEditor;
+using namespace OptionsEditor;
 
 const char namePath_Separator = '/';
 
@@ -15,15 +15,13 @@ OptionsModel::OptionsModel(
   const std::string &name,
   FabricCore::RTVal value,
   QSettings* settings,
-  const std::string &namePath,
-  BaseOptionsEditor* editor) 
+  const std::string &namePath) 
   : BaseModelItem()
   , m_name(name)
   , m_namePath(namePath + namePath_Separator + name)
   , m_val(value)
   , m_originalValue(value.clone())
   , m_settings(settings)
-  , m_editor(editor)
 {
   // Fetching the value from the QSettings
   if (m_settings->contains(m_namePath.data())) 
@@ -36,7 +34,7 @@ OptionsModel::OptionsModel(
       settingsValue.toUtf8().data() 
       );
 
-    m_editor->emitValueChanged();
+    emit valueChanged();
   }
 }
 
@@ -62,7 +60,7 @@ void OptionsModel::setValue(
   m_settings->setValue( m_namePath.data(), QString( m_val.getJSON().getStringCString() ));
 
   // Updating the UI
-  m_editor->emitValueChanged();
+  emit valueChanged();
   emitModelValueChanged( getValue() );
 }
 
@@ -76,15 +74,16 @@ void OptionsModel::setValue(
 
   setValue( value );
 
-  if( commit ) {
-    m_editor->getUndoStack()->push(
-      new OptionUndoCommand(
-        "Changed the option \"" + QString(m_namePath.data()) + "\"",
-        previousValue,
-        value,
-        this
-      )
+  if( commit ) 
+  {
+    QUndoCommand * cmd = new OptionUndoCommand(
+      "Changed the option \"" + QString(m_namePath.data()) + "\"",
+      previousValue,
+      value,
+      this
     );
+
+    emit valueCommitted(cmd);
   }
 }
 

@@ -6,8 +6,8 @@
 #include "OptionsDictModel.h"
 
 using namespace FabricUI;
-using namespace OptionsEditor ;
 using namespace ValueEditor;
+using namespace OptionsEditor;
 
 const char namePath_Separator = '/';
 
@@ -22,11 +22,9 @@ OptionsDictModel::OptionsDictModel(
 {
   FabricCore::RTVal keys = dict.getDictKeys();
 
-  std::cout << "OptionsDictModel" << std::endl;
   for (unsigned i = 0; i < keys.getArraySize(); i++) 
   {
     FabricCore::RTVal key = keys.getArrayElementRef(i);
-    std::cout << "Key[" << i << "] " << key.getStringCString() << std::endl;
     FabricCore::RTVal value = dict.getDictElement(key);
     if (value.isWrappedRTVal()) 
       value = value.getUnwrappedRTVal(); 
@@ -49,9 +47,22 @@ OptionsDictModel::OptionsDictModel(
         key.getStringCString(),
         value,
         settings,
-        m_namePath,
-        editor
+        m_namePath
       );
+
+      QObject::connect(
+        item,
+        SIGNAL(valueChanged()),
+        editor,
+        SLOT(onValueChanged())
+        );
+
+      QObject::connect(
+        item,
+        SIGNAL(valueCommitted(QUndoCommand *)),
+        editor,
+        SLOT(onValueCommitted(QUndoCommand *))
+        );
     }
 
     m_children[key.getStringCString()] = item;

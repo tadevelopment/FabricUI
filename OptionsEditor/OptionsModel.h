@@ -2,12 +2,12 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_BASE_OPTION_MODEL__
-#define __UI_BASE_OPTION_MODEL__
+#ifndef __UI_OPTION_MODEL__
+#define __UI_OPTION_MODEL__
 
 #include <QSettings>
+#include <QUndoCommand>
 #include <FabricCore.h>
-#include "BaseOptionsEditor.h"
 #include <FabricUI/ValueEditor/BaseModelItem.h>
 
 namespace FabricUI {
@@ -17,7 +17,7 @@ class OptionsModel : public ValueEditor::BaseModelItem
 {
   /**
     OptionsModel specializes ValueEditor::BaseModelItem.
-    It defines a model for a single option (RTVal)
+    It defines a model for a single option (RTVal).
   */  
   Q_OBJECT
   
@@ -26,8 +26,7 @@ class OptionsModel : public ValueEditor::BaseModelItem
       const std::string &name,
       FabricCore::RTVal value,
       QSettings* settings,
-      const std::string &namePath,
-      BaseOptionsEditor* editor
+      const std::string &namePath
     );
 
     virtual ~OptionsModel();
@@ -55,6 +54,13 @@ class OptionsModel : public ValueEditor::BaseModelItem
 
     /// Implementation of BaseModelItem
     virtual FTL::CStrRef getName();
+
+  signals:
+    /// Emited when the value of one option has changed.
+    void valueChanged();
+
+    /// Emited when the value of one option has changed.
+    void valueCommitted(QUndoCommand *);
 
   protected:
     struct OptionUndoCommand : QUndoCommand {
@@ -91,11 +97,9 @@ class OptionsModel : public ValueEditor::BaseModelItem
     /// Value before applying the QSettings
     FabricCore::RTVal m_originalValue; 
     QSettings* m_settings;
-    /// Pointer to the editor.
-    BaseOptionsEditor* m_editor;
 };
 
 } // namespace OptionsEditor 
 } // namespace FabricUI
 
-#endif // __UI_BASE_OPTION_MODEL__
+#endif // __UI_OPTION_MODEL__
