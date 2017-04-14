@@ -4,7 +4,7 @@
 #include <QProxyStyle>
 #include <QStyleFactory>
 #include <QTextStream>
-#include "DFGPresetSearchWidget.h"
+#include <FabricUI/DFG/TabSearch/DFGPresetSearchWidget.h>
 #include <FabricUI/Style/FabricStyle.h>
 
 void ReportCallBack(
