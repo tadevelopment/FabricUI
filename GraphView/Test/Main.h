@@ -70,13 +70,7 @@ namespace Test
     Graph* m_graph;
     typedef std::map<std::string, Node*> NodeMap;
     NodeMap m_nodes;
-    struct PathPair
-    {
-      std::string src, dst;
-      PathPair( const std::string& src, const std::string& dst ) : src( src ), dst( dst ) {}
-      bool operator==( const PathPair& p ) const { return ( src == p.src && dst == p.dst ) || ( src == p.dst && dst == p.src ); }
-      bool operator<( const PathPair& p ) const { return !(( *this ) == p ) && src < p.src; } // HACK ?
-    };
+    typedef std::pair<std::string, std::string> PathPair;
     typedef std::map<PathPair, Connection*> ConnectionMap;
     ConnectionMap m_connections;
   };

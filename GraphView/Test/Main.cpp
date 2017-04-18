@@ -25,8 +25,10 @@ Node* Test::Controller::addNode( const std::string& path )
 Connection* Test::Controller::addConnection( ConnectionTarget* c1, ConnectionTarget* c2 )
 {
   PathPair key( c1->path(), c2->path() );
-  if( m_connections.find( key ) != m_connections.end() )
+  if( m_connections.find( key ) == m_connections.end() )
     m_connections.insert( ConnectionMap::value_type( key, new Connection( m_graph, c1, c2 ) ) );
+  else
+    std::cout << "connection " << c1->path() << " " << c2->path() << " already added" << std::endl;
   return m_connections[ key ];
 }
 
