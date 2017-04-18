@@ -1825,66 +1825,32 @@ namespace DFG {
       GraphView::Node *m_node;
     };
 
-    class DeleteNodes1Action : public BaseDFGWidgetAction
+    class DeleteNodesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT
 
     public:
 
-      DeleteNodes1Action(
+      DeleteNodesAction(
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
         : BaseDFGWidgetAction( 
           dfgWidget
           , parent
-          , "DFGWidget::DeleteNodes1Action" 
+          , "DFGWidget::DeleteNodesAction" 
           , "Delete" 
-          , QKeySequence(Qt::Key_Delete)
+          , QKeySequence()
           , Qt::WidgetWithChildrenShortcut
           , enable)
       {
+        QList<QKeySequence> shortcuts;
+        shortcuts += Qt::Key_Delete;
+        shortcuts += Qt::Key_Backspace;
+        this->setShortcuts( shortcuts );
       }
 
-      virtual ~DeleteNodes1Action()
-      {
-      }
-
-    private slots:
-
-      virtual void onTriggered()
-      {
-        if (m_dfgWidget->isEditable())
-        {
-          std::vector<GraphView::Node *> nodes = m_dfgWidget->getUIGraph()->selectedNodes();
-          m_dfgWidget->getUIController()->gvcDoRemoveNodes(nodes);
-        }
-      }
-
-    };
-
-    class DeleteNodes2Action : public BaseDFGWidgetAction
-    {
-      Q_OBJECT
-
-    public:
-
-      DeleteNodes2Action(
-        DFGWidget *dfgWidget,
-        QObject *parent,
-        bool enable = true )
-        : BaseDFGWidgetAction( 
-          dfgWidget
-          , parent
-          , "DFGWidget::DeleteNodes2Action" 
-          , "Delete" 
-          , QKeySequence(Qt::Key_Backspace)
-          , Qt::WidgetWithChildrenShortcut
-          , enable)
-      {
-      }
-
-      virtual ~DeleteNodes2Action()
+      virtual ~DeleteNodesAction()
       {
       }
 
