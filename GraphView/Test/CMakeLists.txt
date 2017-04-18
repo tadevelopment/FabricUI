@@ -77,7 +77,8 @@ add_executable(
   ${FabricUI_Util}
   ${FSCommands}
   ${SGDir}/Native/FabricUI/Style/FabricStyle.cpp
-  ${SGDir}/Native/FabricUI/DFG/TabSearch/Test/Main.cpp
+  ${SGDir}/Native/FabricUI/GraphView/Test/Main.cpp
+  ${SGDir}/Native/FabricUI/GraphView/Test/Main.h
   ${CMAKE_BINARY_DIR}/Moc.cpp
   )
 
