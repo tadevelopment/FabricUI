@@ -1,4 +1,11 @@
+
 #include "Main.h"
+
+#include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/GraphViewWidget.h>
+#include <FabricUI/GraphView/Pin.h>
+#include <FabricUI/GraphView/ConnectionTarget.h>
+#include <FabricUI/GraphView/Node.h>
 
 using namespace FabricUI::GraphView;
 

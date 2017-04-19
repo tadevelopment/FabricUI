@@ -4,7 +4,8 @@
 
 #include <QApplication>
 #include <FabricUI/Style/FabricStyle.h>
-#include <FabricUI/GraphView/GraphViewWidget.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/Graph.h>
 
 namespace FabricUI
 {
