@@ -16,6 +16,8 @@
 #include <FTL/ArrayRef.h>
 #include <FTL/StrRef.h>
 
+class QMenu;
+
 namespace FabricServices
 {
   namespace Commands
@@ -23,6 +25,7 @@ namespace FabricServices
     class CompoundCommand;
   }
 }
+
 
 namespace FabricUI
 {
@@ -39,6 +42,7 @@ namespace FabricUI
     class Port;
     class Connection;
     class ConnectionTarget;
+    class InstBlock;
 
     class Controller : public QObject
     {
@@ -145,6 +149,10 @@ namespace FabricUI
         ) const;
 
       bool gvcDoRemoveConnections(const std::vector<Connection*> & conns);
+
+      virtual QMenu* gvcCreateNodeHeaderMenu( Node * node, ConnectionTarget * other, PortType nodeRole ) { return NULL; }
+      virtual QMenu* gvcCreateInstBlockHeaderMenu( InstBlock *instBlock, ConnectionTarget *other, PortType nodeRole ) { return NULL; }
+      virtual std::string gvcEncodeMetadaToPersistValue() { return ""; }
 
     virtual void collapseNodes(int state, const std::vector<Node*> & nodes);
     virtual void collapseSelectedNodes(int state);
