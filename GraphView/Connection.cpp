@@ -6,6 +6,7 @@
 #include <QPainterPathStroker>
 
 #include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/ConnectionTarget.h>
 #include <FabricUI/GraphView/FixedPort.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/InstBlock.h>
@@ -13,6 +14,13 @@
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Port.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/MouseGrabber.h>
+#include <FabricUI/GraphView/Port.h>
+#include <FabricUI/GraphView/FixedPort.h>
+#include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/GraphView/Node.h>
 
 #include <algorithm>
 #include <cstdlib>

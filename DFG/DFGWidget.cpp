@@ -19,6 +19,11 @@
 #include <FabricUI/DFG/DFGBindingUtils.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/FixedPort.h>
+#include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/SidePanel.h>
 #include <FabricUI/Util/FabricResourcePath.h>
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 #include <FabricUI/Util/UIRange.h>

@@ -13,7 +13,6 @@
 
 #include "PortType.h"
 #include "PortLabel.h"
-#include "PinCircle.h"
 #include "ConnectionTarget.h"
 #include "GraphicItemTypes.h"
 
@@ -26,6 +25,7 @@ namespace FabricUI
     class Graph;
     class Pin;
     class SidePanel;
+    class PinCircle;
 
     class Port : public ConnectionTarget
     {

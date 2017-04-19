@@ -9,6 +9,9 @@
 #include <FabricUI/GraphView/QGraphicsPixmapLayoutItem.h>
 #include <FabricUI/GraphView/SidePanel.h>
 #include <FabricUI/Util/LoadPixmap.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/PortLabel.h>
+#include <FabricUI/GraphView/PinCircle.h>
 
 #include <QGraphicsLinearLayout>
 #include <QGraphicsProxyWidget>

@@ -11,12 +11,7 @@
 
 #include <FTL/CStrRef.h>
 
-#include <FabricUI/GraphView/NodeRectangle.h>
-#include <FabricUI/GraphView/NodeHeader.h>
-#include <FabricUI/GraphView/NodeLabel.h>
-#include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/GraphicItemTypes.h>
-#include <FabricUI/GraphView/Connection.h>
 
 #include <set>
 #include <vector>
@@ -31,6 +26,10 @@ namespace FabricUI
     class Graph;
     class InstBlock;
     class NodeBubble;
+    class NodeHeader;
+    class Pin;
+    class Connection;
+    class ConnectionTarget;
 
     class Node : public QGraphicsWidget
     {

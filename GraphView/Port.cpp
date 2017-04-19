@@ -5,8 +5,11 @@
 #include <FabricUI/GraphView/GraphConfig.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/Pin.h>
+#include <FabricUI/GraphView/PinCircle.h>
+#include <FabricUI/GraphView/PortLabel.h>
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/GraphView/Controller.h>
 
 #include <QGraphicsLinearLayout>
 

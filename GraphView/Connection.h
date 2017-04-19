@@ -9,8 +9,8 @@
 #include <QPointF>
 #include <QRectF>
 
-#include "ConnectionTarget.h"
 #include "GraphicItemTypes.h"
+#include <FTL/Config.h>
 
 namespace FabricUI
 {
@@ -19,6 +19,7 @@ namespace FabricUI
   {
     // forward declarations
     class Graph;
+    class ConnectionTarget;
 
     class Connection : public QObject, public QGraphicsPathItem
     {

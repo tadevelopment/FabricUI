@@ -13,8 +13,11 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <Commands/CommandStack.h>
+#include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
+#include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/DFG/DFGConfig.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGExecHeaderWidget.h>

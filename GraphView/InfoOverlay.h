@@ -3,8 +3,8 @@
 #ifndef __UI_GraphView_InfoOverlay__
 #define __UI_GraphView_InfoOverlay__
 
-#include "Node.h"
 #include "GraphConfig.h"
+#include <QGraphicsWidget>
 
 namespace FabricUI
 {
@@ -13,6 +13,7 @@ namespace FabricUI
   {
     // forward declarations
     class Graph;
+    class Node;
 
     class InfoOverlay : public QGraphicsWidget
     {

@@ -14,6 +14,13 @@
 #include <FabricUI/GraphView/MouseGrabber.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/Util/LoadPixmap.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/GraphView/Port.h>
+#include <FabricUI/GraphView/NodeHeader.h>
+#include <FabricUI/GraphView/Node.h>
+#include <FabricUI/GraphView/PinCircle.h>
+#include <FabricUI/GraphView/FixedPort.h>
 
 #include <QPainter>
 #include <QCursor>

@@ -11,6 +11,11 @@
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/NodeRectangle.h>
+#include <FabricUI/GraphView/NodeHeader.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/Pin.h>
 
 #include <QDebug>
 #include <QApplication>
