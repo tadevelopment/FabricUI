@@ -1844,6 +1844,8 @@ namespace DFG {
           , Qt::WidgetWithChildrenShortcut
           , enable)
       {
+        // HACK : this code currently by-passes the registry
+        // code. TODO : call FabricUI::Actions::BaseAction::init() instead
         QList<QKeySequence> shortcuts;
         shortcuts += Qt::Key_Delete;
         shortcuts += Qt::Key_Backspace;
