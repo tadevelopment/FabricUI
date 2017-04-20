@@ -350,14 +350,20 @@ void InstBlockPort::setDataType(FTL::CStrRef dataType)
   // automatically change the label for array pins
   if(m_label)
   {
-    if(m_dataType.length() > 2)
+    for (int i=4;i>=1;i--)
     {
-      if(m_dataType.substr(m_dataType.length()-2) == "[]" && m_labelSuffix != "[]")
+      std::string brackets = "";
+      for (int j=0;j<i;j++)
+        brackets += "[]";
+      if (m_dataType.length() > brackets.length())
       {
-        m_labelSuffix = "[]";
-        m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
-        m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
-        return;
+        if (m_dataType.substr(m_dataType.length() - brackets.length()) == brackets && m_labelSuffix != brackets)
+        {
+          m_labelSuffix = (i < 4 ? brackets : "[]...[]");
+          m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+          m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
+          return;
+        }
       }
     }
     if(m_labelSuffix.length() > 0)
