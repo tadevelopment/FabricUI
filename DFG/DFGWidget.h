@@ -253,6 +253,14 @@ namespace DFG {
 
       BaseDFGWidgetAction(
         DFGWidget *dfgWidget,
+        QObject *parent
+      ) : Actions::BaseAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+      }
+
+      BaseDFGWidgetAction(
+        DFGWidget *dfgWidget,
         QObject *parent,
         const QString &name, 
         const QString &text = "", 
@@ -1835,21 +1843,19 @@ namespace DFG {
         DFGWidget *dfgWidget,
         QObject *parent,
         bool enable = true )
-        : BaseDFGWidgetAction( 
-          dfgWidget
-          , parent
-          , "DFGWidget::DeleteNodesAction" 
-          , "Delete" 
-          , QKeySequence()
-          , Qt::WidgetWithChildrenShortcut
-          , enable)
+        : BaseDFGWidgetAction( dfgWidget, parent )
       {
-        // HACK : this code currently by-passes the registry
-        // code. TODO : call FabricUI::Actions::BaseAction::init() instead
         QList<QKeySequence> shortcuts;
         shortcuts += Qt::Key_Delete;
         shortcuts += Qt::Key_Backspace;
-        this->setShortcuts( shortcuts );
+
+        this->init(
+          "DFGWidget::DeleteNodesAction"
+          , "Delete"
+          , shortcuts
+          , Qt::WidgetWithChildrenShortcut
+          , enable
+        );
       }
 
       virtual ~DeleteNodesAction()
