@@ -120,7 +120,7 @@ QWidget *ColorViewItem::getWidget()
 
 bool ColorViewItem::hasAlpha() const
 {
-  if( isRTVal( m_val ) )
+  if( !isRTVal( m_val ) )
     return true;
   else
   {
@@ -325,7 +325,7 @@ void ColorViewItem::fromQColor( QColor color )
 {
   if ( color.isValid() )
   {
-    if( isRTVal(m_val) )
+    if( !isRTVal(m_val) )
       m_val = color;
     else
     {
