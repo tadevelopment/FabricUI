@@ -91,6 +91,8 @@ bool RTVariant::rtCanConvert( const QVariant::Private *d, Type t )
         return val.hasType( "Vec4" );
       case int( QVariant::Quaternion ):
         return val.hasType( "Quat" );
+      case int( QVariant::Color ) :
+        return val.hasType( "RGB" ) || val.hasType( "RGBA" ) || val.hasType( "Color" );
 
         // For these more complex types, 
         // a user should directly work with
@@ -360,6 +362,26 @@ bool RTVariant::rtConvert( const QVariant::Private *d, QVariant::Type t, void *r
           v.setScalar(val.maybeGetMember( "w" ).getFloat32());
         }
         break;
+      case int( QVariant::Color ):
+      {
+        QColor& v = *( (QColor*)result );
+        if( val.hasType( "RGB" ) || val.hasType( "RGBA" ) )
+        {
+          v.setRed(   val.getMemberRef( 0 ).getUInt8() );
+          v.setGreen( val.getMemberRef( 1 ).getUInt8() );
+          v.setBlue(  val.getMemberRef( 2 ).getUInt8() );
+          v.setAlpha( val.hasType( "RGBA" ) ? val.getMemberRef( 3 ).getUInt8() : 255 );
+        }
+        else
+        if( val.hasType( "Color" ) )
+        {
+          v.setRedF(   val.getMemberRef( 0 ).getFloat32() );
+          v.setGreenF( val.getMemberRef( 1 ).getFloat32() );
+          v.setBlueF(  val.getMemberRef( 2 ).getFloat32() );
+          v.setAlphaF( val.getMemberRef( 3 ).getFloat32() );          
+        }
+        break;
+      }
       default:
         assert( !"Invalid conversion: Implement this type" );
     }
@@ -390,6 +412,16 @@ double getQVariantRTValValue(const FabricCore::RTVal& val) {
   }
 }
 
+template<>
+float getQVariantRTValValue( const FabricCore::RTVal& val ) {
+  if( val.isFloat32() ) { return val.getFloat32(); }
+  else if( val.isFloat64() ) { return val.getFloat64(); }
+  else {
+    printf( "Cannot get a float from an RTVal of type %s\n", val.getTypeNameCStr() );
+    return 0;
+  }
+}
+
 template<typename intType>
 intType getQVariantRTValValueInt(const FabricCore::RTVal& val, const char* intTypeName) {
   if (val.isUInt8()) { return val.getUInt8(); }
@@ -414,6 +446,11 @@ int getQVariantRTValValue(const FabricCore::RTVal& val) {
 template<>
 unsigned getQVariantRTValValue(const FabricCore::RTVal& val) {
   return getQVariantRTValValueInt<unsigned>(val, "unsigned int");
+}
+
+template<>
+uint8_t getQVariantRTValValue( const FabricCore::RTVal& val ) {
+  return getQVariantRTValValueInt<unsigned>( val, "uint8_t" );
 }
 
 template<>
@@ -476,6 +513,32 @@ QVector4D getQVariantRTValValue(const FabricCore::RTVal& val) {
   else {
     printf("Cannot get a QVector4D from an RTVal of type %s\n", val.getTypeNameCStr());
     return QVector4D();
+  }
+}
+
+template<>
+QColor getQVariantRTValValue( const FabricCore::RTVal& val ) {
+  if( val.hasType( "RGB" ) || val.hasType( "RGBA" ) ) {
+    return QColor(
+      getQVariantRTValValue<uint8_t>( val.getMemberRef( 0 ) ),
+      getQVariantRTValValue<uint8_t>( val.getMemberRef( 0 ) ),
+      getQVariantRTValValue<uint8_t>( val.getMemberRef( 0 ) ),
+      val.hasType( "RGBA" ) ? getQVariantRTValValue<uint8_t>( val.getMemberRef( 0 ) ) : 255
+    );
+  }
+  else
+  if( val.hasType( "Color") )
+  {
+    QColor v;
+    v.setRedF(    getQVariantRTValValue<float>( val.getMemberRef( 0 ) ) );
+    v.setBlueF(   getQVariantRTValValue<float>( val.getMemberRef( 1 ) ) );
+    v.setGreenF(  getQVariantRTValValue<float>( val.getMemberRef( 2 ) ) );
+    v.setAlphaF(  getQVariantRTValValue<float>( val.getMemberRef( 3 ) ) );
+    return v;
+  }
+  else {
+    printf( "Cannot get a QColor from an RTVal of type %s\n", val.getTypeNameCStr() );
+    return QColor();
   }
 }
 
@@ -627,6 +690,23 @@ bool RTVariant::toRTVal( const QVariant & var, FabricCore::RTVal & ioVal )
       row.maybeGetMemberRef( "y" ).setFloat32( v.y() );
       row.maybeGetMemberRef( "z" ).setFloat32( v.z() );
       ioVal.maybeGetMemberRef( "w" ).setFloat32( v.scalar() );
+    }
+    else if( ioVal.hasType( "RGB" ) || ioVal.hasType( "RGBA" ) )
+    {
+      QColor v = var.value<QColor>();
+      ioVal.getMemberRef( 0 ).setUInt8( v.red() );
+      ioVal.getMemberRef( 1 ).setUInt8( v.green() );
+      ioVal.getMemberRef( 2 ).setUInt8( v.blue() );
+      if( ioVal.hasType( "RGBA" ) )
+        ioVal.getMemberRef( 3 ).setUInt8( v.alpha() );
+    }
+    else if( ioVal.hasType( "Color" ) )
+    {
+      QColor v = var.value<QColor>();
+      ioVal.getMemberRef( 0 ).setFloat32( v.redF() );
+      ioVal.getMemberRef( 1 ).setFloat32( v.greenF() );
+      ioVal.getMemberRef( 2 ).setFloat32( v.blueF() );
+      ioVal.getMemberRef( 3 ).setFloat32( v.alphaF() );
     }
     else
     {
