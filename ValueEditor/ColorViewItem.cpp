@@ -329,7 +329,7 @@ void ColorViewItem::fromQColor( QColor color )
       m_val = color;
     else
     {
-      FabricCore::RTVal rtval = getQVariantRTValValue<FabricCore::RTVal>( m_val );
+      FabricCore::RTVal rtval = m_val.value<FabricCore::RTVal>();
       RTVariant::toRTVal( QVariant( color ), rtval );
     }
   }
