@@ -4,6 +4,7 @@
 #include "NodeHeader.h"
 #include "Node.h"
 #include "Graph.h"
+#include <FabricUI/GraphView/MainPanel.h>
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>

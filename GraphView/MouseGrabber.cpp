@@ -14,6 +14,13 @@
 #include <FabricUI/GraphView/MouseGrabber.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/Util/LoadPixmap.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/GraphView/Port.h>
+#include <FabricUI/GraphView/NodeHeader.h>
+#include <FabricUI/GraphView/Node.h>
+#include <FabricUI/GraphView/PinCircle.h>
+#include <FabricUI/GraphView/FixedPort.h>
 
 #include <QPainter>
 #include <QCursor>
@@ -385,7 +392,12 @@ void MouseGrabber::performUngrab( ConnectionTarget *fromCT )
   graph()->resetMouseGrabber();
   m_connection->invalidate();
   scene->removeItem(m_connection);
-  m_connection->deleteLater();
+
+  // [FE-8406] When deleting a Node while dragging a connection from it
+  // the code in ~Connection() uses the Node. Thus, we have to delete the connection
+  // first and then delete the Node (see FabricUI::GraphView::Graph::removeNode)
+  delete m_connection;
+
   // m_connection->setParent(this);
   scene->removeItem(this);
   if ( m_target == fromCT )

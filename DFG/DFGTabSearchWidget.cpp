@@ -16,13 +16,14 @@ DFGTabSearchWidget::DFGTabSearchWidget(
   DFGWidget * parent,
   const DFGConfig & config
   )
-  : QWidget(parent)
-  , m_parent( parent )
+  : m_parent( parent )
   , m_config( config )
   , m_queryMetrics( config.searchQueryFont )
   , m_resultsMetrics( config.searchResultsFont )
   , m_helpMetrics( config.searchHelpFont )
 {
+  setParent( parent );
+
   // always show on top
   setWindowFlags(windowFlags() | Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint);
   setMouseTracking(true);

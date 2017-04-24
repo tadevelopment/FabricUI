@@ -4,8 +4,10 @@
 #include <FabricUI/GraphView/GraphConfig.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/Pin.h>
+#include <FabricUI/GraphView/PinCircle.h>
 #include <FabricUI/GraphView/ProxyPort.h>
 #include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/GraphView/TextContainer.h>
 
 #include <QGraphicsLinearLayout>
 

@@ -1,5 +1,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
+#include <FabricUI/GraphView/MainPanel.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/NameSpaceTreeItem.h>
 #include <FabricUI/DFG/PresetTreeItem.h>
@@ -36,6 +37,7 @@ PresetTreeWidget::PresetTreeWidget(
   )
   : m_dfgController( dfgController )
   , m_showsPresets( showsPresets )
+  , m_modelDirty( true )
 {
   setObjectName( "DFGPresetTreeWidget" );
 
@@ -77,14 +79,24 @@ PresetTreeWidget::PresetTreeWidget(
   {
     TreeView::TreeItem *item = m_treeModel->item("Fabric");
     if (item)   m_treeModel->removeItem(item);
+    
+    // FE-8312 remove "Kraken", "KrakenForCanvas", "KrakenAnimation" entries in the tree.
+    TreeView::TreeItem *krakenItem = m_treeModel->item("Kraken");
+    if (krakenItem)   m_treeModel->removeItem(krakenItem);
+
+    TreeView::TreeItem *krakenCanvasItem = m_treeModel->item("KrakenForCanvas");
+    if (krakenCanvasItem)   m_treeModel->removeItem(krakenCanvasItem);
+
+    TreeView::TreeItem *krakenAnimationItem = m_treeModel->item("KrakenAnimation");
+    if (krakenAnimationItem)   m_treeModel->removeItem(krakenAnimationItem);
   }
 
   // remove "Variables" from the tree.
-  if (hideVariablesDir)
-  {
-    TreeView::TreeItem *item = m_treeModel->item("Variables");
-    if (item)   m_treeModel->removeItem(item);
-  }
+  // if (hideVariablesDir)
+  // {
+  //   TreeView::TreeItem *item = m_treeModel->item("Variables");
+  //   if (item)   m_treeModel->removeItem(item);
+  // }
 
   // remove inexisting / write-protected folders from the tree.
   if (hideWriteProtectedDirs)
@@ -94,7 +106,7 @@ PresetTreeWidget::PresetTreeWidget(
     {
       TreeView::TreeItem *item = m_treeModel->item(i);
       if (item && item->path() != "Fabric"
-               && item->path() != "Variables")
+              /* && item->path() != "Variables"*/)
       {
         FTL::StrRef path = host.getPresetImportPathname(item->path().c_str());
         if ( !path.empty() )
@@ -151,6 +163,19 @@ void PresetTreeWidget::setBinding(
   refresh();
 }
 
+void PresetTreeWidget::setModelDirty()
+{
+  m_modelDirty = true;
+  this->update();
+}
+
+void PresetTreeWidget::paintEvent( QPaintEvent * e )
+{
+  if( m_modelDirty )
+    this->refresh();
+  QWidget::paintEvent( e );
+}
+
 void PresetTreeWidget::refresh()
 {
   std::string search;
@@ -197,7 +222,8 @@ void PresetTreeWidget::refresh()
     }
 
     // also add the variable list item
-    m_treeModel->addItem( new VariableListTreeItem( binding ) );
+    // FE-8381 : Removed variables from the PresetTreeWidget
+    //m_treeModel->addItem( new VariableListTreeItem( binding ) );
 
     for(std::map<std::string, std::string>::iterator it=nameSpaceLookup.begin();it!=nameSpaceLookup.end();it++)
     {
@@ -282,6 +308,8 @@ void PresetTreeWidget::refresh()
 
     m_treeView->expandAll();
   }
+
+  m_modelDirty = false;
 }
 
 void PresetTreeWidget::onCustomContextMenuRequested(QPoint globalPos, FabricUI::TreeView::TreeItem * item)
@@ -372,6 +400,11 @@ void PresetTreeWidget::onExpandToAndSelectItem(QString presetPath) {
           m_treeView->scrollTo(modelIndex);
         }
       }
+
+      // Can happen if the preset
+      // explorer is not displayed.
+      else
+        break;
     }
   }
 }

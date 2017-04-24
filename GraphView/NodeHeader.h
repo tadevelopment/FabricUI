@@ -7,8 +7,6 @@
 #include <QColor>
 #include <QPen>
 #include "ConnectionTarget.h"
-#include "PinCircle.h"
-#include "NodeHeaderButton.h"
 #include <vector>
 
 namespace FabricUI
@@ -19,6 +17,7 @@ namespace FabricUI
     // forward declarations
     class Node;
     class NodeLabel;
+    class NodeHeaderButton;
 
     class NodeHeader : public ConnectionTarget
     {

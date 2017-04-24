@@ -19,6 +19,11 @@
 #include <FabricUI/DFG/DFGBindingUtils.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/FixedPort.h>
+#include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/SidePanel.h>
 #include <FabricUI/Util/FabricResourcePath.h>
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 #include <FabricUI/Util/UIRange.h>
@@ -58,6 +63,7 @@ DFGWidget::DFGWidget(
   , m_errorsWidget( 0 )
   , m_uiGraph( 0 )
   , m_router( 0 )
+  , m_tabSearchVariablesDirty( true )
   , m_manager( manager )
   , m_dfgConfig( dfgConfig )
   , m_isEditable( false )
@@ -153,8 +159,7 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(new FrameSelectedNodesAction        (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new FrameAllNodesAction             (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new RelaxNodesAction                (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new DeleteNodes1Action              (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new DeleteNodes2Action              (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new DeleteNodesAction               (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodeAction          (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodePropertiesAction(this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new ConnectionInsertPresetAction    (this, m_uiGraphViewWidget,
@@ -163,7 +168,7 @@ DFGWidget::DFGWidget(
                                                                       "value",
                                                                       "value",
                                                                       QCursor::pos(),
-                                                                      QKeySequence(Qt::Key_R),
+                                                                      QKeySequence(),
                                                                       "label"));
 
   m_klEditor =
@@ -223,8 +228,39 @@ DFGWidget::DFGWidget(
   layout->addWidget( splitter );
   setLayout( layout );
 
-  m_tabSearchWidget = new DFGTabSearchWidget(this, m_dfgConfig);
+  m_legacyTabSearchWidget = new DFGTabSearchWidget( this, m_dfgConfig );
+  m_legacyTabSearchWidget->hide();
+  m_tabSearchWidget = new DFGPresetSearchWidget( &getDFGController()->getHost() );
+  m_tabSearchWidget->setParent( this );
   m_tabSearchWidget->hide();
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedPreset( QString ) ),
+    this, SLOT( onPresetAddedFromTabSearch( QString ) )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedBackdrop() ),
+    this, SLOT( onBackdropAddedFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedCreateNewVariable() ),
+    this, SLOT( onVariableCreationRequestedFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
+    this, SLOT( onVariableGetterAddedFromTabSearch( const std::string ) )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( giveFocusToParent() ),
+    this, SLOT( onFocusGivenFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedSetVariable( const std::string ) ),
+    this, SLOT( onVariableSetterAddedFromTabSearch( const std::string ) )
+  );
+  QObject::connect(
+    getUIController(), SIGNAL( varsChangedImplicitly() ),
+    this, SLOT( tabSearchVariablesSetDirty() )
+  );
 
   QObject::connect(
     m_uiHeader, SIGNAL(goUpPressed()),
@@ -267,15 +303,27 @@ DFGController * DFGWidget::getUIController()
   return m_uiController.get();
 }
 
-DFGTabSearchWidget * DFGWidget::getTabSearchWidget()
+const char* legacyTabSearchKey = "useLegacyTabSearch";
+
+bool DFGWidget::isUsingLegacyTabSearch() const
 {
+  return getSettings()->value( legacyTabSearchKey, false ).toBool();
+}
+
+void DFGWidget::onToggleLegacyTabSearch( bool toggled )
+{
+  getSettings()->setValue( legacyTabSearchKey, toggled );
+}
+
+DFGAbstractTabSearchWidget * DFGWidget::getTabSearchWidget()
+{
+  if( this->isUsingLegacyTabSearch() )
+    return m_legacyTabSearchWidget;
   return m_tabSearchWidget;
 }
 
-DFGGraphViewWidget * DFGWidget::getGraphViewWidget()
-{
-  return m_uiGraphViewWidget;
-}
+DFGGraphViewWidget * DFGWidget::getGraphViewWidget() { return m_uiGraphViewWidget; }
+const DFGGraphViewWidget * DFGWidget::getGraphViewWidget() const { return m_uiGraphViewWidget; }
 
 DFGExecHeaderWidget * DFGWidget::getHeaderWidget()
 {
@@ -435,6 +483,44 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     char const *nodeName = uiNode->name().c_str();
 
+    FabricCore::DFGExec instExec;
+    bool instExecCanCreatePreset = false;
+    bool instExecCanUpdatePreset = false;
+    if ( uiNode->isInstNode() )
+    {
+      instExec = exec.getSubExec( nodeName );
+      if ( !instExec.isPreset() )
+      {
+        instExecCanCreatePreset = true;
+        
+        FabricCore::String origPresetGUID = instExec.getOrigPresetGUID();
+        if ( origPresetGUID.getSize() > 0 )
+        {
+          FabricCore::DFGHost host = exec.getHost();
+          FabricCore::String presetPath =
+            host.getPresetPathForPresetGUID( origPresetGUID.getCStr() );
+
+          instExecCanUpdatePreset = presetPath.getSize() > 0;
+          if(instExecCanUpdatePreset)
+          {
+            // if we are supposed to hide the fabric dir
+            bool hideFabricDir = true;
+            const char * hideFabricDirStr = getenv("FABRIC_CANVAS_UPDATE_BUILTIN_PRESETS");
+            if(hideFabricDirStr != NULL)
+              hideFabricDir = (FTL::StrRef(hideFabricDirStr) == "0");
+
+            // let's disable the update preset action if the preset is below the fabric_dir
+            if(hideFabricDir)
+            {
+              FTL::CStrRef presetPathRef = presetPath.getCStr();
+              if(presetPathRef.startswith("Fabric."))
+                instExecCanUpdatePreset = false;
+            }
+          }
+        }
+      }
+    }
+
     bool uiNodeIsInstOrBlockNode = (uiNode->isInstNode() || uiNode->isBlockNode());
     bool uiNodeHasDocUrl         = false;
     if (  !exec.isExecBlock(nodeName)
@@ -502,7 +588,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addSeparator();
 
-    result->addAction(new DeleteNodes1Action(dfgWidget, result, dfgWidget->isEditable()));
+    result->addAction(new DeleteNodesAction(dfgWidget, result, dfgWidget->isEditable()));
 
     result->addSeparator();
 
@@ -519,7 +605,8 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addSeparator();
 
-    result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable()));
+    result->addAction(new UpdatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanUpdatePreset));
+    result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanCreatePreset));
     result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
     result->addAction(new ExportGraphAction           (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
     result->addAction(new ImplodeSelectedNodesAction  (dfgWidget, result, dfgWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
@@ -636,7 +723,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "value",
                                                                "value",
                                                                QCursor::pos(),
-                                                               QKeySequence(Qt::Key_R),
+                                                               QKeySequence(),
                                                                "label",
                                                                dfgWidget->isEditable()));
 
@@ -761,10 +848,137 @@ void DFGWidget::tabSearch()
     if (getUIController()->validPresetSplit())
     {
       QPoint pos = getGraphViewWidget()->lastEventPos();
+      m_tabSearchPos = pos;
       pos = getGraphViewWidget()->mapToGlobal(pos);
+      tabSearchVariablesUpdate();
       getTabSearchWidget()->showForSearch(pos);
     }
   }
+}
+
+inline void MaybeSelectNode( GraphView::Graph* graph, const QString& node )
+{
+  if( !node.isEmpty() )
+  {
+    graph->clearSelection();
+    if( GraphView::Node *uiNode = graph->node( node ) )
+      uiNode->setSelected( true );
+  }
+}
+
+QPointF DFGWidget::getTabSearchScenePos() const
+{
+  return this->getGraphViewWidget()->graph()->itemGroup()->mapFromScene( m_tabSearchPos );
+}
+
+void DFGWidget::onPresetAddedFromTabSearch( QString preset )
+{
+  QString addedPreset = this->getUIController()->cmdAddInstFromPreset(
+    preset,
+    getTabSearchScenePos()
+  );
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), addedPreset );
+}
+
+void DFGWidget::onBackdropAddedFromTabSearch()
+{
+  this->getUIController()->cmdAddBackDrop(
+    "backdrop",
+    getTabSearchScenePos()
+  );
+}
+
+void DFGWidget::onVariableCreationRequestedFromTabSearch()
+{
+  DFGNewVariableDialog dialog(
+    this,
+    this->getDFGController()->getClient(),
+    this->getDFGController()->getBinding(),
+    this->getDFGController()->getExecPath()
+  );
+
+  if( dialog.exec() != QDialog::Accepted )
+    return;
+
+
+  QString name = dialog.name();
+  QString dataType = dialog.dataType();
+  QString extension = dialog.extension();
+
+  if( name.isEmpty() )
+  {
+    this->getDFGController()->log( "Warning: no variable created (empty name)." );
+    return;
+  }
+  if( dataType.isEmpty() )
+  {
+    this->getDFGController()->log( "Warning: no variable created (empty type)." );
+    return;
+  }
+
+  QString node = this->getDFGController()->cmdAddVar(
+    name.toUtf8().constData(),
+    dataType.toUtf8().constData(),
+    extension.toUtf8().constData(),
+    getTabSearchScenePos()
+  );
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), node );
+}
+
+void DFGWidget::onVariableSetterAddedFromTabSearch( const std::string name )
+{
+  QString node = this->getUIController()->cmdAddSet( "set", QString::fromStdString( name ), getTabSearchScenePos() );
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), node );
+}
+
+void DFGWidget::onVariableGetterAddedFromTabSearch( const std::string name )
+{
+  QString node = this->getUIController()->cmdAddGet( "get", QString::fromStdString( name ), getTabSearchScenePos() );
+  MaybeSelectNode( this->getGraphViewWidget()->graph(), node );
+}
+
+void DFGWidget::onFocusGivenFromTabSearch()
+{
+  this->getGraphViewWidget()->setFocus( Qt::OtherFocusReason );
+}
+
+void DFGWidget::tabSearchVariablesSetDirty()
+{
+  m_tabSearchVariablesDirty = true;
+  if( m_tabSearchWidget->isVisible() )
+    tabSearchVariablesUpdate();
+}
+
+void DFGWidget::tabSearchVariablesUpdate()
+{
+  if( !m_tabSearchVariablesDirty )
+    return;
+
+  m_tabSearchWidget->unregisterVariables();
+
+  FabricCore::DFGBinding& binding = this->getUIController()->getBinding();
+  QStringList variableNames = DFGBindingUtils::getVariableWordsFromBinding(
+    binding,
+    this->getUIController()->getExecPath()
+  );
+  for( QStringList::const_iterator it = variableNames.begin(); it != variableNames.end(); it++ )
+  {
+    try
+    {
+      const std::string varName = it->toUtf8().constData();
+      const std::string varType =
+        binding.getExec().getVarValue( varName.data() ).getTypeNameCStr();
+      m_tabSearchWidget->registerVariable( varName, varType );
+    }
+    catch( const FabricCore::Exception& e )
+    {
+      std::cerr << e.getDesc_cstr() << std::endl;
+    }
+  }
+
+  m_tabSearchVariablesDirty = false;
+
+  m_tabSearchWidget->updateResults();
 }
 
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)
@@ -1407,20 +1621,46 @@ void DFGWidget::splitFromPreset( const char *nodeName )
   subExec.maybeSplitFromPreset();
 }
 
+static void DFGPresentPresetSaveFailedDialog( QWidget *parent, QString pathname )
+{
+  QMessageBox msg(
+    QMessageBox::Warning,
+    "Fabric Warning", 
+      "The file "
+    + pathname
+    + " cannot be opened for writing.",
+    QMessageBox::NoButton,
+    parent
+    );
+  msg.addButton( "OK", QMessageBox::AcceptRole );
+  msg.exec();
+}
+
+static void DFGPresetFabricCoreExceptionDialog( QWidget *parent, FabricCore::Exception &e )
+{
+  QMessageBox msg(
+    QMessageBox::Warning,
+    "Fabric Warning", 
+    e.getDesc_cstr(),
+    QMessageBox::NoButton,
+    parent
+    );
+  msg.addButton("OK", QMessageBox::AcceptRole);
+  msg.exec();
+}
+
 void DFGWidget::createPreset( const char *nodeName )
 {
   FabricCore::DFGExec &exec = m_uiController->getExec();
   if ( exec.getNodeType( nodeName ) != FabricCore::DFGNodeType_Inst )
     return;
   FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+  if ( subExec.isPreset() )
+    return;
 
   try
   {
-    FTL::CStrRef defaultPresetName;
-    if ( subExec.isPreset() )
-      defaultPresetName = subExec.getTitle();
-    else
-      defaultPresetName = nodeName;
+    FTL::CStrRef defaultPresetName = nodeName;
 
     FabricCore::DFGHost &host = m_uiController->getHost();
 
@@ -1445,7 +1685,7 @@ void DFGWidget::createPreset( const char *nodeName )
           "You need to provide a valid name and pick a valid location!",
           QMessageBox::NoButton,
           this);
-        msg.addButton("Ok", QMessageBox::AcceptRole);
+        msg.addButton("OK", QMessageBox::AcceptRole);
         msg.exec();
         continue;
       }
@@ -1457,7 +1697,7 @@ void DFGWidget::createPreset( const char *nodeName )
           "You can't save a preset into a factory path (below Fabric).",
           QMessageBox::NoButton,
           this);
-        msg.addButton("Ok", QMessageBox::AcceptRole);
+        msg.addButton("OK", QMessageBox::AcceptRole);
         msg.exec();
         continue;
       }
@@ -1479,46 +1719,106 @@ void DFGWidget::createPreset( const char *nodeName )
           + "' does not have an associated path and so the preset cannot be saved.",
           QMessageBox::NoButton,
           this);
-        msg.addButton( "Ok", QMessageBox::AcceptRole );
+        msg.addButton( "OK", QMessageBox::AcceptRole );
         msg.exec();
         continue;
       }
 
-      if ( FTL::FSExists( QSTRING_TO_CONST_CHAR_FILE( pathname ) ) )
+      QString presetPath;
+      if ( !presetDirPath.isEmpty() )
+      {
+        presetPath = presetDirPath;
+        presetPath += '.';
+      }
+      presetPath += presetName;
+
+      if ( host.isPresetDir( presetPath.toUtf8().constData() ) )
       {
         QMessageBox msg(
           QMessageBox::Warning,
-          "Fabric Warning",
-            "The file "
-          + pathname
-          + " already exists.\n"
-          + "Are you sure to overwrite the file?",
+          "Fabric Error",
+            "The path '"
+          + presetPath
+          + "' is a preset directory and cannot be overwritten.",
           QMessageBox::NoButton,
           this);
-        msg.addButton( "Cancel", QMessageBox::RejectRole );
-        msg.addButton( "Ok", QMessageBox::AcceptRole );
-        if ( msg.exec() != QDialog::Accepted )
-          continue;
+        msg.addButton( "OK", QMessageBox::AcceptRole );
+        msg.exec();
+        continue;
+      }
+
+      bool updatePresetGuid = false;
+      if ( host.isPresetFile( presetPath.toUtf8().constData() ) )
+      {
+        FabricCore::String origPresetGUID = subExec.getOrigPresetGUID();
+        FTL::StrRef origPresetGUIDStr(
+          origPresetGUID.getCStr(), origPresetGUID.getSize()
+          );
+
+        FabricCore::String existingPresetGUID =
+          host.getPresetFileGUID( presetPath.toUtf8().constData() );
+        FTL::StrRef existingPresetGUIDStr(
+          existingPresetGUID.getCStr(), existingPresetGUID.getSize()
+          );
+
+        if ( origPresetGUIDStr == existingPresetGUIDStr )
+        {
+          QMessageBox msg(
+            QMessageBox::Warning,
+            "Fabric Warning",
+              "Are you sure you want to overwrite the file '"
+            + pathname
+            + "'?",
+            QMessageBox::NoButton,
+            this
+            );
+          msg.addButton( "Cancel", QMessageBox::RejectRole );
+          QAbstractButton *okButton =
+            msg.addButton( "Yes", QMessageBox::AcceptRole );
+          msg.exec();
+          QAbstractButton *button = msg.clickedButton();
+          if ( button != okButton )
+            continue;
+          updatePresetGuid = true;
+        }
+        else
+        {
+          QMessageBox msg(
+            QMessageBox::Warning,
+            "Fabric Warning",
+              "The preset '"
+            + presetPath
+            + "' already exists."
+            + "\nReuse its preset GUID or create a new one?"
+            + "\nNOTE: This will overwrite the file '"
+            + pathname
+            + "'!",
+            QMessageBox::NoButton,
+            this
+            );
+          msg.addButton( "Cancel", QMessageBox::RejectRole );
+          QAbstractButton *reuseButton =
+            msg.addButton( "Reuse GUID", QMessageBox::YesRole );
+          QAbstractButton *createButton =
+            msg.addButton( "Create New GUID", QMessageBox::NoRole );
+          msg.exec();
+          QAbstractButton *button = msg.clickedButton();
+          if ( button != reuseButton && button != createButton )
+            continue;
+          updatePresetGuid = button == reuseButton;
+        }
       }
 
       pathname =
         m_uiController->cmdCreatePreset(
           nodeName,
           presetDirPath.toUtf8().constData(),
-          presetName.toUtf8().constData()
+          presetName.toUtf8().constData(),
+          updatePresetGuid
           );
       if ( pathname.isEmpty() )
       {
-        QMessageBox msg(
-          QMessageBox::Warning,
-          "Fabric Warning", 
-            "The file "
-          + pathname
-          + " cannot be opened for writing.",
-          QMessageBox::NoButton,
-          this);
-        msg.addButton( "Ok", QMessageBox::AcceptRole );
-        msg.exec();
+        DFGPresentPresetSaveFailedDialog( this, pathname );
         continue;
       }
 
@@ -1530,15 +1830,58 @@ void DFGWidget::createPreset( const char *nodeName )
   }
   catch ( FabricCore::Exception e )
   {
-    QMessageBox msg(
-      QMessageBox::Warning,
-      "Fabric Warning", 
-      e.getDesc_cstr(),
-      QMessageBox::NoButton,
-      this);
-    msg.addButton("Ok", QMessageBox::AcceptRole);
-    msg.exec();
+    DFGPresetFabricCoreExceptionDialog( this, e );
+  }
+}
+
+void DFGWidget::updateOrigPreset( const char *nodeName )
+{
+  QMessageBox msgBox(
+    QMessageBox::Warning,
+    "Fabric Engine",
+    "",
+    QMessageBox::NoButton,
+    this);
+
+  msgBox.setText( "Are you sure you want to update the original preset?" );
+  msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No);
+  msgBox.setDefaultButton( QMessageBox::Yes );
+  if (msgBox.exec() == QMessageBox::No)
+      return;
+
+  FabricCore::DFGExec &exec = m_uiController->getExec();
+  if ( exec.getNodeType( nodeName ) != FabricCore::DFGNodeType_Inst )
     return;
+  FabricCore::DFGExec subExec = exec.getSubExec( nodeName );
+  FabricCore::String origPresetGUID = subExec.getOrigPresetGUID();
+  if ( origPresetGUID.getSize() == 0 )
+    return;
+  FabricCore::DFGHost host = exec.getHost();
+  FabricCore::String presetPath =
+    host.getPresetPathForPresetGUID( origPresetGUID.getCStr() );
+  if ( presetPath.getSize() == 0 )
+    return;
+  FTL::StrRef presetPathStr( presetPath.getCStr(), presetPath.getSize() );
+  std::pair<FTL::StrRef, FTL::StrRef> presetPathSplit =
+    presetPathStr.rsplit( '.' );
+  FTL::StrRef presetDirStr = presetPathSplit.first;
+  FTL::StrRef presetNameStr = presetPathSplit.second;
+
+  try
+  {
+    QString pathname =
+      m_uiController->cmdCreatePreset(
+        nodeName,
+        QString::fromUtf8( presetDirStr.data(), presetDirStr.size() ),
+        QString::fromUtf8( presetNameStr.data(), presetNameStr.size() ),
+        true // updateOrigPreset
+        );
+    if ( pathname.isEmpty() )
+      DFGPresentPresetSaveFailedDialog( this, pathname );
+  }
+  catch ( FabricCore::Exception e )
+  {
+    DFGPresetFabricCoreExceptionDialog( this, e );
   }
 }
 
@@ -1935,7 +2278,7 @@ bool DFGWidget::checkForUnsaved()
       this);
 
     msg.addButton("Save Now", QMessageBox::AcceptRole);
-    msg.addButton("Ok", QMessageBox::NoRole);
+    msg.addButton("OK", QMessageBox::NoRole);
     msg.addButton("Cancel", QMessageBox::RejectRole);
 
     msg.exec();
@@ -2246,6 +2589,8 @@ void DFGWidget::onEditSelectedNodeProperties()
 
 QSettings * DFGWidget::getSettings()
 {
+  if( g_settings == NULL )
+    g_settings = new QSettings();
   return g_settings;
 }
 
@@ -2314,7 +2659,7 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
     QAction * pasteNodesAction = new PasteNodesAction(this, menuBar);
     editMenu->addAction(pasteNodesAction);
 
-    // emit the suffix menu entry requests
+    // emit the prefix menu entry requests
     emit additionalMenuActionsRequested("Edit", editMenu, false);
   }
 
@@ -2369,6 +2714,16 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
     snapToGrid->setCheckable(true);
     snapToGrid->setChecked(m_uiGraph->config().mainPanelGridSnap);
     QObject::connect(snapToGrid, SIGNAL(triggered()), this, SLOT(onToggleSnapToGrid()));
+
+    graphViewMenu->addSeparator();
+    
+    QAction * toggleLecyTabSearchAction = graphViewMenu->addAction("Use Legacy TabSearch");
+    toggleLecyTabSearchAction->setCheckable( true );
+    QObject::connect(
+      toggleLecyTabSearchAction, SIGNAL( triggered( bool ) ),
+      this, SLOT( onToggleLegacyTabSearch( bool ) )
+    );
+    toggleLecyTabSearchAction->setChecked( this->isUsingLegacyTabSearch() );
 
     // emit the suffix menu entry requests
     emit additionalMenuActionsRequested("View", viewMenu, false);

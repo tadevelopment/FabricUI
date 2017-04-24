@@ -61,7 +61,8 @@ void DFGCombinedWidget::initTreeView() {
 
   if(m_dfgWidget->isEditable())
   {
-    QObject::connect(m_dfgWidget->getUIController(), SIGNAL(varsChanged()), m_treeWidget, SLOT(refresh()) );
+    // FE-8381 : Removed variables from the PresetTreeWidget
+    //QObject::connect(m_dfgWidget->getUIController(), SIGNAL(varsChanged()), m_treeWidget, SLOT(setModelDirty()) );
     QObject::connect(m_dfgWidget, SIGNAL(newPresetSaved(QString)), m_treeWidget, SLOT(refresh()));
     QObject::connect(m_dfgWidget, SIGNAL(revealPresetInExplorer(QString)), m_treeWidget, SLOT(onExpandToAndSelectItem(QString)) );
 }

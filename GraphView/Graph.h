@@ -12,14 +12,7 @@
 #include <FTL/StrRef.h>
 
 #include <FabricUI/GraphView/GraphConfig.h>
-#include <FabricUI/GraphView/Controller.h>
-#include <FabricUI/GraphView/Node.h>
-#include <FabricUI/GraphView/Pin.h>
-#include <FabricUI/GraphView/Connection.h>
-#include <FabricUI/GraphView/MouseGrabber.h>
-#include <FabricUI/GraphView/MainPanel.h>
-#include <FabricUI/GraphView/SidePanel.h>
-#include <FabricUI/GraphView/InfoOverlay.h>
+#include <FabricUI/GraphView/PortType.h>
 #include <FabricUI/Util/QString_Conversion.h>
 
 namespace FabricUI
@@ -27,6 +20,19 @@ namespace FabricUI
 
   namespace GraphView
   {
+
+    class Controller;
+    class BackDropNode;
+    class Node;
+    class Pin;
+    class Port;
+    class FixedPort;
+    class Connection;
+    class ConnectionTarget;
+    class MouseGrabber;
+    class MainPanel;
+    class SidePanel;
+    class InfoOverlay;
 
     class Graph : public QGraphicsWidget
     {
@@ -55,6 +61,7 @@ namespace FabricUI
         { return m_config; }
 
       QGraphicsWidget * itemGroup();
+      const QGraphicsWidget * itemGroup() const;
 
       Controller *controller()
         { return m_controller; }

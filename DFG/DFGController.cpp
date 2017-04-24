@@ -21,6 +21,8 @@
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/GraphRelaxer.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
+#include <FabricUI/GraphView/NodeHeaderButton.h>
+#include <FabricUI/GraphView/NodeHeader.h>
 
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGErrorsWidget.h>
@@ -81,6 +83,9 @@ DFGController::DFGController(
 
   QObject::connect(this, SIGNAL(topoDirty()), this, SLOT(onTopoDirty()));
   QObject::connect(this, SIGNAL(varsChanged()), this, SLOT(onVariablesChanged()));
+
+  QObject::connect(this, SIGNAL(topoDirty()), this, SIGNAL(varsChangedImplicitly()));
+  QObject::connect(this, SIGNAL(varsChanged()), this, SIGNAL(varsChangedImplicitly()));
 }
 
 DFGController::~DFGController()
@@ -1477,7 +1482,6 @@ void DFGController::onNodeHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderB
 void DFGController::onVariablesChanged()
 {
   m_presetDictsUpToDate = false;
-  updatePresetPathDB();
 }
 
 void DFGController::onBindingDirty()
@@ -1899,7 +1903,8 @@ QString DFGController::cmdAddPort(
 QString DFGController::cmdCreatePreset(
   QString nodeName,
   QString presetDirPath,
-  QString presetName
+  QString presetName,
+  bool updateOrigPreset
   )
 {
   return m_cmdHandler->dfgDoCreatePreset(
@@ -1908,7 +1913,8 @@ QString DFGController::cmdCreatePreset(
     getExec(),
     nodeName,
     presetDirPath,
-    presetName
+    presetName,
+    updateOrigPreset
     );
 }
 

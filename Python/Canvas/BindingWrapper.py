@@ -528,6 +528,7 @@ class BindingWrapper:
         nodeName,
         presetDirPath,
         presetName,
+        updateOrigPreset,
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
@@ -538,6 +539,7 @@ class BindingWrapper:
             nodeName,
             presetDirPath,
             presetName,
+            updateOrigPreset,
             )
         InvokeCmd(cmd, self.qUndoStack)
         return cmd.getPathname()
@@ -732,12 +734,13 @@ class BindingWrapper:
     def splitFromPreset(
         self,
         execPath,
+        nodeName,
         ):
         rootExec = self.binding.getExec()
         exec_ = rootExec.getSubExec(execPath)
         cmd = DFG.DFGUICmd_SplitFromPreset(
             self.binding,
-            execPath,
+            nodeName,
             exec_,
             )
         InvokeCmd(cmd, self.qUndoStack)

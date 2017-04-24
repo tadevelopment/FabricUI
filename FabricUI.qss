@@ -328,35 +328,6 @@ QDialog QPushButton:focus
   border: 1px solid #555555;
 }
 
-QDialog QTableView
-{
-  border: 0;
-  border-radius: 3px;
-  background: #333333;
-  color: white;
-  font: 10pt "Roboto";
-  font-weight: normal;  
-}
-
-QDialog QTableView::item
-{
-  padding: 2px;
-  color: white;
-}
-
-QDialog QTableView::item:hover
-{
-  padding: 0;
-  background-color: #596D7A;
-}
-
-QDialog QTableView::item:selected
-{
-  border: 0;
-  padding: 0;
-  background-color: #50626E;
-}
-
 QDialog QTreeView
 {
   border: 0;
@@ -783,7 +754,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGExecHeaderWidget #DFGRequiredExtensionsLabel
 {
-  background-color: #50626e;
+  background-color: #50626E;
 }
 
 #DFGExecHeaderWidget #DFGRequiredExtensionsLineEdit
@@ -827,7 +798,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGExecHeaderWidget #DFGRegWidget
 {
-  background-color: #50626e;
+  background-color: #50626E;
 }
 
 #DFGExecHeaderWidget #DFGRegWidget > QWidget
@@ -845,7 +816,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGExecHeaderWidget #DFGPresetNameLabel
 {
-  background-color: #50626e;
+  background-color: #50626E;
 }
 
 #DFGExecHeaderWidget #DFGPresetPathSep
@@ -853,12 +824,12 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   color: #3c4450;
   font-weight: bold;
   qproperty-text: "//";
-  background-color: #50626e;
+  background-color: #50626E;
 }
 
 #DFGExecHeaderWidget #DFGExecPathLabel
 {
-  background-color: #50626e;
+  background-color: #50626E;
 }
 
 #DFGExecHeaderWidget #DFGPresetSplitLabel
@@ -995,7 +966,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #DFGPEWidget_Elements QComboBox::drop-down
 {
   width: 18px;
-  background-color: #50626e;
+  background-color: #50626E;
 
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
@@ -1722,6 +1693,441 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   padding-left: 4px;
   color: #FFFFFF;
+}
+
+/****************************************************************************
+ * TabSearch
+ ***************************************************************************/
+
+#TagWidget QPushButton
+{
+  background-color: #4B4B4B;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  border-left: 2px solid #000;
+  color: #FFFFFF;
+  font: 12px "Roboto";
+  margin: 2px;
+  padding: 2px;
+}
+
+#TagWidget QPushButton:hover
+{
+  background-color: #999999;
+  color: #FFFFFF;
+}
+
+#TagWidget QPushButton:pressed
+{
+  background-color: #B3B3B3;
+  margin-top: 3px;
+  margin-left: 3px;
+  padding-top: 3px;
+  padding-left: 3px;
+}
+
+/* Categories are defined in Core/DFG/DFGTag.cpp */
+#TagWidget[tagCat="ext"] QPushButton { border-left-color: #00BFBF; }
+#TagWidget[tagCat="cat"] QPushButton { border-left-color: #BF00BF; }
+#TagWidget[tagCat="name"] QPushButton { border-left-color: #27A8DF; }
+#TagWidget[tagCat="namecomp"] QPushButton { border-left-color: #BFB900; }
+#TagWidget[tagCat="aka"] QPushButton { border-left-color: #BF0000; }
+#TagWidget[tagCat="porttype"] QPushButton { border-left-color: #06BF12; }
+#TagWidget[tagCat="pathcomp"] QPushButton { border-left-color: #CC6600; }
+
+/* Define colors for dimmed / disabled state */
+#TagWidget[tagCat="ext"][used="true"] QPushButton { border-left-color: #208080; }
+#TagWidget[tagCat="cat"][used="true"] QPushButton { border-left-color: #7F2080; }
+#TagWidget[tagCat="name"][used="true"] QPushButton { border-left-color: #42839E; }
+#TagWidget[tagCat="namecomp"][used="true"] QPushButton { border-left-color: #807C20; }
+#TagWidget[tagCat="aka"][used="true"] QPushButton { border-left-color: #802020; }
+#TagWidget[tagCat="porttype"][used="true"] QPushButton { border-left-color: #1D8024; }
+#TagWidget[tagCat="pathcomp"][used="true"] QPushButton { border-left-color: #8C5823; }
+
+#DFGPresetSearchWidget
+{
+  background-color: #272822;
+  font: 12px "Roboto";
+  padding: 0px;
+}
+
+#DFGPresetSearchWidget QScrollBar:vertical
+{
+  width: 10px;
+  margin: 0px;
+}
+
+#DFGPresetSearchWidget QScrollBar::handle:vertical
+{
+  height: 0;
+}
+
+#DFGPresetSearchWidget QScrollBar::add-line:vertical
+{
+  height: 0;
+  border: none;
+  background: none;
+}
+
+#DFGPresetSearchWidget QScrollBar::sub-line:vertical
+{
+  height: 0;
+  border: none;
+  background: none;
+}
+
+#DFGPresetSearchWidget QScrollBar::up-arrow:vertical 
+{
+  border-image: none;
+  image: none;
+}
+
+#DFGPresetSearchWidget QScrollBar::down-arrow:vertical
+{
+  border-image: none;
+  image: none;
+}
+
+#DFGPresetSearchWidget #SearchFrame
+{
+  background-color: #555555;
+  border: 2px solid #333333;
+  padding: 4px;
+}
+
+#DFGPresetSearchWidget #DetailsPanel
+{
+  background-color: #272822;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  padding: 4px;
+}
+
+#QueryEdit QLineEdit
+{
+  background-color: #272822;
+  border-radius: 4px;
+  color: #FFFFFF;
+  font: 18px "Roboto";
+  padding: 2px;
+}
+
+#ResultsView
+{
+  background: #272822;
+  border-radius: 4px;
+  font: 12px "Roboto";
+  max-height: 300px;
+  padding: 2px;
+}
+
+#ResultsView::item
+{
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  height: 22px;
+  margin: 1px 0px 1px 0px;
+  padding: 0px;
+}
+
+#ResultsView::item:hover
+{
+  background-color: #555555;
+}
+
+#ResultsView::item::has-children
+{
+  background-color: #444444;
+}
+
+#ResultsView::item::has-children:selected,
+#ResultsView::item::!has-children:selected
+{
+  background-color: #666666;
+}
+
+#ResultsView::item::has-children:hover,
+#ResultsView::item::!has-children:hover
+{
+  background-color: #666666;
+}
+
+#ResultsView::branch
+{
+  border-image: none;
+  image: none;
+}
+
+#ResultsView::branch:selected
+{
+  background-color: #272822;
+}
+
+#ResultsView #TagContainer #TagWidget[highlighted="true"] QPushButton
+{
+  background-color: #999999;
+  color: #FFFFFF;
+}
+
+#ResultsView #TagContainer #TagWidget[highlighted="false"] QPushButton
+{
+  background-color: rgba(0,0,0,100);
+}
+
+#ResultsView #TagContainer #TagWidget[highlighted="true"] QPushButton:hover
+{
+  background-color: #B2B2B2;
+  color: #FFFFFF;
+}
+
+#ResultsView #TagContainer #TagWidget[highlighted="false"] QPushButton:hover
+{
+  background-color: #999999;
+  color: #FFFFFF;
+}
+
+#QueryEdit #TagsEdit
+{
+  background-color: #272822;
+  border-radius: 4px;
+}
+
+#QueryEdit #TagsEdit #TagWidget[highlighted="true"] QPushButton
+{
+  color: #272822;
+  background-color: #F0F0F0;
+}
+
+#TagsView
+{
+  border-radius: 4px;
+  margin: 2px 2px 2px 0px;
+}
+
+#HeatBar
+{
+  qproperty-coldColor: #27A8DF;
+  qproperty-warmColor: #27A8DF;
+  qproperty-hotColor: #27A8DF;
+  qproperty-warmPos: 0.33;
+  qproperty-nbBars: 10;
+  qproperty-smooth: false;
+  qproperty-spacingWidth: 1;
+  background-color: #272822;
+  border: 1px solid #272822;
+  min-width: 69px; /* works best if nbBars * (some integer) + ( nbBars - 1 ) * spacingWidth */
+  min-height: 8px;
+}
+
+#DFGPresetSearchWidget #Status
+{
+  background-color: #555555;
+}
+
+#DFGPresetSearchWidget #Status[type="error"]
+{
+  background-color: rgba(255,100,0,50);
+}
+
+#DFGPresetSearchWidget #Status[type="instruction"]
+{
+  background-color: rgba(0,255,100,50);
+}
+
+#DFGPresetSearchWidget #Status[type="hint"] #TabSearchLabel[clickable="false"]
+{
+  color: #BBB;
+}
+
+#DFGPresetSearchWidget #Status #TabSearchLabel
+{
+  font: 12px "Roboto";
+}
+
+#DFGPresetSearchWidget #Status #TabSearchLabel[clickable="false"]
+{
+  color: #FFFFFF;
+}
+
+#DFGPresetSearchWidget #Status #TabSearchLabel[clickable="true"]
+{
+  color: #FFFFFF;
+  font-style: italic;
+}
+
+#DFGPresetSearchWidget #Status #TabSearchLabel[clickable="true"]:hover,
+#DetailsWidget #Name[clickable="true"]:hover
+{
+  color: #27A8DF;
+}
+
+#PresetView QLabel
+{
+  color: #FFFFFF;
+  font: 12px "Roboto";
+  margin-left: 2px;
+}
+
+#PresetView[highlighted="true"] #HeatBar
+{
+  background-color: #272822;
+}
+
+#ToggleDetailsPanelButton
+{
+  background-color: #555555;
+  border-top: 2px solid #333333;
+  border-bottom: 2px solid #333333;
+  border-right: 2px solid #333333;
+  min-width: 4px;
+}
+
+#ToggleDetailsPanelButton[hovered="true"]
+{
+  background-color: #666666;
+}
+
+#ToggleDetailsPanelButton #Handle
+{
+  background-color: #777777;
+  max-height: 32px;
+}
+
+#ToggleDetailsPanelButton[hovered="true"] #Handle
+{
+  background-color: #999999;
+}
+
+#ToggleDetailsPanelButton[toggled="true"] #Handle
+{
+  background-color: #50626E;
+}
+
+#ToggleDetailsPanelButton[toggled="true"][hovered="true"] #Handle
+{
+  background-color: #637987;
+}
+
+#DetailsWidget
+{
+  background-color: #272822;
+  min-width: 300px;
+  max-width: 300px;
+}
+
+#DetailsWidget #Name
+{
+  color: #FFFFFF;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+#DetailsWidget #Description
+{
+  background-color: #272822;
+  border: none;
+  color: #FFFFFF;
+  font-family: "Roboto";
+  font-size: 12px;
+  padding-right: 32px;
+}
+
+#DetailsWidget #Section #Header #Handle
+{
+  background-color: #444444;
+  color: #FFFFFF;
+  font-family: "Roboto";
+  min-width: 4px;
+}
+
+#DetailsWidget #Section #Header #Name
+{
+  background-color: #444444;
+  color: #FFFFFF;
+  font-family: "Roboto";
+  font-size: 14px;
+  font-weight: bold;
+  padding: 4px;
+}
+
+#DetailsWidget #Section #Header[hovered="true"] #Name
+{
+  color: #FFFFFF;
+  background-color: #555555;
+}
+
+#DetailsWidget #Section #Header[toggled="true"] #Handle
+{
+  background-color: #50626E;
+}
+
+#DetailsWidget #PortsView QLabel
+{
+  font: 12px "Roboto";
+}
+
+#DetailsWidget #PortsView
+{
+  background-color: #272822;
+}
+
+#DetailsWidget #PortsView #PortView,
+#DetailsWidget #PortsView #PortsHeader
+{
+  background-color: #272822;
+  color: #FFFFFF;
+}
+
+#DetailsWidget #PortsView #PortsHeader > *
+{
+  background-color: #444444;
+  padding: 4px;
+}
+
+#DetailsWidget #PortsView #PortView > *
+{
+  background-color: #333333;
+  padding: 4px;
+}
+
+#DetailsWidget #PortsView #PortView QLabel,
+#DetailsWidget #PortsView #PortsHeader QLabel
+{
+  color: #FFFFFF;
+}
+
+#DetailsWidget #PortsView #PortView #TabSearchLabel
+{
+  font: 12px "Roboto";
+}
+
+#DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="false"]
+{
+  color: #FFFFFF;
+}
+
+#DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="true"]
+{
+  color: #FFFFFF;
+  font-style: italic;
+}
+
+#DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="true"]:hover
+{
+  color: #27A8DF;
+}
+
+#DetailsWidget #TagWidget[used="true"] QPushButton
+{
+  color: #888;
+  background-color: #3B3B3B;
+}
+
+#DFGPresetSearchWidget #Status #TabSearchLabel[clickable="true"][used="true"],
+#DetailsWidget #PortsView #PortView #TabSearchLabel[clickable="true"][used="true"],
+#DetailsWidget #Name[clickable="true"][used="true"]
+{
+  color: #888;
 }
 
 /****************************************************************************

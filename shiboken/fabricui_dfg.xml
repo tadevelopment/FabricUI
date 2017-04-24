@@ -6,7 +6,7 @@
       <object-type name="DFGBindingUtils" />-
       <object-type name="DFGController" />-
       <object-type name="DFGLogWidget" />
-      <object-type name="DFGTabSearchWidget" />
+      <object-type name="DFGAbstractTabSearchWidget" />
       <object-type name="DFGVEEditorOwner" />
       <object-type name="DFGUICmdHandler">
         <modify-function signature="DFGUICmdHandler()" remove="all" />

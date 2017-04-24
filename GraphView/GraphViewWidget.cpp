@@ -5,6 +5,13 @@
 #include <QDebug>
 #include <QPainter>
 #include <QGLWidget>
+#include <QMimeData>
+#include <QRect>
+#include <QGraphicsSceneEvent>
+
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/GraphView/Graph.h>
 
 #ifdef FABRICUI_TIMERS
   #include <Util/Timer.h>

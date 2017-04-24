@@ -4,6 +4,8 @@
 
 #include "Config.h"
 
+#include <FabricUI/Util/FabricResourcePath.h>
+
 using namespace FTL;
 
 #include <fstream>

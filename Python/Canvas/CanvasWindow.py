@@ -133,6 +133,7 @@ class ToggleManipulationAction(BaseCanvasWindowAction):
             QtGui.QKeySequence(QtCore.Qt.Key_Q),
             QtCore.Qt.WidgetWithChildrenShortcut)
         
+        viewport.addAction(self)
         self.viewport = viewport
         self.setCheckable(True)
         self.toggled.connect(canvasWindow.valueEditor.emitToggleManipulation)
@@ -151,6 +152,7 @@ class GridVisibilityAction(BaseCanvasWindowAction):
             QtGui.QKeySequence(QtCore.Qt.Key_G),
             QtCore.Qt.WidgetWithChildrenShortcut)
         
+        viewport.addAction(self)
         self.toggled.connect(viewport.setGridVisible)
         self.setCheckable(True)
         self.setChecked(viewport.isGridVisible())
@@ -166,6 +168,7 @@ class ResetCameraAction(BaseCanvasWindowAction):
             QtGui.QKeySequence(QtCore.Qt.Key_R),
             QtCore.Qt.WidgetWithChildrenShortcut)
         
+        viewport.addAction(self)
         self.triggered.connect(viewport.resetCamera)
        
 class BlockGraphCompilationAction(BaseCanvasWindowAction):
@@ -179,6 +182,7 @@ class BlockGraphCompilationAction(BaseCanvasWindowAction):
             QtGui.QKeySequence(QtCore.Qt.SHIFT  + QtCore.Qt.CTRL + QtCore.Qt.Key_Return),
             QtCore.Qt.WidgetWithChildrenShortcut)
         
+        self.canvasWindow.addAction(self)
         self.setCheckable(True)
         self.setChecked(False)
         self.toggled.connect(self.canvasWindow.setBlockCompilations)
@@ -461,7 +465,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.treeWidget = DFG.PresetTreeWidget(controller, self.config, True, False, False, False, False, True)
         self.dfgWidget.newPresetSaved.connect(self.treeWidget.refresh)
         self.dfgWidget.revealPresetInExplorer.connect(self.treeWidget.onExpandToAndSelectItem)
-        controller.varsChanged.connect(self.treeWidget.refresh)
+        # FE-8381 : Removed variables from the PresetTreeWidget
+        #controller.varsChanged.connect(self.treeWidget.setModelDirty)
         controller.dirty.connect(self.onDirty)
         controller.topoDirty.connect(self.onTopoDirty)
 
@@ -479,7 +484,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
-        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor( self.client, self.qUndoStack )
+        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor( self.client, self.qUndoStack, self.settings )
         # When the rendering options of the viewport have changed, redraw
         self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
         # Once the Viewport has been setup (and filled its option values), update the options menu
@@ -1381,14 +1386,10 @@ class CanvasWindow(QtGui.QMainWindow):
 
                 if self.isCanvas:
                     self.setGridVisibleAction = GridVisibilityAction(self.viewport, self.viewport)
-                    self.viewport.addAction(self.setGridVisibleAction)
-
                     self.resetCameraAction = ResetCameraAction(self.viewport, self.viewport)
-                    self.viewport.addAction(self.resetCameraAction)
 
                 self.clearLogAction = QtGui.QAction('&Clear Log Messages', None)
                 self.clearLogAction.triggered.connect(self.logWidget.clear)
-
                 self.blockCompilationsAction = BlockGraphCompilationAction(self)
 
                 if self.isCanvas:

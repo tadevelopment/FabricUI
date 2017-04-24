@@ -4,6 +4,7 @@
 #include "Graph.h"
 #include "PinCircle.h"
 #include "InstBlockPort.h"
+#include <FabricUI/GraphView/MainPanel.h>
 
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsSceneMouseEvent>

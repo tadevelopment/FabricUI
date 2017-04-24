@@ -7,6 +7,9 @@
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/NodeHeader.h>
 
 using namespace FabricUI::GraphView;
 

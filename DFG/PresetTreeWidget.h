@@ -42,6 +42,7 @@ namespace FabricUI
 
     public slots:
 
+      void setModelDirty(); // Will tag the model as dirty, and will schedule an update for it
       void refresh();
       void setBinding( FabricCore::DFGBinding const &binding );
       void onCustomContextMenuRequested(QPoint globalPos, FabricUI::TreeView::TreeItem * item);
@@ -51,6 +52,8 @@ namespace FabricUI
       /// Expands the tree-View to show the preset and selects it (FE-7300).
       void onExpandToAndSelectItem(QString presetPath);
 
+    protected:
+      void paintEvent( QPaintEvent * );
 
     private:
       
@@ -66,6 +69,7 @@ namespace FabricUI
       QString m_state;
       bool m_showsPresets;
       std::string m_contextPath;
+      bool m_modelDirty;
     };
 
   };

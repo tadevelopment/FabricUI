@@ -6,6 +6,7 @@
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
+#include <FabricUI/GraphView/MainPanel.h>
 
 using namespace FabricUI::GraphView;
 

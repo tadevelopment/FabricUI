@@ -7,6 +7,11 @@
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/PinCircle.h>
 #include <FabricUI/GraphView/ProxyPort.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/Port.h>
+#include <FabricUI/GraphView/FixedPort.h>
+#include <FabricUI/GraphView/NodeHeader.h>
 
 #include <QGraphicsLinearLayout>
 

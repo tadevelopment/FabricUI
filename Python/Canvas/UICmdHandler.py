@@ -55,6 +55,10 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         return result
 
     @staticmethod
+    def encodeBool(x):
+        return str(x)
+
+    @staticmethod
     def encodeInt(x):
         return str(x)
 
@@ -513,6 +517,7 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         nodeName,
         presetDirPath,
         presetName,
+        updateOrigPreset,
         ):
         return self.evalCmdWithArgs(
             "createPreset",
@@ -521,6 +526,7 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
                 UICmdHandler.encodeString(nodeName),
                 UICmdHandler.encodeString(presetDirPath),
                 UICmdHandler.encodeString(presetName),
+                UICmdHandler.encodeBool(updateOrigPreset),
                 ]
             )
 
@@ -715,6 +721,7 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         return self.evalCmdWithArgs(
             "splitFromPreset",
             [
+                UICmdHandler.encodeString(exec_.getExecPath()),
                 UICmdHandler.encodeString(execPath),
                 ]
             )

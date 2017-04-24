@@ -13,7 +13,6 @@
 
 #include "PortType.h"
 #include "NodeLabel.h"
-#include "PinCircle.h"
 #include "ConnectionTarget.h"
 #include "GraphicItemTypes.h"
 
@@ -23,6 +22,7 @@ namespace GraphView {
 class Graph;
 class InstBlock;
 class Node;
+class PinCircle;
 
 class InstBlockPort : public ConnectionTarget
 {
