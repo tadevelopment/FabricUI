@@ -328,7 +328,10 @@ void ColorViewItem::fromQColor( QColor color )
     if( m_val.type() != QVariant::UserType )
       m_val = color;
     else
-      RTVariant::toRTVal( color, m_val.value<FabricCore::RTVal>() );
+    {
+      FabricCore::RTVal rtval = m_val.value<FabricCore::RTVal>();
+      RTVariant::toRTVal( QVariant( color ), rtval );
+    }
   }
 }
 
