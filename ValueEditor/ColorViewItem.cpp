@@ -118,6 +118,18 @@ QWidget *ColorViewItem::getWidget()
   return m_widget;
 }
 
+bool ColorViewItem::hasAlpha() const
+{
+  if( m_val.userType() != QVariant::UserType )
+    return true;
+  else
+  {
+    FabricCore::RTVal v;
+    RTVariant::toRTVal( m_val, v );
+    return !v.hasType( "RGB" );
+  }
+}
+
 void ColorViewItem::toComponents(
   float &r,
   float &g,
@@ -125,32 +137,11 @@ void ColorViewItem::toComponents(
   float &a
   ) const
 {
-  if ( m_colorRTVal.hasType( "RGB" ) )
-  {
-    r = m_colorRTVal.getMemberRef( 0 ).getUInt8() / 255.0f;
-    g = m_colorRTVal.getMemberRef( 1 ).getUInt8() / 255.0f;
-    b = m_colorRTVal.getMemberRef( 2 ).getUInt8() / 255.0f;
-    a = 1.0f;
-  }
-  else if ( m_colorRTVal.hasType( "RGBA" ) )
-  {
-    r = m_colorRTVal.getMemberRef( 0 ).getUInt8() / 255.0f;
-    g = m_colorRTVal.getMemberRef( 1 ).getUInt8() / 255.0f;
-    b = m_colorRTVal.getMemberRef( 2 ).getUInt8() / 255.0f;
-    a = m_colorRTVal.getMemberRef( 3 ).getUInt8() / 255.0f;
-  }
-  else if ( m_colorRTVal.hasType( "Color" ) )
-  {
-    r = m_colorRTVal.getMemberRef( 0 ).getFloat32();
-    g = m_colorRTVal.getMemberRef( 1 ).getFloat32();
-    b = m_colorRTVal.getMemberRef( 2 ).getFloat32();
-    a = m_colorRTVal.getMemberRef( 3 ).getFloat32();
-  }
-  else
-  {
-    r = g = b = 0.0f;
-    a = 1.0f;
-  }
+  QColor v = m_val.value<QColor>();
+  r = v.redF();
+  g = v.greenF();
+  b = v.blueF();
+  a = v.alphaF();
 }
 
 QColor ColorViewItem::toQColor() const
@@ -162,8 +153,7 @@ QColor ColorViewItem::toQColor() const
  
 void ColorViewItem::onModelValueChanged( QVariant const &value )
 {
-  RTVariant::toRTVal( value, m_colorRTVal );
-
+  m_val = value;
   sync();
 }
 
@@ -180,7 +170,7 @@ void ColorViewItem::sync()
       routeModelValueChanged( 0, QVariant( r ) );
       routeModelValueChanged( 1, QVariant( g ) );
       routeModelValueChanged( 2, QVariant( b ) );
-      if ( !m_colorRTVal.hasType( "RGB" ) )
+      if ( hasAlpha() )
         routeModelValueChanged( 3, QVariant( a ) );
     }
     break;
@@ -190,7 +180,7 @@ void ColorViewItem::sync()
       routeModelValueChanged( 0, QVariant( std::max( 0.0, qColor.hueF() ) ) );
       routeModelValueChanged( 1, QVariant( qColor.saturationF() ) );
       routeModelValueChanged( 2, QVariant( qColor.valueF() ) );
-      if ( !m_colorRTVal.hasType( "RGB" ) )
+      if ( hasAlpha())
         routeModelValueChanged( 3, QVariant( qColor.alphaF() ) );
     }
     break;
@@ -205,6 +195,7 @@ void ColorViewItem::sync()
 
 void ColorViewItem::onChildViewValueChanged( int index, QVariant value )
 {
+  QColor newCol;
   switch ( m_spec )
   {
     case QColor::Hsv:
@@ -213,42 +204,16 @@ void ColorViewItem::onChildViewValueChanged( int index, QVariant value )
       toQColor().getHsvF( &v[0], &v[1], &v[2], &v[3] );
       v[0] = std::max( 0.0, v[0] );
       v[index] = value.toDouble();
-      fromQColor( QColor::fromHsvF( v[0], v[1], v[2], v[3] ) );
+      newCol = QColor::fromHsvF( v[0], v[1], v[2], v[3] );
     }
     break;
 
     case QColor::Rgb:
     {
-      if ( m_colorRTVal.hasType( "RGB" ) )
-      {
-        assert( index >= 0 && index < 3 );
-        if ( index >= 0 && index < 3 )
-          m_colorRTVal.getMemberRef( index ).setUInt8(
-            uint8_t(
-              round(
-                255.0f * std::max( 0.0f, std::min( 1.0f, float( value.toDouble() ) ) )
-                )
-              )
-            );
-      }
-      else if ( m_colorRTVal.hasType( "RGBA" ) )
-      {
-        assert( index >= 0 && index < 4 );
-        if ( index >= 0 && index < 4 )
-          m_colorRTVal.getMemberRef( index ).setUInt8(
-            uint8_t(
-              round(
-                255.0f * std::max( 0.0f, std::min( 1.0f, float( value.toDouble() ) ) )
-                )
-              )
-            );
-      }
-      else if ( m_colorRTVal.hasType( "Color" ) )
-      {
-        assert( index >= 0 && index < 4 );
-        if ( index >= 0 && index < 4 )
-          m_colorRTVal.getMemberRef( index ).setFloat32( float( value.toDouble() ) );
-      }
+      qreal v[4];
+      toQColor().getRgbF( &v[0], &v[1], &v[2], &v[3] );
+      v[index] = value.toDouble();
+      newCol = QColor::fromRgbF( v[0], v[1], v[2], v[3] );
     }
     break;
 
@@ -257,7 +222,7 @@ void ColorViewItem::onChildViewValueChanged( int index, QVariant value )
       break;
   }
 
-  emit viewValueChanged( toVariant( m_colorRTVal ) );
+  emit viewValueChanged( newCol );
 }
 
 void ColorViewItem::doAppendChildViewItems( QList<BaseViewItem*>& items )
@@ -275,7 +240,7 @@ void ColorViewItem::doAppendChildViewItems( QList<BaseViewItem*>& items )
       children[childCount++] = factory->createViewItem( "R", QVariant( r ), &m_childMetadata );
       children[childCount++] = factory->createViewItem( "G", QVariant( g ), &m_childMetadata );
       children[childCount++] = factory->createViewItem( "B", QVariant( b ), &m_childMetadata );
-      if ( !m_colorRTVal.hasType( "RGB" ) )
+      if ( hasAlpha() )
         children[childCount++] = factory->createViewItem( "A", QVariant( a ), &m_childMetadata );
     }
     break;
@@ -287,7 +252,7 @@ void ColorViewItem::doAppendChildViewItems( QList<BaseViewItem*>& items )
       children[childCount++] = factory->createViewItem( "H", QVariant( std::max( 0.0, color.hueF() ) ), &m_childMetadata );
       children[childCount++] = factory->createViewItem( "S", QVariant( color.saturationF() ), &m_childMetadata );
       children[childCount++] = factory->createViewItem( "V", QVariant( color.valueF() ), &m_childMetadata );
-      if ( !m_colorRTVal.hasType( "RGB" ) )
+      if ( hasAlpha() )
         children[childCount++] = factory->createViewItem( "A", QVariant( color.alphaF() ), &m_childMetadata );
     }
     break;
@@ -339,7 +304,7 @@ void ColorViewItem::pickColor()
   QColorDialog qcd( color, this->m_widget->parentWidget() );
   qcd.setOption(
     QColorDialog::ShowAlphaChannel,
-    !m_colorRTVal.hasType( "RGB" )
+    hasAlpha()
     );
   
   connect( &qcd, SIGNAL( colorSelected( QColor ) ), 
@@ -360,39 +325,23 @@ void ColorViewItem::fromQColor( QColor color )
 {
   if ( color.isValid() )
   {
-    if ( m_colorRTVal.hasType( "RGB" ) )
-    {
-      m_colorRTVal.getMemberRef( 0 ).setUInt8( uint8_t( color.red() ) );
-      m_colorRTVal.getMemberRef( 1 ).setUInt8( uint8_t( color.green() ) );
-      m_colorRTVal.getMemberRef( 2 ).setUInt8( uint8_t( color.blue() ) );
-    }
-    else if ( m_colorRTVal.hasType( "RGBA" ) )
-    {
-      m_colorRTVal.getMemberRef( 0 ).setUInt8( uint8_t( color.red() ) );
-      m_colorRTVal.getMemberRef( 1 ).setUInt8( uint8_t( color.green() ) );
-      m_colorRTVal.getMemberRef( 2 ).setUInt8( uint8_t( color.blue() ) );
-      m_colorRTVal.getMemberRef( 3 ).setUInt8( uint8_t( color.alpha() ) );
-    }
-    else if ( m_colorRTVal.hasType( "Color" ) )
-    {
-      m_colorRTVal.getMemberRef( 0 ).setFloat32( float( color.redF() ) );
-      m_colorRTVal.getMemberRef( 1 ).setFloat32( float( color.greenF() ) );
-      m_colorRTVal.getMemberRef( 2 ).setFloat32( float( color.blueF() ) );
-      m_colorRTVal.getMemberRef( 3 ).setFloat32( float( color.alphaF() ) );
-    }
+    if( m_val.type() != QVariant::UserType )
+      m_val = color;
+    else
+      RTVariant::toRTVal( color, m_val.value<FabricCore::RTVal>() );
   }
 }
 
 void ColorViewItem::onColorChanged( QColor color )
 {
   fromQColor( color );
-  emit viewValueChanged( toVariant( m_colorRTVal ) );
+  emit viewValueChanged( m_val );
 }
 
 void ColorViewItem::onColorSelected( QColor color )
 {
   fromQColor( color );
-  emit viewValueChanged( toVariant( m_colorRTVal ) );
+  emit viewValueChanged( m_val );
 }
 
 void ColorViewItem::formatChanged( const QString& format )
@@ -428,20 +377,10 @@ BaseViewItem *ColorViewItem::CreateItem(
   ItemMetadata* metaData
   )
 {
-  if ( value.type() != QVariant::UserType )
+  if( RTVariant::isType<QColor>( value ) )
+    return new ColorViewItem( value, name, metaData );
+  else
     return NULL;
-  if ( value.userType() != qMetaTypeId<FabricCore::RTVal>() )
-    return NULL;
-
-  FabricCore::RTVal rtVal = value.value<FabricCore::RTVal>();
-  if ( !rtVal.isValid() )
-    return NULL;
-  if ( !rtVal.hasType( "RGB" )
-    && !rtVal.hasType( "RGBA" )
-    && !rtVal.hasType( "Color" ) )
-    return NULL;
-
-  return new ColorViewItem( value, name, metaData );
 }
 
 const int ColorViewItem::Priority = 3;
