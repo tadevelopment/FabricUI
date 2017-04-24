@@ -120,7 +120,7 @@ QWidget *ColorViewItem::getWidget()
 
 bool ColorViewItem::hasAlpha() const
 {
-  if( m_val.userType() != QVariant::UserType )
+  if( isRTVal( m_val ) )
     return true;
   else
   {
@@ -137,7 +137,7 @@ void ColorViewItem::toComponents(
   float &a
   ) const
 {
-  QColor v = m_val.value<QColor>();
+  QColor v = getQVariantRTValValue<QColor>( m_val );
   r = v.redF();
   g = v.greenF();
   b = v.blueF();
@@ -325,11 +325,11 @@ void ColorViewItem::fromQColor( QColor color )
 {
   if ( color.isValid() )
   {
-    if( m_val.type() != QVariant::UserType )
+    if( isRTVal(m_val) )
       m_val = color;
     else
     {
-      FabricCore::RTVal rtval = m_val.value<FabricCore::RTVal>();
+      FabricCore::RTVal rtval = getQVariantRTValValue<FabricCore::RTVal>( m_val );
       RTVariant::toRTVal( QVariant( color ), rtval );
     }
   }
