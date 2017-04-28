@@ -303,6 +303,24 @@ DFGController * DFGWidget::getUIController()
   return m_uiController.get();
 }
 
+const DFGController * DFGWidget::getUIController() const
+{
+  return m_uiController.get();
+}
+
+std::string DFGWidget::getBindingHostApp() const
+{
+  std::string host_app = "";
+  DFGController *controller = (DFGController *)getUIController();
+  if (controller)
+  {
+    const char *host_app_ptr = controller->getBinding().getMetadata("host_app");
+    if (host_app_ptr)
+      host_app = host_app_ptr;
+  }
+  return host_app;
+}
+
 const char* legacyTabSearchKey = "useLegacyTabSearch";
 
 bool DFGWidget::isUsingLegacyTabSearch() const
@@ -791,14 +809,7 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
   result->addSeparator();
 
   // [FE-8248] we only show the 'Timeline' menu for certain host applications (e.g. Canvas standalone).
-  std::string host_app = graphWidget->getUIController()->getBinding().getMetadata("host_app");
-  if (   host_app == "Canvas.py"
-      || host_app == "Canvas.exe"
-      || host_app == "Maya"
-      || host_app == "Softimage"
-      || host_app == "Modo"
-      || host_app == "3dsMax"
-     )
+  if ( graphWidget->isBindingHostAppStandalone() )
   {
     QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
     timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );

@@ -89,6 +89,7 @@ namespace DFG {
       GraphView::Graph * getUIGraph();
       DFGKLEditorWidget * getKLEditor();
       DFGController * getUIController();
+      const DFGController * getUIController() const;
       DFGAbstractTabSearchWidget * getTabSearchWidget();
       DFGGraphViewWidget * getGraphViewWidget();
       const DFGGraphViewWidget * getGraphViewWidget() const;
@@ -99,11 +100,20 @@ namespace DFG {
       bool isEditable() const { return m_isEditable; }
       static QSettings * getSettings();
       static void setSettings(QSettings * settings);
-      
+
+      std::string getBindingHostApp() const;
+
+      bool isBindingHostAppStandalone() const { return (isBindingHostAppCanvasPy() || isBindingHostAppCanvasExe()); }
+      bool isBindingHostAppCanvasPy()   const { return (getBindingHostApp() == "Canvas.py"); }
+      bool isBindingHostAppCanvasExe()  const { return (getBindingHostApp() == "Canvas.exe"); }
+      bool isBindingHostAppMaya()       const { return (getBindingHostApp() == "Maya"); }
+      bool isBindingHostAppSoftimage()  const { return (getBindingHostApp() == "Softimage"); }
+      bool isBindingHostAppModo()       const { return (getBindingHostApp() == "Modo"); }
+      bool isBindingHostApp3dsMax()     const { return (getBindingHostApp() == "3dsMax"); }
+
       void onExecPathOrTitleChanged();
       void refreshExtDeps( FTL::CStrRef extDeps );
 
-    //void populateMenuBar(QMenuBar *menuBar, bool addFileMenu = true, bool addDCCMenu = false);
       void populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEditMenu, bool addViewMenu, bool addDCCMenu, bool addHelpMenu);
 
       bool maybeEditNode( FabricUI::GraphView::Node *node );
