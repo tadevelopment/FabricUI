@@ -84,13 +84,13 @@ class ActionRegistry : public QObject
 
     /// Checks if the shortcut is  
     /// already used by an action.
-    QAction* isShortcutUsed(
+    QList<QAction*> isShortcutUsed(
       QKeySequence shortcut
       ) const;
 
     /// Checks if the shortcuts is  
     /// already used by an action.
-    QAction* isShortcutUsed(
+    QList<QAction*> isShortcutUsed(
       const QList<QKeySequence> &shortcuts
       ) const;
 
