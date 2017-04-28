@@ -397,6 +397,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.astManager = KLASTManager(self.client)
         self.host = self.client.getDFGHost()
         self.mainBinding = self.host.createBindingToNewGraph()
+        self.mainBinding.setMetadata("host_app", "Canvas.py", False);
         self.lastSavedBindingVersion = self.mainBinding.getVersion()
         self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
 
@@ -767,6 +768,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
             jsonVal = open(filePath, 'rb').read()
             binding = self.host.createBindingFromJSON(jsonVal)
+            binding.setMetadata("host_app", "Canvas.py", False);
             self.lastSavedBindingVersion = binding.getVersion()
             self.dfgWidget.replaceBinding(binding)
             self.scriptEditor.updateBinding(binding)
@@ -1050,6 +1052,7 @@ class CanvasWindow(QtGui.QMainWindow):
             #             create the new one before resetting the timeline options
 
             binding = self.host.createBindingToNewGraph()
+            binding.setMetadata("host_app", "Canvas.py", False);
             self.lastSavedBindingVersion = binding.getVersion()
 
             self.dfgWidget.replaceBinding(binding)

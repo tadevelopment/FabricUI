@@ -790,27 +790,37 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
 
   result->addSeparator();
 
-
-  QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
-  timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );
+  // [FE-8248] we only show the 'Timeline' menu for certain host applications (e.g. Canvas standalone).
+  std::string host_app = graphWidget->getUIController()->getBinding().getMetadata("host_app");
+  if (   host_app == "Canvas.py"
+      || host_app == "Canvas.exe"
+      || host_app == "Maya"
+      || host_app == "Softimage"
+      || host_app == "Modo"
+      || host_app == "3dsMax"
+     )
   {
-    QString portname[4] = {"timeline", "timelineStart", "timelineEnd", "timelineFramerate"};
-    bool canAddTimelinePort[4];
-    bool canAddAllTimelinePorts = false;
-    for (int i=0;i<4;i++)
+    QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
+    timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );
     {
-      canAddTimelinePort[i] = (   editable
-                               && portType == FabricUI::GraphView::PortType_Output
-                               && exec.getExecPath().getLength() == 0
-                               && graph->ports(portname[i].toUtf8().data()).size() == 0 );
-      canAddAllTimelinePorts |= canAddTimelinePort[i];
-      timelinePortsMenu->addAction( new CreateTimelinePortAction( graphWidget, timelinePortsMenu, i, canAddTimelinePort[i] ) );
+      QString portname[4] = {"timeline", "timelineStart", "timelineEnd", "timelineFramerate"};
+      bool canAddTimelinePort[4];
+      bool canAddAllTimelinePorts = false;
+      for (int i=0;i<4;i++)
+      {
+        canAddTimelinePort[i] = (   editable
+                                  && portType == FabricUI::GraphView::PortType_Output
+                                  && exec.getExecPath().getLength() == 0
+                                  && graph->ports(portname[i].toUtf8().data()).size() == 0 );
+        canAddAllTimelinePorts |= canAddTimelinePort[i];
+        timelinePortsMenu->addAction( new CreateTimelinePortAction( graphWidget, timelinePortsMenu, i, canAddTimelinePort[i] ) );
+      }
+      timelinePortsMenu->addSeparator();
+      timelinePortsMenu->addAction( new CreateAllTimelinePortsAction( graphWidget, timelinePortsMenu, true /* createOnlyMissingPorts */, canAddAllTimelinePorts ) );
     }
-    timelinePortsMenu->addSeparator();
-    timelinePortsMenu->addAction( new CreateAllTimelinePortsAction( graphWidget, timelinePortsMenu, true /* createOnlyMissingPorts */, canAddAllTimelinePorts ) );
-  }
 
-  result->addSeparator();
+    result->addSeparator();
+  }
   
   bool canDeleteAllPorts = (    editable
                             &&  exec.getExecPortCount() > 1
