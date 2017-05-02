@@ -183,7 +183,7 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
     }
 
     // Proto tool setup
-    FabricCore::RTVal::Create( m_client, "RenderEngineInlineDrawingSetup", 0, 0 );
+    FabricCore::RTVal::Create( m_client, "WRenderEngineInlineDrawingSetup", 0, 0 );
 
     m_camera = m_viewport.maybeGetMember("camera");
     m_cameraManipulator = FabricCore::RTVal::Create(m_client, "CameraManipulator", 1, &m_camera);
