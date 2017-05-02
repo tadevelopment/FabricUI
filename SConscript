@@ -342,6 +342,7 @@ if uiLibPrefix == 'ui':
       ]
       )
     pysideEnv.Depends(pysideGen, installedHeaders)
+    pysideEnv.Requires(pysideGen, uiLib)
     pysideEnv.Depends(pysideGen, corePythonModuleFiles)
     pysideGens.append(pysideGen)
 
