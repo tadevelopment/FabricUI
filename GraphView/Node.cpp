@@ -889,7 +889,7 @@ bool Node::onMouseRelease( const QGraphicsSceneMouseEvent *event )
 {
   if ( m_dragging == 2 )
   {
-    if(!selected())
+    if (!selected() && !m_nodesToMove.size())
       emit positionChanged(this, graphPos());
     else
     {
