@@ -268,6 +268,15 @@ void DFGExecHeaderWidget::reqExtResizeToContent()
   int txtPixels = fontMetrics.width(" " + m_reqExtLineEdit->text() + " ");
 
   m_reqExtLineEdit->setFixedWidth(std::max(minPixels, std::min(maxPixels, txtPixels)));
+
+  reqExtSetToolTipFromContent();
+}
+
+void DFGExecHeaderWidget::reqExtSetToolTipFromContent()
+{
+  QString text = m_reqExtLineEdit->text();
+  text.replace(',', '\n');
+  m_reqExtLineEdit->setToolTip(text);
 }
 
 void DFGExecHeaderWidget::onExecChanged()
