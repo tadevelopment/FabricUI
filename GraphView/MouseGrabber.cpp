@@ -79,13 +79,32 @@ MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, Connect
       if(menu == NULL)
         return NULL;
 
-      QPoint globalPos = QCursor::pos();
-      QAction * action = menu->exec(globalPos);
+      QString name = "";
 
-      if(action == NULL)
-        return NULL;
+      if(QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+      {
+        QList<QAction *> actions = menu->actions();
+        if(actions.size() > 0)
+        {
+          QAction *action = actions[0];
+          if(action->isEnabled())
+          {
+            name = action->data().toString();
+            if (name != "exec")
+              name = "";
+          }
+        }
+      }
 
-      QString name = action->data().toString();
+      if(name == "")
+      {
+        QAction * action = menu->exec(QCursor::pos());
+        if(action == NULL)
+          return NULL;
+
+        name = action->data().toString();
+      }
+
       if(name == "")
         return NULL;
 
@@ -106,13 +125,32 @@ MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, Connect
       if(menu == NULL)
         return NULL;
 
-      QPoint globalPos = QCursor::pos();
-      QAction * action = menu->exec(globalPos);
+      QString name = "";
 
-      if(action == NULL)
-        return NULL;
+      if(QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+      {
+        QList<QAction *> actions = menu->actions();
+        if(actions.size() > 0)
+        {
+          QAction *action = actions[0];
+          if(action->isEnabled())
+          {
+            name = action->data().toString();
+            if (name != "exec")
+              name = "";
+          }
+        }
+      }
 
-      QString name = action->data().toString();
+      if(name == "")
+      {
+        QAction * action = menu->exec(QCursor::pos());
+        if(action == NULL)
+          return NULL;
+
+        name = action->data().toString();
+      }
+
       if(name == "")
         return NULL;
 
@@ -949,11 +987,32 @@ void MouseGrabber::invokeNodeHeaderMenu(Node * node, ConnectionTarget * other, P
   if(menu == NULL)
     return;
 
-  QAction * action = menu->exec(pos);
-  if(action == NULL)
-    return;
+  QString name = "";
 
-  QString name = action->data().toString();
+  if(QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+  {
+    QList<QAction *> actions = menu->actions();
+    if(actions.size() > 0)
+    {
+      QAction *action = actions[0];
+      if(action->isEnabled())
+      {
+        name = action->data().toString();
+        if (name != "exec")
+          name = "";
+      }
+    }
+  }
+
+  if(name == "")
+  {
+    QAction * action = menu->exec(pos);
+    if(action == NULL)
+      return;
+
+    name = action->data().toString();
+  }
+
   if(name == "")
     return;
 
@@ -983,11 +1042,32 @@ void MouseGrabber::invokeInstBlockHeaderMenu(
   if(menu == NULL)
     return;
 
-  QAction * action = menu->exec(pos);
-  if(action == NULL)
-    return;
+  QString name = "";
 
-  QString name = action->data().toString();
+  if(QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+  {
+    QList<QAction *> actions = menu->actions();
+    if(actions.size() > 0)
+    {
+      QAction *action = actions[0];
+      if(action->isEnabled())
+      {
+        name = action->data().toString();
+        if (name != "exec")
+          name = "";
+      }
+    }
+  }
+
+  if(name == "")
+  {
+    QAction * action = menu->exec(pos);
+    if(action == NULL)
+      return;
+
+    name = action->data().toString();
+  }
+
   if(name == "")
     return;
 
