@@ -8,3 +8,4 @@
 #include <FabricUI/Util/Config.h>
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Util/LoadPixmap.h>
+#include <FabricUI/Util/Factory.h>

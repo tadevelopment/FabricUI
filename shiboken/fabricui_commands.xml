@@ -4,11 +4,15 @@
     <namespace-type name="Commands"  generate="yes">
       <object-type name="BaseCommand" />
       <object-type name="BaseScriptableCommand" />
+      <object-type name="BaseRTValScriptableCommand" />
       <object-type name="CommandManager" />
-      <object-type name="CommandManager_Python" />
+      <object-type name="RTValCommandManager" />
+      <object-type name="KLCommandManager" />
+      <object-type name="KLCommandManager_Python" />
       <object-type name="CommandRegistry" />
+      <object-type name="KLCommandRegistry" />
+      <object-type name="KLCommandRegistry_Python" />
       <object-type name="CppToPythonTestCommand" />
-      <object-type name="BaseRTValScriptableCommand" />      
     </namespace-type>
   </namespace-type>
 </typesystem>
