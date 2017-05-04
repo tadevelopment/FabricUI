@@ -134,6 +134,7 @@ dirs = [
   'ValueEditor_Legacy',
   'ValueEditor',
   'OptionsEditor',
+  'OptionsEditor/Commands',
   'GraphView',
   'GraphView/Commands',
   'DFG',
@@ -181,7 +182,8 @@ for d in dirs:
 
 uiLib = env.StaticLibrary('FabricUI', sources)
 
-uiFiles = installedHeaders
+import copy
+uiFiles = copy.copy(installedHeaders)
 if uiLibPrefix == 'ui':
   uiLib = env.Install(stageDir.Dir('lib'), uiLib)
   uiFiles.append(uiLib)
@@ -345,7 +347,7 @@ if uiLibPrefix == 'ui':
       ]
       )
     pysideEnv.Depends(pysideGen, installedHeaders)
-    pysideEnv.Depends(pysideGen, uiLib)
+    #pysideEnv.Depends(pysideGen, uiLib)
     pysideEnv.Depends(pysideGen, corePythonModuleFiles)
     pysideGens.append(pysideGen)
 
@@ -356,6 +358,7 @@ if uiLibPrefix == 'ui':
         pysideEnv.Dir('Dialog').srcnode(),
         pysideEnv.Dir('Actions').srcnode(),
         pysideEnv.Dir('OptionsEditor').srcnode(),
+        pysideEnv.Dir('OptionsEditor/Commands').srcnode(),
         pysideEnv.Dir('DFG').srcnode(),
         pysideEnv.Dir('DFG/Commands').srcnode(),
         pysideEnv.Dir('DFG/DFGUICmd').srcnode(),
