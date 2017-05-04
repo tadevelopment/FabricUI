@@ -127,7 +127,7 @@ namespace DFG {
       void createPreset( const char *nodeName );
       void updateOrigPreset( const char *nodeName );
       void exportGraph( const char *nodeName );
-      void explodeNode( const char *nodeName );
+      void explodeNode( const char *nodeName, bool clearCurrentSelection = true, bool selectNewNodes = true );
 
       void createNewGraphNode( QPoint const &globalPos );
       void createNewNodeFromJSON( QPoint const &globalPos );
@@ -914,7 +914,7 @@ namespace DFG {
         {
           GraphView::Graph *graph = controller->graph();
 
-          // create an array of those selected node that are 'explodable'.
+          // create an array of nodes that are selected and 'explodable'.
           std::vector<std::string> nodes;
           {
             FabricCore::DFGExec exec = controller->getExec();
@@ -941,11 +941,15 @@ namespace DFG {
           }
 
           // explode the nodes.
-          for (size_t i=0;i<nodes.size();i++)
+          if (nodes.size() > 0)
           {
-            GraphView::Node *node = graph->node(nodes[i]);
-            if (node)
-              m_dfgWidget->explodeNode(node->name().c_str());
+            graph->clearSelection();
+            for (size_t i=0;i<nodes.size();i++)
+            {
+              GraphView::Node *node = graph->node(nodes[i]);
+              if (node)
+                m_dfgWidget->explodeNode(node->name().c_str(), false /* clearCurrentSelection */, true /* selectNewNodes */);
+            }
           }
         }
       }

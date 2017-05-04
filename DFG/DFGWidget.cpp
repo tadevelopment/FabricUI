@@ -2000,17 +2000,20 @@ void DFGWidget::exportGraph( const char *nodeName )
   }
 }
 
-void DFGWidget::explodeNode( const char *nodeName )
+void DFGWidget::explodeNode( const char *nodeName, bool clearCurrentSelection, bool selectNewNodes )
 {
   QList<QString> newNodeNames =
     m_uiController->cmdExplodeNode( QString::fromUtf8( nodeName ) );
 
-  m_uiGraph->clearSelection();
-  for ( int i = 0; i < newNodeNames.size(); ++i )
-  {
-    if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeNames.at( i ) ) )
-      uiNode->setSelected( true );
-  }
+  if (clearCurrentSelection)
+    m_uiGraph->clearSelection();
+
+  if (selectNewNodes)
+    for (int i=0;i<newNodeNames.size();i++)
+    {
+      if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeNames.at(i) ) )
+        uiNode->setSelected( true );
+    }
 }
 
 void DFGWidget::keyPressEvent(QKeyEvent * event)
