@@ -179,7 +179,8 @@ for d in dirs:
 
 uiLib = env.StaticLibrary('FabricUI', sources)
 
-uiFiles = installedHeaders
+import copy
+uiFiles = copy.copy(installedHeaders)
 if uiLibPrefix == 'ui':
   uiLib = env.Install(stageDir.Dir('lib'), uiLib)
   uiFiles.append(uiLib)
@@ -341,7 +342,7 @@ if uiLibPrefix == 'ui':
       ]
       )
     pysideEnv.Depends(pysideGen, installedHeaders)
-    pysideEnv.Depends(pysideGen, uiLib)
+    pysideEnv.Requires(pysideGen, uiLib)
     pysideEnv.Depends(pysideGen, corePythonModuleFiles)
     pysideGens.append(pysideGen)
 
