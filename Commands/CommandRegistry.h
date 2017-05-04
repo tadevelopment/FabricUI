@@ -5,56 +5,41 @@
 #ifndef __UI_COMMAND_REGISTRY__
 #define __UI_COMMAND_REGISTRY__
 
-#include <QMap> 
-#include <QObject>
-#include <QString> 
-#include <FabricCore.h>
-#include "BaseCommand.h"
+#include "Command.h"
+#include <FabricUI/Util/Factory.h> 
 
 namespace FabricUI {
 namespace Commands {
 
-class BaseCommandFactory;
-
-class CommandRegistry : public QObject
+class CommandRegistry : public Util::BaseFactoryRegistry
 {
   /**
-    CommandRegistry registers the C++ command-factories and creates commands from them. 
-    It has a reference to tke KL command registry, and automatially creates the C++ 
-    wrappers (see KLCommand and KLScriptableCommand) of any KL commandregistered in the
-    KL command registry. When a command is registered, the signal `commandRegisteredCallback`
-    is emitted.
-    
-    When specialized in Python, the same registry is shared between C++ and Python, 
+    CommandRegistry registers C++ command-factories and creates commands from them. 
+    When a command is registered, the signal `commandRegistered` is emitted. When 
+    specialized in Python , the same registry is shared between C++ and Python,
     so commands implemented in Python can be created from C++ and vice versa.
     
     The registry sets it-self as a singleton when it's constructed:
-    - Create the registry: CommandRegistry cmdRegistry(fabricClient);
+    - Create the singleton: CommandRegistry *cmdRegistry = new CommandRegistry();
   
-    - Get the registry: CommandRegistry *cmdRegistry = CommandRegistry::GetCommandRegistry();
+    - Get the singleton: CommandRegistry *cmdRegistry = CommandRegistry::GetCommandRegistry();
 
     Usage:
-    - Register a command (C++): CommandFactory<cmdType>::RegisterCommand(cmdName, userData);
+    - Register a command (C++): CommandFactory<CmdType>::Register(cmdName, userData);
     
-    - Check a command is registered (Python/C++/KL): cmdRegistry->isCommandRegistered(cmdName);
+    - Check a command is registered (Python/C++): cmdRegistry->isCommandRegistered(cmdName);
     
-    - Get a command specs [type, implType] (Python/C++/KL): cmdRegistry->getCommandSpecs(cmdName);
+    - Get a command specs [type, implType] (Python/C++): cmdRegistry->getCommandSpecs(cmdName);
 
-    - Create a command (C++/KL): BaseCommand *cmd = cmdRegistry->createCommand(cmdName);
-
-    - Synchronize with the KL registry: cmdRegistry->synchronizeKL();
+    - Create a command (C++/Python): Command *cmd = cmdRegistry->createCommand(cmdName);
   */  
   Q_OBJECT
 
   public:
-    /// Command implementation types.
-    static QString COMMAND_KL; 
-    static QString COMMAND_CPP; 
-    static QString COMMAND_PYTHON; 
+    // Command type
+    QString COMMAND_CPP; 
  
-	  CommandRegistry(
-      FabricCore::Client client
-      );
+    CommandRegistry();
 
     virtual ~CommandRegistry();
 
@@ -62,92 +47,96 @@ class CommandRegistry : public QObject
     /// Thows an error if the registry has not been created.
     static CommandRegistry* GetCommandRegistry();
 
-    /// Registers a C++ CommandFactory.
-  	void registerFactory(
-      const QString &cmdName, 
-      BaseCommandFactory *factory
+    /// Creates a command named 'cmdName'.
+    /// Throws an error if the command isn't registered.
+    virtual Command* createCommand(
+      const QString &cmdName
       );
 
-    /// Checks if a command (KL, C++, Python) 
-    /// has been registered under "cmdName".
+    /// Checks if a command (C++, Python) 
+    /// has been registered under 'cmdName'.
     bool isCommandRegistered(
       const QString &cmdName
       );
 
-    /// Provides the command and implementation type (KL/C++/Python).
+    /// Provides the command and implementation type (C++/Python).
     /// Returns an empty list if the command is not registred.
     QList<QString> getCommandSpecs(
       const QString &cmdName
       );
 
-    /// Creates a C++ or KL command named "cmdName".
-    /// Throws an error if the command cannot be created,
-    /// has to be registered first.
-    virtual BaseCommand* createCommand(
-      const QString &cmdName
-      );
-
-    /// Gets the KL registry.
-    FabricCore::RTVal getKLRegistry();
-
-    /// Gets the FabricCore client.
-    FabricCore::Client getFabricClient();
-
-    /// Synchronizes with the KL registry.
-    /// Allows to create KL command from C++/Python.
-    void synchronizeKL();
-
-    /// Gets all the registred commands (KL/C++/Python) 
+    /// Gets all the registred commands (C++/Python) 
     /// and the specs as a string, used for debugging.
     QString getContent();
   
   signals:
-    /// Emitted when a command 
-    /// has been registered.
-    void commandRegisteredCallback(
+    /// Emitted when a command has been registered.
+    /// \param cmdName The name of the command
+    /// \param cmdType Object type
+    /// \param implType Implementation : C++ or Python
+    void commandRegistered(
       const QString &cmdName,
       const QString &cmdType,
       const QString &implType
       );
 
+  public slots:
+    /// Implementation of Util::FactoryRegistry.
+    virtual void registerFactory(
+      const QString &name, 
+      Util::Factory *factory
+      );
+
+    /// Implementation of Util::FactoryRegistry.
+    /// Does nothing.
+    virtual void unregisterFactory(
+      const QString &name 
+      );
+    
   protected:
-    /// Inform a command has been registered. 
+    /// Informs a command has been registered. 
     /// \param cmdName The name of the command
     /// \param cmdType Object type
-    /// \param implType Implementation : KL, C++ or Python
-    void commandRegistered(
+    /// \param implType Implementation : C++ or Python
+    virtual void commandIsRegistered(
       const QString &cmdName,
       const QString &cmdType,
       const QString &implType
     );
 
   private:
-    /// Registers a command defined in KL.
-    /// Allows to create KL command from C++/Python.
-    void registerKLCommand(
-      const QString &cmdName
-      );
-
-    /// Creates a C++ KLCommand or KLSriptableCommand wrapper 
-    /// for a KL command registered in the KL CommandRegistry.
-    BaseCommand* createKLCommand(
-      const QString &cmdName
-      );
-
+    /// Dictionaries of registered commands (Python/C++): 
+    /// {cmdName, {type, implementation type}}
+    QMap< QString, QList<QString> > m_cmdSpecs;
     /// CommandRegistry singleton, set from Constructor.
     static CommandRegistry *s_cmdRegistry;
     /// Check if the singleton has been set.
     static bool s_instanceFlag;
+};
 
-    /// Dictionaries of registered commands factories (C++): 
-    QMap<QString, BaseCommandFactory*> m_registeredCmdFactories;
-    /// Dictionaries of registered commands (Python/C++/KL): 
-    /// {cmdName, {type, implementation type}}
-    QMap< QString, QList<QString> > m_registeredCmdSpecs;
-    /// KL command registry.
-    FabricCore::RTVal m_klCmdRegistry;
-    /// Fabric client.
-    FabricCore::Client m_client;
+template<typename T> 
+class CommandFactory : public Util::TemplateFactory<T>
+{
+  /**
+    CommandFactory is used to register commands in the CommandRegistry.
+    - Register a command: CommandFactory<cmdType>::Register(cmdName, userData);
+  */
+  public:
+    CommandFactory(void *userData) 
+      : TemplateFactory(userData) 
+    {
+    }
+
+    /// Registers the command <T> under "cmdName".
+    static void Register(
+      const QString &cmdName,
+      void *userData=0) 
+    {
+      TemplateFactory::Register(
+        CommandRegistry::GetCommandRegistry(),
+        cmdName,
+        userData);
+    }
 };
 
 } // namespace Commands

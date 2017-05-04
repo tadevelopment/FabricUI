@@ -2,53 +2,24 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <string>
-#include "KLCommand.h"
-#include "CommandFactory.h"
+#include "CommandHelpers.h"
 #include "CommandRegistry.h"
-#include "KLScriptableCommand.h"
-#include <FabricUI/Util/TypeInfo.h>
 
 using namespace FabricUI;
 using namespace Commands;
-using namespace FabricCore;
+using namespace Util;
 
-QString CommandRegistry::COMMAND_KL = "KL";
-QString CommandRegistry::COMMAND_CPP = "CPP";
-QString CommandRegistry::COMMAND_PYTHON = "PYTHON";
 bool CommandRegistry::s_instanceFlag = false;
 CommandRegistry* CommandRegistry::s_cmdRegistry = 0;
 
-CommandRegistry::CommandRegistry(
-  Client client) 
-  : QObject()
-  , m_client(client)
+CommandRegistry::CommandRegistry() 
+  : Util::BaseFactoryRegistry()
 {
   if(s_instanceFlag)
-    throw("CommandRegistry::CommandRegistry, singleton has already been created");
-  
-  try 
-  {
-    m_klCmdRegistry = RTVal::Create(
-      m_client, 
-      "CommandRegistry", 
-      0, 
-      0);
-
-    m_klCmdRegistry = m_klCmdRegistry.callMethod(
-      "CommandRegistry", 
-      "getCommandRegistry", 
-      0, 
-      0);
-  }
-
-  catch(Exception &e)
-  {
-    printf(
-      "CommandRegistry::CommandRegistry: exception: %s\n", 
-      e.getDesc_cstr());
-  }
+    printAndThrow("CommandRegistry::CommandRegistry, singleton has already been created");
    
+  COMMAND_CPP = "CPP";
+ 
   // Set the pointer of the CommandRegistry singleton
   // equal to this instance of CommandRegistry.
   s_cmdRegistry = this;
@@ -57,71 +28,53 @@ CommandRegistry::CommandRegistry(
 
 CommandRegistry::~CommandRegistry() 
 {
-  QMapIterator<QString, BaseCommandFactory*> ite(m_registeredCmdFactories);
-  while (ite.hasNext()) 
-  {
-    ite.next();
-    BaseCommandFactory* factory = (BaseCommandFactory*)ite.value();
-    delete factory;
-    factory = 0;
-  }
- 
   s_instanceFlag = false;
 }
 
 CommandRegistry* CommandRegistry::GetCommandRegistry()
 {
   if(!s_instanceFlag)
-    throw(
-      std::string(
-        "CommandRegistry::CommandRegistry, the registry is null")
+    printAndThrow(
+      "CommandRegistry::CommandRegistry, the registry is null"
     );
 
   return s_cmdRegistry;
 }
 
 void CommandRegistry::registerFactory(
-  const QString &cmdName, 
-  BaseCommandFactory *factory) 
+  const QString &name, 
+  Factory *factory) 
 {
-  if (!isCommandRegistered(cmdName))
+  if (!isCommandRegistered(name))
   {
-    m_registeredCmdFactories[cmdName] = factory;
-
+    Util::BaseFactoryRegistry::registerFactory(name, factory);
+ 
     // Get the name of the cmd class.
     // --> FactoryClassName<CmdClassName>
     QString factoryName = Util::type(
-      *factory
-      );
+      *factory);
+    
+    QString cmdClassName = parseTemplateCppType(
+      factoryName);
 
-    int firstIndex = factoryName.indexOf(
-      "<"
-      );
-
-    int lastIndex = factoryName.lastIndexOf(
-      ">"
-      );
-
-    QString cmdClassName = factoryName.mid(
-      firstIndex+1,
-      lastIndex-(firstIndex+1)
-      );
-
-    commandRegistered(
-      cmdName,
+    commandIsRegistered(
+      name,
       cmdClassName,
       COMMAND_CPP
       );
   }
 }
 
+void CommandRegistry::unregisterFactory(
+  const QString &name)
+{
+  // Does nothing.
+}
+
 bool CommandRegistry::isCommandRegistered(
   const QString &cmdName) 
 {
-  // Check first if the command is registered
-  // in KL but not in C++ alredy.
-  registerKLCommand(cmdName);
-  return m_registeredCmdSpecs.count(cmdName) > 0;
+  return m_cmdSpecs.count(cmdName) > 0;
 }
 
 QList<QString> CommandRegistry::getCommandSpecs(
@@ -130,83 +83,54 @@ QList<QString> CommandRegistry::getCommandSpecs(
   QList<QString> specs;
 
   if(isCommandRegistered(cmdName))
-    specs = m_registeredCmdSpecs[cmdName];
+    specs = m_cmdSpecs[cmdName];
 
   return specs;
 }
 
-BaseCommand* CommandRegistry::createCommand(
+Command* CommandRegistry::createCommand(
   const QString &cmdName) 
 {  
-  if (!isCommandRegistered(cmdName))
-    throw( 
-      std::string(
-        QString(
-          "CommandRegistry::createCommand, cannot create command '" + 
-          cmdName + "', it's not registered"
-        ).toUtf8().constData() 
-      )
+  if(!isCommandRegistered(cmdName))
+    printAndThrow( 
+      QString(
+        "CommandRegistry::createCommand, cannot create command '" + 
+        cmdName + "', it's not registered"
+      ).toUtf8().constData() 
     );
 
   QList<QString> spec = getCommandSpecs(cmdName);
-
-  BaseCommand *cmd = 0;
+  
   if(spec[1] == COMMAND_CPP) 
   {
-    cmd = m_registeredCmdFactories[cmdName]->createCommand();
+    Factory *factory = Util::BaseFactoryRegistry::getFactory(
+      cmdName);
 
+    Command* cmd = (Command*)factory->create(); 
+ 
+    if(cmd == 0)
+      printAndThrow(
+        "CommandRegistry::createCppCommand, resulting command is null" 
+      );
+  
+    void *userData = factory->getUserData();
+  
     cmd->registrationCallback(
       cmdName,
-      m_registeredCmdFactories[cmdName]->m_userData);
+      userData);
+
+    return cmd;
   }
 
-  else if(spec[1] == COMMAND_KL)
-    cmd = createKLCommand(cmdName);
-  
-  return cmd;
-}
-
-FabricCore::RTVal CommandRegistry::getKLRegistry()
-{
-  return m_klCmdRegistry;
-}
-
-FabricCore::Client CommandRegistry::getFabricClient()
-{
-  return m_client;
-}
-
-void CommandRegistry::synchronizeKL() 
-{
-  try 
-  {
-    RTVal klCmdNameList = m_klCmdRegistry.callMethod(
-      "String[]", 
-      "getRegisteredCommandList", 
-      0, 
-      0);
-    
-    for(unsigned int i=0; i<klCmdNameList.getArraySize(); ++i)
-    {
-      QString cmdName(klCmdNameList.getArrayElement(i).getStringCString());
-      registerKLCommand(cmdName);
-    }
-  }
-
-  catch(Exception &e)
-  {
-    printf(
-      "CommandRegistry::synchronizeKL: exception: %s\n", 
-      e.getDesc_cstr());
-  }
+  return 0;
 }
 
 QString CommandRegistry::getContent()
 {
   QString res = "--> CommandRegistry:\n";
-  QMapIterator< QString, QList<QString> > specsIt(m_registeredCmdSpecs);
+  QMapIterator< QString, QList<QString> > specsIt(m_cmdSpecs);
 
-  while (specsIt.hasNext()) 
+  while(specsIt.hasNext()) 
   {
     specsIt.next();
     QString name = specsIt.key();
@@ -220,129 +144,19 @@ QString CommandRegistry::getContent()
   return res;
 }
 
-void CommandRegistry::registerKLCommand(
-  const QString &cmdName) 
-{
-  try 
-  {
-    RTVal args[2] = {
-      RTVal::ConstructString(m_client, cmdName.toUtf8().constData()),
-      RTVal::Construct(m_client, "Type", 0, 0),
-    };
-
-    bool isCmdRegistered = m_klCmdRegistry.callMethod(
-      "Boolean", 
-      "isCommandRegistered", 
-      2, 
-      args).getBoolean();
-
-    if(isCmdRegistered)
-    {
-      commandRegistered(
-        cmdName,
-        RTVal::Construct(
-          m_client, 
-          "String", 
-          1, 
-          &args[1]).getStringCString(),
-        COMMAND_KL);
-    }
-  }
-
-  catch(Exception &e)
-  {
-    printf(
-      "CommandRegistry::registerKLCommand: exception: %s\n", 
-      e.getDesc_cstr());
-  }
-}
-
-BaseCommand* CommandRegistry::createKLCommand(
-  const QString &cmdName)
-{  
-  try
-  {
-    RTVal args[2] = {
-      RTVal::ConstructString(
-        m_client, 
-        cmdName.toUtf8().constData()),
-
-      RTVal::ConstructString(
-        m_client, 
-        "")
-    };
-
-    // Creates the KL command from the KL registery. 
-    // Check if it's a scriptable command
-    RTVal klCmd = m_klCmdRegistry.callMethod(
-      "BaseScriptableCommand", 
-      "createCommand", 
-      2, 
-      args);
-
-    if(!klCmd.isNullObject())
-      return new KLScriptableCommand(klCmd);
-    
-    // if not, it's a simple command.
-    else
-    {
-      klCmd = m_klCmdRegistry.callMethod(
-        "Command", 
-        "createCommand", 
-        2, 
-        args);
-
-      return new KLCommand(klCmd);
-    }
-  }
-
-  catch(Exception &e)
-  {
-    printf(
-      "CommandRegistry::createKLCommand: exception: %s\n", 
-      e.getDesc_cstr());
-  }
-
-  return 0;
-}
-
-void CommandRegistry::commandRegistered(
+void CommandRegistry::commandIsRegistered(
   const QString &cmdName,
   const QString &cmdType,
   const QString &implType) 
 {
-  if(m_registeredCmdSpecs.count(cmdName))
-    return;
-
   // sets the command specs
   QList<QString> spec;
   spec.append(cmdType);
   spec.append(implType);
-  m_registeredCmdSpecs[cmdName] = spec;
-
-  // Inform the KL registry
-  try
-  {
-    RTVal nameVal = RTVal::ConstructString(
-      m_client,
-      cmdName.toUtf8().constData());
-
-    m_klCmdRegistry.callMethod(
-      "",
-      "registerAppCommand",
-      1,
-      &nameVal);
-  }
-
-  catch(Exception &e)
-  {
-    printf(
-      "CommandRegistry::commandRegistered: exception: %s\n", 
-      e.getDesc_cstr());
-  }
-   
+  m_cmdSpecs[cmdName] = spec;
+    
   // inform a command has been registered.
-  emit commandRegisteredCallback(
+  emit commandRegistered(
     cmdName,
     cmdType,
     implType);

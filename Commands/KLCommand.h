@@ -73,48 +73,22 @@ class KLCommand : public BaseCommand
 
     virtual ~KLCommand();
 
-    /// Shared with KLSCriptableCommand.
-    static QString GetName(
-      FabricCore::RTVal klCmd
-      );
-
-    /// Shared with KLSCriptableCommand.
-    static bool CanUndo(
-      FabricCore::RTVal klCmd
-      );
-
-    /// Shared with KLSCriptableCommand.
-    static bool DoIt(
-      FabricCore::RTVal klCmd
-      );
-
-    /// Shared with KLSCriptableCommand.
-    static QString GetHelp(
-      FabricCore::RTVal klCmd
-      );
-
-    /// Shared with KLSCriptableCommand.
-    static bool UndoIt();
-
-    /// Shared with KLSCriptableCommand.
-    static bool RedoIt();
-
-    /// Implementation of BaseCommand.
+    /// Implementation of Command.
     virtual QString getName();
 
-    /// Implementation of BaseCommand.
+    /// Implementation of Command.
     virtual bool canUndo();
 
-    /// Implementation of BaseCommand.
+    /// Implementation of Command.
     virtual bool doIt();
 
-    /// Implementation of BaseCommand.
+    /// Implementation of Command.
     virtual bool undoIt();
 
-    /// Implementation of BaseCommand.
+    /// Implementation of Command.
     virtual bool redoIt();
 
-    /// Implementation of BaseCommand.
+    /// Implementation of Command.
     virtual QString getHelp();
 
   private:

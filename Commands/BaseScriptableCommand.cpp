@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <stdio.h>
+#include "CommandHelpers.h"
 #include "BaseScriptableCommand.h"
 
 using namespace FabricUI;
@@ -40,18 +40,20 @@ void BaseScriptableCommand::declareArg(
 bool BaseScriptableCommand::hasArg(
   const QString &key)
 {
-  return (m_argSpecs.count(key) > 0);
+  return m_argSpecs.count(key) > 0;
 }
 
 QString BaseScriptableCommand::getArg(
   const QString &key)
 {
-  return (m_args.count(key) > 0) ?  m_args[key] : QString();
+  return m_args.count(key) > 0 
+    ? m_args[key]
+    : QString();
 }
 
-QMap<QString, QString> BaseScriptableCommand::getArgs()
+QList<QString> BaseScriptableCommand::getArgKeys()
 {
-  return m_args; 
+  return m_argSpecs.keys(); 
 }
 
 void BaseScriptableCommand::setArg(
@@ -59,13 +61,13 @@ void BaseScriptableCommand::setArg(
   const QString &value) 
 {
   if(key.isEmpty()) 
-    throw(
-      std::string("BaseScriptableCommand::setArg, error setting arg: key not specified")
+    printAndThrow(
+      "BaseScriptableCommand::setArg, error setting arg: key not specified"
     );
 
   if(m_argSpecs.count(key) == 0) 
     // TODO: make this an optional behavior
-    throw(
+    printAndThrow(
       std::string(
         "BaseScriptableCommand::setArg, error setting arg: '" + 
         std::string(key.toUtf8().constData()) + "' not supported by this command"
@@ -77,48 +79,42 @@ void BaseScriptableCommand::setArg(
 
 void BaseScriptableCommand::validateSetArgs()
 {
-  QMapIterator<QString, QString> argsIt(m_args);
-  QMapIterator<QString, ScriptableCommandArgSpec> argSpecsIt(m_argSpecs);
+  QMapIterator<QString, ScriptableCommandArgSpec> it(m_argSpecs);
   
-  while (argSpecsIt.hasNext()) 
+  while(it.hasNext()) 
   {
-    argsIt.next();
-    argSpecsIt.next();
+    it.next();
 
-    QString key = argSpecsIt.key();
-    ScriptableCommandArgSpec spec = argSpecsIt.value();
+    QString key = it.key();
+    ScriptableCommandArgSpec spec = it.value();
  
-    if(!spec.optional) 
-    {
-      QString arg = argsIt.value();
+    bool isValid = !m_args.count(key) && m_args[key].isEmpty();
 
-      if(arg.isEmpty())//is null
-       throw(
+    if(!spec.optional && !isValid) //is null
+      printAndThrow(
         std::string(
           "BaseScriptableCommand::validateSetArgs, error validating arg: '" + 
           std::string(key.toUtf8().constData()) + "' has not been set"
         )
       );
-    }
   }
 }
 
 QString BaseScriptableCommand::getArgsDescription() 
 {
-  QMapIterator<QString, QString> argsIt(m_args);
-  QMapIterator<QString, ScriptableCommandArgSpec> argSpecsIt(m_argSpecs);
+  QMapIterator<QString, ScriptableCommandArgSpec> it(m_argSpecs);
 
   int count = 0;
   QString res;
-  while (argsIt.hasNext()) 
+  while(it.hasNext()) 
   {
-    argsIt.next();
-    argSpecsIt.next();
-    ScriptableCommandArgSpec spec = argSpecsIt.value();
+    it.next();
+    QString key = it.key();
+    ScriptableCommandArgSpec spec = it.value();
 
-    res += "    [" + argsIt.key() 
-      + "] opt: " + QString::number(spec.optional)
-      + " val: " + argsIt.value()
+    res += "    ["  + key 
+      + "] opt: "   + QString::number(spec.optional)
+      + " val: "    + getArg(key)
       + " defVal: " + spec.defaultValue;
 
     res += (count < m_args.size() - 1) ? "\n" : "";

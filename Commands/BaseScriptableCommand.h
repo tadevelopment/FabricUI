@@ -7,21 +7,22 @@
 
 #include <QMap>
 #include "BaseCommand.h"
+#include "ScriptableCommand.h"
 
 namespace FabricUI {
 namespace Commands {
 
-class BaseScriptableCommand : public BaseCommand
+class BaseScriptableCommand 
+  : public BaseCommand
+  , public ScriptableCommand
 {
   /**
-    BaseScriptableCommand defines the methods for commands with arguments.
-    Any scriptable command must inherites from this class. Each argument
-    is identified by a key. 
+    BaseScriptableCommand is a base implementation of ScriptableCommand.
+    New scriptable commands can inheritated this class.
 
-    Because the arguments have to be set from any app/DCCs, the args values
-    are passed as QString only. However, the QString class provides helpers
-    to cast QString to basic types, see http://doc.qt.io/qt-4.8/qstring.html.
-    Another possibility is to use JSON format, see KLScriptableCommand.
+    C++ interfaces cannot be wrapped in pyhton by shiboken.
+    If you want your command to be accessible from python,
+    it must derived from this class.
   */
 
   public:
@@ -29,55 +30,54 @@ class BaseScriptableCommand : public BaseCommand
     
     virtual ~BaseScriptableCommand();
 
-    /// Declares and sets an argument.
-    /// To call from the command constructor.
-    void declareArg( 
+    /// Implementation of ScriptableCommand.
+    virtual void declareArg( 
       const QString &key, 
       bool optional = true, 
       const QString &defaultValue = QString()
       );
 
-    /// Checks if a command has an arg.
+    /// Implementation of ScriptableCommand.
     virtual bool hasArg(
       const QString &key 
       );
 
-    /// Gets the arguments.
-    virtual QMap<QString, QString> getArgs();
+    /// Implementation of ScriptableCommand.
+    virtual QList<QString> getArgKeys();
 
-    /// Gets the value of an argument.
+    /// Implementation of ScriptableCommand.
     virtual QString getArg( 
       const QString &key 
       );
-
-    /// Sets the value of an argument.
-    /// Throws an error if the key is 
-    /// empty or has't been declared.
+ 
+    /// Implementation of ScriptableCommand.
+    /// Throws an error if the key is empty 
+    /// or has't been declared.
     virtual void setArg(
       const QString &key, 
       const QString &value
       );
 
-    /// Check if the arguments are correctly set. 
-    /// Throws an error if not.
+    /// Implementation of ScriptableCommand.
+    /// Throws an error if not valid.
     virtual void validateSetArgs();
 
-    /// Gets a decription of the arguments.
-    /// Used for debugging.
+    /// Implementation of ScriptableCommand.
     virtual QString getArgsDescription();
 
-  protected:
+    /// List of arguments {argName, argValue}
+    QMap<QString, QString> m_args;
+    
+  private:    
     /// Defines the arguments specs:
     /// default value, optional
     struct ScriptableCommandArgSpec 
     {
       QString type;
-      QString defaultValue;
       bool optional;
+      QString defaultValue;
     };
 
-    /// List of arguments {argName, argValue}
-    QMap<QString, QString> m_args;
     /// List of arguments specs {argName, {defaultValue, optional}}
     QMap<QString, ScriptableCommandArgSpec> m_argSpecs;
 };
