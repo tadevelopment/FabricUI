@@ -866,7 +866,7 @@ namespace DFG {
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
       {
-        setText( "Implode nodes" );
+        setText( "Implode selected nodes" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -879,6 +879,75 @@ namespace DFG {
         Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
         bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
         m_dfgWidget->implodeSelectedNodes(isCTRL);
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class ExplodeSelectedNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ExplodeSelectedNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Explode selected nodes" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        DFGController *controller = m_dfgWidget->getUIController();
+        if (controller)
+        {
+          GraphView::Graph *graph = controller->graph();
+
+          // create an array of those selected node that are 'explodable'.
+          std::vector<std::string> nodes;
+          {
+            FabricCore::DFGExec exec = controller->getExec();
+            std::vector<GraphView::Node *> selectedNodes = graph->selectedNodes();
+            for (size_t i=0;i<selectedNodes.size();i++)
+            {
+              GraphView::Node *node = selectedNodes[i];
+              std::string nodeName = node->name();
+
+              if (   node->isBackDropNode()
+                  || node->isBlockNode() )
+                continue;
+
+              FabricCore::DFGNodeType dfgNodeType = exec.getNodeType( selectedNodes[i]->name().c_str() );
+              if (   dfgNodeType != FabricCore::DFGNodeType_Inst
+                  && dfgNodeType != FabricCore::DFGNodeType_User )
+                continue;
+
+              if (exec.getSubExec(nodeName.c_str()).getType() != FabricCore::DFGExecType_Graph)
+                continue;
+
+              nodes.push_back(nodeName);
+            }
+          }
+
+          // explode the nodes.
+          for (size_t i=0;i<nodes.size();i++)
+          {
+            GraphView::Node *node = graph->node(nodes[i]);
+            if (node)
+              m_dfgWidget->explodeNode(node->name().c_str());
+          }
+        }
       }
 
     private:

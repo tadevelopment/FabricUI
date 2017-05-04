@@ -378,10 +378,9 @@ static void CountNodeTypes(
 
 QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, void* userData)
 {
-  DFGWidget * graphWidget = (DFGWidget*)userData;
-  DFGController *controller =
-    static_cast<DFGController *>( graph->controller() );
-  if ( !controller )
+  DFGWidget     *graphWidget = (DFGWidget*)userData;
+  DFGController *controller  = static_cast<DFGController *>(graph->controller());
+  if (!controller)
     return NULL;
 
   std::vector<GraphView::Node *> nodes = graph->selectedNodes();
@@ -409,10 +408,14 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  result->addAction(new NewGraphNodeAction              (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewFunctionNodeAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewBackdropNodeAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new ImplodeSelectedNodesAction      (graphWidget, result, graphWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
+  result->addAction(new NewGraphNodeAction   (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewFunctionNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewBackdropNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+
+  result->addSeparator();
+
+  result->addAction(new ImplodeSelectedNodesAction(graphWidget, result, graphWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
+  result->addAction(new ExplodeSelectedNodesAction(graphWidget, result, graphWidget->isEditable() && instNodeCount + userNodeCount > 0));
 
   result->addSeparator();
 
