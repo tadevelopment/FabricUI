@@ -2454,7 +2454,8 @@ void DFGWidget::onEditSelectedNodeProperties()
           oldNodeName.c_str(),
           getConfig(),
           true /* setAlphaNum */,
-          isEditable
+          isEditable,
+          node->isBackDropNode()
           );
 
         if ( dialog.exec() )
