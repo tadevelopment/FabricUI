@@ -2,53 +2,78 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_BASE_OPTIONE_DITOR__
-#define __UI_BASE_OPTIONE_DITOR__
+#ifndef __UI_BASE_OPTIONS_EDITOR__
+#define __UI_BASE_OPTIONS_EDITOR__
 
-#include <QUndoStack>
+#include <QString>
+#include <QSettings>
 #include <FabricUI/ValueEditor/VETreeWidget.h>
+#include <FabricUI/ValueEditor/BaseModelItem.h>
 
 namespace FabricUI {
 namespace OptionsEditor {
 
-class OptionsModel;
-class OptionsDictModel;
-
 class BaseOptionsEditor : public ValueEditor::VETreeWidget
 {
   /**
-    BaseOptionsEditor specializes ValueEditor::VETreeWidget
-     to edit the content of OptionsDictModel dictionary.
+    BaseOptionsEditor edits the content of a generic options lists
+    in a tree-view widget. A model composed of BaseModelItem
+    representing the hierarchy of the options is created.     
   */  
   Q_OBJECT
 
   public:
-    BaseOptionsEditor( 
-      QUndoStack *undoStack 
+    /// Constructs a BaseOptionsEditor.
+    /// \param title Title of the editor.
+    /// \param options The options to edit.
+    /// \param settings Pointor to the settings.
+    BaseOptionsEditor(
+      const QString &title = QString(),
+      void *options=0,
+      QSettings *settings=0
       );
 
     virtual ~BaseOptionsEditor();
 
-  public slots:
-    /// Update when the dictionary content changed.
-    virtual void updateOptions();
+    /// Constructs recursively the model, to override.
+    virtual ValueEditor::BaseModelItem* constructModel(
+      const std::string &name,
+      const std::string &path,
+      BaseOptionsEditor *editor,
+      void *options,
+      QSettings* settings=0
+      );
 
-    /// Update when a dictionary value changed.
-    void onValueChanged();
+  public slots:  
+    /// Resets (clears and sets) the model, to override.
+    /// \param options New options for the model.
+    virtual void resetModel(
+      void *options=0
+      );
 
-    /// Update when a dictionary value is committed.
-    void onValueCommitted(QUndoCommand *);
+    /// Updates the model content, to override.
+    /// \param options New options for the model.
+    virtual void updateModel(
+      void *options=0
+      );
+
+    /// Updates the editor from the model.
+    void modelUpdated();
 
   signals:
-    /// Emited when the value of one option has changed.
-    void valueChanged();
+    /// Emitted when the editor changed.
+    void updated();
 
   protected:
-    QUndoStack *m_undoStack;
-    OptionsDictModel* m_model;
+    /// Editor's title.
+    QString m_title;
+    /// Pointor to the settings.
+    QSettings *m_settings;
+    /// Root model
+    ValueEditor::BaseModelItem *m_model;
 };
 
 } // namespace OptionsEditor 
 } // namespace FabricUI
 
-#endif // __UI_BASE_OPTIONE_DITOR__
+#endif // __UI_BASE_OPTIONS_EDITOR__
