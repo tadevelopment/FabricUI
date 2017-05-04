@@ -8,7 +8,7 @@
 #include <FabricUI/Viewports/QtToKLEvent.h>
 #include <map>
 #include <iostream>
-#include <FabricUI/Commands/CommandManager.h>
+#include <FabricUI/Commands/KLCommandManager.h>
 
 using namespace FabricUI::Viewports;
 
@@ -133,13 +133,19 @@ bool ManipulationTool::onEvent(QEvent *event) {
       if(result) 
       {
         event->accept();
-        Commands::CommandManager::GetCommandManager()->synchronizeKL();
+        Commands::KLCommandManager *manager = dynamic_cast<Commands::KLCommandManager *>(
+          Commands::CommandManager::GetCommandManager());
+        manager->synchronizeKL();
       }
 
       // In certain cases, the kl event is not accepted but should be.
       // We check if KL commands where added.
       if (event->type() == QEvent::MouseButtonRelease)
-        Commands::CommandManager::GetCommandManager()->synchronizeKL();
+      {
+        Commands::KLCommandManager *manager = dynamic_cast<Commands::KLCommandManager *>(
+          Commands::CommandManager::GetCommandManager());
+        manager->synchronizeKL();
+      }
 
       FabricCore::RTVal host = klevent.maybeGetMember("host");
       if(host.maybeGetMember("redrawRequested").getBoolean())

@@ -3,52 +3,57 @@
 //
 
 #include "ViewportOptionsEditor.h"
-#include <FabricUI/OptionsEditor/OptionsDictModel.h>
-
+ 
 using namespace FabricUI;
 using namespace Viewports;
 using namespace OptionsEditor;
+using namespace FabricCore;
 
 ViewportOptionsEditor::ViewportOptionsEditor( 
-  FabricCore::Client client, 
-  QUndoStack* undoStack,
+  Client client, 
   QSettings *settings)
-  : BaseOptionsEditor(undoStack)
-  , m_settings(settings)
+  : BaseRTValOptionsEditor(client, "Rendering Options", 0, settings)
 {
-  try
-  {
-    // Create a DrawContext object
-    client.loadExtension("InlineDrawing", "", false);
-    m_drawContext = FabricCore::RTVal::Create(client, "DrawContext", 0, 0);
-    m_drawContext = m_drawContext.callMethod( "DrawContext" , "getInstance", 0, NULL);
-    updateOptions();
-  }
-  catch(FabricCore::Exception e)
-  {
-    printf("ViewportOptionsEditor : %s\n", e.getDesc_cstr());
-  }
 }
 
 ViewportOptionsEditor::~ViewportOptionsEditor()
 {
 }
 
-// Currently destroying and rebuilding the whole tree :
-// we might want to do incremental updates, to keep the state of the items
-void ViewportOptionsEditor::updateOptions() {
+void ViewportOptionsEditor::resetModel(
+  void *options) 
+{
+  RTVal viewportParams;
 
-  BaseOptionsEditor::updateOptions();
+  try
+  {
+    // Create a DrawContext object
+    m_client.loadExtension(
+      "InlineDrawing", 
+      "", 
+      false);
 
-  FabricCore::RTVal dict = m_drawContext.maybeGetMember("viewportParams");
+    RTVal drawContext = RTVal::Create(
+      m_client, 
+      "DrawContext", 
+      0, 0);
 
-  m_model = new OptionsDictModel(
-    "Rendering Options",
-    dict,
-    m_settings,
-    "",
-    this
-  );
+    drawContext = drawContext.callMethod( 
+      "DrawContext" , 
+      "getInstance", 
+      0, 0);
 
-  this->onSetModelItem(m_model);
+    viewportParams = drawContext.maybeGetMember(
+      "viewportParams");
+  
+    BaseRTValOptionsEditor::resetModel(
+      (void*)&viewportParams);
+  }
+
+  catch(Exception e)
+  {
+    printf(
+      "ViewportOptionsEditor::getRTValOptions : %s\n", 
+      e.getDesc_cstr());
+  }
 }

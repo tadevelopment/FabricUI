@@ -3,7 +3,6 @@
  */
 
 #include "GLViewportWidget.h"
-#include <FabricUI/Commands/CommandManager.h>
 
 using namespace FabricUI::Viewports;
 
@@ -250,8 +249,6 @@ void GLViewportWidget::mouseReleaseEvent(QMouseEvent *event)
     return;
   if(m_manipTool->onEvent(event))
     return;
-
-  Commands::CommandManager::GetCommandManager()->synchronizeKL();
   ViewportWidget::mouseReleaseEvent(event);
 }
 
