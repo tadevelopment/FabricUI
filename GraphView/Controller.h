@@ -9,15 +9,20 @@
 #include <QSizeF>
 #include <QColor>
 
-#include <Commands/CommandStack.h>
-#include <Commands/CompoundCommand.h>
-
 #include "PortType.h"
 
 #include <vector>
 
 #include <FTL/ArrayRef.h>
 #include <FTL/StrRef.h>
+
+namespace FabricServices
+{
+  namespace Commands
+  {
+    class CompoundCommand;
+  }
+}
 
 namespace FabricUI
 {

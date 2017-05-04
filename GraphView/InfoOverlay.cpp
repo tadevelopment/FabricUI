@@ -3,6 +3,8 @@
 #include "InfoOverlay.h"
 #include "Graph.h"
 #include "Controller.h"
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/Node.h>
 
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneMouseEvent>

@@ -7,13 +7,13 @@
 
 #include <QGraphicsWidget>
 #include <QGraphicsLinearLayout>
+#include <QPen>
 #include <vector>
 
-#include "FixedPort.h"
-#include "Port.h"
+#include <FTL/StrRef.h>
+
 #include "PortType.h"
-#include "ProxyPort.h"
-#include "SidePanelItemGroup.h"
+#include <FabricUI/GraphView/GraphicItemTypes.h>
 
 namespace FabricUI
 {
@@ -22,6 +22,11 @@ namespace FabricUI
   {
     // forward declarations
     class Graph;
+    class Port;
+    class FixedPort;
+    class ProxyPort;
+    class ConnectionTarget;
+    class SidePanelItemGroup;
 
     class SidePanel : public QGraphicsWidget
     {

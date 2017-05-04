@@ -8,10 +8,8 @@
 #include <QPen>
 
 #include "PortType.h"
-#include "PinCircle.h"
 #include "ConnectionTarget.h"
 #include "GraphicItemTypes.h"
-#include "TextContainer.h"
 
 namespace FabricUI
 {
@@ -22,6 +20,8 @@ namespace FabricUI
     class Graph;
     class Pin;
     class SidePanel;
+    class PinCircle;
+    class TextContainer;
 
     class ProxyPort : public ConnectionTarget
     {

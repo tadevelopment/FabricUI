@@ -5,6 +5,7 @@
 #include "NodeRectangle.h"
 #include "Node.h"
 #include "Graph.h"
+#include <FabricUI/GraphView/NodeHeader.h>
 
 #include <QWidget>
 #include <QPainter>

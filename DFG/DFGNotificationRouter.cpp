@@ -7,6 +7,10 @@
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/NodeBubble.h>
+#include <FabricUI/GraphView/FixedPort.h>
+#include <FabricUI/GraphView/NodeHeader.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGNotificationRouter.h>
 #include <FabricUI/DFG/DFGWidget.h>

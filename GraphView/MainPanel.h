@@ -10,8 +10,6 @@
 #include <QColor>
 #include <vector>
 
-#include "SelectionRect.h"
-
 namespace FabricUI
 {
 
@@ -20,6 +18,7 @@ namespace FabricUI
     // forward declarations
     class Graph;
     class Node;
+    class SelectionRect;
 
     class MainPanel : public QGraphicsWidget
     {

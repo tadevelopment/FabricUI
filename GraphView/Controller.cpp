@@ -10,6 +10,11 @@
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/ConnectionTarget.h>
+#include <Commands/CommandStack.h>
+#include <Commands/CompoundCommand.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/NodeHeader.h>
+#include <FabricUI/GraphView/NodeHeaderButton.h>
 
 using namespace FabricUI::GraphView;
 using namespace FabricServices::Commands;

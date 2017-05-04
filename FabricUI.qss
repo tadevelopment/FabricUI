@@ -1999,10 +1999,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 }
 
 #ToggleDetailsPanelButton[toggled="true"] #Handle
-{
-  background-color: #50626E;
-}
-
 #ToggleDetailsPanelButton[toggled="true"][hovered="true"] #Handle
 {
   background-color: #637987;

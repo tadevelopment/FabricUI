@@ -8,9 +8,11 @@
 #include <FabricUI/GraphView/InstBlockHeader.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/NodeLabel.h>
+#include <FabricUI/GraphView/Node.h>
 
 #include <QDebug>
 #include <QGraphicsLinearLayout>
+#include <QGraphicsSceneHoverEvent>
 #include <QPainter>
 
 namespace FabricUI {

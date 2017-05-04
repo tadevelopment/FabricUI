@@ -6,7 +6,7 @@
 #include <QTreeView>
 
 #include <FTL/Config.h>
-#include "QueryEdit.h"
+#include "Data.h"
 #include <map>
 
 namespace FabricUI

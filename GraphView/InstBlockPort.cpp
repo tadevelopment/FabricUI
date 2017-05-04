@@ -9,6 +9,12 @@
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
 #include <FabricUI/GraphView/ProxyPort.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/Port.h>
+#include <FabricUI/GraphView/Pin.h>
+#include <FabricUI/GraphView/Node.h>
+#include <FabricUI/GraphView/PinCircle.h>
 
 #include <QGraphicsLinearLayout>
 

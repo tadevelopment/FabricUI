@@ -21,6 +21,8 @@
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/GraphRelaxer.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
+#include <FabricUI/GraphView/NodeHeaderButton.h>
+#include <FabricUI/GraphView/NodeHeader.h>
 
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGErrorsWidget.h>

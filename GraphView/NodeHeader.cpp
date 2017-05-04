@@ -4,6 +4,9 @@
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/PinCircle.h>
+#include <FabricUI/GraphView/NodeHeaderButton.h>
 
 #include <QGraphicsLinearLayout>
 #include <QPushButton>

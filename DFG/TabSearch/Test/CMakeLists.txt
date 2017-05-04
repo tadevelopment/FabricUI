@@ -58,7 +58,7 @@ add_dependencies( DFGPresetSearchWidget qtMoc )
 
 target_link_libraries(
   DFGPresetSearchWidget
-  FabricCore-2.5.lib
+  FabricCore-2.6.lib
   Qt5Gui.lib
   Qt5Widgets.lib
   Qt5Core.lib

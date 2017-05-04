@@ -6,6 +6,10 @@
 #include <FabricUI/GraphView/Port.h>
 #include <FabricUI/GraphView/PortLabel.h>
 #include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/GraphView/SidePanelItemGroup.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/FixedPort.h>
+#include <FabricUI/GraphView/ProxyPort.h>
 
 #include <QDebug>
 #include <QPainter>
