@@ -54,7 +54,10 @@ class CommandManager : public QObject
     /// Gets the manager singleton.
     /// Thows an error if the manager has not been created.
     static CommandManager* GetCommandManager();
-   
+    
+    /// Checks if the manager has been created.
+    static bool IsInitalized();
+
     /// Creates and executes a command (if doCmd == true).
     /// If executed, the command is added to the manager stack.
     /// Throws an exception if an error occurs.
@@ -78,15 +81,24 @@ class CommandManager : public QObject
     /// Throws an exception if an error occurs.
     virtual void redoCommand();
 
+    /// Clears the redo stack.
+    virtual void clearRedoStack();
+
     /// Clears all the commands.
     virtual void clear();
 
     /// Returns the number of commands.
-    int count();
+    unsigned count();
 
     /// Gets the current index (next command to undo).
     /// If -1 is returns, there is no command to undo.
     int getStackIndex();
+
+    /// Gets the command at index 'index'.
+    /// Returns null if the index is out of ranges.
+    Command* getCommandAtIndex(
+      unsigned index
+      );
 
     /// Gets the stack content as a string.
     /// Used for debugging.
@@ -116,9 +128,6 @@ class CommandManager : public QObject
       Command *cmd,
       bool isLowCmd = false
       );
-
-    /// Clears the redo stack.
-    virtual void clearRedoStack();
 
     /// Pushes a command.
     void pushTopCommand(

@@ -42,6 +42,11 @@ CommandManager* CommandManager::GetCommandManager()
   return s_cmdManager;
 }
 
+bool CommandManager::IsInitalized()
+{
+  return s_instanceFlag;
+}
+
 Command* CommandManager::createCommand(
   const QString &cmdName, 
   const QMap<QString, QString> &args, 
@@ -222,14 +227,26 @@ void CommandManager::clear()
   emit cleared();
 }
 
-int CommandManager::count()
+unsigned CommandManager::count()
 {
-  return int(m_redoStack.size() + m_undoStack.size());
+  return unsigned(m_redoStack.size() + m_undoStack.size());
 }
 
 int CommandManager::getStackIndex()
 {
   return int(m_undoStack.size() - 1);
+}
+
+Command* CommandManager::getCommandAtIndex(
+  unsigned index)
+{
+  if(index >= 0 && index < m_undoStack.size())
+    return m_undoStack[index].topLevelCmd;
+
+  else if (index >= m_undoStack.size() && index < count())
+    return m_redoStack[index - m_undoStack.size()].topLevelCmd;
+
+  return 0;
 }
 
 QString CommandManager::getContent()

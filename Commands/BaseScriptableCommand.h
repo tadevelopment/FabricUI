@@ -23,6 +23,7 @@ class BaseScriptableCommand
     C++ interfaces cannot be wrapped in pyhton by shiboken.
     If you want your command to be accessible from python,
     it must derived from this class.
+
   */
 
   public:

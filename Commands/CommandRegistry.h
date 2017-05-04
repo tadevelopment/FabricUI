@@ -46,6 +46,9 @@ class CommandRegistry : public Util::BaseFactoryRegistry
     /// Gets the registry singleton.
     /// Thows an error if the registry has not been created.
     static CommandRegistry* GetCommandRegistry();
+    
+    /// Checks if the registry has been created.
+    static bool IsInitalized();
 
     /// Creates a command named 'cmdName'.
     /// Throws an error if the command isn't registered.

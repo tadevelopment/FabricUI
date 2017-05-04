@@ -41,6 +41,11 @@ CommandRegistry* CommandRegistry::GetCommandRegistry()
   return s_cmdRegistry;
 }
 
+bool CommandRegistry::IsInitalized()
+{
+  return s_instanceFlag;
+}
+
 void CommandRegistry::registerFactory(
   const QString &name, 
   Factory *factory) 

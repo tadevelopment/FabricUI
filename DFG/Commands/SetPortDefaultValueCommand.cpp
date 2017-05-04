@@ -94,11 +94,12 @@ bool SetPortDefaultValueCommand::doIt()
     DFGExec nodeExec = exec.getSubExec(
       nodeName.toUtf8().constData()
       );
-    
+ 
     RTVal portVal = getRTValArg(
       "portValue",
       nodeExec.getPortTypeSpec(
         portName.toUtf8().constData())
+ 
       );
     
     bool isUndoable = getRTValArg(
@@ -113,12 +114,14 @@ bool SetPortDefaultValueCommand::doIt()
 
     if(isUndoable)
 		  ++m_coreCmdCount;
-    
+
     return true;
   }
 
   catch(Exception &e)
   {
+    std::cout << "SetPortDefaultValueCommand::doIt: exception: " << e.getDesc_cstr() << std::endl;
+
     printf(
       "SetPortDefaultValueCommand::doIt: exception: %s\n", 
       e.getDesc_cstr());
