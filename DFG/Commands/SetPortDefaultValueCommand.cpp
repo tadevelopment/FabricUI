@@ -1,39 +1,42 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "SetPortDefaultValueCommand.h"
-#include <FabricUI/Commands/CommandManager.h>
+#include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Util/RTValUtil.h>
 
 using namespace FabricCore;
 using namespace FabricUI;
 using namespace DFG;
-    
+using namespace Commands;
+
 SetPortDefaultValueCommand::SetPortDefaultValueCommand() 
   : BaseDFGCommand()
 {
-	declareArg(
+	declareRTValArg(
     "execPath",
     "String",
     false);
 
-  declareArg(
+  declareRTValArg(
     "nodeName",
     "String",
     false);
 
-  declareArg(
+  declareRTValArg(
     "portName",
     "String",
     false);
 
- 	BaseScriptableCommand::declareArg(
+ 	declareArg(
     "portValue",
     false);
 
-  Client client = 
-    Commands::CommandManager::GetCommandManager()->getFabricClient();
+  KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
+    CommandManager::GetCommandManager());
+    
+  Client client = manager->getClient();
             
-  declareArg( 
+  declareRTValArg( 
     "isUndoable",
     "Boolean",
     true,
@@ -49,27 +52,39 @@ SetPortDefaultValueCommand::~SetPortDefaultValueCommand()
 
 bool SetPortDefaultValueCommand::canUndo()
 {
-  return getArgAsRTVal(
-    "isUndoable"
-    ).getBoolean();
+  try 
+  {
+    return getRTValArg(
+      "isUndoable"
+      ).getBoolean();
+  }
+
+  catch(Exception &e)
+  {
+    printf(
+      "SetPortDefaultValueCommand::canUndo: exception: %s\n", 
+      e.getDesc_cstr());
+  }
+
+  return false;
 }
 
 bool SetPortDefaultValueCommand::doIt()
 {
   try 
   {
-    QString execPath = getArgAsRTVal(
+    QString execPath = getRTValArg(
       "execPath"
       ).getStringCString();
 
-    QString nodeName = getArgAsRTVal(
+    QString nodeName = getRTValArg(
       "nodeName"
       ).getStringCString();
 
-    QString portName = getArgAsRTVal(
+    QString portName = getRTValArg(
       "portName"
       ).getStringCString();
-
+    
     QString portPath = nodeName + "." + portName;
 
     DFGExec exec = m_dfgController->getBinding().getExec().getSubExec(
@@ -80,19 +95,13 @@ bool SetPortDefaultValueCommand::doIt()
       nodeName.toUtf8().constData()
       );
     
-    // Sets the type of the arg here because 
-    // we did not know the RTVal type before.
-    setArgType(
-      "portValue", 
+    RTVal portVal = getRTValArg(
+      "portValue",
       nodeExec.getPortTypeSpec(
-        portName.toUtf8().constData()
-      ));
-
-    RTVal portVal = getArgAsRTVal(
-      "portValue"
+        portName.toUtf8().constData())
       );
-
-    bool isUndoable = getArgAsRTVal(
+    
+    bool isUndoable = getRTValArg(
       "isUndoable"
       ).getBoolean();
 
@@ -104,7 +113,7 @@ bool SetPortDefaultValueCommand::doIt()
 
     if(isUndoable)
 		  ++m_coreCmdCount;
-
+    
     return true;
   }
 

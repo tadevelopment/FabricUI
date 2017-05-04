@@ -1,6 +1,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "BaseDFGCommand.h"
+#include <iostream>
 
 using namespace FabricUI;
 using namespace DFG;
@@ -22,7 +23,7 @@ void BaseDFGCommand::registrationCallback(
   const QString &name, 
   void *userData)
 {
-  BaseScriptableCommand::registrationCallback(
+  BaseCommand::registrationCallback(
     name,
     userData);
 
@@ -36,6 +37,8 @@ void BaseDFGCommand::registrationCallback(
 
 bool BaseDFGCommand::canUndo()
 {
+  std::cout << "BaseDFGCommand::canUndo" << std::endl;
+
   return m_coreCmdCount > 0;
 }
 

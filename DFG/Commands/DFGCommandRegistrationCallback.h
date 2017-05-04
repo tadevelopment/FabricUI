@@ -7,7 +7,7 @@
 
 #include "SetPortDefaultValueCommand.h"
 #include "SetPortsDefaultValuesCommand.h"
-#include <FabricUI/Commands/CommandFactory.h>
+#include <FabricUI/Commands/CommandRegistry.h>
 
 namespace FabricUI {
 namespace DFG {
@@ -16,7 +16,7 @@ class DFGCommandRegistrationCallback : public QObject
 {
   /**
     DFGCommandRegistrationCallback registered all
-    the BaseDFGCommand commands. It must be called once.
+    the BaseDFGCommand commands. 
   */
 
   Q_OBJECT
@@ -31,11 +31,11 @@ class DFGCommandRegistrationCallback : public QObject
     static void RegisterCommands(
       void *dfgController)
     {
-      Commands::CommandFactory<SetPortDefaultValueCommand>::RegisterCommand(
+      Commands::CommandFactory<SetPortDefaultValueCommand>::Register(
         "setPortDefaultValue",
         (void *)dfgController);
 
-      Commands::CommandFactory<SetPortsDefaultValuesCommand>::RegisterCommand(
+      Commands::CommandFactory<SetPortsDefaultValuesCommand>::Register(
         "setPortsDefaultValues",
         (void *)dfgController);
     }
