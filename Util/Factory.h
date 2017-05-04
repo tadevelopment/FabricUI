@@ -30,6 +30,8 @@ class Factory
   */
 
   public:
+    virtual ~Factory() {}
+
     /// Creates the object, returns it as a void pointer.
     /// To override.
     virtual void* create(

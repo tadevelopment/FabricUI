@@ -41,4 +41,3 @@ Command* KLCommandRegistry_Python::createCommand(
   return _createCommand_Python(
     cmdName);
 }
- 

@@ -14,6 +14,8 @@ namespace OptionsEditor {
 class RTValItem {
   
   public:
+    virtual ~RTValItem() {}
+    
     /// Sets the dictionary of options.
     virtual void setRTValOptions(
       FabricCore::RTVal options

@@ -240,10 +240,10 @@ int CommandManager::getStackIndex()
 Command* CommandManager::getCommandAtIndex(
   unsigned index)
 {
-  if(index >= 0 && index < m_undoStack.size())
+  if(index >= 0 && index < unsigned(m_undoStack.size()))
     return m_undoStack[index].topLevelCmd;
 
-  else if (index >= m_undoStack.size() && index < count())
+  else if (index >= unsigned(m_undoStack.size()) && index < count())
     return m_redoStack[index - m_undoStack.size()].topLevelCmd;
 
   return 0;

@@ -126,7 +126,7 @@ class CommandFactory : public Util::TemplateFactory<T>
   */
   public:
     CommandFactory(void *userData) 
-      : TemplateFactory(userData) 
+      : Util::TemplateFactory<T>(userData) 
     {
     }
 
@@ -135,7 +135,7 @@ class CommandFactory : public Util::TemplateFactory<T>
       const QString &cmdName,
       void *userData=0) 
     {
-      TemplateFactory::Register(
+      Util::TemplateFactory<T>::Register(
         CommandRegistry::GetCommandRegistry(),
         cmdName,
         userData);

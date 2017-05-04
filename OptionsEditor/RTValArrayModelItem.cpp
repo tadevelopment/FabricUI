@@ -2,9 +2,10 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
  
+#include <QString>
+#include "RTValArrayModelItem.h"
 #include "BaseRTValOptionsEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
-#include "RTValArrayModelItem.h"
 
 using namespace FabricUI;
 using namespace OptionsEditor;
@@ -34,7 +35,7 @@ RTValArrayModelItem::RTValArrayModelItem(
         i); 
 
       constructModel(
-        name + "_" + std::to_string(i),
+        name + "_" + std::string(QString::number(i).toUtf8().constData()),
         editor,
         (void*)&chidOptions,
         settings);

@@ -76,4 +76,3 @@ void BaseFactoryRegistry::deleteFactory(
   }
   m_factories.remove(it.key());
 }
- 

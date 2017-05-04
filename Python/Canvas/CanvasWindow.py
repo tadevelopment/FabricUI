@@ -18,7 +18,6 @@ from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
-from FabricEngine.Canvas.Commands.DisplayOptionsEditorCommand import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
 
 class CanvasWindowEventFilter(QtCore.QObject):

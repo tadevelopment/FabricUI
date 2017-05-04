@@ -117,4 +117,3 @@ QString OpenOptionsEditorCommand::getHelp()
   help +=  "- editorTitle (String): Title of the widget";
   return help;
 }
- 

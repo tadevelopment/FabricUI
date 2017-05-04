@@ -140,6 +140,7 @@ BaseCommand* KLCommandManager_Python::_createCommand_Python(
 {
   printAndThrow(
     "KLCommandManager_Python::_createCommand_Python must be overridden");
+  return 0;
 }
 
 BaseCommand* KLCommandManager_Python::_createRTValCommand_Python(
@@ -149,6 +150,7 @@ BaseCommand* KLCommandManager_Python::_createRTValCommand_Python(
 {
   printAndThrow(
     "KLCommandManager_Python::_createRTValCommand_Python must be overridden");
+  return 0;
 }
 
 void KLCommandManager_Python::onCommandPushed(

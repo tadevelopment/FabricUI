@@ -125,4 +125,3 @@ QString SetOptionsModelValueCommand::getHelp()
   help +=  "- newValue (RTVal): New model value";
   return help;
 }
- 

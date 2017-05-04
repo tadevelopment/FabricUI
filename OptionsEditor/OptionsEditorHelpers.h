@@ -5,7 +5,7 @@
 #ifndef __UI_OPTIONS_EDITOR_HELPERS__
 #define __UI_OPTIONS_EDITOR_HELPERS__
 
-#include <Qlist>
+#include <QList>
 #include <QString>
 #include <QMainWindow>
 #include <QDockWidget>

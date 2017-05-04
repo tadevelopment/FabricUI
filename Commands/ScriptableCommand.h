@@ -24,6 +24,8 @@ class ScriptableCommand
   */
 
   public:
+    virtual ~ScriptableCommand() {}
+
     /// Declares an argument, called from constructor.
     /// \param key Argument key
     /// \param optional If true, default.

@@ -18,6 +18,8 @@ class RTValScriptableCommand
   */
 
   public:
+    virtual ~RTValScriptableCommand() {}
+    
     /// Declares an argument, called from constructor.
     /// \param key Argument key
     /// \param type RTVal type 

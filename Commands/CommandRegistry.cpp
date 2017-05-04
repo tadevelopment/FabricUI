@@ -50,7 +50,7 @@ void CommandRegistry::registerFactory(
   const QString &name, 
   Factory *factory) 
 {
-  if (!isCommandRegistered(name))
+  if(!isCommandRegistered(name))
   {
     Util::BaseFactoryRegistry::registerFactory(name, factory);
  
@@ -65,8 +65,7 @@ void CommandRegistry::registerFactory(
     commandIsRegistered(
       name,
       cmdClassName,
-      COMMAND_CPP
-      );
+      COMMAND_CPP);
   }
 }
 
@@ -85,12 +84,15 @@ bool CommandRegistry::isCommandRegistered(
 QList<QString> CommandRegistry::getCommandSpecs(
   const QString &cmdName) 
 {
-  QList<QString> specs;
+  if(!isCommandRegistered(cmdName))
+    printAndThrow( 
+      QString(
+        "CommandRegistry::getCommandSpecs, cannot create command '" + 
+        cmdName + "', it's not registered"
+      ).toUtf8().constData() 
+    );
 
-  if(isCommandRegistered(cmdName))
-    specs = m_cmdSpecs[cmdName];
-
-  return specs;
+  return m_cmdSpecs[cmdName];
 }
 
 Command* CommandRegistry::createCommand(

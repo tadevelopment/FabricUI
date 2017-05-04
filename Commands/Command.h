@@ -111,6 +111,8 @@ class Command
   */
       
   public:
+    virtual ~Command() {}
+    
     /// Called when the command is created.
     /// The userData argument is used to pass optional custom data.
     /// The data is referenced by the registry, and given to the
