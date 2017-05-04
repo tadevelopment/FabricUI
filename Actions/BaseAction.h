@@ -207,4 +207,4 @@ class BaseAction : public QAction
 } // namespace Actions
 } // namespace FabricUI
 
-#endif // __UI_DFG_DFGWidget__
+#endif // __UI_BASE_ACTION__
