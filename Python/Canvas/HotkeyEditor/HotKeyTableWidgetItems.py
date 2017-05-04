@@ -29,7 +29,6 @@ class BaseTableWidgetItem(QtGui.QTableWidgetItem):
         self.widgetItemColor = TableWidgetItemColor
         if not isEditable:
             font = self.font()
-            font.setItalic(True)
             self.setFont(font)
             self.setForeground(self.widgetItemColor.Disabled)
  

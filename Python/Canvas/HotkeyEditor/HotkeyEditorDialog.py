@@ -4,7 +4,7 @@
 
 import os
 from PySide import QtCore, QtGui
-from FabricEngine.FabricUI import Actions
+from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.HotkeyEditor.HotKeyEditorActions import *
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidget import HotkeyTableWidget
@@ -115,7 +115,9 @@ class HotkeyEditorDialog(QtGui.QDialog):
         self.adjustSize()
     
     def onUpdate(self, isDirty, clear): 
-        
+        """ Update the widget.
+        """
+
         dirtyText = ''
         if isDirty:
             dirtyText = "*"
@@ -141,6 +143,14 @@ class HotkeyEditorDialog(QtGui.QDialog):
             self.__editComboBox.currentIndex(),
             self.__itemComboBox.currentIndex())
 
+    def showEvent(self, event):
+        """ Implementation of QtGui.QDialog.
+        """
+        super(HotkeyEditorDialog, self).showEvent(event)
+        GetCommandRegistry().synchronizeKL();
+
     def closeEvent(self, event):
+        """ Implementation of QtGui.QDialog.
+        """
         self.hotkeyTable.manager.rejectShortcutChanges()
         super(HotkeyEditorDialog, self).closeEvent(event)

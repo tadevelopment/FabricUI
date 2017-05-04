@@ -42,10 +42,8 @@ class CommandManagerQtCallback(QtCore.QObject):
             """ Implmentation of QUndoCommand
             """
             try:
-                # 'redo' is called when the Qt command wrapper 
-                # is pushed to the Qt stack. Because the command 
-                # http://doc.qt.io/qt-4.8/qundostack.html#push
-                # We deactivate it.
+                # 'redo' is called when a Qt command is pushed to the 
+                #  stack. http://doc.qt.io/qt-4.8/qundostack.html#push.
                 if self.canRedo is True:
                     GetCommandManager().redoCommand()
                 else:
@@ -65,10 +63,11 @@ class CommandManagerQtCallback(QtCore.QObject):
         super(CommandManagerQtCallback, self).__init__()
         self.qUndoStack = qUndoStack
         self.scriptEditor = scriptEditor
-        GetCommandManager().commandPushedCallback.connect(self.__onCommandPushedCallback)
+        GetCommandManager()._commandPushed_Python.connect(self.__onCommandPushed)
         GetCommandManager().cleared.connect(self.__onCleared)
 
     def __encodeJSONChars(self, string):
+
         result = ""
 
         for ch in string:
@@ -100,67 +99,61 @@ class CommandManagerQtCallback(QtCore.QObject):
         result += "\""
         return result
 
-    def __getCommandDescription(self, cmd):
+    def __getCommandDescription(self, baseCmd):
         """ \internal
             Gets a description of the command,
             logged in the scrip-editor. 
         """
 
-        desc = cmd.getName()
+        desc = baseCmd.getName()
 
-        # Check if it's a BaseRTValScriptableCommand.
-        if issubclass(type(cmd), Commands.BaseScriptableCommand):
+        if issubclass(type(baseCmd), Commands.BaseScriptableCommand):
+            
             try:
-                args = cmd.getArgs()
+                keys = baseCmd.getArgKeys()
      
-                # Check if it's a BaseRTValScriptableCommand.
-                isRTValScriptCommand = issubclass(type(cmd), Commands.BaseRTValScriptableCommand)
-
-                desc += "("
+                desc += '('
                     
                 count = 0
-                for key, value in args.iteritems():
-                    desc += str(key) 
-                    desc += "="
+                for key in keys:
+                    desc += str(key) + '='
 
-                    # BaseScriptableCommand.
-                    # All arguments are strings.
-                    if not isRTValScriptCommand:
-                        desc += str(value)
+                    # RTValScriptableCommand, arguments are RTVal.
+                    if issubclass(type(baseCmd), Commands.BaseRTValScriptableCommand):
 
-                    # BaseRTValScriptableCommand.
-                    else:
-                        # Get the KL RTVal type.
-                        rtValType = cmd.getArgType(key)
-
-                        # Get the python RTVal object.
-                        pyRTValType = getattr(GetCommandManager().client.RT.types, rtValType)
-
-                        if pyRTValType == "String":
-                            desc += str(pyRTValType(value).getSimpleType())
-
-                        # Check if the RTVal type can be casted in Python.
-                        elif pyRTValType().getSimpleType() is not None:
-                            value = cmd.getArgAsRTVal(key)
-                            desc += str(pyRTValType(value).getSimpleType())
+                        rtVal = baseCmd.getRTValArg(key)
+                        pythonVal = rtVal.getSimpleType()
                             
+                        # Can cast the RTVal in simple JSON type
+                        if pythonVal is not None:
+                            rtValType = rtVal.type('String').getSimpleType()
+
+                            if rtValType == 'String':
+                                pyRTValType = getattr(GetCommandManager().getClient().RT.types, rtValType)
+                                desc += str(pyRTValType(baseCmd.getArg(key)).getSimpleType())
+                            else:
+                                desc += str(rtVal.getSimpleType())
+
                         # JSON
                         else:
-                            desc += self.__encodeJSON(str(value))
+                            desc += self.__encodeJSON(str(baseCmd.getArg(key)))
 
-                    if count < len(args) - 1:
-                        desc += ", "
+                    # ScriptableCommand, arguments are strings.
+                    else:
+                        desc += str(baseCmd.getArg(key))
+
+                    if count < len(keys) - 1:
+                        desc += ', '
                         count += 1   
 
-                desc += ")"
-
-                             
+                desc += ')'
+                    
             except Exception as e:    
-                raise Exception("CommandManagerQtCallback.__getCommandDescription, error: " + str(e) )
+                raise Exception('CommandManagerQtCallback.__getCommandDescription, error: ' + str(e) )
         
         return desc
 
-    def __onCommandPushedCallback(self, cmd):
+    def __onCommandPushed(self, baseCmd):
         """ \internal
             Called when a command has been pushed to the manager. 
         """
@@ -168,16 +161,15 @@ class CommandManagerQtCallback(QtCore.QObject):
         # Create the command wrapper.
         oldEchoStackIndexChanges = self.scriptEditor._echoStackIndexChanges
         self.scriptEditor._echoStackIndexChanges = False
-        self.qUndoStack.push( self.CommandQtWrapper( cmd.getName() ) )
+        self.qUndoStack.push( self.CommandQtWrapper( baseCmd.getName() ) )
         self.scriptEditor._echoStackIndexChanges = oldEchoStackIndexChanges
 
         # Log the commands.
         self.scriptEditor.logText( 
-            "Commands." + self.__getCommandDescription(cmd) )
+            'Commands.' + self.__getCommandDescription(baseCmd) )
 
     def __onCleared(self):
         """ \internal
             Called when the manager is cleared. 
         """
-        
         self.qUndoStack.clear()

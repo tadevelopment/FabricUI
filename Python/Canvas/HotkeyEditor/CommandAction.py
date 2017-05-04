@@ -23,7 +23,8 @@ class CommandAction(Actions.BaseAction):
         super(CommandAction, self).__init__(parent)
         
         self.implType = implType
-        
+        self.cmdName = cmdName
+
         super(CommandAction, self).init(
             cmdName, 
             tooltip, 
@@ -38,6 +39,8 @@ class CommandAction(Actions.BaseAction):
             Create the command.
         """
         try:
-            GetCommandManager().createCommand(self.text())
+            GetCommandManager().createCmd(self.cmdName)
+            GetCommandManager().synchronizeKL()
+
         except Exception as e:    
             print str(e)

@@ -10,13 +10,15 @@ import sys
 
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core, FabricUI, Util
-from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine, Actions
+from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine, Actions, Commands as CppCommands
 from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.Commands.CommandManager import *
+from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
+from FabricEngine.Canvas.Commands.DisplayOptionsEditorCommand import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
 
 class CanvasWindowEventFilter(QtCore.QObject):
@@ -117,16 +119,16 @@ class QuitApplicationAction(BaseCanvasWindowAction):
             canvasWindow, 
             "CanvasWindow.QuitApplicationAction", 
             "Quit", 
-            QtGui.QKeySequence.Quit)
+            QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Q))
     
     def onTriggered(self):
         self.canvasWindow.close()
 
 class ToggleManipulationAction(BaseCanvasWindowAction):
 
-    def __init__(self, parent, viewport):
+    def __init__(self, canvasWindow, viewport):
         super(ToggleManipulationAction, self).__init__(
-            parent,     
+            viewport,     
             None, 
             "CanvasWindow.ToggleManipulationAction", 
             "Toggle manipulation", 
@@ -134,10 +136,12 @@ class ToggleManipulationAction(BaseCanvasWindowAction):
             QtCore.Qt.WidgetWithChildrenShortcut)
         
         viewport.addAction(self)
+        self.canvasWindow = canvasWindow
         self.viewport = viewport
         self.setCheckable(True)
         self.setChecked(self.viewport.isManipulationActive())
-
+        self.toggled.connect( self.canvasWindow.valueEditor.toggleManipulation)
+    
     def onTriggered(self):
         self.viewport.toggleManipulation()
 
@@ -440,7 +444,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.scriptEditor = ScriptEditor(self.client, self.mainBinding, self.qUndoStack, self.logWidget, self.settings, self, self.config)
         self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
         self.cmdManagerQtCallback = CommandManagerQtCallback(self.qUndoStack, self.scriptEditor)
-        
+
     def _initDFGWidget(self):
         """Initializes the Data Flow Graph.
 
@@ -461,6 +465,9 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget.onGraphSet.connect(self.onGraphSet)
         self.dfgWidget.additionalMenuActionsRequested.connect(self.onAdditionalMenuActionsRequested)
         self.dfgWidget.urlDropped.connect(self.onUrlDropped)
+
+        controller = self.dfgWidget.getDFGController()
+        controller.topoDirty.connect(GetCommandManager().synchronizeKL)
 
     def _initTreeView(self):
         """Initializes the preset TreeView.
@@ -491,11 +498,11 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
-        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor( self.client, self.qUndoStack, self.settings )
+        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor( self.client, self.settings )
         # When the rendering options of the viewport have changed, redraw
-        self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
+        self.renderingOptionsWidget.updated.connect(self.viewport.redraw)
         # Once the Viewport has been setup (and filled its option values), update the options menu
-        self.viewport.initComplete.connect(self.renderingOptionsWidget.updateOptions)
+        self.viewport.initComplete.connect(self.renderingOptionsWidget.resetModel)
 
         self.renderingOptionsDockWidget = QtGui.QDockWidget("Rendering Options", self)
         self.renderingOptionsDockWidget.setObjectName("Rendering Options")
@@ -1378,7 +1385,7 @@ class CanvasWindow(QtGui.QMainWindow):
             else:
                 if self.isCanvas:
                     menu.addSeparator()
-                    self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
+                    self.manipAction = ToggleManipulationAction(self, self.viewport)
                     menu.addAction(self.manipAction)
 
                     menu.addSeparator()

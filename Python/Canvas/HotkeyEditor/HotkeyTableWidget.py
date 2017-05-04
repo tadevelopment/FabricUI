@@ -63,7 +63,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         actionRegistry.actionUnregistered.connect(self.__onActionUnregistered)
 
         # Notify when an command is registered.
-        GetCommandRegistry().commandRegisteredCallback.connect(self.__onCommandRegistered)
+        GetCommandRegistry().commandRegistered.connect(self.__onCommandRegistered)
         
         # Construct the item-delegate
         itemDelegate = HotkeyTableWidgetItemDelegate(self)
@@ -202,10 +202,10 @@ class HotkeyTableWidget(QtGui.QTableWidget):
 
         if actionRegistry.getAction(cmdName) is None:
             # Must construct the command to get the tooltip
-            cmd = GetCommandRegistry().createCommand(cmdName)
+            cmd = GetCommandRegistry()._createCommand_Python(cmdName)
             
             tooltip = cmdType+ "[" + implType + "]\n\n"
-            tooltip += cmd.getHelp()
+            #tooltip += cmd.getHelp()
             isScriptable = issubclass(type(cmd), Commands.BaseScriptableCommand)
 
             # Add the action to the canvasWindow so it's available.
@@ -216,8 +216,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
                 implType,
                 QtGui.QKeySequence(), 
                 tooltip, 
-                isScriptable
-                )
+                isScriptable)
 
             self.canvasWindow.addAction(action)
  
