@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
  
-#include <iostream>
 #include <QRegExp>
 #include "RTValUtil.h"
 #include <FTL/StrRef.h>
@@ -194,7 +193,7 @@ inline QString EncodeStringChars(
   {
     if ( *it == '\"' ) result += "\\\"";
     // Don't pollute with newlines, ...
-    // Not ncesseray to parse the JSON.
+    // Not necesseray to parse the JSON.
     else if ( *it == '\r' ) result += "";//\\r";
     else if ( *it == '\n' ) result += "";//"\\n";
     else if ( *it == '\t' ) result += "";//"\\t";
@@ -216,8 +215,9 @@ QString RTValUtil::EncodeStrings(
 {
   QString result;
   
-  int count = 0;
   QString str;
+  int count = 0;
+  
   foreach(str, strList)
   {
     if(count > 0)

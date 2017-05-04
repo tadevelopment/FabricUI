@@ -1,0 +1,188 @@
+//
+// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
+//
+
+#ifndef __UI_FACTORY__
+#define __UI_FACTORY__
+ 
+#include <QMap>
+#include <QObject>
+#include <QString>
+
+namespace FabricUI {
+namespace Util {
+
+/**
+  Factory is a framework to associate a C++ class with a unique  
+  name so object of this class can be constructed from it. 
+
+  It has two components:
+  - factories that wrapp the C++ object construction.
+  - registries that registered a factory under a given unqiue-name.
+*/
+
+class Factory
+{
+  /**
+    Factory is a base class for any factories. The method 'create' creates the C++ 
+    object and must be overrideen. Factory also has a generic 'userData' argument. 
+    It's used to store optional data that can be passed to the object afterward.
+  */
+
+  public:
+    /// Creates the object, returns it as a void pointer.
+    /// To override.
+    virtual void* create(
+      void* args=0) = 0;
+
+    /// Gets the user data (may be null).
+    virtual void* getUserData() = 0;
+};
+
+class BaseFactoryRegistry : public QObject {
+  /**
+    BaseFactoryRegistry is a base class to registers/unregisters factories.
+    When a factory is created, it must be registered in a registery.
+    New registry should inherites this class.  
+  */
+
+  Q_OBJECT
+
+  public:
+    BaseFactoryRegistry();
+
+    virtual ~BaseFactoryRegistry();
+    
+    /// Gets a factory.
+    /// Returns null if no factory is registered under 'name'.
+    /// \param name Name of the factory.
+    Factory* getFactory(
+      const QString &name
+      );
+
+    /// Checks is the registry has a factory.
+    /// \param name Name of the factory.
+    bool hasFactory(
+      const QString &name
+      );
+
+  public slots:
+    /// Registers a factory once.
+    /// \param name Name of the factory.
+    /// \param factory Pointer to the factory.
+    virtual void registerFactory(
+      const QString &name, 
+      Factory *factory
+      );
+
+    /// Unregisters a factory.
+    /// \param name Name of the factory.
+    virtual void unregisterFactory(
+      const QString &name 
+      );
+
+  signals:
+    /// Emitted when a factory is registered.
+    /// \param name Name of the factory.
+    /// \param factory Pointer to the factory.
+    void factoryRegistered(
+      const QString &name, 
+      Factory *factory
+      );
+
+    /// Emitted when a factory is unregistered.
+    /// \param name Name of the factory.
+    void factoryUnregistered(
+      const QString &name
+      );
+
+  private:
+    /// \internl
+    void deleteFactory(
+      QMapIterator<QString, Factory*> &it
+      );
+
+    /// Dictionaries of registered factories. 
+    QMap<QString, Factory*> m_factories;
+};
+
+template<typename T> 
+class TemplateFactory : public Factory
+{
+  /**
+    TemplateFactory creates a new object from it's type directly.
+    It's the best approach found so far.   
+  
+    Usage: 
+      // Defines a new class.
+      class MyClass 
+      {
+        ...
+      };
+
+      // Get the registry.
+      FactoryRegistry *registry = ....;
+      
+      // Create a factory to construct objects  
+      // of type 'MyClass' and register it.
+      Factory<MyClass>::Register(
+        registry,
+        "myClass");
+
+      // Get the factory in the registry
+      Factory *factory = registry->getFactory(
+        "myClass");
+
+      // Construct a new object if type 'MyClass'
+      MyClass *myObject = (MyClass *)factory->create();
+  */
+  public:
+    /// Constructor.
+    /// \param userData The user data.
+    TemplateFactory(
+      void* userData) 
+      : m_userData(userData)
+    {
+    }
+
+    virtual ~TemplateFactory() 
+    { 
+    } 
+
+    /// Creates the factory and registers it in a registry.
+    /// \param registry BaseFactoryRegistry owning the factory.
+    /// \param name Name of the factory, should be unique.
+    /// \param userData The user data.
+    static void Register(
+      BaseFactoryRegistry *registry,
+      const QString &name,
+      void* userData = 0) 
+    {
+      registry->registerFactory(
+        name, 
+        new TemplateFactory(userData)
+        );
+    }
+
+    /// Creates a new object <T>.
+    /// Implementation of Factory.
+    virtual void* create(
+      void* args=0) 
+    { 
+      return new T();
+    } 
+
+    /// Implementation of Factory.
+    virtual void* getUserData() 
+    { 
+      return m_userData;
+    } 
+
+    private:
+      void* m_userData;
+};
+
+} // namespace Util
+} // namespace FabricUI
+
+#endif // __UI_FACTORY__
