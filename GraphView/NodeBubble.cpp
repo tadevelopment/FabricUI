@@ -109,6 +109,8 @@ void NodeBubble::setText( QString t )
 {
   m_textItem->setText( t );
 
+  setToolTip( t );
+
   updateChildrenGeometries();
 }
 
