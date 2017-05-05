@@ -114,27 +114,29 @@ void NodeBubble::setText( QString t )
 
 void NodeBubble::mousePressEvent( QGraphicsSceneMouseEvent *event )
 {
-  printf("press\n");
-  if( MainPanel::filterMousePressEvent( event ) )
+  if ( MainPanel::filterMousePressEvent( event ) )
     return event->ignore();
 
-  //if ( event->button() == Qt::RightButton )
+  if ( event->button() == Qt::MiddleButton )
   {
-    // toggle the expanded state
-    m_node->m_graph->controller()->gvcDoSetNodeCommentExpanded(
-      m_node,
-      isCollapsed()
-      );
-    event->accept();
-    return;
+    QGraphicsObject::mousePressEvent(event);
   }
-
-  QGraphicsObject::mousePressEvent(event);
+  else
+  {
+    if ( event->button() == Qt::RightButton )
+    {
+      // toggle the expanded state
+      m_node->m_graph->controller()->gvcDoSetNodeCommentExpanded(
+        m_node,
+        isCollapsed()
+        );
+    }
+    event->accept();
+  }
 }
 
 void NodeBubble::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event )
 {
-  printf("double\n");
   if ( event->button() == Qt::LeftButton )
   {
     if ( isCollapsed() )
