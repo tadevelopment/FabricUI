@@ -405,7 +405,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   QMenu *result = new QMenu( graph->scene()->views()[0] );
   
-  result->addAction(new GoUpAction(graphWidget, result) );
+  result->addAction(new GoUpAction(graphWidget, result, !controller->isViewingRootGraph()) );
 
   result->addSeparator();
 
@@ -789,7 +789,6 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
   result->addAction( new CreatePortAction( graphWidget, portType, result, editable && !(portType != FabricUI::GraphView::PortType_Output && exec.isInstBlockExec()) ) );
 
   result->addSeparator();
-
 
   QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
   timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );
