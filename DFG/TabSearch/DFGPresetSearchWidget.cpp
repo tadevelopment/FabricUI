@@ -17,7 +17,7 @@ using namespace FabricUI::DFG;
 
 static const QKeySequence ToggleDetailsKey = Qt::CTRL + Qt::Key_Tab;
 
-static const size_t NbHints = 7;
+static const size_t NbHints = 8;
 struct Hint
 {
   std::string message;
@@ -33,7 +33,8 @@ static const Hint Hints[NbHints] = {
   Hint( "You can mouse over a Tag to see its category", 1.0 ),
   Hint( "You can add Tags by clicking on them (in the results or the the details panel)", 1.0 ),
   Hint( "You can move through Tags with Alt + Arrows", 2.0 ),
-  Hint( "You can remove filtered Tags by clicking on them", 1.0 )
+  Hint( "You can remove filtered Tags by clicking on them", 1.0 ),
+  Hint( "You can also add Variables, Backdrops and Blocks from the TabSearch", 0.5 )
 };
 
 const std::string& GetRandomHint()
@@ -394,6 +395,8 @@ void DFGPresetSearchWidget::updateResults()
 
 const std::string BackdropType = "backdrop";
 const TabSearch::Query::Tag BackdropTag = std::string("name:BackDrop");
+const std::string NewBlockType = "block";
+const TabSearch::Query::Tag NewBlockTag = std::string( "name:NewBlock" );
 const std::string NewVariableType = "newVariable";
 const TabSearch::Query::Tag NewVariableTag = std::string( "name:NewVariable" );
 const std::string VariableSetType = "setVariable";
@@ -413,6 +416,11 @@ void DFGPresetSearchWidget::registerStaticEntries()
     "cat:UI"
   };
 
+  const char* newBlockTags[] = {
+    NewBlockTag.data(),
+    "cat:Block"
+  };
+
   const char* newVariableTags[] = {
     NewVariableTag.data(),
     VariableTag.data(),
@@ -427,6 +435,14 @@ void DFGPresetSearchWidget::registerStaticEntries()
         backdropResult.data(),
         sizeof( backdropTags ) / sizeof( const char* ),
         backdropTags
+      );
+
+    TabSearch::Result newBlockResult( NewBlockType, "New Block" );
+    if( !m_host->searchDBHasUser( newBlockResult.data() ) )
+      m_host->searchDBAddUser(
+        newBlockResult.data(),
+        sizeof( newBlockTags ) / sizeof( const char* ),
+        newBlockTags
       );
 
     TabSearch::Result newVariableResult( NewVariableType, "New Variable" );
@@ -517,6 +533,9 @@ void DFGPresetSearchWidget::onResultValidated( const TabSearch::Result& result )
     const std::string type = result.type();
     if( type == BackdropType )
       emit selectedBackdrop();
+    else
+    if( type == NewBlockType )
+      emit selectedNewBlock();
     else
     if( type == NewVariableType )
       emit selectedCreateNewVariable();
@@ -621,6 +640,11 @@ void DFGPresetSearchWidget::Status::setDisplayedResult( const TabSearch::Result&
     {
       this->addItem( new TabSearch::Label( "Add a new " ) );
       this->addItem( new TabSearch::Label( "Backdrop", BackdropTag ) );
+    }
+    if( type == NewBlockType )
+    {
+      this->addItem( new TabSearch::Label( "Add a new " ) );
+      this->addItem( new TabSearch::Label( "Block", NewBlockTag ) );
     }
     else
     if( type == NewVariableType )

@@ -37,6 +37,7 @@ namespace FabricUI
       // Emitted when a Result (there are different types) has been chosen
       void selectedPreset( QString preset );
       void selectedBackdrop();
+      void selectedNewBlock();
       void selectedCreateNewVariable();
       void selectedGetVariable( const std::string name );
       void selectedSetVariable( const std::string name );
