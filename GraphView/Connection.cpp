@@ -436,7 +436,7 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
-  if (!m_dst->isConnectedAsTarget())
+  if (!m_dst || m_dst->isDragging())
   {
     QBrush thing = painter->brush();
     thing.setStyle(Qt::SolidPattern);
@@ -446,7 +446,7 @@ void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
     thing.setStyle(Qt::NoBrush);
   }
 
-  if (!m_src->isConnectedAsSource())
+  if (!m_src || m_src->isDragging())
   {
     QBrush thing = painter->brush();
     thing.setStyle(Qt::SolidPattern);

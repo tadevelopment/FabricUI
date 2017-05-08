@@ -450,7 +450,6 @@ void MouseGrabber::paint(QPainter * painter, const QStyleOptionGraphicsItem * op
   QColor color = m_connection->color();
   color.setAlpha(125);
   painter->setPen(color);
-  // painter->drawRect(windowFrameRect());
   painter->drawEllipse(windowFrameRect().center(), m_radius, m_radius);
   QGraphicsWidget::paint(painter, option, widget);
 }
