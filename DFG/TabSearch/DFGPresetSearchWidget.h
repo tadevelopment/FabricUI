@@ -40,6 +40,7 @@ namespace FabricUI
       bool focusNextPrevChild( bool next ) FTL_OVERRIDE;
       void resizeEvent( QResizeEvent * event ) FTL_OVERRIDE;
       void showEvent( QShowEvent * event ) FTL_OVERRIDE;
+      void toggleNewBlocks( bool );
 
     signals:
       // Emitted when a Result (there are different types) has been chosen
@@ -86,6 +87,7 @@ namespace FabricUI
       // Will the Query persist between 2 invocations ?
       bool m_clearQueryOnClose;
       bool m_staticEntriesAddedToDB;
+      bool m_newBlocksEnabled;
 
       // Used to query the database
       FabricCore::DFGHost* m_host;

@@ -143,6 +143,7 @@ void DFGPresetSearchWidget::Status::updateDisplay()
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
   , m_staticEntriesAddedToDB( false )
+  , m_newBlocksEnabled( false )
   , m_host( host )
   , m_searchFrame( new QFrame() )
   , m_status( new Status( this ) )
@@ -444,11 +445,16 @@ void DFGPresetSearchWidget::registerStaticEntries()
 
     TabSearch::Result newBlockResult( NewBlockType, "New Block" );
     if( !m_host->searchDBHasUser( newBlockResult.data() ) )
-      m_host->searchDBAddUser(
-        newBlockResult.data(),
-        sizeof( newBlockTags ) / sizeof( const char* ),
-        newBlockTags
-      );
+    {
+      if( m_newBlocksEnabled )
+        m_host->searchDBAddUser(
+          newBlockResult.data(),
+          sizeof( newBlockTags ) / sizeof( const char* ),
+          newBlockTags
+        );
+    }
+    else if( !m_newBlocksEnabled )
+      m_host->searchDBRemoveUser( newBlockResult.data() );
 
     TabSearch::Result newVariableResult( NewVariableType, "New Variable" );
     if( !m_host->searchDBHasUser( newVariableResult.data() ) )
@@ -527,6 +533,17 @@ void DFGPresetSearchWidget::unregisterVariables()
   }
   m_registeredVariables.clear();
   m_staticEntriesAddedToDB = false;
+}
+
+void DFGPresetSearchWidget::toggleNewBlocks( bool enabled )
+{
+  if( enabled != m_newBlocksEnabled )
+  {
+    m_newBlocksEnabled = enabled;
+    m_staticEntriesAddedToDB = false;
+    this->registerStaticEntries();
+    this->updateResults();
+  }
 }
 
 void DFGPresetSearchWidget::onResultValidated( const TabSearch::Result& result )

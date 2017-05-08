@@ -2870,6 +2870,12 @@ void DFGWidget::onExecChanged()
     emit onGraphSet(m_uiGraph);
   }
 
+  m_tabSearchWidget->toggleNewBlocks(
+    exec.isValid()
+    && this->isEditable()
+    && exec.allowsBlocks()
+  );
+
   m_uiController->updateNodeErrors();
 
   emit execChanged();
