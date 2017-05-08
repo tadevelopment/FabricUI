@@ -5,9 +5,7 @@
 
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
 
-#include "QueryEdit.h"
-#include "ResultsView.h"
-#include "DetailsWidget.h"
+#include <set>
 
 class QFrame;
 class QScrollArea;
@@ -16,6 +14,16 @@ namespace FabricUI
 {
   namespace DFG
   {
+    namespace TabSearch
+    {
+      class QueryEdit;
+      class DetailsWidget;
+      class ResultsView;
+      class Toggle;
+      struct Query;
+      class Result;
+    }
+
     class DFGPresetSearchWidget : public DFGAbstractTabSearchWidget
     {
       Q_OBJECT

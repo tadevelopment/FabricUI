@@ -2,6 +2,11 @@
 
 #include "DFGPresetSearchWidget.h"
 #include "ItemView.h"
+#include "QueryEdit.h"
+#include "ResultsView.h"
+#include "DetailsWidget.h"
+
+#include "Data.h"
 
 #include <FTL/JSONValue.h>
 #include <QDebug>

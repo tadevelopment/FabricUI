@@ -8,7 +8,11 @@
 #include <QWidget>
 #include <FTL/Config.h>
 #include <FTL/StrRef.h>
-#include <FabricCore.h>
+
+namespace FabricCore
+{
+  class DFGHost;
+}
 
 namespace FabricUI
 {
