@@ -992,6 +992,16 @@ void DFGWidget::tabSearchVariablesUpdate()
   m_tabSearchWidget->updateResults();
 }
 
+void DFGWidget::tabSearchBlockToggleChanged()
+{
+  FabricCore::DFGExec &exec = this->getUIController()->getExec();
+  m_tabSearchWidget->toggleNewBlocks(
+    exec.isValid()
+    && this->isEditable()
+    && exec.allowsBlocks()
+  );
+}
+
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)
 {
   emit nodeInspectRequested(node);
@@ -2870,11 +2880,7 @@ void DFGWidget::onExecChanged()
     emit onGraphSet(m_uiGraph);
   }
 
-  m_tabSearchWidget->toggleNewBlocks(
-    exec.isValid()
-    && this->isEditable()
-    && exec.allowsBlocks()
-  );
+  this->tabSearchBlockToggleChanged();
 
   m_uiController->updateNodeErrors();
 
@@ -2930,6 +2936,7 @@ void DFGWidget::onExecSplitChanged()
     if ( m_uiGraph )
       m_uiGraph->setEditable( m_isEditable );
   }
+  this->tabSearchBlockToggleChanged();
 }
 
 void DFGWidget::replaceBinding(

@@ -204,6 +204,7 @@ namespace DFG {
         );
       void tabSearchVariablesSetDirty();
       void tabSearchVariablesUpdate();
+      void tabSearchBlockToggleChanged();
 
     private:
 
