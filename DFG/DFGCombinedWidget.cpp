@@ -91,6 +91,10 @@ void DFGCombinedWidget::initDFG() {
       m_dfgWidget, SIGNAL(nodeInspectRequested(FabricUI::GraphView::Node*)),
       this, SLOT(onNodeInspectRequested(FabricUI::GraphView::Node*))
       );
+    QObject::connect(
+      m_dfgWidget, SIGNAL(revealPresetInExplorer(QString)),
+      this, SLOT(onRevealPresetInExplorer(QString))
+      );
 
     QObject::connect(m_dfgWidget, SIGNAL(onGraphSet(FabricUI::GraphView::Graph*)), 
       this, SLOT(onGraphSet(FabricUI::GraphView::Graph*)));
@@ -210,6 +214,20 @@ void DFGCombinedWidget::onNodeInspectRequested(FabricUI::GraphView::Node * node)
   {
     s[2] = (int)(float(s[1]) * 0.25f);
     s[1] -= s[2];
+    m_hSplitter->setSizes(s);
+  }
+}
+
+void DFGCombinedWidget::onRevealPresetInExplorer(QString nodeName)
+{
+  if ( nodeName.isEmpty() )
+    return;
+
+  QList<int> s = m_hSplitter->sizes();
+  if(s[0] == 0)
+  {
+    s[0] = (int)(float(s[1]) * 0.25f);
+    s[1] -= s[0];
     m_hSplitter->setSizes(s);
   }
 }

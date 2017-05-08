@@ -69,6 +69,7 @@ namespace FabricUI
       virtual void onNodeInspectRequested(FabricUI::GraphView::Node * node);
       virtual void onNodeEditRequested(FabricUI::GraphView::Node * node);
       virtual void onAdditionalMenuActionsRequested(QString name, QMenu * menu, bool prefix);
+      virtual void onRevealPresetInExplorer(QString nodeName);
 
     protected slots:
       void onPortEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog);
