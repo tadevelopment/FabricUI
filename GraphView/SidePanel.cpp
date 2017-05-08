@@ -24,6 +24,8 @@ using namespace FabricUI::GraphView;
 SidePanel::SidePanel(Graph * parent, PortType portType, QColor color)
   : QGraphicsWidget( parent )
   , m_dragDstY( 0 )
+  , m_proxyPort( NULL )
+  , m_proxyPortDummy( NULL )
 {
   m_itemGroup = new SidePanelItemGroup(this);
   m_itemGroup->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding));
@@ -44,7 +46,10 @@ SidePanel::SidePanel(Graph * parent, PortType portType, QColor color)
   setContentsMargins(0, 0, 0, 0);
   //setAcceptDrops( true );
 
-  m_proxyPort = new ProxyPort(this, m_portType);
+  if (m_portType == PortType_Input && graph()->controller()->gvcCurrentExecIsInstBlockExec())
+    m_proxyPortDummy = new TextContainer(this, "", config.sidePanelFontColor, config.sidePanelFontHighlightColor, config.sidePanelFont);
+  else
+    m_proxyPort = new ProxyPort(this, m_portType);
 
   QObject::connect(m_itemGroup, SIGNAL(resized()), this, SLOT(onItemGroupResized()));
 
@@ -306,8 +311,16 @@ void SidePanel::resetLayout()
   portsLayout->setSpacing(config.sidePanelSpacing);
   portsLayout->setOrientation(Qt::Vertical);
 
-  portsLayout->addItem(m_proxyPort);
-  portsLayout->setAlignment(m_proxyPort, Qt::AlignRight | Qt::AlignTop);
+  if (m_proxyPort)
+  {
+    portsLayout->addItem(m_proxyPort);
+    portsLayout->setAlignment(m_proxyPort, Qt::AlignRight | Qt::AlignTop);
+  }
+  if (m_proxyPortDummy)
+  {
+    portsLayout->addItem(m_proxyPortDummy);
+    portsLayout->setAlignment(m_proxyPortDummy, Qt::AlignRight | Qt::AlignTop);
+  }
   portsLayout->setItemSpacing(0, 20);
 
   for(size_t i=0;i<m_fixedPorts.size();i++)

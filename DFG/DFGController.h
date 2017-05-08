@@ -183,6 +183,7 @@ namespace FabricUI
         );
 
       virtual QString gvcGetCurrentExecPath();
+      virtual bool gvcCurrentExecIsInstBlockExec();
       
       // Commands
 
