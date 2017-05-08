@@ -23,9 +23,9 @@ using namespace FabricUI::GraphView;
 
 SidePanel::SidePanel(Graph * parent, PortType portType, QColor color)
   : QGraphicsWidget( parent )
-  , m_dragDstY( 0 )
   , m_proxyPort( NULL )
   , m_proxyPortDummy( NULL )
+  , m_dragDstY( 0 )
 {
   m_itemGroup = new SidePanelItemGroup(this);
   m_itemGroup->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding));
