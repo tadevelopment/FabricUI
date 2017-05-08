@@ -436,6 +436,26 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+  if (!m_dst->isConnectedAsTarget())
+  {
+    QBrush thing = painter->brush();
+    thing.setStyle(Qt::SolidPattern);
+    thing.setColor(m_color);
+    painter->setBrush(thing);
+    painter->drawEllipse(dstPoint(), 4, 4);
+    thing.setStyle(Qt::NoBrush);
+  }
+
+  if (!m_src->isConnectedAsSource())
+  {
+    QBrush thing = painter->brush();
+    thing.setStyle(Qt::SolidPattern);
+    thing.setColor(m_color);
+    painter->setBrush(thing);
+    painter->drawEllipse(srcPoint(), 4, 4);
+    thing.setStyle(Qt::NoBrush);
+  }
+
   // [FE-6836] connections of IO ports are always dimmed.
   if (m_src->path() == m_dst->path() && !m_dragging && m_src->isRealPort() && m_dst->isRealPort())
   {
