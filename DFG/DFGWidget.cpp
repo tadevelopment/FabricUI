@@ -242,8 +242,12 @@ DFGWidget::DFGWidget(
     this, SLOT( onBackdropAddedFromTabSearch() )
   );
   QObject::connect(
-    m_tabSearchWidget, SIGNAL( selectedCreateNewVariable() ),
-    this, SLOT( onVariableCreationRequestedFromTabSearch() )
+    m_tabSearchWidget, SIGNAL( selectedBackdrop() ),
+    this, SLOT( onBackdropAddedFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedNewBlock() ),
+    this, SLOT( onNewBlockAddedFromTabSearch() )
   );
   QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
@@ -883,6 +887,14 @@ void DFGWidget::onBackdropAddedFromTabSearch()
 {
   this->getUIController()->cmdAddBackDrop(
     "backdrop",
+    getTabSearchScenePos()
+  );
+}
+
+void DFGWidget::onNewBlockAddedFromTabSearch()
+{
+  this->getUIController()->cmdAddBlock(
+    "block",
     getTabSearchScenePos()
   );
 }
