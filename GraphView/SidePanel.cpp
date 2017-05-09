@@ -47,7 +47,11 @@ SidePanel::SidePanel(Graph * parent, PortType portType, QColor color)
   //setAcceptDrops( true );
 
   if (m_portType == PortType_Input && graph()->controller()->gvcCurrentExecIsInstBlockExec())
+  {
+    // [FE-7155] m_proxyPortDummy is an invisible (empty string) label which replaces the Expose port,
+    // and makes sure that the ports below are at the same position as if there were an Expose port
     m_proxyPortDummy = new TextContainer(this, "", config.sidePanelFontColor, config.sidePanelFontHighlightColor, config.sidePanelFont);
+  }
   else
     m_proxyPort = new ProxyPort(this, m_portType);
 
