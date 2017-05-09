@@ -172,10 +172,8 @@ protected:
   void mouseMoveEvent( QMouseEvent * e ) FTL_OVERRIDE
   {
     QPoint mousePos = e->globalPos();
-    m_parent->setUpdatesEnabled( false );
     m_parent->move( mousePos - m_clickOffset );
     m_parent->maybeReposition();
-    m_parent->setUpdatesEnabled( true );
   }
 };
 
