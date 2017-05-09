@@ -99,6 +99,7 @@ namespace DFG {
       bool isEditable() const { return m_isEditable; }
       static QSettings * getSettings();
       static void setSettings(QSettings * settings);
+      bool isQuickZoomActive() const { return {m_uiGraphZoomBeforeQuickZoom != 0}; }
       
       void onExecPathOrTitleChanged();
       void refreshExtDeps( FTL::CStrRef extDeps );
