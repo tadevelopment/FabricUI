@@ -139,7 +139,7 @@ class DFGPresetSearchWidget::MoveHandle : public QFrame
   typedef QFrame Parent;
 
   DFGPresetSearchWidget* m_parent;
-  QPoint m_lastPos;
+  QPoint m_clickOffset; // position of the click when starting to drag
 
 public:
   MoveHandle( DFGPresetSearchWidget* parent )
@@ -166,15 +166,16 @@ protected:
 
   void mousePressEvent( QMouseEvent * e ) FTL_OVERRIDE
   {
-    m_lastPos = e->globalPos();
+    m_clickOffset = e->globalPos() - m_parent->pos();
   }
 
   void mouseMoveEvent( QMouseEvent * e ) FTL_OVERRIDE
   {
     QPoint mousePos = e->globalPos();
-    m_parent->move( m_parent->pos() + mousePos - m_lastPos );
+    m_parent->setUpdatesEnabled( false );
+    m_parent->move( mousePos - m_clickOffset );
     m_parent->maybeReposition();
-    m_lastPos = mousePos;
+    m_parent->setUpdatesEnabled( true );
   }
 };
 
