@@ -5,6 +5,8 @@
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/MainPanel.h>
 
 #include <QDebug>
 #include <QGraphicsSceneHoverEvent>

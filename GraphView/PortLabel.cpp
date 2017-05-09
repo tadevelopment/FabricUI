@@ -4,7 +4,8 @@
 
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/Port.h>
-#include <FabricUI/GraphView/PortLabel.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/MainPanel.h>
 
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>

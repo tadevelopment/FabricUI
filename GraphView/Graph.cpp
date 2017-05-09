@@ -7,6 +7,17 @@
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
 #include <FabricUI/GraphView/NodeBubble.h>
+#include <FabricUI/GraphView/GraphConfig.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/Node.h>
+#include <FabricUI/GraphView/Pin.h>
+#include <FabricUI/GraphView/Port.h>
+#include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/MouseGrabber.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/GraphView/InfoOverlay.h>
+#include <FabricUI/GraphView/FixedPort.h>
 
 #include <float.h>
 

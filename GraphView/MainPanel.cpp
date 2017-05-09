@@ -6,12 +6,16 @@
 #include <QPainter>
 #include <QCursor>
 #include <QGraphicsView>
+#include <QMimeData>
 
 #include <FabricUI/GraphView/MainPanel.h>
 #include <FabricUI/GraphView/Pin.h>
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/Graph.h>
 #include <FabricUI/GraphView/GraphConfig.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/SidePanel.h>
+#include <FabricUI/GraphView/SelectionRect.h>
 
 #include <math.h>
 
@@ -230,6 +234,7 @@ void MainPanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
       if (hit && nodes[i]->isBackDropNode())
       {
+        // [FE-6224]
         // backdrop nodes are only hit when the selection
         // rectangle intersects with the backdrop's border
         // or if it contains the entire backdrop.

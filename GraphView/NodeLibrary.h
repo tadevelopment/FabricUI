@@ -3,8 +3,6 @@
 #ifndef __UI_GraphView_NodeLibrary__
 #define __UI_GraphView_NodeLibrary__
 
-#include "NodeLibraryItem.h"
-
 #include <QWidget>
 #include <QLineEdit>
 #include <QScrollArea>
@@ -16,6 +14,7 @@ namespace FabricUI
 
   namespace GraphView
   {
+    class NodeLibraryItem;
 
     class NodeLibrary : public QWidget
     {

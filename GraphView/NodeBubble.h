@@ -3,8 +3,8 @@
 #ifndef __UI_GraphView_NodeBubble__
 #define __UI_GraphView_NodeBubble__
 
-#include "Node.h"
 #include "GraphConfig.h"
+#include <QGraphicsItem>
 
 class QGraphicsRectItem;
 class QGraphicsSimpleTextItem;
@@ -13,6 +13,7 @@ namespace FabricUI {
 namespace GraphView {
 
 class Graph;
+class Node;
 
 class NodeBubble : public QGraphicsObject
 {

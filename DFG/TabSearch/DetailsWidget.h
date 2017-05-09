@@ -4,7 +4,6 @@
 #define __UI_DFG_TabSearch_DetailsWidget__
 
 #include "Data.h"
-#include "ItemView.h"
 
 #include <QFrame>
 
@@ -16,6 +15,8 @@ namespace FabricUI
   {
     namespace TabSearch
     {
+      class Label;
+
       // TODO : is quite generic; we might want to move it elsewhere
       class Toggle : public QFrame
       {

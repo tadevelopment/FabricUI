@@ -11,7 +11,6 @@
 
 #include "PortType.h"
 #include "NodeLabel.h"
-#include "PinCircle.h"
 #include "ConnectionTarget.h"
 #include "GraphicItemTypes.h"
 
@@ -23,6 +22,7 @@ namespace FabricUI
     // forward decl
     class Graph;
     class Node;
+    class PinCircle;
 
     class Pin : public ConnectionTarget
     {

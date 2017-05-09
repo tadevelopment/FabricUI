@@ -11,6 +11,11 @@
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/NodeRectangle.h>
+#include <FabricUI/GraphView/NodeHeader.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/Pin.h>
 
 #include <QDebug>
 #include <QApplication>
@@ -734,6 +739,13 @@ void Node::restorePreviousSelection()
 
 void Node::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
 {
+  // [FE-8415] backdrops may only respond to clicks in the header.
+  if (isBackDropNode())
+  {
+    QGraphicsWidget::contextMenuEvent(event);
+    return;
+  }
+
   QMenu * menu = graph()->getNodeContextMenu( this );
   if ( menu )
   {
@@ -750,7 +762,7 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 
   storeCurrentSelection();
 
-  // backdrops may only respond to clicks in the header.
+  // [FE-6224] backdrops may only respond to clicks in the header.
   if (isBackDropNode())
   {
     if (!header()->rect().contains(mapFromScene(event->scenePos())))
@@ -884,7 +896,7 @@ bool Node::onMouseRelease( const QGraphicsSceneMouseEvent *event )
 {
   if ( m_dragging == 2 )
   {
-    if(!selected())
+    if (!selected() && !m_nodesToMove.size())
       emit positionChanged(this, graphPos());
     else
     {

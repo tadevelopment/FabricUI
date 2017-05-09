@@ -9,13 +9,14 @@
 #include <QPen>
 
 #include "GraphConfig.h"
-#include "Graph.h"
 
 namespace FabricUI
 {
 
   namespace GraphView
   {
+
+    class Graph;
 
     // The GraphViewScene specializes QGraphicsScene for intercepting events that need to be treated
     // globally (eg: click for panning the camera) and not forwareded to individual scene widgets.

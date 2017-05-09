@@ -19,6 +19,11 @@
 #include <FabricUI/DFG/DFGBindingUtils.h>
 #include <FabricUI/GraphView/NodeBubble.h>
 #include <FabricUI/GraphView/InstBlock.h>
+#include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/FixedPort.h>
+#include <FabricUI/GraphView/Connection.h>
+#include <FabricUI/GraphView/MainPanel.h>
+#include <FabricUI/GraphView/SidePanel.h>
 #include <FabricUI/Util/FabricResourcePath.h>
 #include <FabricUI/Util/LoadFabricStyleSheet.h>
 #include <FabricUI/Util/UIRange.h>
@@ -154,8 +159,7 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(new FrameSelectedNodesAction        (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new FrameAllNodesAction             (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new RelaxNodesAction                (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new DeleteNodes1Action              (this, m_uiGraphViewWidget));
-  m_uiGraphViewWidget->addAction(new DeleteNodes2Action              (this, m_uiGraphViewWidget));
+  m_uiGraphViewWidget->addAction(new DeleteNodesAction               (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodeAction          (this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new EditSelectedNodePropertiesAction(this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new ConnectionInsertPresetAction    (this, m_uiGraphViewWidget,
@@ -401,7 +405,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   QMenu *result = new QMenu( graph->scene()->views()[0] );
   
-  result->addAction(new GoUpAction(graphWidget, result) );
+  result->addAction(new GoUpAction(graphWidget, result, !controller->isViewingRootGraph()) );
 
   result->addSeparator();
 
@@ -584,7 +588,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addSeparator();
 
-    result->addAction(new DeleteNodes1Action(dfgWidget, result, dfgWidget->isEditable()));
+    result->addAction(new DeleteNodesAction(dfgWidget, result, dfgWidget->isEditable()));
 
     result->addSeparator();
 
@@ -785,7 +789,6 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
   result->addAction( new CreatePortAction( graphWidget, portType, result, editable && !(portType != FabricUI::GraphView::PortType_Output && exec.isInstBlockExec()) ) );
 
   result->addSeparator();
-
 
   QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
   timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );
@@ -2450,7 +2453,8 @@ void DFGWidget::onEditSelectedNodeProperties()
           oldNodeName.c_str(),
           getConfig(),
           true /* setAlphaNum */,
-          isEditable
+          isEditable,
+          node->isBackDropNode()
           );
 
         if ( dialog.exec() )

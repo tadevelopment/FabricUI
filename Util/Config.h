@@ -7,8 +7,6 @@
 #include <FTL/JSONValue.h>
 #include <FTL/SharedPtr.h>
 
-#include <FabricUI/Util/FabricResourcePath.h>
-
 #include <QColor>
 #include <QFont>
 #include <QString>

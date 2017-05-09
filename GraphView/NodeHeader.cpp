@@ -4,6 +4,9 @@
 #include <FabricUI/GraphView/Node.h>
 #include <FabricUI/GraphView/NodeLabel.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/Controller.h>
+#include <FabricUI/GraphView/PinCircle.h>
+#include <FabricUI/GraphView/NodeHeaderButton.h>
 
 #include <QGraphicsLinearLayout>
 #include <QPushButton>
@@ -223,6 +226,23 @@ void NodeHeader::setHeaderButtonState(QString name, int state)
     if(m_buttons[i]->name() == name)
       m_buttons[i]->setState(state);
   }
+}
+
+void NodeHeader::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
+{
+  // [FE-8415] backdrops may only respond to clicks in the header.
+  if( this->node()->isBackDropNode() )
+  {
+    QMenu * menu = this->node()->graph()->getNodeContextMenu( this->node() );
+    if ( menu )
+    {
+      menu->exec( QCursor::pos() );
+      menu->setParent( NULL );
+      menu->deleteLater();
+    }
+  }
+  else
+    Parent::contextMenuEvent( event );
 }
 
 void NodeHeader::onHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderButton * button)

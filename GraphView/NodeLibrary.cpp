@@ -1,6 +1,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <FabricUI/GraphView/NodeLibrary.h>
+#include <FabricUI/GraphView/NodeLibraryItem.h>
 
 #include <QVBoxLayout>
 #include <QRegExp>

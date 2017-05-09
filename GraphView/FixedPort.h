@@ -12,8 +12,6 @@
 #include <FTL/CStrRef.h>
 
 #include "PortType.h"
-#include "PortLabel.h"
-#include "PinCircle.h"
 #include "ConnectionTarget.h"
 #include "GraphicItemTypes.h"
 
@@ -26,6 +24,8 @@ namespace FabricUI
     class Graph;
     class Pin;
     class SidePanel;
+    class TextContainer;
+    class PinCircle;
 
     class FixedPort : public ConnectionTarget
     {
