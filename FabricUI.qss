@@ -2132,7 +2132,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #DFGPresetSearchWidget #MoveHandle
 {
-  min-height: 8px;
-  background-color: #999999;
+  min-height: 4px;
+  background-color: #50626e;
   border: 2px solid #333333;
+  border-bottom: 0px;
 }
