@@ -242,8 +242,12 @@ DFGWidget::DFGWidget(
     this, SLOT( onBackdropAddedFromTabSearch() )
   );
   QObject::connect(
-    m_tabSearchWidget, SIGNAL( selectedCreateNewVariable() ),
-    this, SLOT( onVariableCreationRequestedFromTabSearch() )
+    m_tabSearchWidget, SIGNAL( selectedBackdrop() ),
+    this, SLOT( onBackdropAddedFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedNewBlock() ),
+    this, SLOT( onNewBlockAddedFromTabSearch() )
   );
   QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
@@ -907,6 +911,14 @@ void DFGWidget::onBackdropAddedFromTabSearch()
   );
 }
 
+void DFGWidget::onNewBlockAddedFromTabSearch()
+{
+  this->getUIController()->cmdAddBlock(
+    "block",
+    getTabSearchScenePos()
+  );
+}
+
 void DFGWidget::onVariableCreationRequestedFromTabSearch()
 {
   DFGNewVariableDialog dialog(
@@ -998,6 +1010,16 @@ void DFGWidget::tabSearchVariablesUpdate()
   m_tabSearchVariablesDirty = false;
 
   m_tabSearchWidget->updateResults();
+}
+
+void DFGWidget::tabSearchBlockToggleChanged()
+{
+  FabricCore::DFGExec &exec = this->getUIController()->getExec();
+  m_tabSearchWidget->toggleNewBlocks(
+    exec.isValid()
+    && this->isEditable()
+    && exec.allowsBlocks()
+  );
 }
 
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)
@@ -2878,6 +2900,8 @@ void DFGWidget::onExecChanged()
     emit onGraphSet(m_uiGraph);
   }
 
+  this->tabSearchBlockToggleChanged();
+
   m_uiController->updateNodeErrors();
 
   emit execChanged();
@@ -2932,6 +2956,7 @@ void DFGWidget::onExecSplitChanged()
     if ( m_uiGraph )
       m_uiGraph->setEditable( m_isEditable );
   }
+  this->tabSearchBlockToggleChanged();
 }
 
 void DFGWidget::replaceBinding(
