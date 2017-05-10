@@ -2,14 +2,15 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandHelpers.h"
-#include "KLCommandRegistry.h"
+#include "CommandException.h"
+#include "RTValCommandManager.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
 
 using namespace FabricUI;
 using namespace Commands;
 using namespace FabricCore;
+using namespace Util;
 
 BaseRTValScriptableCommand::BaseRTValScriptableCommand() 
   : BaseScriptableCommand()
@@ -24,13 +25,19 @@ BaseRTValScriptableCommand::~BaseRTValScriptableCommand()
 void BaseRTValScriptableCommand::declareArg(
   const QString &key, 
   bool optional, 
-  const QString &defaultValue) 
-{
-  declareRTValArg(
-    key,
-    QString(),
-    optional,
-    defaultValue);
+  const QString &defaultValue,
+  bool loggable)
+{ 
+  if(key.isEmpty()) 
+    CommandException::CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::declareArg",
+      "Key not specified  in command '" + getName() + "'");
+  
+  ScriptableCommandRTValArgSpec spec;
+  spec.type = QString();
+  spec.loggable = loggable;
+  spec.optional = optional;
+  m_rtvalArgSpecs.insert(key, spec);
 }
 
 bool BaseRTValScriptableCommand::hasArg(
@@ -39,78 +46,67 @@ bool BaseRTValScriptableCommand::hasArg(
   return m_rtvalArgSpecs.count(key) > 0;
 }
 
+bool BaseRTValScriptableCommand::isArgOptional(
+  const QString &key)
+{
+  if(key.isEmpty()) 
+    CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::isArgOptional",
+      "setting arg of '" + getName() + "', key not specified");
+
+  if(!hasArg(key)) 
+    // TODO: make this an optional behavior
+    CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::isArgOptional",
+      "setting arg: '" + key + + "' not supported by command '" + getName() + "'");
+
+   return m_rtvalArgSpecs[key].optional;
+}
+
+bool BaseRTValScriptableCommand::isArgLoggable(
+  const QString &key)
+{
+  if(key.isEmpty()) 
+    CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::isArgLoggable",
+      "setting arg of '" + getName() + "', key not specified");
+
+  if(!hasArg(key)) 
+    // TODO: make this an optional behavior
+    CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::isArgLoggable",
+      "setting arg: '" + key + + "' not supported by command '" + getName() + "'");
+
+  return m_rtvalArgSpecs[key].loggable;
+}
+
 QList<QString> BaseRTValScriptableCommand::getArgKeys()
 {
   return m_rtvalArgSpecs.keys(); 
+}
+
+bool BaseRTValScriptableCommand::isArgSet(
+  const QString &key)
+{
+  // The arg can be set as RTVal or as JSON.
+  return BaseScriptableCommand::isArgSet(key) || 
+    (m_rtvalArgs.count(key) && m_rtvalArgs[key].isValid());
 }
 
 QString BaseRTValScriptableCommand::getArg(
   const QString &key)
 {
   if(!hasArg(key)) 
-    printAndThrow(
-      std::string(
-        "BaseRTValScriptableCommand::getArg, error: no arg named " +
-        std::string(key.toUtf8().constData())
-      )
-    );
-
+    CommandException::CommandException::PrintOrThrow(  
+      "BaseRTValScriptableCommand::getArg",
+      "No arg named '" + key + "' in command '" + getName() + "'");
 
   // Known RTVal of known type, get the json from it.
-  if(m_rtvalArgs.count(key) > 0 && !m_rtvalArgSpecs[key].type.isEmpty())
-  {
-    QString json;
-    try
-    {
-      json = Util::RTValUtil::rtValToJSON(
-        getRTValArg(key));
-    }
-    catch(Exception &e)
-    {
-      json = Util::RTValUtil::klRTValToJSON(
-        getRTValArg(key));
-    }
-    return json;
-  }
-
-  // Else, get the JSON directly
-  else 
-    return m_args.count(key) > 0 
-      ? m_args[key]
-      : QString();
-}
-
-inline RTVal castJSONToRTVal(
-  const QString &json,
-  const QString &type) 
-{
-  KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
-    Commands::CommandRegistry::GetCommandRegistry());
-
-  RTVal rtVal;
-
-  try
-  {
-    rtVal = Util::RTValUtil::jsonToRTVal(
-      registry->getClient(),
-      json,
-      type);
-  }
-
-  catch(Exception &e)
-  {
-    rtVal = Util::RTValUtil::jsonToKLRTVal(
-      registry->getClient(),
-      json,
-      type);
-  }
-
-  if(!rtVal.isValid()) 
-    printAndThrow(
-      "BaseRTValScriptableCommand::castJSONToRTVal, error: wasn't able to cast JSON in RTVal"
-    );
-
-  return rtVal;
+  return (m_rtvalArgs.count(key) > 0 && !m_rtvalArgSpecs[key].type.isEmpty())
+    ? RTValUtil::forceRTValToJSON(getRTValArg(key))
+    // Otherwise, return the Json if it's been set.
+    // It happens if the arg's been declared with an unknown type
+    : m_args.count(key) > 0 ? m_args[key] : QString();
 }
 
 void BaseRTValScriptableCommand::setArg(
@@ -118,17 +114,18 @@ void BaseRTValScriptableCommand::setArg(
   const QString &json) 
 {
   if(!hasArg(key)) 
-    printAndThrow(
-      std::string(
-        "BaseRTValScriptableCommand::setArg, error: no arg named " +
-        std::string(key.toUtf8().constData())
-      )
-    );
+    CommandException::CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::setArg",
+      "No arg named " + key + "' in command '" + getName() + "'");
 
   // Known type, cast the JSON to a RTVal.
   if(!m_rtvalArgSpecs[key].type.isEmpty())
   {
-    RTVal rtVal = castJSONToRTVal(
+    RTValCommandManager *manager = dynamic_cast<RTValCommandManager*>(
+      CommandManager::GetCommandManager());
+
+    RTVal rtVal = RTValUtil::forceJSONToRTVal(
+      manager->getClient(),
       json,
       m_rtvalArgSpecs[key].type);
 
@@ -148,18 +145,12 @@ void BaseRTValScriptableCommand::validateSetArgs()
     it.next();
     QString key = it.key();
     ScriptableCommandRTValArgSpec spec = it.value();
-    
-    bool isValid = !m_args.count(key) && m_args[key].isEmpty();
-    bool isRTValValid = !m_rtvalArgs.count(key) && !m_rtvalArgs[key].isValid();
 
     // We support unknown type.
-    if(!spec.optional && (!isValid && !isRTValValid))
-      printAndThrow(
-        std::string(
-          "BaseRTValScriptableCommand::validateSetArgs, error: argument: '" + 
-          std::string(key.toUtf8().constData()) + "' has not been set"
-        )
-      );
+    if(!spec.optional && !isArgSet(key))
+      CommandException::CommandException::PrintOrThrow(
+        "BaseRTValScriptableCommand::validateSetArgs",
+        "Argument '" + key + "' in command '" + getName() + "' has not been set");
   }
 }
 
@@ -193,107 +184,117 @@ void BaseRTValScriptableCommand::declareRTValArg(
   const QString &key, 
   const QString &type,
   bool optional, 
-  const QString &defaultValue) 
-{
-  try
-  {
-    RTVal defaultRtVal;
-
-    // Cast the JSON in RTVal of possible
-    if(!type.isEmpty() && !defaultValue.isEmpty())
-      defaultRtVal = castJSONToRTVal(
-        getArg(key),
-        type);
-
-    declareRTValArg(
-      key,
-      type,
-      optional,
-      defaultRtVal);
-  }
-
-  catch(Exception &e)
-  {
-    printf(
-      "BaseRTValScriptableCommand::declareRTValArg: exception: %s\n", 
-      e.getDesc_cstr());
-  }
-}
-
-void BaseRTValScriptableCommand::declareRTValArg(
-  const QString &key, 
-  const QString &type,
-  bool optional, 
-  RTVal defaultValue) 
+  RTVal defaultValue,
+  bool loggable) 
 {
   if(key.isEmpty()) 
-    printAndThrow(
-      "BaseRTValScriptableCommand::declareRTValArg, error: key not specified"
-    );
+    CommandException::CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::declareRTValArg",
+      "Key not specified  in command '" + getName() + "'");
+
+  RTValCommandManager *manager = dynamic_cast<RTValCommandManager*>(
+    CommandManager::GetCommandManager());
+
+  if(!type.isEmpty() && !manager->getClient().isValidType(type.toUtf8().constData()))
+    CommandException::CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::declareRTValArg", 
+      "Type '" + type  + "' of command '" + getName() + "' is not a valid KL type");
 
   ScriptableCommandRTValArgSpec spec;
   spec.type = type;
   spec.optional = optional;
+  spec.loggable = loggable;
   m_rtvalArgSpecs.insert(key, spec);
 
-  if(defaultValue.isValid())
+  if(!type.isEmpty() && defaultValue.isValid())
   {
     m_rtvalArgSpecs[key].defaultValue = defaultValue;
-    setRTValArg(key, defaultValue);
+
+    setRTValArg(
+      key, 
+      defaultValue);
   }
 }
- 
+
 QString BaseRTValScriptableCommand::getRTValArgType(
   const QString &key)
 {
   if(!hasArg(key)) 
-    printAndThrow(
-      std::string(
-        "BaseRTValScriptableCommand::getRTValArgType, error: no arg named " +
-        std::string(key.toUtf8().constData())
-      )
-    );
+    CommandException::CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::getRTValArgType",
+      "No arg named '" + key + "' in command '" + getName() + "'");
 
   return m_rtvalArgSpecs[key].type;
+}
+
+void BaseRTValScriptableCommand::setRTValArgType(
+  const QString &key,
+  const QString &type)
+{
+  if(!hasArg(key)) 
+  {
+    CommandException::CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::setRTValArgType",
+      "No arg named '" + key + "' in command '" + getName() + "'",
+      "",
+      PRINT);
+
+    return;
+  }
+
+  RTValCommandManager *manager = dynamic_cast<RTValCommandManager*>(
+    CommandManager::GetCommandManager());
+
+  if(!manager->getClient().isValidType(type.toUtf8().constData()))
+    CommandException::CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::setRTValArgType",
+      "Argument '" + key + "' in command '" + getName() + "' has not a valid kl type '" + type + "'");
+
+  // If the type is different, update it
+  if(m_rtvalArgSpecs[key].type != type)
+  {
+    m_rtvalArgSpecs[key].type = type;
+
+    // If the arg has been set in JSON,  
+    // construct it since we know its type
+    if(m_args.count(key) > 0)
+    {
+      RTVal rtVal = RTValUtil::forceJSONToRTVal(
+        manager->getClient(),
+        m_args[key],
+        type);
+        
+      setRTValArg(
+        key, 
+        rtVal);
+    }
+  }
 }
 
 RTVal BaseRTValScriptableCommand::getRTValArg(
   const QString &key)
 {
-  RTVal rtVal;
-
   if(!hasArg(key)) 
-    printAndThrow(
-      std::string(
-        "BaseRTValScriptableCommand::getRTValArg, error: no arg named " +
-        std::string(key.toUtf8().constData())
-      )
-    );
+    CommandException::CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::getRTValArg",
+      "No arg named '" + key + "' in command '" + getName() + "'");
 
   if(m_rtvalArgs.count(key) == 0)
   {
-    printAndThrow(
-      std::string(
-        "BaseRTValScriptableCommand::getRTValArg, error: no arg named " +
-        std::string(key.toUtf8().constData())
-      )
-    );
+    if(m_args.count(key) > 0)
+      CommandException::CommandException::PrintOrThrow(
+        "BaseRTValScriptableCommand::getRTValArg",
+          "RTVal argument '" + key + "' of command '" + getName() + 
+          "' has bot been set, but its JSON is, \n !!! use getRTValArg(key, type) instead !!!");
+
+    else
+      CommandException::CommandException::PrintOrThrow(
+        "BaseRTValScriptableCommand::getRTValArg",
+        "Argument '" + key + "' of command '" + getName() + "' has bot been set");
   }
 
-  if(m_rtvalArgs[key].isValid())
-  {
-    try
-    {
-      rtVal = Util::RTValUtil::klRTValToRTVal(
-        m_rtvalArgs[key]);
-    }
-    catch(Exception &e)
-    {
-      rtVal = m_rtvalArgs[key];
-    }
-  }
-
-  return rtVal;
+  return RTValUtil::forceToRTVal(
+      m_rtvalArgs[key]);
 }
 
 RTVal BaseRTValScriptableCommand::getRTValArg(
@@ -301,64 +302,78 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
   const QString &type)
 {
   if(!hasArg(key)) 
-    printAndThrow(
-      std::string(
-        "BaseRTValScriptableCommand::getRTValArg, error: no arg named " +
-        std::string(key.toUtf8().constData())
-      )
-    );
+    CommandException::CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::getRTValArg",
+      "No arg named '" + key + "' in command '" + getName() + "'");
 
-  RTVal rtVal;
-
-  // The RTVal is set already, get it.
-  if(m_rtvalArgs.count(key) > 0)
-    rtVal = getRTValArg(key);
-
-  // The RTVal's been set in pure JSON -> construct it.
-  else
-  {
-    rtVal = castJSONToRTVal(
-      getArg(key),
+  // The RTVal's been set in JSON -> construct it.
+  if(m_rtvalArgs.count(key) == 0) 
+    setRTValArgType(
+      key,
       type);
-   
-    setRTValArg(
-      key, 
-      rtVal);
-  }
 
-  return rtVal;
+  return getRTValArg(key);
 }
 
 void BaseRTValScriptableCommand::setRTValArg(
   const QString &key, 
-  RTVal value) 
+  RTVal rtVal) 
 {
   if(!hasArg(key)) 
-    printAndThrow(
-      std::string(
-        "BaseRTValScriptableCommand::setRTValArg, error: no arg named " +
-        std::string(key.toUtf8().constData())
-      )
-    );
+    CommandException::CommandException::PrintOrThrow(
+      "BaseRTValScriptableCommand::setRTValArg",
+      "No arg named '" + key + "' in command '" + getName() + "'");
 
   // Sets the RTVal.
-  m_rtvalArgs.insert(key, value);
+  m_rtvalArgs.insert(key, rtVal);
 
-  // Get its type.
-  try
+  // Sets its type if we doesn't know it already.
+  // It happens if the arg's been declared with an unknown type.
+  if(m_rtvalArgSpecs[key].type.isEmpty())
+    m_rtvalArgSpecs[key].type = RTValUtil::getRTValType(
+      rtVal);
+}
+
+QString BaseRTValScriptableCommand::createHelpFromArgs(
+  const QString &commandHelp,
+  const QMap<QString, QString> &argsHelp)
+{
+  QString help = commandHelp + "\n";
+
+  if(argsHelp.size() > 0)
+    help +=  "Arguments:\n";
+
+  QMapIterator<QString, QString> it(argsHelp);
+  while(it.hasNext()) 
   {
-    if(m_rtvalArgSpecs[key].type.isEmpty())
-      m_rtvalArgSpecs[key].type = value.callMethod(
-        "String",
-        "type",
-        0,
-        0).getStringCString();
+    it.next();
+    QString key = it.key();
+
+    if(!hasArg(key)) 
+      return "";
+
+    QString argHelp = it.value();
+
+    QString specs; 
+    specs += " ["; 
+    specs += m_rtvalArgSpecs[key].type; 
+
+    if( m_rtvalArgSpecs[key].optional || m_rtvalArgSpecs[key].loggable)
+    {
+      if(m_rtvalArgSpecs[key].optional)
+        specs += ", optional"; 
+
+      if(m_rtvalArgSpecs[key].loggable)
+      {
+        if(m_rtvalArgSpecs[key].optional)
+          specs += ", loggable"; 
+        specs += ", loggable"; 
+      }
+    }
+    specs += "]"; 
+     
+    help +=  "- " + key + specs + ": " + argHelp + "\n";
   }
 
-  catch(Exception &e)
-  {
-    printf(
-      "BaseRTValScriptableCommand::setRTValArg: exception: %s\n", 
-      e.getDesc_cstr());
-  }
+  return help;
 }

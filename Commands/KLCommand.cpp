@@ -49,3 +49,9 @@ QString KLCommand::getHelp()
 {
   return GetKLCommandHelp(m_klCmd);
 }
+
+QString KLCommand::getHistoryDesc() 
+{
+  return GetKLCommandHistoryDesc(
+    m_klCmd);
+}

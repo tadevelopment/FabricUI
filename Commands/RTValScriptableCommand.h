@@ -15,6 +15,9 @@ class RTValScriptableCommand
   /**
     RTValScriptableCommand complements ScriptableCommand 
     for RTVal based scriptable arguments.
+
+    C++ RTVal are generic C++ wrappers for KL objects/structure
+    that can be reprensented in a JSON format. 
   */
 
   public:
@@ -23,31 +26,29 @@ class RTValScriptableCommand
     /// Declares an argument, called from constructor.
     /// \param key Argument key
     /// \param type RTVal type 
-    /// \param optional If true, default.
-    /// \param defaultValue JSON definition of the RTVal
-    virtual void declareRTValArg( 
-      const QString &key, 
-      const QString &type,
-      bool optional, 
-      const QString &defaultValue
-      ) = 0;
-
-    /// Declares an argument, called from constructor.
-    /// \param key Argument key
-    /// \param type RTVal type 
-    /// \param optional If true, default.
+    /// \param optional If true, the arg is  optional.
     /// \param defaultValue Default value 
+    /// \param loggable If true, the arg is logged in the script-editor. 
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
       bool optional, 
-      FabricCore::RTVal defaultValue
+      FabricCore::RTVal defaultValue,
+      bool loggable
       ) = 0;
 
     /// Gets the argument rtval type.
     /// \param key Argument key
     virtual QString getRTValArgType(
       const QString &key
+      ) = 0;
+
+    /// Sets the argument type if not set.
+    /// \param key Argument key
+    /// \param type RTVal type 
+    virtual void setRTValArgType(
+      const QString &key,
+      const QString &type
       ) = 0;
 
     /// Gets an argument.

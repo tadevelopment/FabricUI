@@ -20,18 +20,8 @@ class CommandRegistry : public Util::BaseFactoryRegistry
     so commands implemented in Python can be created from C++ and vice versa.
     
     The registry sets it-self as a singleton when it's constructed:
-    - Create the singleton: CommandRegistry *cmdRegistry = new CommandRegistry();
-  
+    - Create the singleton: new CommandRegistry();
     - Get the singleton: CommandRegistry *cmdRegistry = CommandRegistry::GetCommandRegistry();
-
-    Usage:
-    - Register a command (C++): CommandFactory<CmdType>::Register(cmdName, userData);
-    
-    - Check a command is registered (Python/C++): cmdRegistry->isCommandRegistered(cmdName);
-    
-    - Get a command specs [type, implType] (Python/C++): cmdRegistry->getCommandSpecs(cmdName);
-
-    - Create a command (C++/Python): Command *cmd = cmdRegistry->createCommand(cmdName);
   */  
   Q_OBJECT
 
@@ -56,13 +46,13 @@ class CommandRegistry : public Util::BaseFactoryRegistry
       const QString &cmdName
       );
 
-    /// Checks if a command (C++, Python) 
+    /// Checks if a command (C++/Python) 
     /// has been registered under 'cmdName'.
     bool isCommandRegistered(
       const QString &cmdName
       );
 
-    /// Provides the command and implementation type (C++/Python).
+    /// Gets the command and implementation type (C++/Python).
     /// Returns an empty list if the command is not registred.
     QList<QString> getCommandSpecs(
       const QString &cmdName
@@ -105,7 +95,7 @@ class CommandRegistry : public Util::BaseFactoryRegistry
       const QString &cmdName,
       const QString &cmdType,
       const QString &implType
-    );
+      );
 
   private:
     /// Dictionaries of registered commands (Python/C++): 

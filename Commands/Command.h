@@ -125,7 +125,7 @@ class Command
     /// Gets the command name.
     virtual QString getName() = 0;
 
-    /// Checks if the command is undoable, false by default.
+    /// Checks if the command is undoable.
     virtual bool canUndo() = 0;
 
     /// Defines the command logic.
@@ -142,6 +142,10 @@ class Command
     
     /// Gets the command's help (description)
     virtual QString getHelp() = 0;
+
+    /// Gets a description of the command
+    /// to display in the history stack (if one).
+    virtual QString getHistoryDesc() = 0;
 };
 
 } // namespace Commands

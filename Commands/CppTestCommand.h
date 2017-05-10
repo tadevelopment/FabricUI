@@ -5,10 +5,9 @@
 #ifndef __UI_CPP_TEST_COMMAND_REGISTRY__
 #define __UI_CPP_TEST_COMMAND_REGISTRY__
 
-#include <QString>
-#include <FabricCore.h>
-#include "KLCommandManager.h"
+#include "CommandException.h"
 #include "KLCommandRegistry.h"
+#include "RTValCommandManager.h"
 #include "BaseScriptableCommand.h"
 
 namespace FabricUI {
@@ -25,7 +24,7 @@ class CppTestScriptableCommand : public BaseScriptableCommand
     {
       BaseScriptableCommand::declareArg(
         "arg_1",
-        false,
+        true,
         "arg_1_default_Cpp");
     }
 
@@ -75,16 +74,16 @@ class CppTestMetaCommand : public CppTestScriptableCommand
  
     virtual bool doIt()
     {
-      QMap<QString, QString> map;
-      map["arg_1"] = "string_Cpp";
+      QMap<QString, QString> args;
+      args["arg_1"] = "string_Cpp";
 
       CommandManager::GetCommandManager()->createCommand(
         "cppTestScriptableCommand", 
-        map);
+        args);
 
       CommandManager::GetCommandManager()->createCommand(
         "cppTestScriptableCommand", 
-        map);
+        args);
 
       return true;
     }
@@ -107,12 +106,12 @@ class CppToPythonTestCommand
     /// Creates C++ commands from C++.
     static void CreateCppTestCommands() 
     {
-      QMap<QString, QString> map;
-      map["arg_1"] = "string_Cpp";
+      QMap<QString, QString> args;
+      args["arg_1"] = "string_Cpp";
 
       CommandManager::GetCommandManager()->createCommand(
         "cppTestScriptableCommand", 
-        map);
+        args);
 
       CommandManager::GetCommandManager()->createCommand(
         "cppTestMetaCommand");
@@ -121,12 +120,12 @@ class CppToPythonTestCommand
     /// Creates python commands from C++.
     static void CreatePythonTestCommands() 
     {
-      QMap<QString, QString> map;
-      map["arg_1"] = "string_Cpp";
+      QMap<QString, QString> args;
+      args["arg_1"] = "string_Cpp";
 
       CommandManager::GetCommandManager()->createCommand(
         "testScriptableCommand", 
-        map);
+        args);
 
       CommandManager::GetCommandManager()->createCommand(
         "testMetaCommand");
@@ -139,7 +138,7 @@ class CppToPythonTestCommand
       try
       {
         KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
-          Commands::CommandRegistry::GetCommandRegistry());
+          CommandRegistry::GetCommandRegistry());
 
         FabricCore::RTVal CppToKLTestCommand = FabricCore::RTVal::Create(
           registry->getClient(), 
@@ -159,9 +158,11 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        printf(
-          "RegisterKLTestCommands: exception: %s\n", 
-          e.getDesc_cstr());
+        CommandException::PrintOrThrow(
+          "CppToPythonTestCommand::RegisterKLTestCommands",
+          e.getDesc_cstr(),
+          "",
+          PRINT);
       }
     }
 
@@ -171,7 +172,7 @@ class CppToPythonTestCommand
       try
       {
         KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
-          Commands::CommandRegistry::GetCommandRegistry());
+          CommandRegistry::GetCommandRegistry());
 
         FabricCore::RTVal CppToKLTestCommand = FabricCore::RTVal::Create(
           registry->getClient(), 
@@ -188,9 +189,11 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        printf(
-          "CreateKLTestCommandsInKL: exception: %s\n", 
-          e.getDesc_cstr());
+        CommandException::PrintOrThrow(
+          "CppToPythonTestCommand::CreateKLTestCommandsInKL",
+          e.getDesc_cstr(),
+          "",
+          PRINT);
       }
     }
 
@@ -199,17 +202,17 @@ class CppToPythonTestCommand
     {
       try
       {
-        KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
-          Commands::CommandManager::GetCommandManager());
+        RTValCommandManager *manager = (RTValCommandManager *)(
+          CommandManager::GetCommandManager());
 
-        manager->createCommand("klTestCommand");
-        manager->createCommand("klTestMetaCommand");
+        manager->CommandManager::createCommand("klTestCommand");
+        manager->CommandManager::createCommand("klTestMetaCommand");
  
         FabricCore::RTVal strRTVal = FabricCore::RTVal::ConstructString(
           manager->getClient(), 
           "string_Cpp");
 
-        FabricCore::RTVal floatRTVal = FabricCore::RTVal::ConstructFloat32(
+        FabricCore::RTVal floatRTVal = FabricCore::RTVal::ConstructFloat64(
           manager->getClient(), 
           4.555f);
      
@@ -217,19 +220,21 @@ class CppToPythonTestCommand
         args["arg_1"] = strRTVal;
         args["arg_2"] = floatRTVal;
 
-        manager->createRTValCommand(
+        manager->createCommand(
           "klTestScriptableCommand", 
           args);
 
-        manager->createCommand(
+        manager->CommandManager::createCommand(
           "klTestScriptableMetaCommand");
       }
 
       catch(FabricCore::Exception &e)
       {
-        printf(
-          "CreateKLTestCommands: exception: %s\n", 
-          e.getDesc_cstr());
+        CommandException::PrintOrThrow(
+          "CppToPythonTestCommand::CreateKLTestCommands",
+          e.getDesc_cstr(),
+          "",
+          PRINT);
       }
     }
 };

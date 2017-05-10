@@ -5,6 +5,7 @@
 #include "KLCommandHelpers.h"
 #include "KLCommandRegistry.h"
 #include "KLCommandManager.h"
+#include "CommandException.h"
 
 using namespace FabricCore;
 
@@ -27,8 +28,9 @@ QString GetKLCommandName(
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandHelpers::GetKLCommandName: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandHelpers::GetKLCommandName",
+      "",
       e.getDesc_cstr());
   }
 
@@ -49,8 +51,9 @@ bool CanKLCommandUndo(
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandHelpers::CanKLCommandUndo: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandHelpers::CanKLCommandUndo",
+      "",
       e.getDesc_cstr());
   }
   
@@ -60,6 +63,8 @@ bool CanKLCommandUndo(
 bool DoKLCommand( 
   RTVal klCmd) 
 { 
+  QString strError;
+
   try 
   {
     KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
@@ -78,24 +83,21 @@ bool DoKLCommand(
       2, 
       args);
     
-    QString strError = args[1].getStringCString();
-
+    strError = args[1].getStringCString();
     if(!strError.isEmpty())
-    {
-      printf(
-        "KLCommandHelpers::DoKLCommand: error: %s\n", 
-        strError.toUtf8().constData());
-
-      return false;
-    }
+      CommandException::PrintOrThrow(
+        "KLCommandHelpers::DoKLCommand",
+        strError
+        );
 
     return true;
   }
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandHelpers::DoKLCommand: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandHelpers::DoKLCommand",
+      strError,
       e.getDesc_cstr());
   }
 
@@ -104,12 +106,14 @@ bool DoKLCommand(
 
 bool UndoKLCommand() 
 { 
+  QString strError;
+
   try 
   { 
     KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
       Commands::CommandManager::GetCommandManager());
 
-    RTVal errorVal = RTVal::ConstructString(
+    RTVal valError = RTVal::ConstructString(
       manager->getClient(), 
       "");
 
@@ -117,13 +121,15 @@ bool UndoKLCommand()
       "Boolean", 
       "undoCommand", 
       1, 
-      &errorVal).getBoolean();
-
-    if(!res)
+      &valError).getBoolean();
+    
+    strError = valError.getStringCString();
+    if(!res || !strError.isEmpty())
     {
-      printf(
-        "KLCommandHelpers::UndoKLCommand: error: %s\n", 
-        errorVal.getStringCString());
+      CommandException::PrintOrThrow(
+        "KLCommandHelpers::UndoKLCommand",
+        strError
+        );
 
       return false;
     }
@@ -133,8 +139,9 @@ bool UndoKLCommand()
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandHelpers::UndoKLCommand: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandHelpers::UndoKLCommand",
+      strError,
       e.getDesc_cstr());
   }
 
@@ -143,12 +150,14 @@ bool UndoKLCommand()
 
 bool RedoKLCommand() 
 {  
+  QString strError;
+
   try 
   {
     KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
       Commands::CommandManager::GetCommandManager());
     
-    RTVal errorVal = RTVal::ConstructString(
+    RTVal valError = RTVal::ConstructString(
       manager->getClient(), 
       "");
 
@@ -156,13 +165,15 @@ bool RedoKLCommand()
       "Boolean", 
       "redoCommand", 
       1, 
-      &errorVal).getBoolean();
+      &valError).getBoolean();
 
-    if(!res)
+    strError = valError.getStringCString();
+    if(!res || !strError.isEmpty())
     {
-      printf(
-        "KLCommandHelpers::RedoKLCommand: error: %s\n", 
-        errorVal.getStringCString());
+      CommandException::PrintOrThrow(
+        "KLCommandHelpers::RedoKLCommand",
+        strError
+        );
 
       return false;      
     }
@@ -172,8 +183,9 @@ bool RedoKLCommand()
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandHelpers::RedoKLCommand: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandHelpers::RedoKLCommand",
+      strError,
       e.getDesc_cstr());
   }
   
@@ -194,8 +206,32 @@ QString GetKLCommandHelp(
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandHelpers::GetKLCommandHelp: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandHelpers::GetKLCommandHelp",
+      "",
+      e.getDesc_cstr());
+  }
+
+  return "";
+}
+
+QString GetKLCommandHistoryDesc(
+  RTVal klCmd) 
+{
+  try 
+  {
+    return klCmd.callMethod(
+      "String", 
+      "getHistoryDesc", 
+      0, 
+      0).getStringCString();
+  }
+
+  catch(Exception &e)
+  {
+    CommandException::PrintOrThrow(
+      "KLCommandHelpers::GetKLCommandHistoryDesc",
+      "",
       e.getDesc_cstr());
   }
 

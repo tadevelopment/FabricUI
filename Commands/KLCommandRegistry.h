@@ -47,7 +47,7 @@ class KLCommandRegistry : public CommandRegistry
     /// Allows to create KL command from C++/Python.
     void synchronizeKL();
     
-  private:
+  protected:
     /// Implementation of CommandRegistry.
     /// Registers the commands as a KL AppCommand in  
     /// the KL registry so it can be called from KL.
@@ -55,8 +55,9 @@ class KLCommandRegistry : public CommandRegistry
       const QString &cmdName,
       const QString &cmdType,
       const QString &implType
-    );
+      );
 
+  private:
     /// Registers a KL command so it can be created from C++/Python
     /// Automatically called when synchronizing the registries.
     void registerKLCommand(

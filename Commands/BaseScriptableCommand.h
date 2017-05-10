@@ -18,12 +18,10 @@ class BaseScriptableCommand
 {
   /**
     BaseScriptableCommand is a base implementation of ScriptableCommand.
-    New scriptable commands can inheritated this class.
+    New scriptable commands can inheritated this class. 
 
-    C++ interfaces cannot be wrapped in pyhton by shiboken.
-    If you want your command to be accessible from python,
-    it must derived from this class.
-
+    C++ interfaces cannot be wrapped in python by shiboken. New commands
+    must specialize this class to be accessible from python.
   */
 
   public:
@@ -34,8 +32,9 @@ class BaseScriptableCommand
     /// Implementation of ScriptableCommand.
     virtual void declareArg( 
       const QString &key, 
-      bool optional = true, 
-      const QString &defaultValue = QString()
+      bool optional = false, 
+      const QString &defaultValue = QString(),
+      bool loggable = true
       );
 
     /// Implementation of ScriptableCommand.
@@ -44,7 +43,22 @@ class BaseScriptableCommand
       );
 
     /// Implementation of ScriptableCommand.
+    virtual bool isArgOptional(
+      const QString &key 
+      );
+
+    /// Implementation of ScriptableCommand.
+    virtual bool isArgLoggable(
+      const QString &key 
+      );
+
+    /// Implementation of ScriptableCommand.
     virtual QList<QString> getArgKeys();
+
+    /// Implementation of ScriptableCommand.
+    virtual bool isArgSet(
+      const QString &key
+      );
 
     /// Implementation of ScriptableCommand.
     virtual QString getArg( 
@@ -53,7 +67,7 @@ class BaseScriptableCommand
  
     /// Implementation of ScriptableCommand.
     /// Throws an error if the key is empty 
-    /// or has't been declared.
+    /// or hasn't been declared.
     virtual void setArg(
       const QString &key, 
       const QString &value
@@ -64,22 +78,40 @@ class BaseScriptableCommand
     virtual void validateSetArgs();
 
     /// Implementation of ScriptableCommand.
+    /// Command name + list of all the arguments.
     virtual QString getArgsDescription();
-
+    
     /// List of arguments {argName, argValue}
     QMap<QString, QString> m_args;
     
+  protected:
+    /// Helper to create the command's helps
+    /// from a subsets of arguments.
+    /// \param commandHelp The main help text.
+    /// \param argsHelp Map of [arg, arg help]
+    virtual QString createHelpFromArgs(
+      const QString &commandHelp,
+      const QMap<QString, QString> &argsHelp
+      );
+
+    /// Helper to create the command's desc
+    /// from a subsets of arguments.
+    /// \param argsHelp Map of [arg, arg desc]
+    QString createHistoryDescFromArgs(
+      const QMap<QString, QString> &argsDesc
+      );
+
   private:    
     /// Defines the arguments specs:
-    /// default value, optional
+    /// default value, optional, loggable
     struct ScriptableCommandArgSpec 
     {
-      QString type;
       bool optional;
+      bool loggable;  
       QString defaultValue;
     };
 
-    /// List of arguments specs {argName, {defaultValue, optional}}
+    /// List of arguments specs {argName, spec}
     QMap<QString, ScriptableCommandArgSpec> m_argSpecs;
 };
 

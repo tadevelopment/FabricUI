@@ -5,8 +5,8 @@
 #ifndef __UI_KL_COMMAND__
 #define __UI_KL_COMMAND__
 
-#include "BaseCommand.h"
 #include <FabricCore.h>
+#include "BaseCommand.h"
 
 namespace FabricUI {
 namespace Commands {
@@ -90,6 +90,9 @@ class KLCommand : public BaseCommand
 
     /// Implementation of Command.
     virtual QString getHelp();
+
+    /// Implementation of Command.
+    virtual QString getHistoryDesc();
 
   private:
     /// KL Command

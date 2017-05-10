@@ -16,9 +16,8 @@ class BaseCommand : public Command
     BaseCommand is a default implementation of Command.
     New commands can inheritated this class.
 
-    C++ interfaces cannot be wrapped in pyhton by shiboken.
-    If you want your command to be accessible from python,
-    it must derived from this class.
+    C++ interfaces cannot be wrapped in python by shiboken. New commands
+    must specialize this class to be accessible from python.
   */
 
   public:
@@ -26,7 +25,8 @@ class BaseCommand : public Command
 
     virtual ~BaseCommand();
 
-    /// Implementation of Command.
+    /// Default implementation of Command.
+    /// Sets the command name.
     virtual void registrationCallback(
       const QString &name, 
       void *userData
@@ -35,20 +35,29 @@ class BaseCommand : public Command
     /// Implementation of Command.
     virtual QString getName();
 
-    /// Implementation of Command, false by default.
+    /// Default implementation of Command, 
+    /// returns false.
     virtual bool canUndo();
 
-    /// Implementation of Command, false by default.
+    /// Default implementation of Command, 
+    /// returns false.
     virtual bool doIt();
 
-    /// Implementation of Command, false by default.
+    /// Default implementation of Command, 
+    /// returns false.
     virtual bool undoIt();
 
-    /// Implementation of Command, false by default.
+    /// Default implementation of Command, 
+    /// returns false.
     virtual bool redoIt();
     
-    /// Implementation of Command, returns an empty string 
+    /// Default implementation of Command, 
+    /// returns an empty string 
     virtual QString getHelp();
+
+    /// Default implementation of Command, 
+    /// returns the commande name. 
+    virtual QString getHistoryDesc();
 
   private:
     /// Name of the command.

@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandHelpers.h"
+#include "CommandException.h"
 #include "KLCommandHelpers.h"
 #include "KLCommandRegistry.h"
 #include "KLScriptableCommand.h"
@@ -36,12 +36,13 @@ bool KLScriptableCommand::canUndo()
 
 bool KLScriptableCommand::doIt() 
 { 
-  return DoKLCommand(
-    m_klCmd.callMethod(
-      "Command", 
-      "getAsCommand", 
-      0, 
-      0));
+  RTVal cmd = RTVal::Construct(
+    m_klCmd.getContext(),
+    "Command",
+    1,
+    &m_klCmd);
+  
+  return DoKLCommand(cmd);
 }
 
 bool KLScriptableCommand::undoIt() 
@@ -56,14 +57,22 @@ bool KLScriptableCommand::redoIt()
 
 QString KLScriptableCommand::getHelp() 
 {
-  return GetKLCommandHelp(m_klCmd);
+  return GetKLCommandHelp(
+    m_klCmd);
+}
+
+QString KLScriptableCommand::getHistoryDesc() 
+{
+  return GetKLCommandHistoryDesc(
+    m_klCmd);
 }
 
 // ScriptableCommand
 void KLScriptableCommand::declareArg( 
   const QString &key, 
   bool optional, 
-  const QString &defaultValue)
+  const QString &defaultValue,
+  bool loggable)
 {
   // Do nothing.
 }
@@ -75,7 +84,7 @@ bool KLScriptableCommand::hasArg(
 
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
+    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
       Commands::CommandRegistry::GetCommandRegistry());
 
     RTVal keyVal = RTVal::ConstructString(
@@ -92,12 +101,121 @@ bool KLScriptableCommand::hasArg(
 
   catch(Exception &e)
   {
-    printf(
-      "KLScriptableCommand::hasArg: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::hasArg", 
+      "",
+      e.getDesc_cstr(),
+      PRINT | THROW);
   }
 
   return res;
+}
+
+bool KLScriptableCommand::isArgOptional(
+  const QString &key) 
+{
+  bool res = false;
+
+  try 
+  {
+    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
+      Commands::CommandRegistry::GetCommandRegistry());
+
+    RTVal keyVal = RTVal::ConstructString(
+      registry->getClient(), 
+      key.toUtf8().constData());
+
+    res = m_klCmd.callMethod(
+      "Boolean",
+      "isArgOptional",
+      1,
+      &keyVal
+      ).getBoolean();
+  }
+
+  catch(Exception &e)
+  {
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::isArgOptional", 
+      "",
+      e.getDesc_cstr(),
+      PRINT | THROW);
+  }
+
+  return res;
+}
+
+bool KLScriptableCommand::isArgLoggable(
+  const QString &key) 
+{
+  bool res = false;
+
+  try 
+  {
+    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
+      Commands::CommandRegistry::GetCommandRegistry());
+
+    RTVal keyVal = RTVal::ConstructString(
+      registry->getClient(), 
+      key.toUtf8().constData());
+
+    res = m_klCmd.callMethod(
+      "Boolean",
+      "isArgLoggable",
+      1,
+      &keyVal
+      ).getBoolean();
+  }
+
+  catch(Exception &e)
+  {
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::isArgLoggable", 
+      "",
+      e.getDesc_cstr(),
+      PRINT | THROW);
+  }
+
+  return res;
+}
+
+QList<QString> KLScriptableCommand::getArgKeys()
+{
+  QList<QString> keys;
+
+  try 
+  {
+    RTVal args = m_klCmd.callMethod(
+      "RTVal[String]", 
+      "getArgs", 
+      0, 0);
+
+    RTVal rtvalKeys = args.getDictKeys();
+    for (unsigned i = 0; i < rtvalKeys.getArraySize(); i++) 
+    {
+      QString key = rtvalKeys.getArrayElementRef(
+        i).getStringCString(); 
+
+      keys.append(key);
+    }
+  }
+
+  catch(Exception &e)
+  {
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::getArgKeys", 
+      "",
+      e.getDesc_cstr(),
+      PRINT | THROW);
+  }
+  
+  return keys;
+}
+
+bool KLScriptableCommand::isArgSet(
+  const QString &key)
+{
+  return true;
 }
 
 QString KLScriptableCommand::getArg(
@@ -115,7 +233,7 @@ void KLScriptableCommand::setArg(
 {
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
+    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
       Commands::CommandRegistry::GetCommandRegistry());
 
     // Get the argument from its JSON description.
@@ -129,49 +247,12 @@ void KLScriptableCommand::setArg(
 
   catch(Exception &e)
   {
-    printf(
-      "KLScriptableCommand::setArg: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::setArg",
+      e.getDesc_cstr(),
+      "",
+      PRINT | THROW);
   }
-}
-
-QList<QString> KLScriptableCommand::getArgKeys()
-{
-  QList<QString> keys;
-
-  try 
-  {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
-      Commands::CommandRegistry::GetCommandRegistry());
-
-    RTVal errorVal = RTVal::ConstructString(
-      registry->getClient(), 
-      "");
-
-    RTVal args = m_klCmd.callMethod(
-      "", 
-      "getArgs", 
-      0, 
-      0);
-
-    RTVal rtvalKeys = args.getDictKeys();
-    for (unsigned i = 0; i < rtvalKeys.getArraySize(); i++) 
-    {
-      QString key = rtvalKeys.getArrayElementRef(
-        i).getStringCString(); 
-
-      keys.append(key);
-    }
-  }
-
-  catch(Exception &e)
-  {
-    printf(
-      "KLScriptableCommand::getArgKeys: exception: %s\n", 
-      e.getDesc_cstr());
-  }
-  
-  return keys;
 }
 
 void KLScriptableCommand::validateSetArgs()
@@ -180,7 +261,7 @@ void KLScriptableCommand::validateSetArgs()
 
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
+    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
       Commands::CommandRegistry::GetCommandRegistry());
 
     RTVal errorVal = RTVal::ConstructString(
@@ -198,15 +279,19 @@ void KLScriptableCommand::validateSetArgs()
 
   catch(Exception &e)
   {
-    printf(
-      "KLScriptableCommand::validateSetArgs: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::validateSetArgs", 
+      "",
+      e.getDesc_cstr(),
+      PRINT | THROW);
   }
   
   if(!strError.isEmpty())
-     printAndThrow(
-      strError.toUtf8().constData()
-    );
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::validateSetArgs",
+      "",
+      strError,
+      PRINT | THROW);
 }
 
 QString KLScriptableCommand::getArgsDescription() 
@@ -222,9 +307,11 @@ QString KLScriptableCommand::getArgsDescription()
 
   catch(Exception &e)
   {
-    printf(
-      "KLScriptableCommand::getArgsDescription: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::getArgsDescription", 
+      "",
+      e.getDesc_cstr(),
+      PRINT | THROW);
   }
 
   return "";
@@ -235,16 +322,8 @@ void KLScriptableCommand::declareRTValArg(
   const QString &key, 
   const QString &type,
   bool optional, 
-  const QString &defaultValue)
-{
-  // Do nothing.
-}
-
-void KLScriptableCommand::declareRTValArg( 
-  const QString &key, 
-  const QString &type,
-  bool optional, 
-  FabricCore::RTVal defaultValue)
+  FabricCore::RTVal defaultValue,
+  bool loggable)
 {
   // Do nothing.
 }
@@ -256,7 +335,7 @@ QString KLScriptableCommand::getRTValArgType(
 
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
+    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
       Commands::CommandRegistry::GetCommandRegistry());
 
     RTVal keyVal = RTVal::ConstructString(
@@ -273,30 +352,38 @@ QString KLScriptableCommand::getRTValArgType(
 
   catch(Exception &e)
   {
-    printf(
-      "KLScriptableCommand::getRTValArgType: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::getRTValArgType", 
+      "",
+      e.getDesc_cstr(),
+      PRINT | THROW);
   }
   
   return res;
+}
+
+void KLScriptableCommand::setRTValArgType(
+  const QString &key,
+  const QString &type)
+{
+  // Do nothing
 }
 
 RTVal KLScriptableCommand::getRTValArg(
   const QString &key)
 {
   if(!hasArg(key)) 
-    printAndThrow(
-      std::string(
-        "KLScriptableCommand::getRTValArg, error: no arg named " +
-        std::string(key.toUtf8().constData())
-      )
-    );
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::getRTValArgType",
+      "No arg named '" + key + "' in command '" + getName() + "'",
+      "",
+      PRINT | THROW);
 
   RTVal res;
 
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
+    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
       Commands::CommandRegistry::GetCommandRegistry());
 
     RTVal keyVal = RTVal::ConstructString(
@@ -312,9 +399,11 @@ RTVal KLScriptableCommand::getRTValArg(
 
   catch(Exception &e)
   {
-    printf(
-      "KLScriptableCommand::getRTValArg: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::getRTValArg",
+      "",
+      e.getDesc_cstr(),
+      PRINT | THROW);
   }
   
   return res;
@@ -332,18 +421,17 @@ void KLScriptableCommand::setRTValArg(
   FabricCore::RTVal value)
 {
   if(!hasArg(key)) 
-    printAndThrow(
-      std::string(
-        "KLScriptableCommand::setRTValArg, error: no arg named " +
-        std::string(key.toUtf8().constData())
-      )
-    );
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::setRTValArg",
+      "No arg named '" + key + "' in command '" + getName() + "'",
+      "",
+      PRINT | THROW);
 
   QString strError;
 
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
+    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
       Commands::CommandRegistry::GetCommandRegistry());
     
     RTVal keyVal = RTVal::ConstructString(
@@ -367,17 +455,20 @@ void KLScriptableCommand::setRTValArg(
 
     // Gets possible KL errors.
     strError = args[2].getStringCString();
+    if(!strError.isEmpty())
+      CommandException::PrintOrThrow(
+        "KLScriptableCommand::setRTValArg",
+        "",
+        strError,
+        PRINT | THROW);
   }
 
   catch(Exception &e)
   {
-    printf(
-      "KLScriptableCommand::setRTValArg: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow(
+      "KLScriptableCommand::setRTValArg",
+      strError,
+      e.getDesc_cstr(),
+      PRINT | THROW);
   }
-
-  if(!strError.isEmpty())
-    printAndThrow(
-      strError.toUtf8().constData()
-    );
 }

@@ -18,11 +18,15 @@ class BaseRTValScriptableCommand
 {
   /**
     BaseRTValScriptableCommand is a base implementation of RTValScriptableCommand.
-    New rtval scriptable commands can inheritated this class.
+    New RTVal scriptable commands can specialize this class.
+      
+    Because RTVal can be represented as JSON (string), JSON can be used to set
+    an argument. We use this feature if the type of the RTVal is not known
+    when the argument is declared and the command is executed from the script-
+    editor.  
 
-    C++ interfaces cannot be wrapped in pyhton by shiboken.
-    If you want your command to be accessible from python,
-    it must derived from this class.
+    C++ interfaces cannot be wrapped in python by shiboken. New commands
+    must specialize this class to be accessible from python.
   */
 
   public:
@@ -31,10 +35,14 @@ class BaseRTValScriptableCommand
     virtual ~BaseRTValScriptableCommand();
     
     /// Implementation of ScriptableCommand.
+    /// Declares an arg. of unknown RTVal type.
+    /// The parameter 'defaultValue' does nothing.
+    /// To set the argument as JSON, use `setArg`.
     virtual void declareArg( 
       const QString &key, 
-      bool optional = true, 
-      const QString &defaultValue = QString()
+      bool optional = false, 
+      const QString &defaultValue = QString(),
+      bool loggable = true
       );
 
     /// Implementation of ScriptableCommand.
@@ -43,22 +51,43 @@ class BaseRTValScriptableCommand
       );
 
     /// Implementation of ScriptableCommand.
+    virtual bool isArgOptional(
+      const QString &key 
+      );
+
+    /// Implementation of ScriptableCommand.
+    virtual bool isArgLoggable(
+      const QString &key 
+      );
+
+    /// Implementation of ScriptableCommand.
     virtual QList<QString> getArgKeys();
 
     /// Implementation of ScriptableCommand.
+    virtual bool isArgSet(
+      const QString &key
+      );
+    
+    /// Implementation of ScriptableCommand.
+    /// Gets the JSON representation of the arg.
     virtual QString getArg( 
       const QString &key 
       );
  
     /// Implementation of ScriptableCommand.
-    /// Throws an error if the key is empty 
-    /// or has't been declared.
+    /// Sets a JSON representation of the arg.
+    /// To use when the RTVal type of the arg
+    /// is unknown (e.g set from the script-editor).
+    /// Throws an error if the key is empty or 
+    /// hasn't been declared.
     virtual void setArg(
       const QString &key, 
       const QString &value
       );
 
     /// Implementation of ScriptableCommand.
+    /// Validates that the args've been set
+    /// either as RTVal or as JSON.
     /// Throws an error if not valid.
     virtual void validateSetArgs();
 
@@ -66,19 +95,13 @@ class BaseRTValScriptableCommand
     virtual QString getArgsDescription();
 
     /// Implementation of RTValScriptableCommand.
+    /// Declares an argument of known RTVal type.
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
-      bool optional = true, 
-      const QString &defaultValue = QString()
-      );
-
-    /// Implementation of RTValScriptableCommand.
-    virtual void declareRTValArg( 
-      const QString &key, 
-      const QString &type,
-      bool optional, 
-      FabricCore::RTVal defaultValue
+      bool optional = false, 
+      FabricCore::RTVal defaultValue = FabricCore::RTVal(),
+      bool loggable = true
       );
 
     /// Implementation of RTValScriptableCommand.
@@ -87,11 +110,21 @@ class BaseRTValScriptableCommand
       );
 
     /// Implementation of RTValScriptableCommand.
+    /// To use with unknown type argument. The RTVal 
+    /// is constructed from the JSON and the type
+    virtual void setRTValArgType(
+      const QString &key,
+      const QString &type
+      );
+
+    /// Implementation of RTValScriptableCommand.
     virtual FabricCore::RTVal getRTValArg( 
       const QString &key 
       );
 
     /// Implementation of RTValScriptableCommand.
+    /// To use with unknown type argument. The RTVal 
+    /// is constructed from the JSON and the type
     virtual FabricCore::RTVal getRTValArg( 
       const QString &key,
       const QString &type
@@ -103,19 +136,27 @@ class BaseRTValScriptableCommand
       FabricCore::RTVal value
       );
 
+  protected:
+    /// Implementation of BaseScriptableCommand.
+    virtual QString createHelpFromArgs(
+      const QString &commandHelp,
+      const QMap<QString, QString> &argsHelp
+      );
+
   private:    
     /// Defines the arguments specs:
-    /// type, default value, optional
+    /// type, default value, optional, loggable
     struct ScriptableCommandRTValArgSpec 
     {
       QString type;
       bool optional;
+      bool loggable;  
       FabricCore::RTVal defaultValue;
     };
 
     /// List of arguments {argName, argValue}
     QMap<QString, FabricCore::RTVal> m_rtvalArgs;
-    /// List of arguments specs {argName, {defaultValue, optional}}
+    /// List of arguments specs {argName, spec}
     QMap<QString, ScriptableCommandRTValArgSpec> m_rtvalArgSpecs;
 };
 

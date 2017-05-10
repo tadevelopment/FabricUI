@@ -2,8 +2,9 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandHelpers.h"
+#include "CommandException.h"
 #include "CommandRegistry.h"
+#include <FabricUI/Util/TypeInfo.h>
 
 using namespace FabricUI;
 using namespace Commands;
@@ -16,7 +17,10 @@ CommandRegistry::CommandRegistry()
   : Util::BaseFactoryRegistry()
 {
   if(s_instanceFlag)
-    printAndThrow("CommandRegistry::CommandRegistry, singleton has already been created");
+    CommandException::PrintOrThrow(
+      "CommandRegistry::CommandRegistry",
+      "singleton has already been created"
+      );
    
   COMMAND_CPP = "CPP";
  
@@ -34,9 +38,10 @@ CommandRegistry::~CommandRegistry()
 CommandRegistry* CommandRegistry::GetCommandRegistry()
 {
   if(!s_instanceFlag)
-    printAndThrow(
-      "CommandRegistry::CommandRegistry, the registry is null"
-    );
+    CommandException::PrintOrThrow(
+      "CommandRegistry::GetCommandRegistry",
+      "the registry is null"
+      );
 
   return s_cmdRegistry;
 }
@@ -53,18 +58,12 @@ void CommandRegistry::registerFactory(
   if(!isCommandRegistered(name))
   {
     Util::BaseFactoryRegistry::registerFactory(name, factory);
- 
-    // Get the name of the cmd class.
-    // --> FactoryClassName<CmdClassName>
-    QString factoryName = Util::type(
-      *factory);
-    
-    QString cmdClassName = parseTemplateCppType(
-      factoryName);
 
     commandIsRegistered(
       name,
-      cmdClassName,
+      // Get the name of the cmd class.
+      // --> FactoryClassName<CmdClassName>
+      Util::GetTemplateClassType(*factory),
       COMMAND_CPP);
   }
 }
@@ -85,12 +84,10 @@ QList<QString> CommandRegistry::getCommandSpecs(
   const QString &cmdName) 
 {
   if(!isCommandRegistered(cmdName))
-    printAndThrow( 
-      QString(
-        "CommandRegistry::getCommandSpecs, cannot create command '" + 
-        cmdName + "', it's not registered"
-      ).toUtf8().constData() 
-    );
+    CommandException::PrintOrThrow( 
+      "CommandRegistry::getCommandSpecs",
+      "cannot create command '" + cmdName + "', it's not registered"
+      );
 
   return m_cmdSpecs[cmdName];
 }
@@ -99,36 +96,45 @@ Command* CommandRegistry::createCommand(
   const QString &cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
-    printAndThrow( 
-      QString(
-        "CommandRegistry::createCommand, cannot create command '" + 
-        cmdName + "', it's not registered"
-      ).toUtf8().constData() 
-    );
-
-  QList<QString> spec = getCommandSpecs(cmdName);
-  
-  if(spec[1] == COMMAND_CPP) 
-  {
-    Factory *factory = Util::BaseFactoryRegistry::getFactory(
-      cmdName);
-
-    Command* cmd = (Command*)factory->create(); 
- 
-    if(cmd == 0)
-      printAndThrow(
-        "CommandRegistry::createCppCommand, resulting command is null" 
+    CommandException::PrintOrThrow( 
+      "CommandRegistry::createCommand",
+      "cannot create command '" + cmdName + "', it's not registered"
       );
-  
-    void *userData = factory->getUserData();
-  
-    cmd->registrationCallback(
-      cmdName,
-      userData);
 
-    return cmd;
+  try
+  {
+    QList<QString> spec = getCommandSpecs(cmdName);
+    
+    if(spec[1] == COMMAND_CPP) 
+    {
+      Factory *factory = Util::BaseFactoryRegistry::getFactory(
+        cmdName);
+
+      Command* cmd = (Command*)factory->create(); 
+      if(cmd == 0)
+        CommandException::PrintOrThrow(
+          "CommandRegistry::createCommand",
+          "resulting command is null" 
+          );
+
+      void *userData = factory->getUserData();
+    
+      cmd->registrationCallback(
+        cmdName,
+        userData);
+
+      return cmd;
+    }
   }
-
+    
+  catch(CommandException &e) 
+  {
+    CommandException::PrintOrThrow(
+      "CommandRegistry::createCommand",
+      e.what()
+      );
+  }
+ 
   return 0;
 }
 

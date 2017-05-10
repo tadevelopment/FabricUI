@@ -51,3 +51,8 @@ QString BaseCommand::getHelp()
 {
   return "";
 }
+
+QString BaseCommand::getHistoryDesc() 
+{
+  return getName();
+}

@@ -5,6 +5,7 @@
 #ifndef __UI_KL_COMMAND_REGISTRY_PYTHON__
 #define __UI_KL_COMMAND_REGISTRY_PYTHON__
 
+#include <QPair>
 #include "BaseCommand.h"
 #include "KLCommandRegistry.h"
 
@@ -31,18 +32,49 @@ class KLCommandRegistry_Python : public KLCommandRegistry
     virtual ~KLCommandRegistry_Python();
 
   protected:
+    // Python -> C++
+
     /// Wraps CommandRegistry::createCommand.
-    /// To override in Python
-    virtual BaseCommand* _createCommand_Python(
+    /// Propagates the C++ exception in python.
+    /// To override in Python.
+    virtual QPair<QString, BaseCommand*> _createCommand_Python(
       const QString &cmdName
       );
 
+    /// Wraps CommandRegistry::commandIsRegistered.
+    /// Propagates the C++ exception in python.
+    /// To override in Python.
+    virtual QString _commandIsRegistered_Python(
+      const QString &cmdName,
+      const QString &cmdType,
+      const QString &implType
+      );
+
+    /// Wraps KLCommandRegistry::synchronizeKL.
+    /// Propagates the C++ exception in python.
+    /// To override in Python.
+    virtual QString _synchronizeKL_Python();
+
   private:
+    // C++ -> Python
+
     /// Implementation of CommandRegistry, 
-    /// calls the Python version.
+    /// calls _createCommand_Python.
     virtual Command* createCommand(
       const QString &cmdName
       );
+
+    /// Implementation of CommandRegistry, 
+    /// calls _commandIsRegistered_Python.
+    virtual void commandIsRegistered(
+      const QString &cmdName,
+      const QString &cmdType,
+      const QString &implType
+      );
+
+    /// Implementation of KLCommandRegistry.
+    /// calls _synchronizeKL_Python.
+    virtual void synchronizeKL();
 };
 
 } // namespace Commands

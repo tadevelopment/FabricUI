@@ -121,12 +121,24 @@ class KLScriptableCommand
     /// Implementation of Command.
     virtual QString getHelp();
 
+    /// Implementation of Command.
+    virtual QString getHistoryDesc();
+
     /// Implementation of ScriptableCommand.
     /// Does nothing, the arg is set in KL.
     virtual void declareArg( 
       const QString &key, 
-      bool optional = true, 
-      const QString &defaultValue = QString()
+      bool optional, 
+      const QString &defaultValue,
+      bool loggable = false
+      );
+
+    /// Implementation of ScriptableCommand.
+    virtual QList<QString> getArgKeys();
+
+    /// Implementation of ScriptableCommand.
+    virtual bool isArgSet(
+      const QString &key
       );
 
     /// Implementation of ScriptableCommand.
@@ -134,6 +146,16 @@ class KLScriptableCommand
       const QString &key 
       );
     
+    /// Implementation of ScriptableCommand.
+    virtual bool isArgOptional(
+      const QString &key 
+      );
+
+    /// Implementation of ScriptableCommand.
+    virtual bool isArgLoggable(
+      const QString &key 
+      );
+
     /// Implementation of ScriptableCommand.
     /// Gets the RTVal JSON representation.
     virtual QString getArg( 
@@ -148,9 +170,6 @@ class KLScriptableCommand
       );
 
     /// Implementation of ScriptableCommand.
-    virtual QList<QString> getArgKeys();
-
-    /// Implementation of ScriptableCommand.
     virtual void validateSetArgs();
 
     /// Implementation of ScriptableCommand.
@@ -161,22 +180,21 @@ class KLScriptableCommand
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
-      bool optional = true, 
-      const QString &defaultValue = QString()
-      );
-
-    /// Implementation of RTValScriptableCommand.
-    /// Does nothing, the arg is set in KL.
-    virtual void declareRTValArg( 
-      const QString &key, 
-      const QString &type,
       bool optional, 
-      FabricCore::RTVal defaultValue
+      FabricCore::RTVal defaultValue,
+      bool loggable = false
       );
 
     /// Implementation of RTValScriptableCommand.
     virtual QString getRTValArgType(
       const QString &key
+      );
+
+    /// Implementation of RTValScriptableCommand.
+    /// Does nothing, the arg is set in KL.
+    virtual void setRTValArgType(
+      const QString &key,
+      const QString &type
       );
     
     /// Implementation of RTValScriptableCommand.

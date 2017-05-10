@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandHelpers.h"
+#include "CommandException.h"
 #include "CommandRegistry.h"
 #include "RTValCommandManager.h"
 #include "ScriptableCommand.h"
@@ -28,7 +28,7 @@ FabricCore::Client RTValCommandManager::getClient()
   return m_client;
 }
 
-Command* RTValCommandManager::createRTValCommand(
+Command* RTValCommandManager::createCommand(
   const QString &cmdName, 
   const QMap<QString, RTVal> &args, 
   bool doCmd)
@@ -39,7 +39,7 @@ Command* RTValCommandManager::createRTValCommand(
       cmdName);
     
     if(args.size() > 0) 
-      checkRTValCommandArgs(cmd, args);
+      checkCommandArgs(cmd, args);
 
     if(doCmd) 
       doCommand(cmd);
@@ -47,33 +47,58 @@ Command* RTValCommandManager::createRTValCommand(
     return cmd;
   }
 
-  catch(std::string &e) 
+  catch(CommandException &e) 
   {
-    printAndThrow(
-      QString(
-        "RTValCommandManager::createRTValCommand, error: Cannot create command '" + 
-        cmdName + "', " + 
-        QString(e.c_str())
-      ).toUtf8().constData()
-    );
+    CommandException::PrintOrThrow(
+      "RTValCommandManager::createCommand",
+      "Cannot create command '" + cmdName + "'",
+      e.what()
+      );
+  }
+
+  catch(Exception &e) 
+  {
+    CommandException::PrintOrThrow(
+      "RTValCommandManager::createCommand",
+      "Cannot create command '" + cmdName + "'",
+      e.getDesc_cstr()
+      );
   }
 
   return 0;
 }
 
-void RTValCommandManager::checkRTValCommandArgs(
+void RTValCommandManager::doCommand(
+  Command *cmd) 
+{
+  try
+  {
+    CommandManager::doCommand(
+      cmd);
+  }
+   
+  catch(Exception &e) 
+  {
+    cleanupUnfinishedCommandsAndThrow(
+      cmd,
+      e.getDesc_cstr()
+      );
+  }
+}
+
+void RTValCommandManager::checkCommandArgs(
   Command *cmd,
   const QMap<QString, RTVal> &args)
 { 
   RTValScriptableCommand* rtvalScriptCommand = dynamic_cast<RTValScriptableCommand*>(cmd);
   
   if(!rtvalScriptCommand) 
-    printAndThrow(
-      QString(
-        "RTValCommandManager::checkRTValCommandArgs, command '" + cmd->getName() + 
-        "' is created with args, but is not implementing the RTValScriptableCommand interface"
-      ).toUtf8().constData() 
-    );
+    CommandException::PrintOrThrow(
+      "RTValCommandManager::checkCommandArgs",
+
+      "Command '" + cmd->getName() + "' is created with args, " + 
+      "but is not implementing the RTValScriptableCommand interface"
+      );
 
   // Sets the rtval args
   QMapIterator<QString, RTVal> ite(args);

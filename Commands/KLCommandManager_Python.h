@@ -5,7 +5,7 @@
 #ifndef __UI_KL_COMMAND_MANAGER_PYTHON__
 #define __UI_KL_COMMAND_MANAGER_PYTHON__
 
-#include <QMap>
+#include <QPair>
 #include "BaseCommand.h"
 #include "KLCommandManager.h"
 
@@ -17,10 +17,10 @@ class KLCommandManager_Python : public KLCommandManager
   /**
     Pyside/shiboken doesn't propagate C++ exceptions to Python, cf. https://bugreports.qt.io/browse/PYSIDE-62.
     KLCommandManager_Python "wraps" methods of KLCommandManager throwing C++ exceptions called from Python.
-    The exceptions are catched and returned as strings ao they can be raised in Python.   
+    The exceptions are catched and returned as strings so they can be raised in Python.   
 
-    In addition, it 'redirects' methods of KLCommandManager that expose the 'Command' interfaces because C++ 
-    interfaces cannot be wrapped in pyhton by shiboken.
+    In addition, KLCommandManager_Python 'redirects' methods of KLCommandManager that expose the 'Command' 
+    interfaces because C++ interfaces cannot be wrapped in pyhton by shiboken.
   */
   Q_OBJECT
   
@@ -32,120 +32,157 @@ class KLCommandManager_Python : public KLCommandManager
     virtual ~KLCommandManager_Python();
 
   protected:
+    // Python -> C++
+
     /// Gets the total number of commands
     /// (low+top) at the current index.
     /// Used by the python command manager.
     int _totalCountAtStackIndex();
 
-    /// Wraps CommandManager::doCommand.
-    QString _doCommand_Python(
-    	BaseCommand *cmd
-      );
-
-    /// Wraps CommandManager::undoCommand.
-    QString _undoCommand_Python();
-
-    /// Wraps CommandManager::redoCommand.
-    QString _redoCommand_Python();
-
-    /// Wraps CommandManager::checkCommandArgs.
-    QString _checkCommandArgs_Python(
-      BaseCommand *cmd,
-      const QMap<QString, QString> &args
-      );
-
-    /// Wraps CommandManager::checkCommandArgs.
-    QString _checkRTValCommandArgs_Python(
-      BaseCommand *cmd,
-      const QMap<QString, FabricCore::RTVal> &args
-      );
-
     /// Wraps and redirects CommandManager::createCommand.
-    /// Do not call, throws an exception, to override in Python
+    /// Do not call, throws an exception, to override in Python.
     virtual BaseCommand* _createCommand_Python(
       const QString &cmdName, 
       const QMap<QString, QString> &args, 
       bool doCmd
       );
+ 
+    /// Wraps CommandManager::doCommand.
+    /// Propagates the C++ exception in python.
+    /// To override in Python.
+    virtual QString _doCommand_Python(
+    	BaseCommand *cmd
+      );
 
-    /// Wraps and redirects CommandManager::createRTValCommand.
-    /// Do not call, throws an exception, to override in Python
+    /// Wraps CommandManager::undoCommand.
+    /// Propagates the C++ exception in python.
+    /// To override in Python.
+    virtual QString _undoCommand_Python();
+
+    /// Wraps CommandManager::redoCommand.
+    /// Propagates the C++ exception in python.
+    /// To override in Python.
+    virtual QString _redoCommand_Python();
+
+    /// Wraps CommandManager::getCommandAtIndex.
+    /// Propagates the C++ exception in python 
+    /// and redirects the C++ call, to override in Python.
+    virtual QPair<QString, BaseCommand*> _getCommandAtIndex_Python(
+      unsigned index
+      );
+
+    /// Wraps CommandManager::checkCommandArgs.
+    /// Propagates the C++ exception in python 
+    /// and redirects the C++ call, to override in Python.
+    virtual QString _checkCommandArgs_Python(
+      BaseCommand *cmd,
+      const QMap<QString, QString> &args
+      );
+
+    /// Wraps and redirects CommandManager::commandPushed.
+    /// Redirects the C++ call, to override in Python.
+    virtual void _commandPushed_Python(
+      BaseCommand *cmd,
+      bool isLowCmd = false
+      );
+
+    /// Wraps and redirects RTValCommandManager::createCommand.
+    /// Redirects the C++ call, to override in Python.
     virtual BaseCommand* _createRTValCommand_Python(
       const QString &cmdName, 
       const QMap<QString, FabricCore::RTVal> &args, 
       bool doCmd
       );
 
-    /// Wraps and redirects CommandManager::commandIsPushed.
-    /// Do not call, throws an exception, to override in Python
-    virtual void _commandIsPushed_Python(
+    /// Wraps RTValCommandManager::checkCommandArgs.
+    /// Propagates the C++ exception in python 
+    /// and redirects the C++ call, to override in Python.
+    virtual QString _checkRTValCommandArgs_Python(
       BaseCommand *cmd,
-      bool isLowCmd = false
+      const QMap<QString, FabricCore::RTVal> &args
       );
 
+    /// Wraps KLCommandManager::synchronizeKL.
+    /// Propagates the C++ exception in python.
+    /// To override in Python.
+    virtual QString _synchronizeKL_Python();
+
   signals:
-    /// Wraps and redirects CommandManager::commandPushed signal.
-    void _commandPushed_Python(
+    /// Wraps and redirects CommandManager::commandDone signal.
+    /// Propagates the C++ signal in python 
+    void _commandDone_Python(
       BaseCommand *cmd
       );
       
   private slots:
     /// Wraps CommandManager method.
-    void onCommandPushed(
+    void onCommandDone(
       Command *cmd
       );
 
   private:
-    /// Implementation of CommandManager, 
-    /// Do not call, throws an exception.
-    virtual void doCommand(
-      Command *cmd
-      );
+    // C++ -> Python
 
     /// Implementation of CommandManager, 
-    /// Do not call, throws an exception.
-    virtual void undoCommand();
-
-    /// Implementation of CommandManager, 
-    /// Do not call, throws an exception.
-    virtual void redoCommand();
-
-    /// Implementation of CommandManager, 
-    /// calls the Python version.
-    virtual void checkCommandArgs(
-      Command *cmd,
-      const QMap<QString, QString> &args
-      );
-
-    /// Implementation of RTValCommandManager, 
-    /// calls the Python version.
-    virtual void checkRTValCommandArgs(
-      Command *cmd,
-      const QMap<QString, FabricCore::RTVal> &args
-      );
-
-    /// Implementation of CommandManager, 
-    /// calls the Python version.
+    /// calls _createCommand_Python.
     virtual Command* createCommand(
       const QString &cmdName, 
       const QMap<QString, QString> &args, 
       bool doCmd
       );
 
+    /// Implementation of CommandManager, 
+    /// calls _doCommand_Python.
+    virtual void doCommand(
+      Command *cmd
+      );
+
+    /// Implementation of CommandManager, 
+    /// calls _undoCommand_Python.
+    virtual void undoCommand();
+
+    /// Implementation of CommandManager, 
+    /// calls _redoCommand_Python.
+    virtual void redoCommand();
+
+    /// Implementation of CommandManager, 
+    /// calls _getCommandAtIndex_Python.
+    virtual Command* getCommandAtIndex(
+      unsigned index
+      );
+
+    /// Implementation of CommandManager, 
+    /// calls _checkCommandArgs_Python.
+    virtual void checkCommandArgs(
+      Command *cmd,
+      const QMap<QString, QString> &args
+      );
+
+    /// Implementation of CommandManager, 
+    /// calls _commandPushed_Python.
+    virtual void commandPushed(
+      Command *cmd,
+      bool isLowCmd = false
+      );
+
     /// Implementation of RTValCommandManager, 
-    /// calls the Python version.
-    virtual Command* createRTValCommand(
+    /// calls _createRTValCommand_Python.
+    virtual Command* createCommand(
       const QString &cmdName, 
       const QMap<QString, FabricCore::RTVal> &args, 
       bool doCmd
       );
-
-    /// Implementation of CommandManager, 
-    /// calls the Python version.
-    virtual void commandIsPushed(
+    
+    /// Implementation of RTValCommandManager, 
+    /// calls _checkRTValCommandArgs_Python.
+    virtual void checkCommandArgs(
       Command *cmd,
-      bool isLowCmd = false
+      const QMap<QString, FabricCore::RTVal> &args
       );
+
+    /// Implementation of KLCommandManager.
+    /// calls _synchronizeKL_Python.
+    virtual void synchronizeKL();
 };
 
 } // namespace Commands

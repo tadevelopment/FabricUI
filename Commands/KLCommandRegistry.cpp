@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandHelpers.h"
+#include "CommandException.h"
 #include "KLCommandRegistry.h"
 #include "KLCommand.h"
 #include "KLScriptableCommand.h"
@@ -33,8 +33,9 @@ KLCommandRegistry::KLCommandRegistry(
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandRegistry::KLCommandRegistry: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandManager_Python::KLCommandRegistry",
+      "",
       e.getDesc_cstr());
   }
 }
@@ -47,12 +48,10 @@ Command* KLCommandRegistry::createCommand(
   const QString &cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
-    printAndThrow( 
-      QString(
-        "KLCommandRegistry::createCommand, cannot create command '" + 
-        cmdName + "', it's not registered"
-      ).toUtf8().constData() 
-    );
+    CommandException::PrintOrThrow( 
+      "KLCommandRegistry::createCommand",
+      "Cannot create command '" + cmdName + "', it's not registered"
+      );
 
   QList<QString> spec = getCommandSpecs(
     cmdName);
@@ -91,9 +90,11 @@ void KLCommandRegistry::synchronizeKL()
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandRegistry::synchronizeKL: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow( 
+      "KLCommandRegistry::synchronizeKL",
+      "",
+      e.getDesc_cstr()
+      );
   }
 }
  
@@ -127,22 +128,22 @@ void KLCommandRegistry::registerKLCommand(
       // Don't call KLCommandRegistry::commandIsRegistered.
       CommandRegistry::commandIsRegistered(
         cmdName,
-
         RTVal::Construct(
           m_client, 
           "String", 
           1, 
           &args[1]).getStringCString(),
-
         COMMAND_KL);
     }
   }
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandRegistry::registerKLCommand: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow( 
+      "KLCommandRegistry::registerKLCommand",
+      "",
+      e.getDesc_cstr()
+      );
   }
 }
  
@@ -164,7 +165,9 @@ Command* KLCommandRegistry::createKLCommand(
     // Creates the KL command from the KL registery. 
     // Check if it's a scriptable command
     RTVal klCmd = m_klCmdRegistry.callMethod(
-      "ScriptableCommand", 
+      // Cast to BaseScriptableCommand and ScriptableCommand so
+      // we don't have to cast the rtval in KLScriptableCommand.
+      "BaseScriptableCommand", 
       "createCommand", 
       2, 
       args);
@@ -187,9 +190,11 @@ Command* KLCommandRegistry::createKLCommand(
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandRegistry::createKLCommand: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow( 
+      "KLCommandRegistry::createKLCommand",
+      "",
+      e.getDesc_cstr()
+      );
   }
 
   return 0;
@@ -215,9 +220,11 @@ void KLCommandRegistry::commandIsRegistered(
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandRegistry::commandIsRegistered: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow( 
+      "KLCommandRegistry::commandIsRegistered",
+      "",
+      e.getDesc_cstr()
+      );
   }
   
   CommandRegistry::commandIsRegistered(

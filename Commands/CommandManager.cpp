@@ -3,9 +3,9 @@
 //
 
 #include "KLCommand.h"
-#include "CommandHelpers.h"
 #include "CommandManager.h"
 #include "CommandRegistry.h"
+#include "CommandException.h"
 #include "ScriptableCommand.h"
 
 using namespace FabricUI;
@@ -18,7 +18,10 @@ CommandManager::CommandManager()
   : QObject()
 {
   if(s_instanceFlag)
-    printAndThrow("CommandManager::CommandManager, CommandManager singleton has already been created");
+    CommandException::PrintOrThrow(
+      "CommandManager::CommandManager",
+      "CommandManager singleton has already been created"
+      );
    
   // Set the pointer of the CommandManager singleton
   // equal to this instance of CommandManager.
@@ -35,9 +38,9 @@ CommandManager::~CommandManager()
 CommandManager* CommandManager::GetCommandManager()
 {
   if(!s_instanceFlag)
-    printAndThrow(
-      "CommandManager::CommandManager, the manager is null"
-    );
+    CommandException::PrintOrThrow(
+      "CommandManager::CommandManager",
+      "The manager is null");
 
   return s_cmdManager;
 }
@@ -66,15 +69,12 @@ Command* CommandManager::createCommand(
     return cmd;
   }
 
-  catch(std::string &e) 
+  catch(CommandException &e) 
   {
-    printAndThrow(
-      QString(
-        "CommandManager::createCommand, error: Cannot create command '" + 
-        cmdName + "', " + 
-        QString(e.c_str())
-      ).toUtf8().constData()
-    );
+    CommandException::PrintOrThrow(
+      "CommandManager::createCommand",
+      "Cannot create command '" + cmdName + "'",
+      e.what());
   }
 
   return 0;
@@ -84,45 +84,55 @@ void CommandManager::doCommand(
   Command *cmd) 
 {
   if(!cmd) 
-    printAndThrow(
-      "CommandManager::doCommand, Command is null"
-    );
+    CommandException::PrintOrThrow(
+      "CommandManager::doCommand",
+      "Command is null");
   
   bool subCmd = m_undoStack.size() != 0 && 
-                !m_undoStack[m_undoStack.size() - 1].succeeded;
+    !m_undoStack[m_undoStack.size() - 1].succeeded;
   
+  // If undoable command, update the stacks.
   if(cmd->canUndo() && !subCmd) 
   {
     clearRedoStack();
     pushTopCommand(cmd, false);
   }
 
-  if(!cmd->doIt())
+  // Execute the command, catch any errors.
+  try
   {
-    QString cmdForErrorLog = (cmd != 0) 
-      ? cmd->getName()
-      : m_undoStack[m_undoStack.size() - 1].topLevelCmd->getName();
-    
-    cleanupUnfinishedCommands();
+    if(!cmd->doIt())
+      cleanupUnfinishedCommandsAndThrow(
+        cmd);
+  }
+   
+  catch(CommandException &e) 
+  {
+    cleanupUnfinishedCommandsAndThrow(
+      cmd,
+      e.what());
+  }
 
-    printAndThrow(
-      QString(
-        "CommandManager::doCommand, error doing command '" + 
-        cmdForErrorLog + "'"
-      ).toUtf8().constData() 
-    );
-  } 
-  
+  // If undoable command, update the stacks.
   if(cmd->canUndo())
   {
     if(subCmd)
       pushLowCommand(cmd);
+
     else
     {
       m_undoStack[m_undoStack.size() - 1].succeeded = true;
-      emit commandPushed(
+      // Inform that a command has been succefully executed.
+      emit commandDone(
         m_undoStack[m_undoStack.size() - 1].topLevelCmd);
     }
+  }
+
+  else
+  {
+    if(!subCmd)
+      // Inform that a command has been succefully executed.
+      emit commandDone(cmd);
   }
 }
 
@@ -130,7 +140,12 @@ void CommandManager::undoCommand()
 {
   if(m_undoStack.size() == 0)
   {
-    printf("CommandManager::undoCommand: nothing to undo");
+    CommandException::PrintOrThrow(
+      "CommandManager::undoCommand",
+      "Nothing to undo",
+      "",
+      PRINT);
+
     return;
   }
 
@@ -151,23 +166,19 @@ void CommandManager::undoCommand()
           low_->redoIt();
         }
 
-        printAndThrow(
-          QString(
-            "CommandManager::undoCommand, error undoing command, top: '" + 
-            top->getName() + "', low: '" + low->getName() + "'"
-          ).toUtf8().constData() 
-        );
+        CommandException::PrintOrThrow(
+          "CommandManager::undoCommand",
+          "Undoing command, top: '" + top->getName() + "', low: '" + low->getName() + "'"
+          );
       }
     }
   }
   
   else if(!top->undoIt())
-    printAndThrow(
-      QString(
-        "CommandManager::undoCommand, error undoing command : " + 
-        top->getName()
-      ).toUtf8().constData() 
-   );
+    CommandException::PrintOrThrow(
+      "CommandManager::undoCommand", 
+      "Undoing command '" + top->getName() + "'"
+      );
 
   m_undoStack.pop_back();
   m_redoStack.push_back(stackedCmd);
@@ -177,7 +188,12 @@ void CommandManager::redoCommand()
 {
   if(m_redoStack.size() == 0)
   {
-    printf("CommandManager::redoCommand: nothing to redo");
+    CommandException::PrintOrThrow(
+      "CommandManager::undoCommand", 
+      "Nothing to redo",
+      "",
+      PRINT);
+
     return;
   }
 
@@ -187,7 +203,7 @@ void CommandManager::redoCommand()
   int lowLevelCmdsCount = int(stackedCmd.lowLevelCmds.size());
   if(lowLevelCmdsCount > 0) 
   {
-    for (int i = 0; i < lowLevelCmdsCount; ++i)
+    for(int i = 0; i < lowLevelCmdsCount; ++i)
     {
       Command *low = stackedCmd.lowLevelCmds[i]; 
       if(!low->redoIt())
@@ -198,23 +214,19 @@ void CommandManager::redoCommand()
           low_->undoIt();
         }
 
-        printAndThrow(
-          QString(
-            "CommandManager::redoCommand, error redoing command, top: '" + 
-            top->getName() + "', low: '" + low->getName() + "'"
-          ).toUtf8().constData()
-        );
+        CommandException::PrintOrThrow(
+          "CommandManager::redoCommand",
+          "Undoing command, top: '" + top->getName() + "', low: '" + low->getName() + "'"
+          );
       }
     }
   }
 
   else if(!top->redoIt())
-    printAndThrow(
-      QString(
-        "CommandManager::redoCommand, error redoing command: '" + 
-        top->getName() + "'"
-      ).toUtf8().constData() 
-   );
+    CommandException::PrintOrThrow(
+      "CommandManager::redoCommand",
+      "Redoing command: '" +  top->getName() + "'"
+      );
  
   m_redoStack.pop_back();
   m_undoStack.push_back(stackedCmd);
@@ -271,12 +283,11 @@ void CommandManager::checkCommandArgs(
   ScriptableCommand* scriptCommand = dynamic_cast<ScriptableCommand*>(cmd);
   
   if(!scriptCommand) 
-    printAndThrow(
-      QString(
-        "CommandManager::checkCommandArgs, command '" + cmd->getName() + 
-        "' is created with args, but is not implementing the ScriptableCommand interface"
-      ).toUtf8().constData() 
-    );
+    CommandException::PrintOrThrow(
+      "CommandManager::checkCommandArgs",
+        "Command '" + cmd->getName() +  "' is created with args " + 
+        "but is not implementing the ScriptableCommand interface"
+        );
 
   // Try to set the arg even if not part of the specs, 
   // some commands might require this
@@ -334,17 +345,17 @@ void CommandManager::pushTopCommand(
   stackedCmd.topLevelCmd = cmd;
   stackedCmd.succeeded = succeeded;
   m_undoStack.push_back(stackedCmd);
-  commandIsPushed(cmd, false);
+  commandPushed(cmd, false);
 }
 
 void CommandManager::pushLowCommand(
   Command *cmd) 
 { 
   m_undoStack[m_undoStack.size() - 1].lowLevelCmds.push_back(cmd);
-  commandIsPushed(cmd, true);
+  commandPushed(cmd, true);
 }
 
-void CommandManager::commandIsPushed(
+void CommandManager::commandPushed(
   Command *cmd,
   bool isLowCmd) 
 { 
@@ -389,8 +400,15 @@ QString CommandManager::getStackContent(
   return res;
 }
 
-void CommandManager::cleanupUnfinishedCommands() 
+void CommandManager::cleanupUnfinishedCommandsAndThrow(
+  Command *cmd,
+  const QString &error) 
 {
+  QString cmdForErrorLog = (cmd != 0) 
+    ? cmd->getName()
+    : m_undoStack[m_undoStack.size() - 1].topLevelCmd->getName();
+  
+  // If the failed command have been pushed, removes it.
   if(m_undoStack.size() && !m_undoStack[m_undoStack.size() - 1].succeeded) 
   {
     StackedCommand top = m_undoStack[m_undoStack.size() - 1];
@@ -399,12 +417,15 @@ void CommandManager::cleanupUnfinishedCommands()
     for(int i = top.lowLevelCmds.size(); i--;) 
     {
       if(!top.lowLevelCmds[i]->undoIt()) 
-        printAndThrow(
-          QString(
-            "CommandManager::cleanupUnfinishedCommands, error while reverting command '" + 
-             top.lowLevelCmds[i]->getName() 
-          ).toUtf8().constData()
-        );
+        CommandException::PrintOrThrow(
+          "CommandManager::cleanupUnfinishedCommandsAndThrow",
+          "While reverting command '" + top.lowLevelCmds[i]->getName() + "'",
+          error);
     }
   }
+
+  CommandException::PrintOrThrow(
+    "CommandManager::doCommand",
+    "Doing command '" + cmdForErrorLog + "'",
+    error);    
 }

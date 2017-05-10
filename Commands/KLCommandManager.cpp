@@ -2,11 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <string>
 #include "KLCommand.h"
 #include "KLCommandManager.h"
+#include "CommandException.h"
 #include "KLScriptableCommand.h"
-  
+
 using namespace FabricUI;
 using namespace Commands;
 using namespace FabricCore;
@@ -41,8 +41,9 @@ KLCommandManager::KLCommandManager(
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandManager::KLCommandManager: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandManager::KLCommandManager",
+      "",
       e.getDesc_cstr());
   }
 }
@@ -55,7 +56,12 @@ void KLCommandManager::undoCommand()
 {
   if(m_undoStack.size() == 0)
   {
-    printf("KLCommandManager::undoCommand: nothing to undo");
+    CommandException::PrintOrThrow(
+      "KLCommandManager::undoCommand",
+      "Nothing to redo",
+      "",
+      PRINT);
+
     return;
   }
 
@@ -68,7 +74,12 @@ void KLCommandManager::redoCommand()
 {
   if(m_redoStack.size() == 0)
   {
-    printf("KLCommandManager::redoCommand: nothing to redo");
+    CommandException::PrintOrThrow(
+      "KLCommandManager::redoCommand",
+      "Nothing to redo",
+      "",
+      PRINT);
+
     return;
   }
 
@@ -90,8 +101,9 @@ void KLCommandManager::clear()
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandManager::clear: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandManager::clear",
+      "",
       e.getDesc_cstr());
   }
   
@@ -122,8 +134,9 @@ QString KLCommandManager::getContent()
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandManager::getContent: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandManager::getContent",
+      "",
       e.getDesc_cstr());
   }
 
@@ -147,11 +160,10 @@ void KLCommandManager::synchronizeKL()
 
     // !! Problem, KL and C++ command managers are out of synch
     if(m_klCmdUndoStackCount > klCmdCount)
-      throw(
-        QString(
-          "KLCommandManager::synchronizeKL: the KL and C++ command managers are out of synch"
-        ).toUtf8().constData() 
-      );
+      CommandException::PrintOrThrow(
+        "KLCommandManager::synchronizeKL",
+        "KL and C++ command managers are out of synch"
+        );
 
     // Synchronize our stack with KL, two scenarios: 
     // 1. A KL command is created in KL : we construct the
@@ -217,16 +229,18 @@ void KLCommandManager::synchronizeKL()
         i--; klCmdCount--;
 
         // Create and execute the C++ command.
-        createRTValCommand(cmdName, args);
+        createCommand(cmdName, args);
       }
 
       // KL commands have actually been 
       // created, create the C++ wrappers.
       else
       {
+        // Cast to BaseScriptableCommand and ScriptableCommand so
+        // we don't have to cast the rtval in KLScriptableCommand.
         RTVal scriptCmd = RTVal::Construct(
           m_client,
-          "ScriptableCommand", 
+          "BaseScriptableCommand", 
           1, 
           &klCmd);
 
@@ -247,8 +261,9 @@ void KLCommandManager::synchronizeKL()
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandManager::synchronizeKL: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandManager::synchronizeKL",
+      "",
       e.getDesc_cstr());
   }
 }
@@ -268,8 +283,9 @@ void KLCommandManager::clearRedoStack()
 
   catch(Exception &e)
   {
-    printf(
-      "KLCommandManager::clearRedoStack: exception: %s\n", 
+    CommandException::PrintOrThrow(
+      "KLCommandManager::clearRedoStack",
+      "",
       e.getDesc_cstr());
   }
 }
