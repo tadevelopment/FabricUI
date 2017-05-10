@@ -31,7 +31,8 @@ namespace FabricUI
         const char * nodeName, 
         const DFGConfig & dfgConfig,
         bool setAlphaNum,
-        bool isEditable
+        bool isEditable,
+        bool textEditGetsFirstFocus = false
         );
       /// Destructor
       virtual ~DFGNodePropertiesDialog();
@@ -122,6 +123,7 @@ namespace FabricUI
       QLineEdit                       *m_presetNameLabel;
       QLineEdit                       *m_presetImportPathname;
       QLineEdit                       *m_textEdit;
+      bool                             m_textEditGetsFirstFocus;
       QLineEdit                       *m_nameEdit;
       QPlainTextEdit                  *m_toolTipEdit;
       QLineEdit                       *m_docUrlEdit;

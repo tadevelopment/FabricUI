@@ -431,7 +431,7 @@ class CanvasWindow(QtGui.QMainWindow):
         controller = self.dfgWidget.getDFGController()
         self.treeWidget = DFG.PresetTreeWidget(controller, self.config, True, False, False, False, False, True)
         self.dfgWidget.newPresetSaved.connect(self.treeWidget.refresh)
-        self.dfgWidget.revealPresetInExplorer.connect(self.treeWidget.onExpandToAndSelectItem)
+        self.dfgWidget.revealPresetInExplorer.connect(self.onRevealPresetInExplorer)
         # FE-8381 : Removed variables from the PresetTreeWidget
         #controller.varsChanged.connect(self.treeWidget.setModelDirty)
         controller.dirty.connect(self.onDirty)
@@ -1418,3 +1418,12 @@ class CanvasWindow(QtGui.QMainWindow):
         
             self.loadGraph(fileInfo.filePath())
 
+    def onRevealPresetInExplorer(self, nodeName):
+        """Callback for when 'Reveal in explorer' is invoked.
+        """
+
+        # [FE-8400] ensure the explorer is visible before revealing the preset.
+        if not self.treeDock.isVisible():
+          self.treeDock.setVisible(True);
+
+        self.treeWidget.onExpandToAndSelectItem(nodeName)
