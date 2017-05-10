@@ -1369,6 +1369,7 @@ class CanvasWindow(QtGui.QMainWindow):
         if graph != self.currentGraph:
             graph = self.dfgWidget.getUIGraph()
             graph.nodeEditRequested.connect(self.onNodeEditRequested)
+            graph.nodeInspectRequested.connect(self.onNodeInspectRequested)
             self.currentGraph = graph
 
     def dragEnterEvent(self, event):
@@ -1427,3 +1428,11 @@ class CanvasWindow(QtGui.QMainWindow):
           self.treeDock.setVisible(True);
 
         self.treeWidget.onExpandToAndSelectItem(nodeName)
+
+    def onNodeInspectRequested(self, nodeName):
+        """Callback for when 'Inspect node' is invoked.
+        """
+
+        # [FE-8411] ensure the value editor is visible.
+        if not self.valueEditorDockWidget.isVisible():
+          self.valueEditorDockWidget.setVisible(True);
