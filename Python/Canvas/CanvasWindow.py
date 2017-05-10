@@ -1434,5 +1434,6 @@ class CanvasWindow(QtGui.QMainWindow):
         """
 
         # [FE-8411] ensure the value editor is visible.
-        if not self.valueEditorDockWidget.isVisible():
+        if not self.valueEditorDockWidget.isVisible() or self.valueEditorDockWidget.visibleRegion().isEmpty():
           self.valueEditorDockWidget.setVisible(True);
+          self.valueEditorDockWidget.raise_();
