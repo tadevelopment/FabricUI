@@ -1423,7 +1423,8 @@ class CanvasWindow(QtGui.QMainWindow):
         """
 
         # [FE-8400] ensure the explorer is visible before revealing the preset.
-        if not self.treeDock.isVisible():
+        if not self.treeDock.isVisible() or self.treeDock.visibleRegion().isEmpty():
           self.treeDock.setVisible(True);
+          self.treeDock.raise_();
 
         self.treeWidget.onExpandToAndSelectItem(nodeName)
