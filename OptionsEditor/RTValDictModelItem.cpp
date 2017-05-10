@@ -26,21 +26,25 @@ RTValDictModelItem::RTValDictModelItem(
 
     m_client = rtValEditor->getClient();
 
-    RTVal *rtValOptions = (RTVal*)options;
-    RTVal keys = rtValOptions->getDictKeys();
+    RTVal rtValOptions = *(RTVal*)options;
 
-    for (unsigned i = 0; i < keys.getArraySize(); i++) 
+    if(rtValOptions.isWrappedRTVal()) 
+      rtValOptions = rtValOptions.getUnwrappedRTVal(); 
+
+    RTVal keys = rtValOptions.getDictKeys();
+
+    for(unsigned i = 0; i < keys.getArraySize(); i++) 
     {
       RTVal key = keys.getArrayElementRef(
         i); 
 
-      RTVal chidOptions = rtValOptions->getDictElement(
+      RTVal childrenOptions = rtValOptions.getDictElement(
         key); 
 
       constructModel(
         key.getStringCString(),
         editor,
-        (void*)&chidOptions,
+        (void*)&childrenOptions,
         settings);
     }
   }
@@ -71,16 +75,15 @@ RTVal RTValDictModelItem::getRTValOptions()
     std::map<std::string, BaseModelItem*>::iterator it;
     for(it = m_children.begin(); it != m_children.end(); it++) 
     {
-      RTVal keyVal = RTVal::ConstructString(
+      RTVal key = RTVal::ConstructString(
         m_client,
         it->first.data());
 
       BaseModelItem *child = (BaseModelItem *)it->second;
-      RTValItem *rtValChild = dynamic_cast<RTValItem*>(
-        child);
+      RTValItem *rtValChild = dynamic_cast<RTValItem*>(child);
 
       options.setDictElement(
-        keyVal,
+        key,
         Util::RTValUtil::rtValToKLRTVal(
           rtValChild->getRTValOptions())
         );
@@ -103,30 +106,24 @@ void RTValDictModelItem::setRTValOptions(
   try
   {
     if(options.isWrappedRTVal()) 
-      options = options.getUnwrappedRTVal(); 
+      options = options.getUnwrappedRTVal();
 
     if(!options.isDict())
       throw("RTValDictModelItem::setRTValOptions, options is not a dictionay");
 
-    unsigned count = 0;
-    RTVal keys = options.getDictKeys();
-
     std::map<std::string, BaseModelItem*>::iterator it;
     for(it=m_children.begin(); it!=m_children.end(); it++) 
     {
-      BaseModelItem * child = (BaseModelItem *)it->second;
-      
-      RTValItem *rtValChild = 
-        dynamic_cast<RTValItem*>(child);
+      RTVal key = RTVal::ConstructString(
+        m_client,
+        it->first.data());
 
-      RTVal chidOptions = options.getDictElement(
-        keys.getArrayElementRef(count)
-        ); 
+      RTVal childrenOptions = options.getDictElement(
+        key); 
 
-      rtValChild->setRTValOptions(
-        chidOptions);
-
-      count++;
+      BaseModelItem *child = (BaseModelItem *)it->second;
+      RTValItem *rtValChild = dynamic_cast<RTValItem*>(child);
+      rtValChild->setRTValOptions(childrenOptions);
     }
   }
 

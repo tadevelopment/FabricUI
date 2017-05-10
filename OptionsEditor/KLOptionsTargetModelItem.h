@@ -10,22 +10,22 @@
 namespace FabricUI {
 namespace OptionsEditor {
 
-class KLModelItem : public RTValModelItem
+class KLOptionsTargetModelItem : public RTValModelItem
 {
   /**
-    KLModelItem specializes RTValModelItem 
+    KLOptionsTargetModelItem specializes RTValModelItem 
     for simple RTVal of KL OptionsTargets.
   */    
   Q_OBJECT
   
   public:
-    /// Constructs a KLModelItem.
+    /// Constructs a KLOptionsTargetModelItem.
     /// \param name Name of the item.
     /// \param path Item's path.
     /// \param editor Pointor to the OptionsEditor.
     /// \param options Item's options.
     /// \param settings Pointor to the settings.
-    KLModelItem(
+    KLOptionsTargetModelItem(
       const std::string &name,
       const std::string &path,
       BaseOptionsEditor *editor,
@@ -33,7 +33,7 @@ class KLModelItem : public RTValModelItem
       QSettings *settings=0
       );
 
-    virtual ~KLModelItem();
+    virtual ~KLOptionsTargetModelItem();
 
     /// Implementation of ValueEditor::BaseModelItem
     /// Create a command for undo-redo.
@@ -45,7 +45,7 @@ class KLModelItem : public RTValModelItem
 
   private:
     /// ID the the KL OptionsTarget in the registry.
-    QString m_registryID;
+    QString m_editorID;
     // Reference to the fabric client.
     FabricCore::Client m_client;
 };

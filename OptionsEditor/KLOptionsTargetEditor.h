@@ -10,32 +10,32 @@
 namespace FabricUI {
 namespace OptionsEditor {
 
-class KLOptionsEditor 
+class KLOptionsTargetEditor 
   : public BaseRTValOptionsEditor
 {
   /** 
-    KLOptionsEditor specializes BaseRTValOptionsEditor 
-    to edit KL OptionsTargets.
+    KLOptionsTargetEditor specializes BaseRTValOptionsEditor 
+    to edit KL OptionsTargets, see Exts/FabricInterfaces/OptionsEditor.
   */
   Q_OBJECT
  
   public:
     /// Constructs a RTValDictModelItem .
     /// \param client Fabric core client.
-    /// \param registryID ID of the KL OptionsEditorTarget in the registry.
+    /// \param editorID ID of the KL OptionsEditorTarget in the registry.
     /// \param title Title of the editor.
     /// \param settings Pointor to the settings.
-    KLOptionsEditor(
+    KLOptionsTargetEditor(
       FabricCore::Client client,
-      const QString &registryID,
+      const QString &editorID,
       const QString &title = QString(),
       QSettings *settings=0
       );
       
-    virtual ~KLOptionsEditor();
+    virtual ~KLOptionsTargetEditor();
 
     /// Gets the KL registry id.
-    QString getRegistryID();
+    QString geteditorID();
 
     /// \implmentation of BaseOptionsEditor
     virtual ValueEditor::BaseModelItem* constructModel(
@@ -59,7 +59,7 @@ class KLOptionsEditor
 
     private:
       /// ID the the KL OptionsTarget in the registry.
-      QString m_registryID;
+      QString m_editorID;
 };
 
 } // namespace OptionsEditor 

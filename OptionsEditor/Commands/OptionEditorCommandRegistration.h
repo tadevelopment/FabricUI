@@ -5,9 +5,9 @@
 #ifndef __UI_OPTIONS_EDITOR_COMMAND_REGISTRATION__
 #define __UI_OPTIONS_EDITOR_COMMAND_REGISTRATION__
 
-#include "SetOptionsModelValueCommand.h"
-#include "CloseOptionsEditorCommand.h"
-#include "OpenOptionsEditorCommand.h"
+#include "OpenKLOptionsTargetEditorCommand.h"
+#include "CloseKLOptionsTargetEditorCommand.h"
+#include "SetKLOptionsTargetModelItemCommand.h"
 #include <FabricUI/Commands/CommandRegistry.h>
 
 namespace FabricUI {
@@ -26,14 +26,14 @@ class OptionEditorCommandRegistration
 
    	static void RegisterCommands()
     {
-      Commands::CommandFactory<SetOptionsModelValueCommand>::Register(
-        "setOptionsModelValue");
+      Commands::CommandFactory<SetKLOptionsTargetModelItemCommand>::Register(
+        "setKLOptionsTargetModelItem");
 
-      Commands::CommandFactory<OpenOptionsEditorCommand>::Register(
-        "openOptionsEditor");
+      Commands::CommandFactory<OpenKLOptionsTargetEditorCommand>::Register(
+        "openKLOptionsTargetEditor");
 
-      Commands::CommandFactory<CloseOptionsEditorCommand>::Register(
-        "closeOptionsEditor");
+      Commands::CommandFactory<CloseKLOptionsTargetEditorCommand>::Register(
+        "closeKLOptionsTargetEditor");
     }
 };
 

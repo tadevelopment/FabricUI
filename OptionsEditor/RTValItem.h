@@ -13,6 +13,12 @@ namespace OptionsEditor {
 
 class RTValItem {
   
+  /**
+    RTValItem defines methods to set/get RTBAl options.
+    Any OptionsModelItem that uses RTVAl must implements 
+    this interface.
+  */ 
+
   public:
     virtual ~RTValItem() {}
     

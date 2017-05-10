@@ -46,9 +46,6 @@ BaseModelItem* BaseRTValOptionsEditor::constructModel(
   {
     RTVal rtValOptions = *(RTVal*)options;
 
-    if(rtValOptions.isWrappedRTVal()) 
-      rtValOptions = rtValOptions.getUnwrappedRTVal(); 
-      
     if(rtValOptions.isDict()) 
       return new RTValDictModelItem(
         name,

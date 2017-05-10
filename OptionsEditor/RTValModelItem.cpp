@@ -2,14 +2,14 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "OptionsEditorHelpers.h"
 #include "RTValModelItem.h"
+#include "BaseRTValOptionsEditor.h"
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
  
 using namespace FabricUI;
+using namespace FabricCore;
 using namespace ValueEditor;
 using namespace OptionsEditor;
-using namespace FabricCore;
 
 RTValModelItem::RTValModelItem(
   const std::string &name,
@@ -20,7 +20,15 @@ RTValModelItem::RTValModelItem(
   : BaseSimpleModelItem(name, path, editor)
   , m_settings(settings)
 {   
+  BaseRTValOptionsEditor* rtValEditor = dynamic_cast<BaseRTValOptionsEditor*>(
+    editor);
+
+  m_client = rtValEditor->getClient();
+
   m_options = *(RTVal *)options;
+  if(m_options.isWrappedRTVal()) 
+    m_options = m_options.getUnwrappedRTVal(); 
+
   m_originalOptions = m_options.clone();
  
   // Fetching the value from the QSettings
@@ -81,12 +89,21 @@ void RTValModelItem::resetToDefault()
 
 RTVal RTValModelItem::getRTValOptions()
 {
-  return m_options;
+  RTVal option = RTVal::Construct(
+    m_client,
+    "RTVal",
+    1,
+    &m_options);
+
+  return option;
 }
 
 void RTValModelItem::setRTValOptions(
   RTVal options) 
 {
+  if(options.isWrappedRTVal()) 
+    options = options.getUnwrappedRTVal(); 
+
   setValue(
     toVariant(options));
 }

@@ -28,6 +28,22 @@ BaseOptionsEditor::~BaseOptionsEditor()
   }
 }
 
+BaseModelItem* BaseOptionsEditor::constructModel(
+  const std::string &name,
+  const std::string &path,
+  BaseOptionsEditor *editor,
+  void *options,
+  QSettings *settings) 
+{
+  throw(
+    "BaseOptionsEditor::constructModel must be overridden");
+}
+
+BaseModelItem* BaseOptionsEditor::getRootModel()
+{
+  return m_model;
+}
+
 void BaseOptionsEditor::modelUpdated()
 {
   emit updated();
@@ -58,15 +74,4 @@ void BaseOptionsEditor::updateModel(
 {
   throw(
     "BaseOptionsEditor::updateModel must be overridden");
-}
-
-BaseModelItem* BaseOptionsEditor::constructModel(
-  const std::string &name,
-  const std::string &path,
-  BaseOptionsEditor *editor,
-  void *options,
-  QSettings *settings) 
-{
-  throw(
-    "BaseOptionsEditor::constructModel must be overridden");
 }

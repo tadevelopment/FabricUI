@@ -14,7 +14,7 @@ namespace OptionsEditor {
 class BaseOptionsModelItem : public ValueEditor::BaseModelItem 
 {
   /**
-    BaseModelItem defines a model for a single option (RTVal).
+    BaseOptionsModelItem is the base class for any options item.
   */  
   Q_OBJECT
   

@@ -3,7 +3,7 @@
 //
 
 #include <QApplication>
-#include "KLOptionsEditor.h"
+#include "KLOptionsTargetEditor.h"
 #include "OptionsEditorHelpers.h"
 #include <FabricUI/Util/RTValUtil.h>
 
@@ -12,7 +12,8 @@ using namespace FabricCore;
 namespace FabricUI {
 namespace OptionsEditor {
 
-QMainWindow* GetMainWindow() 
+// Qt helpers
+inline QMainWindow* GetMainWindow() 
 {
   foreach(QWidget *wiget, QApplication::topLevelWidgets())
   { 
@@ -25,7 +26,7 @@ QMainWindow* GetMainWindow()
 
 QDockWidget* CreateOptionsEditor( 
   Client client,
-  const QString &registryID,
+  const QString &editorID,
   const QString &title,
   const QString &groupeName)
 {
@@ -35,12 +36,12 @@ QDockWidget* CreateOptionsEditor(
     title, 
     mainWindow);
 
-  dock->setObjectName(registryID);
+  dock->setObjectName(editorID);
 
-  BaseOptionsEditor *optionsEditor = new KLOptionsEditor(
+  BaseOptionsEditor *optionsEditor = new KLOptionsTargetEditor(
     client,
-    registryID,
-    registryID);
+    editorID,
+    editorID);
 
   dock->setWidget(optionsEditor);
 
@@ -51,50 +52,207 @@ QDockWidget* CreateOptionsEditor(
 
   return dock;
 }
- 
-QDockWidget* GetOptionsEditorDockByTitle(
-  const QString &title
-  ){
-  return 0;
-}
-
-QList<QDockWidget*> GetOptionsEditorDocks() 
-{ 
-  QMainWindow* mainWindow = GetMainWindow();
-  return mainWindow->findChildren<QDockWidget *>();
-}
 
 QDockWidget * GetOptionsEditorDock(
-  const QString &registryID) 
+  const QString &editorID) 
 { 
   QMainWindow* mainWindow = GetMainWindow();
-  return mainWindow->findChild<QDockWidget *>(registryID);
+  return mainWindow->findChild<QDockWidget *>(editorID);
 }
 
 BaseOptionsEditor* GetOptionsEditor(
-  const QString &registryID) 
+  const QString &editorID) 
 {
-  QDockWidget * dock = GetOptionsEditorDock(registryID);
+  QDockWidget * dock = GetOptionsEditorDock(editorID);
   BaseOptionsEditor* editor = dock->findChild<BaseOptionsEditor *>();
   return editor;
 }
 
-RTVal GetKLOptionsEditorTargetRegistry(
-  Client client) 
-{
-  RTVal optionsEditorTargetRegistry;
+// KL generic editor (use for Viewport options editor too)
+inline RTVal GetKLSingleOption_(
+  Client client,
+  int index,
+  QList<QString> &singleOptionPaths,
+  RTVal &options) 
+{ 
+  try
+  {
+    if(options.isWrappedRTVal()) 
+      options = options.getUnwrappedRTVal(); 
+
+    QString optionName = singleOptionPaths[index];
+
+    RTVal key = RTVal::ConstructString(
+      client,
+      optionName.toUtf8().constData()); 
+
+    if(options.isDict()) 
+    {
+      RTVal childrenOptions = options.getDictElement( 
+        key); 
+
+      if(childrenOptions.isDict() || childrenOptions.isArray())
+        return GetKLSingleOption_(
+          client,
+          index+1, 
+          singleOptionPaths, 
+          childrenOptions);
+
+      else
+        return childrenOptions;
+    }
+
+    else if(options.isArray()) 
+    {
+      // RTVal key = RTVal::ConstructString(
+      //   client,
+      //   optionName.toUtf8().constData()); 
+
+      // RTVal childrenOptions = rtValOptions->getDictElement( key); 
+
+      // if( Util::RTValUtil::getRTValType(options) == "RTVal[String]" || 
+      //     Util::RTValUtil::getRTValType(options) == "RTVal[]")
+        
+      //   GetKLSingleOption_(
+      //     index+1, 
+      //     singleOptionPaths, 
+      //     singleOption,
+      //     childrenOptions);
+    }
+
+    else
+      return options;
+  }
+
+  catch(Exception &e)
+  {
+    printf(
+      "OptionsEditorHelpers::GetKLSingleOption_: exception: %s\n", 
+      e.getDesc_cstr());
+  }
+
+  RTVal dumb;
+  return dumb;
+}
+
+inline void SetKLSingleOption_(
+  Client client,
+  int index,
+  QList<QString> &singleOptionPaths,
+  RTVal singleOption,
+  RTVal options) 
+{ 
+  if(options.isWrappedRTVal()) 
+    options = options.getUnwrappedRTVal(); 
 
   try
   {
-    RTVal appOptionsEditorTargetRegistry = RTVal::Construct(
+    QString optionName = singleOptionPaths[index];
+
+    RTVal key = RTVal::ConstructString(
       client,
-      "AppOptionsEditorTargetRegistry",
+      optionName.toUtf8().constData()); 
+
+    if(options.isDict()) 
+    {
+      RTVal childrenOptions = options.getDictElement( 
+        key); 
+
+      if(childrenOptions.isDict() || childrenOptions.isArray())
+        SetKLSingleOption_(
+          client,
+          index+1, 
+          singleOptionPaths, 
+          singleOption,
+          childrenOptions);
+
+      else
+        options.setDictElement(
+          key, 
+          Util::RTValUtil::forceToKLRTVal(
+            singleOption)
+          );
+    }
+
+    else if(options.isArray()) 
+    {
+      // RTVal key = RTVal::ConstructString(
+      //   client,
+      //   optionName.toUtf8().constData()); 
+
+      // RTVal childrenOptions = rtValOptions->getDictElement( key); 
+
+      // if( Util::RTValUtil::getRTValType(options) == "RTVal[String]" || 
+      //     Util::RTValUtil::getRTValType(options) == "RTVal[]")
+        
+      //   SetKLSingleOption_(
+      //     index+1, 
+      //     singleOptionPaths, 
+      //     singleOption,
+      //     childrenOptions);
+    }
+  }
+
+  catch(Exception &e)
+  {
+    printf(
+      "OptionsEditorHelpers::SetKLSingleOption_: exception: %s\n", 
+      e.getDesc_cstr());
+  }
+}
+
+RTVal GetKLSingleOption(
+  Client client,
+  QString singleOptionPath,
+  RTVal options) 
+{ 
+  QList<QString> singleOptionPaths = 
+    singleOptionPath.split('/');
+ 
+  if(options.isWrappedRTVal()) 
+    options = options.getUnwrappedRTVal(); 
+
+  return GetKLSingleOption_(
+    client,
+    1,
+    singleOptionPaths,
+    options);
+}
+
+void SetKLSingleOption(
+  Client client,
+  QString singleOptionPath,
+  RTVal singleOption,
+  RTVal options) 
+{ 
+  QList<QString> singleOptionPaths = 
+    singleOptionPath.split('/');
+ 
+  SetKLSingleOption_(
+    client,
+    1,
+    singleOptionPaths,
+    singleOption,
+    options);
+}
+
+// KL OptionsTarget helpers
+inline RTVal GetKLOptionsTargetRegistry(
+  Client client) 
+{
+  RTVal optionsTargetRegistry;
+
+  try
+  {
+    RTVal appOptionsTargetRegistry = RTVal::Construct(
+      client,
+      "AppOptionsTargetRegistry",
       0, 
       0);
 
-    optionsEditorTargetRegistry = appOptionsEditorTargetRegistry.callMethod(
-      "OptionsEditorTargetRegistry",
-      "getOptionsEditorTargetRegistry",
+    optionsTargetRegistry = appOptionsTargetRegistry.callMethod(
+      "OptionsTargetRegistry",
+      "getOptionsTargetRegistry",
       0,
       0);
   }
@@ -102,13 +260,13 @@ RTVal GetKLOptionsEditorTargetRegistry(
   catch(Exception &e)
   {
     printf(
-      "OptionsEditorHelpers::GetKLOptionsEditorTargetRegistry: exception: %s\n", 
+      "OptionsEditorHelpers::GetKLOptionsTargetRegistry: exception: %s\n", 
       e.getDesc_cstr());
   }
 
-  return optionsEditorTargetRegistry;
+  return optionsTargetRegistry;
 }
- 
+
 RTVal GetKLOptionsTargetOptions(
   Client client,
   QString registryID) 
@@ -121,10 +279,10 @@ RTVal GetKLOptionsTargetOptions(
       client,
       registryID.toUtf8().constData());
 
-    RTVal optionsEditorTargetRegistry = GetKLOptionsEditorTargetRegistry(
+    RTVal optionsTargetRegistry = GetKLOptionsTargetRegistry(
       client);
     
-    options = optionsEditorTargetRegistry.callMethod(
+    options = optionsTargetRegistry.callMethod(
       "RTVal", 
       "getTargetOptions",
       1,
@@ -141,47 +299,69 @@ RTVal GetKLOptionsTargetOptions(
   return options;
 }
 
-void SetKLOptionsTargetSingleOption(
+inline void SetKLOptionsTargetOptions(
   Client client,
   QString registryID,
-  QString optionPath,
-  RTVal rtVal) 
-{ 
+  RTVal options) 
+{  
   try
   {
-    RTVal optionsEditorTargetRegistry = GetKLOptionsEditorTargetRegistry(
-      client);
+    RTVal registryIDVal = RTVal::ConstructString(
+      client,
+      registryID.toUtf8().constData());
 
-    RTVal args[3] = 
+    RTVal optionsTargetRegistry = GetKLOptionsTargetRegistry(
+      client);
+    
+    RTVal args[2] = 
     {
       RTVal::ConstructString(
         client, 
         registryID.toUtf8().constData())
       ,
-      RTVal::ConstructString(
-        client, 
-        optionPath.toUtf8().constData())
-      ,
       RTVal::Construct(
         client, 
         "RTVal",
         1,
-        &rtVal)
+        &options)
     };
 
-    optionsEditorTargetRegistry.callMethod(
-      "",
-      "setTargetSingleOptions",
-      3, 
+    optionsTargetRegistry.callMethod(
+      "RTVal", 
+      "setTargetOptions",
+      2,
       args);
   }
 
   catch(Exception &e)
   {
     printf(
-      "OptionsEditorHelpers::SetKLOptionsTargetSingleOption: exception: %s\n", 
+      "OptionsEditorHelpers::SetKLOptionsTargetOptions: exception: %s\n", 
       e.getDesc_cstr());
   }
+}
+
+void SetKLOptionsTargetSingleOption(
+  Client client,
+  QString registryID,
+  QString singleOptionPath,
+  RTVal singleOption) 
+{ 
+  RTVal options = GetKLOptionsTargetOptions(
+    client,
+    registryID
+    );
+
+  SetKLSingleOption(
+    client,
+    singleOptionPath,
+    singleOption,
+    options);
+
+  SetKLOptionsTargetOptions(
+    client,
+    registryID,
+    options);
 }
 
 } // namespace OptionsEditor 

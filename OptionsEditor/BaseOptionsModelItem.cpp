@@ -15,8 +15,12 @@ BaseOptionsModelItem::BaseOptionsModelItem(
   const std::string &path) 
   : BaseModelItem()
   , m_name(name)
-  , m_path(path + path_Separator + name)
 {
+	// Don't add the separator at
+	// the begining of the path.
+ 	m_path = (path.length() > 0)
+		?	path + path_Separator + name
+		: name;
 }
 
 BaseOptionsModelItem::~BaseOptionsModelItem()

@@ -17,7 +17,7 @@ class RTValModelItem
 {
   /**
     RTValModelItem specializes BaseSimpleModelItem 
-    for RTVal of basic type.
+    for RTVal of basic type (leaf).
   */    
   Q_OBJECT
   
@@ -68,6 +68,10 @@ class RTValModelItem
     FabricCore::RTVal m_originalOptions; 
     /// Pointor to the settings.
     QSettings *m_settings;
+
+  private:  
+    /// \internal
+    FabricCore::Client m_client;
 };
 
 } // namespace OptionsEditor 

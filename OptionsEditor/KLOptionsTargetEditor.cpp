@@ -2,40 +2,38 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "KLOptionsEditor.h"
-#include "KLModelItem.h"
-#include "OptionsEditorHelpers.h"
+#include "KLOptionsTargetModelItem.h"
+#include "KLOptionsTargetEditor.h"
 #include "RTValDictModelItem.h"
 #include "RTValArrayModelItem.h"
-#include <FabricUI/Commands/KLCommandManager.h>
+#include "OptionsEditorHelpers.h"
 
 using namespace FabricUI;
 using namespace FabricCore;
-using namespace OptionsEditor;
-using namespace Commands;
 using namespace ValueEditor;
+using namespace OptionsEditor;
 
-KLOptionsEditor::KLOptionsEditor(
+KLOptionsTargetEditor::KLOptionsTargetEditor(
   Client client,
-  const QString &registryID,
+  const QString &editorID,
   const QString &title,
   QSettings *settings)
   : BaseRTValOptionsEditor(client, title, 0, settings)
-  , m_registryID(registryID)
+  , m_editorID(editorID)
 {
   resetModel();
 }
 
-KLOptionsEditor::~KLOptionsEditor() 
+KLOptionsTargetEditor::~KLOptionsTargetEditor() 
 {
 }
 
-QString KLOptionsEditor::getRegistryID() 
+QString KLOptionsTargetEditor::geteditorID() 
 { 
-  return m_registryID; 
+  return m_editorID; 
 }
 
-BaseModelItem* KLOptionsEditor::constructModel(
+BaseModelItem* KLOptionsTargetEditor::constructModel(
   const std::string &name,
   const std::string &path,
   BaseOptionsEditor *editor,
@@ -46,9 +44,9 @@ BaseModelItem* KLOptionsEditor::constructModel(
   {
     RTVal rtValOptions = *(RTVal*)options;
 
-    if(rtValOptions.isWrappedRTVal()) 
+   if(rtValOptions.isWrappedRTVal()) 
       rtValOptions = rtValOptions.getUnwrappedRTVal(); 
-      
+
     if(rtValOptions.isDict()) 
       return new RTValDictModelItem(
         name,
@@ -66,7 +64,7 @@ BaseModelItem* KLOptionsEditor::constructModel(
         settings);
 
     else
-      return new KLModelItem(
+      return new KLOptionsTargetModelItem(
         name,
         path,
         editor,
@@ -77,14 +75,14 @@ BaseModelItem* KLOptionsEditor::constructModel(
   catch(Exception &e)
   {
     printf(
-      "KLOptionsEditor::constructModel: exception: %s\n", 
+      "KLOptionsTargetEditor::constructModel: exception: %s\n", 
       e.getDesc_cstr());
   }
 
   return 0;
 }
 
-void KLOptionsEditor::updateModel(
+void KLOptionsTargetEditor::updateModel(
   void *options) 
 {
   RTValItem *rtValModel = dynamic_cast<RTValItem*>(
@@ -92,18 +90,18 @@ void KLOptionsEditor::updateModel(
 
   RTVal rtValOptions = GetKLOptionsTargetOptions(
     m_client, 
-    m_registryID);
+    m_editorID);
 
   rtValModel->setRTValOptions(
     rtValOptions);
 }
- 
-void KLOptionsEditor::resetModel(
+
+void KLOptionsTargetEditor::resetModel(
   void *options) 
 {
   RTVal rtValOptions = GetKLOptionsTargetOptions(
     m_client, 
-    m_registryID);
+    m_editorID);
 
   BaseOptionsEditor::resetModel(
     (void*)&rtValOptions);

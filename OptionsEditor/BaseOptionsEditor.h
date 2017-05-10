@@ -16,9 +16,16 @@ namespace OptionsEditor {
 class BaseOptionsEditor : public ValueEditor::VETreeWidget
 {
   /**
-    BaseOptionsEditor edits the content of a generic options lists
-    in a tree-view widget. A model composed of BaseModelItem
-    representing the hierarchy of the options is created.     
+    BaseOptionsEditor edits the content of a generic options list in a tree-
+    view widget. In order to support any kind of data, the options are passed  
+    using void pointor. A model composed of nested BaseOptionsModelItem (list
+    or simple) representing the options hierarchy is created.  
+    
+    root list item
+      - simple item
+      - list item
+        - simple item
+        - simple item   
   */  
   Q_OBJECT
 
@@ -44,8 +51,11 @@ class BaseOptionsEditor : public ValueEditor::VETreeWidget
       QSettings* settings=0
       );
 
+    /// Gets the root model
+    ValueEditor::BaseModelItem* getRootModel();
+
   public slots:  
-    /// Resets (clears and sets) the model, to override.
+    /// Resets the model, to override.
     /// \param options New options for the model.
     virtual void resetModel(
       void *options=0

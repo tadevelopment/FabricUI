@@ -27,17 +27,20 @@ RTValArrayModelItem::RTValArrayModelItem(
 
     m_client = rtValEditor->getClient();
     
-    RTVal *rtValOptions = (RTVal*)options;
+    RTVal rtValOptions = *(RTVal*)options;
 
-    for(unsigned i=0; i<rtValOptions->getArraySize(); i++) 
+    if(rtValOptions.isWrappedRTVal()) 
+      rtValOptions = rtValOptions.getUnwrappedRTVal(); 
+
+    for(unsigned i=0; i<rtValOptions.getArraySize(); i++) 
     {
-      RTVal chidOptions = rtValOptions->getArrayElementRef(
+      RTVal childrenOptions = rtValOptions.getArrayElementRef(
         i); 
 
       constructModel(
         name + "_" + std::string(QString::number(i).toUtf8().constData()),
         editor,
-        (void*)&chidOptions,
+        (void*)&childrenOptions,
         settings);
     }
   }
@@ -117,9 +120,9 @@ void RTValArrayModelItem::setRTValOptions(
       RTValItem *rtValChild = 
         dynamic_cast<RTValItem*>(child);
 
-      RTVal chidOptions = options.getArrayElementRef(count);
+      RTVal childrenOptions = options.getArrayElementRef(count);
       
-      rtValChild->setRTValOptions(chidOptions);
+      rtValChild->setRTValOptions(childrenOptions);
       
       count++;
     }

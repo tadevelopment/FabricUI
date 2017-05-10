@@ -15,8 +15,8 @@ namespace OptionsEditor {
 class BaseListModelItem : public BaseOptionsModelItem 
 {
   /**
-    BaseListModelItem is a list of BaseOptionsModelItem stored
-    as a key-value pair dictionary [key(String), value(BaseOptionsModelItem)].
+    BaseListModelItem is a list of BaseOptionsModelItem stored as a 
+    key-value pair dictionary [key(String), value(BaseOptionsModelItem)].
   */  
   Q_OBJECT
   

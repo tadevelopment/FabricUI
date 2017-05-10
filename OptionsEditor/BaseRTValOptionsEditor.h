@@ -15,7 +15,8 @@ class BaseRTValOptionsEditor
   : public BaseOptionsEditor 
 {
   /** 
-    BaseRTValOptionsEditor is used edit the content of a RTVal in a tree-view widget.
+    BaseRTValOptionsEditor edits the content 
+    of a RTVal in a tree-view widget.
   */
   Q_OBJECT
   

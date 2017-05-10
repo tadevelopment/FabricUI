@@ -14,7 +14,8 @@ namespace OptionsEditor {
 class BaseSimpleModelItem : public BaseOptionsModelItem 
 {
   /**
-    BaseSimpleModelItem specializes BaseModelItem.
+    BaseSimpleModelItem specializes BaseOptionsModelItem
+    and defines a model for a single option (leaf).
   */  
   Q_OBJECT
   
