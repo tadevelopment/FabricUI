@@ -15,79 +15,106 @@ namespace Util {
 class RTValUtil 
 {
   /**
-    RTValUtil provides static methods to convert 
-    C++ KL RTVal to/from JSON. A C++ KL RTVal is
-    a C++ RTVal wrapping a KL RTVal.
+    RTValUtil provides static methods to convert C++ KL RTVal to/from JSON. 
+    A C++ KL RTVal is a C++ RTVal wrapping a KL RTVal.
   */
 
   public:
     RTValUtil();
 
-    /// Convert a C++ KL RTVal to a C++ RTVal.
+    /// Checks if the c++ RTVal wraps a KL RTVal.
+    static bool isKLRTVal(
+      FabricCore::RTVal klRTVal
+      );
+
+    /// Gets the KL type of the C++ RTVal.
+    /// If the C++ RTVal wraps a KL RTVal, the returned type 
+    /// is the type of the object wrapped by the KL RTVal.
+    /// To know if a C++ wraps a KL RTVal, use `isKLRTVal`.
+    static QString getRTValType(
+      FabricCore::RTVal rtVal
+      );
+
+    /// Converts a C++ KL RTVal to a C++ RTVal.
     static FabricCore::RTVal klRTValToRTVal(
       FabricCore::RTVal klRTVal
       );
 
-    /// Convert a C++ RTVal to a C++ KL RTVal.
+    /// Converts a C++ RTVal to a C++ KL RTVal.
     static FabricCore::RTVal rtValToKLRTVal(
       FabricCore::RTVal rtVal
       );
 
-    /// Extract in JSON the C++ RTVal.
+    /// Extracts in JSON the C++ RTVal.
     static QString rtValToJSON(
       FabricCore::RTVal rtVal
       );
 
-    /// Extract in JSON the C++ KL RTVal.
+    /// Extracts in JSON the C++ KL RTVal.
     static QString klRTValToJSON(
       FabricCore::RTVal klRTVal
       );
 
-    /// Create a C++ RTVal of type rtValType 
+    /// Creates a C++ RTVal of KL type 'type' 
     /// and sets it's value from the json.
     static FabricCore::RTVal jsonToRTVal(
       FabricCore::Context ctxt,
       const QString &json,
-      const QString &rtValType
+      const QString &type
       );
      
-    /// Create a C++ RTVal wrapping a KL RTVal 
-    /// of type rtValType and sets it's value
-    /// from the json.
+    /// Creates a C++ RTVal wrapping a KL RTVal of
+    /// KL type 'type' and sets it's value from json.
     static FabricCore::RTVal jsonToKLRTVal(
       FabricCore::Context ctxt,
       const QString &json,
-      const QString &rtValType
+      const QString &type
       );
 
-    /// Create a C++ RTVal of type rtValType 
+    /// Creates a C++ RTVal of KL type 'type' 
     /// and sets it's value from the json.
     static FabricCore::RTVal jsonToRTVal(
       FabricCore::Client client,
       const QString &json,
-      const QString &rtValType
+      const QString &type
       );
 
-    /// Create a C++ RTVal wrapping a KL RTVal 
-    /// of type rtValType and sets it's value
-    /// from the json.
+    /// Creates a C++ RTVal wrapping a KL RTVal of
+    /// KL type 'type' and sets it's value from json.
     static FabricCore::RTVal jsonToKLRTVal(
       FabricCore::Client client,
       const QString &json,
-      const QString &rtValType
+      const QString &type
       );
 
-    /// Convert a string in
-    /// a scriptable format.
-    static QString EncodeString(
-      QString str
-      );
+    /// Creates a C++ RTVal wrapping a KL RTVal of
+    /// KL type 'type' and sets it's value from json.
+    static FabricCore::RTVal forceJSONToRTVal(
+      FabricCore::Context ctxt,
+      const QString &json,
+      const QString &type);
 
-    /// Convert a list of strings 
-    /// in a scriptable format.
-    static QString EncodeStrings(
-      QList< QString > strList
-      );
+    /// Creates a C++ RTVal wrapping a KL RTVal of
+    /// KL type "type" and sets it's value from json.
+    static FabricCore::RTVal forceJSONToRTVal(
+      FabricCore::Client client,
+      const QString &json,
+      const QString &type);
+
+    /// Converts a C++ KL RTVal to a C++ RTVal
+    /// if the input is a C++ KL RTVal.
+    static FabricCore::RTVal forceToRTVal(
+      FabricCore::RTVal rtVal);
+
+    /// Converts a C++ RTVal to a C++ KL 
+    /// RTVal if the input is a C++ RTVal.
+    static FabricCore::RTVal forceToKLRTVal(
+      FabricCore::RTVal rtVal);
+
+    /// Extracts the JSON from the C++ RTVal 
+    /// either it wraps a KL RTVal or others.
+    static QString forceRTValToJSON(
+      FabricCore::RTVal rtVal);
 };
 
 } // namespace FabricUI

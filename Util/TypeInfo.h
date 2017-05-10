@@ -21,7 +21,7 @@ class TypeInfo
       );
 };
 
-template <class T> QString type(
+template <class T> QString GetClassType(
   const T& t) 
 {
   /**
@@ -29,7 +29,6 @@ template <class T> QString type(
     Use to unmangle the result of std::type_info::name
     
     Usage:
-
       #include <iostream>
       #include "<FabricUI/Util/TypeInfo.h>
 
@@ -56,7 +55,26 @@ template <class T> QString type(
   return TypeInfo::demangle(
     typeid(t).name()
     );
-};
+}
+
+template <class T> QString GetTemplateClassType(
+  const T& t)
+{
+  QString type = GetClassType(t);
+
+  int firstIndex = type.indexOf(
+    "<"
+    );
+
+  int lastIndex = type.lastIndexOf(
+    ">"
+    );
+
+  return type.mid(
+    firstIndex+1,
+    lastIndex-(firstIndex+1)
+    );
+}
 
 } // namespace Util
 } // namespace FabricUI

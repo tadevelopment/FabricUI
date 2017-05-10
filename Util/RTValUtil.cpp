@@ -3,6 +3,7 @@
 //
  
 #include <QRegExp>
+#include <iostream>
 #include "RTValUtil.h"
 #include <FTL/StrRef.h>
 #include <FTL/JSONEnc.h>
@@ -17,6 +18,38 @@ RTValUtil::RTValUtil()
 {
 }
 
+bool RTValUtil::isKLRTVal(
+  RTVal klRTVal)
+{
+  QString dataType = 
+    klRTVal.getTypeName().getStringCString();
+  return dataType == "RTVal";
+}
+
+QString RTValUtil::getRTValType(
+  RTVal klRTVal)
+{
+  QString type;
+
+  try 
+  {
+    type = klRTVal.callMethod(
+      "String", 
+      "type", 
+      0, 
+      0).getStringCString();
+  }
+
+  catch(Exception &e)
+  {
+    printf(
+      "RTValUtil::getRTValType: exception: %s\n", 
+      e.getDesc_cstr());
+  }
+
+  return type;
+}
+
 RTVal RTValUtil::klRTValToRTVal(
   RTVal klRTVal)
 {
@@ -26,7 +59,7 @@ RTVal RTValUtil::klRTValToRTVal(
   {
     // Get the type of the value  
     // stored by the KL RTVal
-    QString dataType = klRTVal.callMethod(
+    const char *dataType = klRTVal.callMethod(
       "String", 
       "type", 
       0, 
@@ -36,7 +69,7 @@ RTVal RTValUtil::klRTValToRTVal(
     // and set its value from the kl RTVal.
     rtVal = RTVal::Construct(
       klRTVal.getContext(), 
-      dataType.toUtf8().constData(), 
+      dataType, 
       1, 
       &klRTVal);
   }
@@ -182,50 +215,68 @@ RTVal RTValUtil::jsonToKLRTVal(
     rtValType);
 }
 
-inline QString EncodeStringChars(
-  QString str)
+RTVal RTValUtil::forceJSONToRTVal(
+  Context ctxt,
+  const QString &json,
+  const QString &type) 
 {
-  QString result;
- 
-  for(QString::const_iterator it(str.begin()); 
-      it != str.end(); 
-      ++it)
+  RTVal rtVal;
+
+  try
   {
-    if ( *it == '\"' ) result += "\\\"";
-    // Don't pollute with newlines, ...
-    // Not necesseray to parse the JSON.
-    else if ( *it == '\r' ) result += "";//\\r";
-    else if ( *it == '\n' ) result += "";//"\\n";
-    else if ( *it == '\t' ) result += "";//"\\t";
-    else if ( *it == '\\' ) result += "\\\\";
-    else result += *it;
+    rtVal = Util::RTValUtil::jsonToRTVal(
+      ctxt,
+      json,
+      type);
   }
 
-  return result;
-}
-
-QString RTValUtil::EncodeString(
-  QString str)
-{
-  return "\"" + EncodeStringChars(str) + "\"";
-}
-
-QString RTValUtil::EncodeStrings(
-  QList< QString > strList)
-{
-  QString result;
-  
-  QString str;
-  int count = 0;
-  
-  foreach(str, strList)
+  catch(Exception &e)
   {
-    if(count > 0)
-      result += "|";
-    result += EncodeString(str);
-    count ++;
+    rtVal = Util::RTValUtil::jsonToKLRTVal(
+      ctxt,
+      json,
+      type);
   }
-  result += "\"";
 
-  return result;
+  if(!rtVal.isValid()) 
+    printf(
+      "RTValUtil::forceJSONToRTVal, error: wasn't able to cast JSON in RTVal"
+    );
+
+  return rtVal;
+}
+
+RTVal RTValUtil::forceJSONToRTVal(
+  Client client,
+  const QString &json,
+  const QString &type) 
+{
+  return forceJSONToRTVal(
+    client.getContext(),
+    json,
+    type);
+}
+
+RTVal RTValUtil::forceToRTVal(
+  RTVal rtVal) 
+{
+  return isKLRTVal(rtVal)
+    ? klRTValToRTVal(rtVal)
+    : rtVal;
+}
+
+RTVal RTValUtil::forceToKLRTVal(
+  RTVal rtVal) 
+{
+  return !isKLRTVal(rtVal) 
+    ? rtValToKLRTVal(rtVal)
+    : rtVal;
+}
+
+QString RTValUtil::forceRTValToJSON(
+  RTVal rtVal) 
+{
+  return isKLRTVal(rtVal)
+    ? RTValUtil::klRTValToJSON(rtVal)
+    : RTValUtil::rtValToJSON(rtVal);
 }
