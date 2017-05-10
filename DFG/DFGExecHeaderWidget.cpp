@@ -3,6 +3,7 @@
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGExecHeaderWidget.h>
 #include <FabricUI/Util/LoadPixmap.h>
+#include <FabricUI/Util/FELineEdit.h>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -70,7 +71,7 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
 
   m_reqExtLabel = new QLabel;
   m_reqExtLabel->setObjectName( "DFGRequiredExtensionsLabel" );
-  m_reqExtLineEdit = new QLineEdit;
+  m_reqExtLineEdit = new Util::FELineEdit;  // [FE-7883]
   m_reqExtLineEdit->setObjectName( "DFGRequiredExtensionsLineEdit" );
   m_reqExtLineEdit->setFocusPolicy( Qt::ClickFocus ); // [FE-5446]
   QObject::connect(
@@ -268,6 +269,15 @@ void DFGExecHeaderWidget::reqExtResizeToContent()
   int txtPixels = fontMetrics.width(" " + m_reqExtLineEdit->text() + " ");
 
   m_reqExtLineEdit->setFixedWidth(std::max(minPixels, std::min(maxPixels, txtPixels)));
+
+  reqExtSetToolTipFromContent();
+}
+
+void DFGExecHeaderWidget::reqExtSetToolTipFromContent()
+{
+  QString text = m_reqExtLineEdit->text();
+  text.replace(',', '\n');
+  m_reqExtLineEdit->setToolTip(text);
 }
 
 void DFGExecHeaderWidget::onExecChanged()

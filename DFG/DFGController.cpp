@@ -2282,6 +2282,11 @@ QString DFGController::gvcGetCurrentExecPath()
   return getExecPath_QS();
 }
 
+bool DFGController::gvcCurrentExecIsInstBlockExec()
+{
+  return m_exec.isInstBlockExec();
+}
+
 void DFGController::savePrefs()
 {
   if ( m_presetDictsUpToDate )

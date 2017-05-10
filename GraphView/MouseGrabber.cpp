@@ -72,13 +72,32 @@ MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, Connect
       if(menu == NULL)
         return NULL;
 
-      QPoint globalPos = QCursor::pos();
-      QAction * action = menu->exec(globalPos);
+      QString name = "";
 
-      if(action == NULL)
-        return NULL;
+      if(QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+      {
+        QList<QAction *> actions = menu->actions();
+        if(actions.size() > 0)
+        {
+          QAction *action = actions[0];
+          if(action->isEnabled())
+          {
+            name = action->data().toString();
+            if (name != "exec")
+              name = "";
+          }
+        }
+      }
 
-      QString name = action->data().toString();
+      if(name == "")
+      {
+        QAction * action = menu->exec(QCursor::pos());
+        if(action == NULL)
+          return NULL;
+
+        name = action->data().toString();
+      }
+
       if(name == "")
         return NULL;
 
@@ -99,13 +118,32 @@ MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, Connect
       if(menu == NULL)
         return NULL;
 
-      QPoint globalPos = QCursor::pos();
-      QAction * action = menu->exec(globalPos);
+      QString name = "";
 
-      if(action == NULL)
-        return NULL;
+      if(QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+      {
+        QList<QAction *> actions = menu->actions();
+        if(actions.size() > 0)
+        {
+          QAction *action = actions[0];
+          if(action->isEnabled())
+          {
+            name = action->data().toString();
+            if (name != "exec")
+              name = "";
+          }
+        }
+      }
 
-      QString name = action->data().toString();
+      if(name == "")
+      {
+        QAction * action = menu->exec(QCursor::pos());
+        if(action == NULL)
+          return NULL;
+
+        name = action->data().toString();
+      }
+
       if(name == "")
         return NULL;
 
@@ -385,7 +423,12 @@ void MouseGrabber::performUngrab( ConnectionTarget *fromCT )
   graph()->resetMouseGrabber();
   m_connection->invalidate();
   scene->removeItem(m_connection);
-  m_connection->deleteLater();
+
+  // [FE-8406] When deleting a Node while dragging a connection from it
+  // the code in ~Connection() uses the Node. Thus, we have to delete the connection
+  // first and then delete the Node (see FabricUI::GraphView::Graph::removeNode)
+  delete m_connection;
+
   // m_connection->setParent(this);
   scene->removeItem(this);
   if ( m_target == fromCT )
@@ -508,11 +551,32 @@ void MouseGrabber::invokeNodeHeaderMenu(Node * node, ConnectionTarget * other, P
   if(menu == NULL)
     return;
 
-  QAction * action = menu->exec(pos);
-  if(action == NULL)
-    return;
+  QString name = "";
 
-  QString name = action->data().toString();
+  if(QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+  {
+    QList<QAction *> actions = menu->actions();
+    if(actions.size() > 0)
+    {
+      QAction *action = actions[0];
+      if(action->isEnabled())
+      {
+        name = action->data().toString();
+        if (name != "exec")
+          name = "";
+      }
+    }
+  }
+
+  if(name == "")
+  {
+    QAction * action = menu->exec(pos);
+    if(action == NULL)
+      return;
+
+    name = action->data().toString();
+  }
+
   if(name == "")
     return;
 
@@ -542,11 +606,32 @@ void MouseGrabber::invokeInstBlockHeaderMenu(
   if(menu == NULL)
     return;
 
-  QAction * action = menu->exec(pos);
-  if(action == NULL)
-    return;
+  QString name = "";
 
-  QString name = action->data().toString();
+  if(QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+  {
+    QList<QAction *> actions = menu->actions();
+    if(actions.size() > 0)
+    {
+      QAction *action = actions[0];
+      if(action->isEnabled())
+      {
+        name = action->data().toString();
+        if (name != "exec")
+          name = "";
+      }
+    }
+  }
+
+  if(name == "")
+  {
+    QAction * action = menu->exec(pos);
+    if(action == NULL)
+      return;
+
+    name = action->data().toString();
+  }
+
   if(name == "")
     return;
 

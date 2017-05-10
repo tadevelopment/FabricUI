@@ -184,6 +184,7 @@ namespace FabricUI
         );
 
       virtual QString gvcGetCurrentExecPath();
+      virtual bool gvcCurrentExecIsInstBlockExec();
 
       QMenu* gvcCreateNodeHeaderMenu( GraphView::Node *, GraphView::ConnectionTarget *, GraphView::PortType ) FTL_OVERRIDE;
       QMenu* gvcCreateInstBlockHeaderMenu( GraphView::InstBlock *, GraphView::ConnectionTarget *, GraphView::PortType ) FTL_OVERRIDE;

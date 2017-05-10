@@ -5,6 +5,7 @@
 #include <QStyleFactory>
 #include <QTextStream>
 #include <FabricUI/DFG/TabSearch/DFGPresetSearchWidget.h>
+#include "ResultsView.h"
 #include <FabricUI/Style/FabricStyle.h>
 
 void ReportCallBack(

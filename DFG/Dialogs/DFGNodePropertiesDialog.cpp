@@ -16,10 +16,12 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
   const char * nodeName, 
   const DFGConfig & dfgConfig,
   bool setAlphaNum,
-  bool isEditable )
+  bool isEditable,
+  bool textEditGetsFirstFocus )
 : DFGBaseDialog(parent, true, dfgConfig)
 , m_nodeName(nodeName)
 , m_controller(controller)
+, m_textEditGetsFirstFocus(textEditGetsFirstFocus)
 {
   setObjectName( "DFGNodePropertiesDialog" );
   setWindowTitle("Node Properties");
@@ -102,10 +104,12 @@ DFGNodePropertiesDialog::DFGNodePropertiesDialog(
         exec.getNodeMetadata( m_nodeName.c_str(), "uiTitle" );
       m_textEdit = new QLineEdit( uiTitle.c_str(), this );
       m_textEdit->setReadOnly(!isEditable);
+      if (m_textEditGetsFirstFocus)
+        m_textEdit->selectAll();
     }
 
     m_nameEdit->setText( m_nodeName.c_str() );
-    m_nameEdit->selectAll();    
+    m_nameEdit->selectAll();
 
     FTL::CStrRef uiTooltip = exec.getNodeMetadata(m_nodeName.c_str(), "uiTooltip");
     if(uiTooltip.empty() && subExec.isValid())
@@ -165,7 +169,10 @@ void DFGNodePropertiesDialog::setDocUrl(QString value)
 /// Shows this dialog widgets
 void DFGNodePropertiesDialog::showEvent(QShowEvent * event)
 {
-  QTimer::singleShot(0, m_nameEdit, SLOT(setFocus()));
+  if (m_textEditGetsFirstFocus && m_textEdit != NULL)
+    QTimer::singleShot(0, m_textEdit, SLOT(setFocus()));
+  else
+    QTimer::singleShot(0, m_nameEdit, SLOT(setFocus()));
   DFGBaseDialog::showEvent(event);  
 }
 

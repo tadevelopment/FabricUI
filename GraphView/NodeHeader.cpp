@@ -228,6 +228,23 @@ void NodeHeader::setHeaderButtonState(QString name, int state)
   }
 }
 
+void NodeHeader::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
+{
+  // [FE-8415] backdrops may only respond to clicks in the header.
+  if( this->node()->isBackDropNode() )
+  {
+    QMenu * menu = this->node()->graph()->getNodeContextMenu( this->node() );
+    if ( menu )
+    {
+      menu->exec( QCursor::pos() );
+      menu->setParent( NULL );
+      menu->deleteLater();
+    }
+  }
+  else
+    Parent::contextMenuEvent( event );
+}
+
 void NodeHeader::onHeaderButtonTriggered(FabricUI::GraphView::NodeHeaderButton * button)
 {
   emit headerButtonTriggered(button);
