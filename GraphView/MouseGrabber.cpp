@@ -21,6 +21,7 @@
 #include <QGraphicsView>
 #include <QMenu>
 #include <QAction>
+#include <QApplication>
 
 using namespace FabricUI::GraphView;
 
