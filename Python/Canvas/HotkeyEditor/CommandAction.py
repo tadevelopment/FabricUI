@@ -39,8 +39,8 @@ class CommandAction(Actions.BaseAction):
             Create the command.
         """
         try:
-            GetCommandManager().createCmd(self.cmdName)
-            GetCommandManager().synchronizeKL()
+            GetCmdManager().createCmd(self.cmdName)
+            GetCmdManager().synchronizeKL()
 
         except Exception as e:    
             print str(e)

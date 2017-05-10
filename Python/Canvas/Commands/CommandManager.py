@@ -3,330 +3,281 @@
 #
 
 from FabricEngine.Canvas.Utils import *
-from FabricEngine.FabricUI import Commands
+from FabricEngine.FabricUI import Commands as CppCommands
 from FabricEngine.Canvas.Commands.CommandRegistry import *
+from FabricEngine.Canvas.Commands.CommandArgsHelpers import CommandArgsHelpers
 
-class CommandManager(Commands.KLCommandManager_Python):
+class CommandManager(CppCommands.KLCommandManager_Python):
     
-    """ CommandManager specializes KLCommandManager_Python (C++). See Commands/KLCommandManager.h(cpp) 
-        and Commands/KLCommandManager_Python.h(cpp). The manager is shared between the C++ and Python, 
-        so commands defined in Python can be created from C++ code too, and vice versa.
+    """ CommandManager specializes KLCommandManager_Python (C++). See Commands/CommandManager.h(cpp),
+        Commands/KLCommandManager.h(cpp) and Commands/KLCommandManager_Python.h(cpp). The manager is 
+        shared between the C++ and Python, so commands defined in Python can be created from C++ code, 
+        and vice versa.
 
         The CommandManager is a singleton and should not be created directly.
         - Create the singleton: cmdManager = CommandManager(fabricClient)
 
-        - Get the singleton: cmdManager = GetCommandManager()
+        - Get the singleton: cmdManager = GetCmdManager()
 
-        Usage:
+        Available methods:
         - Create a command (KL/C++/Python): cmd = cmdManager.createCmd(cmdName, args, doIt)
                 
-        - Execute a command: cmdManager.doCommand(cmd);
+        - Execute a command: cmdManager.doCmd(cmd)
 
-        - Proces undo: cmdManager.undoCommand()
+        - Process undo: cmdManager.undoCmd()
 
-        - Proces redo: cmdManager.redoCommand()
+        - Process redo: cmdManager.redoCmd()
+
+        - Clear the stacks: cmdManagerclear()
+
+        - Number of commands (undo+redo): cmdManager.count()
+
+        - Get current stack index: cmdManager.getStackIndex()
+        
+        - Get the stack content as string: cmdManager.getContent()
 
         - Synchronize with the KL manager: cmdManager.synchronizeKL()
 
-        When a command is registered, a function creating the command with named arguments is dynimically  
-        defined in Python. Each function in added to the python 'Commands' module. For example, the scriptable 
-        command FooCmd with arguments {arg_1:"foo_1", arg_2:"foo_2"} can be created and executed via:
-        - from FabricEngine.Canvas.Commands.CommandRegistry import *
+
+        When a command is registered, a function creating the command with named arguments is dynimi-
+        cally defined in Python. Each function in added to the python 'Commands' module. For example, 
+        the scriptable command FooCmd with arguments {arg_1:"foo_1", arg_2:"foo_2"} can be created  
+        and executed via:
+        - from FabricEngine.Canvas.Commands.CommandManager import *
         - import Commands
         - Commands.FooCmd(arg_1 = "foo_1", arg_2 = "foo_2)
 
         This is equivalent to (see CommandManager.py):
         - args = {arg_1:"foo_1", arg_2:"foo_2"}
-        - GetCommandManager().createCommand("FooCmd", args, True)
+        - GetCmdManager().createCommand("FooCmd", args, True)
     """
     
     def __init__(self, client):
         """ Initializes the CommandManager.
-
-            Arguments:
-            - client: A FabricCore client.
         """
-
         super(CommandManager, self).__init__(client)
-        # There is no "new" is python, so we need to own the commands 
-        # created in Python. They are refered by the C++ CommandManager 
-        # undo-redo stacks. 
+        # There is no "new" in python, we need to own the commands created
+        # in Python. They are referenced in the C++ CommandManager stacks. 
         self.__client = client
         self.__flatCommandsStack = []
 
         # Connect our-self.
-        cmdRegistry = CreateCommandRegistry(client)
+        cmdRegistry = CreateCmdRegistry(client)
         cmdRegistry.commandRegistered.connect(self.__onCommandRegistered)
     
     def createCmd(self, cmdName, args = {}, doCmd = True):
-        """ Initializes the CommandManager.
-
-            Arguments:
-            - cmdName: A FabricCore client.
-            - args: A FabricCore client.
-            - doCmd: A FabricCore client.
+        """ Creates and executes a command (if doCmd == true).
+            If executed, the command is added to the manager stack.
+            Raises an exception if an error occurs.
         """
-              
         try:
-            cmd = GetCommandRegistry()._createCommand_Python(cmdName)
-            
+            cmd = GetCmdRegistry().createCmd(cmdName)
             if len(args) > 0:
-                self.__castAndCheckCommandArgs(cmd, args);
-
-            if doCmd :
-                self.doCommand(cmd)
-          
+                self.__castAndCheckCmdArgs(cmd, args)
+            if doCmd:
+                self.doCmd(cmd)
             return cmd
-
-        except Exception as e:    
+        except Exception as e:   
             raise Exception(e)
 
-    def doCommand(self, cmd):
-        """ Implementation of Commands.CommandManager.
-            Raises an exception if an error occurs. 
+    def doCmd(self, cmd):
+        """ Executes a command and adds it to the undo stack.
+            Raises an exception if an error occurs.
         """
-        error = super(CommandManager, self)._doCommand_Python(cmd)
-        if error:
-            raise Exception(error)
+        return self._doCommand_Python(cmd)
 
-    def undoCommand(self):
-        """ Implementation of Commands.CommandManager.
+    def undoCmd(self):
+        """ Undoes the current command.
             Raises an exception if an error occurs. 
         """
-        error = super(CommandManager, self)._undoCommand_Python()
-        if error:
-            raise Exception(error)
-
-    def redoCommand(self):
-        """ Implementation of Commands.CommandManager.
+        self._undoCommand_Python()
+        
+    def redoCmd(self):
+        """ Redoes the next command.
             Raises an exception if an error occurs. 
         """
-        error = super(CommandManager, self)._redoCommand_Python()
-        if error:
-            raise Exception(error)
+        self._redoCommand_Python()
 
     def clear(self):
-        """ Implementation of Commands.CommandManager
+        """ Clears all the commands.
         """
         super(CommandManager, self).clear()
         self.__flatCommandsStack = []
 
+    def getCmdAtIndex(self, index):
+        """ Gets the command at index 'index'.
+            Returns none if the index is out of ranges.
+        """
+        error, cmd = self._getCommandAtIndex_Python(index)
+        return cmd
+
     def getClient(self):
-        """ Implementation of Commands.CommandManager
+        """ Implementation of Commands.KLCommandManager
         """
         return self.__client
 
-    def __castInputArgsToStr(self, cmd, inputArgs):
-        """ \internal
-            Casts the inputs arguments of the command into String. 
+    def synchronizeKL(self):
+        """ Implementation of Commands.KLCommandManager
         """
+        self._synchronizeKL_Python()
 
-        try:
-            strArgs = {}
-
-            for key, value in inputArgs.iteritems():
-                
-                inputArgType = type(value)
-                isInputArgTypeStr = issubclass(inputArgType, str) or issubclass(inputArgType, unicode)
-
-                # Commands.BaseRTValScriptableCommand
-                if issubclass(type(cmd), Commands.BaseRTValScriptableCommand):
-
-                    # The input arg is a RTVal, cast it to JSON.
-                    # Construct a dumb RTVal to compare the python
-                    # object type --> find a better way.
-                    if inputArgType == type(self.__client.RT.types.UInt32()):
-                        value = value.getJSONStr()
-
-                    else:
-                        # Get the KL RTVal type.
-                        rtValType = cmd.getRTValArgType(key)
-                        isArgStr = rtValType == "String"
-
-                        # The arg is Python. If the input arg is a string and the
-                        # cmd arg is not, assume the input arg is already the JSON. 
-                        # Otherwise we create the JSON from the pyton value.
-                        if not (isInputArgTypeStr and not isArgStr):
-                            castArg = True
-
-                            # Check if the string has quotes.
-                            # If so, we assume that it's already a JSON
-                            if isInputArgTypeStr and isArgStr and len(value) > 0:
-                                first =  value[0] == "'" or value[0] == "\"" 
-                                last =  value[len(value)-1] == "'" or value[len(value)-1] == "\"" 
-                                castArg = not first and not last
-
-                            if castArg:
-                                # Get the python RTVal object.
-                                pyRTValType = getattr(self.__client.RT.types, rtValType)
-
-                                # Check if the python type can be casted as a RTVal.
-                                if pyRTValType().getSimpleType() is None:
-                                    raise Exception("Can't cast python '" + str(inputArgType) + 
-                                        "' to rtVal '" + str(rtValType) + "'")
-                                
-                                # Construct the python RTVal and sets its value.
-                                rtVal = pyRTValType(value)   
-                                value = rtVal.getJSONStr()   
-                
-                # Commands.BaseScriptableCommand, all in strings
-                else:
-                    value = str(value)   
-
-                strArgs[key] = value
-                               
-        except Exception as e:    
-            raise Exception("CommandManager.__castInputArgsToStr, error: " + str(e) )
-        
-        return strArgs
-
-    def __castInputArgsToTRVal(self, cmd, inputArgs):
-        """ \internal
-            Casts the inputs arguments of the command into RTVal. 
+    ### \internal, don't call these methods.
+    def __castAndCheckCmdArgs(self, cmd, inputArgs):
+        """ \internal, casts the commands's args depending of their types.
         """
-        try:
-            rtValArgs = {}
-
-            for key, value in inputArgs.iteritems():
-                if type(value) != type(self.__client.RT.types.UInt32()):
-                    rtValType = cmd.getRTValArgType(key)
-                    pyRTValType = getattr(self.__client.RT.types, rtValType)
-                    value  = pyRTValType(value)  
-                rtValArgs[key] = value   
-                   
-            return rtValArgs
-        
-        except Exception as e:    
+        if not CommandArgsHelpers.IsScriptableCmd(cmd):
             raise Exception(
-                'CommandManager.__castInputArgsToTRVal, error: ' + str(e) )
-
-    def __castAndCheckCommandArgs(self, cmd, inputArgs):
-        """ \internal
-            Casts the inputs arguments of the command into RTVal. 
-        """
-
-        if not issubclass(type(cmd), Commands.BaseScriptableCommand):
-            raise Exception(
-                "CommandManager.__castAndCheckCommandArgs, error: Command '" +
+                "CommandManager.__castAndCheckCmdArgs, error: Command '" +
                 str(cmd.getName()) + "' is not scriptable" )
 
-        # Check if it's a BaseRTValScriptableCommand.
-        isRTValScriptCommand = issubclass(type(cmd), Commands.BaseRTValScriptableCommand)
-        createRTValCommand = isRTValScriptCommand
-
+        # If the command is a RTValScriptable and its RTVal args type have
+        # been set, call checkRTValCommandArgs, checkCommandArgs otherwise.
+        createRTValCommand = CommandArgsHelpers.IsRTValScriptableCmd(cmd)
         for key, value in inputArgs.iteritems():
-            if not cmd.hasArg(key):
+            if cmd.hasArg(key) is False:
                 raise Exception(
-                    "CommandManager.__castAndCheckCommandArgs, error: arg '" + 
+                    "CommandManager.__castAndCheckCmdArgs, error: arg '" + 
                     str(key) + "' doesn't exist" )
 
-            if isRTValScriptCommand:
+            if CommandArgsHelpers.IsRTValScriptableCmd(cmd):
                 rtValType = cmd.getRTValArgType(key)
                 if len(rtValType) == 0:
                     createRTValCommand = False
-                    break;
+                    break
 
-        if isRTValScriptCommand and createRTValCommand:
-            args = self.__castInputArgsToTRVal(cmd, inputArgs)
-            super(CommandManager, self)._checkRTValCommandArgs_Python(cmd, args)
-
+        if createRTValCommand:
+            self._checkRTValCommandArgs_Python(
+                cmd, 
+                CommandArgsHelpers.CastCmdArgsToRTVal(self.__client, cmd, inputArgs))
         else:
-            args = self.__castInputArgsToStr(cmd, inputArgs)
-            super(CommandManager, self)._checkCommandArgs_Python(cmd, args)
+            self._checkCommandArgs_Python(
+                cmd, 
+                CommandArgsHelpers.CastCmdArgsToStr(self.__client, cmd, inputArgs))
 
     def _createCommand_Python(self, cmdName, args = {}, doCmd = True):
-        """ \internal, 
-            Implementation of KLCommandManager_Python
-        """
+        """ \internal, impl. of Commands.KLCommandManager_Python. """
         try:
-            cmd = GetCommandRegistry()._createCommand_Python(cmdName)
-            
+            cmd = GetCmdRegistry().createCmd(cmdName)
             if len(args) > 0:
-                super(CommandManager, self)._checkCommandArgs_Python(cmd, args)
-
-            if doCmd :
-                self.doCommand(cmd)
-                
+                self._checkCommandArgs_Python(cmd, args)
+            if doCmd:
+                self._doCommand_Python(cmd)
             return cmd
-
         except Exception as e:    
             raise Exception(e)
+
+    def _checkCommandArgs_Python(self, cmd, args):
+        """ \internal, impl. of Commands.KLCommandManager_Python. """
+        error = super(CommandManager, self)._checkCommandArgs_Python(cmd, args)
+        if error:
+            raise Exception(error)
+        return error
 
     def _createRTValCommand_Python(self, cmdName, args = {}, doCmd = True):
-        """ \internal, 
-            Implementation of KLCommandManager_Python
-        """
+        """ \internal, impl. of Commands.KLCommandManager_Python. """
         try:
-            cmd = GetCommandRegistry()._createCommand_Python(cmdName)
-
+            cmd = GetCmdRegistry().createCmd(cmdName)
             if len(args) > 0:
-                super(CommandManager, self)._checkRTValCommandArgs_Python(cmd, args)
-
-            if doCmd :
-                self.doCommand(cmd)
-                
+                self._checkRTValCommandArgs_Python(
+                    cmd, 
+                    CommandArgsHelpers.CastCmdArgsToRTVal(self.__client, cmd, args))
+            if doCmd:
+                self._doCommand_Python(cmd)
             return cmd
-        
         except Exception as e:    
             raise Exception(e)
 
+    def _checkRTValCommandArgs_Python(self, cmd, args):
+        """ \internal, impl. of Commands.KLCommandManager_Python. """
+        error = super(CommandManager, self)._checkRTValCommandArgs_Python(cmd, args)
+        if error:
+            raise Exception(error)
+        return error
+
+    def _doCommand_Python(self, cmd):
+        """ \internal, impl. of Commands.KLCommandManager_Python. """
+        error = super(CommandManager, self)._doCommand_Python(cmd)
+        if error:
+            raise Exception(error)
+        return error
+
+    def _undoCommand_Python(self):
+        """ \internal, impl. of Commands.KLCommandManager_Python. """
+        error = super(CommandManager, self)._undoCommand_Python()
+        if error:
+            raise Exception(error)
+        return error
+
+    def _redoCommand_Python(self):
+        """ \internal, impl. of Commands.KLCommandManager_Python. """
+        error = super(CommandManager, self)._redoCommand_Python()
+        if error:
+            raise Exception(error)
+        return error
+
+    def _getCommandAtIndex_Python(self, index):
+        """ \internal, impl. of Commands.KLCommandManager_Python. """
+        error, cmd = super(CommandManager, self)._getCommandAtIndex_Python()
+        if cmd is None:
+            raise Exception(error)
+        return error, cmd
+
     def clearRedoStack(self):
-        """ \internal 
-            Implementation of Commands.CommandManager
-        """
+        """ \internal, impl. of Commands.KLCommandManager_Python. """
         count = self._totalCountAtStackIndex()
         super(CommandManager, self).clearRedoStack()
         self.__flatCommandsStack = self.__flatCommandsStack[:count]
 
-    def _commandIsPushed_Python(self, cmd, isLowCmd):
-        """ \internal 
-            Implementation of KLCommandManager_Python
+    def _commandPushed_Python(self, cmd, isLowCmd):
+        """ \internal, impl. of Commands.KLCommandManager_Python. 
+            Add the commands to the python stack.
         """
         self.__flatCommandsStack.append(cmd)
-
+    
+    def _synchronizeKL_Python(self):
+        """ \internal, impl. of Commands.KLCommandRegistry_Python. """
+        error = super(CommandManager, self)._synchronizeKL_Python()
+        if error:
+            raise Exception(error)
+        return error
+     
     def __onCommandRegistered(self, cmdName, cmdType, implType):
-        """ \internal
-            Callback when a command is registered.
+        """ \internal, callback when a command is registered.
+            Run-time creation of the function to create the command.
+            The function is added to the "Commands" module. 
         """
-
-        # Run-time creation of the function to create the command.
-        # The function is added to the "Commands" module.
         exec('\
 def ' + cmdName + '(**kwargs):\n\
-    print "__onCommandRegistered"\n\
     try:\n\
-        return GetCommandManager().createCmd("' + cmdName + '", kwargs )\n\
+        return GetCmdManager().createCmd("' + cmdName + '", kwargs )\n\
     except Exception as e:\n\
         raise Exception(e)\n\
 setattr(GetOrCreateModule("Commands") , "' + cmdName + '", '+ cmdName + ')')
 
 
-# \internal
-# Create the "Commands" module right now so it 
-# can be imported with the usual syntax later
-# --> import Commands
+# \internal, Create the "Commands" module right now so it can  
+# be imported with the usual syntax later : 'import Commands'
 GetOrCreateModule('Commands')
 
-# \internal
-# Store the CommandManager singleton
+# \internal, store the manager singleton
 global s_cmdManagerSingleton
 s_cmdManagerSingleton = None
 
-def GetCommandManager():
+def GetCmdManager():
     """ Gets the CommandManager singleton.
         Raises an exception if the manager is not created. 
     """
     if s_cmdManagerSingleton is None:
-        raise Exception("CommandManager.GetCommandManager, the manager is null.\n\
-            To create it : CreateCommandManager(FabricCore.Client).")
+        raise Exception("CommandManager.GetCmdManager, the manager is null.\n\
+            To create it : CreateCmdManager(FabricCore.Client).")
     else:
         return s_cmdManagerSingleton
 
-def CreateCommandManager(client):
+def CreateCmdManager(client):
     """ Creates the CommandManager singleton.
     """
     global s_cmdManagerSingleton
     if s_cmdManagerSingleton is None:
         # Be sure the command registry is created.
         s_cmdManagerSingleton = CommandManager(client)
-    return s_cmdManagerSingleton;
+    return s_cmdManagerSingleton

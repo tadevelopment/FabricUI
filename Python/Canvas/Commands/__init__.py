@@ -1,5 +1,5 @@
 __all__ = [
-  	'CommandManager',
+	'CommandManager',
     'CommandRegistry',
     'CommandManagerQtCallback'
 ]
