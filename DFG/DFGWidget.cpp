@@ -384,6 +384,9 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   if ( !controller )
     return NULL;
 
+  if (graphWidget->isQuickZoomActive())  // [FE-7950]
+    return NULL;
+
   std::vector<GraphView::Node *> nodes = graph->selectedNodes();
   
   unsigned varNodeCount;
@@ -456,6 +459,9 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     FabricCore::DFGExec &exec      = dfgWidget->m_uiController->getExec();
     GraphView::Graph    *graph     = dfgWidget->m_uiGraph;
     if (graph->controller() == NULL)
+      return NULL;
+
+    if (dfgWidget->isQuickZoomActive())  // [FE-7950]
       return NULL;
 
     std::vector<GraphView::Node *> nodes = dfgWidget->getUIController()->graph()->selectedNodes();
@@ -639,6 +645,10 @@ QMenu *DFGWidget::portContextMenuCallback(
   GraphView::Graph * graph = graphWidget->m_uiGraph;
   if (!graph->controller())
     return NULL;
+
+  if (graphWidget->isQuickZoomActive())  // [FE-7950]
+    return NULL;
+
   FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
 
   bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
@@ -678,6 +688,9 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   if(graph->controller() == NULL)
     return NULL;
 
+  if (graphWidget->isQuickZoomActive())  // [FE-7950]
+    return NULL;
+
   bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
 
   QMenu *menu = new QMenu( fixedPort->scene()->views()[0] );
@@ -695,6 +708,9 @@ QMenu *DFGWidget::connectionContextMenuCallback(
   )
 {
   DFGWidget * dfgWidget = (DFGWidget*)userData;
+
+  if (dfgWidget->isQuickZoomActive())  // [FE-7950]
+    return NULL;  // [FE-7950]
 
   QMenu *result = new QMenu(connection->scene()->views()[0]);
 
@@ -769,6 +785,10 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
   GraphView::Graph * graph = graphWidget->m_uiGraph;
   if (graph->controller() == NULL)
     return NULL;
+
+  if (graphWidget->isQuickZoomActive())  // [FE-7950]
+    return NULL;
+
   FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
 
   bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
@@ -2058,7 +2078,7 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
 {
   if ( event->key() == Qt::Key_Z
     && !event->isAutoRepeat()
-    && m_uiGraphZoomBeforeQuickZoom != 0 )
+    && isQuickZoomActive() )
   {
     event->accept();
 
