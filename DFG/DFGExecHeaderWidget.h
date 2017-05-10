@@ -69,6 +69,7 @@ namespace FabricUI
 
       void reqExtEditingFinished();
       void reqExtResizeToContent();
+      void reqExtSetToolTipFromContent();
       void onSplitFromPresetClicked();
 
     private:

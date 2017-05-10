@@ -19,6 +19,15 @@ inline std::string ToStdString( const QString& s )
 }
 inline QString ToQString( const std::string& s ) { return QString::fromUtf8( s.data(), int(s.size()) ); }
 
+// Converts a UTF8 string to a Latin1 string (guaranteeing 1 byte per character)
+inline std::string ToLatin1( const QString& s )
+{
+  const QByteArray cvtd = s.toLatin1();
+  assert( cvtd.size() == s.size() ); // There should be as many bytes as characters
+  return std::string( cvtd.data(), cvtd.end() );
+}
+inline std::string ToLatin1( const std::string& s ) { return ToLatin1( ToQString( s ) ); }
+
 namespace FabricUI
 {
   namespace DFG
