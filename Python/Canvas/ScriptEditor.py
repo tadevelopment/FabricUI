@@ -541,7 +541,7 @@ class ScriptEditor(QtGui.QWidget):
 
         # Synchronize the KL-C++ registry so KL commands 
         # can be created with 'named-arg' syntax. 
-        CommandRegistry.GetCommandRegistry().synchronizeKL();
+        GetCmdRegistry().synchronizeKL();
 
         self.exec_(code)
 
@@ -550,10 +550,10 @@ class ScriptEditor(QtGui.QWidget):
             self.log.appendCommand(code + "\n")
         oldEchoStackIndexChanges = self._echoStackIndexChanges
         self._echoStackIndexChanges = False
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
-        sys.stdout = self.stdout
-        sys.stderr = self.stderr
+        # old_stdout = sys.stdout
+        # old_stderr = sys.stderr
+        # sys.stdout = self.stdout
+        # sys.stderr = self.stderr
         try:
             result = eval(code, self.eval_globals)
             if self.echoCommandsAction.isChecked() and result is not None:
@@ -564,8 +564,8 @@ class ScriptEditor(QtGui.QWidget):
                 traceback.format_exception(exc_type, exc_value, exc_traceback)
                 )
             result = None
-        sys.stderr = old_stderr
-        sys.stdout = old_stdout
+        # sys.stderr = old_stderr
+        # sys.stdout = old_stdout
         self._echoStackIndexChanges = oldEchoStackIndexChanges
         return result
 
@@ -574,10 +574,10 @@ class ScriptEditor(QtGui.QWidget):
             self.log.appendCommand(code + "\n")
         oldEchoStackIndexChanges = self._echoStackIndexChanges
         self._echoStackIndexChanges = False
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
-        sys.stdout = self.stdout
-        sys.stderr = self.stderr
+        # old_stdout = sys.stdout
+        # old_stderr = sys.stderr
+        # sys.stdout = self.stdout
+        # sys.stderr = self.stderr
         try:
             exec code in self.eval_globals
         except:
@@ -585,8 +585,8 @@ class ScriptEditor(QtGui.QWidget):
             sys.stderr.writelines(
                 traceback.format_exception(exc_type, exc_value, exc_traceback)
                 )
-        sys.stderr = old_stderr
-        sys.stdout = old_stdout
+        # sys.stderr = old_stderr
+        # sys.stdout = old_stdout
         self._echoStackIndexChanges = oldEchoStackIndexChanges
 
     def logText(self, text):

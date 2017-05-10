@@ -433,7 +433,7 @@ class CanvasWindow(QtGui.QMainWindow):
         """
         self.qUndoStack = QtGui.QUndoStack()
 
-        CreateCommandManager(self.client)
+        CreateCmdManager(self.client)
         self.hotkeyEditorDialog = HotkeyEditorDialog(self)
 
         self.qUndoView = QtGui.QUndoView(self.qUndoStack)
@@ -466,7 +466,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget.urlDropped.connect(self.onUrlDropped)
 
         controller = self.dfgWidget.getDFGController()
-        controller.topoDirty.connect(GetCommandManager().synchronizeKL)
+        controller.topoDirty.connect(GetCmdManager().synchronizeKL)
 
     def _initTreeView(self):
         """Initializes the preset TreeView.
@@ -806,7 +806,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
             self.host.flushUndoRedo()
             self.qUndoStack.clear()
-            GetCommandManager().clear()
+            GetCmdManager().clear()
             self.qUndoView.setEmptyLabel("Load Graph")
             self.viewport.clearInlineDrawing()
 
@@ -1089,7 +1089,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
             self.host.flushUndoRedo()
             self.qUndoStack.clear()
-            GetCommandManager().clear()
+            GetCmdManager().clear()
             self.viewport.clearInlineDrawing()
             QtCore.QCoreApplication.processEvents()
 
