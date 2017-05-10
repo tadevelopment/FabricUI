@@ -1,7 +1,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "BaseDFGCommand.h"
-#include <iostream>
+#include <FabricUI/Commands/CommandException.h>
 
 using namespace FabricUI;
 using namespace DFG;
@@ -30,15 +30,15 @@ void BaseDFGCommand::registrationCallback(
   m_dfgController = (DFGController*)userData;
 
   if(m_dfgController == 0)
-    throw(
-      "BaseDFGCommand::registrationCallback, error: DFGController is null"
-    );
+    CommandException::PrintOrThrow(
+      "BaseDFGCommand::registrationCallback",
+      "DFGController is null",
+      "",
+      PRINT | THROW);
 }
 
 bool BaseDFGCommand::canUndo()
 {
-  std::cout << "BaseDFGCommand::canUndo" << std::endl;
-
   return m_coreCmdCount > 0;
 }
 
@@ -48,15 +48,16 @@ bool BaseDFGCommand::undoIt()
   {
     for (unsigned i = 0; i < m_coreCmdCount; ++i)
       m_dfgController->getBinding().getHost().maybeUndo();
-
     return true;
   }
 
   catch(Exception &e)
   {
-    printf(
-      "BaseDFGCommand::undoIt: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow(
+      "BaseDFGCommand::undoIt",
+      "",
+      QString(e.getDesc_cstr()),
+      PRINT | THROW);
   }
 
   return false;
@@ -68,15 +69,16 @@ bool BaseDFGCommand::redoIt()
   {
     for (unsigned i = 0; i < m_coreCmdCount; ++i)
       m_dfgController->getBinding().getHost().maybeRedo();
-
     return true;
   }
 
   catch(Exception &e)
   {
-    printf(
-      "BaseDFGCommand::redoIt: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow(
+      "BaseDFGCommand::redoIt",
+      "",
+      QString(e.getDesc_cstr()),
+      PRINT | THROW);
   }
 
   return false;

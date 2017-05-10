@@ -24,14 +24,17 @@ class SetPortsDefaultValuesCommand : public BaseDFGCommand
 
     virtual ~SetPortsDefaultValuesCommand();
 
-    /// Implementation of BaseCommand.
+    /// Implementation of Command.
     bool canUndo();
  
-    /// Implementation of BaseCommand.
+    /// Implementation of Command.
     virtual bool doIt();
 
-    /// Implementation of BaseScriptableCommand.
+    /// Implementation of Command.
     virtual QString getHelp();
+    
+    /// Implementation of Command.
+    virtual QString getHistoryDesc();
 };
 
 } // namespace DFG

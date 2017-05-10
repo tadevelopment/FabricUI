@@ -2,7 +2,7 @@
 
 #include "SetPortsDefaultValuesCommand.h"
 #include <FabricUI/Commands/KLCommandManager.h>
-#include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Commands/CommandException.h>
 
 using namespace FabricCore;
 using namespace FabricUI;
@@ -12,39 +12,47 @@ using namespace Commands;
 SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand() 
   : BaseDFGCommand()
 {
-	declareRTValArg(
-    "execPath",
-    "String",
-    false);
+  try
+  {
+    declareRTValArg(
+      "execPath", 
+      "String", 
+      false);
 
-  declareRTValArg(
-    "nodeName",
-    "String",
-    false);
+    declareRTValArg(
+      "nodeName", 
+      "String", 
+      false);
 
-  declareRTValArg(
-    "portNameList",
-    "String[]",
-    false);
+    declareRTValArg(
+      "portNameList", 
+      "String[]", 
+      false);
 
- 	declareRTValArg(
-    "portValueList",
-    "RTVal[]",
-    false);
+   	declareRTValArg(
+      "portValueList", 
+      false);
 
-  KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
-    CommandManager::GetCommandManager());
-    
-  Client client = manager->getClient();
-                   
-  declareRTValArg( 
-    "isUndoable",
-    "Boolean",
-    true,
-    RTVal::ConstructBoolean(
-      client,
-      true)
-    );
+    KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
+      CommandManager::GetCommandManager());
+                           
+    declareRTValArg( 
+      "isUndoable",
+      "Boolean",
+      true,
+      RTVal::ConstructBoolean(
+        manager->getClient(), 
+        true)
+      );
+  }
+
+  catch(CommandException &e) 
+  {
+    CommandException::PrintOrThrow(
+      "SetPortDefaultValueCommand::SetPortDefaultValueCommand",
+      "",
+      e.what());
+  }
 }
 
 SetPortsDefaultValuesCommand::~SetPortsDefaultValuesCommand() 
@@ -75,12 +83,10 @@ bool SetPortsDefaultValuesCommand::doIt()
       ).getBoolean();
 
     RTVal portNameList = getRTValArg(
-      "portNameList"
-      );
+      "portNameList");
     
     RTVal portValueList = getRTValArg(
-      "portValueList"
-      );
+      "portValueList");
 
     DFGExec exec = m_dfgController->getBinding().getExec().getSubExec(
       execPath.toUtf8().constData()
@@ -99,8 +105,7 @@ bool SetPortsDefaultValuesCommand::doIt()
       exec.setPortDefaultValue( 
         portPath.toUtf8().constData(), 
         portValueList.getArrayElement(i), 
-        isUndoable
-        );
+        isUndoable);
 
       if(isUndoable)
         ++m_coreCmdCount;
@@ -109,25 +114,44 @@ bool SetPortsDefaultValuesCommand::doIt()
     return true;
   }
 
-  catch(Exception &e)
+  catch(CommandException &e) 
   {
-    printf(
-      "SetPortsDefaultValuesCommand::doIt: exception: %s\n", 
-      e.getDesc_cstr());
+    CommandException::PrintOrThrow(
+      "SetPortsDefaultValuesCommand::doIt",
+      "",
+      e.what());
   }
-
   return false;
 } 
 
 QString SetPortsDefaultValuesCommand::getHelp()
 {
-  QString help;
-  help +=  "Sets the values of several DFG ports.\n";
-  help +=  "Arguments:\n";
-  help +=  "- execPath (String): Absolute path of the DFGExec.\n";
-  help +=  "- nodeName (String): Name of the node owning the port.\n";
-  help +=  "- portNameList (String[]): Name of the ports.\n";
-  help +=  "- portValueList (RTVal[]): Values to set, must be of the same type than the port.\n";
-  help +=  "- isUndoable (Boolean): If true, the command is undoable.";
-  return help;
+  QMap<QString, QString> argsHelp;
+
+  argsHelp["execPath"] = "Absolute path of the DFGExec";
+  argsHelp["nodeName"] = "Name of the node owning the port";
+  argsHelp["portNameList"] = "Name of the ports.";
+  argsHelp["portValueList"] = "Values to set, must be of the same type than the ports.";
+  argsHelp["isUndoable"] = "If true, the command is undoable.";
+
+  return createHelpFromArgs(
+    "Sets the values of several DFG ports",
+    argsHelp);
+}
+
+QString SetPortsDefaultValuesCommand::getHistoryDesc()
+{
+  QMap<QString, QString> argsDesc;
+
+  argsDesc["execPath"] = getRTValArg(
+    "execPath").getStringCString();
+
+  argsDesc["nodeName"] = getRTValArg(
+    "nodeName").getStringCString();
+
+  argsDesc["portNameList"] = getRTValArg(
+    "portNameList").getStringCString();
+
+  return createHistoryDescFromArgs(
+    argsDesc);
 }
