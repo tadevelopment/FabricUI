@@ -3,7 +3,6 @@
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/DFG/DFGExecHeaderWidget.h>
 #include <FabricUI/Util/LoadPixmap.h>
-#include <FabricUI/Util/FELineEdit.h>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -71,7 +70,7 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
 
   m_reqExtLabel = new QLabel;
   m_reqExtLabel->setObjectName( "DFGRequiredExtensionsLabel" );
-  m_reqExtLineEdit = new Util::FELineEdit;  // [FE-7883]
+  m_reqExtLineEdit = new ReqExtLineEdit; // [FE-7883] [FE-4882]
   m_reqExtLineEdit->setObjectName( "DFGRequiredExtensionsLineEdit" );
   m_reqExtLineEdit->setFocusPolicy( Qt::ClickFocus ); // [FE-5446]
   QObject::connect(
@@ -197,7 +196,7 @@ void DFGExecHeaderWidget::refresh()
     m_reqExtLabel->setVisible( execBlockName.empty() );
     m_reqExtLabel->setText( "Required Extensions:" );
     m_reqExtLineEdit->setVisible( execBlockName.empty() );
-    m_reqExtLineEdit->setReadOnly( wouldSplitFromPreset );
+    m_reqExtLineEdit->setAllowEdits( !wouldSplitFromPreset );
     m_reqExtLineEdit->setText( extDepsDescCStr.c_str() );
 
     update();

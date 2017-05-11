@@ -9,10 +9,12 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QFrame>
+#include <QMouseEvent>
 
 #include <FTL/StrRef.h>
 
 #include <FabricUI/GraphView/GraphConfig.h>
+#include <FabricUI/Util/FELineEdit.h>
 
 class QLabel;
 
@@ -21,6 +23,59 @@ namespace FabricUI
   namespace DFG
   {
     class DFGController;
+
+    class ReqExtLineEdit : public Util::FELineEdit
+    {
+      Q_OBJECT
+
+    public:
+
+      ReqExtLineEdit( QWidget *parent = 0 )
+        : FELineEdit( parent )
+        , m_allowEdits( false)
+      {
+        init();
+      }
+
+      void setAllowEdits(bool allow)
+      {
+        m_allowEdits = allow;
+      }
+      
+      virtual void mouseDoubleClickEvent(QMouseEvent *event)
+      {
+        // [FE-4882] textfield requires a double-click before it can be edited.
+        if (m_allowEdits)
+        {
+          setReadOnly(false);
+          setFocus();
+        }
+        selectAll();
+        event->accept();
+      }
+
+      void focusOutEvent(QFocusEvent * event)
+      {
+        setReadOnly(true);
+        event->accept();
+      }
+
+    protected:
+
+      void init()
+      {
+        setReadOnly( true);
+      }
+
+    signals:
+
+    protected slots:
+
+    private:
+
+      bool m_allowEdits;
+
+    };
 
     class DFGExecHeaderWidget : public QFrame
     {
@@ -79,7 +134,7 @@ namespace FabricUI
       QLabel *m_presetNameLabel;
       QLabel *m_presetPathSep;
       QLabel *m_reqExtLabel;
-      QLineEdit *m_reqExtLineEdit;
+      ReqExtLineEdit *m_reqExtLineEdit;
       QPushButton * m_backButton;
       QPushButton * m_saveButton;
       QPushButton * m_reloadButton;
