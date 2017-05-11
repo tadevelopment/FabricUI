@@ -17,6 +17,7 @@
 #include <vector>
 #include <ASTWrapper/KLASTManager.h>
 #include <QTimer>
+#include <QAction>
  
 using namespace FabricUI::ValueEditor_Legacy;
 
@@ -184,7 +185,11 @@ namespace FabricUI
 
       virtual QString gvcGetCurrentExecPath();
       virtual bool gvcCurrentExecIsInstBlockExec();
-      
+
+      QMenu* gvcCreateNodeHeaderMenu( GraphView::Node *, GraphView::ConnectionTarget *, GraphView::PortType ) FTL_OVERRIDE;
+      QMenu* gvcCreateInstBlockHeaderMenu( GraphView::InstBlock *, GraphView::ConnectionTarget *, GraphView::PortType ) FTL_OVERRIDE;
+      std::string gvcEncodeMetadaToPersistValue() FTL_OVERRIDE;
+
       // Commands
 
       void cmdRemoveNodes(
@@ -608,6 +613,42 @@ namespace FabricUI
         FTL::CStrRef oldNodeName,
         FTL::CStrRef newNodeName
         );
+    };
+
+    class ExposePortAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ExposePortAction(
+        QObject *parent,
+        DFGController *dfgController,
+        GraphView::ConnectionTarget *other,
+        GraphView::PortType connectionPortType
+      );
+
+    protected slots:
+
+      void onTriggered();
+
+    protected:
+
+      virtual bool allowNonInPortType() const
+      { return true; }
+
+      virtual void invokeAddPort(
+        QString desiredPortName,
+        FabricCore::DFGPortType portType,
+        QString typeSpec,
+        QString extDep,
+        QString metaData
+      ) = 0;
+
+      DFGController *m_dfgController;
+      GraphView::ConnectionTarget *m_other;
+      GraphView::PortType m_connectionPortType;
+
     };
 
   };

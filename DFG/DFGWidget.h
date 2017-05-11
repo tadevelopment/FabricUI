@@ -99,6 +99,7 @@ namespace DFG {
       bool isEditable() const { return m_isEditable; }
       static QSettings * getSettings();
       static void setSettings(QSettings * settings);
+      bool isQuickZoomActive() const { return (m_uiGraphZoomBeforeQuickZoom != 0); }
       
       void onExecPathOrTitleChanged();
       void refreshExtDeps( FTL::CStrRef extDeps );
@@ -180,6 +181,7 @@ namespace DFG {
       void onRevealPresetInExplorer(const char* nodeName);
       void onPresetAddedFromTabSearch( QString preset );
       void onBackdropAddedFromTabSearch();
+      void onNewBlockAddedFromTabSearch();
       void onVariableCreationRequestedFromTabSearch();
       void onVariableSetterAddedFromTabSearch( const std::string name );
       void onVariableGetterAddedFromTabSearch( const std::string name );
@@ -203,6 +205,7 @@ namespace DFG {
         );
       void tabSearchVariablesSetDirty();
       void tabSearchVariablesUpdate();
+      void tabSearchBlockToggleChanged();
 
     private:
 
