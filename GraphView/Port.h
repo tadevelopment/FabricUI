@@ -41,7 +41,7 @@ namespace FabricUI
         SidePanel * parent,
         FTL::StrRef name,
         PortType portType,
-        FTL::StrRef dataType,
+        FTL::CStrRef dataType,
         QColor color,
         FTL::StrRef label = FTL::StrRef()
         );
@@ -79,7 +79,7 @@ namespace FabricUI
 
       virtual FTL::CStrRef dataType() const
         { return m_dataType; }
-      virtual void setDataType(FTL::CStrRef dataType);
+      virtual void setDataType(FTL::CStrRef dataType, bool updateLabelforArrays);
 
       virtual bool highlighted() const;
       virtual void setHighlighted(bool state = true);
@@ -113,12 +113,13 @@ namespace FabricUI
 
     private:
 
-      void init();
+      void init(PortType portType, FTL::CStrRef dataType, QColor color);
 
       SidePanel * m_sidePanel;
       std::string m_name;
       PortType m_portType;
       std::string m_labelCaption;
+      std::string m_labelSuffix;
       QColor m_color;
       std::string m_dataType;
       bool m_highlighted;
