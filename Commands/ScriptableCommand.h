@@ -39,12 +39,11 @@ class ScriptableCommand
     /// \param loggable If true, the arg is logged in the script-editor. 
     virtual void declareArg( 
       const QString &key, 
-      bool optional, 
-      const QString &defaultValue,
-      bool loggable
+      int flag, 
+      const QString &defaultValue
       ) = 0;
 
-    /// Checks if a command has an arg.
+    /// Checks if the command has an arg.
     /// \param key Argument key
     virtual bool hasArg(
       const QString &key 
@@ -52,14 +51,9 @@ class ScriptableCommand
 
     /// Checks if an arg is optional.
     /// \param key Argument key
-    virtual bool isArgOptional(
-      const QString &key 
-      ) = 0;
-
-    /// Checks if an arg is loggable.
-    /// \param key Argument key
-    virtual bool isArgLoggable(
-      const QString &key 
+    virtual bool isArg(
+      const QString &key,
+      int flag
       ) = 0;
 
     /// Gets the arguments keys.
@@ -89,8 +83,7 @@ class ScriptableCommand
     /// doing the command, called from the manager.
     virtual void validateSetArgs() = 0;
 
-    /// Gets a decription of the arguments.
-    /// Used for debugging.
+    /// Gets a decription of the args, for debugging.
     virtual QString getArgsDescription() = 0;
 };
 

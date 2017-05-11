@@ -30,7 +30,7 @@ void BaseDFGCommand::registrationCallback(
   m_dfgController = (DFGController*)userData;
 
   if(m_dfgController == 0)
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseDFGCommand::registrationCallback",
       "DFGController is null",
       "",
@@ -53,7 +53,7 @@ bool BaseDFGCommand::undoIt()
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseDFGCommand::undoIt",
       "",
       QString(e.getDesc_cstr()),
@@ -74,7 +74,7 @@ bool BaseDFGCommand::redoIt()
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseDFGCommand::redoIt",
       "",
       QString(e.getDesc_cstr()),

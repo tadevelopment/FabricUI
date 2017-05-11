@@ -2,7 +2,7 @@
 # Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 #
 
-from FabricEngine.FabricUI import Commands, Util
+from FabricEngine.FabricUI import Commands as CppCommands
 
 class CommandArgsHelpers:
 
@@ -22,12 +22,12 @@ class CommandArgsHelpers:
     @staticmethod
     def IsRTValScriptableCmd(cmd):
         """ \internal """
-        return issubclass(type(cmd), Commands.BaseRTValScriptableCommand)
+        return issubclass(type(cmd), CppCommands.BaseRTValScriptableCommand)
 
     @staticmethod
     def IsScriptableCmd(cmd):
         """ \internal """
-        return issubclass(type(cmd), Commands.BaseScriptableCommand)
+        return issubclass(type(cmd), CppCommands.BaseScriptableCommand)
 
     ### CommandManager
     @staticmethod
@@ -40,7 +40,7 @@ class CommandArgsHelpers:
 
             for key, arg in args.iteritems():
                  
-                # Commands.BaseRTValScriptableCommand
+                # CppCommands.BaseRTValScriptableCommand
                 if CommandArgsHelpers.IsRTValScriptableCmd(cmd):
 
                     # The input arg is a RTVal, cast it to JSON.
@@ -78,7 +78,7 @@ class CommandArgsHelpers:
                                 rtVal = pyRTValType(arg)   
                                 arg = rtVal.getJSONStr()   
                 
-                # Commands.BaseScriptableCommand, all in strings
+                # CppCommands.BaseScriptableCommand, all in strings
                 else:
                     if not CommandArgsHelpers.__IsPyStringArg(arg):
                         raise Exception(
@@ -174,14 +174,14 @@ class CommandArgsHelpers:
                 keys = cmd.getArgKeys()
      
                 desc += '('
-                    
+                   
                 count = 0
                 for key in keys:
 
                     # Log only loggable commands.
-                    if cmd.isArgSet(key) and cmd.isArgLoggable(key):
+                    if cmd.isArgSet(key) and cmd.isArg(key, CppCommands.CommandFlags.LOGGABLE_ARG):
 
-                        if count > 0 and count < len(keys)-1:
+                        if count > 0 and count < len(keys):
                             desc += ', '
 
                         desc += str(key) + '='
@@ -189,7 +189,7 @@ class CommandArgsHelpers:
                         # RTValScriptableCommand, arguments are RTVal.
                         if CommandArgsHelpers.IsRTValScriptableCmd(cmd):
 
-                            if not cmd.isArgSet(key) or len(cmd.getRTValArgType(key)) == 0:
+                            if len(cmd.getRTValArgType(key)) == 0:
                                 raise Exception(
                                     "CommandManagerQtCallback.ParseCmdArgs, error: \n" + 
                                     "The argument '" + str(key) + "' is invalid" )

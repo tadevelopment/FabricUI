@@ -127,14 +127,7 @@ void ViewportModelItem::setValue(
         "setViewportModelItem",
         args);
     }
-
-    catch(Exception &e)
-    {
-      printf(
-        "ViewportModelItem::getRTValOptions: exception: %s\n", 
-        e.getDesc_cstr());
-    }
-
+ 
     catch (std::string &e) 
     {
       printf(

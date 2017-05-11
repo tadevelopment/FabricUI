@@ -18,38 +18,21 @@ OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand()
 {
   try
   {
-    declareRTValArg(
-      "editorID",
-      "String",
-      false);
-
-    declareRTValArg(
-      "editorTitle",
-      "String",
-      false);
+    declareRTValArg("editorID", "String");
+    declareRTValArg("editorTitle", "String");
 
     declareRTValArg(
       "groupName",
       "String",
-      true);
-  }
-
-  catch(Exception &e)
-  {
-    CommandException::PrintOrThrow(
-      "OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand",
-      "",  
-      e.getDesc_cstr(),
-      PRINT | THROW);
+      CommandFlags::OPTIONAL_ARG | CommandFlags::LOGGABLE_ARG);
   }
 
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand",
       "",
-      e.what(),
-      PRINT | THROW);
+      e.what());
   }
 };
 
@@ -102,22 +85,12 @@ bool OpenKLOptionsTargetEditorCommand::doIt()
     res = true;
   }
 
-  catch(Exception &e)
-  {
-    CommandException::PrintOrThrow(
-      "OpenKLOptionsTargetEditorCommand::doIt",
-      "",
-      e.getDesc_cstr(),
-      PRINT | THROW);
-  }
-
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "OpenKLOptionsTargetEditorCommand::doIt",
       "",
-      e.what(),
-      PRINT | THROW);
+      e.what());
   }
 
   return res;

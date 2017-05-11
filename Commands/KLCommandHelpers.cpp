@@ -2,10 +2,10 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "KLCommandHelpers.h"
-#include "KLCommandRegistry.h"
-#include "KLCommandManager.h"
 #include "CommandException.h"
+#include "KLCommandHelpers.h"
+#include "KLCommandManager.h"
+#include "KLCommandRegistry.h"
 
 using namespace FabricCore;
 
@@ -28,7 +28,7 @@ QString GetKLCommandName(
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandHelpers::GetKLCommandName",
       "",
       e.getDesc_cstr());
@@ -51,7 +51,7 @@ bool CanKLCommandUndo(
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandHelpers::CanKLCommandUndo",
       "",
       e.getDesc_cstr());
@@ -85,7 +85,7 @@ bool DoKLCommand(
     
     strError = args[1].getStringCString();
     if(!strError.isEmpty())
-      CommandException::PrintOrThrow(
+      CommandException::Throw(
         "KLCommandHelpers::DoKLCommand",
         strError
         );
@@ -95,7 +95,7 @@ bool DoKLCommand(
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandHelpers::DoKLCommand",
       strError,
       e.getDesc_cstr());
@@ -126,7 +126,7 @@ bool UndoKLCommand()
     strError = valError.getStringCString();
     if(!res || !strError.isEmpty())
     {
-      CommandException::PrintOrThrow(
+      CommandException::Throw(
         "KLCommandHelpers::UndoKLCommand",
         strError
         );
@@ -139,7 +139,7 @@ bool UndoKLCommand()
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandHelpers::UndoKLCommand",
       strError,
       e.getDesc_cstr());
@@ -170,7 +170,7 @@ bool RedoKLCommand()
     strError = valError.getStringCString();
     if(!res || !strError.isEmpty())
     {
-      CommandException::PrintOrThrow(
+      CommandException::Throw(
         "KLCommandHelpers::RedoKLCommand",
         strError
         );
@@ -183,7 +183,7 @@ bool RedoKLCommand()
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandHelpers::RedoKLCommand",
       strError,
       e.getDesc_cstr());
@@ -206,7 +206,7 @@ QString GetKLCommandHelp(
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandHelpers::GetKLCommandHelp",
       "",
       e.getDesc_cstr());
@@ -229,7 +229,7 @@ QString GetKLCommandHistoryDesc(
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandHelpers::GetKLCommandHistoryDesc",
       "",
       e.getDesc_cstr());

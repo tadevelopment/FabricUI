@@ -12,6 +12,7 @@
 namespace FabricUI {
 namespace Commands {
 
+#define NOTHING 0
 #define PRINT 1
 #define THROW 2
 
@@ -30,18 +31,20 @@ class CommandException : public std::exception
  
     virtual ~CommandException() throw() {}
 
-    /// Prints and/or throws a CommandException.
+    /// Trows and/or prints a CommandException.
     /// \param method Name of the method that fails.
     /// \param error The error to throw/print.
     /// \param childError A child error
     /// \param flag (THROW, PRINT)
-    static QString PrintOrThrow(
+    static QString Throw(
       const QString &method,
       const QString &error = QString(),
       const QString &childError = QString(),
-      unsigned flag = THROW)
+      int flag = THROW)
     {
-      QString cmdError = method + ", error: " + error + "\n " + childError;
+      QString cmdError = method + ", error: " + error + "\n ";
+      if(!childError.isEmpty()) 
+        cmdError += childError + "\n ";
 
       if(flag & PRINT)
         printf("%s", cmdError.toUtf8().constData());
@@ -55,8 +58,7 @@ class CommandException : public std::exception
     /// Implementation of exception.
     virtual const char* what() const throw()
     {
-      return 
-        m_message.toUtf8().constData();
+      return m_message.toUtf8().constData();
     }
 
   private:

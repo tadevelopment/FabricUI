@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandException.h"
 #include "CommandRegistry.h"
+#include "CommandException.h"
 #include <FabricUI/Util/TypeInfo.h>
 
 using namespace FabricUI;
@@ -17,7 +17,7 @@ CommandRegistry::CommandRegistry()
   : Util::BaseFactoryRegistry()
 {
   if(s_instanceFlag)
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CommandRegistry::CommandRegistry",
       "singleton has already been created"
       );
@@ -38,7 +38,7 @@ CommandRegistry::~CommandRegistry()
 CommandRegistry* CommandRegistry::GetCommandRegistry()
 {
   if(!s_instanceFlag)
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CommandRegistry::GetCommandRegistry",
       "the registry is null"
       );
@@ -84,7 +84,7 @@ QList<QString> CommandRegistry::getCommandSpecs(
   const QString &cmdName) 
 {
   if(!isCommandRegistered(cmdName))
-    CommandException::PrintOrThrow( 
+    CommandException::Throw( 
       "CommandRegistry::getCommandSpecs",
       "cannot create command '" + cmdName + "', it's not registered"
       );
@@ -96,7 +96,7 @@ Command* CommandRegistry::createCommand(
   const QString &cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
-    CommandException::PrintOrThrow( 
+    CommandException::Throw( 
       "CommandRegistry::createCommand",
       "cannot create command '" + cmdName + "', it's not registered"
       );
@@ -112,7 +112,7 @@ Command* CommandRegistry::createCommand(
 
       Command* cmd = (Command*)factory->create(); 
       if(cmd == 0)
-        CommandException::PrintOrThrow(
+        CommandException::Throw(
           "CommandRegistry::createCommand",
           "resulting command is null" 
           );
@@ -129,7 +129,7 @@ Command* CommandRegistry::createCommand(
     
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CommandRegistry::createCommand",
       e.what()
       );

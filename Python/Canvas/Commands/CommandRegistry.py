@@ -56,7 +56,6 @@ class CommandRegistry(CppCommands.KLCommandRegistry_Python):
             - cmdType is not command (inherite from Commands.BaseCommand)
             - The command has already been registered under another type
         """
-
         if not cmdName:
             raise Exception('CommandRegistry.registerCommand, error: cmdName is empty') 
 
@@ -106,7 +105,7 @@ class CommandRegistry(CppCommands.KLCommandRegistry_Python):
         if super(CommandRegistry, self).isCommandRegistered(cmdName) is True:
          
             if super(CommandRegistry, self).getCommandSpecs(cmdName)[1] == self.COMMAND_PYTHON:
-                
+            
                 try:
                     # Create the command
                     cmd = self.__cmdObjectTypeDict[cmdName]() 
@@ -122,10 +121,8 @@ class CommandRegistry(CppCommands.KLCommandRegistry_Python):
             # Otherwise (C++/KL), create it in C++.
             else:
                 error, cmd = super(CommandRegistry, self)._createCommand_Python(cmdName)
-
                 if len(error) > 0:
                     raise Exception(error)  
-
                 return [error, cmd]
 
         else:
@@ -135,22 +132,16 @@ class CommandRegistry(CppCommands.KLCommandRegistry_Python):
     def _commandIsRegistered_Python(self, cmdName, cmdType, implType):
         """ \internal, impl. of Commands.KLCommandRegistry_Python. """
         error = super(CommandRegistry, self)._commandIsRegistered_Python(
-            cmdName, 
-            cmdType, 
-            implType)
-        
+            cmdName, cmdType, implType)  
         if error:
             raise Exception(error)  
-
         return error;
 
     def _synchronizeKL_Python(self):
         """ \internal, impl. of Commands.KLCommandRegistry_Python. """
         error = super(CommandRegistry, self)._synchronizeKL_Python()
-        
         if error:
             raise Exception(error)
-
         return error;
 
 # \internal, store the registry singleton 

@@ -19,24 +19,16 @@ BaseScriptableCommand::~BaseScriptableCommand()
 
 void BaseScriptableCommand::declareArg(
   const QString &key, 
-  bool optional, 
-  const QString &defaultValue,
-  bool loggable) 
+  int flags, 
+  const QString &defaultValue) 
 {
   if(key.isEmpty())
-  {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseScriptableCommand::declareArg",
-      "declaring arg of '" + getName() + "', key not specified",
-      "",
-      PRINT);
-
-    return;
-  }
+      "declaring arg of '" + getName() + "', key not specified");
 
   ScriptableCommandArgSpec spec;
-  spec.optional = optional;
-  spec.loggable = loggable;
+  spec.flags = flags;
   spec.defaultValue = defaultValue;
   m_argSpecs[key] = spec;
 
@@ -50,56 +42,22 @@ bool BaseScriptableCommand::hasArg(
   return m_argSpecs.count(key) > 0;
 }
 
-bool BaseScriptableCommand::isArgOptional(
-  const QString &key)
+bool BaseScriptableCommand::isArg(
+  const QString &key,
+  int flag)
 {
-  bool res = false;
-
   if(key.isEmpty()) 
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseScriptableCommand::isArgOptional",
-      "setting arg of '" + getName() + "', key not specified",
-      "",
-      PRINT);
+      "setting arg of '" + getName() + "', key not specified");
 
-  else if(!hasArg(key)) 
+  if(!hasArg(key)) 
     // TODO: make this an optional behavior
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseScriptableCommand::isArgOptional",
-      "setting arg: '" + key + + "' not supported by command '" + getName() + "'",
-      "",
-      PRINT);
+      "setting arg: '" + key + + "' not supported by command '" + getName() + "'");
 
-  else
-    res = m_argSpecs[key].optional;
-
-  return res;
-}
-
-bool BaseScriptableCommand::isArgLoggable(
-  const QString &key)
-{
-  bool res = false;
-
-  if(key.isEmpty()) 
-    CommandException::PrintOrThrow(
-      "BaseScriptableCommand::isArgLoggable",
-      "setting arg of '" + getName() + "', key not specified",
-      "",
-      PRINT);
-
-  else if(!hasArg(key)) 
-    // TODO: make this an optional behavior
-    CommandException::PrintOrThrow(
-      "BaseScriptableCommand::isArgLoggable",
-      "setting arg: '" + key + + "' not supported by command '" + getName() + "'",
-      "",
-      PRINT);
-
-  else
-    res = m_argSpecs[key].loggable;
-
-  return res;
+  return (m_argSpecs[key].flags & flag);
 }
 
 QString BaseScriptableCommand::getArg(
@@ -127,19 +85,15 @@ void BaseScriptableCommand::setArg(
   const QString &value) 
 {
   if(key.isEmpty()) 
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseScriptableCommand::setArg",
-      "setting arg of '" + getName() + "', key not specified",
-      "",
-      THROW);
+      "setting arg of '" + getName() + "', key not specified");
 
   if(!hasArg(key)) 
     // TODO: make this an optional behavior
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseScriptableCommand::setArg",
-      "setting arg: '" + key + + "' not supported by command '" + getName() + "'",
-      "",
-      THROW);
+      "setting arg: '" + key + + "' not supported by command '" + getName() + "'");
 
   m_args.insert(key, value);
 }
@@ -155,12 +109,10 @@ void BaseScriptableCommand::validateSetArgs()
     QString key = it.key();
     ScriptableCommandArgSpec spec = it.value();
      
-    if(!spec.optional && !isArgSet(key)) //is null
-      CommandException::PrintOrThrow(
+    if(!isArg(key, CommandFlags::OPTIONAL_ARG) && !isArgSet(key)) //is null
+      CommandException::Throw(
         "BaseScriptableCommand::validateSetArgs",
-        "validating arg: '" + key + "' of command '" + getName() + "' has not been set",
-        "",
-        THROW);
+        "validating arg: '" + key + "' of command '" + getName() + "' has not been set");
   }
 }
 
@@ -177,7 +129,7 @@ QString BaseScriptableCommand::getArgsDescription()
     ScriptableCommandArgSpec spec = it.value();
 
     res += "    ["  + key 
-      + "] opt: "   + QString::number(spec.optional)
+      + "] opt: "   + QString::number(isArg(key, CommandFlags::OPTIONAL_ARG))
       + " val: "    + getArg(key)
       + " defVal: " + spec.defaultValue;
 
@@ -206,16 +158,16 @@ QString BaseScriptableCommand::createHelpFromArgs(
     QString argHelp = it.value();
 
     QString specs; 
-    if(m_argSpecs[key].optional || m_argSpecs[key].loggable)
+    if(isArg(key, CommandFlags::OPTIONAL_ARG) || isArg(key, CommandFlags::LOGGABLE_ARG))
     {
       specs += "["; 
 
-      if(m_argSpecs[key].optional)
+      if(isArg(key, CommandFlags::OPTIONAL_ARG))
         specs += "optional"; 
 
-      if(m_argSpecs[key].loggable)
+      if(isArg(key, CommandFlags::LOGGABLE_ARG))
       {
-        if(m_argSpecs[key].optional)
+        if(isArg(key, CommandFlags::OPTIONAL_ARG))
           specs += ", loggable"; 
         specs += "loggable"; 
       }

@@ -41,7 +41,7 @@ KLCommandManager::KLCommandManager(
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager::KLCommandManager",
       "",
       e.getDesc_cstr());
@@ -56,7 +56,7 @@ void KLCommandManager::undoCommand()
 {
   if(m_undoStack.size() == 0)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager::undoCommand",
       "Nothing to redo",
       "",
@@ -74,7 +74,7 @@ void KLCommandManager::redoCommand()
 {
   if(m_redoStack.size() == 0)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager::redoCommand",
       "Nothing to redo",
       "",
@@ -101,7 +101,7 @@ void KLCommandManager::clear()
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager::clear",
       "",
       e.getDesc_cstr());
@@ -134,7 +134,7 @@ QString KLCommandManager::getContent()
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager::getContent",
       "",
       e.getDesc_cstr());
@@ -160,10 +160,9 @@ void KLCommandManager::synchronizeKL()
 
     // !! Problem, KL and C++ command managers are out of synch
     if(m_klCmdUndoStackCount > klCmdCount)
-      CommandException::PrintOrThrow(
+      CommandException::Throw(
         "KLCommandManager::synchronizeKL",
-        "KL and C++ command managers are out of synch"
-        );
+        "KL and C++ command managers are out of synch");
 
     // Synchronize our stack with KL, two scenarios: 
     // 1. A KL command is created in KL : we construct the
@@ -261,7 +260,7 @@ void KLCommandManager::synchronizeKL()
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager::synchronizeKL",
       "",
       e.getDesc_cstr());
@@ -283,7 +282,7 @@ void KLCommandManager::clearRedoStack()
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager::clearRedoStack",
       "",
       e.getDesc_cstr());

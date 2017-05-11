@@ -3,8 +3,8 @@
 //
 
 #include <QApplication>
-#include "KLOptionsTargetEditor.h"
 #include "OptionsEditorHelpers.h"
+#include "KLOptionsTargetEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
 
 using namespace FabricCore;

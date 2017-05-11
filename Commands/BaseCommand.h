@@ -59,7 +59,7 @@ class BaseCommand : public Command
     /// returns the commande name. 
     virtual QString getHistoryDesc();
 
-  private:
+  protected:
     /// Name of the command.
     QString m_name;
 };

@@ -14,24 +14,10 @@ SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand()
 {
   try
   {
-    declareRTValArg(
-      "execPath", 
-      "String", 
-      false);
-
-    declareRTValArg(
-      "nodeName", 
-      "String", 
-      false);
-
-    declareRTValArg(
-      "portNameList", 
-      "String[]", 
-      false);
-
-   	declareRTValArg(
-      "portValueList", 
-      false);
+    declareRTValArg("execPath", "String");
+    declareRTValArg("nodeName", "String");
+    declareRTValArg("portNameList", "String[]");
+   	declareArg("portValueList");
 
     KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
       CommandManager::GetCommandManager());
@@ -39,7 +25,7 @@ SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand()
     declareRTValArg( 
       "isUndoable",
       "Boolean",
-      true,
+      CommandFlags::OPTIONAL_ARG | CommandFlags::LOGGABLE_ARG,
       RTVal::ConstructBoolean(
         manager->getClient(), 
         true)
@@ -48,7 +34,7 @@ SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand()
 
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "SetPortDefaultValueCommand::SetPortDefaultValueCommand",
       "",
       e.what());
@@ -116,7 +102,7 @@ bool SetPortsDefaultValuesCommand::doIt()
 
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "SetPortsDefaultValuesCommand::doIt",
       "",
       e.what());

@@ -2,9 +2,9 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include "KLCommand.h"
 #include "CommandException.h"
 #include "KLCommandRegistry.h"
-#include "KLCommand.h"
 #include "KLScriptableCommand.h"
  
 using namespace FabricUI;
@@ -33,7 +33,7 @@ KLCommandRegistry::KLCommandRegistry(
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager_Python::KLCommandRegistry",
       "",
       e.getDesc_cstr());
@@ -48,7 +48,7 @@ Command* KLCommandRegistry::createCommand(
   const QString &cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
-    CommandException::PrintOrThrow( 
+    CommandException::Throw( 
       "KLCommandRegistry::createCommand",
       "Cannot create command '" + cmdName + "', it's not registered"
       );
@@ -90,7 +90,7 @@ void KLCommandRegistry::synchronizeKL()
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow( 
+    CommandException::Throw( 
       "KLCommandRegistry::synchronizeKL",
       "",
       e.getDesc_cstr()
@@ -139,7 +139,7 @@ void KLCommandRegistry::registerKLCommand(
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow( 
+    CommandException::Throw( 
       "KLCommandRegistry::registerKLCommand",
       "",
       e.getDesc_cstr()
@@ -190,7 +190,7 @@ Command* KLCommandRegistry::createKLCommand(
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow( 
+    CommandException::Throw( 
       "KLCommandRegistry::createKLCommand",
       "",
       e.getDesc_cstr()
@@ -220,7 +220,7 @@ void KLCommandRegistry::commandIsRegistered(
 
   catch(Exception &e)
   {
-    CommandException::PrintOrThrow( 
+    CommandException::Throw( 
       "KLCommandRegistry::commandIsRegistered",
       "",
       e.getDesc_cstr()

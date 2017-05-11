@@ -18,7 +18,7 @@ CommandManager::CommandManager()
   : QObject()
 {
   if(s_instanceFlag)
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CommandManager::CommandManager",
       "CommandManager singleton has already been created"
       );
@@ -38,7 +38,7 @@ CommandManager::~CommandManager()
 CommandManager* CommandManager::GetCommandManager()
 {
   if(!s_instanceFlag)
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CommandManager::CommandManager",
       "The manager is null");
 
@@ -71,7 +71,7 @@ Command* CommandManager::createCommand(
 
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CommandManager::createCommand",
       "Cannot create command '" + cmdName + "'",
       e.what());
@@ -84,7 +84,7 @@ void CommandManager::doCommand(
   Command *cmd) 
 {
   if(!cmd) 
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CommandManager::doCommand",
       "Command is null");
   
@@ -140,7 +140,7 @@ void CommandManager::undoCommand()
 {
   if(m_undoStack.size() == 0)
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CommandManager::undoCommand",
       "Nothing to undo",
       "",
@@ -157,29 +157,44 @@ void CommandManager::undoCommand()
   {
     for(int i = lowLevelCmdsCount; i--;)
     {
-      Command *low = stackedCmd.lowLevelCmds[i];
-      if(!low->undoIt())
+      try
       {
-        for(int j = i+1; j<lowLevelCmdsCount; ++j)
-        {
-          Command *low_ = stackedCmd.lowLevelCmds[j];
-          low_->redoIt();
-        }
-
-        CommandException::PrintOrThrow(
-          "CommandManager::undoCommand",
-          "Undoing command, top: '" + top->getName() + "', low: '" + low->getName() + "'"
-          );
+        if(!stackedCmd.lowLevelCmds[i]->undoIt())
+          cleanupUnfinishedUndoLowCommandsAndThrow(
+            i, 
+            stackedCmd);
+      }
+       
+      catch(CommandException &e) 
+      {
+        cleanupUnfinishedUndoLowCommandsAndThrow(
+          i, 
+          stackedCmd, 
+          e.what());
       }
     }
   }
   
-  else if(!top->undoIt())
-    CommandException::PrintOrThrow(
-      "CommandManager::undoCommand", 
-      "Undoing command '" + top->getName() + "'"
-      );
-
+  else 
+  {
+    try
+    {
+      if(!top->undoIt())
+        CommandException::Throw(
+        "CommandManager::undoCommand top", 
+        "Undoing command '" + top->getName() + "'"
+        );
+    }
+     
+    catch(CommandException &e) 
+    {
+      CommandException::Throw(
+        "CommandManager::undoCommand top", 
+        "Undoing command '" + top->getName() + "'",
+         e.what());
+    }
+  }
+ 
   m_undoStack.pop_back();
   m_redoStack.push_back(stackedCmd);
 }
@@ -188,8 +203,8 @@ void CommandManager::redoCommand()
 {
   if(m_redoStack.size() == 0)
   {
-    CommandException::PrintOrThrow(
-      "CommandManager::undoCommand", 
+    CommandException::Throw(
+      "CommandManager::redoCommand", 
       "Nothing to redo",
       "",
       PRINT);
@@ -205,29 +220,44 @@ void CommandManager::redoCommand()
   {
     for(int i = 0; i < lowLevelCmdsCount; ++i)
     {
-      Command *low = stackedCmd.lowLevelCmds[i]; 
-      if(!low->redoIt())
+      try
       {
-        for(int j = i; j--;)
-        {
-          Command *low_ = stackedCmd.lowLevelCmds[j];
-          low_->undoIt();
-        }
-
-        CommandException::PrintOrThrow(
-          "CommandManager::redoCommand",
-          "Undoing command, top: '" + top->getName() + "', low: '" + low->getName() + "'"
-          );
+        if(!stackedCmd.lowLevelCmds[i]->redoIt())
+          cleanupUnfinishedRedoLowCommandsAndThrow(
+            i, 
+            stackedCmd);
+      }
+       
+      catch(CommandException &e) 
+      {
+        cleanupUnfinishedRedoLowCommandsAndThrow(
+          i, 
+          stackedCmd, 
+          e.what());
       }
     }
   }
 
-  else if(!top->redoIt())
-    CommandException::PrintOrThrow(
-      "CommandManager::redoCommand",
-      "Redoing command: '" +  top->getName() + "'"
-      );
- 
+  else 
+  {
+    try
+    {
+      if(!top->redoIt())
+        CommandException::Throw(
+        "CommandManager::redoCommand top", 
+        "Undoing command '" + top->getName() + "'"
+        );
+    }
+     
+    catch(CommandException &e) 
+    {
+      CommandException::Throw(
+        "CommandManager::redoCommand top", 
+        "Undoing command '" + top->getName() + "'",
+         e.what());
+    }
+  }
+
   m_redoStack.pop_back();
   m_undoStack.push_back(stackedCmd);
 }
@@ -283,7 +313,7 @@ void CommandManager::checkCommandArgs(
   ScriptableCommand* scriptCommand = dynamic_cast<ScriptableCommand*>(cmd);
   
   if(!scriptCommand) 
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CommandManager::checkCommandArgs",
         "Command '" + cmd->getName() +  "' is created with args " + 
         "but is not implementing the ScriptableCommand interface"
@@ -417,15 +447,77 @@ void CommandManager::cleanupUnfinishedCommandsAndThrow(
     for(int i = top.lowLevelCmds.size(); i--;) 
     {
       if(!top.lowLevelCmds[i]->undoIt()) 
-        CommandException::PrintOrThrow(
+        CommandException::Throw(
           "CommandManager::cleanupUnfinishedCommandsAndThrow",
           "While reverting command '" + top.lowLevelCmds[i]->getName() + "'",
           error);
     }
   }
 
-  CommandException::PrintOrThrow(
+  CommandException::Throw(
     "CommandManager::doCommand",
     "Doing command '" + cmdForErrorLog + "'",
     error);    
+}
+
+void CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow(
+  int topLevelCmdIndex, 
+  StackedCommand &stackedCmd,
+  const QString &error) 
+{
+  int j = 0;
+
+  try
+  {
+    for(j = topLevelCmdIndex+1; j<int(stackedCmd.lowLevelCmds.size()); ++j)
+      stackedCmd.lowLevelCmds[j]->redoIt();
+  }
+       
+  catch(CommandException &e) 
+  {
+    CommandException::Throw(
+      "CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow",
+      "Redoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
+      "', low: '" + stackedCmd.lowLevelCmds[j]->getName() + "'",
+      error
+      );
+  }
+
+  CommandException::Throw(
+    "CommandManager::undoCommand",
+    "Undoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
+    "', low: '" + stackedCmd.lowLevelCmds[topLevelCmdIndex]->getName() + "'",
+    error
+    );
+}
+
+void CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow(
+  int topLevelCmdIndex, 
+  StackedCommand &stackedCmd,
+  const QString &error) 
+{
+  int j = 0;
+
+  try
+  {
+    for(j = topLevelCmdIndex; j--;)
+      stackedCmd.lowLevelCmds[j]->undoIt();
+  }
+       
+  catch(CommandException &e) 
+  {
+    CommandException::Throw(
+      "CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow",
+      "Undoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
+      "', low: '" + stackedCmd.lowLevelCmds[j]->getName() + "'",
+      error
+      );
+  }
+
+  CommandException::Throw(
+    "CommandManager::redoCommand",
+    "Redoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
+    "', low: '" + stackedCmd.lowLevelCmds[topLevelCmdIndex]->getName() + "'",
+    error
+    );
 }

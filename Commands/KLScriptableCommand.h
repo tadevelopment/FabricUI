@@ -128,9 +128,8 @@ class KLScriptableCommand
     /// Does nothing, the arg is set in KL.
     virtual void declareArg( 
       const QString &key, 
-      bool optional, 
-      const QString &defaultValue,
-      bool loggable = false
+      int flag, 
+      const QString &defaultValue
       );
 
     /// Implementation of ScriptableCommand.
@@ -147,19 +146,15 @@ class KLScriptableCommand
       );
     
     /// Implementation of ScriptableCommand.
-    virtual bool isArgOptional(
-      const QString &key 
-      );
-
-    /// Implementation of ScriptableCommand.
-    virtual bool isArgLoggable(
-      const QString &key 
+    virtual bool isArg(
+      const QString &key,
+      int flag
       );
 
     /// Implementation of ScriptableCommand.
     /// Gets the RTVal JSON representation.
     virtual QString getArg( 
-      const QString &key 
+      const QString &key
       );
 
     /// Implementation of ScriptableCommand.
@@ -180,9 +175,8 @@ class KLScriptableCommand
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
-      bool optional, 
-      FabricCore::RTVal defaultValue,
-      bool loggable = false
+      int flag, 
+      FabricCore::RTVal defaultValue
       );
 
     /// Implementation of RTValScriptableCommand.

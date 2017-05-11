@@ -43,11 +43,11 @@ BaseCommand* KLCommandManager_Python::_createCommand_Python(
   const QMap<QString, QString> &args, 
   bool doCmd)
 {
-  CommandException::PrintOrThrow(
+  CommandException::Throw(
     "KLCommandManager_Python::_createCommand_Python",
     "Method must be overridden",
     "",
-    PRINT);
+    PRINT | THROW);
 
   return 0;
 }
@@ -64,20 +64,11 @@ QString KLCommandManager_Python::_doCommand_Python(
 
   catch (CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "KLCommandManager_Python::_doCommand_Python",
       "",
       e.what(),
-      PRINT);
-  }
-
-	catch(Exception &e) 
-  {
-    error = CommandException::PrintOrThrow(
-      "KLCommandManager_Python::_doCommand_Python",
-      "",
-      e.getDesc_cstr(),
-      PRINT);
+      NOTHING);
   }
 
   return error;
@@ -94,21 +85,12 @@ QString KLCommandManager_Python::_undoCommand_Python()
 
   catch (CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "KLCommandManager_Python::_undoCommand_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
 	}
-
-  catch(Exception &e) 
-  {
-    error = CommandException::PrintOrThrow(
-      "KLCommandManager_Python::_undoCommand_Python",
-      "",
-      e.getDesc_cstr(),
-      PRINT);
-  }
 
   return error;
 }
@@ -124,21 +106,12 @@ QString KLCommandManager_Python::_redoCommand_Python()
 
 	catch (CommandException &e) 
 	{
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "KLCommandManager_Python::_redoCommand_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
 	}
-
-  catch(Exception &e) 
-  {
-    error = CommandException::PrintOrThrow(
-      "KLCommandManager_Python::_redoCommand_Python",
-      "",
-      e.getDesc_cstr(),
-      PRINT);
-  }
 
   return error;
 }
@@ -155,11 +128,11 @@ QPair<QString, BaseCommand*> KLCommandManager_Python::_getCommandAtIndex_Python(
     cmd);
 
   if(!baseCmd)
-    pair.first = CommandException::PrintOrThrow(
+    pair.first = CommandException::Throw(
       "KLCommandManager_Python::_getCommandAtIndex_Python",
       "Command '" + cmd->getName() + "' is not a BaseCommand",
       "",
-      PRINT);
+      NOTHING);
   else
     pair.second = baseCmd;
 
@@ -179,20 +152,11 @@ QString KLCommandManager_Python::_checkCommandArgs_Python(
 
   catch (CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "KLCommandManager_Python::_checkCommandArgs_Python",
       "",
       e.what(),
-      PRINT);
-  }
-
-  catch(Exception &e) 
-  {
-    error = CommandException::PrintOrThrow(
-      "KLCommandManager_Python::_checkCommandArgs_Python",
-      "",
-      e.getDesc_cstr(),
-      PRINT);
+      NOTHING);
   }
 
   return error;
@@ -202,11 +166,11 @@ void KLCommandManager_Python::_commandPushed_Python(
   BaseCommand *cmd,
   bool isLowCmd)
 {
-  CommandException::PrintOrThrow(
+  CommandException::Throw(
     "KLCommandManager_Python::_commandPushed_Python",
     "Method must be overridden",
     "",
-    PRINT);
+    NOTHING);
 }
 
 // RTValCommandManager
@@ -215,11 +179,11 @@ BaseCommand* KLCommandManager_Python::_createRTValCommand_Python(
   const QMap<QString, RTVal> &args, 
   bool doCmd)
 {
-  CommandException::PrintOrThrow(
+  CommandException::Throw(
     "KLCommandManager_Python::_createRTValCommand_Python",
     "Method must be overridden",
     "",
-    PRINT);
+    NOTHING);
   
   return 0;
 }
@@ -239,22 +203,13 @@ QString KLCommandManager_Python::_checkRTValCommandArgs_Python(
 
   catch (CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "KLCommandManager_Python::_checkRTValCommandArgs_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
 
-  catch(Exception &e) 
-  {
-    error = CommandException::PrintOrThrow(
-      "KLCommandManager_Python::_checkRTValCommandArgs_Python",
-      "",
-      e.getDesc_cstr(),
-      PRINT);
-  }
-  
   return error;
 }
 
@@ -269,20 +224,11 @@ QString KLCommandManager_Python::_synchronizeKL_Python()
 
   catch (CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "KLCommandManager_Python::_synchronizeKL_Python",
       "",
       e.what(),
-      PRINT);
-  }
-
-  catch(Exception &e) 
-  {
-    error = CommandException::PrintOrThrow(
-      "KLCommandManager_Python::_synchronizeKL_Python",
-      "",
-      e.getDesc_cstr(),
-      PRINT);
+      NOTHING);
   }
 
   return error;
@@ -295,7 +241,7 @@ void KLCommandManager_Python::onCommandDone(
     cmd);
 
   if(!baseCmd)
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager_Python::onCommandDone",
       "Command '" + cmd->getName() + "' is not a BaseCommand",
       "",
@@ -323,10 +269,11 @@ void KLCommandManager_Python::doCommand(
   BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
 
   if(!baseCmd)
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager_Python::doCommand",
-      "Command '" + cmd->getName() + "' is not a BaseCommand"
-      );
+      "Command '" + cmd->getName() + "' is not a BaseCommand",
+      "",
+      PRINT | THROW);
 
   _doCommand_Python(
     baseCmd);
@@ -357,10 +304,11 @@ void KLCommandManager_Python::checkCommandArgs(
   BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
 
   if(!baseCmd)
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager_Python::checkCommandArgs",
-      "Command '" + cmd->getName()  + "' is not a BaseCommand"
-      );
+      "Command '" + cmd->getName()  + "' is not a BaseCommand",
+      "",
+      PRINT | THROW);
 
   _checkCommandArgs_Python(
     baseCmd,
@@ -374,10 +322,11 @@ void KLCommandManager_Python::commandPushed(
   BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
 
   if(!baseCmd)
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "KLCommandManager_Python::commandPushed",
-      "Command '" + cmd->getName() + "' is not a BaseCommand"
-      );
+      "Command '" + cmd->getName() + "' is not a BaseCommand",
+      "",
+      PRINT | THROW);
 
   _commandPushed_Python(
     baseCmd,
@@ -403,10 +352,11 @@ void KLCommandManager_Python::checkCommandArgs(
   BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
 
   if(!baseCmd)
-     CommandException::PrintOrThrow(
+     CommandException::Throw(
       "KLCommandManager_Python::checkCommandArgs",
-      "Command '" + cmd->getName()  + "' is not a BaseCommand"
-      );
+      "Command '" + cmd->getName()  + "' is not a BaseCommand",
+      "",
+      PRINT | THROW);
 
   _checkRTValCommandArgs_Python(
     baseCmd,

@@ -2,11 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "KLOptionsTargetModelItem.h"
-#include "KLOptionsTargetEditor.h"
 #include "RTValDictModelItem.h"
 #include "RTValArrayModelItem.h"
 #include "OptionsEditorHelpers.h"
+#include "KLOptionsTargetEditor.h"
+#include "KLOptionsTargetModelItem.h"
 
 using namespace FabricUI;
 using namespace FabricCore;

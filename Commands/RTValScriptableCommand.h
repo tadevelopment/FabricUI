@@ -32,9 +32,8 @@ class RTValScriptableCommand
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
-      bool optional, 
-      FabricCore::RTVal defaultValue,
-      bool loggable
+      int flag, 
+      FabricCore::RTVal defaultValue
       ) = 0;
 
     /// Gets the argument rtval type.

@@ -20,9 +20,8 @@ BaseRTValScriptableCommand_Python::~BaseRTValScriptableCommand_Python()
 
 QString BaseRTValScriptableCommand_Python::_declareArg_Python(
   const QString &key, 
-  bool optional, 
-  const QString &defaultValue,
-  bool loggable)
+  int flag, 
+  const QString &defaultValue)
 {
   QString error;
 
@@ -30,66 +29,45 @@ QString BaseRTValScriptableCommand_Python::_declareArg_Python(
   {
     BaseRTValScriptableCommand::declareArg(
       key,
-      optional,
-      defaultValue,
-      loggable);
+      flag,
+      defaultValue);
   }
 
   catch(CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "BaseRTValScriptableCommand_Python::_declareArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
 
   return error;
 }
 
-QPair<QString, bool> BaseRTValScriptableCommand_Python::_isArgOptional_Python(
-  const QString &key)
+QPair<QString, bool> BaseRTValScriptableCommand_Python::_isArg_Python(
+  const QString &key,
+  int flag)
 {
   QPair<QString, bool> pair;
     
   try
   {
-    pair.second = BaseRTValScriptableCommand::isArgOptional(key);
+    pair.second = BaseRTValScriptableCommand::isArg(key, flag);
   }
 
   catch(CommandException &e) 
   {
-    pair.first = CommandException::PrintOrThrow(
-      "BaseRTValScriptableCommand_Python::_isArgOptional_Python",
+    pair.first = CommandException::Throw(
+      "BaseRTValScriptableCommand_Python::_isArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return pair;
 }
-
-QPair<QString, bool> BaseRTValScriptableCommand_Python::_isArgLoggable_Python(
-  const QString &key)
-{
-  QPair<QString, bool> pair;
-    
-  try
-  {
-    pair.second = BaseRTValScriptableCommand::isArgLoggable(key);
-  }
-
-  catch(CommandException &e) 
-  {
-    pair.first = CommandException::PrintOrThrow(
-      "BaseRTValScriptableCommand_Python::_isArgLoggable_Python",
-      "",
-      e.what(),
-      PRINT);
-  }
  
-  return pair;
-}
 
 QPair<QString, QString> BaseRTValScriptableCommand_Python::_getArg_Python(
   const QString &key)
@@ -103,11 +81,11 @@ QPair<QString, QString> BaseRTValScriptableCommand_Python::_getArg_Python(
 
   catch(CommandException &e) 
   {
-    pair.first = CommandException::PrintOrThrow(
+    pair.first = CommandException::Throw(
       "BaseRTValScriptableCommand_Python::_getArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return pair;
@@ -128,11 +106,11 @@ QString BaseRTValScriptableCommand_Python::_setArg_Python(
 
   catch(CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "BaseRTValScriptableCommand_Python::_setArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return error;
@@ -149,11 +127,11 @@ QString BaseRTValScriptableCommand_Python::_validateSetArgs_Python()
 
   catch(CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "BaseRTValScriptableCommand_Python::_validateSetArgs_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return error;
@@ -162,9 +140,8 @@ QString BaseRTValScriptableCommand_Python::_validateSetArgs_Python()
 QString BaseRTValScriptableCommand_Python::_declareRTValArg_Python(
   const QString &key, 
   const QString &type,
-  bool optional, 
-  RTVal defaultValue,
-  bool loggable)
+  int flag, 
+  RTVal defaultValue)
 {
   QString error;
 
@@ -173,18 +150,17 @@ QString BaseRTValScriptableCommand_Python::_declareRTValArg_Python(
     BaseRTValScriptableCommand::declareRTValArg(
       key,
       type,
-      optional,
-      defaultValue,
-      loggable);
+      flag,
+      defaultValue);
   }
 
   catch(CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "BaseRTValScriptableCommand_Python::_declareRTValArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
 
   return error;
@@ -202,11 +178,11 @@ QPair<QString, QString> BaseRTValScriptableCommand_Python::_getRTValArgType_Pyth
 
   catch(CommandException &e) 
   {
-    pair.first = CommandException::PrintOrThrow(
+    pair.first = CommandException::Throw(
       "BaseRTValScriptableCommand_Python::_getRTValArgType_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return pair;
@@ -227,11 +203,11 @@ QString BaseRTValScriptableCommand_Python::_setRTValArgType_Python(
 
   catch(CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "BaseRTValScriptableCommand_Python::_setRTValArgType_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return error;
@@ -249,11 +225,11 @@ QPair<QString, RTVal> BaseRTValScriptableCommand_Python::_getRTValArg_Python(
 
   catch(CommandException &e) 
   {
-    pair.first = CommandException::PrintOrThrow(
+    pair.first = CommandException::Throw(
       "BaseRTValScriptableCommand_Python::_getRTValArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return pair;
@@ -274,11 +250,11 @@ QPair<QString, RTVal> BaseRTValScriptableCommand_Python::_getRTValArg_Python(
 
   catch(CommandException &e) 
   {
-    pair.first = CommandException::PrintOrThrow(
+    pair.first = CommandException::Throw(
       "BaseRTValScriptableCommand_Python::_getRTValArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return pair;
@@ -299,11 +275,11 @@ QString BaseRTValScriptableCommand_Python::_setRTValArg_Python(
 
   catch(CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "BaseRTValScriptableCommand_Python::_setRTValArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return error;
@@ -311,33 +287,24 @@ QString BaseRTValScriptableCommand_Python::_setRTValArg_Python(
 
 void BaseRTValScriptableCommand_Python::declareArg(
   const QString &key, 
-  bool optional, 
-  const QString &defaultValue,
-  bool loggable)
+  int flag, 
+  const QString &defaultValue)
 {
   _declareArg_Python(
     key,
-    optional,
-    defaultValue,
-    loggable);
+    flag,
+    defaultValue);
 }
 
-bool BaseRTValScriptableCommand_Python::isArgOptional(
-  const QString &key)
+bool BaseRTValScriptableCommand_Python::isArg(
+  const QString &key,
+  int flag)
 {
-  QPair<QString, bool> pair = _isArgOptional_Python(
-    key);
+  QPair<QString, bool> pair = _isArg_Python(
+    key, flag);
   return pair.second;
 }
-
-bool BaseRTValScriptableCommand_Python::isArgLoggable(
-  const QString &key)
-{
-  QPair<QString, bool> pair = _isArgLoggable_Python(
-    key);
-  return pair.second;
-}
-
+ 
 QString BaseRTValScriptableCommand_Python::getArg(
   const QString &key)
 {
@@ -363,16 +330,14 @@ void BaseRTValScriptableCommand_Python::validateSetArgs()
 void BaseRTValScriptableCommand_Python::declareRTValArg(
   const QString &key, 
   const QString &type,
-  bool optional, 
-  RTVal defaultValue,
-  bool loggable)
+  int flag, 
+  RTVal defaultValue)
 {
   _declareRTValArg_Python(
     key,
     type,
-    optional,
-    defaultValue,
-    loggable);
+    flag,
+    defaultValue);
 }
 
 QString BaseRTValScriptableCommand_Python::getRTValArgType(

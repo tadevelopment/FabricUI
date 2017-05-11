@@ -16,24 +16,13 @@ SetPortDefaultValueCommand::SetPortDefaultValueCommand()
   try
   {
     // Optional arg of known KL type, 
-    declareRTValArg(
-      "execPath", 
-      "String", 
-      false);
-    
-    declareRTValArg(
-      "nodeName", 
-      "String", 
-      false);
-    
-    declareRTValArg(
-      "portName", 
-      "String", 
-      false);
+    declareRTValArg("execPath", "String");
+    declareRTValArg("nodeName", "String");
+    declareRTValArg("portName", "String");
 
     // No-optional arg of unknown KL type, which
     // is retrieved when executing the command.
-    declareArg("portValue", false);
+    declareArg("portValue", CommandFlags::LOGGABLE_ARG);
 
     KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
       CommandManager::GetCommandManager());
@@ -42,24 +31,16 @@ SetPortDefaultValueCommand::SetPortDefaultValueCommand()
     declareRTValArg( 
       "isUndoable",
       "Boolean",
-      true,
+      CommandFlags::OPTIONAL_ARG | CommandFlags::LOGGABLE_ARG,
       RTVal::ConstructBoolean(
         manager->getClient(), 
         true)
       );
   }
 
-  catch(Exception &e)
-  {
-    CommandException::PrintOrThrow(
-      "SetPortDefaultValueCommand::SetPortDefaultValueCommand",
-      "",  
-      e.getDesc_cstr());
-  }
-
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "SetPortDefaultValueCommand::SetPortDefaultValueCommand",
       "",
       e.what());
@@ -81,7 +62,7 @@ bool SetPortDefaultValueCommand::canUndo()
 
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "SetPortDefaultValueCommand::canUndo",
       "",
       e.what());
@@ -139,7 +120,7 @@ bool SetPortDefaultValueCommand::doIt()
 
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "SetPortDefaultValueCommand::doIt",
       "",
       e.what());

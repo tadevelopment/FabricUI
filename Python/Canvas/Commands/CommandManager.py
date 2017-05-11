@@ -179,8 +179,8 @@ class CommandManager(CppCommands.KLCommandManager_Python):
             cmd = GetCmdRegistry().createCmd(cmdName)
             if len(args) > 0:
                 self._checkRTValCommandArgs_Python(
-                    cmd, 
-                    CommandArgsHelpers.CastCmdArgsToRTVal(self.__client, cmd, args))
+                    cmd, CommandArgsHelpers.CastCmdArgsToRTVal(
+                        self.__client, cmd, args))
             if doCmd:
                 self._doCommand_Python(cmd)
             return cmd
@@ -189,7 +189,8 @@ class CommandManager(CppCommands.KLCommandManager_Python):
 
     def _checkRTValCommandArgs_Python(self, cmd, args):
         """ \internal, impl. of Commands.KLCommandManager_Python. """
-        error = super(CommandManager, self)._checkRTValCommandArgs_Python(cmd, args)
+        error = super(CommandManager, self)._checkRTValCommandArgs_Python(
+            cmd, args)
         if error:
             raise Exception(error)
         return error

@@ -2,10 +2,10 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandException.h"
 #include "CommandRegistry.h"
-#include "RTValCommandManager.h"
+#include "CommandException.h"
 #include "ScriptableCommand.h"
+#include "RTValCommandManager.h"
 #include "RTValScriptableCommand.h"
 
 using namespace FabricUI;
@@ -49,22 +49,13 @@ Command* RTValCommandManager::createCommand(
 
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "RTValCommandManager::createCommand",
       "Cannot create command '" + cmdName + "'",
       e.what()
       );
   }
-
-  catch(Exception &e) 
-  {
-    CommandException::PrintOrThrow(
-      "RTValCommandManager::createCommand",
-      "Cannot create command '" + cmdName + "'",
-      e.getDesc_cstr()
-      );
-  }
-
+ 
   return 0;
 }
 
@@ -93,7 +84,7 @@ void RTValCommandManager::checkCommandArgs(
   RTValScriptableCommand* rtvalScriptCommand = dynamic_cast<RTValScriptableCommand*>(cmd);
   
   if(!rtvalScriptCommand) 
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "RTValCommandManager::checkCommandArgs",
 
       "Command '" + cmd->getName() + "' is created with args, " + 

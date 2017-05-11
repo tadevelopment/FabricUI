@@ -3,11 +3,14 @@
 //
 
 #include <FabricUI/Commands/Command.h>
+#include <FabricUI/Commands/CommandFlags.h>
 #include <FabricUI/Commands/ScriptableCommand.h>
 #include <FabricUI/Commands/RTValScriptableCommand.h>
 #include <FabricUI/Commands/BaseCommand.h>
 #include <FabricUI/Commands/BaseScriptableCommand.h>
 #include <FabricUI/Commands/BaseRTValScriptableCommand.h>
+#include <FabricUI/Commands/BaseScriptableCommand_Python.h>
+#include <FabricUI/Commands/BaseRTValScriptableCommand_Python.h>
 #include <FabricUI/Commands/CommandRegistry.h>
 #include <FabricUI/Commands/KLCommandRegistry.h>
 #include <FabricUI/Commands/KLCommandRegistry_Python.h>

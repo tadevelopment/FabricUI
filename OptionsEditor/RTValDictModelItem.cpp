@@ -2,9 +2,9 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
  
+#include "RTValDictModelItem.h"
 #include "BaseRTValOptionsEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
-#include "RTValDictModelItem.h"
 
 using namespace FabricUI;
 using namespace OptionsEditor;

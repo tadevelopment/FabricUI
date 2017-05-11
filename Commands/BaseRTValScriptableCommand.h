@@ -7,6 +7,7 @@
 
 #include "BaseScriptableCommand.h"
 #include "RTValScriptableCommand.h"
+#include "CommandFlags.h"
 
 namespace FabricUI {
 namespace Commands {
@@ -40,9 +41,8 @@ class BaseRTValScriptableCommand
     /// To set the argument as JSON, use `setArg`.
     virtual void declareArg( 
       const QString &key, 
-      bool optional = false, 
-      const QString &defaultValue = QString(),
-      bool loggable = true
+      int flags = FabricUI::Commands::CommandFlags::LOGGABLE_ARG, 
+      const QString &defaultValue = QString()
       );
 
     /// Implementation of ScriptableCommand.
@@ -51,15 +51,11 @@ class BaseRTValScriptableCommand
       );
 
     /// Implementation of ScriptableCommand.
-    virtual bool isArgOptional(
-      const QString &key 
+    virtual bool isArg(
+      const QString &key,
+      int flag
       );
-
-    /// Implementation of ScriptableCommand.
-    virtual bool isArgLoggable(
-      const QString &key 
-      );
-
+ 
     /// Implementation of ScriptableCommand.
     virtual QList<QString> getArgKeys();
 
@@ -99,9 +95,8 @@ class BaseRTValScriptableCommand
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
-      bool optional = false, 
-      FabricCore::RTVal defaultValue = FabricCore::RTVal(),
-      bool loggable = true
+      int flags = FabricUI::Commands::CommandFlags::LOGGABLE_ARG, 
+      FabricCore::RTVal defaultValue = FabricCore::RTVal()
       );
 
     /// Implementation of RTValScriptableCommand.
@@ -145,12 +140,11 @@ class BaseRTValScriptableCommand
 
   private:    
     /// Defines the arguments specs:
-    /// type, default value, optional, loggable
+    /// type, default value, flags (optional, loggable)
     struct ScriptableCommandRTValArgSpec 
     {
       QString type;
-      bool optional;
-      bool loggable;  
+      int flags;
       FabricCore::RTVal defaultValue;
     };
 

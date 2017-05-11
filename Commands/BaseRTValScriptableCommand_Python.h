@@ -31,23 +31,17 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
     /// To override in Python.
     virtual QString _declareArg_Python(
       const QString &key, 
-      bool optional, 
-      const QString &defaultValue,
-      bool loggable
+      int flag, 
+      const QString &defaultValue
       );
 
     /// Wraps BaseRTValScriptableCommand::isArgOptional.
     /// Propagates the C++ exception in python.
     /// To override in Python.
-    virtual QPair<QString, bool> _isArgOptional_Python(
-      const QString &key);
-
-    /// Wraps BaseRTValScriptableCommand::isArgLoggable.
-    /// Propagates the C++ exception in python.
-    /// To override in Python.
-    virtual QPair<QString, bool> _isArgLoggable_Python(
-      const QString &key);
-
+    virtual QPair<QString, bool> _isArg_Python(
+      const QString &key,
+      int flag);
+ 
     /// Wraps BaseRTValScriptableCommand::getArg.
     /// Propagates the C++ exception in python.
     /// To override in Python.
@@ -72,9 +66,8 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
     virtual QString _declareRTValArg_Python( 
       const QString &key, 
       const QString &type,
-      bool optional, 
-      FabricCore::RTVal defaultValue,
-      bool loggable
+      int flag, 
+      FabricCore::RTVal defaultValue
       );
 
     /// Wraps BaseRTValScriptableCommand::getRTValArgType.
@@ -122,21 +115,16 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
     /// calls _declareArg_Python.
     virtual void declareArg(
       const QString &key, 
-      bool optional, 
-      const QString &defaultValue,
-      bool loggable
+      int flag, 
+      const QString &defaultValue
       );
 
     /// Implementation of ScriptableCommand.
     /// calls _isArgOptional_Python.
-    virtual bool isArgOptional(
-      const QString &key);
-
-    /// Implementation of ScriptableCommand.
-    /// calls _isArgLoggable_Python.
-    virtual bool isArgLoggable(
-      const QString &key);
-
+    virtual bool isArg(
+      const QString &key,
+      int flag);
+ 
     /// Implementation of ScriptableCommand.
     /// calls _getArg_Python.
     virtual QString getArg(
@@ -157,9 +145,8 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
-      bool optional, 
-      FabricCore::RTVal defaultValue,
-      bool loggable
+      int flag, 
+      FabricCore::RTVal defaultValue
       );
 
     /// Implementation of RTValScriptableCommand.

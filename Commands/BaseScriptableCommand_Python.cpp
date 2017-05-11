@@ -19,9 +19,8 @@ BaseScriptableCommand_Python::~BaseScriptableCommand_Python()
 
 QString BaseScriptableCommand_Python::_declareArg_Python(
   const QString &key, 
-  bool optional, 
-  const QString &defaultValue,
-  bool loggable)
+  int flag, 
+  const QString &defaultValue)
 {
   QString error;
 
@@ -29,66 +28,47 @@ QString BaseScriptableCommand_Python::_declareArg_Python(
   {
     BaseScriptableCommand::declareArg(
       key,
-      optional,
-      defaultValue,
-      loggable);
+      flag,
+      defaultValue);
   }
 
   catch(CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "BaseScriptableCommand_Python::_declareArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
 
   return error;
 }
 
-QPair<QString, bool> BaseScriptableCommand_Python::_isArgOptional_Python(
-  const QString &key)
+QPair<QString, bool> BaseScriptableCommand_Python::_isArg_Python(
+  const QString &key,
+  int flag)
 {
   QPair<QString, bool> pair;
     
   try
   {
-    pair.second = BaseScriptableCommand::isArgOptional(key);
+    pair.second = BaseScriptableCommand::isArg(
+      key, 
+      flag);
   }
 
   catch(CommandException &e) 
   {
-    pair.first = CommandException::PrintOrThrow(
-      "BaseScriptableCommand_Python::_isArgOptional_Python",
+    pair.first = CommandException::Throw(
+      "BaseScriptableCommand_Python::_isArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return pair;
 }
-
-QPair<QString, bool> BaseScriptableCommand_Python::_isArgLoggable_Python(
-  const QString &key)
-{
-  QPair<QString, bool> pair;
-    
-  try
-  {
-    pair.second = BaseScriptableCommand::isArgLoggable(key);
-  }
-
-  catch(CommandException &e) 
-  {
-    pair.first = CommandException::PrintOrThrow(
-      "BaseScriptableCommand_Python::_isArgLoggable_Python",
-      "",
-      e.what(),
-      PRINT);
-  }
  
-  return pair;
-}
 
 QPair<QString, QString> BaseScriptableCommand_Python::_getArg_Python(
   const QString &key)
@@ -102,11 +82,11 @@ QPair<QString, QString> BaseScriptableCommand_Python::_getArg_Python(
 
   catch(CommandException &e) 
   {
-    pair.first = CommandException::PrintOrThrow(
+    pair.first = CommandException::Throw(
       "BaseScriptableCommand_Python::_getArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return pair;
@@ -127,11 +107,11 @@ QString BaseScriptableCommand_Python::_setArg_Python(
 
   catch(CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "BaseScriptableCommand_Python::_setArg_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return error;
@@ -148,11 +128,11 @@ QString BaseScriptableCommand_Python::_validateSetArgs_Python()
 
   catch(CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "BaseScriptableCommand_Python::_validateSetArgs_Python",
       "",
       e.what(),
-      PRINT);
+      NOTHING);
   }
  
   return error;
@@ -160,30 +140,21 @@ QString BaseScriptableCommand_Python::_validateSetArgs_Python()
 
 void BaseScriptableCommand_Python::declareArg(
   const QString &key, 
-  bool optional, 
-  const QString &defaultValue,
-  bool loggable)
+  int flag, 
+  const QString &defaultValue)
 {
   _declareArg_Python(
     key,
-    optional,
-    defaultValue,
-    loggable);
+    flag,
+    defaultValue);
 }
 
-bool BaseScriptableCommand_Python::isArgOptional(
-  const QString &key)
+bool BaseScriptableCommand_Python::isArg(
+  const QString &key,
+  int flag)
 {
-  QPair<QString, bool> pair = _isArgOptional_Python(
-    key);
-  return pair.second;
-}
-
-bool BaseScriptableCommand_Python::isArgLoggable(
-  const QString &key)
-{
-  QPair<QString, bool> pair = _isArgLoggable_Python(
-    key);
+  QPair<QString, bool> pair = _isArg_Python(
+    key, flag);
   return pair.second;
 }
 

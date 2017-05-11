@@ -8,6 +8,7 @@
 #include <QMap>
 #include "BaseCommand.h"
 #include "ScriptableCommand.h"
+#include "CommandFlags.h"
 
 namespace FabricUI {
 namespace Commands {
@@ -32,9 +33,8 @@ class BaseScriptableCommand
     /// Implementation of ScriptableCommand.
     virtual void declareArg( 
       const QString &key, 
-      bool optional = false, 
-      const QString &defaultValue = QString(),
-      bool loggable = true
+      int flags = FabricUI::Commands::CommandFlags::LOGGABLE_ARG, 
+      const QString &defaultValue = QString()
       );
 
     /// Implementation of ScriptableCommand.
@@ -43,13 +43,9 @@ class BaseScriptableCommand
       );
 
     /// Implementation of ScriptableCommand.
-    virtual bool isArgOptional(
-      const QString &key 
-      );
-
-    /// Implementation of ScriptableCommand.
-    virtual bool isArgLoggable(
-      const QString &key 
+    virtual bool isArg(
+      const QString &key,
+      int flag 
       );
 
     /// Implementation of ScriptableCommand.
@@ -103,11 +99,10 @@ class BaseScriptableCommand
 
   private:    
     /// Defines the arguments specs:
-    /// default value, optional, loggable
+    /// default value, flags (optional, loggable)
     struct ScriptableCommandArgSpec 
     {
-      bool optional;
-      bool loggable;  
+      int flags;
       QString defaultValue;
     };
 

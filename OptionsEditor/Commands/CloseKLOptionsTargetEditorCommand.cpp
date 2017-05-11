@@ -21,37 +21,24 @@ CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand()
     KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
       CommandManager::GetCommandManager());
     
-    declareRTValArg(
-      "editorID",
-      "String",
-      false);
+    declareRTValArg("editorID", "String");
 
     declareRTValArg(
       "failSilently",
       "Boolean",
-      false,
+      CommandFlags::OPTIONAL_ARG | CommandFlags::LOGGABLE_ARG,
       RTVal::ConstructBoolean(
         manager->getClient(), 
         false)
       );
   }
 
-  catch(Exception &e)
-  {
-    CommandException::PrintOrThrow(
-      "CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand",
-      "",  
-      e.getDesc_cstr(),
-      PRINT | THROW);
-  }
-
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand",
       "",
-      e.what(),
-      PRINT | THROW);
+      e.what());
   }
 };
 
@@ -84,22 +71,12 @@ bool CloseKLOptionsTargetEditorCommand::doIt()
     }
   }
 
-  catch(Exception &e)
-  {
-    CommandException::PrintOrThrow(
-      "CloseKLOptionsTargetEditorCommand::doIt",
-      "",  
-      e.getDesc_cstr(),
-      PRINT | THROW);
-  }
-
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "CloseKLOptionsTargetEditorCommand::doIt",
       "",
-      e.what(),
-      PRINT | THROW);
+      e.what());
   }
 
   return res;

@@ -166,6 +166,22 @@ class CommandManager : public QObject
       const QList<StackedCommand> &stack
       );
 
+    /// Cleans the stacks if errors occur when
+    /// undoing a command and throws an exception.
+    void cleanupUnfinishedUndoLowCommandsAndThrow(
+      int topLevelCmdIndex, 
+      StackedCommand &stackedCmd,
+      const QString &error = QString()
+      );
+
+    /// Cleans the stacks if errors occur when
+    /// redoing a command and throws an exception.
+    void cleanupUnfinishedRedoLowCommandsAndThrow(
+      int topLevelCmdIndex, 
+      StackedCommand &stackedCmd,
+      const QString &error = QString()
+      );
+
     /// CommandManager singleton, set from Constructor.
     static CommandManager *s_cmdManager;
     /// Check if the singleton has been set.

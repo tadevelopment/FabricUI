@@ -31,11 +31,11 @@ QPair<QString, BaseCommand*> KLCommandRegistry_Python::_createCommand_Python(
     cmd);
 
   if(!baseCmd)
-    pair.first = CommandException::PrintOrThrow(
+    pair.first = CommandException::Throw(
       "KLCommandRegistry_Python::_createCommand_Python",
       "Command '" + cmd->getName() + "' is not a BaseCommand",
       "",
-      PRINT);
+      PRINT | THROW);
   else
     pair.second = baseCmd;
 
@@ -59,20 +59,11 @@ QString KLCommandRegistry_Python::_commandIsRegistered_Python(
 
   catch (CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "KLCommandRegistry_Python::_commandIsRegistered_Python",
       "",
       e.what(),
-      PRINT);
-  }
-
-  catch(Exception &e) 
-  {
-    error = CommandException::PrintOrThrow(
-      "KLCommandRegistry_Python::_commandIsRegistered_Python",
-      "",
-      e.getDesc_cstr(),
-      PRINT);
+      NOTHING);
   }
 
   return error;
@@ -89,20 +80,11 @@ QString KLCommandRegistry_Python::_synchronizeKL_Python()
 
   catch (CommandException &e) 
   {
-    error = CommandException::PrintOrThrow(
+    error = CommandException::Throw(
       "KLCommandRegistry_Python::_synchronizeKL_Python",
       "",
       e.what(),
-      PRINT);
-  }
-
-  catch(Exception &e) 
-  {
-    error = CommandException::PrintOrThrow(
-      "KLCommandRegistry_Python::_synchronizeKL_Python",
-      "",
-      e.getDesc_cstr(),
-      PRINT);
+      NOTHING);
   }
 
   return error;

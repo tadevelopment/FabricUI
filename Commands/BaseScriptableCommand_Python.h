@@ -17,9 +17,6 @@ class BaseScriptableCommand_Python : public BaseScriptableCommand
     Pyside/shiboken doesn't propagate C++ exceptions to Python, cf. https://bugreports.qt.io/browse/PYSIDE-62.
     BaseScriptableCommand_Python "wraps" methods of BaseScriptableCommand throwing C++ exceptions called from Python.
     The exceptions are catched and returned as strings ao they can be raised in Python.
-
-    In addition, it 'redirects' methods of BaseScriptableCommand that expose the 'Command' interfaces because C++ 
-    interfaces cannot be wrapped in pyhton by shiboken.
   */  
  	public:
     BaseScriptableCommand_Python();
@@ -34,23 +31,17 @@ class BaseScriptableCommand_Python : public BaseScriptableCommand
     /// To override in Python.
     virtual QString _declareArg_Python(
       const QString &key, 
-      bool optional, 
-      const QString &defaultValue,
-      bool loggable
+      int flag, 
+      const QString &defaultValue
       );
 
-    /// Wraps BaseScriptableCommand::isArgOptional.
+    /// Wraps BaseScriptableCommand::isArg.
     /// Propagates the C++ exception in python.
     /// To override in Python.
-    virtual QPair<QString, bool> _isArgOptional_Python(
-      const QString &key);
-
-    /// Wraps BaseScriptableCommand::isArgLoggable.
-    /// Propagates the C++ exception in python.
-    /// To override in Python.
-    virtual QPair<QString, bool> _isArgLoggable_Python(
-      const QString &key);
-
+    virtual QPair<QString, bool> _isArg_Python(
+      const QString &key,
+      int flag);
+ 
     /// Wraps BaseScriptableCommand::getArg.
     /// Propagates the C++ exception in python.
     /// To override in Python.
@@ -76,21 +67,16 @@ class BaseScriptableCommand_Python : public BaseScriptableCommand
     /// calls _declareArg_Python.
     virtual void declareArg(
       const QString &key, 
-      bool optional, 
-      const QString &defaultValue,
-      bool loggable
+      int flag, 
+      const QString &defaultValue
       );
 
     /// Implementation of ScriptableCommand.
     /// calls _isArgOptional_Python.
-    virtual bool isArgOptional(
-      const QString &key);
-
-    /// Implementation of ScriptableCommand.
-    /// calls _isArgLoggable_Python.
-    virtual bool isArgLoggable(
-      const QString &key);
-
+    virtual bool isArg(
+      const QString &key,
+      int flag);
+ 
     /// Implementation of ScriptableCommand.
     /// calls _getArg_Python.
     virtual QString getArg(

@@ -24,7 +24,7 @@ class CppTestScriptableCommand : public BaseScriptableCommand
     {
       BaseScriptableCommand::declareArg(
         "arg_1",
-        true,
+        CommandFlags::OPTIONAL_ARG | CommandFlags::LOGGABLE_ARG,
         "arg_1_default_Cpp");
     }
 
@@ -158,7 +158,7 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        CommandException::PrintOrThrow(
+        CommandException::Throw(
           "CppToPythonTestCommand::RegisterKLTestCommands",
           e.getDesc_cstr(),
           "",
@@ -189,7 +189,7 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        CommandException::PrintOrThrow(
+        CommandException::Throw(
           "CppToPythonTestCommand::CreateKLTestCommandsInKL",
           e.getDesc_cstr(),
           "",
@@ -230,7 +230,7 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        CommandException::PrintOrThrow(
+        CommandException::Throw(
           "CppToPythonTestCommand::CreateKLTestCommands",
           e.getDesc_cstr(),
           "",

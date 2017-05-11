@@ -19,47 +19,24 @@ BaseSetRTValModelItemCommand::BaseSetRTValModelItemCommand()
 {
   try
   {
-    declareRTValArg(
-      "editorID",
-      "String",
-      false);
-
-    declareRTValArg(
-      "optionsPath", 
-      "String", 
-      false);
+    declareRTValArg("editorID","String");
+    declareRTValArg("optionsPath", "String");
     
     // Declares an optional argument of 
     // unknowned type which is not loggable.
-    declareArg(
-      "previousValue", 
-      true,
-      "",
-      false);
+    declareArg("previousValue", CommandFlags::OPTIONAL_ARG);
 
     // Declares an no-optional 
     // arg of unknowned type.
-    declareArg(
-      "newValue", 
-      false);
-  }
-
-  catch(Exception &e)
-  {
-    CommandException::PrintOrThrow(
-      "BaseSetRTValModelItemCommand::BaseSetRTValModelItemCommand",
-      "",  
-      e.getDesc_cstr(),
-      PRINT | THROW);
+    declareArg("newValue");
   }
 
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseSetRTValModelItemCommand::BaseSetRTValModelItemCommand",
       "",
-      e.what(),
-      PRINT | THROW);
+      e.what());
   }
 };
 
@@ -95,22 +72,12 @@ bool BaseSetRTValModelItemCommand::exeCommand(
     res = true;
   }
 
-  catch(Exception &e)
-  {
-    CommandException::PrintOrThrow(
-      "BaseSetRTValModelItemCommand::exeCommand",
-      "",  
-      e.getDesc_cstr(),
-      PRINT | THROW);
-  }
-
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseSetRTValModelItemCommand::exeCommand",
       "",
-      e.what(),
-      PRINT | THROW);
+      e.what());
   }
 
   return res;
@@ -158,22 +125,12 @@ void BaseSetRTValModelItemCommand::checkArguments()
         singleOption);
   }
 
-  catch(Exception &e)
-  {
-    CommandException::PrintOrThrow(
-      "BaseSetRTValModelItemCommand::checkArguments",
-      "",  
-      e.getDesc_cstr(),
-      PRINT | THROW);
-  }
-
   catch(CommandException &e) 
   {
-    CommandException::PrintOrThrow(
+    CommandException::Throw(
       "BaseSetRTValModelItemCommand::checkArguments",
       "",
-      e.what(),
-      PRINT | THROW);
+      e.what());
   }
 }
 
