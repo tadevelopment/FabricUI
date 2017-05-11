@@ -57,7 +57,7 @@ namespace FabricUI
       void focusOutEvent(QFocusEvent * event)
       {
         setReadOnly(true);
-        event->accept();
+        Util::FELineEdit::focusOutEvent(event);
       }
 
     protected:
