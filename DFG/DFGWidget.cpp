@@ -622,8 +622,10 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanCreatePreset));
     result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
     result->addAction(new ExportGraphAction           (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
-    result->addAction(new ImplodeSelectedNodesAction  (dfgWidget, result, dfgWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
-    result->addAction(new ExplodeNodeAction           (dfgWidget, uiNode, result, dfgWidget->isEditable() && onlyInstNodes && instNodeCount == 1 && exec.getSubExec(nodeName).getType() == FabricCore::DFGExecType_Graph));
+    result->addSeparator();
+
+    result->addAction(new ImplodeSelectedNodesAction(dfgWidget, result, dfgWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
+    result->addAction(new ExplodeSelectedNodesAction(dfgWidget, result, dfgWidget->isEditable() && instNodeCount + userNodeCount > 0));
 
     result->addSeparator();
 
