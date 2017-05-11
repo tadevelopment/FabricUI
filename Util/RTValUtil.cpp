@@ -83,7 +83,30 @@ QString RTValUtil::rtValToJSON(
 
   try 
   {
-    res = rtVal.getJSON().getStringCString();
+    // If the value is an Object, we have use the RTValToJSONEncoder interface, if any.
+    // This is the same logic as in FabricServices::Persistence::RTValToJSONEncoder, which unfortunately is not obvious to reuse.
+    if( rtVal.isObject() ) {
+      FabricCore::RTVal cast = FabricCore::RTVal::Construct( rtVal.getContext(), "RTValToJSONEncoder", 1, &rtVal );
+      if( !cast.isValid() )
+        throw FabricCore::Exception( ("KL object of type " + std::string(rtVal.getTypeNameCStr()) + " doesn't support RTValToJSONEncoder").c_str() );
+
+      FTL::CStrRef ref;
+      if( !cast.isNullObject() ) {
+        FabricCore::RTVal result = cast.callMethod( "String", "convertToString", 0, 0 );
+        if( !result.isValid() )
+          throw FabricCore::Exception( ("Calling method 'RTValToJSONEncoder::convertToString' on object of type " + std::string( rtVal.getTypeNameCStr() ) + " failed").c_str() );
+
+        ref = result.getStringCString();
+      }
+      // Encode as a json friendly string (eg: add escape chars)
+      std::string json;
+      {
+        FTL::JSONEnc<> jsonEnc( json );
+        FTL::JSONStringEnc<> jsonStringEnc( jsonEnc, ref );
+      }
+      res = json.c_str();
+    } else
+      res = rtVal.getJSON().getStringCString();
   }
 
   catch(Exception &e)
@@ -113,7 +136,7 @@ QString RTValUtil::klRTValToJSON(
 }
 
 RTVal RTValUtil::jsonToRTVal(
-  Context ctxt,
+  Context context,
   const QString &json,
   const QString &rtValType)
 {
@@ -122,12 +145,52 @@ RTVal RTValUtil::jsonToRTVal(
   try 
   {
     rtVal = RTVal::Construct(
-      ctxt, 
+      context,
       rtValType.toUtf8().constData(), 
       0, 
       0);
 
-    rtVal.setJSON(json.toUtf8().constData());
+    // If the value is an Object, we have use the RTValToJSONDecoder interface, if any.
+    // This is the same logic as in FabricServices::Persistence::RTValToJSONDecoder, which unfortunately is not obvious to reuse.
+    if( rtVal.isObject() ) {
+
+      // Create the object (non-null)
+      rtVal = RTVal::Create(
+        context,
+        rtValType.toUtf8().constData(),
+        0,
+        0 );
+
+      // Try to decode as a String first
+      std::string decodedString;
+      {
+        FTL::StrRef jsonStr( json.toUtf8().constData() );
+        FTL::JSONStrWithLoc strWithLoc( jsonStr );
+        FTL::JSONDec<FTL::JSONStrWithLoc> jsonDec( strWithLoc );
+        FTL::JSONEnt<FTL::JSONStrWithLoc> jsonEnt;
+        if( !jsonDec.getNext( jsonEnt )
+            || jsonEnt.getType() != jsonEnt.Type_String )
+          return rtVal;// Return as empty
+        jsonEnt.stringAppendTo( decodedString );
+      }
+
+      FabricCore::RTVal cast = FabricCore::RTVal::Construct( context, "RTValFromJSONDecoder", 1, &rtVal );
+      if( !cast.isInterface() )
+        return rtVal;// Return as empty
+      if( cast.isNullObject() )
+        return rtVal;// Return as empty
+
+      FabricCore::RTVal data =
+        FabricCore::RTVal::ConstructString(
+          context,
+          decodedString.data(),
+          decodedString.size()
+        );
+      FabricCore::RTVal result = cast.callMethod( "Boolean", "convertFromString", 1, &data );
+      if( !result.isValid() || !result.getBoolean() )
+        throw FabricCore::Exception( ("Error calling 'RTValFromJSONDecoder::convertFromString' on object of type " + std::string( rtVal.getTypeNameCStr() ) ).c_str() );
+    } else
+      rtVal.setJSON( json.toUtf8().constData() );
   }
 
   catch(Exception &e)
@@ -148,12 +211,12 @@ RTVal RTValUtil::jsonToRTVal(
 }
 
 RTVal RTValUtil::jsonToKLRTVal(
-  Context ctxt,
+  Context context,
   const QString &json,
   const QString &rtValType)
 {
   RTVal rtVal = RTValUtil::jsonToRTVal(
-    ctxt,
+    context,
     json,
     rtValType);
   
