@@ -251,13 +251,13 @@ public:
     QString nodeName
     ) { return QStringList(); }
 
-  virtual void dfgDoAddBackDrop(
+  virtual QString dfgDoAddBackDrop(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
     QString title,
     QPointF pos
-    ) {}
+    ) { return QString(); }
 
   virtual void dfgDoSetNodeComment(
     FabricCore::DFGBinding const &binding,
