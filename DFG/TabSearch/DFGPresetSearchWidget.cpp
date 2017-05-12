@@ -155,7 +155,7 @@ protected:
   void enterEvent( QEvent* e ) FTL_OVERRIDE
   {
     Parent::enterEvent( e );
-    this->setCursor( Qt::PointingHandCursor );
+    this->setCursor( Qt::OpenHandCursor );
   }
 
   void leaveEvent( QEvent* e ) FTL_OVERRIDE
@@ -166,7 +166,13 @@ protected:
 
   void mousePressEvent( QMouseEvent * e ) FTL_OVERRIDE
   {
+    this->setCursor( Qt::ClosedHandCursor );
     m_clickOffset = e->globalPos() - m_parent->pos();
+  }
+
+  void mouseReleaseEvent( QMouseEvent * e ) FTL_OVERRIDE
+  {
+    this->setCursor( Qt::OpenHandCursor );
   }
 
   void mouseMoveEvent( QMouseEvent * e ) FTL_OVERRIDE
