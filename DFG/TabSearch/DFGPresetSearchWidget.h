@@ -98,10 +98,10 @@ namespace FabricUI
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
       TabSearch::DetailsWidget* m_detailsWidget;
-      QPoint m_posAtShow;
       QScrollArea* m_detailsPanel;
       TabSearch::Toggle* m_toggleDetailsButton;
       bool m_detailsPanelToggled;
+      class MoveHandle;
     };
   };
 };
