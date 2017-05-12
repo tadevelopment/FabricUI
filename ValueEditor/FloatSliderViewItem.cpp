@@ -137,14 +137,11 @@ void FloatSliderViewItem::metadataChanged()
 
 void FloatSliderViewItem::onLineEditTextModified( QString text )
 {
-  text.replace(',', '.');
-  if (text.startsWith('.'))
-    text = "0" + text;
   double value = std::max(
     m_hardMinimum,
     std::min(
       m_hardMaximum,
-      text.toDouble()
+      Util::tolerantStringToDouble(text)
       )
     );
 
