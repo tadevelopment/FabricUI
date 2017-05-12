@@ -452,6 +452,8 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addAction(new ResetZoomAction(graphWidget, result));
 
+  result->setFocus( Qt::OtherFocusReason );
+
   return result;
 }
 
@@ -636,6 +638,8 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     result->addAction(new SetNodeCommentAction   (dfgWidget, uiNode, result, uiNode->comment().isEmpty(), dfgWidget->isEditable()));
     result->addAction(new RemoveNodeCommentAction(dfgWidget, uiNode, result, dfgWidget->isEditable() && !uiNode->comment().isEmpty()));
 
+    result->setFocus( Qt::OtherFocusReason );
+
     return result;
   }
   catch(FabricCore::Exception e)
@@ -683,7 +687,9 @@ QMenu *DFGWidget::portContextMenuCallback(
 
   result->addAction( new MoveInputPortsToEndAction ( graphWidget, result, editable && exec.getExecPortCount() > 1 && numPortsIn  > 0 ) );
   result->addAction( new MoveOutputPortsToEndAction( graphWidget, result, editable && exec.getExecPortCount() > 1 && numPortsOut > 0 ) );
-  
+
+  result->setFocus( Qt::OtherFocusReason );
+
   return result;
 }
 
@@ -707,6 +713,8 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   QAction *dummyAction = new QAction( "Port is locked", menu );
   dummyAction->setEnabled( editable && false );
   menu->addAction( dummyAction );
+
+  menu->setFocus( Qt::OtherFocusReason );
 
   return menu;
 }
@@ -782,6 +790,8 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "",
                                                                dfgWidget->isEditable()));
 
+  result->setFocus( Qt::OtherFocusReason );
+
   return result;
 }
 
@@ -854,6 +864,8 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
   result->addAction( new SidePanelScrollUpAction  ( graphWidget, panel, result, canScroll ) );
   result->addAction( new SidePanelScrollDownAction( graphWidget, panel, result, canScroll ) );
 
+  result->setFocus( Qt::OtherFocusReason );
+
   return result;
 }
 
@@ -873,7 +885,7 @@ void DFGWidget::tabSearch()
 {
   if (m_isEditable)
   {
-    if (getUIController()->validPresetSplit())
+    if (getUIController()->validPresetSplit() && this->getGraphViewWidget()->hasFocus())
     {
       QPoint pos = getGraphViewWidget()->lastEventPos();
       m_tabSearchPos = pos;
