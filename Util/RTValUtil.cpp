@@ -91,8 +91,10 @@ QString RTValUtil::rtValToJSON(
         throw FabricCore::Exception( ("KL object of type " + std::string(rtVal.getTypeNameCStr()) + " doesn't support RTValToJSONEncoder").c_str() );
 
       FTL::CStrRef ref;
+      FabricCore::RTVal result;
+
       if( !cast.isNullObject() ) {
-        FabricCore::RTVal result = cast.callMethod( "String", "convertToString", 0, 0 );
+        result = cast.callMethod( "String", "convertToString", 0, 0 );
         if( !result.isValid() )
           throw FabricCore::Exception( ("Calling method 'RTValToJSONEncoder::convertToString' on object of type " + std::string( rtVal.getTypeNameCStr() ) + " failed").c_str() );
 
