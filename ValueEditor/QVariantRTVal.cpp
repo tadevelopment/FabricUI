@@ -521,9 +521,9 @@ QColor getQVariantRTValValue( const FabricCore::RTVal& val ) {
   if( val.hasType( "RGB" ) || val.hasType( "RGBA" ) ) {
     return QColor(
       getQVariantRTValValue<uint8_t>( val.getMemberRef( 0 ) ),
-      getQVariantRTValValue<uint8_t>( val.getMemberRef( 0 ) ),
-      getQVariantRTValValue<uint8_t>( val.getMemberRef( 0 ) ),
-      val.hasType( "RGBA" ) ? getQVariantRTValValue<uint8_t>( val.getMemberRef( 0 ) ) : 255
+      getQVariantRTValValue<uint8_t>( val.getMemberRef( 1 ) ),
+      getQVariantRTValValue<uint8_t>( val.getMemberRef( 2 ) ),
+      val.hasType( "RGBA" ) ? getQVariantRTValValue<uint8_t>( val.getMemberRef( 3 ) ) : 255
     );
   }
   else
