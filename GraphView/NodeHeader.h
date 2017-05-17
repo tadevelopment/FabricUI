@@ -23,6 +23,8 @@ namespace FabricUI
     {
       Q_OBJECT
 
+      typedef ConnectionTarget Parent;
+
     public:
 
       NodeHeader(
@@ -81,6 +83,7 @@ namespace FabricUI
     protected:
 
       PinCircle * findPinCircle( QPointF pos ) FTL_OVERRIDE { return NULL; }
+      void contextMenuEvent( QGraphicsSceneContextMenuEvent * event ) FTL_OVERRIDE;
 
     private slots:
 

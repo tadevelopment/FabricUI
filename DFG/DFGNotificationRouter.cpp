@@ -1954,7 +1954,7 @@ void DFGNotificationRouter::onExecPortResolvedTypeChanged(
     FabricCore::DFGExec &exec = m_dfgController->getExec();
     for(size_t i=0;i<uiPorts.size();i++)
     {
-      uiPorts[i]->setDataType(newResolvedType);
+      uiPorts[i]->setDataType(newResolvedType, true /* updateLabelforArrays */);
       uiPorts[i]->setColor(m_config.getColorForDataType(newResolvedType, &exec, portName.c_str()));
     }
     uiGraph->updateColorForConnections(uiPorts[0]);
@@ -1982,7 +1982,7 @@ void DFGNotificationRouter::onExecFixedPortResolvedTypeChanged(
     FabricCore::DFGExec &exec = m_dfgController->getExec();
     for(size_t i=0;i<uiFixedPorts.size();i++)
     {
-      uiFixedPorts[i]->setDataType(newResolvedType);
+      uiFixedPorts[i]->setDataType(newResolvedType, true /* updateLabelforArrays */);
       uiFixedPorts[i]->setColor(m_config.getColorForDataType(newResolvedType, &exec, portName.c_str()));
     }
     uiGraph->updateColorForConnections(uiFixedPorts[0]);

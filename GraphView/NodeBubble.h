@@ -6,6 +6,8 @@
 #include "GraphConfig.h"
 #include <QGraphicsItem>
 
+#include <FTL/Config.h>
+
 class QGraphicsRectItem;
 class QGraphicsSimpleTextItem;
 
@@ -18,8 +20,6 @@ class Node;
 class NodeBubble : public QGraphicsObject
 {
   Q_OBJECT
-
-  friend class Node;
 
 public:
 
@@ -54,6 +54,8 @@ protected:
     );
   virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
   virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
+
+  void contextMenuEvent( QGraphicsSceneContextMenuEvent * event ) FTL_OVERRIDE;
 
   void updateChildrenGeometries();
 

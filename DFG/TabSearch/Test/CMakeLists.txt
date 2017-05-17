@@ -3,11 +3,11 @@ project (DFGPresetSearchWidget)
 
 set(
   FabricStageDir "${FABRIC_DIR}"
-  CACHE FILEPATH "desc" )
+  CACHE PATH "desc" )
 
 set(
   QtDir "C:/Qt5/5.7/msvc2013_64"
-  CACHE FILEPATH "desc" )
+  CACHE PATH "desc" )
 
 add_definitions(-DFEC_SHARED)
 
@@ -16,10 +16,14 @@ add_custom_target(
   COMMAND "${CMAKE_CURRENT_LIST_DIR}/moc.bat" ${QtDir} ${CMAKE_CURRENT_LIST_DIR}
 )
 
+set( SGDir "../../../../.." )
+
 include_directories(
   ../
-  ${FabricStageDir}/include
-  ${FabricStageDir}/include/FabricServices
+  ${SGDir}
+  ${SGDir}/Native
+  ${SGDir}/Core/Clients/CAPI
+  ${SGDir}/Native/FabricServices
   ${QtDir}/include ${QtDir}/include/QtCore
   ${QtDir}/include/QtGUI
   ${QtDir}/include/ActiveQt
@@ -47,11 +51,13 @@ add_executable(
   ../HeatBar.h
   ../Data.cpp
   ../Data.h
+  ${SGDir}/Native/FabricUI/Style/FabricStyle.cpp
+  ${SGDir}/Native/FabricUI/Util/FabricResourcesPath.cpp
+  ${SGDir}/Native/FabricUI/Util/Config.cpp
   Moc.cpp
   Main.cpp
   )
 
-set( FABRIC_DIR ${FabricStageDir} )
 configure_file( ${CMAKE_CURRENT_LIST_DIR}/../../../FabricUI.qss ${CMAKE_BINARY_DIR}/ )
 
 add_dependencies( DFGPresetSearchWidget qtMoc )

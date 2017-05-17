@@ -89,6 +89,7 @@ namespace DFG {
       GraphView::Graph * getUIGraph();
       DFGKLEditorWidget * getKLEditor();
       DFGController * getUIController();
+      const DFGController * getUIController() const;
       DFGAbstractTabSearchWidget * getTabSearchWidget();
       DFGGraphViewWidget * getGraphViewWidget();
       const DFGGraphViewWidget * getGraphViewWidget() const;
@@ -99,11 +100,22 @@ namespace DFG {
       bool isEditable() const { return m_isEditable; }
       static QSettings * getSettings();
       static void setSettings(QSettings * settings);
+
+      std::string getBindingHostApp() const;
+
+      bool isBindingHostAppStandalone() const { return (isBindingHostAppCanvasPy() || isBindingHostAppCanvasExe()); }
+      bool isBindingHostAppCanvasPy()   const { return (getBindingHostApp() == "Canvas.py"); }
+      bool isBindingHostAppCanvasExe()  const { return (getBindingHostApp() == "Canvas.exe"); }
+      bool isBindingHostAppMaya()       const { return (getBindingHostApp() == "Maya"); }
+      bool isBindingHostAppSoftimage()  const { return (getBindingHostApp() == "Softimage"); }
+      bool isBindingHostAppModo()       const { return (getBindingHostApp() == "Modo"); }
+      bool isBindingHostApp3dsMax()     const { return (getBindingHostApp() == "3dsMax"); }
+
+      bool isQuickZoomActive() const { return (m_uiGraphZoomBeforeQuickZoom != 0); }
       
       void onExecPathOrTitleChanged();
       void refreshExtDeps( FTL::CStrRef extDeps );
 
-    //void populateMenuBar(QMenuBar *menuBar, bool addFileMenu = true, bool addDCCMenu = false);
       void populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEditMenu, bool addViewMenu, bool addDCCMenu, bool addHelpMenu);
 
       bool maybeEditNode( FabricUI::GraphView::Node *node );
@@ -127,7 +139,7 @@ namespace DFG {
       void createPreset( const char *nodeName );
       void updateOrigPreset( const char *nodeName );
       void exportGraph( const char *nodeName );
-      void explodeNode( const char *nodeName );
+      void explodeNode( const char *nodeName, bool clearCurrentSelection = true, bool selectNewNodes = true );
 
       void createNewGraphNode( QPoint const &globalPos );
       void createNewNodeFromJSON( QPoint const &globalPos );
@@ -180,6 +192,7 @@ namespace DFG {
       void onRevealPresetInExplorer(const char* nodeName);
       void onPresetAddedFromTabSearch( QString preset );
       void onBackdropAddedFromTabSearch();
+      void onNewBlockAddedFromTabSearch();
       void onVariableCreationRequestedFromTabSearch();
       void onVariableSetterAddedFromTabSearch( const std::string name );
       void onVariableGetterAddedFromTabSearch( const std::string name );
@@ -203,6 +216,7 @@ namespace DFG {
         );
       void tabSearchVariablesSetDirty();
       void tabSearchVariablesUpdate();
+      void tabSearchBlockToggleChanged();
 
     private:
 
@@ -866,7 +880,7 @@ namespace DFG {
         : QAction( parent )
         , m_dfgWidget( dfgWidget )
       {
-        setText( "Implode nodes" );
+        setText( "Implode selected nodes" );
         connect( this, SIGNAL(triggered()),
                  this, SLOT(onTriggered()) );
         setEnabled( enable );
@@ -879,6 +893,79 @@ namespace DFG {
         Qt::KeyboardModifiers keyMod = QApplication::keyboardModifiers();
         bool isCTRL  = keyMod.testFlag(Qt::ControlModifier);
         m_dfgWidget->implodeSelectedNodes(isCTRL);
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
+    };
+
+    class ExplodeSelectedNodesAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ExplodeSelectedNodesAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true )
+        : QAction( parent )
+        , m_dfgWidget( dfgWidget )
+      {
+        setText( "Explode selected nodes" );
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+        setEnabled( enable );
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        DFGController *controller = m_dfgWidget->getUIController();
+        if (controller)
+        {
+          GraphView::Graph *graph = controller->graph();
+
+          // create an array of nodes that are selected and 'explodable'.
+          std::vector<std::string> nodes;
+          {
+            FabricCore::DFGExec exec = controller->getExec();
+            std::vector<GraphView::Node *> selectedNodes = graph->selectedNodes();
+            for (size_t i=0;i<selectedNodes.size();i++)
+            {
+              GraphView::Node *node = selectedNodes[i];
+              std::string nodeName = node->name();
+
+              if (   node->isBackDropNode()
+                  || node->isBlockNode() )
+                continue;
+
+              FabricCore::DFGNodeType dfgNodeType = exec.getNodeType( selectedNodes[i]->name().c_str() );
+              if (   dfgNodeType != FabricCore::DFGNodeType_Inst
+                  && dfgNodeType != FabricCore::DFGNodeType_User )
+                continue;
+
+              if (exec.getSubExec(nodeName.c_str()).getType() != FabricCore::DFGExecType_Graph)
+                continue;
+
+              nodes.push_back(nodeName);
+            }
+          }
+
+          // explode the nodes.
+          if (nodes.size() > 0)
+          {
+            graph->clearSelection();
+            for (size_t i=0;i<nodes.size();i++)
+            {
+              GraphView::Node *node = graph->node(nodes[i]);
+              if (node)
+                m_dfgWidget->explodeNode(node->name().c_str(), false /* clearCurrentSelection */, true /* selectNewNodes */);
+            }
+          }
+        }
       }
 
     private:

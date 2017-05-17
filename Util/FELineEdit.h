@@ -2,17 +2,16 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef FABRICUI_VALUEEDITOR_VELINEEDIT_H
-#define FABRICUI_VALUEEDITOR_VELINEEDIT_H
+#ifndef FABRICUI_UTIL_VELINEEDIT_H
+#define FABRICUI_UTIL_VELINEEDIT_H
 
 #include <QLineEdit>
-#include <QIntValidator>
-#include <FabricUI/Util/StringUtil.h>
+#include <FabricUI/Util/StringUtils.h>
 
 namespace FabricUI {
-namespace ValueEditor {
+namespace Util {
 
-class VELineEdit : public QLineEdit
+class FELineEdit : public QLineEdit
 {
   Q_OBJECT
 
@@ -22,26 +21,16 @@ private:
 
 public:
 
-  VELineEdit( QWidget *parent = 0 )
+  FELineEdit( QWidget *parent = 0 )
     : QLineEdit( parent )
   {
     init();
   }
 
-  VELineEdit( QString text, QWidget *parent = 0 )
+  FELineEdit( QString text, QWidget *parent = 0 )
     : QLineEdit( text, parent )
   {
     init();
-  }
-
-  void setValidatorInt()
-  {
-    setValidator(new QIntValidator(this));
-  }
-
-  void setValidatorDouble()
-  {
-    setValidator(FabricUI::Util::newDoubleValidator(this));
   }
 
 signals:
@@ -83,7 +72,7 @@ protected slots:
   }
 };
 
-} // namespace ValueEditor
-} // namespace FabricUI
+} // namespace Util
+} // namespace FabricUI 
 
-#endif // FABRICUI_VALUEEDITOR_VELINEEDIT_H
+#endif // FABRICUI_UTIL_FELINEEDIT_H

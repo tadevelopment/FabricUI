@@ -227,7 +227,7 @@ public:
     QString nodeName
     ) = 0;
 
-  virtual void dfgDoAddBackDrop(
+  virtual QString dfgDoAddBackDrop(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,

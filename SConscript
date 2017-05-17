@@ -181,7 +181,8 @@ for d in dirs:
 
 uiLib = env.StaticLibrary('FabricUI', sources)
 
-uiFiles = installedHeaders
+import copy
+uiFiles = copy.copy(installedHeaders)
 if uiLibPrefix == 'ui':
   uiLib = env.Install(stageDir.Dir('lib'), uiLib)
   uiFiles.append(uiLib)
@@ -345,7 +346,8 @@ if uiLibPrefix == 'ui':
       ]
       )
     pysideEnv.Depends(pysideGen, installedHeaders)
-    pysideEnv.Depends(pysideGen, uiLib)
+    pysideEnv.Requires(pysideGen, uiLib) # HACK [FE-8436] : this line shouldn't be needed
+      # ... instead, we should just add QtCore to the RPath on OSX for the shiboken executable
     pysideEnv.Depends(pysideGen, corePythonModuleFiles)
     pysideGens.append(pysideGen)
 

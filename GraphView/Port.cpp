@@ -19,7 +19,7 @@ Port::Port(
   SidePanel * parent,
   FTL::StrRef name,
   PortType portType,
-  FTL::StrRef dataType,
+  FTL::CStrRef dataType,
   QColor color,
   FTL::StrRef label
   )
@@ -29,18 +29,15 @@ Port::Port(
   , m_labelCaption( !label.empty()? label: name )
   , m_allowEdits( true )
 {
-  // if(parent->graph()->path().length() > 0)
-  //   m_path = parent->graph()->path() + parent->graph()->config().pathSep + m_path;
+  init(portType, dataType, color);
+}
+
+void Port::init(PortType portType, FTL::CStrRef dataType, QColor color)
+{
   m_portType = portType;
-  m_dataType = dataType;
   m_color = color;
   m_index = 0;
 
-  init();
-}
-
-void Port::init()
-{
   setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding));
 
   const GraphConfig & config = graph()->config();
@@ -58,7 +55,10 @@ void Port::init()
     config.sidePanelFontHighlightColor,
     config.sidePanelFont
     );
-  m_circle = new PinCircle(this, m_portType, color());
+
+  setDataType( dataType, true /* updateLabelforArrays */ );
+  
+  m_circle = new PinCircle(this, m_portType, this->color());
 
   if(m_portType == PortType_Input)
   {
@@ -128,10 +128,37 @@ PortType Port::portType() const
   return m_portType;
 }
 
-void Port::setDataType(FTL::CStrRef dataType)
+void Port::setDataType(FTL::CStrRef dataType, bool updateLabelforArrays)
 {
   m_dataType = dataType;
-  setToolTip(m_dataType.c_str());
+  setToolTip(dataType.c_str());
+
+  // automatically change the label for array pins
+  if(updateLabelforArrays && m_label)
+  {
+    for (int i=4;i>=1;i--)
+    {
+      std::string brackets = "";
+      for (int j=0;j<i;j++)
+        brackets += "[]";
+      if (m_dataType.length() > brackets.length())
+      {
+        if (m_dataType.substr(m_dataType.length() - brackets.length()) == brackets && m_labelSuffix != brackets)
+        {
+          m_labelSuffix = (i < 4 ? brackets : "[]...[]");
+          m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+          m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
+          return;
+        }
+      }
+    }
+    if(m_labelSuffix.length() > 0)
+    {
+      m_labelSuffix = "";
+      m_label->setText( QSTRING_FROM_STL_UTF8( m_labelCaption ) );
+      m_label->setSuffix( QSTRING_FROM_STL_UTF8( m_labelSuffix ) );
+    }
+  }
 }
 
 void Port::setColor(QColor color)
