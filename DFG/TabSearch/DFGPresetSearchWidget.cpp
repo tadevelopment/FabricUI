@@ -2,6 +2,11 @@
 
 #include "DFGPresetSearchWidget.h"
 #include "ItemView.h"
+#include "QueryEdit.h"
+#include "ResultsView.h"
+#include "DetailsWidget.h"
+
+#include "Data.h"
 
 #include <FTL/JSONValue.h>
 #include <QDebug>
@@ -17,7 +22,7 @@ using namespace FabricUI::DFG;
 
 static const QKeySequence ToggleDetailsKey = Qt::CTRL + Qt::Key_Tab;
 
-static const size_t NbHints = 7;
+static const size_t NbHints = 8;
 struct Hint
 {
   std::string message;
@@ -33,7 +38,8 @@ static const Hint Hints[NbHints] = {
   Hint( "You can mouse over a Tag to see its category", 1.0 ),
   Hint( "You can add Tags by clicking on them (in the results or the the details panel)", 1.0 ),
   Hint( "You can move through Tags with Alt + Arrows", 2.0 ),
-  Hint( "You can remove filtered Tags by clicking on them", 1.0 )
+  Hint( "You can remove filtered Tags by clicking on them", 1.0 ),
+  Hint( "You can also add Variables, Backdrops and Blocks from the TabSearch", 0.5 )
 };
 
 const std::string& GetRandomHint()
@@ -134,9 +140,59 @@ void DFGPresetSearchWidget::Status::updateDisplay()
     clear();
 }
 
+class DFGPresetSearchWidget::MoveHandle : public QFrame
+{
+  typedef QFrame Parent;
+
+  DFGPresetSearchWidget* m_parent;
+  QPoint m_clickOffset; // position of the click when starting to drag
+
+public:
+  MoveHandle( DFGPresetSearchWidget* parent )
+    : QFrame( parent )
+    , m_parent( parent )
+  {
+    this->setObjectName( "MoveHandle" );
+    this->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ) );
+  }
+  
+protected:
+
+  void enterEvent( QEvent* e ) FTL_OVERRIDE
+  {
+    Parent::enterEvent( e );
+    this->setCursor( Qt::OpenHandCursor );
+  }
+
+  void leaveEvent( QEvent* e ) FTL_OVERRIDE
+  {
+    Parent::leaveEvent( e );
+    this->unsetCursor();
+  }
+
+  void mousePressEvent( QMouseEvent * e ) FTL_OVERRIDE
+  {
+    this->setCursor( Qt::ClosedHandCursor );
+    m_clickOffset = e->globalPos() - m_parent->pos();
+  }
+
+  void mouseReleaseEvent( QMouseEvent * e ) FTL_OVERRIDE
+  {
+    this->setCursor( Qt::OpenHandCursor );
+  }
+
+  void mouseMoveEvent( QMouseEvent * e ) FTL_OVERRIDE
+  {
+    QPoint mousePos = e->globalPos();
+    m_parent->move( mousePos - m_clickOffset );
+    m_parent->maybeReposition();
+  }
+};
+
 DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   : m_clearQueryOnClose( false )
   , m_staticEntriesAddedToDB( false )
+  , m_newBlocksEnabled( false )
   , m_host( host )
   , m_searchFrame( new QFrame() )
   , m_status( new Status( this ) )
@@ -246,7 +302,6 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
   hlayout->setSizeConstraint( QLayout::SetFixedSize );
   hlayout->setMargin( 0 ); hlayout->setSpacing( 0 );
   hlayout->addWidget( m_searchFrame );
-  this->setLayout( hlayout );
   m_detailsPanel->setFocusPolicy( Qt::NoFocus );
   m_detailsPanel->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
@@ -301,6 +356,15 @@ DFGPresetSearchWidget::DFGPresetSearchWidget( FabricCore::DFGHost* host )
     this->addAction( toggleDetailsA );
   }
 
+  // Layout containing most of the TabSearch, and its MoveHandle
+  QVBoxLayout* moveableLay = new QVBoxLayout();
+  moveableLay->addWidget( new MoveHandle( this ) );
+  moveableLay->addLayout( hlayout );
+  moveableLay->setMargin( 0 );
+  moveableLay->setSpacing( 0 );
+  moveableLay->setSizeConstraint( QLayout::SetFixedSize );
+  this->setLayout( moveableLay );
+
   vlayout->addWidget( m_status );
   hidePreview();
   updateSize();
@@ -314,8 +378,7 @@ DFGPresetSearchWidget::~DFGPresetSearchWidget()
 void DFGPresetSearchWidget::showForSearch( QPoint globalPos )
 {
   move( QPoint( 0, 0 ) );
-  m_posAtShow = mapFromGlobal( globalPos );
-  move( m_posAtShow );
+  move( mapFromGlobal( globalPos ) );
 
   emit enabled( true );
   show();
@@ -341,9 +404,6 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
 {
   registerStaticEntries();
 
-  // Splitting the search string into a char**
-  const std::string searchStr = query.getText();
-
   std::vector<std::string> searchTermsStr = query.getSplitText();
 
   // Remove tags (i.e. terms that contain ':') because they should be
@@ -352,7 +412,12 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
     std::vector<std::string> filteredTerms;
     for( size_t i = 0; i < searchTermsStr.size(); i++ )
       if( !TabSearch::Query::Tag::IsTag( searchTermsStr[i] ) )
-        filteredTerms.push_back( searchTermsStr[i] );
+      {
+        // Converting the string to Latin1 because Core/DFGHost::searchPresets
+        // currently only supports encodings with 1 byte per char
+        std::string searchTerm = ToLatin1( searchTermsStr[i] );
+        filteredTerms.push_back( searchTerm );
+      }
     searchTermsStr = filteredTerms;
   }
 
@@ -368,9 +433,7 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
     requiredTags[i] = queryTags[i].data();
 
   // Querying the DataBase of presets
-  FabricCore::DFGHost* host = m_host;
-  FEC_StringRef jsonStr = FEC_DFGHostSearchPresets(
-    host->getFECDFGHostRef(),
+  FabricCore::String json = m_host->searchPresets(
     searchTerms.size(),
     searchTerms.data(),
     requiredTags.size(),
@@ -378,11 +441,11 @@ void DFGPresetSearchWidget::onQueryChanged( const TabSearch::Query& query )
     0,
     16
   );
-  FTL::StrRef jsonStrR( FEC_StringGetCStr( jsonStr ), FEC_StringGetSize( jsonStr ) );
+  std::string jsonStr( json.getCStr(), json.getSize() );
 
   hidePreview();
   m_status->setHintsEnabled( query.getTags().size() == 0 && query.getText().empty() );
-  m_resultsView->setResults( jsonStrR, query );
+  m_resultsView->setResults( jsonStr, query );
 
   updateSize();
 }
@@ -394,6 +457,8 @@ void DFGPresetSearchWidget::updateResults()
 
 const std::string BackdropType = "backdrop";
 const TabSearch::Query::Tag BackdropTag = std::string("name:BackDrop");
+const std::string NewBlockType = "block";
+const TabSearch::Query::Tag NewBlockTag = std::string( "name:NewBlock" );
 const std::string NewVariableType = "newVariable";
 const TabSearch::Query::Tag NewVariableTag = std::string( "name:NewVariable" );
 const std::string VariableSetType = "setVariable";
@@ -413,6 +478,11 @@ void DFGPresetSearchWidget::registerStaticEntries()
     "cat:UI"
   };
 
+  const char* newBlockTags[] = {
+    NewBlockTag.data(),
+    "cat:Block"
+  };
+
   const char* newVariableTags[] = {
     NewVariableTag.data(),
     VariableTag.data(),
@@ -428,6 +498,19 @@ void DFGPresetSearchWidget::registerStaticEntries()
         sizeof( backdropTags ) / sizeof( const char* ),
         backdropTags
       );
+
+    TabSearch::Result newBlockResult( NewBlockType, "New Block" );
+    if( !m_host->searchDBHasUser( newBlockResult.data() ) )
+    {
+      if( m_newBlocksEnabled )
+        m_host->searchDBAddUser(
+          newBlockResult.data(),
+          sizeof( newBlockTags ) / sizeof( const char* ),
+          newBlockTags
+        );
+    }
+    else if( !m_newBlocksEnabled )
+      m_host->searchDBRemoveUser( newBlockResult.data() );
 
     TabSearch::Result newVariableResult( NewVariableType, "New Variable" );
     if( !m_host->searchDBHasUser( newVariableResult.data() ) )
@@ -508,6 +591,17 @@ void DFGPresetSearchWidget::unregisterVariables()
   m_staticEntriesAddedToDB = false;
 }
 
+void DFGPresetSearchWidget::toggleNewBlocks( bool enabled )
+{
+  if( enabled != m_newBlocksEnabled )
+  {
+    m_newBlocksEnabled = enabled;
+    m_staticEntriesAddedToDB = false;
+    this->registerStaticEntries();
+    this->updateResults();
+  }
+}
+
 void DFGPresetSearchWidget::onResultValidated( const TabSearch::Result& result )
 {
   if( result.isPreset() )
@@ -517,6 +611,9 @@ void DFGPresetSearchWidget::onResultValidated( const TabSearch::Result& result )
     const std::string type = result.type();
     if( type == BackdropType )
       emit selectedBackdrop();
+    else
+    if( type == NewBlockType )
+      emit selectedNewBlock();
     else
     if( type == NewVariableType )
       emit selectedCreateNewVariable();
@@ -622,6 +719,11 @@ void DFGPresetSearchWidget::Status::setDisplayedResult( const TabSearch::Result&
       this->addItem( new TabSearch::Label( "Add a new " ) );
       this->addItem( new TabSearch::Label( "Backdrop", BackdropTag ) );
     }
+    if( type == NewBlockType )
+    {
+      this->addItem( new TabSearch::Label( "Add a new " ) );
+      this->addItem( new TabSearch::Label( "Block", NewBlockTag ) );
+    }
     else
     if( type == NewVariableType )
     {
@@ -711,21 +813,11 @@ void DFGPresetSearchWidget::maybeReposition()
 {
   if ( QWidget *parent = parentWidget() )
   {
-    QSize parentSize = parent->size();
-    // qDebug() << "parentSize" << parentSize;
-    QPoint myPos = QPoint(
-      // Don't move the widget when shrinking
-      std::min( m_posAtShow.x(), this->pos().x() ),
-      std::min( m_posAtShow.y(), this->pos().y() )
-    );
-    // qDebug() << "myPos before" << myPos;
-    QSize mySize = size();
-    // qDebug() << "mySize" << myPos;
-    if ( myPos.x() + mySize.width() > parentSize.width() )
-      myPos.setX( std::max( 0, parentSize.width() - mySize.width() ) );
-    if ( myPos.y() + mySize.height() > parentSize.height() )
-      myPos.setY( std::max( 0, parentSize.height() - mySize.height() ) );
-    // qDebug() << "myPos before" << myPos;
+    QPoint myPos = this->pos();
+    // The order of std::max and std::min is important ! Because if the Parent is too
+    // small for the widget, we want to give priority to the top left (rather than the bottom right)
+    myPos.setX( std::max( 0, std::min( myPos.x(), parent->width() - this->width() ) ) );
+    myPos.setY( std::max( 0, std::min( myPos.y(), parent->height() - this->height() ) ) );
     move( myPos );
   }
 }

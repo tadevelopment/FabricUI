@@ -181,7 +181,17 @@ inline QRegExpValidator *newDoubleValidator(QObject *parent)
   return new QRegExpValidator(QRegExp("[-+]?\\d*[\\.,]?\\d+([eE][-+]?\\d+)?"), parent);
 }
 
-} // namespace Utils
+// converts a string into a float regardless
+// whether the separator is a dot or a comma.
+inline double tolerantStringToDouble(QString s)
+{
+  s.replace(',', '.');
+  if (s.startsWith('.'))
+    s = "0" + s;
+  return s.toDouble();
+}
+
+} // namespace Util
 } // namespace FabricUI
  
 #endif // __UI_FABRICUI_STRING_UTILS_H__

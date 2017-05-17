@@ -520,7 +520,7 @@ QStringList DFGUICmdHandler_QUndo::dfgDoExplodeNode(
   return cmd->getExplodedNodeNames();
 }
 
-void DFGUICmdHandler_QUndo::dfgDoAddBackDrop(
+QString DFGUICmdHandler_QUndo::dfgDoAddBackDrop(
   FabricCore::DFGBinding const &binding,
   QString execPath,
   FabricCore::DFGExec const &exec,
@@ -537,6 +537,7 @@ void DFGUICmdHandler_QUndo::dfgDoAddBackDrop(
       pos
       );
   m_qUndoStack->push( new WrappedCommand( cmd ) );
+  return cmd->getActualNodeName();
 }
 
 void DFGUICmdHandler_QUndo::dfgDoSetNodeComment(

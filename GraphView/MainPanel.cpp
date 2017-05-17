@@ -234,6 +234,7 @@ void MainPanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
       if (hit && nodes[i]->isBackDropNode())
       {
+        // [FE-6224]
         // backdrop nodes are only hit when the selection
         // rectangle intersects with the backdrop's border
         // or if it contains the entire backdrop.
