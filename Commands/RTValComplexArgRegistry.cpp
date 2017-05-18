@@ -2,10 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandException.h"
 #include "RTValComplexArgRegistry.h"
+#include <FabricUI/Util/FabricException.h>
  
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 

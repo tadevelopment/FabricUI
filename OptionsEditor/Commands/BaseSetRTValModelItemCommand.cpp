@@ -5,7 +5,7 @@
 #include "../OptionsEditorHelpers.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseSetRTValModelItemCommand.h"
-#include <FabricUI/Commands/CommandException.h>
+#include <FabricUI/Util/FabricException.h>
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
 
@@ -32,9 +32,9 @@ BaseSetRTValModelItemCommand::BaseSetRTValModelItemCommand()
     declareArg("newValue");
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseSetRTValModelItemCommand::BaseSetRTValModelItemCommand",
       "",
       e.what());
@@ -73,9 +73,9 @@ bool BaseSetRTValModelItemCommand::exeCommand(
     res = true;
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseSetRTValModelItemCommand::exeCommand",
       "",
       e.what());
@@ -126,9 +126,9 @@ void BaseSetRTValModelItemCommand::checkArguments()
         singleOption);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseSetRTValModelItemCommand::checkArguments",
       "",
       e.what());

@@ -5,7 +5,7 @@
 #include "ViewportOptionsEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Commands/CommandRegistry.h>
-#include <FabricUI/Commands/CommandException.h>
+#include <FabricUI/Util/FabricException.h>
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 #include <FabricUI/OptionsEditor/RTValDictModelItem.h>

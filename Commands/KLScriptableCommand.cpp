@@ -2,11 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandException.h"
 #include "KLCommandHelpers.h"
 #include "KLCommandRegistry.h"
 #include "KLScriptableCommand.h"
 #include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Util/FabricException.h>
  
 using namespace FabricUI;
 using namespace Util;
@@ -111,7 +111,7 @@ bool KLScriptableCommand::hasArg(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::hasArg", 
       "",
       e.getDesc_cstr());
@@ -152,7 +152,7 @@ bool KLScriptableCommand::isArg(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::isArg", 
       "",
       e.getDesc_cstr());
@@ -184,7 +184,7 @@ QList<QString> KLScriptableCommand::getArgKeys()
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::getArgKeys", 
       "",
       e.getDesc_cstr());
@@ -229,7 +229,7 @@ void KLScriptableCommand::setArg(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::setArg",
       e.getDesc_cstr(),
       "");
@@ -260,14 +260,14 @@ void KLScriptableCommand::validateSetArgs()
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::validateSetArgs", 
       "",
       e.getDesc_cstr());
   }
   
   if(!strError.isEmpty())
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::validateSetArgs",
       "",
       strError);
@@ -286,7 +286,7 @@ QString KLScriptableCommand::getArgsDescription()
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::getArgsDescription", 
       "",
       e.getDesc_cstr());
@@ -329,7 +329,7 @@ QString KLScriptableCommand::getRTValArgType(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::getRTValArgType", 
       "",
       e.getDesc_cstr());
@@ -349,7 +349,7 @@ RTVal KLScriptableCommand::getRTValArg(
   const QString &key)
 {
   if(!hasArg(key)) 
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::getRTValArgType",
       "No arg named '" + key + "' in command '" + getName() + "'",
       "");
@@ -374,7 +374,7 @@ RTVal KLScriptableCommand::getRTValArg(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::getRTValArg",
       "",
       e.getDesc_cstr());
@@ -423,7 +423,7 @@ void KLScriptableCommand::setRTValArg(
     // Gets possible KL errors.
     strError = args[2].getStringCString();
     if(!strError.isEmpty())
-      CommandException::Throw(
+      FabricException::Throw(
         "KLScriptableCommand::setRTValArg",
         "",
         strError);
@@ -431,7 +431,7 @@ void KLScriptableCommand::setRTValArg(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLScriptableCommand::setRTValArg",
       strError,
       e.getDesc_cstr());

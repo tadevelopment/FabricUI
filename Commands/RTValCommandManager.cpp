@@ -2,13 +2,13 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "RTValPathValueArg.h"
 #include "CommandRegistry.h"
-#include "CommandException.h"
+#include "RTValPathValueArg.h"
 #include "ScriptableCommand.h"
 #include "RTValCommandManager.h"
 #include "RTValScriptableCommand.h"
 #include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Util/FabricException.h>
 #include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/PathResolvers/PathResolver.h>
 
@@ -56,9 +56,9 @@ Command* RTValCommandManager::createCommand(
     return cmd;
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "RTValCommandManager::createCommand",
       "Cannot create command '" + cmdName + "'",
       e.what()
@@ -93,7 +93,7 @@ void RTValCommandManager::checkCommandArgs(
   RTValScriptableCommand* rtvalScriptCmd = dynamic_cast<RTValScriptableCommand*>(cmd);
   
   if(!rtvalScriptCmd) 
-    CommandException::Throw(
+    FabricException::Throw(
       "RTValCommandManager::checkCommandArgs",
       "Command '" + cmd->getName() + "' is created with args, " + 
       "but is not implementing the RTValScriptableCommand interface"
@@ -144,16 +144,16 @@ void RTValCommandManager::preProcessCommandArgs(
    
   catch(Exception &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "RTValCommandManager::preProcessCommandArgs",
       "",
       e.getDesc_cstr()
       );
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "RTValCommandManager::preProcessCommandArgs",
       "",
       e.what());
@@ -188,16 +188,16 @@ void RTValCommandManager::postProcessCommandArgs(
    
   catch(Exception &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "RTValCommandManager::postProcessCommandArgs",
       "",
       e.getDesc_cstr()
       );
   }
 
-  catch (CommandException &e) 
+  catch (FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "RTValCommandManager::postProcessCommandArgs",
       "",
       e.what());

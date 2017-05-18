@@ -2,10 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
  
-#include "CommandException.h"
 #include "KLCommandRegistry_Python.h"
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 
@@ -31,7 +32,7 @@ QPair<QString, BaseCommand*> KLCommandRegistry_Python::_createCommand_Python(
     cmd);
 
   if(!baseCmd)
-    pair.first = CommandException::Throw(
+    pair.first = FabricException::Throw(
       "KLCommandRegistry_Python::_createCommand_Python",
       "Command '" + cmd->getName() + "' is not a BaseCommand",
       "",
@@ -57,9 +58,9 @@ QString KLCommandRegistry_Python::_commandIsRegistered_Python(
       implType);
   }
 
-  catch (CommandException &e) 
+  catch (FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "KLCommandRegistry_Python::_commandIsRegistered_Python",
       "",
       e.what(),
@@ -78,9 +79,9 @@ QString KLCommandRegistry_Python::_synchronizeKL_Python()
     KLCommandRegistry::synchronizeKL();
   }
 
-  catch (CommandException &e) 
+  catch (FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "KLCommandRegistry_Python::_synchronizeKL_Python",
       "",
       e.what(),

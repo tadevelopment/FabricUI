@@ -4,9 +4,9 @@
  
 #include <QStringList>
 #include "CommandArgFlags.h"
-#include "CommandException.h"
 #include "RTValPathValueArg.h"
 #include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
 using namespace Util;
@@ -80,7 +80,7 @@ QString RTValPathValueArg::setValue(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "RTValPathValueArg::setValue",
       "",
       e.getDesc_cstr());
@@ -112,7 +112,7 @@ QString RTValPathValueArg::getValueType(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "RTValPathValueArg::getValueType",
       "",
       e.getDesc_cstr());
@@ -144,7 +144,7 @@ RTVal RTValPathValueArg::getValue(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "RTValPathValueArg::getValue",
       "",
       e.getDesc_cstr());

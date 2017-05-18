@@ -2,36 +2,36 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_COMMAND_HELPERS__
-#define __UI_COMMAND_HELPERS__
+#ifndef __UI_FABRIC_EXCEPTION__
+#define __UI_FABRIC_EXCEPTION__
 
 #include <stdio.h>
 #include <QString>
 #include <exception>
 
 namespace FabricUI {
-namespace Commands {
+namespace Util {
 
 #define NOTHING 0
 #define PRINT 1
 #define THROW 2
 
-class CommandException : public std::exception
+class FabricException : public std::exception
 {
   /**
     Exception for commands.
   */
 
   public: 
-    CommandException(
+    FabricException(
       const QString &message)
       : m_message(message)
     {
     }
  
-    virtual ~CommandException() throw() {}
+    virtual ~FabricException() throw() {}
 
-    /// Trows and/or prints a CommandException.
+    /// Trows and/or prints a FabricException.
     /// \param method Name of the method that fails.
     /// \param error The error to throw/print.
     /// \param childError A child error
@@ -50,7 +50,7 @@ class CommandException : public std::exception
         printf("%s", cmdError.toUtf8().constData());
 
       if(flag & THROW)
-        throw CommandException(cmdError);
+        throw FabricException(cmdError);
 
       return cmdError;
     }
@@ -68,4 +68,4 @@ class CommandException : public std::exception
 } // namespace Commands
 } // namespace FabricUI
 
-#endif // __UI_COMMAND_HELPERS__
+#endif // __UI_FABRIC_EXCEPTION__

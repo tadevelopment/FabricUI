@@ -3,12 +3,12 @@
 //
 
 #include "CommandRegistry.h"
-#include "CommandException.h"
 #include <FabricUI/Util/TypeInfo.h>
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
-using namespace Commands;
 using namespace Util;
+using namespace Commands;
 
 bool CommandRegistry::s_instanceFlag = false;
 CommandRegistry* CommandRegistry::s_cmdRegistry = 0;
@@ -17,7 +17,7 @@ CommandRegistry::CommandRegistry()
   : Util::BaseFactoryRegistry()
 {
   if(s_instanceFlag)
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandRegistry::CommandRegistry",
       "singleton has already been created"
       );
@@ -38,7 +38,7 @@ CommandRegistry::~CommandRegistry()
 CommandRegistry* CommandRegistry::GetCommandRegistry()
 {
   if(!s_instanceFlag)
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandRegistry::GetCommandRegistry",
       "the registry is null"
       );
@@ -84,7 +84,7 @@ QList<QString> CommandRegistry::getCommandSpecs(
   const QString &cmdName) 
 {
   if(!isCommandRegistered(cmdName))
-    CommandException::Throw( 
+    FabricException::Throw( 
       "CommandRegistry::getCommandSpecs",
       "cannot create command '" + cmdName + "', it's not registered"
       );
@@ -96,7 +96,7 @@ Command* CommandRegistry::createCommand(
   const QString &cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
-    CommandException::Throw( 
+    FabricException::Throw( 
       "CommandRegistry::createCommand",
       "cannot create command '" + cmdName + "', it's not registered"
       );
@@ -112,7 +112,7 @@ Command* CommandRegistry::createCommand(
 
       Command* cmd = (Command*)factory->create(); 
       if(cmd == 0)
-        CommandException::Throw(
+        FabricException::Throw(
           "CommandRegistry::createCommand",
           "resulting command is null" 
           );
@@ -127,9 +127,9 @@ Command* CommandRegistry::createCommand(
     }
   }
     
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandRegistry::createCommand",
       e.what()
       );

@@ -2,10 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandException.h"
 #include "BaseScriptableCommand.h"
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 
 BaseScriptableCommand::BaseScriptableCommand() 
@@ -23,7 +24,7 @@ void BaseScriptableCommand::declareArg(
   const QString &defaultValue) 
 {
   if(key.isEmpty())
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseScriptableCommand::declareArg",
       "declaring arg of '" + getName() + "', key not specified");
 
@@ -47,13 +48,13 @@ bool BaseScriptableCommand::isArg(
   int flag)
 {
   if(key.isEmpty()) 
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseScriptableCommand::isArg",
       "setting arg of '" + getName() + "', key not specified");
 
   if(!hasArg(key)) 
     // TODO: make this an optional behavior
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseScriptableCommand::isArg",
       "setting arg: '" + key + + "' not supported by command '" + getName() + "'");
 
@@ -85,13 +86,13 @@ void BaseScriptableCommand::setArg(
   const QString &value) 
 {
   if(key.isEmpty()) 
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseScriptableCommand::setArg",
       "setting arg of '" + getName() + "', key not specified");
 
   if(!hasArg(key)) 
     // TODO: make this an optional behavior
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseScriptableCommand::setArg",
       "setting arg: '" + key + + "' not supported by command '" + getName() + "'");
 
@@ -110,7 +111,7 @@ void BaseScriptableCommand::validateSetArgs()
     ScriptableCommandArgSpec spec = it.value();
      
     if(!isArg(key, CommandArgFlags::OPTIONAL_ARG) && !isArgSet(key)) //is null
-      CommandException::Throw(
+      FabricException::Throw(
         "BaseScriptableCommand::validateSetArgs",
         "validating arg: '" + key + "' of command '" + getName() + "' has not been set");
   }

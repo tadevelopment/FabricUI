@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandException.h"
 #include "CommandArgHelpers.h"
+#include <FabricUI/Util/FabricException.h>
 
 namespace FabricUI {
 namespace Commands {
@@ -39,9 +39,9 @@ QString CreateHistoryDescFromArgs(
     }
   }
  
-  catch(CommandException &e) 
+  catch(Util::FabricException &e) 
   {
-    CommandException::Throw(
+    Util::FabricException::Throw(
       "CommandArgHelpers::CreateHistoryDescFromArgs",
       "",
       e.what());
@@ -93,9 +93,9 @@ QString CreateHelpFromArgs(
     }
   }
  
-  catch(CommandException &e) 
+  catch(Util::FabricException &e) 
   {
-    CommandException::Throw(
+    Util::FabricException::Throw(
       "CommandArgHelpers::CreateHelpFromArgs",
       "",
       e.what());
@@ -160,9 +160,9 @@ QString CreateHelpFromRTValArgs(
     }
   }
  
-  catch(CommandException &e) 
+  catch(Util::FabricException &e) 
   {
-    CommandException::Throw(
+    Util::FabricException::Throw(
       "CommandArgHelpers::CreateHelpFromRTValArgs",
       "",
       e.what());

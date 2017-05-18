@@ -3,12 +3,11 @@
 #include <iostream>
 #include "DFGPathResolver.h"
 #include <FabricUI/Util/RTValUtil.h>
-#include <FabricUI/Commands/CommandException.h>
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
 using namespace DFG;
 using namespace Util;
-using namespace Commands;
 using namespace FabricCore;
 using namespace PathResolvers;
  
@@ -59,7 +58,7 @@ bool DFGPathResolver::knownPath(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "DFGPathResolver::knownPath",
       "",
       e.getDesc_cstr());
@@ -94,7 +93,7 @@ QString DFGPathResolver::getType(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "DFGPathResolver::getType",
       "",
       e.getDesc_cstr());
@@ -127,7 +126,7 @@ void DFGPathResolver::getValue(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "DFGPathResolver::getValue",
       "",
       e.getDesc_cstr()
@@ -160,7 +159,7 @@ void DFGPathResolver::setValue(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "DFGPathResolver::setValue",
       "",
       e.getDesc_cstr());

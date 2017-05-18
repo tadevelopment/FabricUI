@@ -4,15 +4,16 @@
 
 #include <FabricCore.h>
 #include "../OptionsEditorHelpers.h"
+#include <FabricUI/Util/FabricException.h>
 #include "OpenKLOptionsTargetEditorCommand.h"
-#include <FabricUI/Commands/CommandException.h>
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
 
 using namespace FabricUI;
-using namespace OptionsEditor;
-using namespace FabricCore;
+using namespace Util;
 using namespace Commands;
+using namespace FabricCore;
+using namespace OptionsEditor;
 
 OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand() 
   : BaseRTValScriptableCommand()
@@ -29,9 +30,9 @@ OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand()
       CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand",
       "",
       e.what());
@@ -92,9 +93,9 @@ bool OpenKLOptionsTargetEditorCommand::doIt()
     res = true;
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "OpenKLOptionsTargetEditorCommand::doIt",
       "",
       e.what());

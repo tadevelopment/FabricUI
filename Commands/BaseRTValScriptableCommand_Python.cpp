@@ -2,10 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
  
-#include "CommandException.h"
+#include <FabricUI/Util/FabricException.h>
 #include "BaseRTValScriptableCommand_Python.h"
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 
@@ -33,9 +34,9 @@ QString BaseRTValScriptableCommand_Python::_declareArg_Python(
       defaultValue);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_declareArg_Python",
       "",
       e.what(),
@@ -56,9 +57,9 @@ QPair<QString, bool> BaseRTValScriptableCommand_Python::_isArg_Python(
     pair.second = BaseRTValScriptableCommand::isArg(key, flag);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    pair.first = CommandException::Throw(
+    pair.first = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_isArg_Python",
       "",
       e.what(),
@@ -79,9 +80,9 @@ QPair<QString, QString> BaseRTValScriptableCommand_Python::_getArg_Python(
     pair.second = BaseRTValScriptableCommand::getArg(key);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    pair.first = CommandException::Throw(
+    pair.first = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_getArg_Python",
       "",
       e.what(),
@@ -104,9 +105,9 @@ QString BaseRTValScriptableCommand_Python::_setArg_Python(
       value);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_setArg_Python",
       "",
       e.what(),
@@ -125,9 +126,9 @@ QString BaseRTValScriptableCommand_Python::_validateSetArgs_Python()
     BaseRTValScriptableCommand::validateSetArgs();
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_validateSetArgs_Python",
       "",
       e.what(),
@@ -154,9 +155,9 @@ QString BaseRTValScriptableCommand_Python::_declareRTValArg_Python(
       defaultValue);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_declareRTValArg_Python",
       "",
       e.what(),
@@ -176,9 +177,9 @@ QPair<QString, QString> BaseRTValScriptableCommand_Python::_getRTValArgType_Pyth
     pair.second = BaseRTValScriptableCommand::getRTValArgType(key);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    pair.first = CommandException::Throw(
+    pair.first = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_getRTValArgType_Python",
       "",
       e.what(),
@@ -201,9 +202,9 @@ QString BaseRTValScriptableCommand_Python::_setRTValArgType_Python(
       type);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_setRTValArgType_Python",
       "",
       e.what(),
@@ -223,9 +224,9 @@ QPair<QString, RTVal> BaseRTValScriptableCommand_Python::_getRTValArg_Python(
     pair.second = BaseRTValScriptableCommand::getRTValArg(key);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    pair.first = CommandException::Throw(
+    pair.first = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_getRTValArg_Python",
       "",
       e.what(),
@@ -248,9 +249,9 @@ QPair<QString, RTVal> BaseRTValScriptableCommand_Python::_getRTValArg_Python(
       type);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    pair.first = CommandException::Throw(
+    pair.first = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_getRTValArg_Python",
       "",
       e.what(),
@@ -273,9 +274,9 @@ QString BaseRTValScriptableCommand_Python::_setRTValArg_Python(
       value);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "BaseRTValScriptableCommand_Python::_setRTValArg_Python",
       "",
       e.what(),

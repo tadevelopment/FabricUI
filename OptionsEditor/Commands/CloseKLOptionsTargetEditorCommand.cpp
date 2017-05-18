@@ -4,12 +4,13 @@
  
 #include <FabricCore.h>
 #include "../OptionsEditorHelpers.h"
+#include <FabricUI/Util/FabricException.h>
 #include "CloseKLOptionsTargetEditorCommand.h"
-#include <FabricUI/Commands/CommandException.h>
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace OptionsEditor;
@@ -35,9 +36,9 @@ CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand()
       );
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand",
       "",
       e.what());
@@ -80,9 +81,9 @@ bool CloseKLOptionsTargetEditorCommand::doIt()
     }
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "CloseKLOptionsTargetEditorCommand::doIt",
       "",
       e.what());

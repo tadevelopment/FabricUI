@@ -5,10 +5,11 @@
 #include "KLCommand.h"
 #include "CommandManager.h"
 #include "CommandRegistry.h"
-#include "CommandException.h"
 #include "ScriptableCommand.h"
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 
 bool CommandManager::s_instanceFlag = false;
@@ -18,7 +19,7 @@ CommandManager::CommandManager()
   : QObject()
 {
   if(s_instanceFlag)
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandManager::CommandManager",
       "CommandManager singleton has already been created"
       );
@@ -38,7 +39,7 @@ CommandManager::~CommandManager()
 CommandManager* CommandManager::GetCommandManager()
 {
   if(!s_instanceFlag)
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandManager::CommandManager",
       "The manager is null");
 
@@ -69,9 +70,9 @@ Command* CommandManager::createCommand(
     return cmd;
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandManager::createCommand",
       "Cannot create command '" + cmdName + "'",
       e.what());
@@ -84,7 +85,7 @@ void CommandManager::doCommand(
   Command *cmd) 
 {
   if(!cmd) 
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandManager::doCommand",
       "Command is null");
   
@@ -112,7 +113,7 @@ void CommandManager::doCommand(
     postProcessCommandArgs(cmd);
   }
    
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
     cleanupUnfinishedCommandsAndThrow(
       cmd,
@@ -150,7 +151,7 @@ void CommandManager::undoCommand()
 {
   if(m_undoStack.size() == 0)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandManager::undoCommand",
       "Nothing to undo",
       "",
@@ -179,7 +180,7 @@ void CommandManager::undoCommand()
         postProcessCommandArgs(stackedCmd.lowLevelCmds[i]);
       }
        
-      catch(CommandException &e) 
+      catch(FabricException &e) 
       {
         cleanupUnfinishedUndoLowCommandsAndThrow(
           i, 
@@ -194,7 +195,7 @@ void CommandManager::undoCommand()
     try
     {
       if(!top->undoIt())
-        CommandException::Throw(
+        FabricException::Throw(
         "CommandManager::undoCommand top", 
         "Undoing command '" + top->getName() + "'"
         );
@@ -202,9 +203,9 @@ void CommandManager::undoCommand()
       postProcessCommandArgs(top);
     }
      
-    catch(CommandException &e) 
+    catch(FabricException &e) 
     {
-      CommandException::Throw(
+      FabricException::Throw(
         "CommandManager::undoCommand top", 
         "Undoing command '" + top->getName() + "'",
          e.what());
@@ -219,7 +220,7 @@ void CommandManager::redoCommand()
 {
   if(m_redoStack.size() == 0)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandManager::redoCommand", 
       "Nothing to redo",
       "",
@@ -246,7 +247,7 @@ void CommandManager::redoCommand()
         postProcessCommandArgs(stackedCmd.lowLevelCmds[i]);
      }
        
-      catch(CommandException &e) 
+      catch(FabricException &e) 
       {
         cleanupUnfinishedRedoLowCommandsAndThrow(
           i, 
@@ -261,7 +262,7 @@ void CommandManager::redoCommand()
     try
     {
       if(!top->redoIt())
-        CommandException::Throw(
+        FabricException::Throw(
         "CommandManager::redoCommand top", 
         "Undoing command '" + top->getName() + "'"
         );
@@ -269,9 +270,9 @@ void CommandManager::redoCommand()
       postProcessCommandArgs(top);
     }
      
-    catch(CommandException &e) 
+    catch(FabricException &e) 
     {
-      CommandException::Throw(
+      FabricException::Throw(
         "CommandManager::redoCommand top", 
         "Undoing command '" + top->getName() + "'",
          e.what());
@@ -333,7 +334,7 @@ void CommandManager::checkCommandArgs(
   ScriptableCommand* scriptCommand = dynamic_cast<ScriptableCommand*>(cmd);
   
   if(!scriptCommand) 
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandManager::checkCommandArgs",
         "Command '" + cmd->getName() +  "' is created with args " + 
         "but is not implementing the ScriptableCommand interface"
@@ -479,14 +480,14 @@ void CommandManager::cleanupUnfinishedCommandsAndThrow(
     for(int i = top.lowLevelCmds.size(); i--;) 
     {
       if(!top.lowLevelCmds[i]->undoIt()) 
-        CommandException::Throw(
+        FabricException::Throw(
           "CommandManager::cleanupUnfinishedCommandsAndThrow",
           "While reverting command '" + top.lowLevelCmds[i]->getName() + "'",
           error);
     }
   }
 
-  CommandException::Throw(
+  FabricException::Throw(
     "CommandManager::doCommand",
     "Doing command '" + cmdForErrorLog + "'",
     error);    
@@ -505,16 +506,16 @@ void CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow(
       stackedCmd.lowLevelCmds[j]->redoIt();
   }
        
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow",
       "Redoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
       "', low: '" + stackedCmd.lowLevelCmds[j]->getName() + "'",
       error);
   }
 
-  CommandException::Throw(
+  FabricException::Throw(
     "CommandManager::undoCommand",
     "Undoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
     "', low: '" + stackedCmd.lowLevelCmds[topLevelCmdIndex]->getName() + "'",
@@ -534,16 +535,16 @@ void CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow(
       stackedCmd.lowLevelCmds[j]->undoIt();
   }
        
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow",
       "Undoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
       "', low: '" + stackedCmd.lowLevelCmds[j]->getName() + "'",
       error);
   }
 
-  CommandException::Throw(
+  FabricException::Throw(
     "CommandManager::redoCommand",
     "Redoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
     "', low: '" + stackedCmd.lowLevelCmds[topLevelCmdIndex]->getName() + "'",

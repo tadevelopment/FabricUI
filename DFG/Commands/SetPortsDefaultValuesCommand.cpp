@@ -3,12 +3,13 @@
 #include "SetPortsDefaultValuesCommand.h"
 #include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/KLCommandManager.h>
-#include <FabricUI/Commands/CommandException.h>
+#include <FabricUI/Util/FabricException.h>
 #include <FabricUI/PathResolvers/PathResolver.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
 
 using namespace FabricUI;
 using namespace DFG;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace PathResolvers;
@@ -42,9 +43,9 @@ SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand()
       );
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand",
       "",
       e.what());
@@ -62,9 +63,9 @@ bool SetPortsDefaultValuesCommand::canUndo()
     return getRTValArg("isUndoable").getBoolean();
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "SetPortsDefaultValuesCommand::canUndo",
       "",
       e.what());
@@ -114,9 +115,9 @@ bool SetPortsDefaultValuesCommand::doIt()
     return true;
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "SetPortsDefaultValuesCommand::doIt",
       "",
       e.what());
@@ -144,9 +145,9 @@ bool SetPortsDefaultValuesCommand::undoIt()
     return true;
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "SetPortsDefaultValuesCommand::undoIt",
       "",
       e.what());

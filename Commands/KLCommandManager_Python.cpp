@@ -2,10 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
  
-#include "CommandException.h"
 #include "KLCommandManager_Python.h"
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 
@@ -43,7 +44,7 @@ BaseCommand* KLCommandManager_Python::_createCommand_Python(
   const QMap<QString, QString> &args, 
   bool doCmd)
 {
-  CommandException::Throw(
+  FabricException::Throw(
     "KLCommandManager_Python::_createCommand_Python",
     "Method must be overridden",
     "",
@@ -62,9 +63,9 @@ QString KLCommandManager_Python::_doCommand_Python(
 		KLCommandManager::doCommand(cmd);
 	}  
 
-  catch (CommandException &e) 
+  catch (FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "KLCommandManager_Python::_doCommand_Python",
       "",
       e.what(),
@@ -83,9 +84,9 @@ QString KLCommandManager_Python::_undoCommand_Python()
     KLCommandManager::undoCommand();
   }
 
-  catch (CommandException &e) 
+  catch (FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "KLCommandManager_Python::_undoCommand_Python",
       "",
       e.what(),
@@ -104,9 +105,9 @@ QString KLCommandManager_Python::_redoCommand_Python()
 		KLCommandManager::redoCommand();
 	}	 
 
-	catch (CommandException &e) 
+	catch (FabricException &e) 
 	{
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "KLCommandManager_Python::_redoCommand_Python",
       "",
       e.what(),
@@ -128,7 +129,7 @@ QPair<QString, BaseCommand*> KLCommandManager_Python::_getCommandAtIndex_Python(
     cmd);
 
   if(!baseCmd)
-    pair.first = CommandException::Throw(
+    pair.first = FabricException::Throw(
       "KLCommandManager_Python::_getCommandAtIndex_Python",
       "Command '" + cmd->getName() + "' is not a BaseCommand",
       "",
@@ -150,9 +151,9 @@ QString KLCommandManager_Python::_checkCommandArgs_Python(
     CommandManager::checkCommandArgs(cmd, args);
   }
 
-  catch (CommandException &e) 
+  catch (FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "KLCommandManager_Python::_checkCommandArgs_Python",
       "",
       e.what(),
@@ -166,7 +167,7 @@ void KLCommandManager_Python::_commandPushed_Python(
   BaseCommand *cmd,
   bool isLowCmd)
 {
-  CommandException::Throw(
+  FabricException::Throw(
     "KLCommandManager_Python::_commandPushed_Python",
     "Method must be overridden",
     "",
@@ -179,7 +180,7 @@ BaseCommand* KLCommandManager_Python::_createRTValCommand_Python(
   const QMap<QString, RTVal> &args, 
   bool doCmd)
 {
-  CommandException::Throw(
+  FabricException::Throw(
     "KLCommandManager_Python::_createRTValCommand_Python",
     "Method must be overridden",
     "",
@@ -201,9 +202,9 @@ QString KLCommandManager_Python::_checkRTValCommandArgs_Python(
       args);
   }
 
-  catch (CommandException &e) 
+  catch (FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "KLCommandManager_Python::_checkRTValCommandArgs_Python",
       "",
       e.what(),
@@ -222,9 +223,9 @@ QString KLCommandManager_Python::_synchronizeKL_Python()
     KLCommandManager::synchronizeKL();
   }
 
-  catch (CommandException &e) 
+  catch (FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "KLCommandManager_Python::_synchronizeKL_Python",
       "",
       e.what(),
@@ -241,7 +242,7 @@ void KLCommandManager_Python::onCommandDone(
     cmd);
 
   if(!baseCmd)
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager_Python::onCommandDone",
       "Command '" + cmd->getName() + "' is not a BaseCommand",
       "",
@@ -269,7 +270,7 @@ void KLCommandManager_Python::doCommand(
   BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
 
   if(!baseCmd)
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager_Python::doCommand",
       "Command '" + cmd->getName() + "' is not a BaseCommand",
       "",
@@ -304,7 +305,7 @@ void KLCommandManager_Python::checkCommandArgs(
   BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
 
   if(!baseCmd)
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager_Python::checkCommandArgs",
       "Command '" + cmd->getName()  + "' is not a BaseCommand",
       "",
@@ -322,7 +323,7 @@ void KLCommandManager_Python::commandPushed(
   BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
 
   if(!baseCmd)
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager_Python::commandPushed",
       "Command '" + cmd->getName() + "' is not a BaseCommand",
       "",
@@ -352,7 +353,7 @@ void KLCommandManager_Python::checkCommandArgs(
   BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
 
   if(!baseCmd)
-     CommandException::Throw(
+     FabricException::Throw(
       "KLCommandManager_Python::checkCommandArgs",
       "Command '" + cmd->getName()  + "' is not a BaseCommand",
       "",

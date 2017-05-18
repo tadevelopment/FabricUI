@@ -2,12 +2,13 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
  
-#include "CommandException.h"
 #include "BaseScriptableCommand_Python.h"
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
- 
+
 BaseScriptableCommand_Python::BaseScriptableCommand_Python() 
   : BaseScriptableCommand() 
 {
@@ -32,9 +33,9 @@ QString BaseScriptableCommand_Python::_declareArg_Python(
       defaultValue);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "BaseScriptableCommand_Python::_declareArg_Python",
       "",
       e.what(),
@@ -57,9 +58,9 @@ QPair<QString, bool> BaseScriptableCommand_Python::_isArg_Python(
       flag);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    pair.first = CommandException::Throw(
+    pair.first = FabricException::Throw(
       "BaseScriptableCommand_Python::_isArg_Python",
       "",
       e.what(),
@@ -80,9 +81,9 @@ QPair<QString, QString> BaseScriptableCommand_Python::_getArg_Python(
     pair.second = BaseScriptableCommand::getArg(key);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    pair.first = CommandException::Throw(
+    pair.first = FabricException::Throw(
       "BaseScriptableCommand_Python::_getArg_Python",
       "",
       e.what(),
@@ -105,9 +106,9 @@ QString BaseScriptableCommand_Python::_setArg_Python(
       value);
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "BaseScriptableCommand_Python::_setArg_Python",
       "",
       e.what(),
@@ -126,9 +127,9 @@ QString BaseScriptableCommand_Python::_validateSetArgs_Python()
     BaseScriptableCommand::validateSetArgs();
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    error = CommandException::Throw(
+    error = FabricException::Throw(
       "BaseScriptableCommand_Python::_validateSetArgs_Python",
       "",
       e.what(),

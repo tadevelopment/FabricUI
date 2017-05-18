@@ -4,10 +4,11 @@
 
 #include "KLCommand.h"
 #include "KLCommandManager.h"
-#include "CommandException.h"
 #include "KLScriptableCommand.h"
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 
@@ -41,7 +42,7 @@ KLCommandManager::KLCommandManager(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager::KLCommandManager",
       "",
       e.getDesc_cstr());
@@ -56,7 +57,7 @@ void KLCommandManager::undoCommand()
 {
   if(m_undoStack.size() == 0)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager::undoCommand",
       "Nothing to redo",
       "",
@@ -74,7 +75,7 @@ void KLCommandManager::redoCommand()
 {
   if(m_redoStack.size() == 0)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager::redoCommand",
       "Nothing to redo",
       "",
@@ -100,7 +101,7 @@ void KLCommandManager::clear()
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager::clear",
       "",
       e.getDesc_cstr());
@@ -133,7 +134,7 @@ QString KLCommandManager::getContent()
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager::getContent",
       "",
       e.getDesc_cstr());
@@ -162,7 +163,7 @@ void KLCommandManager::synchronizeKL()
 
     // !! Problem, KL and C++ command managers are out of synch
     if(m_klCmdUndoStackCount > klCmdCount)
-      CommandException::Throw(
+      FabricException::Throw(
         "KLCommandManager::synchronizeKL",
         "KL and C++ command managers are out of synch before the synchronization");
 
@@ -211,15 +212,15 @@ void KLCommandManager::synchronizeKL()
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager::synchronizeKL",
       "",
       e.getDesc_cstr());
   }
 
-  catch (CommandException &e) 
+  catch (FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager::synchronizeKL",
       "",
       e.what());
@@ -227,7 +228,7 @@ void KLCommandManager::synchronizeKL()
 
   // !! Problem, KL and C++ command managers are out of synch
   if(m_klCmdUndoStackCount > klCmdCount)
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager::synchronizeKL",
       "KL and C++ command managers are out of synch after the synchronization");
 }
@@ -349,7 +350,7 @@ void KLCommandManager::clearRedoStack()
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "KLCommandManager::clearRedoStack",
       "",
       e.getDesc_cstr());

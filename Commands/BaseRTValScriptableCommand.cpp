@@ -3,10 +3,10 @@
 //
 
 #include <QStringList>
-#include "CommandException.h"
 #include "RTValCommandManager.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
 using namespace Util;
@@ -61,13 +61,13 @@ bool BaseRTValScriptableCommand::isArg(
   int flag)
 {
   if(key.isEmpty()) 
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::isArg",
       "setting arg of '" + getName() + "', key not specified");
 
   if(!hasArg(key)) 
     // TODO: make this an optional behavior
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::isArg",
       "Arg: '" + key + "' not supported by command '" + getName() + "'");
 
@@ -92,7 +92,7 @@ QString BaseRTValScriptableCommand::getArg(
   const QString &key)
 {
   if(!hasArg(key)) 
-    CommandException::Throw(  
+    FabricException::Throw(  
       "BaseRTValScriptableCommand::getArg",
       "No arg named '" + key + "' in command '" + getName() + "'");
 
@@ -111,7 +111,7 @@ void BaseRTValScriptableCommand::setArg(
   QString mainKey = GetMainKey(key);
 
   if(!hasArg(mainKey)) 
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::setArg",
       "No arg named " + mainKey + "' in command '" + getName() + "'");
 
@@ -154,15 +154,15 @@ void BaseRTValScriptableCommand::setArg(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::setArg",
       "",
       e.getDesc_cstr());
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::setArg",
       "",
       e.what());
@@ -183,7 +183,7 @@ void BaseRTValScriptableCommand::validateSetArgs()
  
     // We support unknown type.
     if(!isArg(mainKey, CommandArgFlags::OPTIONAL_ARG) && !isArgSet(mainKey))
-      CommandException::Throw(
+      FabricException::Throw(
         "BaseRTValScriptableCommand::validateSetArgs",
         "Argument '" + mainKey + "' in command '" + getName() + "' has not been set");
   }
@@ -222,12 +222,12 @@ void BaseRTValScriptableCommand::declareRTValArg(
   RTVal defaultValue) 
 {
   if(key.isEmpty()) 
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::declareRTValArg",
       "Key not specified  in command '" + getName() + "'");
  
   if(!type.isEmpty() && !GetManager()->getClient().isValidType(type.toUtf8().constData()))
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::declareRTValArg", 
       "Type '" + type  + "' of command '" + getName() + "' is not a valid KL type");
 
@@ -260,15 +260,15 @@ void BaseRTValScriptableCommand::declareRTValArg(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::declareRTValArg",
       "",
       e.getDesc_cstr());
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::declareRTValArg",
       "",
       e.what());
@@ -281,7 +281,7 @@ QString BaseRTValScriptableCommand::getRTValArgType(
   QString mainKey = GetMainKey(key);
 
   if(!hasArg(mainKey)) 
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::getRTValArgType",
       "No arg named '" + mainKey + "' in command '" + getName() + "'");
 
@@ -307,12 +307,12 @@ void BaseRTValScriptableCommand::setRTValArgType(
   QString mainKey = GetMainKey(key);
 
   if(!hasArg(mainKey)) 
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::setRTValArgType",
       "No arg named '" + mainKey + "' in command '" + getName() + "'");
  
   if(!GetManager()->getClient().isValidType(type.toUtf8().constData()))
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseDFGCommand::setRTValArgType",
       "Argument '" + mainKey + "' in command '" + getName() + "' has not a valid kl type '" + type + "'");
  
@@ -337,15 +337,15 @@ void BaseRTValScriptableCommand::setRTValArgType(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::setRTValArgType",
       "",
       e.getDesc_cstr());
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::setRTValArgType",
       "",
       e.what());
@@ -358,12 +358,12 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
   QString mainKey = GetMainKey(key);
 
   if(!hasArg(mainKey)) 
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::getRTValArg",
       "No arg named '" + mainKey + "' in command '" + getName() + "'");
   
   if(!m_rtvalArgs[mainKey].first.isValid() && !m_rtvalArgs[mainKey].second.isEmpty())
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::getRTValArg",
         "RTVal argument '" + mainKey + "' of command '" + getName() + 
         "' has been set in JSON only, \n !!! use getRTValArg(mainKey, type) instead !!!");
@@ -389,15 +389,15 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::getRTValArg",
       "",
       e.getDesc_cstr());
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::getRTValArg",
       "",
       e.what());
@@ -421,7 +421,7 @@ void BaseRTValScriptableCommand::setRTValArg(
   QString mainKey = GetMainKey(key);
 
   if(!hasArg(mainKey)) 
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::setRTValArg",
       "No arg named '" + mainKey + "' in command '" + getName() + "'");
 
@@ -472,15 +472,15 @@ void BaseRTValScriptableCommand::setRTValArg(
 
   catch(Exception &e)
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::setRTValArg",
       "",
       e.getDesc_cstr());
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "BaseRTValScriptableCommand::setRTValArg",
       "",
       e.what());

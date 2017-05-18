@@ -3,7 +3,7 @@
 #include <FabricUI/Util/RTValUtil.h>
 #include "SetXfoPortDefaultValueCommand.h"
 #include <FabricUI/Commands/CommandArgFlags.h>
-#include <FabricUI/Commands/CommandException.h>
+#include <FabricUI/Util/FabricException.h>
 #include <FabricUI/Commands/KLCommandManager.h>
  #include <FabricUI/Commands/CommandArgHelpers.h>
 
@@ -54,9 +54,9 @@ SetXfoPortDefaultValueCommand::SetXfoPortDefaultValueCommand()
       );
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "SetXfoPortDefaultValueCommand::SetXfoPortDefaultValueCommand",
       "",
       e.what());
@@ -74,9 +74,9 @@ bool SetXfoPortDefaultValueCommand::canUndo()
     return getRTValArg("isUndoable").getBoolean();
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "SetXfoPortDefaultValueCommand::canUndo",
       "",
       e.what());
@@ -99,9 +99,9 @@ bool SetXfoPortDefaultValueCommand::doIt()
     return true;
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "SetXfoPortDefaultValueCommand::doIt",
       "",
       e.what());
@@ -118,9 +118,9 @@ bool SetXfoPortDefaultValueCommand::undoIt()
     return true;
   }
 
-  catch(CommandException &e) 
+  catch(FabricException &e) 
   {
-    CommandException::Throw(
+    FabricException::Throw(
       "SetXfoPortDefaultValueCommand::undoIt",
       "",
       e.what());

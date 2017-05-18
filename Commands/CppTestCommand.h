@@ -5,10 +5,10 @@
 #ifndef __UI_CPP_TEST_COMMAND_REGISTRY__
 #define __UI_CPP_TEST_COMMAND_REGISTRY__
 
-#include "CommandException.h"
 #include "KLCommandRegistry.h"
 #include "RTValCommandManager.h"
 #include "BaseScriptableCommand.h"
+#include <FabricUI/Util/FabricException.h>
 
 namespace FabricUI {
 namespace Commands {
@@ -158,7 +158,7 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        CommandException::Throw(
+        Util::FabricException::Throw(
           "CppToPythonTestCommand::RegisterKLTestCommands",
           e.getDesc_cstr(),
           "",
@@ -189,7 +189,7 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        CommandException::Throw(
+        Util::FabricException::Throw(
           "CppToPythonTestCommand::CreateKLTestCommandsInKL",
           e.getDesc_cstr(),
           "",
@@ -230,7 +230,7 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        CommandException::Throw(
+        Util::FabricException::Throw(
           "CppToPythonTestCommand::CreateKLTestCommands",
           e.getDesc_cstr(),
           "",
