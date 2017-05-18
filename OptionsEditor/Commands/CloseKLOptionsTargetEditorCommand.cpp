@@ -7,6 +7,7 @@
 #include "CloseKLOptionsTargetEditorCommand.h"
 #include <FabricUI/Commands/CommandException.h>
 #include <FabricUI/Commands/KLCommandManager.h>
+#include <FabricUI/Commands/CommandArgHelpers.h>
 
 using namespace FabricUI;
 using namespace Commands;
@@ -15,6 +16,7 @@ using namespace OptionsEditor;
 
 CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand() 
   : BaseRTValScriptableCommand()
+  , m_canLog(true)
 {
   try
   {
@@ -26,7 +28,7 @@ CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand()
     declareRTValArg(
       "failSilently",
       "Boolean",
-      CommandFlags::OPTIONAL_ARG | CommandFlags::LOGGABLE_ARG,
+      CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG,
       RTVal::ConstructBoolean(
         manager->getClient(), 
         false)
@@ -50,6 +52,10 @@ bool CloseKLOptionsTargetEditorCommand::canUndo() {
   return false;
 }
 
+bool CloseKLOptionsTargetEditorCommand::canLog() {
+  return m_canLog;
+}
+
 bool CloseKLOptionsTargetEditorCommand::doIt() 
 { 
   bool res = false;
@@ -62,7 +68,10 @@ bool CloseKLOptionsTargetEditorCommand::doIt()
     QWidget *dock = GetOptionsEditorDock(editorID);
 
     if(dock == 0)
+    {
+      m_canLog = false;
       res = failSilently;
+    }
 
     else
     {
@@ -89,9 +98,10 @@ QString CloseKLOptionsTargetEditorCommand::getHelp()
   argsHelp["editorID"] = "Qt objectName of the option editor / ID of the KL option in the OptionsTargetRegistry";
   argsHelp["failSilently"] = "If false, throws an error if the widget has not been closed";
 
-  return createHelpFromArgs(
+  return CreateHelpFromRTValArgs(
     "Close a Qt editor to edit a KL OptionsTarget",
-    argsHelp);
+    argsHelp,
+    this);
 }
 
 QString CloseKLOptionsTargetEditorCommand::getHistoryDesc()
@@ -104,7 +114,8 @@ QString CloseKLOptionsTargetEditorCommand::getHistoryDesc()
   argsDesc["failSilently"] = QString::number(
     getRTValArg("failSilently").getBoolean()
     );
-
-  return createHistoryDescFromArgs(
-    argsDesc);
+ 
+  return CreateHistoryDescFromArgs(
+    argsDesc,
+    this);
 }

@@ -5,6 +5,7 @@
 #include "../OptionsEditorHelpers.h"
 #include "SetKLOptionsTargetModelItemCommand.h"
 #include <FabricUI/Commands/KLCommandManager.h>
+#include <FabricUI/Commands/CommandArgHelpers.h>
 
 using namespace FabricUI;
 using namespace Commands;
@@ -55,7 +56,8 @@ QString SetKLOptionsTargetModelItemCommand::getHelp()
   argsHelp["newValue"] = "New option";
   argsHelp["previousValue"] = "Previous option";
 
-  return createHelpFromArgs(
+  return CreateHelpFromRTValArgs(
     "Sets the value of a KL OptionsEditorTarget model item",
-    argsHelp);
+    argsHelp,
+    this);
 }

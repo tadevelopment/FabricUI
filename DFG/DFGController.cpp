@@ -9,6 +9,8 @@
 #include <QMessageBox>
 #include <QTimer>
 
+#include <iostream>
+
 #include <FTL/JSONEnc.h>
 #include <FTL/JSONDec.h>
 #include <FTL/Str.h>
@@ -32,6 +34,8 @@
 #include <FabricUI/DFG/DFGUIUtil.h>
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
+
+#include <FabricUI/DFG/PathResolvers/DFGPathResolver.h>
 #include <FabricUI/DFG/Commands/DFGCommandRegistrationCallback.h>
 
 using namespace FabricServices;
@@ -104,17 +108,6 @@ void DFGController::setHostBindingExec(
 
   setBindingExec( binding, execPath, exec, execBlockName );
 
-  // The new command system is used
-  // by canvas.py only, not canvas.exe
-  try
-  {
-    DFGCommandRegistrationCallback::RegisterCommands((void*)this);
-  }
-  catch(std::string &e) 
-  {
-    printf("DFGController::setHostBindingExec, error: %s", e.c_str());
-  }
- 
   emit hostChanged();
 }
 
@@ -132,6 +125,22 @@ void DFGController::setBindingExec(
 
   m_binding = binding;
 
+  try
+  { 
+    DFGCommandRegistrationCallback::RegisterCommands();
+ 
+    DFGPathResolver *resolver = new DFGPathResolver(m_client);
+
+    resolver->setBindingID(
+      ".",
+      m_binding.getBindingID()
+      );
+  }
+  catch(std::string &e) 
+  {
+    printf("DFGController::setBindingExec, error: %s", e.c_str());
+  }
+  
   if ( m_binding.isValid() )
   {
     m_bindingNotifier = DFGBindingNotifier::Create( m_binding );

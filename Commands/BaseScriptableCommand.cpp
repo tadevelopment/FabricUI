@@ -48,13 +48,13 @@ bool BaseScriptableCommand::isArg(
 {
   if(key.isEmpty()) 
     CommandException::Throw(
-      "BaseScriptableCommand::isArgOptional",
+      "BaseScriptableCommand::isArg",
       "setting arg of '" + getName() + "', key not specified");
 
   if(!hasArg(key)) 
     // TODO: make this an optional behavior
     CommandException::Throw(
-      "BaseScriptableCommand::isArgOptional",
+      "BaseScriptableCommand::isArg",
       "setting arg: '" + key + + "' not supported by command '" + getName() + "'");
 
   return (m_argSpecs[key].flags & flag);
@@ -109,7 +109,7 @@ void BaseScriptableCommand::validateSetArgs()
     QString key = it.key();
     ScriptableCommandArgSpec spec = it.value();
      
-    if(!isArg(key, CommandFlags::OPTIONAL_ARG) && !isArgSet(key)) //is null
+    if(!isArg(key, CommandArgFlags::OPTIONAL_ARG) && !isArgSet(key)) //is null
       CommandException::Throw(
         "BaseScriptableCommand::validateSetArgs",
         "validating arg: '" + key + "' of command '" + getName() + "' has not been set");
@@ -129,7 +129,7 @@ QString BaseScriptableCommand::getArgsDescription()
     ScriptableCommandArgSpec spec = it.value();
 
     res += "    ["  + key 
-      + "] opt: "   + QString::number(isArg(key, CommandFlags::OPTIONAL_ARG))
+      + "] opt: "   + QString::number(isArg(key, CommandArgFlags::OPTIONAL_ARG))
       + " val: "    + getArg(key)
       + " defVal: " + spec.defaultValue;
 
@@ -139,72 +139,4 @@ QString BaseScriptableCommand::getArgsDescription()
   }
 
   return res;
-}
-
-QString BaseScriptableCommand::createHelpFromArgs(
-  const QString &commandHelp,
-  const QMap<QString, QString> &argsHelp)
-{
-  QString help = commandHelp + "\n";
-
-  if(argsHelp.size() > 0)
-    help +=  "Arguments:\n";
-
-  QMapIterator<QString, QString> it(argsHelp);
-  while(it.hasNext()) 
-  {
-    it.next();
-    QString key = it.key();
-    QString argHelp = it.value();
-
-    QString specs; 
-    if(isArg(key, CommandFlags::OPTIONAL_ARG) || isArg(key, CommandFlags::LOGGABLE_ARG))
-    {
-      specs += "["; 
-
-      if(isArg(key, CommandFlags::OPTIONAL_ARG))
-        specs += "optional"; 
-
-      if(isArg(key, CommandFlags::LOGGABLE_ARG))
-      {
-        if(isArg(key, CommandFlags::OPTIONAL_ARG))
-          specs += ", loggable"; 
-        specs += "loggable"; 
-      }
-
-      specs += "]"; 
-    }
-     
-    help +=  "- " + key + specs + ": " + argHelp + "\n";
-  }
-
-  return help;
-}
-
-QString BaseScriptableCommand::createHistoryDescFromArgs(
-  const QMap<QString, QString> &argsDesc)
-{
-  QString desc = getName();
-
-  if(argsDesc.size() > 0)
-  {
-    int count = 0;
-    desc +=  "(";
-
-    QMapIterator<QString, QString> it(argsDesc);
-    while(it.hasNext()) 
-    {
-      it.next();
-      QString key = it.key();
-      QString argDesc = it.value();
-      desc += key + "=\"" + argDesc + "\"";
-      if(count < argsDesc.size()-1)
-        desc += ", ";
-      count++;
-    }
-
-    desc +=  ")";
-  }
-
-  return desc;
 }

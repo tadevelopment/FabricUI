@@ -8,7 +8,7 @@
 #include <QMap>
 #include "BaseCommand.h"
 #include "ScriptableCommand.h"
-#include "CommandFlags.h"
+#include "CommandArgFlags.h"
 
 namespace FabricUI {
 namespace Commands {
@@ -33,7 +33,7 @@ class BaseScriptableCommand
     /// Implementation of ScriptableCommand.
     virtual void declareArg( 
       const QString &key, 
-      int flags = FabricUI::Commands::CommandFlags::LOGGABLE_ARG, 
+      int flags = FabricUI::Commands::CommandArgFlags::LOGGABLE_ARG, 
       const QString &defaultValue = QString()
       );
 
@@ -76,26 +76,6 @@ class BaseScriptableCommand
     /// Implementation of ScriptableCommand.
     /// Command name + list of all the arguments.
     virtual QString getArgsDescription();
-    
-    /// List of arguments {argName, argValue}
-    QMap<QString, QString> m_args;
-    
-  protected:
-    /// Helper to create the command's helps
-    /// from a subsets of arguments.
-    /// \param commandHelp The main help text.
-    /// \param argsHelp Map of [arg, arg help]
-    virtual QString createHelpFromArgs(
-      const QString &commandHelp,
-      const QMap<QString, QString> &argsHelp
-      );
-
-    /// Helper to create the command's desc
-    /// from a subsets of arguments.
-    /// \param argsHelp Map of [arg, arg desc]
-    QString createHistoryDescFromArgs(
-      const QMap<QString, QString> &argsDesc
-      );
 
   private:    
     /// Defines the arguments specs:
@@ -106,6 +86,9 @@ class BaseScriptableCommand
       QString defaultValue;
     };
 
+    /// List of arguments {argName, argValue}
+    QMap<QString, QString> m_args;
+  
     /// List of arguments specs {argName, spec}
     QMap<QString, ScriptableCommandArgSpec> m_argSpecs;
 };

@@ -5,9 +5,10 @@
 #ifndef __UI_BASE_RTVAL_SCRIPTABLE_COMMAND__
 #define __UI_BASE_RTVAL_SCRIPTABLE_COMMAND__
 
+#include <QPair>
+#include "CommandArgFlags.h"
 #include "BaseScriptableCommand.h"
 #include "RTValScriptableCommand.h"
-#include "CommandFlags.h"
 
 namespace FabricUI {
 namespace Commands {
@@ -26,6 +27,9 @@ class BaseRTValScriptableCommand
     when the argument is declared and the command is executed from the script-
     editor.  
 
+    BaseRTValScriptableCommand support by-default RTValPathValueArg so it can 
+    get/set RTVal of DFG ports or attributes using their paths.
+
     C++ interfaces cannot be wrapped in python by shiboken. New commands
     must specialize this class to be accessible from python.
   */
@@ -41,7 +45,7 @@ class BaseRTValScriptableCommand
     /// To set the argument as JSON, use `setArg`.
     virtual void declareArg( 
       const QString &key, 
-      int flags = FabricUI::Commands::CommandFlags::LOGGABLE_ARG, 
+      int flags = FabricUI::Commands::CommandArgFlags::LOGGABLE_ARG, 
       const QString &defaultValue = QString()
       );
 
@@ -95,7 +99,7 @@ class BaseRTValScriptableCommand
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
-      int flags = FabricUI::Commands::CommandFlags::LOGGABLE_ARG, 
+      int flags = FabricUI::Commands::CommandArgFlags::LOGGABLE_ARG, 
       FabricCore::RTVal defaultValue = FabricCore::RTVal()
       );
 
@@ -130,14 +134,7 @@ class BaseRTValScriptableCommand
       const QString &key, 
       FabricCore::RTVal value
       );
-
-  protected:
-    /// Implementation of BaseScriptableCommand.
-    virtual QString createHelpFromArgs(
-      const QString &commandHelp,
-      const QMap<QString, QString> &argsHelp
-      );
-
+    
   private:    
     /// Defines the arguments specs:
     /// type, default value, flags (optional, loggable)
@@ -149,7 +146,7 @@ class BaseRTValScriptableCommand
     };
 
     /// List of arguments {argName, argValue}
-    QMap<QString, FabricCore::RTVal> m_rtvalArgs;
+    QMap<QString, QPair<FabricCore::RTVal, QString> > m_rtvalArgs;
     /// List of arguments specs {argName, spec}
     QMap<QString, ScriptableCommandRTValArgSpec> m_rtvalArgSpecs;
 };

@@ -132,17 +132,16 @@ class CommandManager(CppCommands.KLCommandManager_Python):
 
         # If the command is a RTValScriptable and its RTVal args type have
         # been set, call checkRTValCommandArgs, checkCommandArgs otherwise.
-        createRTValCommand = CommandArgsHelpers.IsRTValScriptableCmd(cmd)
-        for key, value in inputArgs.iteritems():
+        createRTValCommand = False
+        for key, arg in inputArgs.iteritems():
             if cmd.hasArg(key) is False:
                 raise Exception(
                     "CommandManager.__castAndCheckCmdArgs, error: arg '" + 
                     str(key) + "' doesn't exist" )
 
             if CommandArgsHelpers.IsRTValScriptableCmd(cmd):
-                rtValType = cmd.getRTValArgType(key)
-                if len(rtValType) == 0:
-                    createRTValCommand = False
+                if CommandArgsHelpers.IsPyRTValArg(self.__client, arg):
+                    createRTValCommand = True
                     break
 
         if createRTValCommand:

@@ -95,8 +95,7 @@ void KLCommandManager::clear()
     m_klCmdManager.callMethod(
       "", 
       "clear", 
-      0, 
-      0);
+      0, 0);
   }
 
   catch(Exception &e)
@@ -145,37 +144,40 @@ QString KLCommandManager::getContent()
 
 void KLCommandManager::synchronizeKL() 
 {
-  // Get the number of KL commands in the KL manager undo stack
-  unsigned int klCmdCount = 0;
+  unsigned klCmdCount;
+
   try
   {
-    klCmdCount = m_klCmdManager.callMethod(
+    // Get the number of KL commands in the KL manager undo stack
+    int klCmdCount_int = m_klCmdManager.callMethod(
       "SInt32", 
       "getStackIndex", 
       0, 
       0).getSInt32();
 
-    if(klCmdCount > 0)
-      klCmdCount ++;
+    // Index to size. If the KL undo stack is empty, 
+    // `getStackIndex` returns -1, so it's always coherent.
+    klCmdCount_int ++;
+    klCmdCount = unsigned(klCmdCount_int);
 
     // !! Problem, KL and C++ command managers are out of synch
     if(m_klCmdUndoStackCount > klCmdCount)
       CommandException::Throw(
         "KLCommandManager::synchronizeKL",
-        "KL and C++ command managers are out of synch");
+        "KL and C++ command managers are out of synch before the synchronization");
 
     // Synchronize our stack with KL, two scenarios: 
-    // 1. A KL command is created in KL : we construct the
+    // 1. A C++/Python command is asked to be created from KL (KL AppCommand).
+    // 2. A KL command is created in KL : we construct the
     //    KLCommand and KLScriptableCommand wrappers.
-    // 2. A C++/Python command is asked to be created from KL.
-    unsigned int klCmdUndoStackCount = m_klCmdUndoStackCount;
+    unsigned klCmdUndoStackCount = m_klCmdUndoStackCount;
 
-    for(unsigned int i=klCmdUndoStackCount; i<klCmdCount; ++i)
+    for(unsigned i=klCmdUndoStackCount; i<klCmdCount; ++i)
     {
       RTVal cmdIndex = RTVal::ConstructUInt32(
         m_client, 
         i);
-      
+
       // Gets the KL command from the KL manager. 
       RTVal klCmd = m_klCmdManager.callMethod(
         "Command", 
@@ -192,69 +194,18 @@ void KLCommandManager::synchronizeKL()
         &klCmd);
 
       if(appCmd.isValid() && !appCmd.isNullObject())
-      {     
-        // Gets the command name.
-        QString cmdName = appCmd.callMethod(
-          "String",
-          "getName",
-          0, 
-          0).getStringCString();
- 
-        RTVal argNameList = appCmd.callMethod(
-          "String[]", 
-          "getArgNameList", 
-          0, 
-          0);
-
-        QMap< QString, RTVal > args;
-        for(unsigned int j=0; j<argNameList.getArraySize(); ++j)
-        {
-          RTVal argNameVal = argNameList.getArrayElement(j);
-          args[argNameVal.getStringCString()] = appCmd.callMethod(
-            "RTVal", 
-            "getArg", 
-            1, 
-            &argNameVal);
-        }
-
-        // Remove the KL command
-        m_klCmdManager.callMethod(
-          "Boolean",
-          "removeCommandAtIndex",
-          1,
-          &cmdIndex);
-
-        // decrement
-        i--; klCmdCount--;
-
-        // Create and execute the C++ command.
-        createCommand(cmdName, args);
-      }
+        createCommandFromKLAppCommand(
+          i, 
+          klCmdCount, 
+          appCmd);
 
       // KL commands have actually been 
       // created, create the C++ wrappers.
       else
-      {
-        // Cast to BaseScriptableCommand and ScriptableCommand so
-        // we don't have to cast the rtval in KLScriptableCommand.
-        RTVal scriptCmd = RTVal::Construct(
-          m_client,
-          "BaseScriptableCommand", 
-          1, 
-          &klCmd);
-
-        if(scriptCmd.isValid() && !scriptCmd.isNullObject())
-          pushTopCommand( 
-            new KLScriptableCommand(scriptCmd), 
-            true);
-
-        else
-          pushTopCommand( 
-            new KLCommand(klCmd), 
-            true);
-
-        m_klCmdUndoStackCount ++;
-      }
+        createKLCommandWrappers(
+          i, 
+          klCmdCount, 
+          klCmd);
     } 
   }
 
@@ -264,6 +215,122 @@ void KLCommandManager::synchronizeKL()
       "KLCommandManager::synchronizeKL",
       "",
       e.getDesc_cstr());
+  }
+
+  catch (CommandException &e) 
+  {
+    CommandException::Throw(
+      "KLCommandManager::synchronizeKL",
+      "",
+      e.what());
+  }
+
+  // !! Problem, KL and C++ command managers are out of synch
+  if(m_klCmdUndoStackCount > klCmdCount)
+    CommandException::Throw(
+      "KLCommandManager::synchronizeKL",
+      "KL and C++ command managers are out of synch after the synchronization");
+}
+
+void KLCommandManager::createCommandFromKLAppCommand(
+  unsigned &index,
+  unsigned &klCmdCount,
+  RTVal appCmd)
+{
+  // Gets the command name.
+  QString cmdName = appCmd.callMethod(
+    "String",
+    "getName",
+    0, 
+    0).getStringCString();
+
+  RTVal argNameList = appCmd.callMethod(
+    "String[]", 
+    "getArgNameList", 
+    0, 
+    0);
+
+  QMap<QString, RTVal> args;
+  for(unsigned i=0; i<argNameList.getArraySize(); ++i)
+  {
+    RTVal argNameVal = argNameList.getArrayElement(i);
+    args[argNameVal.getStringCString()] = appCmd.callMethod(
+      "RTVal", 
+      "getArg", 
+      1, 
+      &argNameVal);
+  }
+
+  RTVal cmdIndex = RTVal::ConstructUInt32(
+    m_client, 
+    index);
+
+  // Remove the KL command
+  m_klCmdManager.callMethod(
+    "Boolean",
+    "removeCommandAtIndex",
+    1,
+    &cmdIndex);
+
+  // decrement
+  index--; klCmdCount--;
+
+  // Create and execute the C++ command.
+  createCommand(cmdName, args);
+}
+
+void KLCommandManager::createKLCommandWrappers(
+  unsigned &index,
+  unsigned &klCmdCount,
+  RTVal klCmd)
+{
+  RTVal scriptCmd = RTVal::Construct(
+    m_client,
+    "BaseScriptableCommand", 
+    1, 
+    &klCmd);
+
+  if(scriptCmd.isValid() && !scriptCmd.isNullObject())
+  {
+    KLScriptableCommand *klScriptableCmd = new KLScriptableCommand(scriptCmd);
+
+    postProcessCommandArgs(klScriptableCmd);
+
+    if(klScriptableCmd->canUndo() && klScriptableCmd->addToUndoStack())
+    {
+      pushTopCommand(klScriptableCmd, true);
+      
+      emit commandDone(
+        m_undoStack[m_undoStack.size() - 1].topLevelCmd);
+    }
+
+    else if(!klScriptableCmd->canUndo() && klScriptableCmd->addToUndoStack())
+    {
+      RTVal cmdIndex = RTVal::ConstructUInt32(
+        m_client, 
+        index);
+
+      // Remove the KL command
+      m_klCmdManager.callMethod(
+        "Boolean",
+        "removeCommandAtIndex",
+        1,
+        &cmdIndex);
+
+      delete klScriptableCmd;
+      klScriptableCmd = 0;
+
+      // decrement
+      index--; klCmdCount--;
+    }
+  }
+
+  else
+  {
+    pushTopCommand(new KLCommand(klCmd), true);
+
+    emit commandDone(
+      m_undoStack[m_undoStack.size() - 1].topLevelCmd);
   }
 }
 
@@ -287,4 +354,15 @@ void KLCommandManager::clearRedoStack()
       "",
       e.getDesc_cstr());
   }
+}
+
+void KLCommandManager::pushTopCommand(
+  Command *cmd,
+  bool succeeded)
+{
+  m_klCmdUndoStackCount += isKLCommand(cmd) ? 1 : 0;
+
+  CommandManager::pushTopCommand(
+    cmd,
+    succeeded);
 }

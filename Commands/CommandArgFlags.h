@@ -8,18 +8,24 @@
 namespace FabricUI {
 namespace Commands {
 
-class CommandFlags
+class CommandArgFlags
 {
   /**
-    CommandFlags  
+    CommandArgFlags  
  
   */
   public:
-  	CommandFlags() {}
-    /// Optional argument flags
+  	CommandArgFlags() {}
+    /// Optional argument flag.
     static int OPTIONAL_ARG;
-    /// Loggale argument flags
+    /// Loggale argument flag.
     static int LOGGABLE_ARG;
+    /// Input argument flag.
+    static int IN_ARG;
+    /// Output argument flag.
+    static int OUT_ARG;
+ 	  /// IO argument flag.
+    static int IO_ARG;
 };
 
 } // namespace Commands

@@ -7,6 +7,7 @@
 #include "OpenKLOptionsTargetEditorCommand.h"
 #include <FabricUI/Commands/CommandException.h>
 #include <FabricUI/Commands/KLCommandManager.h>
+#include <FabricUI/Commands/CommandArgHelpers.h>
 
 using namespace FabricUI;
 using namespace OptionsEditor;
@@ -15,6 +16,7 @@ using namespace Commands;
 
 OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand() 
   : BaseRTValScriptableCommand()
+  , m_canLog(true)
 {
   try
   {
@@ -24,7 +26,7 @@ OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand()
     declareRTValArg(
       "groupName",
       "String",
-      CommandFlags::OPTIONAL_ARG | CommandFlags::LOGGABLE_ARG);
+      CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG);
   }
 
   catch(CommandException &e) 
@@ -44,7 +46,10 @@ bool OpenKLOptionsTargetEditorCommand::canUndo() {
   return false;
 }
 
-/// Implementation of Command.
+bool OpenKLOptionsTargetEditorCommand::canLog() {
+  return m_canLog;
+}
+
 bool OpenKLOptionsTargetEditorCommand::doIt() 
 { 
   bool res = false;
@@ -60,6 +65,8 @@ bool OpenKLOptionsTargetEditorCommand::doIt()
     {
       if(dock->isHidden())
         dock->show();
+      else
+        m_canLog = false;
     }
 
     else
@@ -104,9 +111,10 @@ QString OpenKLOptionsTargetEditorCommand::getHelp()
   argsHelp["editorTitle"] = "Title of the widget";
   argsHelp["groupName"] = "Name of the options' group";
   
-  return createHelpFromArgs(
+  return CreateHelpFromRTValArgs(
     "Open a Qt editor to edit a KL OptionsTarget",
-    argsHelp);
+    argsHelp,
+    this);
 }
 
 QString OpenKLOptionsTargetEditorCommand::getHistoryDesc()
@@ -119,6 +127,7 @@ QString OpenKLOptionsTargetEditorCommand::getHistoryDesc()
   argsDesc["editorTitle"] = getRTValArg(
     "editorTitle").getStringCString();
 
-  return createHistoryDescFromArgs(
-    argsDesc);
+  return CreateHistoryDescFromArgs(
+    argsDesc,
+    this);
 }

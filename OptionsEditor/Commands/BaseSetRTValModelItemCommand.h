@@ -38,7 +38,7 @@ class BaseSetRTValModelItemCommand : public Commands::BaseRTValScriptableCommand
 
     /// Implementation of Command.
     virtual bool canUndo();
-    
+
     /// Implementation of Command.
     virtual QString getHistoryDesc();
     

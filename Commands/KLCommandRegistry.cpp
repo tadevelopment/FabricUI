@@ -165,8 +165,6 @@ Command* KLCommandRegistry::createKLCommand(
     // Creates the KL command from the KL registery. 
     // Check if it's a scriptable command
     RTVal klCmd = m_klCmdRegistry.callMethod(
-      // Cast to BaseScriptableCommand and ScriptableCommand so
-      // we don't have to cast the rtval in KLScriptableCommand.
       "BaseScriptableCommand", 
       "createCommand", 
       2, 

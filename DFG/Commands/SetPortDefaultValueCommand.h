@@ -1,34 +1,31 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#ifndef __UI_SETPORTDEFAULTVALUE_COMMAND__
-#define __UI_SETPORTDEFAULTVALUE_COMMAND__
+#ifndef __UI_SET_PORT_DEFAULT_VALUE_COMMAND__
+#define __UI_SET_PORT_DEFAULT_VALUE_COMMAND__
 
-#include "BaseDFGCommand.h"
+#include <FabricUI/Commands/BaseRTValScriptableCommand.h>
 
 namespace FabricUI {
 namespace DFG {
 
-class SetPortDefaultValueCommand : public BaseDFGCommand 
+class SetPortDefaultValueCommand : public Commands::BaseRTValScriptableCommand
 {
   public:
-    /**
-      Args:
-      - execPath (String): Absolute path of the DFGExec.
-      - nodeName (String): Name of the node owning the port.
-      - portName (String): Name of the port.
-      - portValue (RTVal): Value to set, must be of the same that the port type.
-      - isUndoable (Boolean): If true, the command is undoable.
-    */
-    
     SetPortDefaultValueCommand();
 
     virtual ~SetPortDefaultValueCommand();
 
     /// Implementation of Command.
-    bool canUndo();
- 
+    virtual bool canUndo();
+
     /// Implementation of Command.
     virtual bool doIt();
+
+    /// Implementation of Command.
+    virtual bool undoIt();
+
+     /// Implementation of Command.
+    virtual bool redoIt();
 
     /// Implementation of Command.
     virtual QString getHelp();
@@ -40,4 +37,4 @@ class SetPortDefaultValueCommand : public BaseDFGCommand
 } // namespace DFG
 } // namespace FabricUI
 
-#endif // __UI_SETPORTDEFAULTVALUE_COMMAND__
+#endif // __UI_SET_PORT_DEFAULT_VALUE_COMMAND__

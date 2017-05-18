@@ -30,6 +30,16 @@ bool KLCommand::canUndo()
   return CanKLCommandUndo(m_klCmd);
 }
 
+bool KLCommand::addToUndoStack() 
+{
+  return AddKLCommandToUndoStack(m_klCmd);
+}
+
+bool KLCommand::canLog() 
+{
+  return CanKLCommandLog(m_klCmd);
+}
+
 bool KLCommand::doIt() 
 { 
   return DoKLCommand(m_klCmd);

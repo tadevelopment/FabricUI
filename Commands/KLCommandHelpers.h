@@ -27,6 +27,19 @@ bool CanKLCommandUndo(
   FabricCore::RTVal klCmd
   );
 
+/// Checks if the KL command can be 
+/// added to the KL undo stack.
+/// Throws an exception if an error occurs.
+bool AddKLCommandToUndoStack(
+  FabricCore::RTVal klCmd
+  );
+
+/// Checks if the KL command is undoable.
+/// Throws an exception if an error occurs.
+bool CanKLCommandLog(
+  FabricCore::RTVal klCmd
+  );
+
 /// Executes a KL commands.
 /// Throws an exception if an error occurs.
 bool DoKLCommand(

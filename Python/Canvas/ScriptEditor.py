@@ -15,7 +15,8 @@ from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.PythonHighlighter import PythonHighlighter
 from FabricEngine.FabricUI import DFG, Actions
 from FabricEngine.Canvas.Commands.CommandRegistry import *
- 
+from FabricEngine.Canvas.Commands.CommandManager import *
+
 class LogStd:
 
     def __init__(self, log):
@@ -545,6 +546,11 @@ class ScriptEditor(QtGui.QWidget):
 
         self.exec_(code)
 
+        # Synchronize the KL-C++ registry so KL commands 
+        # can be created with 'named-arg' syntax. 
+        GetCmdManager().synchronizeKL();
+
+
     def eval(self, code):
         if self.echoCommandsAction.isChecked():
             self.log.appendCommand(code + "\n")
@@ -557,7 +563,7 @@ class ScriptEditor(QtGui.QWidget):
         try:
             result = eval(code, self.eval_globals)
             if self.echoCommandsAction.isChecked() and result is not None:
-                self.log.appendCommand("# Result: %s\n" % str(result))
+                self.log.appendCommand("Result: %s\n" % str(result))
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             sys.stderr.writelines(

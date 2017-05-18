@@ -1,31 +1,41 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "SetPortsDefaultValuesCommand.h"
+#include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandException.h>
+#include <FabricUI/PathResolvers/PathResolver.h>
+#include <FabricUI/Commands/CommandArgHelpers.h>
 
-using namespace FabricCore;
 using namespace FabricUI;
 using namespace DFG;
 using namespace Commands;
+using namespace FabricCore;
+using namespace PathResolvers;
 
 SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand() 
-  : BaseDFGCommand()
+  : BaseRTValScriptableCommand()
 {
   try
   {
-    declareRTValArg("execPath", "String");
-    declareRTValArg("nodeName", "String");
-    declareRTValArg("portNameList", "String[]");
-   	declareArg("portValueList");
+    declareRTValArg("pathValues", "PathValue", CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IO_ARG);
+    
+    // No-optional arg of unknown KL type, which
+    // is retrieved when executing the command.
+    declareArg("newValues");
 
-    KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
+    // Optional arg of unknown KL type, which
+    // is retrieved when executing the command.
+    declareArg("previousValues", CommandArgFlags::OPTIONAL_ARG);
+
+    KLCommandManager *manager = dynamic_cast<KLCommandManager*>(
       CommandManager::GetCommandManager());
-                           
+    
+    // Optional arg of known KL type, with default value.                  
     declareRTValArg( 
       "isUndoable",
       "Boolean",
-      CommandFlags::OPTIONAL_ARG | CommandFlags::LOGGABLE_ARG,
+      CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG,
       RTVal::ConstructBoolean(
         manager->getClient(), 
         true)
@@ -35,7 +45,7 @@ SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand()
   catch(CommandException &e) 
   {
     CommandException::Throw(
-      "SetPortDefaultValueCommand::SetPortDefaultValueCommand",
+      "SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand",
       "",
       e.what());
   }
@@ -47,55 +57,59 @@ SetPortsDefaultValuesCommand::~SetPortsDefaultValuesCommand()
 
 bool SetPortsDefaultValuesCommand::canUndo()
 {
-  return getRTValArg(
-    "isUndoable"
-    ).getBoolean();
+  try 
+  {
+    return getRTValArg("isUndoable").getBoolean();
+  }
+
+  catch(CommandException &e) 
+  {
+    CommandException::Throw(
+      "SetPortsDefaultValuesCommand::canUndo",
+      "",
+      e.what());
+  }
+
+  return false;
 }
 
 bool SetPortsDefaultValuesCommand::doIt()
 {
-  try 
+	try
   {
-    QString execPath = getRTValArg(
-      "execPath"
-      ).getStringCString();
-
-    QString nodeName = getRTValArg(
-      "nodeName"
-      ).getStringCString();
-
-    bool isUndoable = getRTValArg(
-      "isUndoable"
-      ).getBoolean();
-
-    RTVal portNameList = getRTValArg(
-      "portNameList");
+  	KLCommandManager *manager = dynamic_cast<KLCommandManager*>(
+    	CommandManager::GetCommandManager());
     
-    RTVal portValueList = getRTValArg(
-      "portValueList");
+    RTVal pathValues = getRTValArg("pathValues");
 
-    DFGExec exec = m_dfgController->getBinding().getExec().getSubExec(
-      execPath.toUtf8().constData()
-      );
-
-    DFGExec nodeExec = exec.getSubExec(
-      nodeName.toUtf8().constData()
-      );
-
-    for(unsigned int i=0; i<portNameList.getArraySize(); ++i)
+    if(canUndo() && !isArgSet("previousValues"))
     {
-      QString portName = portNameList.getArrayElement(i).getStringCString();
+    	RTVal previousValues = RTVal::ConstructVariableArray(
+    		manager->getClient(), "RTVal");
 
-      QString portPath = nodeName + "." + portName;
+    	previousValues.setArraySize(pathValues.getArraySize());
 
-      exec.setPortDefaultValue( 
-        portPath.toUtf8().constData(), 
-        portValueList.getArrayElement(i), 
-        isUndoable);
+    	for(unsigned int i=0; i<pathValues.getArraySize(); ++i)
+    	{
+    		RTVal pathValue = pathValues.getArrayElement(i);
+    		previousValues.setArrayElement(i, pathValue.maybeGetMember("value"));
+    	}
 
-      if(isUndoable)
-        ++m_coreCmdCount;
+      setRTValArg("previousValues", previousValues);
     }
+ 
+ 		// For the moment, assume that all the port share the same type.
+    QString portType = PathResolver::GetPathResolver()->getType(pathValues.getArrayElement(0));
+    RTVal newValues = getRTValArg("newValues", portType+"[]");
+
+  	for(unsigned int i=0; i<pathValues.getArraySize(); ++i)
+  	{
+  		RTVal pathValue = pathValues.getArrayElement(i);
+    	pathValue.setMember("value", newValues.getArrayElement(i));
+  		pathValues.setArrayElement(i, pathValue);
+  	}
+    	
+    setRTValArg("pathValues", pathValues);
 
     return true;
   }
@@ -107,37 +121,79 @@ bool SetPortsDefaultValuesCommand::doIt()
       "",
       e.what());
   }
+
   return false;
+} 
+
+bool SetPortsDefaultValuesCommand::undoIt()
+{ 
+  try
+  {
+    RTVal pathValues = getRTValArg("pathValues");
+    RTVal previousValues = getRTValArg("previousValues");
+
+    for(unsigned int i=0; i<pathValues.getArraySize(); ++i)
+    {
+      RTVal pathValue = pathValues.getArrayElement(i);
+      pathValue.setMember("value", previousValues.getArrayElement(i));
+      pathValues.setArrayElement(i, pathValue);
+    }
+      
+    setRTValArg("pathValues", pathValues);
+    
+    return true;
+  }
+
+  catch(CommandException &e) 
+  {
+    CommandException::Throw(
+      "SetPortsDefaultValuesCommand::undoIt",
+      "",
+      e.what());
+  }
+ 
+  return false;
+} 
+
+bool SetPortsDefaultValuesCommand::redoIt()
+{
+  return doIt();
 } 
 
 QString SetPortsDefaultValuesCommand::getHelp()
 {
   QMap<QString, QString> argsHelp;
 
-  argsHelp["execPath"] = "Absolute path of the DFGExec";
-  argsHelp["nodeName"] = "Name of the node owning the port";
-  argsHelp["portNameList"] = "Name of the ports.";
-  argsHelp["portValueList"] = "Values to set, must be of the same type than the ports.";
-  argsHelp["isUndoable"] = "If true, the command is undoable.";
+  argsHelp["pathValues"] = "Array of absolute paths of the ports.";
+  argsHelp["newValues"] = "Array of new values, must be of the same type than the port.";
+  argsHelp["previousValues"] = "Array of previous values, must be of the same type than the port.";
+  argsHelp["isUndoable"] = "If true, the command is undoable and loggable.";
 
-  return createHelpFromArgs(
+  return CreateHelpFromRTValArgs(
     "Sets the values of several DFG ports",
-    argsHelp);
+    argsHelp,
+    this);
 }
 
 QString SetPortsDefaultValuesCommand::getHistoryDesc()
 {
   QMap<QString, QString> argsDesc;
+ 
+  RTVal pathValues = getRTValArg("pathValues");
 
-  argsDesc["execPath"] = getRTValArg(
-    "execPath").getStringCString();
+  QString desc = "[";
+  for(unsigned int i=0; i<pathValues.getArraySize(); ++i)
+	{
+		RTVal pathValue = pathValues.getArrayElement(i);
+		desc += pathValue.maybeGetMember("value").getStringCString();
+		if(i < pathValues.getArraySize() - 1)
+			desc += ", ";
+	}
+  desc += "]";
 
-  argsDesc["nodeName"] = getRTValArg(
-    "nodeName").getStringCString();
-
-  argsDesc["portNameList"] = getRTValArg(
-    "portNameList").getStringCString();
-
-  return createHistoryDescFromArgs(
-    argsDesc);
+  argsDesc["pathValues"] = desc;
+ 
+  return CreateHistoryDescFromArgs(
+    argsDesc,
+    this);
 }

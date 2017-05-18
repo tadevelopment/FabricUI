@@ -32,6 +32,11 @@ bool BaseCommand::canUndo()
   return false;
 }
 
+bool BaseCommand::canLog() 
+{
+  return canUndo();
+}
+
 bool BaseCommand::doIt() 
 {
   return false;

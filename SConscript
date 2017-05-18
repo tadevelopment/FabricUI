@@ -126,6 +126,7 @@ dirs = [
   'Dialog',
   'Style',
   'Commands',
+  'PathResolvers',
   'Viewports',
   'KLEditor',
   'Menus',
@@ -143,7 +144,7 @@ dirs = [
   'DFG/Dialogs',
   'DFG/PortEditor',
   'DFG/TabSearch',
- 
+  'DFG/PathResolvers',
   'SceneHub',
   'SceneHub/TreeView',
   'SceneHub/Menus',

@@ -109,6 +109,13 @@ class KLScriptableCommand
     /// Implementation of Command.
     virtual bool canUndo();
 
+    /// Checks if the KL command can be 
+    /// added to the KL undo stack.
+    bool addToUndoStack();
+
+    /// Implementation of Command.
+    virtual bool canLog();
+    
     /// Implementation of Command.
     virtual bool doIt();
 

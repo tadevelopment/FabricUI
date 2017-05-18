@@ -99,11 +99,17 @@ void CommandManager::doCommand(
   }
 
   // Execute the command, catch any errors.
+  // The command breaks if the 'doIt' method
+  // returns false or throws an exception.
   try
   {
+    preProcessCommandArgs(cmd);
+
     if(!cmd->doIt())
       cleanupUnfinishedCommandsAndThrow(
         cmd);
+
+    postProcessCommandArgs(cmd);
   }
    
   catch(CommandException &e) 
@@ -122,17 +128,21 @@ void CommandManager::doCommand(
     else
     {
       m_undoStack[m_undoStack.size() - 1].succeeded = true;
-      // Inform that a command has been succefully executed.
+      
+      // Inform a command has been succefully executed.
       emit commandDone(
         m_undoStack[m_undoStack.size() - 1].topLevelCmd);
     }
   }
 
+  // Delete no-undoable commands.
   else
   {
-    if(!subCmd)
-      // Inform that a command has been succefully executed.
-      emit commandDone(cmd);
+    // Inform a command has been succefully executed.
+    emit commandDone(cmd);
+      
+    delete cmd;
+    cmd = 0;
   }
 }
 
@@ -154,7 +164,9 @@ void CommandManager::undoCommand()
 
   int lowLevelCmdsCount = int(stackedCmd.lowLevelCmds.size());
   if(lowLevelCmdsCount > 0)
-  {
+  { 
+    // The undo breaks if the 'undoIt' method
+    // returns false or throws an exception.
     for(int i = lowLevelCmdsCount; i--;)
     {
       try
@@ -163,6 +175,8 @@ void CommandManager::undoCommand()
           cleanupUnfinishedUndoLowCommandsAndThrow(
             i, 
             stackedCmd);
+
+        postProcessCommandArgs(stackedCmd.lowLevelCmds[i]);
       }
        
       catch(CommandException &e) 
@@ -184,6 +198,8 @@ void CommandManager::undoCommand()
         "CommandManager::undoCommand top", 
         "Undoing command '" + top->getName() + "'"
         );
+
+      postProcessCommandArgs(top);
     }
      
     catch(CommandException &e) 
@@ -226,7 +242,9 @@ void CommandManager::redoCommand()
           cleanupUnfinishedRedoLowCommandsAndThrow(
             i, 
             stackedCmd);
-      }
+        
+        postProcessCommandArgs(stackedCmd.lowLevelCmds[i]);
+     }
        
       catch(CommandException &e) 
       {
@@ -247,6 +265,8 @@ void CommandManager::redoCommand()
         "CommandManager::redoCommand top", 
         "Undoing command '" + top->getName() + "'"
         );
+
+      postProcessCommandArgs(top);
     }
      
     catch(CommandException &e) 
@@ -322,7 +342,7 @@ void CommandManager::checkCommandArgs(
   // Try to set the arg even if not part of the specs, 
   // some commands might require this
   QMapIterator<QString, QString> ite(args);
-  while (ite.hasNext()) 
+  while(ite.hasNext()) 
   {
     ite.next();
 
@@ -337,6 +357,18 @@ void CommandManager::checkCommandArgs(
 void CommandManager::clearRedoStack() 
 {
   clearCommandStack(m_redoStack);
+}
+
+void CommandManager::preProcessCommandArgs(
+  Command* cmd)
+{
+  // Do nothing.
+}
+
+void CommandManager::postProcessCommandArgs(
+  Command* cmd)
+{
+  // Do nothing.
 }
 
 void CommandManager::clearCommandStack(
@@ -479,16 +511,14 @@ void CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow(
       "CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow",
       "Redoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
       "', low: '" + stackedCmd.lowLevelCmds[j]->getName() + "'",
-      error
-      );
+      error);
   }
 
   CommandException::Throw(
     "CommandManager::undoCommand",
     "Undoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
     "', low: '" + stackedCmd.lowLevelCmds[topLevelCmdIndex]->getName() + "'",
-    error
-    );
+    error);
 }
 
 void CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow(
@@ -510,14 +540,12 @@ void CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow(
       "CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow",
       "Undoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
       "', low: '" + stackedCmd.lowLevelCmds[j]->getName() + "'",
-      error
-      );
+      error);
   }
 
   CommandException::Throw(
     "CommandManager::redoCommand",
     "Redoing command, top: '" + stackedCmd.topLevelCmd->getName() + 
     "', low: '" + stackedCmd.lowLevelCmds[topLevelCmdIndex]->getName() + "'",
-    error
-    );
+    error);
 }

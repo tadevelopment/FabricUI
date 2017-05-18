@@ -32,10 +32,16 @@ class OpenKLOptionsTargetEditorCommand : public Commands::BaseRTValScriptableCom
     virtual bool canUndo();
 
     /// Implementation of Command.
+    virtual bool canLog();
+    
+    /// Implementation of Command.
     virtual QString getHelp();
 
     /// Implementation of Command.
     virtual QString getHistoryDesc();
+
+  private:
+    bool m_canLog;
 };
 
 } // namespace OptionsEditor 

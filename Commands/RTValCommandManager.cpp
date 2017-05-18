@@ -2,21 +2,30 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include "RTValPathValueArg.h"
 #include "CommandRegistry.h"
 #include "CommandException.h"
 #include "ScriptableCommand.h"
 #include "RTValCommandManager.h"
 #include "RTValScriptableCommand.h"
+#include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Commands/CommandArgFlags.h>
+#include <FabricUI/PathResolvers/PathResolver.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
+using namespace PathResolvers;
 
 RTValCommandManager::RTValCommandManager(
   Client client) 
   : CommandManager()
   , m_client(client)
 {
+  m_RTValComplexArgRegistry.registerArg(
+    new RTValPathValueArg()
+    );
 }
 
 RTValCommandManager::~RTValCommandManager() 
@@ -81,12 +90,11 @@ void RTValCommandManager::checkCommandArgs(
   Command *cmd,
   const QMap<QString, RTVal> &args)
 { 
-  RTValScriptableCommand* rtvalScriptCommand = dynamic_cast<RTValScriptableCommand*>(cmd);
+  RTValScriptableCommand* rtvalScriptCmd = dynamic_cast<RTValScriptableCommand*>(cmd);
   
-  if(!rtvalScriptCommand) 
+  if(!rtvalScriptCmd) 
     CommandException::Throw(
       "RTValCommandManager::checkCommandArgs",
-
       "Command '" + cmd->getName() + "' is created with args, " + 
       "but is not implementing the RTValScriptableCommand interface"
       );
@@ -97,11 +105,106 @@ void RTValCommandManager::checkCommandArgs(
   {
     ite.next();
 
-    rtvalScriptCommand->setRTValArg(
+    rtvalScriptCmd->setRTValArg(
       ite.key(), 
       ite.value());
   }
 
-  ScriptableCommand* scriptCommand = dynamic_cast<ScriptableCommand*>(cmd);
-  scriptCommand->validateSetArgs();
+  ScriptableCommand* scriptCmd = dynamic_cast<ScriptableCommand*>(cmd);
+  scriptCmd->validateSetArgs();
+}
+
+void RTValCommandManager::preProcessCommandArgs(
+  Command* cmd)
+{
+  RTValScriptableCommand* rtvalScriptCmd = dynamic_cast<RTValScriptableCommand*>(cmd);
+  
+  if(!rtvalScriptCmd)
+    return;
+
+  try
+  {
+    ScriptableCommand* scriptCmd = dynamic_cast<ScriptableCommand*>(cmd);
+    
+    QString key;
+    foreach(key, scriptCmd->getArgKeys())
+    {
+      if( scriptCmd->isArg(key, CommandArgFlags::IN_ARG) ||
+          scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
+      {
+        RTVal pathValue = rtvalScriptCmd->getRTValArg(key);
+        if(PathResolver::GetPathResolver()->knownPath(pathValue))
+        {
+          PathResolver::GetPathResolver()->getValue(pathValue);
+          rtvalScriptCmd->setRTValArg(key, pathValue);
+        }
+      }
+    }
+  }
+   
+  catch(Exception &e) 
+  {
+    CommandException::Throw(
+      "RTValCommandManager::preProcessCommandArgs",
+      "",
+      e.getDesc_cstr()
+      );
+  }
+
+  catch(CommandException &e) 
+  {
+    CommandException::Throw(
+      "RTValCommandManager::preProcessCommandArgs",
+      "",
+      e.what());
+  }
+}
+
+void RTValCommandManager::postProcessCommandArgs(
+  Command* cmd)
+{
+  RTValScriptableCommand* rtvalScriptCmd = dynamic_cast<RTValScriptableCommand*>(cmd);
+  
+  if(!rtvalScriptCmd)
+    return;
+
+  try
+  {
+    ScriptableCommand* scriptCmd = dynamic_cast<ScriptableCommand*>(cmd);
+    
+    QString key;
+    foreach(key, scriptCmd->getArgKeys())
+    {
+      if( scriptCmd->isArg(key, CommandArgFlags::OUT_ARG) ||
+          scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
+      {
+        RTVal pathValue = rtvalScriptCmd->getRTValArg(key);
+        if(PathResolver::GetPathResolver()->knownPath(pathValue))
+          PathResolver::GetPathResolver()->setValue(
+            pathValue);
+      }
+    }
+  }
+   
+  catch(Exception &e) 
+  {
+    CommandException::Throw(
+      "RTValCommandManager::postProcessCommandArgs",
+      "",
+      e.getDesc_cstr()
+      );
+  }
+
+  catch (CommandException &e) 
+  {
+    CommandException::Throw(
+      "RTValCommandManager::postProcessCommandArgs",
+      "",
+      e.what());
+  }
+}
+
+RTValComplexArgRegistry& RTValCommandManager::getComplexArgRegistry()
+{
+  return m_RTValComplexArgRegistry;
 }

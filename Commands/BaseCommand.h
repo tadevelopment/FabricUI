@@ -40,6 +40,10 @@ class BaseCommand : public Command
     virtual bool canUndo();
 
     /// Default implementation of Command, 
+    /// Same as canUndo.
+    virtual bool canLog();
+
+    /// Default implementation of Command, 
     /// returns false.
     virtual bool doIt();
 

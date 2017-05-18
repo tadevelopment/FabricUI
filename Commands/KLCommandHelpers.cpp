@@ -60,6 +60,52 @@ bool CanKLCommandUndo(
   return false;
 }
 
+bool AddKLCommandToUndoStack(
+  RTVal klCmd) 
+{
+  try 
+  {
+    return klCmd.callMethod(
+      "Boolean", 
+      "addToUndoStack", 
+      0, 
+      0).getBoolean();
+  }
+
+  catch(Exception &e)
+  {
+    CommandException::Throw(
+      "KLCommandHelpers::AddKLCommandToUndoStack",
+      "",
+      e.getDesc_cstr());
+  }
+  
+  return false;
+}
+
+bool CanKLCommandLog(
+  RTVal klCmd) 
+{
+  try 
+  {
+    return klCmd.callMethod(
+      "Boolean", 
+      "canLog", 
+      0, 
+      0).getBoolean();
+  }
+
+  catch(Exception &e)
+  {
+    CommandException::Throw(
+      "KLCommandHelpers::CanKLCommandLog",
+      "",
+      e.getDesc_cstr());
+  }
+  
+  return false;
+}
+
 bool DoKLCommand( 
   RTVal klCmd) 
 { 
@@ -87,8 +133,7 @@ bool DoKLCommand(
     if(!strError.isEmpty())
       CommandException::Throw(
         "KLCommandHelpers::DoKLCommand",
-        strError
-        );
+        strError);
 
     return true;
   }
@@ -128,8 +173,7 @@ bool UndoKLCommand()
     {
       CommandException::Throw(
         "KLCommandHelpers::UndoKLCommand",
-        strError
-        );
+        strError);
 
       return false;
     }
@@ -172,8 +216,7 @@ bool RedoKLCommand()
     {
       CommandException::Throw(
         "KLCommandHelpers::RedoKLCommand",
-        strError
-        );
+        strError);
 
       return false;      
     }

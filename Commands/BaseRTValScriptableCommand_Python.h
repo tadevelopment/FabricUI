@@ -35,7 +35,7 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
       const QString &defaultValue
       );
 
-    /// Wraps BaseRTValScriptableCommand::isArgOptional.
+    /// Wraps BaseRTValScriptableCommand::isArg.
     /// Propagates the C++ exception in python.
     /// To override in Python.
     virtual QPair<QString, bool> _isArg_Python(
@@ -120,7 +120,7 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
       );
 
     /// Implementation of ScriptableCommand.
-    /// calls _isArgOptional_Python.
+    /// calls _isArg_Python.
     virtual bool isArg(
       const QString &key,
       int flag);

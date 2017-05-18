@@ -3,7 +3,7 @@
   <namespace-type name="FabricUI"  generate="no">
     <namespace-type name="Commands"  generate="yes">
       <object-type name="BaseCommand" />
-      <object-type name="CommandFlags" />
+      <object-type name="CommandArgFlags" />
       <object-type name="BaseScriptableCommand" />
       <object-type name="BaseRTValScriptableCommand" />
       <object-type name="BaseScriptableCommand_Python" />

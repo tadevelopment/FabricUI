@@ -117,8 +117,20 @@ class CommandManager : public QObject
     /// Clears the redo stack.
     virtual void clearRedoStack();
 
+    /// Pre-processes the args.
+    /// Called before creating a command.
+    virtual void preProcessCommandArgs(
+      Command* cmd
+      );
+
+    /// Post-processes the args. Called after 
+    /// creating, undoing or redoing a command.
+    virtual void postProcessCommandArgs(
+      Command* cmd
+      );
+
     /// Pushes a command.
-    void pushTopCommand(
+    virtual void pushTopCommand(
       Command *cmd,
       bool succeeded = false
       );

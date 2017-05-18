@@ -7,6 +7,7 @@
 #include "BaseSetRTValModelItemCommand.h"
 #include <FabricUI/Commands/CommandException.h>
 #include <FabricUI/Commands/KLCommandManager.h>
+#include <FabricUI/Commands/CommandArgHelpers.h>
 
 using namespace FabricUI;
 using namespace Util;
@@ -24,7 +25,7 @@ BaseSetRTValModelItemCommand::BaseSetRTValModelItemCommand()
     
     // Declares an optional argument of 
     // unknowned type which is not loggable.
-    declareArg("previousValue", CommandFlags::OPTIONAL_ARG);
+    declareArg("previousValue", CommandArgFlags::OPTIONAL_ARG);
 
     // Declares an no-optional 
     // arg of unknowned type.
@@ -165,7 +166,8 @@ QString BaseSetRTValModelItemCommand::getHistoryDesc()
   argsDesc["optionsPath"] = getRTValArg(
     "optionsPath").getStringCString();
 
-  return createHistoryDescFromArgs(
-    argsDesc);
+  return CreateHistoryDescFromArgs(
+    argsDesc,
+    this);
 }
 

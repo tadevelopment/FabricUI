@@ -1,26 +1,26 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include "SetPortDefaultValueCommand.h"
+#include <FabricUI/Util/RTValUtil.h>
+#include "SetXfoPortDefaultValueCommand.h"
 #include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/CommandException.h>
 #include <FabricUI/Commands/KLCommandManager.h>
-#include <FabricUI/PathResolvers/PathResolver.h>
-#include <FabricUI/Commands/CommandArgHelpers.h>
- 
+ #include <FabricUI/Commands/CommandArgHelpers.h>
+
 using namespace FabricUI;
 using namespace DFG;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
-using namespace PathResolvers;
-
-SetPortDefaultValueCommand::SetPortDefaultValueCommand() 
+ 
+SetXfoPortDefaultValueCommand::SetXfoPortDefaultValueCommand() 
   : BaseRTValScriptableCommand()
 {
   try
   {
     declareRTValArg(
       "target", 
-      "RTVal",
+      "Xfo",
       CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IO_ARG
       );
     
@@ -28,7 +28,7 @@ SetPortDefaultValueCommand::SetPortDefaultValueCommand()
     // is retrieved when executing the command.
     declareRTValArg(
       "newValue",
-      "RTVal",
+      "Xfo",
       CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IN_ARG
       );
 
@@ -36,7 +36,7 @@ SetPortDefaultValueCommand::SetPortDefaultValueCommand()
     // is retrieved when executing the command.
     declareRTValArg(
       "previousValue", 
-      "RTVal",
+      "Xfo",
       CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::IN_ARG
       );
 
@@ -57,17 +57,17 @@ SetPortDefaultValueCommand::SetPortDefaultValueCommand()
   catch(CommandException &e) 
   {
     CommandException::Throw(
-      "SetPortDefaultValueCommand::SetPortDefaultValueCommand",
+      "SetXfoPortDefaultValueCommand::SetXfoPortDefaultValueCommand",
       "",
       e.what());
   }
 }
 
-SetPortDefaultValueCommand::~SetPortDefaultValueCommand() 
+SetXfoPortDefaultValueCommand::~SetXfoPortDefaultValueCommand() 
 {
 }
 
-bool SetPortDefaultValueCommand::canUndo()
+bool SetXfoPortDefaultValueCommand::canUndo()
 {
   try 
   {    
@@ -77,7 +77,7 @@ bool SetPortDefaultValueCommand::canUndo()
   catch(CommandException &e) 
   {
     CommandException::Throw(
-      "SetPortDefaultValueCommand::canUndo",
+      "SetXfoPortDefaultValueCommand::canUndo",
       "",
       e.what());
   }
@@ -85,16 +85,14 @@ bool SetPortDefaultValueCommand::canUndo()
   return false;
 }
 
-bool SetPortDefaultValueCommand::doIt()
+bool SetXfoPortDefaultValueCommand::doIt()
 {
   try
   {
-    QString portType = PathResolver::GetPathResolver()->getType(getRTValArg("target"));
-
-    if(canUndo() && getRTValArgType("previousValue.value") != portType)
+    if(canUndo() && RTValUtil::getRTValType(getRTValArg("previousValue.value")) != "Xfo")
       setRTValArg("previousValue", getRTValArg("target.value"));
 
-    RTVal newValue = getRTValArg("newValue.value", portType);
+    RTVal newValue = getRTValArg("newValue.value", "Xfo");
   
     setRTValArg("target.value", newValue);
  
@@ -104,7 +102,7 @@ bool SetPortDefaultValueCommand::doIt()
   catch(CommandException &e) 
   {
     CommandException::Throw(
-      "SetPortDefaultValueCommand::doIt",
+      "SetXfoPortDefaultValueCommand::doIt",
       "",
       e.what());
   }
@@ -112,7 +110,7 @@ bool SetPortDefaultValueCommand::doIt()
   return false;
 } 
 
-bool SetPortDefaultValueCommand::undoIt()
+bool SetXfoPortDefaultValueCommand::undoIt()
 { 
   try
   {
@@ -123,7 +121,7 @@ bool SetPortDefaultValueCommand::undoIt()
   catch(CommandException &e) 
   {
     CommandException::Throw(
-      "SetPortDefaultValueCommand::undoIt",
+      "SetXfoPortDefaultValueCommand::undoIt",
       "",
       e.what());
   }
@@ -131,26 +129,26 @@ bool SetPortDefaultValueCommand::undoIt()
   return false;
 } 
 
-bool SetPortDefaultValueCommand::redoIt()
+bool SetXfoPortDefaultValueCommand::redoIt()
 {
   return doIt();
 } 
 
-QString SetPortDefaultValueCommand::getHelp()
+QString SetXfoPortDefaultValueCommand::getHelp()
 {
   QMap<QString, QString> argsHelp;
-  argsHelp["target"] = "Absolute path of the port";
-  argsHelp["newValue"] = "New value, must be of the same type than the port.";
-  argsHelp["previousValue"] = "Previous value, must be of the same type than the port.";
-  argsHelp["isUndoable"] = "If true, the command is undoable.";
+  argsHelp["target"] = "Absolute path of the Xfo port";
+  argsHelp["newValue"] = "New value";
+  argsHelp["previousValue"] = "Previous value";
+  argsHelp["isUndoable"] = "If true, the command is undoable";
 
   return CreateHelpFromRTValArgs(
-    "Sets the value of a DFG port",
+    "Sets the value of a Xfo DFG port",
     argsHelp,
     this);
 }
 
-QString SetPortDefaultValueCommand::getHistoryDesc()
+QString SetXfoPortDefaultValueCommand::getHistoryDesc()
 {
   QMap<QString, QString> argsDesc;
  

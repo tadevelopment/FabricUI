@@ -7,8 +7,9 @@
 #include "KLCommandRegistry.h"
 #include "KLScriptableCommand.h"
 #include <FabricUI/Util/RTValUtil.h>
-
+ 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 
@@ -32,6 +33,16 @@ QString KLScriptableCommand::getName()
 bool KLScriptableCommand::canUndo() 
 {
   return CanKLCommandUndo(m_klCmd);
+}
+
+bool KLScriptableCommand::addToUndoStack() 
+{
+  return AddKLCommandToUndoStack(m_klCmd);
+}
+
+bool KLScriptableCommand::canLog() 
+{
+  return CanKLCommandLog(m_klCmd);
 }
 
 bool KLScriptableCommand::doIt() 
@@ -120,24 +131,22 @@ bool KLScriptableCommand::isArg(
     KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
       Commands::CommandRegistry::GetCommandRegistry());
 
-    RTVal keyVal = RTVal::ConstructString(
-      registry->getClient(), 
-      key.toUtf8().constData());
+    RTVal args[2] = 
+    {
+      RTVal::ConstructString(
+        registry->getClient(), 
+        key.toUtf8().constData()),
 
-    if(flag & CommandFlags::OPTIONAL_ARG)
-      res = m_klCmd.callMethod(
-        "Boolean",
-        "isArgOptional",
-        1,
-        &keyVal
-        ).getBoolean();
-
-    else if (flag & CommandFlags::LOGGABLE_ARG)
+      RTVal::ConstructUInt32(
+        registry->getClient(), 
+        flag)
+    };
+ 
     res = m_klCmd.callMethod(
       "Boolean",
-      "isArgLoggable",
-      1,
-      &keyVal
+      "isArg",
+      2,
+      args
       ).getBoolean();
   }
 
@@ -193,7 +202,7 @@ bool KLScriptableCommand::isArgSet(
 QString KLScriptableCommand::getArg(
   const QString &key) 
 {
-  return Util::RTValUtil::klRTValToJSON(
+  return RTValUtil::forceRTValToJSON(
     getRTValArg(
       key)
     );
@@ -203,16 +212,17 @@ void KLScriptableCommand::setArg(
   const QString &key, 
   const QString &json) 
 {
+
   try 
   {
     KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
       Commands::CommandRegistry::GetCommandRegistry());
 
     // Get the argument from its JSON description.
-    RTVal klRTVal = Util::RTValUtil::jsonToKLRTVal(
-      registry->getClient(),
-      json,
-      getRTValArgType(key));
+    RTVal klRTVal = RTValUtil::forceJSONToRTVal(
+        registry->getClient(),
+        json,
+        getRTValArgType(key));
 
     setRTValArg(key, klRTVal);
   }
@@ -355,11 +365,11 @@ RTVal KLScriptableCommand::getRTValArg(
       registry->getClient(), 
       key.toUtf8().constData());
 
-    res = m_klCmd.callMethod(
-      "String", 
+    res = RTValUtil::forceToRTVal(m_klCmd.callMethod(
+      "RTVal", 
       "getArg", 
       1, 
-      &keyVal);
+      &keyVal));
   }
 
   catch(Exception &e)
@@ -384,12 +394,6 @@ void KLScriptableCommand::setRTValArg(
   const QString &key, 
   FabricCore::RTVal value)
 {
-  if(!hasArg(key)) 
-    CommandException::Throw(
-      "KLScriptableCommand::setRTValArg",
-      "No arg named '" + key + "' in command '" + getName() + "'",
-      "");
-
   QString strError;
 
   try 
@@ -403,7 +407,7 @@ void KLScriptableCommand::setRTValArg(
     
     RTVal args[3] = { 
       keyVal, 
-      value, 
+      RTValUtil::forceToKLRTVal(value), 
       // error
       RTVal::ConstructString(
         registry->getClient(), 

@@ -3,7 +3,7 @@
 //
 
 #include <FabricUI/Commands/Command.h>
-#include <FabricUI/Commands/CommandFlags.h>
+#include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/ScriptableCommand.h>
 #include <FabricUI/Commands/RTValScriptableCommand.h>
 #include <FabricUI/Commands/BaseCommand.h>

@@ -128,6 +128,9 @@ class Command
     /// Checks if the command is undoable.
     virtual bool canUndo() = 0;
 
+    /// Checks if the command can be logged.
+    virtual bool canLog() = 0;
+
     /// Defines the command logic.
     /// Returns true if succeded, false otherwise.
     virtual bool doIt() = 0;

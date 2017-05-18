@@ -6,7 +6,7 @@
 #define __UI_KL_COMMAND_MANAGER__
  
 #include "RTValCommandManager.h"
- 
+
 namespace FabricUI {
 namespace Commands {
 
@@ -58,9 +58,29 @@ class KLCommandManager : public RTValCommandManager
     virtual void clearRedoStack();
    
   private:
+    /// Implementation of CommandManager
+    virtual void pushTopCommand(
+      Command *cmd,
+      bool succeeded = false
+      );
+
+    /// \internal
+    void createCommandFromKLAppCommand(
+      unsigned &index,
+      unsigned &klCmdCount,
+      FabricCore::RTVal appCmd
+      );
+
+    /// \internal
+    void createKLCommandWrappers(
+      unsigned &index,
+      unsigned &klCmdCount,
+      FabricCore::RTVal klCmd
+      );
+
     /// Number of KLCommand (KLScriptableCommand)
     /// added, use to compare wit the KL manager.
-    unsigned int m_klCmdUndoStackCount;
+    unsigned m_klCmdUndoStackCount;
     /// KL command manager.
     FabricCore::RTVal m_klCmdManager;
 };

@@ -24,7 +24,7 @@ class CppTestScriptableCommand : public BaseScriptableCommand
     {
       BaseScriptableCommand::declareArg(
         "arg_1",
-        CommandFlags::OPTIONAL_ARG | CommandFlags::LOGGABLE_ARG,
+        CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG,
         "arg_1_default_Cpp");
     }
 
