@@ -29,7 +29,7 @@ FloatSliderViewItem::FloatSliderViewItem(
 {
   m_lineEdit = new VELineEdit;
   m_lineEdit->setObjectName( "VELeft" );
-  m_lineEdit->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::MinimumExpanding );
+  m_lineEdit->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::MinimumExpanding );
 
   m_slider = new DoubleSlider;
   m_slider->setObjectName( "VERight" );
@@ -54,6 +54,9 @@ FloatSliderViewItem::FloatSliderViewItem(
   layout->setSpacing( 0 );
   layout->addWidget( m_lineEdit );
   layout->addWidget( m_slider );
+  
+  layout->setStretchFactor(m_lineEdit, 1);
+  layout->setStretchFactor(m_slider, 5);  
 
   m_widget = new QWidget;
   m_widget->setObjectName( "VEFloatSliderViewItem" );
