@@ -43,11 +43,6 @@ void KLOptionsTargetModelItem::setValue(
   bool commit,
   QVariant valueAtInteractionBegin) 
 {
-  RTValModelItem::setValue(
-    value, 
-    commit, 
-    valueAtInteractionBegin);
-
   if(commit)
   {
     try
@@ -67,10 +62,14 @@ void KLOptionsTargetModelItem::setValue(
         ? valueAtInteractionBegin 
         : getValue();
 
-      RTVal previousRTValValue = m_options.clone();
-      RTVariant::toRTVal(previousValue, previousRTValValue);
-      args["previousValue"] = previousRTValValue;
-      args["newValue"] = m_options.clone();
+      RTVal prevOptionsCopy = m_options.clone();
+      RTVariant::toRTVal(previousValue, prevOptionsCopy);
+      args["previousValue"] = prevOptionsCopy;
+
+      RTVal optionsCopy = m_options.clone();
+      RTVariant::toRTVal(value, optionsCopy);
+
+      args["newValue"] = optionsCopy.clone();
 
       RTValCommandManager *manager = dynamic_cast<RTValCommandManager*>(
         CommandManager::GetCommandManager());
@@ -95,10 +94,17 @@ void KLOptionsTargetModelItem::setValue(
     }
   }
   else
+  {
+    RTValModelItem::setValue(
+      value, 
+      commit, 
+      valueAtInteractionBegin);
+
     SetKLOptionsTargetSingleOption(
       m_client,
       m_editorID,
       QString(m_path.c_str()),
       m_options);
+  }
 }
 
