@@ -5,9 +5,7 @@
 
 #include <FabricUI/DFG/DFGTabSearchWidget.h>
 
-#include "QueryEdit.h"
-#include "ResultsView.h"
-#include "DetailsWidget.h"
+#include <set>
 
 class QFrame;
 class QScrollArea;
@@ -16,6 +14,16 @@ namespace FabricUI
 {
   namespace DFG
   {
+    namespace TabSearch
+    {
+      class QueryEdit;
+      class DetailsWidget;
+      class ResultsView;
+      class Toggle;
+      struct Query;
+      class Result;
+    }
+
     class DFGPresetSearchWidget : public DFGAbstractTabSearchWidget
     {
       Q_OBJECT
@@ -32,11 +40,13 @@ namespace FabricUI
       bool focusNextPrevChild( bool next ) FTL_OVERRIDE;
       void resizeEvent( QResizeEvent * event ) FTL_OVERRIDE;
       void showEvent( QShowEvent * event ) FTL_OVERRIDE;
+      void toggleNewBlocks( bool );
 
     signals:
       // Emitted when a Result (there are different types) has been chosen
       void selectedPreset( QString preset );
       void selectedBackdrop();
+      void selectedNewBlock();
       void selectedCreateNewVariable();
       void selectedGetVariable( const std::string name );
       void selectedSetVariable( const std::string name );
@@ -77,6 +87,7 @@ namespace FabricUI
       // Will the Query persist between 2 invocations ?
       bool m_clearQueryOnClose;
       bool m_staticEntriesAddedToDB;
+      bool m_newBlocksEnabled;
 
       // Used to query the database
       FabricCore::DFGHost* m_host;
@@ -87,10 +98,10 @@ namespace FabricUI
       TabSearch::QueryEdit* m_queryEdit;
       TabSearch::ResultsView* m_resultsView;
       TabSearch::DetailsWidget* m_detailsWidget;
-      QPoint m_posAtShow;
       QScrollArea* m_detailsPanel;
       TabSearch::Toggle* m_toggleDetailsButton;
       bool m_detailsPanelToggled;
+      class MoveHandle;
     };
   };
 };

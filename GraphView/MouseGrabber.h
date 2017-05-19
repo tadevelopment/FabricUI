@@ -11,11 +11,6 @@
 
 namespace FabricUI
 {
-  namespace DFG {
-  class DFGController;
-  } // namespace DFG
-
-
   namespace GraphView
   {
     // forward declarations
@@ -25,97 +20,6 @@ namespace FabricUI
     class InstBlock;
     class Node;
     class SidePanel;
-
-    class ExposePortAction : public QAction
-    {
-      Q_OBJECT
-           
-    public:
-
-      ExposePortAction(
-        QObject *parent,
-        FabricUI::DFG::DFGController *dfgController,
-        ConnectionTarget *other,
-        PortType connectionPortType
-        );
- 
-    protected slots:
-
-      void onTriggered();
-
-    protected:
-
-      virtual bool allowNonInPortType() const
-        { return true; }
-
-      virtual void invokeAddPort(
-        QString desiredPortName,
-        FabricCore::DFGPortType portType,
-        QString typeSpec,
-        QString extDep,
-        QString metaData
-        ) = 0;
-
-      FabricUI::DFG::DFGController *m_dfgController;
-      ConnectionTarget *m_other;
-      PortType m_connectionPortType;
-    };
-
-    class ExposeInstPortAction : public ExposePortAction
-    {
-    public:
-
-      ExposeInstPortAction(
-        QObject *parent,
-        FabricUI::DFG::DFGController *dfgController,
-        Node *node,
-        ConnectionTarget *other,
-        PortType connectionPortType
-        );
-
-    protected:
-
-      virtual void invokeAddPort(
-        QString desiredPortName,
-        FabricCore::DFGPortType portType,
-        QString typeSpec,
-        QString extDep,
-        QString metaData
-        );
-
-    private:
-
-      Node *m_node;
-    };
-
-    class ExposeInstBlockPortAction : public ExposePortAction
-    {
-    public:
-
-      ExposeInstBlockPortAction(
-        QObject *parent,
-        FabricUI::DFG::DFGController *dfgController,
-        InstBlock *instBlock,
-        ConnectionTarget *other
-        );
-
-    protected:
-
-      virtual bool allowNonInPortType() const
-        { return false; }
-
-      virtual void invokeAddPort(
-        QString desiredPortName,
-        FabricCore::DFGPortType portType,
-        QString typeSpec,
-        QString extDep,
-        QString metaData
-        );
-
-    private:
-
-      InstBlock *m_instBlock;
-    };
 
     class MouseGrabber : public ConnectionTarget
     {
@@ -172,17 +76,6 @@ namespace FabricUI
 
       void showToolTip();
       void invokeConnect(ConnectionTarget * source, ConnectionTarget * target);
-
-      static QMenu *createNodeHeaderMenu(
-        Node * node,
-        ConnectionTarget * other,
-        PortType nodeRole
-        );
-      static QMenu *createInstBlockHeaderMenu(
-        InstBlock *instBlock,
-        ConnectionTarget *other,
-        PortType nodeRole
-        );
 
       void invokeNodeHeaderMenu(
         Node * node,

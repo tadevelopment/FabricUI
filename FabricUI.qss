@@ -2126,6 +2126,14 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   color: #888;
 }
 
+#DFGPresetSearchWidget #MoveHandle
+{
+  min-height: 6px;
+  background-color: #50626e;
+  border: 2px solid #333333;
+  border-bottom: 0px;
+}
+
 /****************************************************************************
  * HotkeyEditorDialog
  ***************************************************************************/

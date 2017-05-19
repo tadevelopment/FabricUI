@@ -422,6 +422,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.astManager = KLASTManager(self.client)
         self.host = self.client.getDFGHost()
         self.mainBinding = self.host.createBindingToNewGraph()
+        self.mainBinding.setMetadata("host_app", "Canvas.py", False);
         self.lastSavedBindingVersion = self.mainBinding.getVersion()
         self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
 
@@ -477,7 +478,7 @@ class CanvasWindow(QtGui.QMainWindow):
         controller = self.dfgWidget.getDFGController()
         self.treeWidget = DFG.PresetTreeWidget(controller, self.config, True, False, False, False, False, True)
         self.dfgWidget.newPresetSaved.connect(self.treeWidget.refresh)
-        self.dfgWidget.revealPresetInExplorer.connect(self.treeWidget.onExpandToAndSelectItem)
+        self.dfgWidget.revealPresetInExplorer.connect(self.onRevealPresetInExplorer)
         # FE-8381 : Removed variables from the PresetTreeWidget
         #controller.varsChanged.connect(self.treeWidget.setModelDirty)
         controller.dirty.connect(self.onDirty)
@@ -814,6 +815,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
             jsonVal = open(filePath, 'rb').read()
             binding = self.host.createBindingFromJSON(jsonVal)
+            binding.setMetadata("host_app", "Canvas.py", False);
             self.lastSavedBindingVersion = binding.getVersion()
             self.dfgWidget.replaceBinding(binding)
             self.scriptEditor.updateBinding(binding)
@@ -1097,6 +1099,7 @@ class CanvasWindow(QtGui.QMainWindow):
             #             create the new one before resetting the timeline options
 
             binding = self.host.createBindingToNewGraph()
+            binding.setMetadata("host_app", "Canvas.py", False);
             self.lastSavedBindingVersion = binding.getVersion()
 
             self.dfgWidget.replaceBinding(binding)
@@ -1424,6 +1427,7 @@ class CanvasWindow(QtGui.QMainWindow):
         if graph != self.currentGraph:
             graph = self.dfgWidget.getUIGraph()
             graph.nodeEditRequested.connect(self.onNodeEditRequested)
+            graph.nodeInspectRequested.connect(self.onNodeInspectRequested)
             self.currentGraph = graph
 
     def dragEnterEvent(self, event):
@@ -1473,3 +1477,22 @@ class CanvasWindow(QtGui.QMainWindow):
         
             self.loadGraph(fileInfo.filePath())
 
+    def onRevealPresetInExplorer(self, nodeName):
+        """Callback for when 'Reveal in explorer' is invoked.
+        """
+
+        # [FE-8400] ensure the explorer is visible before revealing the preset.
+        if not self.treeDock.isVisible() or self.treeDock.visibleRegion().isEmpty():
+          self.treeDock.setVisible(True);
+          self.treeDock.raise_();
+
+        self.treeWidget.onExpandToAndSelectItem(nodeName)
+
+    def onNodeInspectRequested(self, nodeName):
+        """Callback for when 'Inspect node' is invoked.
+        """
+
+        # [FE-8411] ensure the value editor is visible.
+        if not self.valueEditorDockWidget.isVisible() or self.valueEditorDockWidget.visibleRegion().isEmpty():
+          self.valueEditorDockWidget.setVisible(True);
+          self.valueEditorDockWidget.raise_();

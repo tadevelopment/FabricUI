@@ -3,6 +3,7 @@
 #include "QueryEdit.h"
 
 #include "ItemView.h"
+#include <FabricCore.h>
 
 #include <FTL/JSONValue.h>
 #include <qevent.h>

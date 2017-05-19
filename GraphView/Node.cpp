@@ -739,6 +739,13 @@ void Node::restorePreviousSelection()
 
 void Node::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
 {
+  // [FE-8415] backdrops may only respond to clicks in the header.
+  if (isBackDropNode())
+  {
+    QGraphicsWidget::contextMenuEvent(event);
+    return;
+  }
+
   QMenu * menu = graph()->getNodeContextMenu( this );
   if ( menu )
   {
@@ -755,7 +762,7 @@ bool Node::onMousePress( const QGraphicsSceneMouseEvent *event )
 
   storeCurrentSelection();
 
-  // backdrops may only respond to clicks in the header.
+  // [FE-6224] backdrops may only respond to clicks in the header.
   if (isBackDropNode())
   {
     if (!header()->rect().contains(mapFromScene(event->scenePos())))

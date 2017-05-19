@@ -27,6 +27,7 @@ namespace FabricUI
     class ProxyPort;
     class ConnectionTarget;
     class SidePanelItemGroup;
+    class TextContainer;
 
     class SidePanel : public QGraphicsWidget
     {
@@ -113,6 +114,7 @@ namespace FabricUI
       float m_itemGroupScroll;
 
       ProxyPort* m_proxyPort;
+      TextContainer * m_proxyPortDummy;
       std::vector<FixedPort*> m_fixedPorts;
       std::vector<Port*> m_ports;
 
