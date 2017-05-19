@@ -530,10 +530,10 @@ QColor getQVariantRTValValue( const FabricCore::RTVal& val ) {
   if( val.hasType( "Color") )
   {
     QColor v;
-    v.setRedF(    getQVariantRTValValue<float>( val.getMemberRef( 0 ) ) );
-    v.setBlueF(   getQVariantRTValValue<float>( val.getMemberRef( 1 ) ) );
-    v.setGreenF(  getQVariantRTValValue<float>( val.getMemberRef( 2 ) ) );
-    v.setAlphaF(  getQVariantRTValValue<float>( val.getMemberRef( 3 ) ) );
+    v.setRedF(   getQVariantRTValValue<float>( val.getMemberRef( 0 ) ) );
+    v.setGreenF( getQVariantRTValValue<float>( val.getMemberRef( 1 ) ) );
+    v.setBlueF(  getQVariantRTValValue<float>( val.getMemberRef( 2 ) ) );
+    v.setAlphaF( getQVariantRTValValue<float>( val.getMemberRef( 3 ) ) );
     return v;
   }
   else {
