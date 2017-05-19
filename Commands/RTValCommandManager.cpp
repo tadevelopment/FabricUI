@@ -10,13 +10,13 @@
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Util/FabricException.h>
 #include <FabricUI/Commands/CommandArgFlags.h>
-#include <FabricUI/PathResolvers/PathResolver.h>
+#include <FabricUI/PathValueResolvers/PathValueResolverRegistry.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
-using namespace PathResolvers;
+using namespace PathValueResolvers;
 
 RTValCommandManager::RTValCommandManager(
   Client client) 
@@ -133,9 +133,9 @@ void RTValCommandManager::preProcessCommandArgs(
           scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
       {
         RTVal pathValue = rtvalScriptCmd->getRTValArg(key);
-        if(PathResolver::GetPathResolver()->knownPath(pathValue))
+        if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
         {
-          PathResolver::GetPathResolver()->getValue(pathValue);
+          PathValueResolverRegistry::GetRegistry()->getValue(pathValue);
           rtvalScriptCmd->setRTValArg(key, pathValue);
         }
       }
@@ -179,8 +179,8 @@ void RTValCommandManager::postProcessCommandArgs(
           scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
       {
         RTVal pathValue = rtvalScriptCmd->getRTValArg(key);
-        if(PathResolver::GetPathResolver()->knownPath(pathValue))
-          PathResolver::GetPathResolver()->setValue(
+        if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
+          PathValueResolverRegistry::GetRegistry()->setValue(
             pathValue);
       }
     }

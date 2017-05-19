@@ -1,18 +1,18 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "SetPortDefaultValueCommand.h"
-#include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/KLCommandManager.h>
-#include <FabricUI/PathResolvers/PathResolver.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
+#include <FabricUI/PathValueResolvers/PathValueResolverRegistry.h>
  
 using namespace FabricUI;
 using namespace DFG;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
-using namespace PathResolvers;
+using namespace PathValueResolvers;
 
 SetPortDefaultValueCommand::SetPortDefaultValueCommand() 
   : BaseRTValScriptableCommand()
@@ -90,7 +90,8 @@ bool SetPortDefaultValueCommand::doIt()
 {
   try
   {
-    QString portType = PathResolver::GetPathResolver()->getType(getRTValArg("target"));
+    QString portType = PathValueResolverRegistry::GetRegistry()->getType(
+      getRTValArg("target"));
 
     if(canUndo() && getRTValArgType("previousValue.value") != portType)
       setRTValArg("previousValue", getRTValArg("target.value"));

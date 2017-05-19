@@ -1,7 +1,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include <iostream>
-#include "DFGPathResolver.h"
+#include "DFGPathValueResolver.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Util/FabricException.h>
 
@@ -9,30 +8,23 @@ using namespace FabricUI;
 using namespace DFG;
 using namespace Util;
 using namespace FabricCore;
-using namespace PathResolvers;
+using namespace PathValueResolvers;
  
-DFGPathResolver::DFGPathResolver(
-  Client client)
- : PathResolver()
- , m_client(client)
+DFGPathValueResolver::DFGPathValueResolver()
 {
 }
 
-DFGPathResolver::~DFGPathResolver()
+DFGPathValueResolver::~DFGPathValueResolver()
 {
 }
-
-void DFGPathResolver::setBindingID(
-  const QString &path,
-  int bindingID)
+ 
+void DFGPathValueResolver::setBinding(
+  DFGBinding binding)
 {
-  m_pathIDMap[path] = bindingID;
-
-  m_binding = (m_client.getContext().getHost().getBindingForID(
-    (unsigned)bindingID));
+  m_binding = binding;
 }
 
-bool DFGPathResolver::knownPath(
+bool DFGPathValueResolver::knownPath(
   RTVal pathValue)
 {
   bool hasPort = false;
@@ -59,7 +51,7 @@ bool DFGPathResolver::knownPath(
   catch(Exception &e)
   {
     FabricException::Throw(
-      "DFGPathResolver::knownPath",
+      "DFGPathValueResolver::knownPath",
       "",
       e.getDesc_cstr());
   }
@@ -67,7 +59,7 @@ bool DFGPathResolver::knownPath(
   return hasPort;
 }
 
-QString DFGPathResolver::getType(
+QString DFGPathValueResolver::getType(
   RTVal pathValue)
 {
   QString portType;
@@ -94,7 +86,7 @@ QString DFGPathResolver::getType(
   catch(Exception &e)
   {
     FabricException::Throw(
-      "DFGPathResolver::getType",
+      "DFGPathValueResolver::getType",
       "",
       e.getDesc_cstr());
   }
@@ -102,7 +94,7 @@ QString DFGPathResolver::getType(
   return portType;
 }
 
-void DFGPathResolver::getValue(
+void DFGPathValueResolver::getValue(
   RTVal pathValue)
 {
   try 
@@ -120,21 +112,20 @@ void DFGPathResolver::getValue(
 
     pathValue.setMember(
       "value", 
-      value
-      );
+      value);
   }
 
   catch(Exception &e)
   {
     FabricException::Throw(
-      "DFGPathResolver::getValue",
+      "DFGPathValueResolver::getValue",
       "",
       e.getDesc_cstr()
       );
   }
 }
 
-void DFGPathResolver::setValue(
+void DFGPathValueResolver::setValue(
   RTVal pathValue)
 {
   try
@@ -160,7 +151,7 @@ void DFGPathResolver::setValue(
   catch(Exception &e)
   {
     FabricException::Throw(
-      "DFGPathResolver::setValue",
+      "DFGPathValueResolver::setValue",
       "",
       e.getDesc_cstr());
   }

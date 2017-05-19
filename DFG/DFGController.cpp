@@ -35,7 +35,8 @@
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
 
-#include <FabricUI/DFG/PathResolvers/DFGPathResolver.h>
+#include <FabricUI/DFG/PathValueResolvers/DFGPathValueResolver.h>
+#include <FabricUI/PathValueResolvers/PathValueResolverRegistry.h>
 #include <FabricUI/DFG/Commands/DFGCommandRegistrationCallback.h>
 
 using namespace FabricServices;
@@ -128,13 +129,22 @@ void DFGController::setBindingExec(
   try
   { 
     DFGCommandRegistrationCallback::RegisterCommands();
- 
-    DFGPathResolver *resolver = new DFGPathResolver(m_client);
-
-    resolver->setBindingID(
-      ".",
-      m_binding.getBindingID()
+      
+    DFGPathValueResolver *resolver = dynamic_cast<DFGPathValueResolver*>(
+      PathValueResolvers::PathValueResolverRegistry::GetRegistry()->getResolver(
+        "DFGPathValueResolver ")
       );
+
+    if(resolver == 0)
+    {
+      resolver = new DFGPathValueResolver();
+      PathValueResolvers::PathValueResolverRegistry::GetRegistry()->registerResolver(
+        "DFGPathValueResolver ",
+        resolver
+        );
+    }
+
+    resolver->setBinding(m_binding);
   }
   catch(std::string &e) 
   {

@@ -6,56 +6,49 @@
 #define __UI_DFG_PATH_RESOLVER__
 
 #include <QMap>
-#include <FabricUI/PathResolvers/PathResolver.h>
+#include <FabricUI/PathValueResolvers/PathValueResolver.h>
 
 namespace FabricUI {
 namespace DFG {
 
-class DFGPathResolver : public PathResolvers::PathResolver
+class DFGPathValueResolver : public PathValueResolvers::PathValueResolver
 {
   /**
-    DFGPathResolver  
+    DFGPathValueResolver  
   */  
  
   public:
-    DFGPathResolver(
-      FabricCore::Client client
+    DFGPathValueResolver();
+
+    virtual ~DFGPathValueResolver();
+   
+    void setBinding(
+      FabricCore::DFGBinding binding
       );
 
-    virtual ~DFGPathResolver();
- 
-    void setBindingID(
-      const QString &path,
-      int bindingID
-      );
-  
-    /// Implementation of PathResolver.
+    /// Implementation of PathValueResolver.
     virtual bool knownPath(
       FabricCore::RTVal pathValue
       );
 
-    /// Implementation of PathResolver.
+    /// Implementation of PathValueResolver.
     virtual QString getType(
       FabricCore::RTVal pathValue
       );
 
-    /// Implementation of PathResolver.
+    /// Implementation of PathValueResolver.
     virtual void getValue(
       FabricCore::RTVal pathValue
       );
 
-    /// Implementation of PathResolver.
+    /// Implementation of PathValueResolver.
     virtual void setValue(
       FabricCore::RTVal pathValue
       );
 
   private:
-    /// 
-    FabricCore::Client m_client;
     ///
     FabricCore::DFGBinding m_binding;
-    ///
-    QMap<QString, int> m_pathIDMap;
 };
 
 } // namespace DFG

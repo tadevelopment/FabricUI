@@ -1,18 +1,18 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "SetPortsDefaultValuesCommand.h"
+#include <FabricUI/Util/FabricException.h>
 #include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/KLCommandManager.h>
-#include <FabricUI/Util/FabricException.h>
-#include <FabricUI/PathResolvers/PathResolver.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
+#include <FabricUI/PathValueResolvers/PathValueResolverRegistry.h>
 
 using namespace FabricUI;
 using namespace DFG;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
-using namespace PathResolvers;
+using namespace PathValueResolvers;
 
 SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand() 
   : BaseRTValScriptableCommand()
@@ -76,52 +76,52 @@ bool SetPortsDefaultValuesCommand::canUndo()
 
 bool SetPortsDefaultValuesCommand::doIt()
 {
-	try
-  {
-  	KLCommandManager *manager = dynamic_cast<KLCommandManager*>(
-    	CommandManager::GetCommandManager());
+	// try
+ //  {
+ //  	KLCommandManager *manager = dynamic_cast<KLCommandManager*>(
+ //    	CommandManager::GetCommandManager());
     
-    RTVal pathValues = getRTValArg("pathValues");
+ //    RTVal pathValues = getRTValArg("pathValues");
 
-    if(canUndo() && !isArgSet("previousValues"))
-    {
-    	RTVal previousValues = RTVal::ConstructVariableArray(
-    		manager->getClient(), "RTVal");
+ //    if(canUndo() && !isArgSet("previousValues"))
+ //    {
+ //    	RTVal previousValues = RTVal::ConstructVariableArray(
+ //    		manager->getClient(), "RTVal");
 
-    	previousValues.setArraySize(pathValues.getArraySize());
+ //    	previousValues.setArraySize(pathValues.getArraySize());
 
-    	for(unsigned int i=0; i<pathValues.getArraySize(); ++i)
-    	{
-    		RTVal pathValue = pathValues.getArrayElement(i);
-    		previousValues.setArrayElement(i, pathValue.maybeGetMember("value"));
-    	}
+ //    	for(unsigned int i=0; i<pathValues.getArraySize(); ++i)
+ //    	{
+ //    		RTVal pathValue = pathValues.getArrayElement(i);
+ //    		previousValues.setArrayElement(i, pathValue.maybeGetMember("value"));
+ //    	}
 
-      setRTValArg("previousValues", previousValues);
-    }
+ //      setRTValArg("previousValues", previousValues);
+ //    }
  
- 		// For the moment, assume that all the port share the same type.
-    QString portType = PathResolver::GetPathResolver()->getType(pathValues.getArrayElement(0));
-    RTVal newValues = getRTValArg("newValues", portType+"[]");
+ // 		// For the moment, assume that all the port share the same type.
+ //    QString portType = PathResolver::GetPathResolver()->getType(pathValues.getArrayElement(0));
+ //    RTVal newValues = getRTValArg("newValues", portType+"[]");
 
-  	for(unsigned int i=0; i<pathValues.getArraySize(); ++i)
-  	{
-  		RTVal pathValue = pathValues.getArrayElement(i);
-    	pathValue.setMember("value", newValues.getArrayElement(i));
-  		pathValues.setArrayElement(i, pathValue);
-  	}
+ //  	for(unsigned int i=0; i<pathValues.getArraySize(); ++i)
+ //  	{
+ //  		RTVal pathValue = pathValues.getArrayElement(i);
+ //    	pathValue.setMember("value", newValues.getArrayElement(i));
+ //  		pathValues.setArrayElement(i, pathValue);
+ //  	}
     	
-    setRTValArg("pathValues", pathValues);
+ //    setRTValArg("pathValues", pathValues);
 
-    return true;
-  }
+ //    return true;
+ //  }
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "SetPortsDefaultValuesCommand::doIt",
-      "",
-      e.what());
-  }
+ //  catch(FabricException &e) 
+ //  {
+ //    FabricException::Throw(
+ //      "SetPortsDefaultValuesCommand::doIt",
+ //      "",
+ //      e.what());
+ //  }
 
   return false;
 } 

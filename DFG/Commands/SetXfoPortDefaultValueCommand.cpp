@@ -2,10 +2,10 @@
 
 #include <FabricUI/Util/RTValUtil.h>
 #include "SetXfoPortDefaultValueCommand.h"
-#include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/KLCommandManager.h>
- #include <FabricUI/Commands/CommandArgHelpers.h>
+#include <FabricUI/Commands/CommandArgHelpers.h>
 
 using namespace FabricUI;
 using namespace DFG;

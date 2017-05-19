@@ -21,6 +21,7 @@ BaseSetRTValModelItemCommand::BaseSetRTValModelItemCommand()
   try
   {
     declareRTValArg("editorID","String");
+    
     declareRTValArg("optionsPath", "String");
     
     // Declares an optional argument of 
