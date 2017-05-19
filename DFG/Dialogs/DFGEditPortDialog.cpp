@@ -1,12 +1,12 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include <QLayout>
-#include <QDoubleValidator>
 #include <QTimer>
 #include <QMessageBox>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include "DFGEditPortDialog.h"
+#include <FabricUI/Util/StringUtils.h>
 
 using namespace FabricUI;
 using namespace FabricUI::DFG;
@@ -63,10 +63,10 @@ DFGEditPortDialog::DFGEditPortDialog(
   m_hardRangeMin->setEnabled(false);
   m_hardRangeMax->setEnabled(false);
   m_combo->setEnabled(false);
-  m_softRangeMin->setValidator(new QDoubleValidator(m_softRangeMin));
-  m_softRangeMax->setValidator(new QDoubleValidator(m_softRangeMax));
-  m_hardRangeMin->setValidator(new QDoubleValidator(m_hardRangeMin));
-  m_hardRangeMax->setValidator(new QDoubleValidator(m_hardRangeMax));
+  m_softRangeMin->setValidator(Util::newDoubleValidator(m_softRangeMin));
+  m_softRangeMax->setValidator(Util::newDoubleValidator(m_softRangeMax));
+  m_hardRangeMin->setValidator(Util::newDoubleValidator(m_hardRangeMin));
+  m_hardRangeMax->setValidator(Util::newDoubleValidator(m_hardRangeMax));
 
   if(m_portTypeCombo)
     addInput(m_portTypeCombo, "Type", "Required");
@@ -233,7 +233,7 @@ void DFGEditPortDialog::setHasSoftRange(bool value)
 
 float DFGEditPortDialog::softRangeMin() const
 {
-  return m_softRangeMin->text().toFloat();
+  return (float)Util::tolerantStringToDouble(m_softRangeMin->text());
 }
 
 void DFGEditPortDialog::setSoftRangeMin(float value)
@@ -243,7 +243,7 @@ void DFGEditPortDialog::setSoftRangeMin(float value)
 
 float DFGEditPortDialog::softRangeMax() const
 {
-  return m_softRangeMax->text().toFloat();
+  return (float)Util::tolerantStringToDouble(m_softRangeMax->text());
 }
 
 void DFGEditPortDialog::setSoftRangeMax(float value)
@@ -275,7 +275,7 @@ void DFGEditPortDialog::setHasHardRange(bool value)
 
 float DFGEditPortDialog::hardRangeMin() const
 {
-  return m_hardRangeMin->text().toFloat();
+  return (float)Util::tolerantStringToDouble(m_hardRangeMin->text());
 }
 
 void DFGEditPortDialog::setHardRangeMin(float value)
@@ -285,7 +285,7 @@ void DFGEditPortDialog::setHardRangeMin(float value)
 
 float DFGEditPortDialog::hardRangeMax() const
 {
-  return m_hardRangeMax->text().toFloat();
+  return (float)Util::tolerantStringToDouble(m_hardRangeMax->text());
 }
 
 void DFGEditPortDialog::setHardRangeMax(float value)
