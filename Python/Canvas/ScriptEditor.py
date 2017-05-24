@@ -556,10 +556,10 @@ class ScriptEditor(QtGui.QWidget):
             self.log.appendCommand(code + "\n")
         oldEchoStackIndexChanges = self._echoStackIndexChanges
         self._echoStackIndexChanges = False
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
-        sys.stdout = self.stdout
-        sys.stderr = self.stderr
+        #old_stdout = sys.stdout
+        #old_stderr = sys.stderr
+        #sys.stdout = self.stdout
+        #sys.stderr = self.stderr
         try:
             result = eval(code, self.eval_globals)
             if self.echoCommandsAction.isChecked() and result is not None:
