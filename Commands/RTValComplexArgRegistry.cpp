@@ -81,7 +81,7 @@ RTVal RTValComplexArgRegistry::getRTValComplexArgValue(
   RTValComplexArg *registeredArg = getRTValComplexArg(flags);
   return registeredArg != 0
     ? registeredArg->getValue(key, pathValue)
-    : "";
+    : RTVal();
 }
 
 bool RTValComplexArgRegistry::isRTValComplexArgTypeOf(

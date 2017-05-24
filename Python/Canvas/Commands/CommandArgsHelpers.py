@@ -68,10 +68,8 @@ class CommandArgsHelpers:
                                     if "<" in arg:
                                         arg = arg.replace("<", "")
                                         arg = arg.replace(">", "")
-                                        rtVal = client.RT.types.PathValue(
-                                            client.RT.types.String(arg))
-
-                                        arg = rtVal.getJSONStr()   
+                                        rtVal = client.RT.types.PathValue(client.RT.types.String(arg))
+                                        arg = Util.RTValUtil.forceRTValToJSON(rtVal)   
 
                                     else:
                                          # Unknown type, it's in JSON already
@@ -79,16 +77,14 @@ class CommandArgsHelpers:
 
                                             rtVal = client.RT.types.PathValue( 
                                                 "",
-                                                client.RT.types.RTVal(
-                                                    Util.RTValUtil.forceJSONToRTVal(
-                                                        client,
-                                                        arg,
-                                                        cmd.getRTValArgType(key+".value")
-                                                        )
+                                                Util.RTValUtil.forceJSONToKLRTVal(
+                                                    client,
+                                                    arg,
+                                                    cmd.getRTValArgType(key+".value")
                                                     )
                                                 )
          
-                                            arg = rtVal.getJSONStr()   
+                                            arg = Util.RTValUtil.forceRTValToJSON(rtVal)   
 
 
                             # If the input arg is a string and the cmd arg is not, 
@@ -113,7 +109,7 @@ class CommandArgsHelpers:
                                 
                                     # Construct the python RTVal and sets its arg.
                                     rtVal = pyRTValType(arg)   
-                                    arg = rtVal.getJSONStr()   
+                                    arg = Util.RTValUtil.forceRTValToJSON(rtVal) 
         
                 # CppCommands.BaseScriptableCommand, all in strings
                 else:
@@ -253,15 +249,14 @@ class CommandArgsHelpers:
                                 rtVal = cmd.getRTValArg(key)                           
 
                             pythonVal = rtVal.getSimpleType()
-                            rtValType = rtVal.type('String').getSimpleType()
-                            pyRTValType = getattr(client.RT.types, rtValType)
-                            res = pyRTValType(rtVal)
-
+                           
                             # Can cast the RTVal in simple JSON type
                             if pythonVal is not None:
+                                
+                                rtValType = Util.RTValUtil.getRTValType(rtVal)
 
                                 if rtValType == 'String':
-                                    str_ = str(res.getSimpleType())
+                                    str_ = rtVal.getSimpleType()
                                     if isPathValue:
                                         str_ = "<" + str_ + ">" 
                                     desc += "\"" + str_ + "\"" 
@@ -271,7 +266,9 @@ class CommandArgsHelpers:
 
                             # JSON
                             else:
-                                desc += CommandArgsHelpers.__EncodeJSON(str(res.getJSONStr()))
+                                desc += CommandArgsHelpers.__EncodeJSON(
+                                    str(Util.RTValUtil.forceRTValToJSON(rtVal))
+                                    )
 
                         # ScriptableCommand, arguments are strings.
                         else:
