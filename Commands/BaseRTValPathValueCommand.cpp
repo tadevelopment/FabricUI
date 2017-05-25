@@ -5,14 +5,13 @@
 #include "CommandArgHelpers.h"
 #include "BaseRTValPathValueCommand.h"
 #include <FabricUI/Util/FabricException.h>
-#include <FabricUI/PathValueResolvers/PathValueResolverRegistry.h>
+#include <FabricUI/Commands/PathValueResolverRegistry.h>
  
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
-using namespace PathValueResolvers;
-
+ 
 BaseRTValPathValueCommand::BaseRTValPathValueCommand() 
   : BaseRTValScriptableCommand()
 {

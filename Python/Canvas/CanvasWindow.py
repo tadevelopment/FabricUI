@@ -690,11 +690,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
         try:
             FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
-            
-            dic = { "editorID":"Rendering Options", "editorTitle":"Rendering Options" }
+            FabricUI.DFG.DFGCommandRegistration.RegisterCommands(self.dfgWidget.getDFGController())
 
-            cmd = GetCmdManager().createCmd('openKLOptionsTargetEditor', dic )
-     
+            cmd = GetCmdManager().createCmd('openKLOptionsTargetEditor', { "editorID":"Rendering Options", "editorTitle":"Rendering Options" } )
             self.viewport.initComplete.connect(cmd.getOptionsEditor().resetModel)
             cmd.getOptionsEditor().updated.connect(self.viewport.redraw)
             cmd.getOptionsEditorDock().hide()

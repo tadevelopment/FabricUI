@@ -2,27 +2,27 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_DFG_PATH_VALUE_RESOLVER__
-#define __UI_DFG_PATH_VALUE_RESOLVER__
+#ifndef __UI_OPTIONS_PATH_VALUE_RESOLVER__
+#define __UI_OPTIONS_PATH_VALUE_RESOLVER__
 
-#include <FabricUI/PathValueResolvers/PathValueResolver.h>
+#include <FabricUI/Commands/PathValueResolver.h>
 
 namespace FabricUI {
-namespace DFG {
+namespace OptionsEditor {
 
-class DFGPathValueResolver : public PathValueResolvers::PathValueResolver
+class OptionsPathValueResolver : public Commands::PathValueResolver
 {
   /**
-    DFGPathValueResolver  
+    OptionsPathValueResolver  
   */  
  
   public:
-    DFGPathValueResolver();
+    OptionsPathValueResolver();
 
-    virtual ~DFGPathValueResolver();
-   
-    void setBinding(
-      FabricCore::DFGBinding binding
+    virtual ~OptionsPathValueResolver();
+    
+    virtual void registrationCallback(
+      void *userData
       );
 
     /// Implementation of PathValueResolver.
@@ -44,13 +44,9 @@ class DFGPathValueResolver : public PathValueResolvers::PathValueResolver
     virtual void setValue(
       FabricCore::RTVal pathValue
       );
-
-  private:
-    ///
-    FabricCore::DFGBinding m_binding;
 };
 
 } // namespace DFG
 } // namespace FabricUI
 
-#endif // __UI_DFG_PATH_VALUE_RESOLVER__
+#endif // __UI_OPTIONS_PATH_VALUE_RESOLVER__

@@ -7,8 +7,8 @@
 using namespace FabricUI;
 using namespace DFG;
 using namespace Util;
+using namespace Commands;
 using namespace FabricCore;
-using namespace PathValueResolvers;
  
 DFGPathValueResolver::DFGPathValueResolver()
 {
@@ -18,10 +18,10 @@ DFGPathValueResolver::~DFGPathValueResolver()
 {
 }
  
-void DFGPathValueResolver::setBinding(
-  DFGBinding binding)
+void DFGPathValueResolver::registrationCallback(
+  void *userData)
 {
-  m_binding = binding;
+  m_controller = (DFGController*)(userData);
 }
 
 bool DFGPathValueResolver::knownPath(
@@ -42,7 +42,7 @@ bool DFGPathValueResolver::knownPath(
     if(index == -1)
       return false;
 
-    DFGExec exec = m_binding.getExec().getSubExec(
+    DFGExec exec = m_controller->getBinding().getExec().getSubExec(
       path.midRef(0, index).toUtf8().constData()
       );
 
@@ -77,7 +77,7 @@ QString DFGPathValueResolver::getType(
     
     int index = path.lastIndexOf(".");
  
-    DFGExec exec = m_binding.getExec().getSubExec(
+    DFGExec exec = m_controller->getBinding().getExec().getSubExec(
       path.midRef(0, index).toUtf8().constData()
       );
 
@@ -108,7 +108,7 @@ void DFGPathValueResolver::getValue(
     QString path = pathValue.maybeGetMember(
       "path").getStringCString();
 
-    RTVal value = m_binding.getExec().getPortDefaultValue( 
+    RTVal value = m_controller->getBinding().getExec().getPortDefaultValue( 
       path.toUtf8().constData(), 
       getType(pathValue).toUtf8().constData()
       );
@@ -145,7 +145,7 @@ void DFGPathValueResolver::setValue(
     value = RTValUtil::forceToRTVal(
       value);
 
-    m_binding.getExec().setPortDefaultValue( 
+    m_controller->getBinding().getExec().setPortDefaultValue( 
       path.toUtf8().constData(), 
       value, 
       false);

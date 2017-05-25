@@ -6,8 +6,7 @@
 #define __UI_RTVAL_OPTIONS_EDITOR__
 
 #include "BaseRTValOptionsEditor.h"
-#include "./PathValueResolvers/OptionsPathValueResolver.h"
-
+ 
 namespace FabricUI {
 namespace OptionsEditor {
 

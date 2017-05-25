@@ -5,15 +5,14 @@
 #include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
-#include <FabricUI/PathValueResolvers/PathValueResolverRegistry.h>
+#include <FabricUI/Commands/PathValueResolverRegistry.h>
 
 using namespace FabricUI;
 using namespace DFG;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
-using namespace PathValueResolvers;
-
+ 
 SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand() 
   : BaseRTValScriptableCommand()
 {

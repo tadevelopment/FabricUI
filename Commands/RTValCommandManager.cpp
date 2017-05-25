@@ -10,14 +10,13 @@
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Util/FabricException.h>
 #include <FabricUI/Commands/CommandArgFlags.h>
-#include <FabricUI/PathValueResolvers/PathValueResolverRegistry.h>
+#include <FabricUI/Commands/PathValueResolverRegistry.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
-using namespace PathValueResolvers;
-
+ 
 RTValCommandManager::RTValCommandManager(
   Client client) 
   : CommandManager()

@@ -37,9 +37,6 @@
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
 
-#include <FabricUI/DFG/PathValueResolvers/DFGPathValueResolver.h>
-#include <FabricUI/PathValueResolvers/PathValueResolverRegistry.h>
-#include <FabricUI/DFG/Commands/DFGCommandRegistrationCallback.h>
 #include <FabricServices/Persistence/RTValToJSONEncoder.hpp>
 #include <FabricUI/DFG/DFGMetaDataHelpers.h>
 #include <FabricUI/DFG/Dialogs/DFGEditPortDialog.h>
@@ -131,31 +128,6 @@ void DFGController::setBindingExec(
     m_bindingNotifier.clear();
 
   m_binding = binding;
-
-  try
-  { 
-    DFGCommandRegistrationCallback::RegisterCommands();
-      
-    DFGPathValueResolver *resolver = dynamic_cast<DFGPathValueResolver*>(
-      PathValueResolvers::PathValueResolverRegistry::GetRegistry()->getResolver(
-        "DFGPathValueResolver ")
-      );
-
-    if(resolver == 0)
-    {
-      resolver = new DFGPathValueResolver();
-      PathValueResolvers::PathValueResolverRegistry::GetRegistry()->registerResolver(
-        "DFGPathValueResolver ",
-        resolver
-        );
-    }
-
-    resolver->setBinding(m_binding);
-  }
-  catch(std::string &e) 
-  {
-    printf("DFGController::setBindingExec, error: %s", e.c_str());
-  }
   
   if ( m_binding.isValid() )
   {

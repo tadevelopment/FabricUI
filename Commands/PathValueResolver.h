@@ -9,7 +9,7 @@
 #include <FabricCore.h>
  
 namespace FabricUI {
-namespace PathValueResolvers {
+namespace Commands {
 
 class PathValueResolver
 {
@@ -19,7 +19,11 @@ class PathValueResolver
  
   public:
     virtual ~PathValueResolver() {}
- 
+
+    virtual void registrationCallback(
+      void *userData
+      ) = 0;
+
     virtual bool knownPath(
       FabricCore::RTVal pathValue
       ) = 0;
@@ -37,7 +41,7 @@ class PathValueResolver
       ) = 0;
 };
 
-} // namespace PathValueResolvers
+} // namespace Commands
 } // namespace FabricUI
 
 #endif // __UI_PATH_VALUE_RESOLVER__

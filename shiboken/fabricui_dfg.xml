@@ -56,7 +56,7 @@
       <object-type name="DFGVEEditorOwner" />
       <object-type name="DFGWidget" />
       <object-type name="PresetTreeWidget" />
-      <object-type name="DFGCommandRegistrationCallback" />
+      <object-type name="DFGCommandRegistration" />
     </namespace-type>
   </namespace-type>
 </typesystem>

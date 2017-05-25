@@ -10,13 +10,17 @@ using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
 using namespace OptionsEditor;
-using namespace PathValueResolvers;
  
 OptionsPathValueResolver::OptionsPathValueResolver()
 {
 }
 
 OptionsPathValueResolver::~OptionsPathValueResolver()
+{
+}
+
+void OptionsPathValueResolver::registrationCallback(
+  void *userData) 
 {
 }
 
