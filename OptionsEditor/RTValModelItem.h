@@ -5,24 +5,20 @@
 #ifndef __UI_RTVAL_MODEL_ITEM__
 #define __UI_RTVAL_MODEL_ITEM__
 
-#include "RTValItem.h"
-#include "BaseSimpleModelItem.h"
+#include "BaseRTValOptionsEditor.h"
+#include "BaseRTValModelItem.h"
 
 namespace FabricUI {
 namespace OptionsEditor {
 
-class RTValModelItem 
-  : public BaseSimpleModelItem
-  , public FabricUI::OptionsEditor::RTValItem
+class RTValModelItem : public BaseRTValModelItem 
 {
   /**
-    RTValModelItem specializes BaseSimpleModelItem 
+    RTValModelItem specializes BaseRTValModelItem 
     for RTVal of basic type (leaf).
   */    
   Q_OBJECT
   
-  Q_INTERFACES(FabricUI::OptionsEditor::RTValItem)
-
   public:
     /// Constructs a RTValModelItem.
     /// \param name Name of the item.
@@ -33,8 +29,8 @@ class RTValModelItem
     RTValModelItem(
       const std::string &name,
       const std::string &path,
-      BaseOptionsEditor *editor,
-      void *options,
+      BaseRTValOptionsEditor *editor,
+      FabricCore::RTVal options,
       QSettings *settings=0
       );
 
@@ -53,14 +49,19 @@ class RTValModelItem
     /// Implementation of ValueEditor::BaseModelItem
     virtual void resetToDefault();
 
-    /// Implementation of RTValItem.
+    /// Implementation of BaseRTValModelItem.
     virtual FabricCore::RTVal getRTValOptions();
 
-    /// Implementation of RTValItem.
+    /// Implementation of BaseRTValModelItem.
     virtual void setRTValOptions(
       FabricCore::RTVal options
       );
 
+  signals:
+    /// Emitted when the value of one option has changed.
+    void updated(
+      );
+    
   protected:
     /// Current value
     FabricCore::RTVal m_options; 
@@ -68,10 +69,6 @@ class RTValModelItem
     FabricCore::RTVal m_originalOptions; 
     /// Pointor to the settings.
     QSettings *m_settings;
-
-  private:  
-    /// \internal
-    FabricCore::Client m_client;
 };
 
 } // namespace OptionsEditor 

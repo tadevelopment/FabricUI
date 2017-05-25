@@ -5,23 +5,19 @@
 #ifndef __UI_RTVAL_ARRAY_MODEL_ITEM__
 #define __UI_RTVAL_ARRAY_MODEL_ITEM__
 
-#include "RTValItem.h"
-#include "BaseListModelItem.h"
+#include "BaseRTValOptionsEditor.h"
+#include "BaseRTValModelItem.h"
 
 namespace FabricUI {
 namespace OptionsEditor {
 
-class RTValArrayModelItem 
-  : public BaseListModelItem
-  , public FabricUI::OptionsEditor::RTValItem
+class RTValArrayModelItem : public BaseRTValModelItem 
 {
   /**
-    RTValArrayModelItem specializes BaseListModelItem 
+    RTValArrayModelItem specializes BaseRTValModelItem 
     for RTVals arrays.
   */  
   Q_OBJECT
-
-  Q_INTERFACES(FabricUI::OptionsEditor::RTValItem)
   
   public:
     /// Constructs a RTValArrayModelItem.
@@ -33,17 +29,35 @@ class RTValArrayModelItem
     RTValArrayModelItem(
       const std::string &name,
       const std::string &path,
-      BaseOptionsEditor *editor,
-      void *options,
+      BaseRTValOptionsEditor *editor,
+      FabricCore::RTVal options,
       QSettings *settings=0
       );
 
     virtual ~RTValArrayModelItem();
 
-    /// Implementation of BaseOptionsArrayModel.
+    /// Implementation of ValueEditor::BaseModelItem
+    virtual int getNumChildren();
+
+    /// Implementation of ValueEditor::BaseModelItem
+    virtual ValueEditor::BaseModelItem* getChild(
+      FTL::StrRef childName, 
+      bool doCreate
+      );
+
+    /// Implementation of ValueEditor::BaseModelItem
+    virtual ValueEditor::BaseModelItem* getChild(
+      int index, 
+      bool doCreate
+      );
+    
+    /// Implementation of ValueEditor::BaseModelItem
+    virtual void resetToDefault();
+
+    /// Implementation of BaseRTValModelItem.
     virtual FabricCore::RTVal getRTValOptions();
 
-    /// Implementation of RTValItem.
+    /// Implementation of BaseRTValModelItem.
     /// Throws an error if 'options' isn't a RTVal array.  
     virtual void setRTValOptions(
       FabricCore::RTVal options
@@ -51,7 +65,11 @@ class RTValArrayModelItem
 
   private:  
     /// \internal
-    FabricCore::Client m_client;
+    FabricCore::Context m_context;
+    /// Lists of the keys.
+    std::vector<std::string> m_keys;
+    /// Dictionary [key, value]
+    std::map<std::string, BaseRTValModelItem*> m_children;
 };
 
 } // namespace OptionsEditor 

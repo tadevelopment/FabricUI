@@ -6,15 +6,16 @@
 #define __UI_BASE_MODEL_ITEM__
 
 #include <string>
+#include <FabricCore.h>
 #include <FabricUI/ValueEditor/BaseModelItem.h>
 
 namespace FabricUI {
 namespace OptionsEditor {
 
-class BaseOptionsModelItem : public ValueEditor::BaseModelItem 
+class BaseRTValModelItem : public ValueEditor::BaseModelItem 
 {
   /**
-    BaseOptionsModelItem is the base class for any options item.
+    BaseRTValModelItem is the base class for any options item.
   */  
   Q_OBJECT
   
@@ -22,12 +23,12 @@ class BaseOptionsModelItem : public ValueEditor::BaseModelItem
     /// Constructs a model item.
     /// \param name Name of the item.
     /// \param path Path of the item.
-    BaseOptionsModelItem(
+    BaseRTValModelItem(
       const std::string &name,
       const std::string &path
       );
 
-    virtual ~BaseOptionsModelItem();
+    virtual ~BaseRTValModelItem();
  
     /// Implementation of BaseModelItem
     virtual bool hasDefault();
@@ -37,6 +38,14 @@ class BaseOptionsModelItem : public ValueEditor::BaseModelItem
 
     /// Get the path of the item (./.../item/child/...)
     FTL::CStrRef getPath();
+
+    /// Sets the dictionary of options.
+    virtual void setRTValOptions(
+      FabricCore::RTVal options
+      ) = 0;
+
+    /// Gets the dictionary of options.
+    virtual FabricCore::RTVal getRTValOptions() = 0;
 
   protected:
     /// Name of the item.

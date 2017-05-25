@@ -4,11 +4,14 @@
 
 #include "OptionsEditorHelpers.h"
 #include "KLOptionsTargetEditor.h"
+#include <FabricUI/Util/RTValUtil.h>
 #include "KLOptionsTargetModelItem.h"
+#include <FabricUI/Util/FabricException.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 #include <FabricUI/Commands/RTValCommandManager.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace ValueEditor;
@@ -17,8 +20,8 @@ using namespace OptionsEditor;
 KLOptionsTargetModelItem::KLOptionsTargetModelItem(
   const std::string &name,
   const std::string &path,
-  BaseOptionsEditor* editor,
-  void *options,
+  BaseRTValOptionsEditor* editor,
+  RTVal options,
   QSettings *settings) 
   : RTValModelItem(
     name, 
@@ -27,11 +30,6 @@ KLOptionsTargetModelItem::KLOptionsTargetModelItem(
     options, 
     settings)
 {   
-  KLOptionsTargetEditor* klEditor = dynamic_cast<KLOptionsTargetEditor*>(
-    editor);
-  
-  m_editorID = klEditor->geteditorID();
-  m_client = klEditor->getClient();
 }
 
 KLOptionsTargetModelItem::~KLOptionsTargetModelItem()
@@ -43,19 +41,21 @@ void KLOptionsTargetModelItem::setValue(
   bool commit,
   QVariant valueAtInteractionBegin) 
 {
-  if(commit)
+  try
   {
-    try
+    if(commit)
     {
       QMap<QString, RTVal> args;
-
-      args["editorID"] = RTVal::ConstructString(
-        m_client, 
-        m_editorID.toUtf8().constData());
-
-      args["optionsPath"] = RTVal::ConstructString(
-        m_client, 
+ 
+      RTVal pathVal = RTVal::ConstructString(
+        m_options.getContext(), 
         m_path.c_str());
+    
+      args["target"] = RTVal::Construct(
+        m_options.getContext(), 
+        "PathValue",
+        1,
+        &pathVal);
 
       // might be invalid when changing a Float with the keyboard (as text), for example
       QVariant previousValue = valueAtInteractionBegin.isValid() 
@@ -64,12 +64,11 @@ void KLOptionsTargetModelItem::setValue(
 
       RTVal prevOptionsCopy = m_options.clone();
       RTVariant::toRTVal(previousValue, prevOptionsCopy);
-      args["previousValue"] = prevOptionsCopy;
+      args["previousValue.value"] = prevOptionsCopy;
 
       RTVal optionsCopy = m_options.clone();
       RTVariant::toRTVal(value, optionsCopy);
-
-      args["newValue"] = optionsCopy.clone();
+      args["newValue.value"] = optionsCopy.clone();
 
       RTValCommandManager *manager = dynamic_cast<RTValCommandManager*>(
         CommandManager::GetCommandManager());
@@ -79,32 +78,32 @@ void KLOptionsTargetModelItem::setValue(
         args);
     }
 
-    catch(Exception &e)
+    else
     {
-      printf(
-        "KLOptionsTargetModelItem::getRTValOptions: exception: %s\n", 
-        e.getDesc_cstr());
-    }
+      RTValModelItem::setValue(
+        value, 
+        commit, 
+        valueAtInteractionBegin);
 
-    catch (std::string &e) 
-    {
-      printf(
-        "KLOptionsTargetModelItem::getRTValOptions: exception: %s\n", 
-        e.c_str());
+      SetKLOptionsTargetSingleOption(
+        QString(m_path.c_str()),
+        m_options);
     }
   }
-  else
-  {
-    RTValModelItem::setValue(
-      value, 
-      commit, 
-      valueAtInteractionBegin);
 
-    SetKLOptionsTargetSingleOption(
-      m_client,
-      m_editorID,
-      QString(m_path.c_str()),
-      m_options);
+  catch(FabricException &e)
+  {
+    FabricException::Throw(
+      "KLOptionsTargetModelItem::getRTValOptions",
+      "",
+      e.what());
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "KLOptionsTargetModelItem::getRTValOptions",
+      "",
+      e.getDesc_cstr());
   }
 }
-

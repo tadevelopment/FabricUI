@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "BaseOptionsModelItem.h"
+#include "BaseRTValModelItem.h"
 
 using namespace FabricUI;
 using namespace ValueEditor;
@@ -10,7 +10,7 @@ using namespace OptionsEditor;
  
 const char path_Separator = '/';
 
-BaseOptionsModelItem::BaseOptionsModelItem(
+BaseRTValModelItem::BaseRTValModelItem(
   const std::string &name,
   const std::string &path) 
   : BaseModelItem()
@@ -23,21 +23,21 @@ BaseOptionsModelItem::BaseOptionsModelItem(
 		: name;
 }
 
-BaseOptionsModelItem::~BaseOptionsModelItem()
+BaseRTValModelItem::~BaseRTValModelItem()
 {
 }
 
-bool BaseOptionsModelItem::hasDefault() 
+bool BaseRTValModelItem::hasDefault() 
 { 
   return true; 
 }
 
-FTL::CStrRef BaseOptionsModelItem::getName() 
+FTL::CStrRef BaseRTValModelItem::getName() 
 { 
   return m_name; 
 }
 
-FTL::CStrRef BaseOptionsModelItem::getPath() 
+FTL::CStrRef BaseRTValModelItem::getPath() 
 { 
   return m_path; 
 }

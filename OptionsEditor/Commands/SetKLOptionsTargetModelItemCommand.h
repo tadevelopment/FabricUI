@@ -5,12 +5,12 @@
 #ifndef __UI_SET_KL_OPTIONS_TARGET_MODEL_ITEM_COMMAND__
 #define __UI_SET_KL_OPTIONS_TARGET_MODEL_ITEM_COMMAND__
 
-#include "BaseSetRTValModelItemCommand.h"
+#include <FabricUI/Commands/BaseRTValPathValueCommand.h>
 
 namespace FabricUI {
 namespace OptionsEditor {
 
-class SetKLOptionsTargetModelItemCommand : public BaseSetRTValModelItemCommand
+class SetKLOptionsTargetModelItemCommand : public Commands::BaseRTValPathValueCommand
 {
   /**
     SetKLOptionsTargetModelItemCommand sets the value of a single 
@@ -30,19 +30,6 @@ class SetKLOptionsTargetModelItemCommand : public BaseSetRTValModelItemCommand
  
     /// Implementation of Command.
     virtual QString getHelp();
-    
-  protected:
-    /// Implementation of BaseSetRTValModelItemCommand.
-    virtual void setSingleOption(
-      const QString &editorID,
-      const QString &optionsPath,
-      FabricCore::RTVal singleOption
-      );
-
-    /// Implementation of BaseSetRTValModelItemCommand.
-    virtual FabricCore::RTVal getOptions(
-      const QString &editorID
-      );
 };
 
 } // namespace OptionsEditor 

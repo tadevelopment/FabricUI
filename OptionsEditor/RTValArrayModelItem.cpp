@@ -4,57 +4,83 @@
  
 #include <QString>
 #include "RTValArrayModelItem.h"
-#include "BaseRTValOptionsEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
-using namespace OptionsEditor;
-using namespace FabricCore;
 using namespace Util;
+using namespace FabricCore;
+using namespace ValueEditor; 
+using namespace OptionsEditor;
 
 RTValArrayModelItem::RTValArrayModelItem(
   const std::string &name,
   const std::string &path,
-  BaseOptionsEditor *editor,
-  void *options,
+  BaseRTValOptionsEditor *editor,
+  RTVal options,
   QSettings *settings) 
-  : BaseListModelItem(name, path)
+  : BaseRTValModelItem(name, path)
 {
   try
   {
-    BaseRTValOptionsEditor* rtValEditor = dynamic_cast<BaseRTValOptionsEditor*>(
-      editor);
+    m_context = options.getContext();
 
-    m_client = rtValEditor->getClient();
-    
-    RTVal rtValOptions = *(RTVal*)options;
-
-    if(rtValOptions.isWrappedRTVal()) 
-      rtValOptions = rtValOptions.getUnwrappedRTVal(); 
-
-    for(unsigned i=0; i<rtValOptions.getArraySize(); i++) 
+    for(unsigned i=0; i<options.getArraySize(); i++) 
     {
-      RTVal childrenOptions = rtValOptions.getArrayElementRef(
+      RTVal childrenOptions = options.getArrayElementRef(
         i); 
 
-      constructModel(
-        name + "_" + std::string(QString::number(i).toUtf8().constData()),
+      std::string childName = name + "_" + std::string(QString::number(i).toUtf8().constData());
+      
+      BaseRTValModelItem* item = editor->constructModel(
+        childName,
+        m_path,
         editor,
-        (void*)&childrenOptions,
+        childrenOptions,
         settings);
+
+      m_children[childName] = item;
+      m_keys.push_back(childName); 
     }
   }
   
   catch(Exception &e)
   {
-    printf(
-      "RTValArrayModelItem::RTValArrayModelItem: exception: %s\n", 
+    FabricException::Throw(
+      "RTValArrayModelItem::RTValArrayModelItem",
+      "",
       e.getDesc_cstr());
   }
 }
  
 RTValArrayModelItem::~RTValArrayModelItem() 
 {
+}
+
+int RTValArrayModelItem::getNumChildren() 
+{ 
+  return m_children.size(); 
+}
+
+BaseModelItem* RTValArrayModelItem::getChild(
+  FTL::StrRef childName, 
+  bool doCreate) 
+{ 
+  return m_children[childName.data()]; 
+}
+
+BaseModelItem* RTValArrayModelItem::getChild(
+  int index, 
+  bool doCreate) 
+{ 
+  return m_children[m_keys[index]]; 
+}
+
+void RTValArrayModelItem::resetToDefault() 
+{
+  std::map<std::string, BaseRTValModelItem*>::iterator it;
+  for (it = m_children.begin(); it != m_children.end(); it++) 
+    it->second->resetToDefault();
 }
 
 RTVal RTValArrayModelItem::getRTValOptions()
@@ -64,7 +90,7 @@ RTVal RTValArrayModelItem::getRTValOptions()
   try
   {
     options = RTVal::ConstructVariableArray(
-      m_client,
+      m_context,
       "RTVal");
 
     options.setArraySize(
@@ -72,17 +98,14 @@ RTVal RTValArrayModelItem::getRTValOptions()
 
     unsigned count = 0;
     
-    std::map<std::string, BaseModelItem*>::iterator it;
+    std::map<std::string, BaseRTValModelItem*>::iterator it;
     for(it=m_children.begin(); it!=m_children.end(); it++) 
     {
-      BaseModelItem * child = (BaseModelItem *)it->second;
-      RTValItem *rtValChild = dynamic_cast<RTValItem*>(
-        child);
-
+      BaseRTValModelItem* child = (BaseRTValModelItem*)it->second;
+     
       options.setArrayElement(
         count,
-        Util::RTValUtil::rtValToKLRTVal(
-          rtValChild->getRTValOptions())
+        RTValUtil::forceToKLRTVal(child->getRTValOptions()) 
         );
 
       count++;
@@ -91,8 +114,9 @@ RTVal RTValArrayModelItem::getRTValOptions()
 
   catch(Exception &e)
   {
-    printf(
-      "RTValArrayModelItem::getRTValOptions: exception: %s\n", 
+    FabricException::Throw(
+      "RTValArrayModelItem::getRTValOptions",
+      "",
       e.getDesc_cstr());
   }
 
@@ -104,25 +128,23 @@ void RTValArrayModelItem::setRTValOptions(
 {  
   try
   { 
-    if(options.isWrappedRTVal()) 
-      options = options.getUnwrappedRTVal(); 
+    options = RTValUtil::forceToRTVal(options);
 
     if(!options.isArray())
-      throw("RTValArrayModelItem::setRTValOptions, options is not an array");
+      FabricException::Throw(
+        "RTValArrayModelItem::setRTValOptions",
+        "options is not an array");
 
     unsigned count = 0;
 
-    std::map<std::string, BaseModelItem*>::iterator it;
+    std::map<std::string, BaseRTValModelItem*>::iterator it;
     for(it=m_children.begin(); it!=m_children.end(); it++) 
     {
-      BaseModelItem * child = (BaseModelItem *)it->second;
-      
-      RTValItem *rtValChild = 
-        dynamic_cast<RTValItem*>(child);
-
+      BaseRTValModelItem* child = (BaseRTValModelItem*)it->second;
+ 
       RTVal childrenOptions = options.getArrayElementRef(count);
       
-      rtValChild->setRTValOptions(childrenOptions);
+      child->setRTValOptions(childrenOptions);
       
       count++;
     }
@@ -130,8 +152,9 @@ void RTValArrayModelItem::setRTValOptions(
 
   catch(Exception &e)
   {
-    printf(
-      "RTValArrayModelItem::setRTValOptions: exception: %s\n", 
+    FabricException::Throw(
+      "RTValArrayModelItem::setRTValOptions",
+      "",
       e.getDesc_cstr());
   }
 }

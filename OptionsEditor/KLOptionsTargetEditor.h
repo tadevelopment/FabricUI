@@ -6,7 +6,8 @@
 #define __UI_RTVAL_OPTIONS_EDITOR__
 
 #include "BaseRTValOptionsEditor.h"
-  
+#include "./PathValueResolvers/OptionsPathValueResolver.h"
+
 namespace FabricUI {
 namespace OptionsEditor {
 
@@ -27,8 +28,7 @@ class KLOptionsTargetEditor
     /// \param settings Pointor to the settings.
     KLOptionsTargetEditor(
       FabricCore::Client client,
-      const QString &editorID,
-      const QString &title = QString(),
+      const QString &title,
       QSettings *settings=0
       );
       
@@ -37,29 +37,29 @@ class KLOptionsTargetEditor
     /// Gets the KL registry id.
     QString geteditorID();
 
-    /// \implmentation of BaseOptionsEditor
-    virtual ValueEditor::BaseModelItem* constructModel(
+    /// \implmentation of BaseRTValOptionsEditor
+    virtual BaseRTValModelItem* constructModel(
       const std::string &name,
       const std::string &path,
-      BaseOptionsEditor *editor,
-      void *options,
+      BaseRTValOptionsEditor *editor,
+      FabricCore::RTVal options,
       QSettings* settings=0
       );
 
     public slots:  
-      /// \implmentation of BaseOptionsEditor
+      /// \implmentation of BaseRTValOptionsEditor
       virtual void resetModel(
-        void *options=0
+        FabricCore::RTVal options=FabricCore::RTVal()
         );
       
-      /// \implmentation of BaseOptionsEditor
+      /// \implmentation of BaseRTValOptionsEditor
       virtual void updateModel(
-        void *options=0
+        FabricCore::RTVal options=FabricCore::RTVal()
         );
 
     private:
-      /// ID the the KL OptionsTarget in the registry.
-      QString m_editorID;
+      // Reference to the fabric client.
+      FabricCore::Client m_client;
 };
 
 } // namespace OptionsEditor 

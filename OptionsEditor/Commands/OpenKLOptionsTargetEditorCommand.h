@@ -5,6 +5,8 @@
 #ifndef __UI_OPEN_KL_OPTIONS_TARGET_EDITOR_COMMAND__
 #define __UI_OPEN_KL_OPTIONS_TARGET_EDITOR_COMMAND__
 
+#include <QDockWidget>
+#include "../BaseRTValOptionsEditor.h"
 #include <FabricUI/Commands/BaseRTValScriptableCommand.h>
  
 namespace FabricUI {
@@ -39,6 +41,10 @@ class OpenKLOptionsTargetEditorCommand : public Commands::BaseRTValScriptableCom
 
     /// Implementation of Command.
     virtual QString getHistoryDesc();
+
+    BaseRTValOptionsEditor* getOptionsEditor();
+
+    QDockWidget* getOptionsEditorDock();
 
   private:
     bool m_canLog;

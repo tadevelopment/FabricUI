@@ -1,82 +1,73 @@
 //
-// Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
+// Copyright(c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "RTValModelItem.h"
-#include "RTValDictModelItem.h"
-#include "RTValArrayModelItem.h"
 #include "BaseRTValOptionsEditor.h"
-#include <FabricUI/ValueEditor/BaseModelItem.h>
-#include "./Commands/OptionEditorCommandRegistration.h"
-
+  
 using namespace FabricUI;
-using namespace Util;
 using namespace FabricCore;
 using namespace ValueEditor;
 using namespace OptionsEditor;
 
 BaseRTValOptionsEditor::BaseRTValOptionsEditor(
-  Client client,
   const QString &title,
-  void *options,
+  RTVal options,
   QSettings *settings)
-  : BaseOptionsEditor(title, options, settings)
-  , m_client(client)
-{
-  OptionEditorCommandRegistration::RegisterCommands();
-}
-
-BaseRTValOptionsEditor::~BaseRTValOptionsEditor() 
+  : VETreeWidget()
+  , m_title(title)
+  , m_settings(settings)
+  , m_model(0)
 {
 }
 
-Client BaseRTValOptionsEditor::getClient() 
+BaseRTValOptionsEditor::~BaseRTValOptionsEditor()
 {
-  return m_client;
+  if(m_model != 0) 
+  { 
+    delete m_model; 
+    m_model = 0;
+  }
 }
- 
-BaseModelItem* BaseRTValOptionsEditor::constructModel(
+
+BaseRTValModelItem* BaseRTValOptionsEditor::constructModel(
   const std::string &name,
   const std::string &path,
-  BaseOptionsEditor *editor,
-  void *options,
+  BaseRTValOptionsEditor *editor,
+  RTVal options,
   QSettings *settings) 
 {
-  try
-  {
-    RTVal rtValOptions = *(RTVal*)options;
+  throw(
+    "BaseRTValOptionsEditor::constructModel must be overridden");
+}
 
-    if(rtValOptions.isDict()) 
-      return new RTValDictModelItem(
-        name,
-        path,
-        editor,
-        (void*)&rtValOptions,
-        settings);
+void BaseRTValOptionsEditor::modelUpdated()
+{
+  emit updated();
+}
 
-    else if(rtValOptions.isArray())
-      return new RTValArrayModelItem(
-        name,
-        path,
-        editor,
-        (void*)&rtValOptions,
-        settings);
-
-    else
-      return new RTValModelItem(
-        name,
-        path,
-        editor,
-        (void*)&rtValOptions,
-        settings);
+void BaseRTValOptionsEditor::resetModel(
+  RTVal options) 
+{
+  if(m_model != 0) 
+  { 
+    delete m_model; 
+    m_model = 0;
   }
+   
+  m_model = constructModel(
+    m_title.toUtf8().constData(),
+    "",
+    this,
+    options, 
+    m_settings);
+ 
+  onSetModelItem(
+    m_model);
+}
 
-  catch(Exception &e)
-  {
-    printf(
-      "BaseRTValOptionsEditor::constructModel: exception: %s\n", 
-      e.getDesc_cstr());
-  }
-
-  return 0;
+void BaseRTValOptionsEditor::updateModel(
+  RTVal options) 
+{
+  throw(
+    "BaseRTValOptionsEditor::updateModel must be overridden");
 }

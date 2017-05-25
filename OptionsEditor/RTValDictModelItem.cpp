@@ -3,62 +3,87 @@
 //
  
 #include "RTValDictModelItem.h"
-#include "BaseRTValOptionsEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Util/FabricException.h>
 
 using namespace FabricUI;
-using namespace OptionsEditor;
-using namespace FabricCore;
 using namespace Util;
+using namespace FabricCore;
+using namespace ValueEditor; 
+using namespace OptionsEditor;
 
 RTValDictModelItem::RTValDictModelItem(
   const std::string &name,
   const std::string &path,
-  BaseOptionsEditor *editor,
-  void *options,
+  BaseRTValOptionsEditor *editor,
+  RTVal options,
   QSettings *settings) 
-  : BaseListModelItem(name, path)
+  : BaseRTValModelItem(name, path)
 {
   try
   {
-    BaseRTValOptionsEditor* rtValEditor = dynamic_cast<BaseRTValOptionsEditor*>(
-      editor);
+    m_context = options.getContext();
 
-    m_client = rtValEditor->getClient();
-
-    RTVal rtValOptions = *(RTVal*)options;
-
-    if(rtValOptions.isWrappedRTVal()) 
-      rtValOptions = rtValOptions.getUnwrappedRTVal(); 
-
-    RTVal keys = rtValOptions.getDictKeys();
-
+    RTVal keys = options.getDictKeys();
     for(unsigned i = 0; i < keys.getArraySize(); i++) 
     {
       RTVal key = keys.getArrayElementRef(
         i); 
 
-      RTVal childrenOptions = rtValOptions.getDictElement(
+      RTVal childrenOptions = options.getDictElement(
         key); 
 
-      constructModel(
-        key.getStringCString(),
+      std::string childName = key.getStringCString();
+
+      BaseRTValModelItem* item = editor->constructModel(
+        childName,
+        m_path,
         editor,
-        (void*)&childrenOptions,
+        childrenOptions,
         settings);
+
+      m_children[childName] = item;
+      m_keys.push_back(childName);
     }
   }
 
   catch(Exception &e)
   {
-    printf(
-      "RTValDictModelItem::RTValDictModelItem: exception: %s\n", 
+    FabricException::Throw(
+      "RTValDictModelItem::RTValDictModelItem",
+      "",
       e.getDesc_cstr());
   }
 }
  
 RTValDictModelItem::~RTValDictModelItem() 
 {
+}
+
+int RTValDictModelItem::getNumChildren() 
+{ 
+  return m_children.size(); 
+}
+
+BaseModelItem* RTValDictModelItem::getChild(
+  FTL::StrRef childName, 
+  bool doCreate) 
+{ 
+  return m_children[childName.data()]; 
+}
+
+BaseModelItem* RTValDictModelItem::getChild(
+  int index, 
+  bool doCreate) 
+{ 
+  return m_children[m_keys[index]]; 
+}
+
+void RTValDictModelItem::resetToDefault() 
+{
+  std::map<std::string, BaseRTValModelItem*>::iterator it;
+  for (it = m_children.begin(); it != m_children.end(); it++) 
+    it->second->resetToDefault();
 }
 
 RTVal RTValDictModelItem::getRTValOptions()
@@ -68,32 +93,31 @@ RTVal RTValDictModelItem::getRTValOptions()
   try
   {
     options = RTVal::ConstructDict(
-      m_client,
+      m_context,
       "String",
       "RTVal");
 
-    std::map<std::string, BaseModelItem*>::iterator it;
+    std::map<std::string, BaseRTValModelItem*>::iterator it;
     for(it = m_children.begin(); it != m_children.end(); it++) 
     {
       RTVal key = RTVal::ConstructString(
-        m_client,
+        m_context,
         it->first.data());
 
-      BaseModelItem *child = (BaseModelItem *)it->second;
-      RTValItem *rtValChild = dynamic_cast<RTValItem*>(child);
-
+      BaseRTValModelItem *child = (BaseRTValModelItem *)it->second;
+ 
       options.setDictElement(
         key,
-        Util::RTValUtil::rtValToKLRTVal(
-          rtValChild->getRTValOptions())
+        RTValUtil::forceToKLRTVal(child->getRTValOptions())
         );
     }
   }
 
   catch(Exception &e)
   {
-    printf(
-      "RTValDictModelItem::getRTValOptions: exception: %s\n", 
+    FabricException::Throw(
+      "RTValDictModelItem::getRTValOptions",
+      "",
       e.getDesc_cstr());
   }
   
@@ -105,32 +129,32 @@ void RTValDictModelItem::setRTValOptions(
 {
   try
   {
-    if(options.isWrappedRTVal()) 
-      options = options.getUnwrappedRTVal();
+    options = RTValUtil::forceToRTVal(options);
 
     if(!options.isDict())
       throw("RTValDictModelItem::setRTValOptions, options is not a dictionay");
 
-    std::map<std::string, BaseModelItem*>::iterator it;
+    std::map<std::string, BaseRTValModelItem*>::iterator it;
     for(it=m_children.begin(); it!=m_children.end(); it++) 
     {
       RTVal key = RTVal::ConstructString(
-        m_client,
+        m_context,
         it->first.data());
 
       RTVal childrenOptions = options.getDictElement(
         key); 
 
-      BaseModelItem *child = (BaseModelItem *)it->second;
-      RTValItem *rtValChild = dynamic_cast<RTValItem*>(child);
-      rtValChild->setRTValOptions(childrenOptions);
+      BaseRTValModelItem *child = (BaseRTValModelItem *)it->second;
+       
+      child->setRTValOptions(childrenOptions);
     }
   }
 
   catch(Exception &e)
   {
-    printf(
-      "RTValDictModelItem::setRTValOptions: exception: %s\n", 
+    FabricException::Throw(
+      "RTValDictModelItem::setRTValOptions",
+      "",
       e.getDesc_cstr());
   }
 }

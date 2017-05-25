@@ -28,8 +28,8 @@ class KLOptionsTargetModelItem : public RTValModelItem
     KLOptionsTargetModelItem(
       const std::string &name,
       const std::string &path,
-      BaseOptionsEditor *editor,
-      void *options,
+      BaseRTValOptionsEditor *editor,
+      FabricCore::RTVal options,
       QSettings *settings=0
       );
 
@@ -42,12 +42,6 @@ class KLOptionsTargetModelItem : public RTValModelItem
       bool commit = false,
       QVariant valueAtInteractionBegin = QVariant()
       );
-
-  private:
-    /// ID the the KL OptionsTarget in the registry.
-    QString m_editorID;
-    // Reference to the fabric client.
-    FabricCore::Client m_client;
 };
 
 } // namespace OptionsEditor 

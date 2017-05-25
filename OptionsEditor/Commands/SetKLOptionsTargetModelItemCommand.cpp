@@ -13,7 +13,7 @@ using namespace FabricCore;
 using namespace OptionsEditor;
 
 SetKLOptionsTargetModelItemCommand::SetKLOptionsTargetModelItemCommand() 
-  : BaseSetRTValModelItemCommand()
+  : BaseRTValPathValueCommand()
 {
 }
 
@@ -21,40 +21,13 @@ SetKLOptionsTargetModelItemCommand::~SetKLOptionsTargetModelItemCommand()
 {
 }
 
-void SetKLOptionsTargetModelItemCommand::setSingleOption(
-  const QString &editorID,
-  const QString &optionsPath,
-  RTVal value) 
-{
-  KLCommandManager *manager = dynamic_cast<KLCommandManager*>(
-    CommandManager::GetCommandManager());
-
-  SetKLOptionsTargetSingleOption(
-    manager->getClient(), 
-    editorID,
-    optionsPath,
-    value);
-}
-
-RTVal SetKLOptionsTargetModelItemCommand::getOptions(
-  const QString &editorID) 
-{
-  KLCommandManager *manager = dynamic_cast<KLCommandManager*>(
-    CommandManager::GetCommandManager());
-
-  return GetKLOptionsTargetOptions(
-    manager->getClient(),
-    editorID);
-}
-
 QString SetKLOptionsTargetModelItemCommand::getHelp()
 {
-   QMap<QString, QString> argsHelp;
-
-  argsHelp["editorID"] = "Qt objectName of the option editor / ID of the KL option in the OptionsTargetRegistry";
-  argsHelp["optionsPath"] = "Path of the option in the editor model hierarchy";
-  argsHelp["newValue"] = "New option";
-  argsHelp["previousValue"] = "Previous option";
+  QMap<QString, QString> argsHelp;
+  argsHelp["target"] = "Absolute path of the port";
+  argsHelp["newValue"] = "New value, must be of the same type than the port.";
+  argsHelp["previousValue"] = "Previous value, must be of the same type than the port.";
+  argsHelp["isUndoable"] = "If true, the command is undoable.";
 
   return CreateHelpFromRTValArgs(
     "Sets the value of a KL OptionsEditorTarget model item",

@@ -3,10 +3,11 @@
 //
 
 #include "RTValModelItem.h"
-#include "BaseRTValOptionsEditor.h"
+#include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
- 
+
 using namespace FabricUI;
+using namespace Util;
 using namespace FabricCore;
 using namespace ValueEditor;
 using namespace OptionsEditor;
@@ -14,25 +15,17 @@ using namespace OptionsEditor;
 RTValModelItem::RTValModelItem(
   const std::string &name,
   const std::string &path,
-  BaseOptionsEditor* editor,
-  void *options,
+  BaseRTValOptionsEditor* editor,
+  RTVal options,
   QSettings *settings) 
-  : BaseSimpleModelItem(name, path, editor)
+  : BaseRTValModelItem(name, path)
   , m_settings(settings)
 {   
-  BaseRTValOptionsEditor* rtValEditor = dynamic_cast<BaseRTValOptionsEditor*>(
-    editor);
-
-  m_client = rtValEditor->getClient();
-
-  m_options = *(RTVal *)options;
-  if(m_options.isWrappedRTVal()) 
-    m_options = m_options.getUnwrappedRTVal(); 
-
+  m_options = RTValUtil::forceToRTVal(options);
   m_originalOptions = m_options.clone();
  
   // Fetching the value from the QSettings
-  if (m_settings != 0 && m_settings->contains(m_path.data())) 
+  if(m_settings != 0 && m_settings->contains(m_path.data())) 
   {
     QString settingsValue = m_settings->value( 
       m_path.data() 
@@ -40,6 +33,13 @@ RTValModelItem::RTValModelItem(
 
     m_options.setJSON(settingsValue.toUtf8().data());
   }
+
+  QObject::connect(
+    this,
+    SIGNAL(updated()),
+    editor,
+    SLOT(modelUpdated())
+    );
 }
 
 RTValModelItem::~RTValModelItem()
@@ -73,10 +73,8 @@ void RTValModelItem::setValue(
       QString(m_options.getJSON().getStringCString())
       );
 
-  BaseSimpleModelItem::setValue(
-    value, 
-    commit, 
-    valueAtInteractionBegin);
+  emitModelValueChanged( getValue() );
+  emit updated();
 }
 
 void RTValModelItem::resetToDefault() 
@@ -89,21 +87,13 @@ void RTValModelItem::resetToDefault()
 
 RTVal RTValModelItem::getRTValOptions()
 {
-  RTVal option = RTVal::Construct(
-    m_client,
-    "RTVal",
-    1,
-    &m_options);
-
-  return option;
+  return RTValUtil::forceToKLRTVal(m_options);
 }
 
 void RTValModelItem::setRTValOptions(
   RTVal options) 
 {
-  if(options.isWrappedRTVal()) 
-    options = options.getUnwrappedRTVal(); 
-
   setValue(
-    toVariant(options));
+    toVariant(RTValUtil::forceToRTVal(options))
+    );
 }

@@ -22,6 +22,7 @@ OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand()
   try
   {
     declareRTValArg("editorID", "String");
+    
     declareRTValArg("editorTitle", "String");
 
     declareRTValArg(
@@ -43,12 +44,32 @@ OpenKLOptionsTargetEditorCommand::~OpenKLOptionsTargetEditorCommand()
 {
 }
 
-bool OpenKLOptionsTargetEditorCommand::canUndo() {
+bool OpenKLOptionsTargetEditorCommand::canUndo() 
+{
   return false;
 }
 
-bool OpenKLOptionsTargetEditorCommand::canLog() {
+bool OpenKLOptionsTargetEditorCommand::canLog() 
+{
   return m_canLog;
+}
+
+BaseRTValOptionsEditor* OpenKLOptionsTargetEditorCommand::getOptionsEditor() 
+{
+  QString editorID = getRTValArg(
+    "editorID"
+    ).getStringCString();
+
+  return GetOptionsEditor(editorID);
+}
+
+QDockWidget* OpenKLOptionsTargetEditorCommand::getOptionsEditorDock() 
+{
+  QString editorID = getRTValArg(
+    "editorID"
+    ).getStringCString();
+
+  return GetOptionsEditorDock(editorID);
 }
 
 bool OpenKLOptionsTargetEditorCommand::doIt() 
@@ -87,7 +108,8 @@ bool OpenKLOptionsTargetEditorCommand::doIt()
         manager->getClient(), 
         editorID,
         editorTitle,
-        groupName);
+        groupName,
+        manager->getSettings());
     }
 
     res = true;
