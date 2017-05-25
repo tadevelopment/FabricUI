@@ -6,23 +6,23 @@
 #include "KLCommandRegistry.h"
 #include "KLScriptableCommand.h"
 #include <FabricUI/Util/FabricException.h>
- 
+#include <FabricUI/Application/FabricApplicationStates.h>
+
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
+using namespace Application;
 
-KLCommandRegistry::KLCommandRegistry(
-  Client client) 
+KLCommandRegistry::KLCommandRegistry() 
   : CommandRegistry()
-  , m_client(client)
 {
   COMMAND_KL = "KL";
 
   try 
   {
     m_klCmdRegistry = RTVal::Create(
-      m_client, 
+      FabricApplicationStates::GetAppStates()->getContext(), 
       "CommandRegistry", 
       0, 0);
 
@@ -66,12 +66,7 @@ FabricCore::RTVal KLCommandRegistry::getKLRegistry()
 {
   return m_klCmdRegistry;
 }
-
-FabricCore::Client KLCommandRegistry::getClient()
-{
-  return m_client;
-}
-
+ 
 void KLCommandRegistry::synchronizeKL() 
 {
   try 
@@ -107,11 +102,11 @@ void KLCommandRegistry::registerKLCommand(
     // Ne sure the command is registered in KL. 
     RTVal args[2] = {
       RTVal::ConstructString(
-        m_client, 
+        FabricApplicationStates::GetAppStates()->getContext(), 
         cmdName.toUtf8().constData()),
 
       RTVal::Construct(
-        m_client, 
+        FabricApplicationStates::GetAppStates()->getContext(), 
         "Type", 
         0, 0),
     };
@@ -130,7 +125,7 @@ void KLCommandRegistry::registerKLCommand(
       CommandRegistry::commandIsRegistered(
         cmdName,
         RTVal::Construct(
-          m_client, 
+          FabricApplicationStates::GetAppStates()->getContext(), 
           "String", 
           1, 
           &args[1]).getStringCString(),
@@ -155,11 +150,11 @@ Command* KLCommandRegistry::createKLCommand(
   {
     RTVal args[2] = {
       RTVal::ConstructString(
-        m_client, 
+        FabricApplicationStates::GetAppStates()->getContext(), 
         cmdName.toUtf8().constData()),
 
       RTVal::ConstructString(
-        m_client, 
+        FabricApplicationStates::GetAppStates()->getContext(), 
         "")
     };
 
@@ -207,7 +202,7 @@ void KLCommandRegistry::commandIsRegistered(
   try
   {
     RTVal nameVal = RTVal::ConstructString(
-      m_client,
+      FabricApplicationStates::GetAppStates()->getContext(),
       cmdName.toUtf8().constData());
 
     m_klCmdRegistry.callMethod(

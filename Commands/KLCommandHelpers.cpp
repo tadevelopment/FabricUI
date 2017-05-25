@@ -4,8 +4,8 @@
 
 #include "KLCommandHelpers.h"
 #include "KLCommandManager.h"
-#include "KLCommandRegistry.h"
 #include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricCore;
 
@@ -119,7 +119,7 @@ bool DoKLCommand(
     RTVal args[2] = { 
       klCmd, 
       RTVal::ConstructString(
-        manager->getClient(), 
+        Application::FabricApplicationStates::GetAppStates()->getContext(), 
         "") 
     };
 
@@ -159,7 +159,7 @@ bool UndoKLCommand()
       Commands::CommandManager::GetCommandManager());
 
     RTVal valError = RTVal::ConstructString(
-      manager->getClient(), 
+      Application::FabricApplicationStates::GetAppStates()->getContext(), 
       "");
 
     bool res = manager->getKLCommandManager().callMethod(
@@ -202,7 +202,7 @@ bool RedoKLCommand()
       Commands::CommandManager::GetCommandManager());
     
     RTVal valError = RTVal::ConstructString(
-      manager->getClient(), 
+      Application::FabricApplicationStates::GetAppStates()->getContext(), 
       "");
 
     bool res = manager->getKLCommandManager().callMethod(

@@ -2,16 +2,18 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include "AppWidget.h"
 #include "BaseViewItem.h"
 #include "BaseModelItem.h"
-#include "AppWidget.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Commands/KLCommandRegistry.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
-using namespace ValueEditor;
-using namespace FabricCore;
 using namespace Commands;
+using namespace FabricCore;
+using namespace Application;
+using namespace ValueEditor;
 
 AppWidget::AppWidget(
   BaseViewItem *viewItem)
@@ -66,13 +68,8 @@ RTVal AppWidget::getAppWidgetRegistry()
 
   try
   {    
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
-      CommandRegistry::GetCommandRegistry());
-    
-    Client client = registry->getClient();
-    
     widgetRegistry = RTVal::Create(
-      client,
+      Application::FabricApplicationStates::GetAppStates()->getContext(),
       "AppWidgetRegistry",
       0,
       0
@@ -121,11 +118,6 @@ QCheckBox* AppWidget::createKLWidget(
 
   try
   {    
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
-      CommandRegistry::GetCommandRegistry());
-    
-    Client client = registry->getClient();
-
     QString cmdName = modelItem->getCommandName();
     RTVal cmdArgs = modelItem->getCommandArgs();
 

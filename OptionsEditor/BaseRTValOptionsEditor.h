@@ -6,7 +6,6 @@
 #define __UI_BASE_OPTIONS_EDITOR__
 
 #include <QString>
-#include <QSettings>
 #include "BaseRTValModelItem.h"
 #include <FabricUI/ValueEditor/VETreeWidget.h>
 
@@ -33,11 +32,9 @@ class BaseRTValOptionsEditor : public ValueEditor::VETreeWidget
     /// Constructs a BaseRTValOptionsEditor.
     /// \param title Title of the editor.
     /// \param options The options to edit.
-    /// \param settings Pointor to the settings.
     BaseRTValOptionsEditor(
       const QString &title = QString(),
-      FabricCore::RTVal options = FabricCore::RTVal(),
-      QSettings *settings=0
+      FabricCore::RTVal options = FabricCore::RTVal()
       );
 
     virtual ~BaseRTValOptionsEditor();
@@ -47,8 +44,7 @@ class BaseRTValOptionsEditor : public ValueEditor::VETreeWidget
       const std::string &name,
       const std::string &path,
       BaseRTValOptionsEditor *editor,
-      FabricCore::RTVal options,
-      QSettings* settings=0
+      FabricCore::RTVal options
       );
  
   public slots:  
@@ -74,8 +70,6 @@ class BaseRTValOptionsEditor : public ValueEditor::VETreeWidget
   protected:
     /// Editor's title.
     QString m_title;
-    /// Pointor to the settings.
-    QSettings *m_settings;
     /// Root model
     BaseRTValModelItem *m_model;
 };

@@ -8,11 +8,13 @@
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
+using namespace Application;
 
 BaseRTValScriptableCommand::BaseRTValScriptableCommand() 
   : BaseScriptableCommand()
@@ -129,41 +131,19 @@ void BaseRTValScriptableCommand::setArg(
           json)
       )
     {
-      std::cout 
-        << "BaseRTValScriptableCommand::setArg 1 " 
-        << std::endl;
-
-      std::cout 
-        << "complexArgType " 
-        << complexArgType.toUtf8().constData() 
-        << std::endl;
-
-      std::cout 
-        << "json " 
-        << json.toUtf8().constData() 
-        << std::endl;
-
       RTVal rtVal = RTValUtil::forceJSONToRTVal(
-        GetManager()->getClient(),
+        FabricApplicationStates::GetAppStates()->getContext(),
         json,
         complexArgType);
 
-      std::cout 
-        << "BaseRTValScriptableCommand::setArg 2 " 
-        << std::endl;
-
       setRTValArg(mainKey, rtVal);
-
-      std::cout 
-        << "BaseRTValScriptableCommand::setArg 3 " 
-        << std::endl;
     }
 
     // Known type, cast the JSON to a RTVal.
     else if(IsKnownRTValType(m_rtvalArgSpecs[mainKey].type))
     {      
       RTVal rtVal = RTValUtil::forceJSONToRTVal(
-        GetManager()->getClient(),
+        FabricApplicationStates::GetAppStates()->getContext(),
         json,
         m_rtvalArgSpecs[mainKey].type);
 
@@ -249,7 +229,7 @@ void BaseRTValScriptableCommand::declareRTValArg(
       "BaseRTValScriptableCommand::declareRTValArg",
       "Key not specified  in command '" + getName() + "'");
  
-  if(!type.isEmpty() && !GetManager()->getClient().isValidType(type.toUtf8().constData()))
+  if(!type.isEmpty() && !FabricApplicationStates::GetAppStates()->getClient().isValidType(type.toUtf8().constData()))
     FabricException::Throw(
       "BaseRTValScriptableCommand::declareRTValArg", 
       "Type '" + type  + "' of command '" + getName() + "' is not a valid KL type");
@@ -265,7 +245,7 @@ void BaseRTValScriptableCommand::declareRTValArg(
         flags, 
         complexArgType)
       ? RTVal::Construct(
-          GetManager()->getClient(), 
+          FabricApplicationStates::GetAppStates()->getContext(), 
           complexArgType.toUtf8().constData(), 
           0, 
           0)
@@ -334,7 +314,7 @@ void BaseRTValScriptableCommand::setRTValArgType(
       "BaseRTValScriptableCommand::setRTValArgType",
       "No arg named '" + mainKey + "' in command '" + getName() + "'");
  
-  if(!GetManager()->getClient().isValidType(type.toUtf8().constData()))
+  if(!FabricApplicationStates::GetAppStates()->getClient().isValidType(type.toUtf8().constData()))
     FabricException::Throw(
       "BaseDFGCommand::setRTValArgType",
       "Argument '" + mainKey + "' in command '" + getName() + "' has not a valid kl type '" + type + "'");
@@ -350,7 +330,7 @@ void BaseRTValScriptableCommand::setRTValArgType(
     if(!m_rtvalArgs[mainKey].second.isEmpty())
     {
       RTVal val = RTValUtil::forceJSONToRTVal(
-        GetManager()->getClient(),
+        FabricApplicationStates::GetAppStates()->getContext(),
         m_rtvalArgs[mainKey].second,
         m_rtvalArgSpecs[mainKey].type);
 
@@ -465,7 +445,7 @@ void BaseRTValScriptableCommand::setRTValArg(
         ? RTValUtil::forceToRTVal(
             m_rtvalArgs[mainKey].first)
         : RTVal::Construct(
-            GetManager()->getClient(), 
+            FabricApplicationStates::GetAppStates()->getContext(), 
             complexArgType.toUtf8().constData(), 
             0, 0);
 

@@ -19,11 +19,8 @@ using namespace ValueEditor;
 using namespace OptionsEditor;
 
 KLOptionsTargetEditor::KLOptionsTargetEditor(
-  Client client,
-  const QString &title,
-  QSettings *settings)
-  : BaseRTValOptionsEditor(title, 0, settings)
-  , m_client(client)
+  const QString &title)
+  : BaseRTValOptionsEditor(title, 0)
 {
   resetModel();
 }
@@ -36,8 +33,7 @@ BaseRTValModelItem* KLOptionsTargetEditor::constructModel(
   const std::string &name,
   const std::string &path,
   BaseRTValOptionsEditor *editor,
-  RTVal options,
-  QSettings *settings) 
+  RTVal options) 
 {
   try
   {
@@ -48,24 +44,21 @@ BaseRTValModelItem* KLOptionsTargetEditor::constructModel(
         name,
         path,
         editor,
-        options,
-        settings);
+        options);
 
     else if(options.isArray())
       return new RTValArrayModelItem(
         name,
         path,
         editor,
-        options,
-        settings);
+        options);
 
     else
       return new KLOptionsTargetModelItem(
         name,
         path,
         editor,
-        options,
-        settings);
+        options);
   }
 
   catch(Exception &e)
@@ -84,7 +77,6 @@ void KLOptionsTargetEditor::updateModel(
 {
   m_model->setRTValOptions(
     GetKLOptionsTargetOptions(
-      m_client.getContext(), 
       m_title)
     );
 }
@@ -94,7 +86,6 @@ void KLOptionsTargetEditor::resetModel(
 {
   BaseRTValOptionsEditor::resetModel(
     GetKLOptionsTargetOptions(
-      m_client.getContext(), 
       m_title)
     );
 }

@@ -11,11 +11,9 @@ using namespace OptionsEditor;
 
 BaseRTValOptionsEditor::BaseRTValOptionsEditor(
   const QString &title,
-  RTVal options,
-  QSettings *settings)
+  RTVal options)
   : VETreeWidget()
   , m_title(title)
-  , m_settings(settings)
   , m_model(0)
 {
 }
@@ -33,8 +31,7 @@ BaseRTValModelItem* BaseRTValOptionsEditor::constructModel(
   const std::string &name,
   const std::string &path,
   BaseRTValOptionsEditor *editor,
-  RTVal options,
-  QSettings *settings) 
+  RTVal options) 
 {
   throw(
     "BaseRTValOptionsEditor::constructModel must be overridden");
@@ -58,8 +55,7 @@ void BaseRTValOptionsEditor::resetModel(
     m_title.toUtf8().constData(),
     "",
     this,
-    options, 
-    m_settings);
+    options);
  
   onSetModelItem(
     m_model);

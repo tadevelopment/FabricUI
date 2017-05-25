@@ -25,9 +25,7 @@ class KLCommandRegistry : public CommandRegistry
     // Command type
     QString COMMAND_KL; 
  
-    KLCommandRegistry(
-      FabricCore::Client client
-      );
+    KLCommandRegistry();
 
     virtual ~KLCommandRegistry();
 
@@ -38,9 +36,6 @@ class KLCommandRegistry : public CommandRegistry
 
     /// Gets the KL registry.
     FabricCore::RTVal getKLRegistry();
-
-    /// Gets the FabricCore client.
-    virtual FabricCore::Client getClient();
   
   public slots:
     /// Synchronizes with the KL registry.
@@ -70,8 +65,6 @@ class KLCommandRegistry : public CommandRegistry
       const QString &cmdName
       );
 
-    /// Fabric client.
-    FabricCore::Client m_client;
     /// KL command registry.
     FabricCore::RTVal m_klCmdRegistry;
 };

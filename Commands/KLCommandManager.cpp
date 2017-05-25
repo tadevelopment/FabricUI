@@ -6,11 +6,13 @@
 #include "KLCommandManager.h"
 #include "KLScriptableCommand.h"
 #include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
+using namespace Application;
 
 inline bool isKLCommand(
   Command *cmd)
@@ -20,15 +22,14 @@ inline bool isKLCommand(
   return (klCmd || klScriptCmd);
 }
 
-KLCommandManager::KLCommandManager(
-  Client client) 
-  : RTValCommandManager(client)
+KLCommandManager::KLCommandManager() 
+  : RTValCommandManager()
   , m_klCmdUndoStackCount(0)
 {
   try 
   {
     m_klCmdManager = RTVal::Create(
-      m_client, 
+      FabricApplicationStates::GetAppStates()->getContext(), 
       "CommandManager", 
       0, 
       0);
@@ -176,7 +177,7 @@ void KLCommandManager::synchronizeKL()
     for(unsigned i=klCmdUndoStackCount; i<klCmdCount; ++i)
     {
       RTVal cmdIndex = RTVal::ConstructUInt32(
-        m_client, 
+        FabricApplicationStates::GetAppStates()->getContext(), 
         i);
 
       // Gets the KL command from the KL manager. 
@@ -189,7 +190,7 @@ void KLCommandManager::synchronizeKL()
       // Check if it's an AppCommand.
       // Construct C++ commands from KL
       RTVal appCmd = RTVal::Construct(
-        m_client,
+        FabricApplicationStates::GetAppStates()->getContext(),
         "AppCommand", 
         1, 
         &klCmd);
@@ -263,7 +264,7 @@ void KLCommandManager::createCommandFromKLAppCommand(
   }
 
   RTVal cmdIndex = RTVal::ConstructUInt32(
-    m_client, 
+    FabricApplicationStates::GetAppStates()->getContext(), 
     index);
 
   // Remove the KL command
@@ -286,7 +287,7 @@ void KLCommandManager::createKLCommandWrappers(
   RTVal klCmd)
 {
   RTVal scriptCmd = RTVal::Construct(
-    m_client,
+    FabricApplicationStates::GetAppStates()->getContext(),
     "BaseScriptableCommand", 
     1, 
     &klCmd);
@@ -308,7 +309,7 @@ void KLCommandManager::createKLCommandWrappers(
     else if(!klScriptableCmd->canUndo() && klScriptableCmd->addToUndoStack())
     {
       RTVal cmdIndex = RTVal::ConstructUInt32(
-        m_client, 
+        FabricApplicationStates::GetAppStates()->getContext(), 
         index);
 
       // Remove the KL command

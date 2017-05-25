@@ -49,15 +49,13 @@ class KLScriptableCommand
       KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
         Commands::CommandRegistry::GetCommandRegistry());
 
-      FabricCore::Client client = registry->getClient(); 
-
       // Create the arguments values as RTVal
       FabricCore::RTVal strRTVal = FabricCore::RTVal::ConstructString(
-        client, 
+        Application::FabricApplicationStates::GetAppStates()->getContext(), 
         "someString");
 
       FabricCore::RTVal floatRTVal = FabricCore::RTVal::ConstructFloat32(
-        client, 
+        Application::FabricApplicationStates::GetAppStates()->getContext(), 
         4.555);
       
       // Cast them in JSON
@@ -74,8 +72,7 @@ class KLScriptableCommand
       floatRTVal.setJSON(cmd->getArg("arg_2"));
 
     - Python:
-      client = GetCommandManager().getClient()
-
+ 
       // Create the arguments values as RTVal
       strRTVal = client.RT.types.String("someString")
       floatRTVal = client.RT.types.Float32(4.555)

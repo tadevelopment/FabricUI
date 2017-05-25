@@ -10,9 +10,8 @@ using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 
-KLCommandManager_Python::KLCommandManager_Python(
-  Client client) 
-  : KLCommandManager(client) 
+KLCommandManager_Python::KLCommandManager_Python() 
+  : KLCommandManager() 
 {
   QObject::connect(
     this,

@@ -21,14 +21,9 @@ class KLOptionsTargetEditor
  
   public:
     /// Constructs a RTValDictModelItem .
-    /// \param client Fabric core client.
-    /// \param editorID ID of the KL OptionsEditorTarget in the registry.
     /// \param title Title of the editor.
-    /// \param settings Pointor to the settings.
     KLOptionsTargetEditor(
-      FabricCore::Client client,
-      const QString &title,
-      QSettings *settings=0
+      const QString &title
       );
       
     virtual ~KLOptionsTargetEditor();
@@ -41,8 +36,7 @@ class KLOptionsTargetEditor
       const std::string &name,
       const std::string &path,
       BaseRTValOptionsEditor *editor,
-      FabricCore::RTVal options,
-      QSettings* settings=0
+      FabricCore::RTVal options
       );
 
     public slots:  
@@ -55,10 +49,6 @@ class KLOptionsTargetEditor
       virtual void updateModel(
         FabricCore::RTVal options=FabricCore::RTVal()
         );
-
-    private:
-      // Reference to the fabric client.
-      FabricCore::Client m_client;
 };
 
 } // namespace OptionsEditor 

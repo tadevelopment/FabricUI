@@ -9,7 +9,6 @@
 #include <QList>
 #include <QObject>
 #include "Command.h"
-#include <QSettings>
 #include <QSharedPointer>
 
 // Need to use a typedef because gcc doesn't support templated default arguments:
@@ -90,12 +89,6 @@ class CommandManager : public QObject
     Command* getCommandAtIndex(
       unsigned index
       );
-
-    void setSettings(
-      QSettings *settings
-      );
-
-    QSettings* getSettings();
 
   signals:
     /// Emitted when a top command has 
@@ -201,8 +194,6 @@ class CommandManager : public QObject
       StackedCommand &stackedCmd,
       const QString &error = QString()
       );
-
-    QSettings *m_settings;
 
     /// CommandManager singleton, set from Constructor.
     static CommandManager *s_cmdManager;

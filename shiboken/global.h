@@ -122,12 +122,12 @@
 #include <FabricUI/DFG/PresetTreeWidget.h>
 #include <FabricUI/Licensing/Licensing.h>
 #include <FabricUI/Style/FabricStyle.h>
-#include <FabricUI/Application/FabricApplication.h>
 #include <FabricUI/Viewports/GLViewportWidget.h>
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Viewports/TimeLineWidget.h>
 
 #include "global_util.h"
+#include "global_application.h"
 
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>

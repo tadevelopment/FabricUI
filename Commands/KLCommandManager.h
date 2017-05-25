@@ -27,9 +27,7 @@ class KLCommandManager : public RTValCommandManager
   Q_OBJECT
 
   public:
-    KLCommandManager(
-      FabricCore::Client client
-      );
+    KLCommandManager();
 
     virtual ~KLCommandManager();
     

@@ -5,29 +5,31 @@
 #include "RTValModelItem.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
 using namespace ValueEditor;
+using namespace Application;
 using namespace OptionsEditor;
 
 RTValModelItem::RTValModelItem(
   const std::string &name,
   const std::string &path,
   BaseRTValOptionsEditor* editor,
-  RTVal options,
-  QSettings *settings) 
+  RTVal options) 
   : BaseRTValModelItem(name, path)
-  , m_settings(settings)
 {   
   m_options = RTValUtil::forceToRTVal(options);
   m_originalOptions = m_options.clone();
- 
+
+  QSettings *settings = FabricApplicationStates::GetAppStates()->getSettings();
+  
   // Fetching the value from the QSettings
-  if(m_settings != 0 && m_settings->contains(m_path.data())) 
+  if(settings != 0 && settings->contains(m_path.data())) 
   {
-    QString settingsValue = m_settings->value( 
+    QString settingsValue = settings->value( 
       m_path.data() 
       ).value<QString>();
 
@@ -66,9 +68,11 @@ void RTValModelItem::setValue(
 
   m_options.assign(optionsCopy);
 
+  QSettings *settings = FabricApplicationStates::GetAppStates()->getSettings();
+
   // Storing the value in the Settings
-  if(m_settings != 0)
-    m_settings->setValue( 
+  if(settings != 0)
+    settings->setValue( 
       m_path.data(),
       QString(m_options.getJSON().getStringCString())
       );

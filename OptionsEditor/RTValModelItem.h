@@ -25,13 +25,11 @@ class RTValModelItem : public BaseRTValModelItem
     /// \param path Item's path.
     /// \param editor Pointor to the OptionsEditor.
     /// \param options Item's options.
-    /// \param settings Pointor to the settings.
     RTValModelItem(
       const std::string &name,
       const std::string &path,
       BaseRTValOptionsEditor *editor,
-      FabricCore::RTVal options,
-      QSettings *settings=0
+      FabricCore::RTVal options
       );
 
     virtual ~RTValModelItem();
@@ -67,8 +65,6 @@ class RTValModelItem : public BaseRTValModelItem
     FabricCore::RTVal m_options; 
     /// Current value
     FabricCore::RTVal m_originalOptions; 
-    /// Pointor to the settings.
-    QSettings *m_settings;
 };
 
 } // namespace OptionsEditor 

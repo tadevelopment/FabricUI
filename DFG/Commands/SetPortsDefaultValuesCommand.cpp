@@ -6,13 +6,15 @@
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace DFG;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
- 
+using namespace Application;
+
 SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand() 
   : BaseRTValScriptableCommand()
 {
@@ -27,17 +29,14 @@ SetPortsDefaultValuesCommand::SetPortsDefaultValuesCommand()
     // Optional arg of unknown KL type, which
     // is retrieved when executing the command.
     declareArg("previousValues", CommandArgFlags::OPTIONAL_ARG);
-
-    KLCommandManager *manager = dynamic_cast<KLCommandManager*>(
-      CommandManager::GetCommandManager());
-    
+ 
     // Optional arg of known KL type, with default value.                  
     declareRTValArg( 
       "isUndoable",
       "Boolean",
       CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG,
       RTVal::ConstructBoolean(
-        manager->getClient(), 
+        FabricApplicationStates::GetAppStates()->getContext(), 
         true)
       );
   }
@@ -77,15 +76,13 @@ bool SetPortsDefaultValuesCommand::doIt()
 {
 	// try
  //  {
- //  	KLCommandManager *manager = dynamic_cast<KLCommandManager*>(
- //    	CommandManager::GetCommandManager());
-    
+ 
  //    RTVal pathValues = getRTValArg("pathValues");
 
  //    if(canUndo() && !isArgSet("previousValues"))
  //    {
  //    	RTVal previousValues = RTVal::ConstructVariableArray(
- //    		manager->getClient(), "RTVal");
+ //    		FabricApplicationStates::GetAppStates()->getContext(), "RTVal");
 
  //    	previousValues.setArraySize(pathValues.getArraySize());
 

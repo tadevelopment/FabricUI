@@ -29,8 +29,7 @@ class KLOptionsTargetModelItem : public RTValModelItem
       const std::string &name,
       const std::string &path,
       BaseRTValOptionsEditor *editor,
-      FabricCore::RTVal options,
-      QSettings *settings=0
+      FabricCore::RTVal options
       );
 
     virtual ~KLOptionsTargetModelItem();

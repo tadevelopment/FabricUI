@@ -5,25 +5,24 @@
 #include "RTValDictModelItem.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
 using namespace ValueEditor; 
+using namespace Application;
 using namespace OptionsEditor;
 
 RTValDictModelItem::RTValDictModelItem(
   const std::string &name,
   const std::string &path,
   BaseRTValOptionsEditor *editor,
-  RTVal options,
-  QSettings *settings) 
+  RTVal options) 
   : BaseRTValModelItem(name, path)
 {
   try
   {
-    m_context = options.getContext();
-
     RTVal keys = options.getDictKeys();
     for(unsigned i = 0; i < keys.getArraySize(); i++) 
     {
@@ -39,8 +38,7 @@ RTValDictModelItem::RTValDictModelItem(
         childName,
         m_path,
         editor,
-        childrenOptions,
-        settings);
+        childrenOptions);
 
       m_children[childName] = item;
       m_keys.push_back(childName);
@@ -93,7 +91,7 @@ RTVal RTValDictModelItem::getRTValOptions()
   try
   {
     options = RTVal::ConstructDict(
-      m_context,
+      FabricApplicationStates::GetAppStates()->getContext(),
       "String",
       "RTVal");
 
@@ -101,7 +99,7 @@ RTVal RTValDictModelItem::getRTValOptions()
     for(it = m_children.begin(); it != m_children.end(); it++) 
     {
       RTVal key = RTVal::ConstructString(
-        m_context,
+        FabricApplicationStates::GetAppStates()->getContext(),
         it->first.data());
 
       BaseRTValModelItem *child = (BaseRTValModelItem *)it->second;
@@ -138,7 +136,7 @@ void RTValDictModelItem::setRTValOptions(
     for(it=m_children.begin(); it!=m_children.end(); it++) 
     {
       RTVal key = RTVal::ConstructString(
-        m_context,
+        options.getContext(),
         it->first.data());
 
       RTVal childrenOptions = options.getDictElement(

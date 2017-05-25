@@ -25,13 +25,11 @@ class RTValDictModelItem : public BaseRTValModelItem
     /// \param path Item's path.
     /// \param editor Pointor to the OptionsEditor.
     /// \param options Item's options.
-    /// \param settings Pointor to the settings.
     RTValDictModelItem(
       const std::string &name,
       const std::string &path,
       BaseRTValOptionsEditor *editor,
-      FabricCore::RTVal options,
-      QSettings *settings=0
+      FabricCore::RTVal options
       );
 
     virtual ~RTValDictModelItem();
@@ -64,8 +62,6 @@ class RTValDictModelItem : public BaseRTValModelItem
       );
 
   private:
-    /// Lists of the options' key.
-    FabricCore::Context m_context;
     /// Lists of the keys.
     std::vector<std::string> m_keys;
     /// Dictionary [key, value]

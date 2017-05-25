@@ -8,11 +8,9 @@
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
-using namespace FabricCore;
-
-KLCommandRegistry_Python::KLCommandRegistry_Python(
-  Client client) 
-  : KLCommandRegistry(client) 
+ 
+KLCommandRegistry_Python::KLCommandRegistry_Python() 
+  : KLCommandRegistry() 
 {
 }
 

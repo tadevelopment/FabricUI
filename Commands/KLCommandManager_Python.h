@@ -25,9 +25,7 @@ class KLCommandManager_Python : public KLCommandManager
   Q_OBJECT
   
  	public:
-    KLCommandManager_Python(
-      FabricCore::Client client
-      );
+    KLCommandManager_Python();
 
     virtual ~KLCommandManager_Python();
 

@@ -8,6 +8,7 @@
 #include "KLOptionsTargetEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricCore;
  
@@ -27,11 +28,9 @@ inline QMainWindow* GetMainWindow()
 }
 
 QDockWidget* CreateOptionsEditor( 
-  Client client,
   const QString &editorID,
   const QString &title,
-  const QString &groupeName,
-  QSettings *settings)
+  const QString &groupeName)
 {
   QMainWindow* mainWindow = GetMainWindow();
 
@@ -42,9 +41,7 @@ QDockWidget* CreateOptionsEditor(
   dock->setObjectName(editorID);
 
   BaseRTValOptionsEditor *optionsEditor = new KLOptionsTargetEditor(
-    client,
-    editorID,
-    settings);
+    editorID);
 
   dock->setWidget(optionsEditor);
 
@@ -202,15 +199,14 @@ inline void SetKLSingleOption(
 }
   
 // KL OptionsTarget helpers
-RTVal GetKLOptionsTargetRegistry(
-  Context context) 
+RTVal GetKLOptionsTargetRegistry() 
 {
   RTVal optionsTargetRegistry;
 
   try
   {
     RTVal appOptionsTargetRegistry = RTVal::Construct(
-      context,
+      Application::FabricApplicationStates::GetAppStates()->getContext(),
       "AppOptionsTargetRegistry",
       0, 
       0);
@@ -234,7 +230,6 @@ RTVal GetKLOptionsTargetRegistry(
 }
  
 RTVal GetKLOptionsTargetOptions(
-  Context context,
   QString registryID) 
 {
   RTVal options;
@@ -242,11 +237,10 @@ RTVal GetKLOptionsTargetOptions(
   try
   {
     RTVal registryIDVal = RTVal::ConstructString(
-      context,
+      Application::FabricApplicationStates::GetAppStates()->getContext(),
       registryID.toUtf8().constData());
 
-    RTVal optionsTargetRegistry = GetKLOptionsTargetRegistry(
-      context);
+    RTVal optionsTargetRegistry = GetKLOptionsTargetRegistry();
     
     options = optionsTargetRegistry.callMethod(
       "RTVal", 
@@ -267,8 +261,7 @@ RTVal GetKLOptionsTargetOptions(
 }
 
 RTVal GetKLOptionsTargetSingleOption(
-  QString path,
-  Context context) 
+  QString path) 
 { 
   RTVal res;
 
@@ -280,7 +273,6 @@ RTVal GetKLOptionsTargetSingleOption(
       0, index).toUtf8().constData();
 
     RTVal options = GetKLOptionsTargetOptions(
-      context,
       registryID);
 
     res = GetKLSingleOption(
@@ -312,7 +304,6 @@ void SetKLOptionsTargetSingleOption(
       0, index).toUtf8().constData();
 
     RTVal options = GetKLOptionsTargetOptions(
-      singleOption.getContext(),
       registryID);
 
     SetKLSingleOption(
@@ -321,8 +312,7 @@ void SetKLOptionsTargetSingleOption(
       singleOption,
       options);
  
-    RTVal optionsTargetRegistry = GetKLOptionsTargetRegistry(
-      options.getContext());    
+    RTVal optionsTargetRegistry = GetKLOptionsTargetRegistry();    
 
     RTVal args[2] = 
     {

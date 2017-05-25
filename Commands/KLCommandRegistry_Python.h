@@ -25,9 +25,7 @@ class KLCommandRegistry_Python : public KLCommandRegistry
   Q_OBJECT
   
  	public:
-    KLCommandRegistry_Python(
-      FabricCore::Client client
-      );
+    KLCommandRegistry_Python();
 
     virtual ~KLCommandRegistry_Python();
 

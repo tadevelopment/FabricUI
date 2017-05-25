@@ -26,10 +26,7 @@
       </object-type>
     </namespace-type>
 
-    <namespace-type name="Application" generate="yes">
-      <object-type name="FabricApplication" />
-    </namespace-type>
-  
+    <load-typesystem name="fabricui_application.xml" generate="yes"/>
     <load-typesystem name="fabricui_menus.xml" generate="yes"/>
     <load-typesystem name="fabricui_dialog.xml" generate="yes"/>
     <load-typesystem name="fabricui_actions.xml" generate="yes"/>

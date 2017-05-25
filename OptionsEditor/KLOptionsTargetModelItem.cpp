@@ -21,14 +21,12 @@ KLOptionsTargetModelItem::KLOptionsTargetModelItem(
   const std::string &name,
   const std::string &path,
   BaseRTValOptionsEditor* editor,
-  RTVal options,
-  QSettings *settings) 
+  RTVal options) 
   : RTValModelItem(
     name, 
     path, 
     editor, 
-    options, 
-    settings)
+    options)
 {   
 }
 

@@ -6,25 +6,24 @@
 #include "RTValArrayModelItem.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
 using namespace ValueEditor; 
 using namespace OptionsEditor;
+using namespace Application;
 
 RTValArrayModelItem::RTValArrayModelItem(
   const std::string &name,
   const std::string &path,
   BaseRTValOptionsEditor *editor,
-  RTVal options,
-  QSettings *settings) 
+  RTVal options) 
   : BaseRTValModelItem(name, path)
 {
   try
   {
-    m_context = options.getContext();
-
     for(unsigned i=0; i<options.getArraySize(); i++) 
     {
       RTVal childrenOptions = options.getArrayElementRef(
@@ -36,8 +35,7 @@ RTValArrayModelItem::RTValArrayModelItem(
         childName,
         m_path,
         editor,
-        childrenOptions,
-        settings);
+        childrenOptions);
 
       m_children[childName] = item;
       m_keys.push_back(childName); 
@@ -90,7 +88,7 @@ RTVal RTValArrayModelItem::getRTValOptions()
   try
   {
     options = RTVal::ConstructVariableArray(
-      m_context,
+      FabricApplicationStates::GetAppStates()->getContext(),
       "RTVal");
 
     options.setArraySize(

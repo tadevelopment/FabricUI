@@ -10,7 +10,7 @@ import sys
 
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core, FabricUI, Util
-from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine, Actions, Commands as CppCommands
+from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine, Actions
 from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
@@ -19,6 +19,7 @@ from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
+from FabricEngine.Canvas.Application.FabricApplicationStates import *
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -436,8 +437,9 @@ class CanvasWindow(QtGui.QMainWindow):
         """
         self.qUndoStack = QtGui.QUndoStack()
 
-        CreateCmdManager(self.client, self.settings)
-
+        CreateAppStates(self.client, self.settings)
+        CreateCmdRegistry()
+        CreateCmdManager()
         GetCmdRegistry().synchronizeKL()
 
         self.hotkeyEditorDialog = HotkeyEditorDialog(self)

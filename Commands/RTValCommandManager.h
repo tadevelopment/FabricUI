@@ -21,9 +21,7 @@ class RTValCommandManager : public CommandManager
   Q_OBJECT
 
   public:
-    RTValCommandManager(
-      FabricCore::Client client
-      );
+    RTValCommandManager();
 
     virtual ~RTValCommandManager();
     
@@ -40,9 +38,6 @@ class RTValCommandManager : public CommandManager
     virtual void doCommand(
       Command* cmd
       );
-    
-    /// Gets the Fabric client.
-    virtual FabricCore::Client getClient();
     
     /// Gets the Fabric client.
     RTValComplexArgRegistry& getComplexArgRegistry();
@@ -65,9 +60,6 @@ class RTValCommandManager : public CommandManager
       Command *cmd,
       const QMap<QString, FabricCore::RTVal> &args
       );
-
-    /// Fabric client.
-    FabricCore::Client m_client;
 
     RTValComplexArgRegistry m_RTValComplexArgRegistry;
 };

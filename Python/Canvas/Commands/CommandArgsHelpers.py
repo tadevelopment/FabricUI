@@ -3,6 +3,7 @@
 #
 
 from FabricEngine.FabricUI import Commands as CppCommands, DFG, Util
+from FabricEngine.Canvas.Application.FabricApplicationStates import *
 
 class CommandArgsHelpers:
 
@@ -13,11 +14,11 @@ class CommandArgsHelpers:
         return issubclass(type(arg), str) or issubclass(type(arg), unicode)
 
     @staticmethod
-    def IsPyRTValArg(client, arg):
+    def IsPyRTValArg(arg):
         """ \internal """
         # Construct a dumb RTVal to compare the python
         # object type --> find a better way.
-        return type(arg) == type(client.RT.types.UInt32())
+        return type(arg) == type(GetAppStates().getClient().RT.types.UInt32())
 
     @staticmethod
     def IsRTValScriptableCmd(cmd):
@@ -36,11 +37,13 @@ class CommandArgsHelpers:
 
     ### CommandManager
     @staticmethod
-    def CastCmdArgsToStr(client, cmd, args):
+    def CastCmdArgsToStr(cmd, args):
         """ \internal, casts the command's args into String. 
         """
 
         try:
+            client = GetAppStates().getClient()
+
             strArgs = {}
 
             for key, arg in args.iteritems():
@@ -49,7 +52,7 @@ class CommandArgsHelpers:
                 if CommandArgsHelpers.IsRTValScriptableCmd(cmd):
 
                     # The input arg is a RTVal, cast it to JSON.
-                    if CommandArgsHelpers.IsPyRTValArg(client, arg):
+                    if CommandArgsHelpers.IsPyRTValArg(arg):
                         arg = arg.getJSONStr()
 
                     else:
@@ -130,15 +133,16 @@ class CommandArgsHelpers:
         return strArgs
 
     @staticmethod
-    def CastCmdArgsToRTVal(client, cmd, args):
+    def CastCmdArgsToRTVal(cmd, args):
         """ \internal, casts the command's args into RTVal. 
         """
         try:
             rtValArgs = {}
+            client = GetAppStates().getClient()
 
             for key, arg in args.iteritems():
             
-                if not CommandArgsHelpers.IsPyRTValArg(client, arg):
+                if not CommandArgsHelpers.IsPyRTValArg(arg):
                     rtValType = cmd.getRTValArgType(key)
                     pyRTValType = getattr(client.RT.types, rtValType)
                 
@@ -199,13 +203,14 @@ class CommandArgsHelpers:
         return result
 
     @staticmethod
-    def ParseCmdArgs(client, cmd):
+    def ParseCmdArgs(cmd):
         """ \internal, parses the command argumentss to construct
             a description of the command logged in the scrip-editor. 
         """
 
         desc = cmd.getName()
         if CommandArgsHelpers.IsScriptableCmd(cmd):
+            client = GetAppStates().getClient()
 
             try:
                 keys = cmd.getArgKeys()

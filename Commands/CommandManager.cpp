@@ -17,7 +17,6 @@ CommandManager* CommandManager::s_cmdManager = 0;
 
 CommandManager::CommandManager() 
   : QObject()
-  , m_settings(0)
 {
   if(s_instanceFlag)
     FabricException::Throw(
@@ -311,17 +310,6 @@ Command* CommandManager::getCommandAtIndex(
     return m_redoStack[index - m_undoStack.size()].topLevelCmd.data();
 
   return 0;
-}
-
-void CommandManager::setSettings(
-  QSettings *settings)
-{
-  m_settings = settings;
-}
-
-QSettings* CommandManager::getSettings()
-{
-  return m_settings;
 }
 
 QString CommandManager::getContent()

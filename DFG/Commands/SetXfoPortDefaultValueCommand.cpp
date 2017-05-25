@@ -6,13 +6,15 @@
 #include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace DFG;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
- 
+using namespace Application;
+
 SetXfoPortDefaultValueCommand::SetXfoPortDefaultValueCommand() 
   : BaseRTValScriptableCommand()
 {
@@ -39,17 +41,14 @@ SetXfoPortDefaultValueCommand::SetXfoPortDefaultValueCommand()
       "Xfo",
       CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::IN_ARG
       );
-
-    KLCommandManager *manager = dynamic_cast<KLCommandManager*>(
-      CommandManager::GetCommandManager());
-    
+ 
     // Optional arg of known KL type, with default value.                  
     declareRTValArg( 
       "isUndoable",
       "Boolean",
       CommandArgFlags::OPTIONAL_ARG,
       RTVal::ConstructBoolean(
-        manager->getClient(), 
+        FabricApplicationStates::GetAppStates()->getContext(), 
         true)
       );
   }

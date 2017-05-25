@@ -8,8 +8,8 @@
 #include <FabricUI/ModelItems/ItemPortModelItem.h>
 #include <FabricUI/ModelItems/RootModelItem.h>
 #include <QStringList>
-#include <FabricUI/Commands/KLCommandRegistry.h>
 #include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 namespace FabricUI {
 namespace ModelItems {
@@ -171,10 +171,7 @@ FabricCore::RTVal ItemPortModelItem::getCommandArgs()
 
   try
   {    
-    Commands::KLCommandRegistry *registry = dynamic_cast<Commands::KLCommandRegistry *>(
-      Commands::CommandRegistry::GetCommandRegistry());
-    
-    FabricCore::Client client = registry->getClient();
+    FabricCore::Client client =  Application::FabricApplicationStates::GetAppStates()->getClient();
   
     cmdArgs = FabricCore::RTVal::ConstructDict(
       client, 

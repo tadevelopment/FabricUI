@@ -6,13 +6,14 @@
 #include "../OptionsEditorHelpers.h"
 #include <FabricUI/Util/FabricException.h>
 #include "CloseKLOptionsTargetEditorCommand.h"
-#include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
+using namespace Application;
 using namespace OptionsEditor;
 
 CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand() 
@@ -21,9 +22,6 @@ CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand()
 {
   try
   {
-    KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
-      CommandManager::GetCommandManager());
-    
     declareRTValArg("editorID", "String");
 
     declareRTValArg(
@@ -31,7 +29,7 @@ CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand()
       "Boolean",
       CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG,
       RTVal::ConstructBoolean(
-        manager->getClient(), 
+        Application::FabricApplicationStates::GetAppStates()->getContext(), 
         false)
       );
   }

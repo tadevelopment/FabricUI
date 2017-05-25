@@ -1,17 +1,18 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "CommandArgFlags.h"
-#include "KLCommandManager.h"
 #include "CommandArgHelpers.h"
 #include "BaseRTValPathValueCommand.h"
 #include <FabricUI/Util/FabricException.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
- 
+#include <FabricUI/Application/FabricApplicationStates.h>
+
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
- 
+using namespace Application;
+
 BaseRTValPathValueCommand::BaseRTValPathValueCommand() 
   : BaseRTValScriptableCommand()
 {
@@ -38,17 +39,14 @@ BaseRTValPathValueCommand::BaseRTValPathValueCommand()
       "RTVal",
       CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::IN_ARG
       );
-
-    KLCommandManager *manager = dynamic_cast<KLCommandManager*>(
-      CommandManager::GetCommandManager());
-    
+ 
     // Optional arg of known KL type, with default value.                  
     declareRTValArg( 
       "isUndoable",
       "Boolean",
       CommandArgFlags::OPTIONAL_ARG,
       RTVal::ConstructBoolean(
-        manager->getClient(), 
+        FabricApplicationStates::GetAppStates()->getContext(), 
         true)
       );
   }

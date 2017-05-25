@@ -8,7 +8,7 @@
 #include "OpenKLOptionsTargetEditorCommand.h"
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
-
+ 
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
@@ -101,15 +101,10 @@ bool OpenKLOptionsTargetEditorCommand::doIt()
         ? getRTValArg("groupName").getStringCString()
         : QString();
 
-      KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
-        CommandManager::GetCommandManager());
-     
       CreateOptionsEditor(
-        manager->getClient(), 
         editorID,
         editorTitle,
-        groupName,
-        manager->getSettings());
+        groupName);
     }
 
     res = true;

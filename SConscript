@@ -310,6 +310,7 @@ if uiLibPrefix == 'ui':
         diffFile,
         shibokenDir.File('fabricui.xml'),
         shibokenDir.File('fabricui_core.xml'),
+        shibokenDir.File('fabricui_application.xml'),
         shibokenDir.File('fabricui_actions.xml'),
         shibokenDir.File('fabricui_commands.xml'),
         shibokenDir.File('fabricui_optionseditor.xml'),
@@ -522,6 +523,7 @@ if uiLibPrefix == 'ui':
 
     pythonDir = [
       'Canvas',
+      'Canvas/Application',
       'Canvas/HotkeyEditor',
       'Canvas/Commands'
     ]

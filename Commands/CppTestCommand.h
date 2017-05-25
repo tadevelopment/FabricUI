@@ -9,6 +9,7 @@
 #include "RTValCommandManager.h"
 #include "BaseScriptableCommand.h"
 #include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
 namespace FabricUI {
 namespace Commands {
@@ -141,7 +142,7 @@ class CppToPythonTestCommand
           CommandRegistry::GetCommandRegistry());
 
         FabricCore::RTVal CppToKLTestCommand = FabricCore::RTVal::Create(
-          registry->getClient(), 
+          Application::FabricApplicationStates::GetAppStates()->getContext(), 
           "CppToKLTestCommand", 
           0, 
           0);
@@ -171,11 +172,8 @@ class CppToPythonTestCommand
     {
       try
       {
-        KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
-          CommandRegistry::GetCommandRegistry());
-
         FabricCore::RTVal CppToKLTestCommand = FabricCore::RTVal::Create(
-          registry->getClient(), 
+          Application::FabricApplicationStates::GetAppStates()->getContext(), 
           "CppToKLTestCommand", 
           0, 
           0);
@@ -209,11 +207,11 @@ class CppToPythonTestCommand
         manager->CommandManager::createCommand("klTestMetaCommand");
  
         FabricCore::RTVal strRTVal = FabricCore::RTVal::ConstructString(
-          manager->getClient(), 
+          Application::FabricApplicationStates::GetAppStates()->getContext(), 
           "string_Cpp");
 
         FabricCore::RTVal floatRTVal = FabricCore::RTVal::ConstructFloat64(
-          manager->getClient(), 
+          Application::FabricApplicationStates::GetAppStates()->getContext(), 
           4.555f);
      
         QMap<QString, FabricCore::RTVal> args;

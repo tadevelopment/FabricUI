@@ -17,10 +17,8 @@ using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
  
-RTValCommandManager::RTValCommandManager(
-  Client client) 
+RTValCommandManager::RTValCommandManager() 
   : CommandManager()
-  , m_client(client)
 {
   m_RTValComplexArgRegistry.registerArg(
     new RTValPathValueArg()
@@ -30,12 +28,7 @@ RTValCommandManager::RTValCommandManager(
 RTValCommandManager::~RTValCommandManager() 
 {
 }
-
-FabricCore::Client RTValCommandManager::getClient()
-{
-  return m_client;
-}
-
+ 
 Command* RTValCommandManager::createCommand(
   const QString &cmdName, 
   const QMap<QString, RTVal> &args, 

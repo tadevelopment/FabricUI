@@ -35,14 +35,13 @@ class CommandRegistry(CppCommands.KLCommandRegistry_Python):
         the BaseCommand::registrationCallback callback.
     """
 
-    def __init__(self, client): 
+    def __init__(self): 
         """ Initializes the CommandRegistry.
         """
-        super(CommandRegistry, self).__init__(client)
+        super(CommandRegistry, self).__init__()
         # Command implementation types.
         self.COMMAND_PYTHON = 'PYTHON'
 
-        self.__client = client
         # Dictionaty of Command Object types (to construct them)
         # {cmdName, pythonCmdType}
         self.__cmdObjectTypeDict = {}
@@ -149,19 +148,12 @@ global s_cmdRegistrySingleton
 s_cmdRegistrySingleton = None
 
 def GetCmdRegistry():
-    """ Gets the CommandRegistry singleton.
-        Raises an exception if the registry is not created. 
-    """
-    if s_cmdRegistrySingleton is None:
-        raise Exception('CommandRegistry.GetCmdRegistry, the registry is null.\n\
-            To create it : CreateCmdRegistry(FabricCore.Client).')
-    else:
-        return s_cmdRegistrySingleton
+    return CreateCmdRegistry()
 
-def CreateCmdRegistry(client):
+def CreateCmdRegistry():
     """ Creates the CommandRegistry singleton.
     """
     global s_cmdRegistrySingleton
     if s_cmdRegistrySingleton is None:
-        s_cmdRegistrySingleton = CommandRegistry(client)
+        s_cmdRegistrySingleton = CommandRegistry()
     return s_cmdRegistrySingleton

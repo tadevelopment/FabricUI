@@ -5,7 +5,7 @@
 from PySide import QtGui, QtCore
 from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Commands.CommandArgsHelpers import CommandArgsHelpers
- 
+
 class CommandManagerQtCallback(QtCore.QObject):
     """ CommandManagerQtCallback is connected to the CommandManagerCallback 
         and adds the commands into the Qt undo stack when they are created. 
@@ -76,7 +76,6 @@ class CommandManagerQtCallback(QtCore.QObject):
             if cmd.canLog():
                 self.scriptEditor.logText( 
                     'Commands.' + CommandArgsHelpers.ParseCmdArgs(
-                        GetCmdManager().getClient(),
                         cmd))
             print "__onCommandDone 2"
             

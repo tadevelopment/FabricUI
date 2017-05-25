@@ -52,17 +52,16 @@ class CommandManager(CppCommands.KLCommandManager_Python):
         - GetCmdManager().createCommand("FooCmd", args, True)
     """
     
-    def __init__(self, client):
+    def __init__(self):
         """ Initializes the CommandManager.
         """
-        super(CommandManager, self).__init__(client)
+        super(CommandManager, self).__init__()
         # There is no "new" in python, we need to own the commands created
         # in Python. They are referenced in the C++ CommandManager stacks. 
-        self.__client = client
         self.__flatCommandsStack = []
 
         # Connect our-self.
-        cmdRegistry = CreateCmdRegistry(client)
+        cmdRegistry = CreateCmdRegistry()
         cmdRegistry.commandRegistered.connect(self.__onCommandRegistered)
     
     def createCmd(self, cmdName, args = {}, doCmd = True):
@@ -111,11 +110,6 @@ class CommandManager(CppCommands.KLCommandManager_Python):
         error, cmd = self._getCommandAtIndex_Python(index)
         return cmd
 
-    def getClient(self):
-        """ Implementation of Commands.KLCommandManager
-        """
-        return self.__client
-
     def synchronizeKL(self):
         """ Implementation of Commands.KLCommandManager
         """
@@ -140,18 +134,18 @@ class CommandManager(CppCommands.KLCommandManager_Python):
                     str(key) + "' doesn't exist" )
 
             if CommandArgsHelpers.IsRTValScriptableCmd(cmd):
-                if CommandArgsHelpers.IsPyRTValArg(self.__client, arg):
+                if CommandArgsHelpers.IsPyRTValArg(arg):
                     createRTValCommand = True
                     break
 
         if createRTValCommand:
             self._checkRTValCommandArgs_Python(
                 cmd, 
-                CommandArgsHelpers.CastCmdArgsToRTVal(self.__client, cmd, inputArgs))
+                CommandArgsHelpers.CastCmdArgsToRTVal(cmd, inputArgs))
         else:
             self._checkCommandArgs_Python(
                 cmd, 
-                CommandArgsHelpers.CastCmdArgsToStr(self.__client, cmd, inputArgs))
+                CommandArgsHelpers.CastCmdArgsToStr(cmd, inputArgs))
 
     def _createCommand_Python(self, cmdName, args = {}, doCmd = True):
         """ \internal, impl. of Commands.KLCommandManager_Python. """
@@ -179,7 +173,7 @@ class CommandManager(CppCommands.KLCommandManager_Python):
             if len(args) > 0:
                 self._checkRTValCommandArgs_Python(
                     cmd, CommandArgsHelpers.CastCmdArgsToRTVal(
-                        self.__client, cmd, args))
+                        cmd, args))
             if doCmd:
                 self._doCommand_Python(cmd)
             return cmd
@@ -264,21 +258,13 @@ global s_cmdManagerSingleton
 s_cmdManagerSingleton = None
 
 def GetCmdManager():
-    """ Gets the CommandManager singleton.
-        Raises an exception if the manager is not created. 
-    """
-    if s_cmdManagerSingleton is None:
-        raise Exception("CommandManager.GetCmdManager, the manager is null.\n\
-            To create it : CreateCmdManager(FabricCore.Client).")
-    else:
-        return s_cmdManagerSingleton
+    return CreateCmdManager()
 
-def CreateCmdManager(client, settings = None):
+def CreateCmdManager():
     """ Creates the CommandManager singleton.
     """
     global s_cmdManagerSingleton
     if s_cmdManagerSingleton is None:
         # Be sure the command registry is created.
-        s_cmdManagerSingleton = CommandManager(client)
-        s_cmdManagerSingleton.setSettings(settings)
+        s_cmdManagerSingleton = CommandManager()
     return s_cmdManagerSingleton

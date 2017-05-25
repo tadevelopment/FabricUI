@@ -44,7 +44,7 @@ bool OptionsPathValueResolver::knownPath(
       path.midRef(0, index).toUtf8().constData()
       );
 
-    RTVal optionsTarget = GetKLOptionsTargetRegistry(pathValue.getContext()).callMethod(
+    RTVal optionsTarget = GetKLOptionsTargetRegistry().callMethod(
       "OptionsTarget",
       "getTarget",
       1,
@@ -101,8 +101,7 @@ void OptionsPathValueResolver::getValue(
       "path").getStringCString();
 
     RTVal singleOption = GetKLOptionsTargetSingleOption(
-      path,
-      pathValue.getContext());
+      path);
 
     pathValue.setMember(
       "value", 
@@ -139,7 +138,9 @@ void OptionsPathValueResolver::setValue(
     
     int index = path.indexOf("/");
     
-    GetOptionsEditor(path.midRef(0, index).toUtf8().constData())->updateModel();
+    GetOptionsEditor(
+      path.midRef(0, index).toUtf8().constData()
+      )->updateModel();
   }
 
   catch(Exception &e)
