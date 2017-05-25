@@ -5,7 +5,6 @@
 #ifndef __UI_OPTIONS_EDITOR_HELPERS__
 #define __UI_OPTIONS_EDITOR_HELPERS__
 
-#include <QList>
 #include <QString>
 #include <QDockWidget>
 #include <FabricCore.h>

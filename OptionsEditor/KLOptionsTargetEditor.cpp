@@ -2,8 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
-
 #include "RTValDictModelItem.h"
 #include "RTValArrayModelItem.h"
 #include "OptionsEditorHelpers.h"

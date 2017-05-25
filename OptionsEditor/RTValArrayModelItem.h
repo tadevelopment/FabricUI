@@ -5,8 +5,8 @@
 #ifndef __UI_RTVAL_ARRAY_MODEL_ITEM__
 #define __UI_RTVAL_ARRAY_MODEL_ITEM__
 
-#include "BaseRTValOptionsEditor.h"
 #include "BaseRTValModelItem.h"
+#include "BaseRTValOptionsEditor.h"
 
 namespace FabricUI {
 namespace OptionsEditor {
