@@ -38,7 +38,10 @@ bool DFGPathValueResolver::knownPath(
       "path").getStringCString();
 
     int index = path.lastIndexOf(".");
- 
+    
+    if(index == -1)
+      return false;
+
     DFGExec exec = m_binding.getExec().getSubExec(
       path.midRef(0, index).toUtf8().constData()
       );

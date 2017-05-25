@@ -3,6 +3,7 @@
  */
 
 #include "GLViewportWidget.h"
+#include <iostream>
 
 using namespace FabricUI::Viewports;
 
@@ -97,6 +98,7 @@ void GLViewportWidget::initializeGL()
     m_viewport.callMethod("", "setup", 1, &m_drawContext);
     m_drawing = m_drawing.callMethod("OGLInlineDrawing", "getInstance", 0, 0);
     setGridVisible(m_gridVisible, false);
+    std::cout << "GLViewportWidget::initializeGL "<< std::endl;
     emit initComplete();
   }
   catch(FabricCore::Exception e)
@@ -222,6 +224,8 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
   }
 
   setGridVisible( m_gridVisible, shouldUpdateGL );
+  emit initComplete();
+
 }
 
 void GLViewportWidget::mousePressEvent(QMouseEvent *event)

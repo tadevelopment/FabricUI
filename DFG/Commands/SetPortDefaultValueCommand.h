@@ -3,12 +3,12 @@
 #ifndef __UI_SET_PORT_DEFAULT_VALUE_COMMAND__
 #define __UI_SET_PORT_DEFAULT_VALUE_COMMAND__
 
-#include <FabricUI/Commands/BaseRTValScriptableCommand.h>
+#include <FabricUI/Commands/BaseRTValPathValueCommand.h>
 
 namespace FabricUI {
 namespace DFG {
 
-class SetPortDefaultValueCommand : public Commands::BaseRTValScriptableCommand
+class SetPortDefaultValueCommand : public Commands::BaseRTValPathValueCommand
 {
   public:
     SetPortDefaultValueCommand();
@@ -16,22 +16,7 @@ class SetPortDefaultValueCommand : public Commands::BaseRTValScriptableCommand
     virtual ~SetPortDefaultValueCommand();
 
     /// Implementation of Command.
-    virtual bool canUndo();
-
-    /// Implementation of Command.
-    virtual bool doIt();
-
-    /// Implementation of Command.
-    virtual bool undoIt();
-
-     /// Implementation of Command.
-    virtual bool redoIt();
-
-    /// Implementation of Command.
     virtual QString getHelp();
-
-    /// Implementation of Command.
-    virtual QString getHistoryDesc();
 };
 
 } // namespace DFG

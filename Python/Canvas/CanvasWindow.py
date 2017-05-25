@@ -231,6 +231,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
     def __init__(self, settings, unguarded, noopt):
         self.settings = settings
+        self.isInitialized = False
 
         super(CanvasWindow, self).__init__()
 
@@ -262,6 +263,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.onGraphSet(self.dfgWidget.getUIGraph())
         self.valueEditor.initConnections()
         self.installEventFilter(CanvasWindowEventFilter(self))
+
 
     def _init(self):
         """Initializes the settings and config for the application.
@@ -434,7 +436,10 @@ class CanvasWindow(QtGui.QMainWindow):
         """
         self.qUndoStack = QtGui.QUndoStack()
 
-        CreateCmdManager(self.client)
+        CreateCmdManager(self.client, self.settings)
+
+        GetCmdRegistry().synchronizeKL()
+
         self.hotkeyEditorDialog = HotkeyEditorDialog(self)
 
         self.qUndoView = QtGui.QUndoView(self.qUndoStack)
@@ -498,19 +503,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
-        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor( self.client, self.settings )
-        # When the rendering options of the viewport have changed, redraw
-        self.renderingOptionsWidget.updated.connect(self.viewport.redraw)
-        # Once the Viewport has been setup (and filled its option values), update the options menu
-        self.viewport.initComplete.connect(self.renderingOptionsWidget.resetModel)
-
-        self.renderingOptionsDockWidget = QtGui.QDockWidget("Rendering Options", self)
-        self.renderingOptionsDockWidget.setObjectName("Rendering Options")
-        self.renderingOptionsDockWidget.setWidget( self.renderingOptionsWidget )
-        self.renderingOptionsDockWidget.setFeatures(self.dockFeatures)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.renderingOptionsDockWidget, QtCore.Qt.Vertical)
-        self.renderingOptionsDockWidget.hide()
-        
         # When a klWidget is activated/deactivated from the value-editor.
         self.valueEditor.refreshViewport.connect(self.viewport.redraw)
 
@@ -690,15 +682,31 @@ class CanvasWindow(QtGui.QMainWindow):
         Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.scriptEditorDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
-        # Toggle Rendering Options Widget Action
-        toggleAction = self.renderingOptionsDockWidget.toggleViewAction()
-        toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
-        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
-        windowMenu.addAction( toggleAction )
+        self._initViewportOptionEditor(windowMenu)
 
-        # add the "Help" menu.
         self.dfgWidget.populateMenuBar(self.menuBar(), False, False, False, False, True)
- 
+    
+    def _initViewportOptionEditor(self, windowMenu):
+
+        try:
+            FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
+            
+            dic = { "editorID":"Rendering Options", "editorTitle":"Rendering Options" }
+
+            cmd = GetCmdManager().createCmd('openKLOptionsTargetEditor', dic )
+     
+            self.viewport.initComplete.connect(cmd.getOptionsEditor().resetModel)
+            cmd.getOptionsEditor().updated.connect(self.viewport.redraw)
+            cmd.getOptionsEditorDock().hide()
+
+            toggleAction = cmd.getOptionsEditorDock().toggleViewAction()
+            toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
+            Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
+            windowMenu.addAction( toggleAction )
+        
+        except Exception as e:
+            print str(type(e))#.encode('utf-8'))
+
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested by manipulators
         in the viewport.

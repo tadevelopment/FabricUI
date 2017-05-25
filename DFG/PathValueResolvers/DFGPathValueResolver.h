@@ -2,10 +2,9 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_DFG_PATH_RESOLVER__
-#define __UI_DFG_PATH_RESOLVER__
+#ifndef __UI_DFG_PATH_VALUE_RESOLVER__
+#define __UI_DFG_PATH_VALUE_RESOLVER__
 
-#include <QMap>
 #include <FabricUI/PathValueResolvers/PathValueResolver.h>
 
 namespace FabricUI {
@@ -54,4 +53,4 @@ class DFGPathValueResolver : public PathValueResolvers::PathValueResolver
 } // namespace DFG
 } // namespace FabricUI
 
-#endif // __UI_DFG_PATH_RESOLVER__
+#endif // __UI_DFG_PATH_VALUE_RESOLVER__

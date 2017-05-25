@@ -9,6 +9,7 @@
 #include <FTL/JSONEnc.h>
 #include <FTL/JSONDec.h>
 #include <FTL/JSONValue.h>
+#include "FabricException.h"
 
 using namespace FabricUI;
 using namespace Util;
@@ -42,8 +43,9 @@ QString RTValUtil::getRTValType(
 
   catch(Exception &e)
   {
-    printf(
-      "RTValUtil::getRTValType: exception: %s\n", 
+    FabricException::Throw(
+      "RTValUtil::getRTValType",
+      "",
       e.getDesc_cstr());
   }
 
@@ -53,35 +55,40 @@ QString RTValUtil::getRTValType(
 RTVal RTValUtil::klRTValToRTVal(
   RTVal klRTVal)
 {
-  RTVal rtVal;
+  // RTVal rtVal;
 
-  try 
-  {
-    // Get the type of the value  
-    // stored by the KL RTVal
-    const char *dataType = klRTVal.callMethod(
-      "String", 
-      "type", 
-      0, 
-      0).getStringCString();
+  // try 
+  // {
+  //   // Get the type of the value  
+  //   // stored by the KL RTVal
+  //   const char *dataType = klRTVal.callMethod(
+  //     "String", 
+  //     "type", 
+  //     0, 
+  //     0).getStringCString();
     
-    // Construct a C++ RTVal of type `type`
-    // and set its value from the kl RTVal.
-    rtVal = RTVal::Construct(
-      klRTVal.getContext(), 
-      dataType, 
-      1, 
-      &klRTVal);
-  }
+  //   // Construct a C++ RTVal of type `type`
+  //   // and set its value from the kl RTVal.
+  //   rtVal = RTVal::Construct(
+  //     klRTVal.getContext(), 
+  //     dataType, 
+  //     1, 
+  //     &klRTVal);
+  // }
 
-  catch(Exception &e)
-  {
-    printf(
-      "RTValUtil::klRTValToRTVal: exception: %s\n", 
-      e.getDesc_cstr());
-  }
+  // catch(Exception &e)
+  // {
+  //   FabricException::Throw(
+  //     "RTValUtil::klRTValToRTVal",
+  //     "",
+  //     e.getDesc_cstr());
+  // }
 
-  return rtVal;
+  // return rtVal;
+
+  return klRTVal.isWrappedRTVal() 
+    ? klRTVal.getUnwrappedRTVal()
+    : klRTVal;
 }
 
 RTVal RTValUtil::rtValToKLRTVal(
@@ -100,8 +107,9 @@ RTVal RTValUtil::rtValToKLRTVal(
 
   catch(Exception &e)
   {
-    printf(
-      "RTValUtil::rtValToKLRTVal: exception: %s\n", 
+    FabricException::Throw(
+      "RTValUtil::rtValToKLRTVal",
+      "",
       e.getDesc_cstr());
   }
 
@@ -145,17 +153,19 @@ QString RTValUtil::rtValToJSON(
 
   catch(Exception &e)
   {
-    printf(
-      "RTValUtil::rtValToJSON: exception: %s\n", 
+    FabricException::Throw(
+      "RTValUtil::rtValToJSON",
+      "",
       e.getDesc_cstr());
   }
 
   catch ( FTL::JSONException &je )
   {
-    printf(
-      "RTValUtil::rtValToJSON : Caught JSONException: %s\n", 
-      je.getDescCStr() );
-  } 
+    FabricException::Throw(
+      "RTValUtil::rtValToJSON",
+      "Caught JSONException",
+      je.getDescCStr());
+  }
 
   return res;
 }
@@ -229,17 +239,19 @@ RTVal RTValUtil::jsonToRTVal(
 
   catch(Exception &e)
   {
-    printf(
-      "RTValUtil::jsonToRTVal: exception: %s\n", 
+    FabricException::Throw(
+      "RTValUtil::jsonToRTVal",
+      "",
       e.getDesc_cstr());
   }
 
   catch ( FTL::JSONException &je )
   {
-    printf(
-      "RTValUtil::jsonToRTVal : Caught JSONException: %s\n", 
-      je.getDescCStr() );
-  } 
+    FabricException::Throw(
+      "RTValUtil::jsonToRTVal",
+      "Caught JSONException",
+      je.getDescCStr());
+  }
 
   return rtVal;
 }
@@ -294,7 +306,7 @@ RTVal RTValUtil::forceJSONToRTVal(
       json,
       type);
   }
-
+  
   catch(Exception &e)
   {
     rtVal = Util::RTValUtil::jsonToKLRTVal(

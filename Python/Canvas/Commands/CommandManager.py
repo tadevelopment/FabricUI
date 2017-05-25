@@ -273,11 +273,12 @@ def GetCmdManager():
     else:
         return s_cmdManagerSingleton
 
-def CreateCmdManager(client):
+def CreateCmdManager(client, settings = None):
     """ Creates the CommandManager singleton.
     """
     global s_cmdManagerSingleton
     if s_cmdManagerSingleton is None:
         # Be sure the command registry is created.
         s_cmdManagerSingleton = CommandManager(client)
+        s_cmdManagerSingleton.setSettings(settings)
     return s_cmdManagerSingleton

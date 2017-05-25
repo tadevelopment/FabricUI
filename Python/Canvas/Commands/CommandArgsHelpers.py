@@ -74,7 +74,11 @@ class CommandArgsHelpers:
                                         arg = rtVal.getJSONStr()   
 
                                     else:
-                                         # Unknown type, it's in JSON already
+                                        # Unknown type, it's in JSON already
+                                        print "Key " + str(key+".value")
+                                        print "arg " + str(arg)
+
+                                        print "CastCmdArgsToStr " + str(cmd.getRTValArgType(key+".value"))
                                         if cmd.getRTValArgType(key+".value") != "RTVal":
 
                                             rtVal = client.RT.types.PathValue( 
