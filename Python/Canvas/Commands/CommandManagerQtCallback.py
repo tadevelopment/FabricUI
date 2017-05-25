@@ -71,14 +71,12 @@ class CommandManagerQtCallback(QtCore.QObject):
                 self.qUndoStack.push( self.CommandQtWrapper( cmd.getHistoryDesc() ) )
                 self.scriptEditor._echoStackIndexChanges = oldEchoStackIndexChanges
 
-            print "__onCommandDone 1 "
             #Log the commands.
             if cmd.canLog():
                 self.scriptEditor.logText( 
                     'Commands.' + CommandArgsHelpers.ParseCmdArgs(
                         GetCmdManager().getClient(),
                         cmd))
-            print "__onCommandDone 2"
             
         except Exception as e:    
                 print str(e)
