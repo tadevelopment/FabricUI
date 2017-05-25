@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
 #include "CommandRegistry.h"
 #include "RTValPathValueArg.h"
 #include "ScriptableCommand.h"
@@ -133,11 +132,6 @@ void RTValCommandManager::preProcessCommandArgs(
       if( scriptCmd->isArg(key, CommandArgFlags::IN_ARG) ||
           scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
       {
-        std::cout 
-          << "RTValCommandManager::preProcessCommandArgs " 
-          << key.toUtf8().constData()
-          << std::endl;
-
         RTVal pathValue = rtvalScriptCmd->getRTValArg(key);
         if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
         {
@@ -180,7 +174,7 @@ void RTValCommandManager::postProcessCommandArgs(
     
     QString key;
     foreach(key, scriptCmd->getArgKeys())
-    {
+    {         
       if( scriptCmd->isArg(key, CommandArgFlags::OUT_ARG) ||
           scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
       {

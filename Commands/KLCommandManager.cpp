@@ -318,9 +318,6 @@ void KLCommandManager::createKLCommandWrappers(
         1,
         &cmdIndex);
 
-      // delete klScriptableCmd;
-      // klScriptableCmd = 0;
-
       // decrement
       index--; klCmdCount--;
     }

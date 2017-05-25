@@ -71,24 +71,24 @@ class CommandArgsHelpers:
                                         rtVal = client.RT.types.PathValue(client.RT.types.String(arg))
                                         arg = Util.RTValUtil.forceRTValToJSON(rtVal)   
 
-                                    else:
-                                        # Unknown type, it's in JSON already
-                                        print "Key " + str(key+".value")
-                                        print "arg " + str(arg)
+                                    # else:
+                                    #     # Unknown type, it's in JSON already
+                                    #     print "Key " + str(key+".value")
+                                    #     print "arg " + str(arg)
 
-                                        print "CastCmdArgsToStr " + str(cmd.getRTValArgType(key+".value"))
-                                        if cmd.getRTValArgType(key+".value") != "RTVal":
+                                    #     print "CastCmdArgsToStr " + str(cmd.getRTValArgType(key+".value"))
+                                    #     if cmd.getRTValArgType(key+".value") != "RTVal":
 
-                                            rtVal = client.RT.types.PathValue( 
-                                                "",
-                                                Util.RTValUtil.forceJSONToKLRTVal(
-                                                    client,
-                                                    arg,
-                                                    cmd.getRTValArgType(key+".value")
-                                                    )
-                                                )
+                                    #         rtVal = client.RT.types.PathValue( 
+                                    #             "",
+                                    #             Util.RTValUtil.forceJSONToKLRTVal(
+                                    #                 client,
+                                    #                 arg,
+                                    #                 cmd.getRTValArgType(key+".value")
+                                    #                 )
+                                    #             )
          
-                                            arg = Util.RTValUtil.forceRTValToJSON(rtVal)   
+                                    #         arg = Util.RTValUtil.forceRTValToJSON(rtVal)   
 
 
                             # If the input arg is a string and the cmd arg is not, 

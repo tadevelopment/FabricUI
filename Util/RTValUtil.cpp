@@ -55,37 +55,6 @@ QString RTValUtil::getRTValType(
 RTVal RTValUtil::klRTValToRTVal(
   RTVal klRTVal)
 {
-  // RTVal rtVal;
-
-  // try 
-  // {
-  //   // Get the type of the value  
-  //   // stored by the KL RTVal
-  //   const char *dataType = klRTVal.callMethod(
-  //     "String", 
-  //     "type", 
-  //     0, 
-  //     0).getStringCString();
-    
-  //   // Construct a C++ RTVal of type `type`
-  //   // and set its value from the kl RTVal.
-  //   rtVal = RTVal::Construct(
-  //     klRTVal.getContext(), 
-  //     dataType, 
-  //     1, 
-  //     &klRTVal);
-  // }
-
-  // catch(Exception &e)
-  // {
-  //   FabricException::Throw(
-  //     "RTValUtil::klRTValToRTVal",
-  //     "",
-  //     e.getDesc_cstr());
-  // }
-
-  // return rtVal;
-
   return klRTVal.isWrappedRTVal() 
     ? klRTVal.getUnwrappedRTVal()
     : klRTVal;
@@ -98,11 +67,7 @@ RTVal RTValUtil::rtValToKLRTVal(
 
   try 
   {
-    klRTVal = RTVal::Construct(
-      rtVal.getContext(), 
-      "RTVal", 
-      1, 
-      &rtVal);
+    klRTVal = RTVal::ConstructWrappedRTVal(rtVal);
   }
 
   catch(Exception &e)

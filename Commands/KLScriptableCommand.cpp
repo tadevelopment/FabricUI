@@ -94,11 +94,8 @@ bool KLScriptableCommand::hasArg(
 
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
-      Commands::CommandRegistry::GetCommandRegistry());
-
     RTVal keyVal = RTVal::ConstructString(
-      registry->getClient(), 
+      m_klCmd.getContext(), 
       key.toUtf8().constData());
 
     res = m_klCmd.callMethod(
@@ -128,17 +125,14 @@ bool KLScriptableCommand::isArg(
 
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
-      Commands::CommandRegistry::GetCommandRegistry());
-
     RTVal args[2] = 
     {
       RTVal::ConstructString(
-        registry->getClient(), 
+        m_klCmd.getContext(), 
         key.toUtf8().constData()),
 
       RTVal::ConstructUInt32(
-        registry->getClient(), 
+        m_klCmd.getContext(), 
         flag)
     };
  
@@ -212,15 +206,11 @@ void KLScriptableCommand::setArg(
   const QString &key, 
   const QString &json) 
 {
-
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
-      Commands::CommandRegistry::GetCommandRegistry());
-
     // Get the argument from its JSON description.
     RTVal klRTVal = RTValUtil::forceJSONToRTVal(
-        registry->getClient(),
+        m_klCmd.getContext(),
         json,
         getRTValArgType(key));
 
@@ -242,11 +232,8 @@ void KLScriptableCommand::validateSetArgs()
 
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
-      Commands::CommandRegistry::GetCommandRegistry());
-
     RTVal errorVal = RTVal::ConstructString(
-      registry->getClient(), 
+      m_klCmd.getContext(), 
       "");
 
     m_klCmd.callMethod(
@@ -312,11 +299,8 @@ QString KLScriptableCommand::getRTValArgType(
 
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
-      Commands::CommandRegistry::GetCommandRegistry());
-
     RTVal keyVal = RTVal::ConstructString(
-      registry->getClient(), 
+      m_klCmd.getContext(), 
       key.toUtf8().constData());
 
     res = m_klCmd.callMethod(
@@ -358,11 +342,8 @@ RTVal KLScriptableCommand::getRTValArg(
 
   try 
   {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
-      Commands::CommandRegistry::GetCommandRegistry());
-
     RTVal keyVal = RTVal::ConstructString(
-      registry->getClient(), 
+      m_klCmd.getContext(), 
       key.toUtf8().constData());
 
     res = RTValUtil::forceToRTVal(m_klCmd.callMethod(
@@ -397,12 +378,9 @@ void KLScriptableCommand::setRTValArg(
   QString strError;
 
   try 
-  {
-    KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry*>(
-      Commands::CommandRegistry::GetCommandRegistry());
-    
+  {  
     RTVal keyVal = RTVal::ConstructString(
-      registry->getClient(), 
+      m_klCmd.getContext(), 
       key.toUtf8().constData());
     
     RTVal args[3] = { 
@@ -410,7 +388,7 @@ void KLScriptableCommand::setRTValArg(
       RTValUtil::forceToKLRTVal(value), 
       // error
       RTVal::ConstructString(
-        registry->getClient(), 
+        m_klCmd.getContext(), 
         "") 
     };
 
