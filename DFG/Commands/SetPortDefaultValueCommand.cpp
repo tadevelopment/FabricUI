@@ -1,15 +1,13 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
 #include "SetPortDefaultValueCommand.h"
-#include <FabricUI/Util/FabricException.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
-
+ 
 using namespace FabricUI;
 using namespace DFG;
-using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
- 
+  
 SetPortDefaultValueCommand::SetPortDefaultValueCommand() 
   : BaseRTValPathValueCommand()
 {

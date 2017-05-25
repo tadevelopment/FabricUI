@@ -8,7 +8,7 @@
 #include "KLCommandRegistry.h"
 #include "RTValCommandManager.h"
 #include "BaseScriptableCommand.h"
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 namespace FabricUI {
@@ -159,7 +159,7 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        Util::FabricException::Throw(
+        Application::FabricException::Throw(
           "CppToPythonTestCommand::RegisterKLTestCommands",
           e.getDesc_cstr(),
           "",
@@ -187,7 +187,7 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        Util::FabricException::Throw(
+        Application::FabricException::Throw(
           "CppToPythonTestCommand::CreateKLTestCommandsInKL",
           e.getDesc_cstr(),
           "",
@@ -228,7 +228,7 @@ class CppToPythonTestCommand
 
       catch(FabricCore::Exception &e)
       {
-        Util::FabricException::Throw(
+        Application::FabricException::Throw(
           "CppToPythonTestCommand::CreateKLTestCommands",
           e.getDesc_cstr(),
           "",

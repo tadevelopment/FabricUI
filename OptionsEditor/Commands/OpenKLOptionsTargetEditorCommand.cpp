@@ -4,15 +4,15 @@
 
 #include <FabricCore.h>
 #include "../OptionsEditorHelpers.h"
-#include <FabricUI/Util/FabricException.h>
 #include "OpenKLOptionsTargetEditorCommand.h"
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
+#include <FabricUI/Application/FabricException.h>
  
 using namespace FabricUI;
-using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
+using namespace Application;
 using namespace OptionsEditor;
 
 OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand() 

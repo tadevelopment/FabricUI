@@ -6,8 +6,8 @@
 #include "KLOptionsTargetEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "KLOptionsTargetModelItem.h"
-#include <FabricUI/Util/FabricException.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/RTValCommandManager.h>
 
 using namespace FabricUI;
@@ -15,6 +15,7 @@ using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace ValueEditor;
+using namespace Application;
 using namespace OptionsEditor;
 
 KLOptionsTargetModelItem::KLOptionsTargetModelItem(

@@ -4,7 +4,7 @@
 
 #include "KLCommandHelpers.h"
 #include "KLCommandManager.h"
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricCore;
@@ -28,7 +28,7 @@ QString GetKLCommandName(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "KLCommandHelpers::GetKLCommandName",
       "",
       e.getDesc_cstr());
@@ -51,7 +51,7 @@ bool CanKLCommandUndo(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "KLCommandHelpers::CanKLCommandUndo",
       "",
       e.getDesc_cstr());
@@ -74,7 +74,7 @@ bool AddKLCommandToUndoStack(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "KLCommandHelpers::AddKLCommandToUndoStack",
       "",
       e.getDesc_cstr());
@@ -97,7 +97,7 @@ bool CanKLCommandLog(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "KLCommandHelpers::CanKLCommandLog",
       "",
       e.getDesc_cstr());
@@ -131,7 +131,7 @@ bool DoKLCommand(
     
     strError = args[1].getStringCString();
     if(!strError.isEmpty())
-      Util::FabricException::Throw(
+      Application::FabricException::Throw(
         "KLCommandHelpers::DoKLCommand",
         strError);
 
@@ -140,7 +140,7 @@ bool DoKLCommand(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "KLCommandHelpers::DoKLCommand",
       strError,
       e.getDesc_cstr());
@@ -171,7 +171,7 @@ bool UndoKLCommand()
     strError = valError.getStringCString();
     if(!res || !strError.isEmpty())
     {
-      Util::FabricException::Throw(
+      Application::FabricException::Throw(
         "KLCommandHelpers::UndoKLCommand",
         strError);
 
@@ -183,7 +183,7 @@ bool UndoKLCommand()
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "KLCommandHelpers::UndoKLCommand",
       strError,
       e.getDesc_cstr());
@@ -214,7 +214,7 @@ bool RedoKLCommand()
     strError = valError.getStringCString();
     if(!res || !strError.isEmpty())
     {
-      Util::FabricException::Throw(
+      Application::FabricException::Throw(
         "KLCommandHelpers::RedoKLCommand",
         strError);
 
@@ -226,7 +226,7 @@ bool RedoKLCommand()
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "KLCommandHelpers::RedoKLCommand",
       strError,
       e.getDesc_cstr());
@@ -249,7 +249,7 @@ QString GetKLCommandHelp(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "KLCommandHelpers::GetKLCommandHelp",
       "",
       e.getDesc_cstr());
@@ -272,7 +272,7 @@ QString GetKLCommandHistoryDesc(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "KLCommandHelpers::GetKLCommandHistoryDesc",
       "",
       e.getDesc_cstr());

@@ -7,15 +7,14 @@
 #include "ScriptableCommand.h"
 #include "RTValCommandManager.h"
 #include "RTValScriptableCommand.h"
-#include <FabricUI/Util/RTValUtil.h>
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 
 using namespace FabricUI;
-using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
+using namespace Application;
  
 RTValCommandManager::RTValCommandManager() 
   : CommandManager()

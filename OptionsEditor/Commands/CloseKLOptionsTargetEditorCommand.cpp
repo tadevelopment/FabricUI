@@ -4,13 +4,12 @@
  
 #include <FabricCore.h>
 #include "../OptionsEditorHelpers.h"
-#include <FabricUI/Util/FabricException.h>
 #include "CloseKLOptionsTargetEditorCommand.h"
 #include <FabricUI/Commands/CommandArgHelpers.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
-using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace Application;

@@ -2,14 +2,15 @@
 
 #include "DFGPathValueResolver.h"
 #include <FabricUI/Util/RTValUtil.h>
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
 using namespace DFG;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
- 
+using namespace Application;
+
 DFGPathValueResolver::DFGPathValueResolver()
 {
 }

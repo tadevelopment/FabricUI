@@ -9,11 +9,12 @@
 #include <FTL/JSONEnc.h>
 #include <FTL/JSONDec.h>
 #include <FTL/JSONValue.h>
-#include "FabricException.h"
+#include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
+using namespace Application;
 
 RTValUtil::RTValUtil()
 {

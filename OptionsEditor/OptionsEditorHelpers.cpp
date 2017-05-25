@@ -7,7 +7,7 @@
 #include "OptionsEditorHelpers.h"
 #include "KLOptionsTargetEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricCore;
@@ -123,7 +123,7 @@ inline RTVal GetKLSingleOption(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "OptionsEditorHelpers::GetKLSingleOption",
       "",
       e.getDesc_cstr());
@@ -191,7 +191,7 @@ inline void SetKLSingleOption(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "OptionsEditorHelpers::SetKLSingleOption",
       "",
       e.getDesc_cstr());
@@ -220,7 +220,7 @@ RTVal GetKLOptionsTargetRegistry()
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "OptionsEditorHelpers::GetKLOptionsTargetRegistry",
       "",
       e.getDesc_cstr());
@@ -251,7 +251,7 @@ RTVal GetKLOptionsTargetOptions(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "OptionsEditorHelpers::GetKLOptionsTargetOptions",
       "",
       e.getDesc_cstr());
@@ -283,7 +283,7 @@ RTVal GetKLOptionsTargetSingleOption(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "OptionsEditorHelpers::GetKLOptionsTargetSingleOption",
       "",
       e.getDesc_cstr());
@@ -336,7 +336,7 @@ void SetKLOptionsTargetSingleOption(
 
   catch(Exception &e)
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "OptionsEditorHelpers::SetKLOptionsTargetSingleOption",
       "",
       e.getDesc_cstr());

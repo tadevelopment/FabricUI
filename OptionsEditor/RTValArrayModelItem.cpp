@@ -5,15 +5,15 @@
 #include <QString>
 #include "RTValArrayModelItem.h"
 #include <FabricUI/Util/RTValUtil.h>
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
 using namespace ValueEditor; 
-using namespace OptionsEditor;
 using namespace Application;
+using namespace OptionsEditor;
 
 RTValArrayModelItem::RTValArrayModelItem(
   const std::string &name,

@@ -2,12 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
 #include <QStringList>
 #include "RTValCommandManager.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;

@@ -4,13 +4,14 @@
 #include "../OptionsEditorHelpers.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "OptionsPathValueResolver.h"
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
+using namespace Application;
 using namespace OptionsEditor;
- 
+
 OptionsPathValueResolver::OptionsPathValueResolver()
 {
 }

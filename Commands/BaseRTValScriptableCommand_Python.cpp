@@ -2,13 +2,13 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
  
-#include <FabricUI/Util/FabricException.h>
 #include "BaseRTValScriptableCommand_Python.h"
+#include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
-using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
+using namespace Application;
 
 BaseRTValScriptableCommand_Python::BaseRTValScriptableCommand_Python() 
   : BaseRTValScriptableCommand() 

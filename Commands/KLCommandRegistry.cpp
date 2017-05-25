@@ -5,7 +5,7 @@
 #include "KLCommand.h"
 #include "KLCommandRegistry.h"
 #include "KLScriptableCommand.h"
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;

@@ -8,8 +8,8 @@
 #include "OptionsPathValueResolver.h"
 #include "OpenKLOptionsTargetEditorCommand.h"
 #include "CloseKLOptionsTargetEditorCommand.h"
-#include "SetKLOptionsTargetModelItemCommand.h"
 #include <FabricUI/Commands/CommandRegistry.h>
+#include "SetKLOptionsTargetModelItemCommand.h"
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 
 namespace FabricUI {

@@ -6,11 +6,11 @@
 #include "CommandManager.h"
 #include "CommandRegistry.h"
 #include "ScriptableCommand.h"
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
-using namespace Util;
 using namespace Commands;
+using namespace Application;
 
 bool CommandManager::s_instanceFlag = false;
 CommandManager* CommandManager::s_cmdManager = 0;

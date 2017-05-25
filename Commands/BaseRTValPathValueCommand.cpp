@@ -3,7 +3,7 @@
 #include "CommandArgFlags.h"
 #include "CommandArgHelpers.h"
 #include "BaseRTValPathValueCommand.h"
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 

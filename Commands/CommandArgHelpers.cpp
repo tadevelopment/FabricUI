@@ -3,7 +3,7 @@
 //
 
 #include "CommandArgHelpers.h"
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 
 namespace FabricUI {
 namespace Commands {
@@ -39,9 +39,9 @@ QString CreateHistoryDescFromArgs(
     }
   }
  
-  catch(Util::FabricException &e) 
+  catch(Application::FabricException &e) 
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "CommandArgHelpers::CreateHistoryDescFromArgs",
       "",
       e.what());
@@ -93,9 +93,9 @@ QString CreateHelpFromArgs(
     }
   }
  
-  catch(Util::FabricException &e) 
+  catch(Application::FabricException &e) 
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "CommandArgHelpers::CreateHelpFromArgs",
       "",
       e.what());
@@ -160,9 +160,9 @@ QString CreateHelpFromRTValArgs(
     }
   }
  
-  catch(Util::FabricException &e) 
+  catch(Application::FabricException &e) 
   {
-    Util::FabricException::Throw(
+    Application::FabricException::Throw(
       "CommandArgHelpers::CreateHelpFromRTValArgs",
       "",
       e.what());

@@ -4,11 +4,12 @@
 
 #include "CommandRegistry.h"
 #include <FabricUI/Util/TypeInfo.h>
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
+using namespace Application;
 
 bool CommandRegistry::s_instanceFlag = false;
 CommandRegistry* CommandRegistry::s_cmdRegistry = 0;

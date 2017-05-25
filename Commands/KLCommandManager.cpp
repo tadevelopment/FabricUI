@@ -5,11 +5,10 @@
 #include "KLCommand.h"
 #include "KLCommandManager.h"
 #include "KLScriptableCommand.h"
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
-using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace Application;

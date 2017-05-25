@@ -10,7 +10,7 @@
 #include <exception>
 
 namespace FabricUI {
-namespace Util {
+namespace Application {
 
 #define NOTHING 0
 #define PRINT 1

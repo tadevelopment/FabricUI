@@ -6,12 +6,13 @@
 #include "CommandArgFlags.h"
 #include "RTValPathValueArg.h"
 #include <FabricUI/Util/RTValUtil.h>
-#include <FabricUI/Util/FabricException.h>
+#include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
+using namespace Application;
 
 RTValPathValueArg::RTValPathValueArg() {}
 
