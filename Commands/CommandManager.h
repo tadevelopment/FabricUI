@@ -9,6 +9,8 @@
 #include <QList>
 #include <QObject>
 #include "Command.h"
+#include <QSettings>
+#include <QSharedPointer>
 
 // Need to use a typedef because gcc doesn't support templated default arguments:
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=39426 
@@ -89,6 +91,12 @@ class CommandManager : public QObject
       unsigned index
       );
 
+    void setSettings(
+      QSettings *settings
+      );
+
+    QSettings* getSettings();
+
   signals:
     /// Emitted when a top command has 
     /// been succefully pushed to the stack.
@@ -147,12 +155,12 @@ class CommandManager : public QObject
     struct StackedCommand 
     {
       bool succeeded;
-      Command* topLevelCmd;
-      QList<Command*> lowLevelCmds;
+      // Use shared pointer so th
+      QSharedPointer< Command > topLevelCmd;
+      QList< QSharedPointer<Command> > lowLevelCmds;
 
       StackedCommand() 
       {
-        topLevelCmd = 0;
         succeeded = false;
       }
     };
@@ -193,6 +201,8 @@ class CommandManager : public QObject
       StackedCommand &stackedCmd,
       const QString &error = QString()
       );
+
+    QSettings *m_settings;
 
     /// CommandManager singleton, set from Constructor.
     static CommandManager *s_cmdManager;

@@ -17,6 +17,7 @@ CommandManager* CommandManager::s_cmdManager = 0;
 
 CommandManager::CommandManager() 
   : QObject()
+  , m_settings(0)
 {
   if(s_instanceFlag)
     FabricException::Throw(
@@ -60,7 +61,7 @@ Command* CommandManager::createCommand(
   {  
     Command *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
       cmdName);
-    
+
     if(args.size() > 0) 
       checkCommandArgs(cmd, args);
 
@@ -132,19 +133,19 @@ void CommandManager::doCommand(
       
       // Inform a command has been succefully executed.
       emit commandDone(
-        m_undoStack[m_undoStack.size() - 1].topLevelCmd);
+        m_undoStack[m_undoStack.size() - 1].topLevelCmd.data());
     }
   }
 
   // Delete no-undoable commands.
-  else
-  {
-    // Inform a command has been succefully executed.
-    emit commandDone(cmd);
+  // else
+  // {
+  //   // Inform a command has been succefully executed.
+  //   emit commandDone(cmd);
       
-    delete cmd;
-    cmd = 0;
-  }
+  //   delete cmd;
+  //   cmd = 0;
+  // }
 }
 
 void CommandManager::undoCommand() 
@@ -161,7 +162,7 @@ void CommandManager::undoCommand()
   }
 
   StackedCommand stackedCmd = m_undoStack[m_undoStack.size() - 1];
-  Command *top = stackedCmd.topLevelCmd;
+  Command *top = stackedCmd.topLevelCmd.data();
 
   int lowLevelCmdsCount = int(stackedCmd.lowLevelCmds.size());
   if(lowLevelCmdsCount > 0)
@@ -177,7 +178,7 @@ void CommandManager::undoCommand()
             i, 
             stackedCmd);
 
-        postProcessCommandArgs(stackedCmd.lowLevelCmds[i]);
+        postProcessCommandArgs(stackedCmd.lowLevelCmds[i].data());
       }
        
       catch(FabricException &e) 
@@ -230,7 +231,7 @@ void CommandManager::redoCommand()
   }
 
   StackedCommand stackedCmd = m_redoStack[m_redoStack.size() - 1];
-  Command *top = stackedCmd.topLevelCmd;
+  Command *top = stackedCmd.topLevelCmd.data();
 
   int lowLevelCmdsCount = int(stackedCmd.lowLevelCmds.size());
   if(lowLevelCmdsCount > 0) 
@@ -244,7 +245,7 @@ void CommandManager::redoCommand()
             i, 
             stackedCmd);
         
-        postProcessCommandArgs(stackedCmd.lowLevelCmds[i]);
+        postProcessCommandArgs(stackedCmd.lowLevelCmds[i].data());
      }
        
       catch(FabricException &e) 
@@ -304,12 +305,23 @@ Command* CommandManager::getCommandAtIndex(
   unsigned index)
 {
   if(index >= 0 && index < unsigned(m_undoStack.size()))
-    return m_undoStack[index].topLevelCmd;
+    return m_undoStack[index].topLevelCmd.data();
 
   else if (index >= unsigned(m_undoStack.size()) && index < count())
-    return m_redoStack[index - m_undoStack.size()].topLevelCmd;
+    return m_redoStack[index - m_undoStack.size()].topLevelCmd.data();
 
   return 0;
+}
+
+void CommandManager::setSettings(
+  QSettings *settings)
+{
+  m_settings = settings;
+}
+
+QSettings* CommandManager::getSettings()
+{
+  return m_settings;
 }
 
 QString CommandManager::getContent()
@@ -383,15 +395,15 @@ void CommandManager::clearCommandStack(
     // in the case we don't own it (Python wrapping)
     if(stackedCmd.topLevelCmd != 0)
     { 
-      delete stackedCmd.topLevelCmd;
-      stackedCmd.topLevelCmd = 0;
+      stackedCmd.topLevelCmd.clear();
+      //stackedCmd.topLevelCmd = 0;
 
       for (int j = 0; j < stackedCmd.lowLevelCmds.size(); ++j)
       {
         if(stackedCmd.lowLevelCmds[j] != 0)
         { 
-          delete stackedCmd.lowLevelCmds[j];
-          stackedCmd.topLevelCmd = 0;
+          /*delete*/ stackedCmd.lowLevelCmds[j].clear();
+          //stackedCmd.topLevelCmd = 0;
         }
       }
     }
@@ -405,8 +417,11 @@ void CommandManager::pushTopCommand(
   bool succeeded) 
 { 
   StackedCommand stackedCmd;
-  stackedCmd.topLevelCmd = cmd;
+
+  QSharedPointer< Command > prt(cmd);
+  stackedCmd.topLevelCmd = prt;
   stackedCmd.succeeded = succeeded;
+
   m_undoStack.push_back(stackedCmd);
   commandPushed(cmd, false);
 }
@@ -414,7 +429,9 @@ void CommandManager::pushTopCommand(
 void CommandManager::pushLowCommand(
   Command *cmd) 
 { 
-  m_undoStack[m_undoStack.size() - 1].lowLevelCmds.push_back(cmd);
+  QSharedPointer< Command > prt(cmd);
+
+  m_undoStack[m_undoStack.size() - 1].lowLevelCmds.push_back(prt);
   commandPushed(cmd, true);
 }
 
@@ -436,7 +453,7 @@ QString CommandManager::getStackContent(
   {
     StackedCommand stackedCmd = stack[i];
 
-    Command *top = stackedCmd.topLevelCmd;
+    Command *top = stackedCmd.topLevelCmd.data();
     ScriptableCommand *scriptableTop = dynamic_cast<ScriptableCommand *>(top);
     
     QString desc = scriptableTop 
@@ -448,7 +465,7 @@ QString CommandManager::getStackContent(
 
     for (int j = 0; j < stackedCmd.lowLevelCmds.size(); ++j)
     {
-      Command *low = stackedCmd.lowLevelCmds[j];
+      Command *low = stackedCmd.lowLevelCmds[j].data();
       ScriptableCommand *scriptableLow = dynamic_cast<ScriptableCommand *>(low);
       
       QString desc = scriptableLow ? 

@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include <QStringList>
 #include "RTValCommandManager.h"
 #include <FabricUI/Util/RTValUtil.h>
@@ -128,12 +129,34 @@ void BaseRTValScriptableCommand::setArg(
           json)
       )
     {
+      std::cout 
+        << "BaseRTValScriptableCommand::setArg 1 " 
+        << std::endl;
+
+      std::cout 
+        << "complexArgType " 
+        << complexArgType.toUtf8().constData() 
+        << std::endl;
+
+      std::cout 
+        << "json " 
+        << json.toUtf8().constData() 
+        << std::endl;
+
       RTVal rtVal = RTValUtil::forceJSONToRTVal(
         GetManager()->getClient(),
         json,
         complexArgType);
 
+      std::cout 
+        << "BaseRTValScriptableCommand::setArg 2 " 
+        << std::endl;
+
       setRTValArg(mainKey, rtVal);
+
+      std::cout 
+        << "BaseRTValScriptableCommand::setArg 3 " 
+        << std::endl;
     }
 
     // Known type, cast the JSON to a RTVal.

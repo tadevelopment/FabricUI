@@ -68,7 +68,7 @@ void KLCommandManager::undoCommand()
 
   CommandManager::undoCommand();
   StackedCommand stackedCmd = m_redoStack[m_redoStack.size() - 1];
-  m_klCmdUndoStackCount -= isKLCommand(stackedCmd.topLevelCmd) ? 1 : 0;
+  m_klCmdUndoStackCount -= isKLCommand(stackedCmd.topLevelCmd.data()) ? 1 : 0;
 }
 
 void KLCommandManager::redoCommand() 
@@ -86,7 +86,7 @@ void KLCommandManager::redoCommand()
 
   CommandManager::redoCommand();
   StackedCommand stackedCmd = m_undoStack[m_undoStack.size() - 1];
-  m_klCmdUndoStackCount += isKLCommand(stackedCmd.topLevelCmd) ? 1 : 0;
+  m_klCmdUndoStackCount += isKLCommand(stackedCmd.topLevelCmd.data()) ? 1 : 0;
 }
 
 void KLCommandManager::clear() 
@@ -302,7 +302,7 @@ void KLCommandManager::createKLCommandWrappers(
       pushTopCommand(klScriptableCmd, true);
       
       emit commandDone(
-        m_undoStack[m_undoStack.size() - 1].topLevelCmd);
+        m_undoStack[m_undoStack.size() - 1].topLevelCmd.data());
     }
 
     else if(!klScriptableCmd->canUndo() && klScriptableCmd->addToUndoStack())
@@ -318,8 +318,8 @@ void KLCommandManager::createKLCommandWrappers(
         1,
         &cmdIndex);
 
-      delete klScriptableCmd;
-      klScriptableCmd = 0;
+      // delete klScriptableCmd;
+      // klScriptableCmd = 0;
 
       // decrement
       index--; klCmdCount--;
@@ -331,7 +331,7 @@ void KLCommandManager::createKLCommandWrappers(
     pushTopCommand(new KLCommand(klCmd), true);
 
     emit commandDone(
-      m_undoStack[m_undoStack.size() - 1].topLevelCmd);
+      m_undoStack[m_undoStack.size() - 1].topLevelCmd.data());
   }
 }
 
