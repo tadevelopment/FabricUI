@@ -5,7 +5,7 @@
 from FabricEngine.Canvas.Utils import *
 from FabricEngine.FabricUI import Commands as CppCommands
 from FabricEngine.Canvas.Commands.CommandRegistry import *
-from FabricEngine.Canvas.Commands.CommandArgsHelpers import CommandArgsHelpers
+from FabricEngine.Canvas.Commands.CommandArgHelpers import CommandArgHelpers
 
 class CommandManager(CppCommands.KLCommandManager_Python):
     
@@ -72,7 +72,12 @@ class CommandManager(CppCommands.KLCommandManager_Python):
         try:
             cmd = GetCmdRegistry().createCmd(cmdName)
             if len(args) > 0:
-                self.__castAndCheckCmdArgs(cmd, args)
+                createRTValCommand, args = CommandArgHelpers.CastAndCheckCmdArgs(cmd, args)
+                if createRTValCommand:
+                    self._checkRTValCommandArgs_Python(cmd, args)
+                else:
+                    self._checkCommandArgs_Python(cmd, args)
+               
             if doCmd:
                 self.doCmd(cmd)
             return cmd
@@ -116,43 +121,12 @@ class CommandManager(CppCommands.KLCommandManager_Python):
         self._synchronizeKL_Python()
 
     ### \internal, don't call these methods.
-    def __castAndCheckCmdArgs(self, cmd, inputArgs):
-        """ \internal, casts the commands's args depending of their types.
-        """
-        if not CommandArgsHelpers.IsScriptableCmd(cmd):
-            raise Exception(
-                "CommandManager.__castAndCheckCmdArgs, error: Command '" +
-                str(cmd.getName()) + "' is not scriptable" )
-
-        # If the command is a RTValScriptable and its RTVal args type have
-        # been set, call checkRTValCommandArgs, checkCommandArgs otherwise.
-        createRTValCommand = False
-        for key, arg in inputArgs.iteritems():
-            if cmd.hasArg(key) is False:
-                raise Exception(
-                    "CommandManager.__castAndCheckCmdArgs, error: arg '" + 
-                    str(key) + "' doesn't exist" )
-
-            if CommandArgsHelpers.IsRTValScriptableCmd(cmd):
-                if CommandArgsHelpers.IsPyRTValArg(arg):
-                    createRTValCommand = True
-                    break
-
-        if createRTValCommand:
-            self._checkRTValCommandArgs_Python(
-                cmd, 
-                CommandArgsHelpers.CastCmdArgsToRTVal(cmd, inputArgs))
-        else:
-            self._checkCommandArgs_Python(
-                cmd, 
-                CommandArgsHelpers.CastCmdArgsToStr(cmd, inputArgs))
-
     def _createCommand_Python(self, cmdName, args = {}, doCmd = True):
         """ \internal, impl. of Commands.KLCommandManager_Python. """
         try:
             cmd = GetCmdRegistry().createCmd(cmdName)
             if len(args) > 0:
-                self._checkCommandArgs_Python(cmd, args)
+                self._checkCommandArgs_Python(cmd, CommandArgHelpers.CastCmdArgsToRTVal(cmd, args))
             if doCmd:
                 self._doCommand_Python(cmd)
             return cmd
@@ -171,9 +145,7 @@ class CommandManager(CppCommands.KLCommandManager_Python):
         try:
             cmd = GetCmdRegistry().createCmd(cmdName)
             if len(args) > 0:
-                self._checkRTValCommandArgs_Python(
-                    cmd, CommandArgsHelpers.CastCmdArgsToRTVal(
-                        cmd, args))
+                self._checkRTValCommandArgs_Python(cmd, args)
             if doCmd:
                 self._doCommand_Python(cmd)
             return cmd

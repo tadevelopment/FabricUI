@@ -12,6 +12,7 @@ using namespace FabricCore;
 using namespace Application;
 
 DFGPathValueResolver::DFGPathValueResolver()
+ : BasePathValueResolver()
 {
 }
 

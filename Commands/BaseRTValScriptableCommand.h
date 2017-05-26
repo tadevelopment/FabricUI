@@ -34,7 +34,8 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
     C++ interfaces cannot be wrapped in python by shiboken. New commands
     must specialize this class to be accessible from python.
   */
-
+  Q_OBJECT
+  
   public:
     BaseRTValScriptableCommand();
     

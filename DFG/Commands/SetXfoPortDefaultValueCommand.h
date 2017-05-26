@@ -10,6 +10,8 @@ namespace DFG {
 
 class SetXfoPortDefaultValueCommand : public Commands::BaseRTValScriptableCommand
 {
+  Q_OBJECT
+  
   public:    
     SetXfoPortDefaultValueCommand();
 

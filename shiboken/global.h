@@ -6,7 +6,8 @@
 #endif
 
 #include "pyside_global.h"
-
+#include "global_application.h"
+#include "global_util.h"
 #include "global_commands.h"
 #include "global_actions.h"
 #include "global_dialog.h"
@@ -125,9 +126,6 @@
 #include <FabricUI/Viewports/GLViewportWidget.h>
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Viewports/TimeLineWidget.h>
-
-#include "global_util.h"
-#include "global_application.h"
 
 #include <FabricUI/SceneHub/SHGLScene.h>
 #include <FabricUI/SceneHub/SHGLRenderer.h>

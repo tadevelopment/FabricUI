@@ -2,10 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include "CommandRegistry.h"
 #include "RTValPathValueArg.h"
-#include "BaseScriptableCommand.h"
 #include "RTValCommandManager.h"
+#include "BaseScriptableCommand.h"
 #include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/CommandArgFlags.h>
@@ -81,9 +82,11 @@ void RTValCommandManager::checkCommandArgs(
   BaseCommand *cmd,
   const QMap<QString, RTVal> &args)
 { 
-  BaseRTValScriptableCommand* rtvalScriptCmd = static_cast<BaseRTValScriptableCommand*>(cmd);
-  
-  if(!rtvalScriptCmd) 
+  std::cout << "RTValCommandManager::checkCommandArgs 1" << std::endl;
+  BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
+  std::cout << "RTValCommandManager::checkCommandArgs 2 " << bool(scriptCmd) << std::endl;
+
+  if(!scriptCmd) 
     FabricException::Throw(
       "RTValCommandManager::checkCommandArgs",
       "BaseCommand '" + cmd->getName() + "' is created with args, " + 
@@ -96,38 +99,37 @@ void RTValCommandManager::checkCommandArgs(
   {
     ite.next();
 
-    rtvalScriptCmd->setRTValArg(
+    scriptCmd->setRTValArg(
       ite.key(), 
       ite.value());
   }
 
-  BaseScriptableCommand* scriptCmd = static_cast<BaseScriptableCommand*>(cmd);
   scriptCmd->validateSetArgs();
 }
 
 void RTValCommandManager::preProcessCommandArgs(
   BaseCommand* cmd)
 {
-  BaseRTValScriptableCommand* rtvalScriptCmd = static_cast<BaseRTValScriptableCommand*>(cmd);
-  
-  if(!rtvalScriptCmd)
+  std::cout << "RTValCommandManager::preProcessCommandArgs 1" << std::endl;
+  BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
+  std::cout << "RTValCommandManager::preProcessCommandArgs 2 " << bool(scriptCmd) << std::endl;
+
+  if(!scriptCmd)
     return;
 
   try
   {
-    BaseScriptableCommand* scriptCmd = static_cast<BaseScriptableCommand*>(cmd);
-    
     QString key;
     foreach(key, scriptCmd->getArgKeys())
     {
       if( scriptCmd->isArg(key, CommandArgFlags::IN_ARG) ||
           scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
       {
-        RTVal pathValue = rtvalScriptCmd->getRTValArg(key);
+        RTVal pathValue = scriptCmd->getRTValArg(key);
         if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
         {
           PathValueResolverRegistry::GetRegistry()->getValue(pathValue);
-          rtvalScriptCmd->setRTValArg(key, pathValue);
+          scriptCmd->setRTValArg(key, pathValue);
         }
       }
     }
@@ -154,27 +156,30 @@ void RTValCommandManager::preProcessCommandArgs(
 void RTValCommandManager::postProcessCommandArgs(
   BaseCommand* cmd)
 {
-  BaseRTValScriptableCommand* rtvalScriptCmd = static_cast<BaseRTValScriptableCommand*>(cmd);
-  
-  if(!rtvalScriptCmd)
+  std::cout << "RTValCommandManager::postProcessCommandArgs 1" << std::endl;
+  BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
+  std::cout << "RTValCommandManager::postProcessCommandArgs 2 " << bool(scriptCmd) << std::endl;
+
+  if(!scriptCmd)
     return;
 
   try
   {
-    BaseScriptableCommand* scriptCmd = static_cast<BaseScriptableCommand*>(cmd);
-    
     QString key;
     foreach(key, scriptCmd->getArgKeys())
     {         
       if( scriptCmd->isArg(key, CommandArgFlags::OUT_ARG) ||
           scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
       {
-        RTVal pathValue = rtvalScriptCmd->getRTValArg(key);
+        RTVal pathValue = scriptCmd->getRTValArg(key);
         if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
           PathValueResolverRegistry::GetRegistry()->setValue(
             pathValue);
       }
     }
+
+    std::cout << "RTValCommandManager::postProcessCommandArgs 3 " << std::endl;
+
   }
    
   catch(Exception &e) 

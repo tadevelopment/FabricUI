@@ -8,6 +8,7 @@ using namespace FabricUI;
 using namespace Commands;
 
 BaseCommand::BaseCommand() 
+ : QObject()
 {
 }
 

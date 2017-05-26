@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include <QStringList>
 #include "RTValCommandManager.h"
 #include <FabricUI/Util/RTValUtil.h>
@@ -25,7 +26,7 @@ BaseRTValScriptableCommand::~BaseRTValScriptableCommand()
 }
 
 inline RTValCommandManager *GetManager() {
-  return static_cast<RTValCommandManager*>(
+  return qobject_cast<RTValCommandManager*>(
     CommandManager::GetCommandManager());
 }
  

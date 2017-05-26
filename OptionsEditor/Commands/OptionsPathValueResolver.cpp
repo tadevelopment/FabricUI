@@ -13,15 +13,11 @@ using namespace Application;
 using namespace OptionsEditor;
 
 OptionsPathValueResolver::OptionsPathValueResolver()
+  : BasePathValueResolver()
 {
 }
 
 OptionsPathValueResolver::~OptionsPathValueResolver()
-{
-}
-
-void OptionsPathValueResolver::registrationCallback(
-  void *userData) 
 {
 }
 

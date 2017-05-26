@@ -65,7 +65,9 @@ class KLCommand : public BaseCommand
       manager = GetCommandManager()
       cmd = manager.createCommand("myCommand") 
   */
-
+  
+  Q_OBJECT
+  
   public:
     KLCommand(
       FabricCore::RTVal klCmd

@@ -5,6 +5,7 @@
 #ifndef __UI_CPP_TEST_COMMAND_REGISTRY__
 #define __UI_CPP_TEST_COMMAND_REGISTRY__
 
+#include <iostream>
 #include "KLCommandRegistry.h"
 #include "RTValCommandManager.h"
 #include "BaseScriptableCommand.h"
@@ -19,6 +20,8 @@ namespace Commands {
 */
 class CppTestScriptableCommand : public BaseScriptableCommand 
 {
+  Q_OBJECT
+
   public:
     CppTestScriptableCommand() 
       : BaseScriptableCommand()
@@ -63,6 +66,8 @@ class CppTestScriptableCommand : public BaseScriptableCommand
 
 class CppTestMetaCommand : public CppTestScriptableCommand 
 {
+  Q_OBJECT
+  
   public:
     CppTestMetaCommand() 
       : CppTestScriptableCommand()
@@ -138,7 +143,7 @@ class CppToPythonTestCommand
     {
       try
       {
-        KLCommandRegistry *registry = static_cast<KLCommandRegistry *>(
+        KLCommandRegistry *registry = qobject_cast<KLCommandRegistry *>(
           CommandRegistry::GetCommandRegistry());
 
         FabricCore::RTVal CppToKLTestCommand = FabricCore::RTVal::Create(

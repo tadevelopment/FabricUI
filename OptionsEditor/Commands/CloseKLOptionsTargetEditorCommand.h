@@ -19,7 +19,8 @@ class CloseKLOptionsTargetEditorCommand : public Commands::BaseRTValScriptableCo
       - editorID (String): ID of the KL OptionsEditorTarget in the registry
       - failSilently (Boolean): If false, throws an error if the widget has not been closed
   */
-
+  Q_OBJECT
+  
   public:
     CloseKLOptionsTargetEditorCommand();
 

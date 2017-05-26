@@ -21,7 +21,8 @@ class OpenKLOptionsTargetEditorCommand : public Commands::BaseRTValScriptableCom
       - editorID (String): ID of the KL OptionsEditorTarget in the registry
       - editorTitle (String): Title of the widget
   */
-
+  Q_OBJECT
+  
   public:
     OpenKLOptionsTargetEditorCommand();
 

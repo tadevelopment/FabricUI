@@ -2,46 +2,50 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_PATH_VALUE_RESOLVER__
-#define __UI_PATH_VALUE_RESOLVER__
+#ifndef __UI_BASE_PATH_VALUE_RESOLVER__
+#define __UI_BASE_PATH_VALUE_RESOLVER__
 
+#include <QObject>
 #include <QString>
 #include <FabricCore.h>
  
 namespace FabricUI {
 namespace Commands {
 
-class PathValueResolver
+class BasePathValueResolver : public QObject
 {
   /**
-    PathValueResolver  
+    BasePathValueResolver  
   */  
- 
+  Q_OBJECT
+  
   public:
-    virtual ~PathValueResolver() {}
+    BasePathValueResolver();
+
+    virtual ~BasePathValueResolver();
 
     virtual void registrationCallback(
       void *userData
-      ) = 0;
+      );
 
     virtual bool knownPath(
       FabricCore::RTVal pathValue
-      ) = 0;
+      );
 
     virtual QString getType(
       FabricCore::RTVal pathValue
-      ) = 0;
+      );
 
     virtual void getValue(
       FabricCore::RTVal pathValue
-      ) = 0;
+      );
 
     virtual void setValue(
       FabricCore::RTVal pathValue
-      ) = 0;
+      );
 };
 
 } // namespace Commands
 } // namespace FabricUI
 
-#endif // __UI_PATH_VALUE_RESOLVER__
+#endif // __UI_BASE_PATH_VALUE_RESOLVER__

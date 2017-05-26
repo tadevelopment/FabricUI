@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include "KLCommand.h"
 #include "KLCommandManager.h"
 #include "KLScriptableCommand.h"
@@ -16,8 +17,10 @@ using namespace Application;
 inline bool isKLCommand(
   BaseCommand *cmd)
 {
-  KLCommand *klCmd = static_cast<KLCommand *>(cmd);
-  KLScriptableCommand *klScriptCmd = static_cast<KLScriptableCommand *>(cmd);
+  std::cout << "KLCommandManager::isKLCommand 1" << std::endl;
+  KLCommand *klCmd = qobject_cast<KLCommand *>(cmd);
+  KLScriptableCommand *klScriptCmd = qobject_cast<KLScriptableCommand *>(cmd);
+  std::cout << "KLCommandManager::isKLCommand 2 " << (klCmd || klScriptCmd) << std::endl;
   return (klCmd || klScriptCmd);
 }
 

@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include "KLCommand.h"
 #include "CommandManager.h"
 #include "CommandRegistry.h"
@@ -84,6 +85,8 @@ BaseCommand* CommandManager::createCommand(
 void CommandManager::doCommand(
   BaseCommand *cmd) 
 {
+  std::cout << "CommandManager::doCommand 1 " << std::endl;
+
   if(!cmd) 
     FabricException::Throw(
       "CommandManager::doCommand",
@@ -98,12 +101,15 @@ void CommandManager::doCommand(
     clearRedoStack();
     pushTopCommand(cmd, false);
   }
+  std::cout << "CommandManager::doCommand 2 " << std::endl;
 
   // Execute the command, catch any errors.
   // The command breaks if the 'doIt' method
   // returns false or throws an exception.
   try
   {
+    std::cout << "CommandManager::doCommand 2 " << std::endl;
+
     preProcessCommandArgs(cmd);
 
     if(!cmd->doIt())
@@ -111,6 +117,9 @@ void CommandManager::doCommand(
         cmd);
 
     postProcessCommandArgs(cmd);
+
+    std::cout << "CommandManager::doCommand 3 " << std::endl;
+
   }
    
   catch(FabricException &e) 
@@ -136,15 +145,8 @@ void CommandManager::doCommand(
     }
   }
 
-  // Delete no-undoable commands.
-  // else
-  // {
-  //   // Inform a command has been succefully executed.
-  //   emit commandDone(cmd);
-      
-  //   delete cmd;
-  //   cmd = 0;
-  // }
+  std::cout << "CommandManager::doCommand 4 " << std::endl;
+
 }
 
 void CommandManager::undoCommand() 
@@ -331,8 +333,10 @@ void CommandManager::checkCommandArgs(
   BaseCommand *cmd,
   const QMap<QString, QString> &args)
 { 
-  BaseScriptableCommand* scriptCommand = static_cast<BaseScriptableCommand*>(cmd);
-  
+  std::cout << "CommandManager::checkCommandArgs 1 " << std::endl;
+  BaseScriptableCommand* scriptCommand = qobject_cast<BaseScriptableCommand*>(cmd);
+  std::cout << "CommandManager::checkCommandArgs 2 "  << bool(scriptCommand) << std::endl;
+
   if(!scriptCommand) 
     FabricException::Throw(
       "CommandManager::checkCommandArgs",
@@ -384,15 +388,10 @@ void CommandManager::clearCommandStack(
     if(stackedCmd.topLevelCmd != 0)
     { 
       stackedCmd.topLevelCmd.clear();
-      //stackedCmd.topLevelCmd = 0;
-
       for (int j = 0; j < stackedCmd.lowLevelCmds.size(); ++j)
       {
         if(stackedCmd.lowLevelCmds[j] != 0)
-        { 
-          /*delete*/ stackedCmd.lowLevelCmds[j].clear();
-          //stackedCmd.topLevelCmd = 0;
-        }
+          stackedCmd.lowLevelCmds[j].clear();
       }
     }
   }
@@ -442,8 +441,10 @@ QString CommandManager::getStackContent(
     StackedCommand stackedCmd = stack[i];
 
     BaseCommand *top = stackedCmd.topLevelCmd.data();
-    BaseScriptableCommand *scriptableTop = static_cast<BaseScriptableCommand *>(top);
-    
+    std::cout << "CommandManager::getStackContent 1.1 " << std::endl;
+    BaseScriptableCommand *scriptableTop = qobject_cast<BaseScriptableCommand *>(top);
+    std::cout << "CommandManager::getStackContent 1.2 " << bool(scriptableTop) << std::endl;
+
     QString desc = scriptableTop 
       ? top->getName() + "\n" + scriptableTop->getArgsDescription() 
       : top->getName();
@@ -454,8 +455,11 @@ QString CommandManager::getStackContent(
     for (int j = 0; j < stackedCmd.lowLevelCmds.size(); ++j)
     {
       BaseCommand *low = stackedCmd.lowLevelCmds[j].data();
-      BaseScriptableCommand *scriptableLow = static_cast<BaseScriptableCommand *>(low);
-      
+
+      std::cout << "CommandManager::getStackContent 2.1 " << std::endl;
+      BaseScriptableCommand *scriptableLow = qobject_cast<BaseScriptableCommand *>(low);
+      std::cout << "CommandManager::getStackContent 2.2"  << bool(scriptableLow) << std::endl;
+
       QString desc = scriptableLow ? 
         low->getName() + "\n" + scriptableLow->getArgsDescription() : 
         low->getName();

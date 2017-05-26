@@ -18,6 +18,9 @@ class BaseScriptableCommand_Python : public BaseScriptableCommand
     BaseScriptableCommand_Python "wraps" methods of BaseScriptableCommand throwing C++ exceptions called from Python.
     The exceptions are catched and returned as strings ao they can be raised in Python.
   */  
+
+  Q_OBJECT
+  
  	public:
     BaseScriptableCommand_Python();
 

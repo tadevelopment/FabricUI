@@ -32,6 +32,8 @@ class BaseScriptableCommand : public BaseCommand
     C++ interfaces cannot be wrapped in python by shiboken. New commands
     must specialize this class to be accessible from python.
   */
+    
+  Q_OBJECT
 
   public:
     BaseScriptableCommand();

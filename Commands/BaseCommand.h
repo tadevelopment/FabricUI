@@ -5,12 +5,13 @@
 #ifndef __UI_BASE_COMMAND__
 #define __UI_BASE_COMMAND__
 
+#include <QObject>
 #include <QString>
 
 namespace FabricUI {
 namespace Commands {
 
-class BaseCommand
+class BaseCommand : public QObject
 {
   /**
     BaseCommand defines the functionalities of a command.
@@ -113,6 +114,8 @@ class BaseCommand
     must specialize this class to be accessible from python.
   */
 
+  Q_OBJECT
+  
   public:
     BaseCommand();
 

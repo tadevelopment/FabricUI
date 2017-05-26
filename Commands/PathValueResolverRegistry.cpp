@@ -17,7 +17,7 @@ PathValueResolverRegistry::PathValueResolverRegistry()
 PathValueResolverRegistry::~PathValueResolverRegistry()
 {
   s_instanceFlag = false;
-  foreach(PathValueResolver* resolver, m_registeredResolvers)
+  foreach(BasePathValueResolver* resolver, m_registeredResolvers)
   {
     delete resolver;
     resolver = 0;
@@ -41,7 +41,7 @@ bool PathValueResolverRegistry::hasResolver(
   return m_registeredResolvers.count(name);
 }
 
-PathValueResolver* PathValueResolverRegistry::getOrCreateResolver(
+BasePathValueResolver* PathValueResolverRegistry::getOrCreateResolver(
   const QString name)
 {
   if(hasResolver(name))
@@ -52,7 +52,7 @@ PathValueResolver* PathValueResolverRegistry::getOrCreateResolver(
     Factory *factory = Util::BaseFactoryRegistry::getFactory(
       name);
 
-    PathValueResolver* resolver = (PathValueResolver*)factory->create(); 
+    BasePathValueResolver* resolver = (BasePathValueResolver*)factory->create(); 
     m_registeredResolvers[name] = resolver;
 
     void *userData = factory->getUserData();
@@ -67,7 +67,7 @@ PathValueResolver* PathValueResolverRegistry::getOrCreateResolver(
 bool PathValueResolverRegistry::knownPath(
   RTVal pathValue)
 {
-  foreach(PathValueResolver* resolver, m_registeredResolvers)
+  foreach(BasePathValueResolver* resolver, m_registeredResolvers)
   {
     if(resolver->knownPath(pathValue))
       return true;
@@ -78,7 +78,7 @@ bool PathValueResolverRegistry::knownPath(
 QString PathValueResolverRegistry::getType(
   RTVal pathValue)
 {
-  foreach(PathValueResolver* resolver, m_registeredResolvers)
+  foreach(BasePathValueResolver* resolver, m_registeredResolvers)
   {
     if(resolver->knownPath(pathValue))
       return resolver->getType(pathValue);
@@ -89,7 +89,7 @@ QString PathValueResolverRegistry::getType(
 void PathValueResolverRegistry::getValue(
   RTVal pathValue)
 {
-  foreach(PathValueResolver* resolver, m_registeredResolvers)
+  foreach(BasePathValueResolver* resolver, m_registeredResolvers)
   {
     if(resolver->knownPath(pathValue))
       resolver->getValue(pathValue);
@@ -99,7 +99,7 @@ void PathValueResolverRegistry::getValue(
 void PathValueResolverRegistry::setValue(
   RTVal pathValue)
 {
-  foreach(PathValueResolver* resolver, m_registeredResolvers)
+  foreach(BasePathValueResolver* resolver, m_registeredResolvers)
   {
     if(resolver->knownPath(pathValue))
       resolver->setValue(pathValue);

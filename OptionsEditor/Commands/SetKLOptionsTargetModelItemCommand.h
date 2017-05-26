@@ -22,7 +22,8 @@ class SetKLOptionsTargetModelItemCommand : public Commands::BaseRTValPathValueCo
     - newValue (RTVal): New option
     - previousValue (RTVal): Previous option
   */
-
+  Q_OBJECT
+  
   public:
     SetKLOptionsTargetModelItemCommand();
 

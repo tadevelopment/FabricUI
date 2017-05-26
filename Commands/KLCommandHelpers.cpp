@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include "KLCommandHelpers.h"
 #include "KLCommandManager.h"
 #include <FabricUI/Application/FabricException.h>
@@ -113,8 +114,10 @@ bool DoKLCommand(
 
   try 
   {
-    KLCommandManager *manager = static_cast<KLCommandManager *>(
+    std::cout << "KLCommandHelpers::DoKLCommand 1" << std::endl;
+    KLCommandManager *manager = qobject_cast<KLCommandManager *>(
       Commands::CommandManager::GetCommandManager());
+    std::cout << "KLCommandHelpers::DoKLCommand 2 " << bool(manager) << std::endl;
 
     RTVal args[2] = { 
       klCmd, 
@@ -155,8 +158,10 @@ bool UndoKLCommand()
 
   try 
   { 
-    KLCommandManager *manager = static_cast<KLCommandManager *>(
+    std::cout << "KLCommandHelpers::UndoKLCommand 1" << std::endl;
+    KLCommandManager *manager = qobject_cast<KLCommandManager *>(
       Commands::CommandManager::GetCommandManager());
+    std::cout << "KLCommandHelpers::UndoKLCommand 2 " << bool(manager) << std::endl;
 
     RTVal valError = RTVal::ConstructString(
       Application::FabricApplicationStates::GetAppStates()->getContext(), 
@@ -198,9 +203,11 @@ bool RedoKLCommand()
 
   try 
   {
-    KLCommandManager *manager = static_cast<KLCommandManager *>(
+    std::cout << "KLCommandHelpers::RedoKLCommand 1" << std::endl;
+    KLCommandManager *manager = qobject_cast<KLCommandManager *>(
       Commands::CommandManager::GetCommandManager());
-    
+    std::cout << "KLCommandHelpers::RedoKLCommand 2 " << bool(manager) << std::endl;
+
     RTVal valError = RTVal::ConstructString(
       Application::FabricApplicationStates::GetAppStates()->getContext(), 
       "");

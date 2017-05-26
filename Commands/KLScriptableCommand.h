@@ -10,8 +10,7 @@
 namespace FabricUI {
 namespace Commands {
 
-class KLScriptableCommand
-  : public BaseRTValScriptableCommand
+class KLScriptableCommand : public BaseRTValScriptableCommand
 {
   /**
     KLScriptableCommand wraps the KL scriptable commands so they  
@@ -46,7 +45,7 @@ class KLScriptableCommand
         MyCommand);
 
     - C++:
-      KLCommandRegistry *registry = static_cast<KLCommandRegistry *>(
+      KLCommandRegistry *registry = qobject_cast<KLCommandRegistry *>(
         Commands::CommandRegistry::GetCommandRegistry());
 
       // Create the arguments values as RTVal
@@ -92,7 +91,9 @@ class KLScriptableCommand
       strRTVal.setJSON(cmd.getArg("arg_1"))
       floatRTVal.setJSON(cmd.getArg("arg_2"))
   */
-
+  
+  Q_OBJECT
+  
   public:
     KLScriptableCommand(
       FabricCore::RTVal klCmd

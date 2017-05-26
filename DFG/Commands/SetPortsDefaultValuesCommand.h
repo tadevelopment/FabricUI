@@ -10,6 +10,8 @@ namespace DFG {
 
 class SetPortsDefaultValuesCommand : public Commands::BaseRTValScriptableCommand
 {
+  Q_OBJECT
+  
   public:  
     SetPortsDefaultValuesCommand();
 

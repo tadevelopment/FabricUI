@@ -4,7 +4,7 @@
 
 from PySide import QtGui, QtCore
 from FabricEngine.Canvas.Commands.CommandManager import *
-from FabricEngine.Canvas.Commands.CommandArgsHelpers import CommandArgsHelpers
+from FabricEngine.Canvas.Commands.CommandArgHelpers import CommandArgHelpers
 
 class CommandManagerQtCallback(QtCore.QObject):
     """ CommandManagerQtCallback is connected to the CommandManagerCallback 
@@ -60,8 +60,10 @@ class CommandManagerQtCallback(QtCore.QObject):
 
     def __onCommandDone(self, cmd):
         """ \internal, when a command's been pushed to the manager. 
-        """
+        """ 
 
+        button = QtGui.QPushButton()
+        print "Button tpe " + str(type(button))
         try:
             # Create a new CommandQtWrapper and  
             # pushs it to the qt undo stack.
@@ -74,7 +76,7 @@ class CommandManagerQtCallback(QtCore.QObject):
             #Log the commands.
             if cmd.canLog():
                 self.scriptEditor.logText( 
-                    'Commands.' + CommandArgsHelpers.ParseCmdArgs(
+                    'Commands.' + CommandArgHelpers.ParseCmdArgs(
                         cmd))
             
         except Exception as e:    

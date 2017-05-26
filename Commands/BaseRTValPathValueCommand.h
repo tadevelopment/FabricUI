@@ -10,6 +10,8 @@ namespace Commands {
 
 class BaseRTValPathValueCommand : public BaseRTValScriptableCommand
 {
+  Q_OBJECT
+  
   public:
     BaseRTValPathValueCommand();
 

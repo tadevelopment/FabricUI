@@ -6,7 +6,7 @@
 #define __UI_PATH_RESOLVER_REGISTRY__
 
 #include <QMap>
-#include "PathValueResolver.h"
+#include "BasePathValueResolver.h"
 #include <FabricUI/Util/Factory.h>
 
 namespace FabricUI {
@@ -34,7 +34,7 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
       );
 
     /// Registers a resolver.
-    PathValueResolver* getOrCreateResolver(
+    BasePathValueResolver* getOrCreateResolver(
       const QString name
       );
 
@@ -60,7 +60,7 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
     /// PathResolver singleton.
     static PathValueResolverRegistry *s_registry;
     /// PathResolver singleton.
-    QMap<QString, PathValueResolver*> m_registeredResolvers;
+    QMap<QString, BasePathValueResolver*> m_registeredResolvers;
 };
 
 template<typename T> 

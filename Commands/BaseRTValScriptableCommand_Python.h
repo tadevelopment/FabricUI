@@ -18,6 +18,8 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
     BaseRTValScriptableCommand_Python "wraps" methods of BaseRTValScriptableCommand throwing C++ exceptions called from Python.
     The exceptions are catched and returned as strings ao they can be raised in Python.
   */  
+  Q_OBJECT
+    
  	public:
     BaseRTValScriptableCommand_Python();
 
