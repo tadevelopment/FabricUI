@@ -45,7 +45,7 @@ KLCommandRegistry::~KLCommandRegistry()
 {
 }
 
-Command* KLCommandRegistry::createCommand(
+BaseCommand* KLCommandRegistry::createCommand(
   const QString &cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
@@ -143,7 +143,7 @@ void KLCommandRegistry::registerKLCommand(
   }
 }
  
-Command* KLCommandRegistry::createKLCommand(
+BaseCommand* KLCommandRegistry::createKLCommand(
   const QString &cmdName)
 {  
   try
@@ -173,7 +173,7 @@ Command* KLCommandRegistry::createKLCommand(
     else
     {
       klCmd = m_klCmdRegistry.callMethod(
-        "Command", 
+        "BaseCommand", 
         "createCommand", 
         2, 
         args);

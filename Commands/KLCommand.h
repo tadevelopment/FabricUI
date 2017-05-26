@@ -19,7 +19,7 @@ class KLCommand : public BaseCommand
     
     Usage:
     - KL:
-      object MyCommand : Command {
+      object MyCommand : BaseCommand {
         String name;
       };
 
@@ -73,36 +73,36 @@ class KLCommand : public BaseCommand
 
     virtual ~KLCommand();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual QString getName();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual bool canUndo();
 
     /// Checks if the KL command can be 
     /// added to the KL undo stack.
     bool addToUndoStack();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual bool canLog();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual bool doIt();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual bool undoIt();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual bool redoIt();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual QString getHelp();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual QString getHistoryDesc();
 
   private:
-    /// KL Command
+    /// KL BaseCommand
     FabricCore::RTVal m_klCmd;
 };
 

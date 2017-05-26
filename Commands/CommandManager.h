@@ -8,7 +8,7 @@
 #include <QMap>
 #include <QList>
 #include <QObject>
-#include "Command.h"
+#include "BaseCommand.h"
 #include <QSharedPointer>
 
 // Need to use a typedef because gcc doesn't support templated default arguments:
@@ -51,7 +51,7 @@ class CommandManager : public QObject
     /// Creates and executes a command (if doCmd == true).
     /// If executed, the command is added to the manager stack.
     /// Throws an exception if an error occurs.
-    virtual Command* createCommand(
+    virtual BaseCommand* createCommand(
       const QString &cmdName, 
       const QMap<QString, QString> &args = QMapString(), 
       bool doCmd = true
@@ -60,7 +60,7 @@ class CommandManager : public QObject
     /// Executes a command and adds it to the undo stack.
     /// Throws an exception if an error occurs.
     virtual void doCommand(
-      Command* cmd
+      BaseCommand* cmd
       );
 
     /// Undoes the current command.
@@ -86,7 +86,7 @@ class CommandManager : public QObject
     virtual QString getContent();
 
     /// Gets the command at index 'index'.
-    Command* getCommandAtIndex(
+    BaseCommand* getCommandAtIndex(
       unsigned index
       );
 
@@ -94,7 +94,7 @@ class CommandManager : public QObject
     /// Emitted when a top command has 
     /// been succefully pushed to the stack.
     void commandDone(
-      Command *cmd
+      BaseCommand *cmd
       );
 
     /// Emitted when the manager is cleared.
@@ -104,14 +104,14 @@ class CommandManager : public QObject
     /// Checks the command arguments before doing it.
     /// Throws an exception if an error occurs.
     virtual void checkCommandArgs(
-      Command *cmd,
+      BaseCommand *cmd,
       const QMap<QString, QString> &args
       );
 
     /// Inform a command has been pushed. 
     /// Needed by the python implementation.
     virtual void commandPushed(
-      Command *cmd,
+      BaseCommand *cmd,
       bool isLowCmd = false
       );
 
@@ -121,25 +121,25 @@ class CommandManager : public QObject
     /// Pre-processes the args.
     /// Called before creating a command.
     virtual void preProcessCommandArgs(
-      Command* cmd
+      BaseCommand* cmd
       );
 
     /// Post-processes the args. Called after 
     /// creating, undoing or redoing a command.
     virtual void postProcessCommandArgs(
-      Command* cmd
+      BaseCommand* cmd
       );
 
     /// Pushes a command.
     virtual void pushTopCommand(
-      Command *cmd,
+      BaseCommand *cmd,
       bool succeeded = false
       );
 
     /// Cleans the stacks if errors occur when
     /// doing a command and throws an exception.
     void cleanupUnfinishedCommandsAndThrow(
-      Command *cmd,
+      BaseCommand *cmd,
       const QString& error = QString()
       );
 
@@ -149,8 +149,8 @@ class CommandManager : public QObject
     {
       bool succeeded;
       // Use shared pointer so th
-      QSharedPointer< Command > topLevelCmd;
-      QList< QSharedPointer<Command> > lowLevelCmds;
+      QSharedPointer< BaseCommand > topLevelCmd;
+      QList< QSharedPointer<BaseCommand> > lowLevelCmds;
 
       StackedCommand() 
       {
@@ -169,7 +169,7 @@ class CommandManager : public QObject
 
     /// Pushes a sub-command.
     void pushLowCommand(
-      Command *cmd
+      BaseCommand *cmd
       );
  
     /// Gets a specific stack content 

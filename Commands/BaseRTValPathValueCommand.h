@@ -15,19 +15,19 @@ class BaseRTValPathValueCommand : public BaseRTValScriptableCommand
 
     virtual ~BaseRTValPathValueCommand();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual bool canUndo();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual bool doIt();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual bool undoIt();
 
-     /// Implementation of Command.
+     /// Implementation of BaseCommand.
     virtual bool redoIt();
 
-    /// Implementation of Command.
+    /// Implementation of BaseCommand.
     virtual QString getHistoryDesc();
 };
 

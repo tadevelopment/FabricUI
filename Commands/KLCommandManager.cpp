@@ -14,10 +14,10 @@ using namespace FabricCore;
 using namespace Application;
 
 inline bool isKLCommand(
-  Command *cmd)
+  BaseCommand *cmd)
 {
-  KLCommand *klCmd = dynamic_cast<KLCommand *>(cmd);
-  KLScriptableCommand *klScriptCmd = dynamic_cast<KLScriptableCommand *>(cmd);
+  KLCommand *klCmd = static_cast<KLCommand *>(cmd);
+  KLScriptableCommand *klScriptCmd = static_cast<KLScriptableCommand *>(cmd);
   return (klCmd || klScriptCmd);
 }
 
@@ -181,7 +181,7 @@ void KLCommandManager::synchronizeKL()
 
       // Gets the KL command from the KL manager. 
       RTVal klCmd = m_klCmdManager.callMethod(
-        "Command", 
+        "BaseCommand", 
         "getCommandAtIndex", 
         1, 
         &cmdIndex);
@@ -355,7 +355,7 @@ void KLCommandManager::clearRedoStack()
 }
 
 void KLCommandManager::pushTopCommand(
-  Command *cmd,
+  BaseCommand *cmd,
   bool succeeded)
 {
   m_klCmdUndoStackCount += isKLCommand(cmd) ? 1 : 0;

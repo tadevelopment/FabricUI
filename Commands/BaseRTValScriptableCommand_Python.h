@@ -111,7 +111,7 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
   private:
     // C++ -> Python
  
-    /// Implementation of ScriptableCommand, 
+    /// Implementation of BaseScriptableCommand, 
     /// calls _declareArg_Python.
     virtual void declareArg(
       const QString &key, 
@@ -119,28 +119,28 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
       const QString &defaultValue
       );
 
-    /// Implementation of ScriptableCommand.
+    /// Implementation of BaseScriptableCommand.
     /// calls _isArg_Python.
     virtual bool isArg(
       const QString &key,
       int flag);
  
-    /// Implementation of ScriptableCommand.
+    /// Implementation of BaseScriptableCommand.
     /// calls _getArg_Python.
     virtual QString getArg(
       const QString &key);
 
-    /// Implementation of ScriptableCommand.
+    /// Implementation of BaseScriptableCommand.
     /// calls _setArg_Python.
     virtual void setArg(
       const QString &key,
       const QString &value);
 
-    /// Implementation of ScriptableCommand.
+    /// Implementation of BaseScriptableCommand.
     /// calls _validateSetArgs_Python.
     virtual void validateSetArgs();
 
-    /// Implementation of RTValScriptableCommand.
+    /// Implementation of BaseRTValScriptableCommand.
     /// calls _declareRTValArg_Python.
     virtual void declareRTValArg( 
       const QString &key, 
@@ -149,33 +149,33 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
       FabricCore::RTVal defaultValue
       );
 
-    /// Implementation of RTValScriptableCommand.
+    /// Implementation of BaseRTValScriptableCommand.
     /// calls _getRTValArgType_Python.
     virtual QString getRTValArgType(
       const QString &key
       );
 
-    /// Implementation of RTValScriptableCommand.
+    /// Implementation of BaseRTValScriptableCommand.
     /// calls _setRTValArgType_Python.
     virtual void setRTValArgType(
       const QString &key,
       const QString &type
       );
 
-    /// Implementation of RTValScriptableCommand.
+    /// Implementation of BaseRTValScriptableCommand.
     /// calls _getRTValArg_Python.
     virtual FabricCore::RTVal getRTValArg( 
       const QString &key
       );
 
-    /// Implementation of RTValScriptableCommand.
+    /// Implementation of BaseRTValScriptableCommand.
     /// calls _getRTValArg_Python.
     virtual FabricCore::RTVal getRTValArg( 
       const QString &key,
       const QString &type
       );
 
-    /// Implementation of RTValScriptableCommand.
+    /// Implementation of BaseRTValScriptableCommand.
     /// calls _setRTValArg_Python.
     virtual void setRTValArg(
       const QString &key,

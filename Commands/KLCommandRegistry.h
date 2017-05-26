@@ -22,7 +22,7 @@ class KLCommandRegistry : public CommandRegistry
   Q_OBJECT
 
   public:
-    // Command type
+    // BaseCommand type
     QString COMMAND_KL; 
  
     KLCommandRegistry();
@@ -30,7 +30,7 @@ class KLCommandRegistry : public CommandRegistry
     virtual ~KLCommandRegistry();
 
     /// Implementation of CommandRegistry.
-    virtual Command* createCommand(
+    virtual BaseCommand* createCommand(
       const QString &cmdName
       );
 
@@ -61,7 +61,7 @@ class KLCommandRegistry : public CommandRegistry
 
     /// Creates a C++ KLCommand or KLSriptableCommand wrapper 
     /// for a KL command registered in the KL KLCommandRegistry.
-    Command* createKLCommand(
+    BaseCommand* createKLCommand(
       const QString &cmdName
       );
 

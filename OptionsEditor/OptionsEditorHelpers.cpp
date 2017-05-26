@@ -20,7 +20,7 @@ inline QMainWindow* GetMainWindow()
 {
   foreach(QWidget *wiget, QApplication::topLevelWidgets())
   { 
-    QMainWindow *mainWindow = dynamic_cast<QMainWindow *>(wiget);
+    QMainWindow *mainWindow = qobject_cast<QMainWindow *>(wiget);
     if(mainWindow != 0)
       return mainWindow;
   }

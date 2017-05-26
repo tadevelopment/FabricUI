@@ -69,7 +69,7 @@ void KLOptionsTargetModelItem::setValue(
       RTVariant::toRTVal(value, optionsCopy);
       args["newValue.value"] = optionsCopy.clone();
 
-      RTValCommandManager *manager = dynamic_cast<RTValCommandManager*>(
+      RTValCommandManager *manager = static_cast<RTValCommandManager*>(
         CommandManager::GetCommandManager());
 
       manager->createCommand(

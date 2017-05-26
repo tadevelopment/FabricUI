@@ -28,7 +28,7 @@ class RTValCommandManager : public CommandManager
     /// Creates and executes a command (if doCmd == true).
     /// If executed, the command is added to the manager stack.
     /// Throws an exception if an error occurs.
-    virtual Command* createCommand(
+    virtual BaseCommand* createCommand(
       const QString &cmdName, 
       const QMap<QString, FabricCore::RTVal> &args, 
       bool doCmd = true
@@ -36,7 +36,7 @@ class RTValCommandManager : public CommandManager
 
     /// Implementation of CommandManager.
     virtual void doCommand(
-      Command* cmd
+      BaseCommand* cmd
       );
     
     /// Gets the Fabric client.
@@ -46,18 +46,18 @@ class RTValCommandManager : public CommandManager
   protected:
     /// Implementation of CommandManager.
     virtual void preProcessCommandArgs(
-      Command* cmd
+      BaseCommand* cmd
       );
 
     /// Implementation of CommandManager.
     virtual void postProcessCommandArgs(
-      Command* cmd
+      BaseCommand* cmd
       );
 
     /// Checks the command arguments before doing it.
     /// Throws an exception if an error occurs.
     virtual void checkCommandArgs(
-      Command *cmd,
+      BaseCommand *cmd,
       const QMap<QString, FabricCore::RTVal> &args
       );
 

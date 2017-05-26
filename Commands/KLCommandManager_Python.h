@@ -19,7 +19,7 @@ class KLCommandManager_Python : public KLCommandManager
     KLCommandManager_Python "wraps" methods of KLCommandManager throwing C++ exceptions called from Python.
     The exceptions are catched and returned as strings so they can be raised in Python.   
 
-    In addition, KLCommandManager_Python 'redirects' methods of KLCommandManager that expose the 'Command' 
+    In addition, KLCommandManager_Python 'redirects' methods of KLCommandManager that expose the 'BaseCommand' 
     interfaces because C++ interfaces cannot be wrapped in pyhton by shiboken.
   */
   Q_OBJECT
@@ -115,7 +115,7 @@ class KLCommandManager_Python : public KLCommandManager
   private slots:
     /// Wraps CommandManager method.
     void onCommandDone(
-      Command *cmd
+      BaseCommand *cmd
       );
 
   private:
@@ -123,7 +123,7 @@ class KLCommandManager_Python : public KLCommandManager
 
     /// Implementation of CommandManager, 
     /// calls _createCommand_Python.
-    virtual Command* createCommand(
+    virtual BaseCommand* createCommand(
       const QString &cmdName, 
       const QMap<QString, QString> &args, 
       bool doCmd
@@ -132,7 +132,7 @@ class KLCommandManager_Python : public KLCommandManager
     /// Implementation of CommandManager, 
     /// calls _doCommand_Python.
     virtual void doCommand(
-      Command *cmd
+      BaseCommand *cmd
       );
 
     /// Implementation of CommandManager, 
@@ -145,27 +145,27 @@ class KLCommandManager_Python : public KLCommandManager
 
     /// Implementation of CommandManager, 
     /// calls _getCommandAtIndex_Python.
-    virtual Command* getCommandAtIndex(
+    virtual BaseCommand* getCommandAtIndex(
       unsigned index
       );
 
     /// Implementation of CommandManager, 
     /// calls _checkCommandArgs_Python.
     virtual void checkCommandArgs(
-      Command *cmd,
+      BaseCommand *cmd,
       const QMap<QString, QString> &args
       );
 
     /// Implementation of CommandManager, 
     /// calls _commandPushed_Python.
     virtual void commandPushed(
-      Command *cmd,
+      BaseCommand *cmd,
       bool isLowCmd = false
       );
 
     /// Implementation of RTValCommandManager, 
     /// calls _createRTValCommand_Python.
-    virtual Command* createCommand(
+    virtual BaseCommand* createCommand(
       const QString &cmdName, 
       const QMap<QString, FabricCore::RTVal> &args, 
       bool doCmd
@@ -174,7 +174,7 @@ class KLCommandManager_Python : public KLCommandManager
     /// Implementation of RTValCommandManager, 
     /// calls _checkRTValCommandArgs_Python.
     virtual void checkCommandArgs(
-      Command *cmd,
+      BaseCommand *cmd,
       const QMap<QString, FabricCore::RTVal> &args
       );
 

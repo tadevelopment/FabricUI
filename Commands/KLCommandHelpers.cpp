@@ -113,7 +113,7 @@ bool DoKLCommand(
 
   try 
   {
-    KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
+    KLCommandManager *manager = static_cast<KLCommandManager *>(
       Commands::CommandManager::GetCommandManager());
 
     RTVal args[2] = { 
@@ -155,7 +155,7 @@ bool UndoKLCommand()
 
   try 
   { 
-    KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
+    KLCommandManager *manager = static_cast<KLCommandManager *>(
       Commands::CommandManager::GetCommandManager());
 
     RTVal valError = RTVal::ConstructString(
@@ -198,7 +198,7 @@ bool RedoKLCommand()
 
   try 
   {
-    KLCommandManager *manager = dynamic_cast<KLCommandManager *>(
+    KLCommandManager *manager = static_cast<KLCommandManager *>(
       Commands::CommandManager::GetCommandManager());
     
     RTVal valError = RTVal::ConstructString(

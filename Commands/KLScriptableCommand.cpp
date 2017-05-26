@@ -25,7 +25,7 @@ KLScriptableCommand::~KLScriptableCommand()
 {
 }
 
-// Command
+// BaseCommand
 QString KLScriptableCommand::getName() 
 {
   return GetKLCommandName(m_klCmd);
@@ -50,7 +50,7 @@ bool KLScriptableCommand::doIt()
 { 
   RTVal cmd = RTVal::Construct(
     m_klCmd.getContext(),
-    "Command",
+    "BaseCommand",
     1,
     &m_klCmd);
   
@@ -79,7 +79,7 @@ QString KLScriptableCommand::getHistoryDesc()
     m_klCmd);
 }
 
-// ScriptableCommand
+// BaseScriptableCommand
 void KLScriptableCommand::declareArg( 
   const QString &key, 
   int flag, 
@@ -283,7 +283,7 @@ QString KLScriptableCommand::getArgsDescription()
   return "";
 }
 
-// RTValScriptableCommand
+// BaseRTValScriptableCommand
 void KLScriptableCommand::declareRTValArg( 
   const QString &key, 
   const QString &type,

@@ -15,9 +15,9 @@ KLCommandManager_Python::KLCommandManager_Python()
 {
   QObject::connect(
     this,
-    SIGNAL(commandDone(Command *)),
+    SIGNAL(commandDone(BaseCommand *)),
     this,
-    SLOT(onCommandDone(Command *))
+    SLOT(onCommandDone(BaseCommand *))
     );
 }
 
@@ -121,20 +121,8 @@ QPair<QString, BaseCommand*> KLCommandManager_Python::_getCommandAtIndex_Python(
 {
   QPair<QString, BaseCommand*> pair;
 
-  Command *cmd = KLCommandManager::getCommandAtIndex(
+  pair.second = KLCommandManager::getCommandAtIndex(
     index);
-
-  BaseCommand* baseCmd = dynamic_cast<BaseCommand*>(
-    cmd);
-
-  if(!baseCmd)
-    pair.first = FabricException::Throw(
-      "KLCommandManager_Python::_getCommandAtIndex_Python",
-      "Command '" + cmd->getName() + "' is not a BaseCommand",
-      "",
-      NOTHING);
-  else
-    pair.second = baseCmd;
 
   return pair;
 }
@@ -235,24 +223,15 @@ QString KLCommandManager_Python::_synchronizeKL_Python()
 }
 
 void KLCommandManager_Python::onCommandDone(
-  Command *cmd)
+  BaseCommand *cmd)
 {
-  BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(
-    cmd);
-
-  if(!baseCmd)
-    FabricException::Throw(
-      "KLCommandManager_Python::onCommandDone",
-      "Command '" + cmd->getName() + "' is not a BaseCommand",
-      "",
-      PRINT | THROW);
-
-  emit _commandDone_Python(baseCmd);
+  
+  emit _commandDone_Python(cmd);
 }
 
 // C++ -> Python
 // CommandManager
-Command* KLCommandManager_Python::createCommand(
+BaseCommand* KLCommandManager_Python::createCommand(
   const QString &cmdName, 
   const QMap<QString, QString> &args, 
   bool doCmd)
@@ -264,19 +243,10 @@ Command* KLCommandManager_Python::createCommand(
 }
 
 void KLCommandManager_Python::doCommand(
-  Command *cmd)
+  BaseCommand *cmd)
 {
-  BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
-
-  if(!baseCmd)
-    FabricException::Throw(
-      "KLCommandManager_Python::doCommand",
-      "Command '" + cmd->getName() + "' is not a BaseCommand",
-      "",
-      PRINT | THROW);
-
   _doCommand_Python(
-    baseCmd);
+    cmd);
 }
 
 void KLCommandManager_Python::undoCommand()
@@ -289,7 +259,7 @@ void KLCommandManager_Python::redoCommand()
   _redoCommand_Python();
 }
 
-Command* KLCommandManager_Python::getCommandAtIndex(
+BaseCommand* KLCommandManager_Python::getCommandAtIndex(
   unsigned index)
 {
   QPair<QString, BaseCommand*> pair = _getCommandAtIndex_Python(
@@ -298,43 +268,25 @@ Command* KLCommandManager_Python::getCommandAtIndex(
 }
 
 void KLCommandManager_Python::checkCommandArgs(
-  Command *cmd,
+  BaseCommand *cmd,
   const QMap<QString, QString> &args)
-{
-  BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
-
-  if(!baseCmd)
-    FabricException::Throw(
-      "KLCommandManager_Python::checkCommandArgs",
-      "Command '" + cmd->getName()  + "' is not a BaseCommand",
-      "",
-      PRINT | THROW);
-
+{ 
   _checkCommandArgs_Python(
-    baseCmd,
+    cmd,
     args);
 }
 
 void KLCommandManager_Python::commandPushed(
-  Command *cmd,
+  BaseCommand *cmd,
   bool isLowCmd)
-{
-  BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
-
-  if(!baseCmd)
-    FabricException::Throw(
-      "KLCommandManager_Python::commandPushed",
-      "Command '" + cmd->getName() + "' is not a BaseCommand",
-      "",
-      PRINT | THROW);
-
+{ 
   _commandPushed_Python(
-    baseCmd,
+    cmd,
     isLowCmd);
 }
 
 // RTValCommandManager
-Command* KLCommandManager_Python::createCommand(
+BaseCommand* KLCommandManager_Python::createCommand(
   const QString &cmdName, 
   const QMap<QString, RTVal> &args, 
   bool doCmd)
@@ -346,20 +298,11 @@ Command* KLCommandManager_Python::createCommand(
 }
 
 void KLCommandManager_Python::checkCommandArgs(
-  Command *cmd,
+  BaseCommand *cmd,
   const QMap<QString, RTVal> &args)
 {
-  BaseCommand *baseCmd = dynamic_cast<BaseCommand *>(cmd);
-
-  if(!baseCmd)
-     FabricException::Throw(
-      "KLCommandManager_Python::checkCommandArgs",
-      "Command '" + cmd->getName()  + "' is not a BaseCommand",
-      "",
-      PRINT | THROW);
-
   _checkRTValCommandArgs_Python(
-    baseCmd,
+    cmd,
     args);
 }
 

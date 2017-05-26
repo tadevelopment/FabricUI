@@ -138,7 +138,7 @@ class CppToPythonTestCommand
     {
       try
       {
-        KLCommandRegistry *registry = dynamic_cast<KLCommandRegistry *>(
+        KLCommandRegistry *registry = static_cast<KLCommandRegistry *>(
           CommandRegistry::GetCommandRegistry());
 
         FabricCore::RTVal CppToKLTestCommand = FabricCore::RTVal::Create(

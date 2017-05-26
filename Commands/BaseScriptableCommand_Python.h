@@ -63,7 +63,7 @@ class BaseScriptableCommand_Python : public BaseScriptableCommand
   private:
     // C++ -> Python
  
-    /// Implementation of ScriptableCommand, 
+    /// Implementation of BaseScriptableCommand, 
     /// calls _declareArg_Python.
     virtual void declareArg(
       const QString &key, 
@@ -71,24 +71,24 @@ class BaseScriptableCommand_Python : public BaseScriptableCommand
       const QString &defaultValue
       );
 
-    /// Implementation of ScriptableCommand.
+    /// Implementation of BaseScriptableCommand.
     /// calls _isArgOptional_Python.
     virtual bool isArg(
       const QString &key,
       int flag);
  
-    /// Implementation of ScriptableCommand.
+    /// Implementation of BaseScriptableCommand.
     /// calls _getArg_Python.
     virtual QString getArg(
       const QString &key);
 
-    /// Implementation of ScriptableCommand.
+    /// Implementation of BaseScriptableCommand.
     /// calls _setArg_Python.
     virtual void setArg(
       const QString &key,
       const QString &value);
 
-    /// Implementation of ScriptableCommand.
+    /// Implementation of BaseScriptableCommand.
     /// calls _validateSetArgs_Python.
     virtual void validateSetArgs();
 

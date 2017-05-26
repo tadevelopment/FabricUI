@@ -19,7 +19,7 @@ class KLCommandRegistry_Python : public KLCommandRegistry
     KLCommandRegistry_Python "wraps" methods of KLCommandRegistry throwing C++ exceptions called from Python.
     The exceptions are catched and returned as strings ao they can be raised in Python.
 
-    In addition, it 'redirects' methods of KLCommandRegistry that expose the 'Command' interfaces because C++ 
+    In addition, it 'redirects' methods of KLCommandRegistry that expose the 'BaseCommand' interfaces because C++ 
     interfaces cannot be wrapped in pyhton by shiboken.
   */
   Q_OBJECT
@@ -58,7 +58,7 @@ class KLCommandRegistry_Python : public KLCommandRegistry
 
     /// Implementation of CommandRegistry, 
     /// calls _createCommand_Python.
-    virtual Command* createCommand(
+    virtual BaseCommand* createCommand(
       const QString &cmdName
       );
 

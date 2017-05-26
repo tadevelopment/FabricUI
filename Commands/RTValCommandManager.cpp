@@ -4,9 +4,9 @@
 
 #include "CommandRegistry.h"
 #include "RTValPathValueArg.h"
-#include "ScriptableCommand.h"
+#include "BaseScriptableCommand.h"
 #include "RTValCommandManager.h"
-#include "RTValScriptableCommand.h"
+#include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
@@ -28,14 +28,14 @@ RTValCommandManager::~RTValCommandManager()
 {
 }
  
-Command* RTValCommandManager::createCommand(
+BaseCommand* RTValCommandManager::createCommand(
   const QString &cmdName, 
   const QMap<QString, RTVal> &args, 
   bool doCmd)
 {
   try 
   {  
-    Command *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
+    BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
       cmdName);
     
     if(args.size() > 0) 
@@ -60,7 +60,7 @@ Command* RTValCommandManager::createCommand(
 }
 
 void RTValCommandManager::doCommand(
-  Command *cmd) 
+  BaseCommand *cmd) 
 {
   try
   {
@@ -78,16 +78,16 @@ void RTValCommandManager::doCommand(
 }
 
 void RTValCommandManager::checkCommandArgs(
-  Command *cmd,
+  BaseCommand *cmd,
   const QMap<QString, RTVal> &args)
 { 
-  RTValScriptableCommand* rtvalScriptCmd = dynamic_cast<RTValScriptableCommand*>(cmd);
+  BaseRTValScriptableCommand* rtvalScriptCmd = static_cast<BaseRTValScriptableCommand*>(cmd);
   
   if(!rtvalScriptCmd) 
     FabricException::Throw(
       "RTValCommandManager::checkCommandArgs",
-      "Command '" + cmd->getName() + "' is created with args, " + 
-      "but is not implementing the RTValScriptableCommand interface"
+      "BaseCommand '" + cmd->getName() + "' is created with args, " + 
+      "but is not implementing the BaseRTValScriptableCommand interface"
       );
 
   // Sets the rtval args
@@ -101,21 +101,21 @@ void RTValCommandManager::checkCommandArgs(
       ite.value());
   }
 
-  ScriptableCommand* scriptCmd = dynamic_cast<ScriptableCommand*>(cmd);
+  BaseScriptableCommand* scriptCmd = static_cast<BaseScriptableCommand*>(cmd);
   scriptCmd->validateSetArgs();
 }
 
 void RTValCommandManager::preProcessCommandArgs(
-  Command* cmd)
+  BaseCommand* cmd)
 {
-  RTValScriptableCommand* rtvalScriptCmd = dynamic_cast<RTValScriptableCommand*>(cmd);
+  BaseRTValScriptableCommand* rtvalScriptCmd = static_cast<BaseRTValScriptableCommand*>(cmd);
   
   if(!rtvalScriptCmd)
     return;
 
   try
   {
-    ScriptableCommand* scriptCmd = dynamic_cast<ScriptableCommand*>(cmd);
+    BaseScriptableCommand* scriptCmd = static_cast<BaseScriptableCommand*>(cmd);
     
     QString key;
     foreach(key, scriptCmd->getArgKeys())
@@ -152,16 +152,16 @@ void RTValCommandManager::preProcessCommandArgs(
 }
 
 void RTValCommandManager::postProcessCommandArgs(
-  Command* cmd)
+  BaseCommand* cmd)
 {
-  RTValScriptableCommand* rtvalScriptCmd = dynamic_cast<RTValScriptableCommand*>(cmd);
+  BaseRTValScriptableCommand* rtvalScriptCmd = static_cast<BaseRTValScriptableCommand*>(cmd);
   
   if(!rtvalScriptCmd)
     return;
 
   try
   {
-    ScriptableCommand* scriptCmd = dynamic_cast<ScriptableCommand*>(cmd);
+    BaseScriptableCommand* scriptCmd = static_cast<BaseScriptableCommand*>(cmd);
     
     QString key;
     foreach(key, scriptCmd->getArgKeys())

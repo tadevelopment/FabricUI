@@ -5,7 +5,7 @@
 #ifndef __UI_COMMAND_REGISTRY__
 #define __UI_COMMAND_REGISTRY__
 
-#include "Command.h"
+#include "BaseCommand.h"
 #include <FabricUI/Util/Factory.h> 
 
 namespace FabricUI {
@@ -26,7 +26,7 @@ class CommandRegistry : public Util::BaseFactoryRegistry
   Q_OBJECT
 
   public:
-    // Command type
+    // BaseCommand type
     QString COMMAND_CPP; 
  
     CommandRegistry();
@@ -42,7 +42,7 @@ class CommandRegistry : public Util::BaseFactoryRegistry
 
     /// Creates a command named 'cmdName'.
     /// Throws an error if the command isn't registered.
-    virtual Command* createCommand(
+    virtual BaseCommand* createCommand(
       const QString &cmdName
       );
 

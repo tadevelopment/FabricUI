@@ -93,7 +93,7 @@ QList<QString> CommandRegistry::getCommandSpecs(
   return m_cmdSpecs[cmdName];
 }
 
-Command* CommandRegistry::createCommand(
+BaseCommand* CommandRegistry::createCommand(
   const QString &cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
@@ -111,7 +111,7 @@ Command* CommandRegistry::createCommand(
       Factory *factory = Util::BaseFactoryRegistry::getFactory(
         cmdName);
 
-      Command* cmd = (Command*)factory->create(); 
+      BaseCommand* cmd = (BaseCommand*)factory->create(); 
       if(cmd == 0)
         FabricException::Throw(
           "CommandRegistry::createCommand",

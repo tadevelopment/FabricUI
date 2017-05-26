@@ -58,7 +58,7 @@ class KLCommandManager : public RTValCommandManager
   private:
     /// Implementation of CommandManager
     virtual void pushTopCommand(
-      Command *cmd,
+      BaseCommand *cmd,
       bool succeeded = false
       );
 

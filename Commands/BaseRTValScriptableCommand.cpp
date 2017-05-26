@@ -25,7 +25,7 @@ BaseRTValScriptableCommand::~BaseRTValScriptableCommand()
 }
 
 inline RTValCommandManager *GetManager() {
-  return dynamic_cast<RTValCommandManager*>(
+  return static_cast<RTValCommandManager*>(
     CommandManager::GetCommandManager());
 }
  
@@ -43,7 +43,7 @@ inline QString GetMainKey(
     : key;
 }
 
-// ScriptableCommand
+// BaseScriptableCommand
 void BaseRTValScriptableCommand::declareArg(
   const QString &key, 
   int flags, 
@@ -216,7 +216,7 @@ QString BaseRTValScriptableCommand::getArgsDescription()
   return res;
 }
 
-// RTValScriptableCommand
+// BaseRTValScriptableCommand
 void BaseRTValScriptableCommand::declareRTValArg(
   const QString &key, 
   const QString &type,

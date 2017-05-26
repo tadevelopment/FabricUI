@@ -23,20 +23,8 @@ QPair<QString, BaseCommand*> KLCommandRegistry_Python::_createCommand_Python(
 {
   QPair<QString, BaseCommand*> pair;
   
-  Command *cmd = KLCommandRegistry::createCommand(
-    cmdName);
-
-  BaseCommand* baseCmd = dynamic_cast<BaseCommand*>(
-    cmd);
-
-  if(!baseCmd)
-    pair.first = FabricException::Throw(
-      "KLCommandRegistry_Python::_createCommand_Python",
-      "Command '" + cmd->getName() + "' is not a BaseCommand",
-      "",
-      PRINT | THROW);
-  else
-    pair.second = baseCmd;
+  pair.second = KLCommandRegistry::createCommand(
+     cmdName);
 
   return pair;
 }
@@ -89,7 +77,7 @@ QString KLCommandRegistry_Python::_synchronizeKL_Python()
   return error;
 }
 
-Command* KLCommandRegistry_Python::createCommand(
+BaseCommand* KLCommandRegistry_Python::createCommand(
   const QString &cmdName)
 { 
   QPair<QString, BaseCommand*> pair = _createCommand_Python(

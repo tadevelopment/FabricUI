@@ -5,16 +5,109 @@
 #ifndef __UI_BASE_COMMAND__
 #define __UI_BASE_COMMAND__
 
-#include "Command.h"
+#include <QString>
 
 namespace FabricUI {
 namespace Commands {
 
-class BaseCommand : public Command
+class BaseCommand
 {
   /**
-    BaseCommand is a default implementation of Command.
-    New commands can inheritated this class.
+    BaseCommand defines the functionalities of a command.
+      
+    Usage:
+    - C++:
+      class MyCommand : public BaseCommand {
+          
+        MyCommand() : BaseCommand()
+        {
+        }
+
+        virtual ~MyCommand()
+        {
+        }
+
+        virtual void registrationCallback(
+          const QString &name, 
+          void *userData)
+        {
+          BaseCommand::registrationCallback(
+            name, 
+            userData);
+
+          // Cast the pointer
+          float *myUserData = (float*)userData;
+        }
+
+        virtual bool canUndo() 
+        {
+          return true;
+        }
+
+        virtual bool doIt() 
+        {
+          ... Do you logic
+
+          --> Create a sub command
+          CommandManager *manager = CommandManager.GetCommandManager();
+          BaseCommand *mySubCommand = manager->createCommand("mySubCommand")
+          
+          return true;
+        }
+
+        virtual bool undoIt() 
+        {
+          ... Undo it
+          return true;
+        }
+
+        virtual bool redoIt() 
+        {
+          ... Redo it
+          return true;
+        }
+      };
+      
+      // Register the command
+      CommandFactory<MyCommand>::Register("myCommand");
+
+      // Create an execute the command
+      CommandManager *manager = CommandManager.GetCommandManager();
+      BaseCommand *cmd = manager->createCommand("myCommand") 
+
+    - Python:
+      class MyCommand(Commands.BaseCommand):
+          
+        def __ini__(self):
+          super(MyCommand, self)__init__()  
+
+        def registrationCallback(self, name, userData:
+          super(MyCommand, self)registrationCallback(name, userData)  
+          myUserData = userData
+      
+        def canUndo(self):
+          return True
+        
+        def doIt(self):
+          ... Do you logic
+
+          --> Create a sub command
+          mySubCommand = GetCommandManager().createCommand("mySubCommand")
+          return True
+
+        def undoIt(self):
+          ... Undo it
+          return True
+        
+        def redoIt(self):
+          ... Redo it
+          return True
+      
+      // Register the command
+      GetCommandRegistry().registerCommand("myCommand", MyCommand)
+
+      // Create an execute the command
+      myCommand = GetCommandManager().createCommand("myCommand")
 
     C++ interfaces cannot be wrapped in python by shiboken. New commands
     must specialize this class to be accessible from python.
@@ -25,42 +118,41 @@ class BaseCommand : public Command
 
     virtual ~BaseCommand();
 
-    /// Default implementation of Command.
-    /// Sets the command name.
+    /// Called when the command is created.
+    /// The userData argument is used to pass optional custom data.
+    /// The data is referenced by the registry, and given to the
+    /// command with this callback.
     virtual void registrationCallback(
       const QString &name, 
       void *userData
       );
 
-    /// Implementation of Command.
+    /// Gets the command name.
     virtual QString getName();
 
-    /// Default implementation of Command, 
-    /// returns false.
+    /// Checks if the command is undoable.
     virtual bool canUndo();
 
-    /// Default implementation of Command, 
-    /// Same as canUndo.
+    /// Checks if the command can be logged.
     virtual bool canLog();
 
-    /// Default implementation of Command, 
-    /// returns false.
+    /// Defines the command logic.
+    /// Returns true if succeded, false otherwise.
     virtual bool doIt();
 
-    /// Default implementation of Command, 
-    /// returns false.
+    /// Defines the undo logic.
+    /// Returns true if succeded, false otherwise.
     virtual bool undoIt();
 
-    /// Default implementation of Command, 
-    /// returns false.
+    /// Defines the redo logic.
+    /// Returns true if succeded, false otherwise.
     virtual bool redoIt();
     
-    /// Default implementation of Command, 
-    /// returns an empty string 
+    /// Gets the command's help (description)
     virtual QString getHelp();
 
-    /// Default implementation of Command, 
-    /// returns the commande name. 
+    /// Gets a description of the command
+    /// to display in the history stack (if one).
     virtual QString getHistoryDesc();
 
   protected:
