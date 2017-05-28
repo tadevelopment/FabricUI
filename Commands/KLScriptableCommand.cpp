@@ -162,19 +162,15 @@ QList<QString> KLScriptableCommand::getArgKeys()
 
   try 
   {
-    RTVal args = m_klCmd.callMethod(
-      "RTVal[String]", 
-      "getArgs", 
+    RTVal rtvalKeys = m_klCmd.callMethod(
+      "String[]", 
+      "getArgKeys", 
       0, 0);
 
-    RTVal rtvalKeys = args.getDictKeys();
     for (unsigned i = 0; i < rtvalKeys.getArraySize(); i++) 
-    {
-      QString key = rtvalKeys.getArrayElementRef(
-        i).getStringCString(); 
-
-      keys.append(key);
-    }
+      keys.append(rtvalKeys.getArrayElementRef(
+        i).getStringCString()
+      ); 
   }
 
   catch(Exception &e)

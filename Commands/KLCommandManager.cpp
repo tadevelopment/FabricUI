@@ -245,16 +245,16 @@ void KLCommandManager::createCommandFromKLAppCommand(
     0, 
     0).getStringCString();
 
-  RTVal argNameList = appCmd.callMethod(
+  RTVal keys = appCmd.callMethod(
     "String[]", 
-    "getArgNameList", 
+    "getArgKeys", 
     0, 
     0);
 
   QMap<QString, RTVal> args;
-  for(unsigned i=0; i<argNameList.getArraySize(); ++i)
+  for(unsigned i=0; i<keys.getArraySize(); ++i)
   {
-    RTVal argNameVal = argNameList.getArrayElement(i);
+    RTVal argNameVal = keys.getArrayElement(i);
     args[argNameVal.getStringCString()] = appCmd.callMethod(
       "RTVal", 
       "getArg", 
