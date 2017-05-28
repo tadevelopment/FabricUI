@@ -107,8 +107,8 @@ inline RTVal GetKLSingleOption(
 
       // RTVal childrenOptions = rtValOptions->getDictElement( key); 
 
-      // if( Util::RTValUtil::getRTValType(options) == "RTVal[String]" || 
-      //     Util::RTValUtil::getRTValType(options) == "RTVal[]")
+      // if( Util::RTValUtil::getType(options) == "RTVal[String]" || 
+      //     Util::RTValUtil::getType(options) == "RTVal[]")
         
       //   GetKLSingleOption(
       //     index+1, 
@@ -178,8 +178,8 @@ inline void SetKLSingleOption(
 
       // RTVal childrenOptions = rtValOptions->getDictElement( key); 
 
-      // if( Util::RTValUtil::getRTValType(options) == "RTVal[String]" || 
-      //     Util::RTValUtil::getRTValType(options) == "RTVal[]")
+      // if( Util::RTValUtil::getType(options) == "RTVal[String]" || 
+      //     Util::RTValUtil::getType(options) == "RTVal[]")
         
       //   SetKLSingleOption(
       //     index+1, 

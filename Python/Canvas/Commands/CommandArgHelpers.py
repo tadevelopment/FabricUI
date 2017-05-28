@@ -239,7 +239,7 @@ class CommandArgHelpers:
                             # Can cast the RTVal in simple JSON type
                             if pythonVal is not None:
                                 
-                                rtValType = Util.RTValUtil.getRTValType(rtVal)
+                                rtValType = Util.RTValUtil.getType(rtVal)
 
                                 if rtValType == 'String':
                                     str_ = rtVal.getSimpleType()

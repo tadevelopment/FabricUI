@@ -29,7 +29,7 @@ class RTValUtil
     /// If the C++ RTVal wraps a KL RTVal, the returned type 
     /// is the type of the object wrapped by the KL RTVal.
     /// To know if a C++ wraps a KL RTVal, use `isKLRTVal`.
-    static QString getRTValType(
+    static QString getType(
       FabricCore::RTVal rtVal
       );
 

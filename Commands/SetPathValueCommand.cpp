@@ -89,12 +89,12 @@ bool SetPathValueCommand::doIt()
     QString portType = PathValueResolverRegistry::GetRegistry()->getType(
       getRTValArg("target"));
 
-    if(canUndo() && getRTValArgType("previousValue.value") != portType)
-      setRTValArg("previousValue", getRTValArg("target.value"));
+    if(canUndo() && getPathValueArgType("previousValue") != portType)
+      setPathValueArgValue("previousValue", getPathValueArgValue("target"));
 
-    RTVal newValue = getRTValArg("newValue.value", portType);
+    RTVal newValue = getPathValueArgValue("newValue", portType);
   
-    setRTValArg("target.value", newValue);
+    setPathValueArgValue("target", newValue);
  
     return true;
   }
@@ -114,7 +114,7 @@ bool SetPathValueCommand::undoIt()
 { 
   try
   {
-    setRTValArg("target.value", getRTValArg("previousValue.value"));
+    setPathValueArgValue("target", getPathValueArgValue("previousValue"));
     return true;
   }
 
@@ -152,7 +152,7 @@ QString SetPathValueCommand::getHistoryDesc()
 {
   QMap<QString, QString> argsDesc;
  
-  argsDesc["target"] = getRTValArg("target.path").getStringCString();;
+  argsDesc["target"] = getPathValueArgPath("target");
  
   return CommandArgHelpers::CreateHistoryDescFromArgs(
     argsDesc,

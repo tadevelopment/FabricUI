@@ -114,15 +114,7 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
     virtual QString getRTValArgType(
       const QString &key
       );
-
-    /// Sets the argument type if not set.
-    /// To use with unknown type argument. The RTVal 
-    /// is constructed from the JSON and the type
-    virtual void setRTValArgType(
-      const QString &key,
-      const QString &type
-      );
-
+ 
     /// Gets an argument.
     virtual FabricCore::RTVal getRTValArg( 
       const QString &key 
@@ -141,24 +133,39 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
       const QString &key, 
       FabricCore::RTVal value
       );
-    
-  private:    
-    QString getPathValueArgType(
-      const QString &key, 
+  
+
+
+    /// Gets the argument rtval type.
+    virtual QString getPathValueArgType(
+      const QString &key
+      );
+
+    /// Gets the argument rtval type.
+    virtual QString getPathValueArgPath(
+      const QString &key
+      );
+
+    /// Gets an argument.
+    virtual FabricCore::RTVal getPathValueArgValue( 
+      const QString &key 
+      );
+
+    /// Gets an argument if type not been set.
+    /// To use with unknown type argument. The RTVal 
+    /// is constructed from the JSON and the type
+    virtual FabricCore::RTVal getPathValueArgValue( 
+      const QString &key,
       const QString &type
       );
 
-    FabricCore::RTVal getPathValueArg(
-      const QString &key,
-      FabricCore::RTVal pathValue
-      );
-
-    QString setPathValueArg(
+    /// Sets an argument.
+    virtual void setPathValueArgValue(
       const QString &key, 
-      FabricCore::RTVal value, 
-      FabricCore::RTVal &pathValue
+      FabricCore::RTVal value
       );
-
+      
+  private:
     /// Defines the arguments specs:
     /// type, default value, flags (optional, loggable)
     struct ScriptableCommandRTValArgSpec 

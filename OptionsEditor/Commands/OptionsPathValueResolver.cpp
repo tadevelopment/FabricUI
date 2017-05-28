@@ -70,7 +70,7 @@ QString OptionsPathValueResolver::getType(
   {
     getValue(pathValue);
 
-    portType = RTValUtil::getRTValType(
+    portType = RTValUtil::getType(
       RTValUtil::toRTVal(pathValue.maybeGetMember("value"))
       );
   }

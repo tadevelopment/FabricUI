@@ -88,7 +88,7 @@ bool SetXfoPortDefaultValueCommand::doIt()
 {
   try
   {
-    if(canUndo() && RTValUtil::getRTValType(getRTValArg("previousValue.value")) != "Xfo")
+    if(canUndo() && RTValUtil::getType(getRTValArg("previousValue.value")) != "Xfo")
       setRTValArg("previousValue", getRTValArg("target.value"));
 
     RTVal newValue = getRTValArg("newValue.value", "Xfo");

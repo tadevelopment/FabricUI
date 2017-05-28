@@ -69,7 +69,6 @@ QPair<QString, bool> BaseRTValScriptableCommand_Python::_isArg_Python(
   return pair;
 }
  
-
 QPair<QString, QString> BaseRTValScriptableCommand_Python::_getArg_Python(
   const QString &key)
 {
@@ -187,31 +186,6 @@ QPair<QString, QString> BaseRTValScriptableCommand_Python::_getRTValArgType_Pyth
   }
  
   return pair;
-}
-
-QString BaseRTValScriptableCommand_Python::_setRTValArgType_Python(
-  const QString &key,
-  const QString &type)
-{
-  QString error;
-    
-  try
-  {
-    BaseRTValScriptableCommand::setRTValArgType(
-      key,
-      type);
-  }
-
-  catch(FabricException &e) 
-  {
-    error = FabricException::Throw(
-      "BaseRTValScriptableCommand_Python::_setRTValArgType_Python",
-      "",
-      e.what(),
-      NOTHING);
-  }
- 
-  return error;
 }
 
 QPair<QString, RTVal> BaseRTValScriptableCommand_Python::_getRTValArg_Python(
@@ -347,15 +321,6 @@ QString BaseRTValScriptableCommand_Python::getRTValArgType(
   QPair<QString, QString> pair = _getRTValArgType_Python(
     key);
   return pair.second;
-}
-
-void BaseRTValScriptableCommand_Python::setRTValArgType(
-  const QString &key,
-  const QString &type)
-{
- _setRTValArgType_Python(
-    key,
-    type);
 }
 
 RTVal BaseRTValScriptableCommand_Python::getRTValArg(

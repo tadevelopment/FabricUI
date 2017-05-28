@@ -62,8 +62,6 @@ class CommandManagerQtCallback(QtCore.QObject):
         """ \internal, when a command's been pushed to the manager. 
         """ 
 
-        button = QtGui.QPushButton()
-        print "Button tpe " + str(type(button))
         try:
             # Create a new CommandQtWrapper and  
             # pushs it to the qt undo stack.

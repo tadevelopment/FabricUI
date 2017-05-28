@@ -22,7 +22,7 @@ bool RTValUtil::isKLRTVal(
   return klRTVal.isWrappedRTVal();
 }
 
-QString RTValUtil::getRTValType(
+QString RTValUtil::getType(
   RTVal klRTVal)
 {
   QString type;
@@ -39,7 +39,7 @@ QString RTValUtil::getRTValType(
   catch(Exception &e)
   {
     FabricException::Throw(
-      "RTValUtil::getRTValType",
+      "RTValUtil::getType",
       "",
       e.getDesc_cstr());
   }

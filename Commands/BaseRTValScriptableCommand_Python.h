@@ -79,14 +79,6 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
       const QString &key
       );
 
-    /// Wraps BaseRTValScriptableCommand::setRTValArgType.
-    /// Propagates the C++ exception in python.
-    /// To override in Python.
-    virtual QString _setRTValArgType_Python(
-      const QString &key,
-      const QString &type
-      );
-
     /// Wraps BaseRTValScriptableCommand::getRTValArg.
     /// Propagates the C++ exception in python.
     /// To override in Python.
@@ -155,13 +147,6 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
     /// calls _getRTValArgType_Python.
     virtual QString getRTValArgType(
       const QString &key
-      );
-
-    /// Implementation of BaseRTValScriptableCommand.
-    /// calls _setRTValArgType_Python.
-    virtual void setRTValArgType(
-      const QString &key,
-      const QString &type
       );
 
     /// Implementation of BaseRTValScriptableCommand.
