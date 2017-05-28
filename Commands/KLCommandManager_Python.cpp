@@ -62,7 +62,7 @@ QString KLCommandManager_Python::_doCommand_Python(
 		KLCommandManager::doCommand(cmd);
 	}  
 
-  catch (FabricException &e) 
+  catch(FabricException &e) 
   {
     error = FabricException::Throw(
       "KLCommandManager_Python::_doCommand_Python",
@@ -83,7 +83,7 @@ QString KLCommandManager_Python::_undoCommand_Python()
     KLCommandManager::undoCommand();
   }
 
-  catch (FabricException &e) 
+  catch(FabricException &e) 
   {
     error = FabricException::Throw(
       "KLCommandManager_Python::_undoCommand_Python",
@@ -104,7 +104,7 @@ QString KLCommandManager_Python::_redoCommand_Python()
 		KLCommandManager::redoCommand();
 	}	 
 
-	catch (FabricException &e) 
+	catch(FabricException &e) 
 	{
     error = FabricException::Throw(
       "KLCommandManager_Python::_redoCommand_Python",
@@ -138,7 +138,7 @@ QString KLCommandManager_Python::_checkCommandArgs_Python(
     CommandManager::checkCommandArgs(cmd, args);
   }
 
-  catch (FabricException &e) 
+  catch(FabricException &e) 
   {
     error = FabricException::Throw(
       "KLCommandManager_Python::_checkCommandArgs_Python",
@@ -189,7 +189,7 @@ QString KLCommandManager_Python::_checkRTValCommandArgs_Python(
       args);
   }
 
-  catch (FabricException &e) 
+  catch(FabricException &e) 
   {
     error = FabricException::Throw(
       "KLCommandManager_Python::_checkRTValCommandArgs_Python",
@@ -210,7 +210,7 @@ QString KLCommandManager_Python::_synchronizeKL_Python()
     KLCommandManager::synchronizeKL();
   }
 
-  catch (FabricException &e) 
+  catch(FabricException &e) 
   {
     error = FabricException::Throw(
       "KLCommandManager_Python::_synchronizeKL_Python",

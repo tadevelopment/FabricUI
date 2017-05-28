@@ -7,7 +7,6 @@
 
 #include <QMap>
 #include <QList>
-#include <QObject>
 #include "BaseCommand.h"
 #include <QSharedPointer>
 

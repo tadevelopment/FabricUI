@@ -13,7 +13,7 @@ using namespace FabricCore;
 using namespace OptionsEditor;
 
 SetKLOptionsTargetModelItemCommand::SetKLOptionsTargetModelItemCommand() 
-  : BaseRTValPathValueCommand()
+  : SetPathValueCommand()
 {
 }
 
@@ -29,7 +29,7 @@ QString SetKLOptionsTargetModelItemCommand::getHelp()
   argsHelp["previousValue"] = "Previous value, must be of the same type than the port.";
   argsHelp["isUndoable"] = "If true, the command is undoable.";
 
-  return CreateHelpFromRTValArgs(
+  return CommandArgHelpers::CreateHelpFromRTValArgs(
     "Sets the value of a KL OptionsEditorTarget model item",
     argsHelp,
     this);

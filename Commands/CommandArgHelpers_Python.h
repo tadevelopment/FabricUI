@@ -15,8 +15,6 @@ namespace Commands {
 class CommandArgHelpers_Python {
 
   public:
-    CommandArgHelpers_Python();
-
     static bool _IsRTValScriptableCommand_Python(
       BaseCommand *cmd
       );

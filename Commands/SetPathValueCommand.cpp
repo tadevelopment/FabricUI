@@ -2,7 +2,7 @@
 
 #include "CommandArgFlags.h"
 #include "CommandArgHelpers.h"
-#include "BaseRTValPathValueCommand.h"
+#include "SetPathValueCommand.h"
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
@@ -13,7 +13,7 @@ using namespace Commands;
 using namespace FabricCore;
 using namespace Application;
 
-BaseRTValPathValueCommand::BaseRTValPathValueCommand() 
+SetPathValueCommand::SetPathValueCommand() 
   : BaseRTValScriptableCommand()
 {
   try
@@ -54,17 +54,17 @@ BaseRTValPathValueCommand::BaseRTValPathValueCommand()
   catch(FabricException &e) 
   {
     FabricException::Throw(
-      "BaseRTValPathValueCommand::BaseRTValPathValueCommand",
+      "SetPathValueCommand::SetPathValueCommand",
       "",
       e.what());
   }
 }
 
-BaseRTValPathValueCommand::~BaseRTValPathValueCommand() 
+SetPathValueCommand::~SetPathValueCommand() 
 {
 }
 
-bool BaseRTValPathValueCommand::canUndo()
+bool SetPathValueCommand::canUndo()
 {
   try 
   {    
@@ -74,7 +74,7 @@ bool BaseRTValPathValueCommand::canUndo()
   catch(FabricException &e) 
   {
     FabricException::Throw(
-      "BaseRTValPathValueCommand::canUndo",
+      "SetPathValueCommand::canUndo",
       "",
       e.what());
   }
@@ -82,7 +82,7 @@ bool BaseRTValPathValueCommand::canUndo()
   return false;
 }
 
-bool BaseRTValPathValueCommand::doIt()
+bool SetPathValueCommand::doIt()
 {
   try
   {
@@ -102,7 +102,7 @@ bool BaseRTValPathValueCommand::doIt()
   catch(FabricException &e) 
   {
     FabricException::Throw(
-      "BaseRTValPathValueCommand::doIt",
+      "SetPathValueCommand::doIt",
       "",
       e.what());
   }
@@ -110,7 +110,7 @@ bool BaseRTValPathValueCommand::doIt()
   return false;
 } 
 
-bool BaseRTValPathValueCommand::undoIt()
+bool SetPathValueCommand::undoIt()
 { 
   try
   {
@@ -121,7 +121,7 @@ bool BaseRTValPathValueCommand::undoIt()
   catch(FabricException &e) 
   {
     FabricException::Throw(
-      "BaseRTValPathValueCommand::undoIt",
+      "SetPathValueCommand::undoIt",
       "",
       e.what());
   }
@@ -129,18 +129,32 @@ bool BaseRTValPathValueCommand::undoIt()
   return false;
 } 
 
-bool BaseRTValPathValueCommand::redoIt()
+bool SetPathValueCommand::redoIt()
 {
   return doIt();
 } 
 
-QString BaseRTValPathValueCommand::getHistoryDesc()
+QString SetPathValueCommand::getHelp()
+{
+  QMap<QString, QString> argsHelp;
+  argsHelp["target"] = "Path of the target";
+  argsHelp["newValue"] = "New value";
+  argsHelp["previousValue"] = "Previous value";
+  argsHelp["isUndoable"] = "If true, the command is undoable";
+
+  return CommandArgHelpers::CreateHelpFromRTValArgs(
+    "Sets the value of a PathValue arg",
+    argsHelp,
+    this);
+}
+
+QString SetPathValueCommand::getHistoryDesc()
 {
   QMap<QString, QString> argsDesc;
  
   argsDesc["target"] = getRTValArg("target.path").getStringCString();;
  
-  return CreateHistoryDescFromArgs(
+  return CommandArgHelpers::CreateHistoryDescFromArgs(
     argsDesc,
     this);
 }

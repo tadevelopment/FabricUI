@@ -12,33 +12,37 @@
 namespace FabricUI {
 namespace Commands {
 
-/// Helper to create the command's desc
-/// from a subsets of arguments.
-/// \param argsHelp Map of [arg, arg desc]
-QString CreateHistoryDescFromArgs(
-  const QMap<QString, QString> &argsDesc,
-  BaseScriptableCommand *cmd
-  );
+class CommandArgHelpers {
+  
+  public:
+    /// Helper to create the command's desc
+    /// from a subsets of arguments.
+    /// \param argsHelp Map of [arg, arg desc]
+    static QString CreateHistoryDescFromArgs(
+      const QMap<QString, QString> &argsDesc,
+      BaseScriptableCommand *cmd
+      );
 
-/// Helper to create the command's helps
-/// from a subsets of arguments.
-/// \param commandHelp The main help text.
-/// \param argsHelp Map of [arg, arg help]
-QString CreateHelpFromArgs(
-  const QString &commandHelp,
-  const QMap<QString, QString> &argsHelp,
-  BaseScriptableCommand *cmd
-  );
+    /// Helper to create the command's helps
+    /// from a subsets of arguments.
+    /// \param commandHelp The main help text.
+    /// \param argsHelp Map of [arg, arg help]
+    static QString CreateHelpFromArgs(
+      const QString &commandHelp,
+      const QMap<QString, QString> &argsHelp,
+      BaseScriptableCommand *cmd
+      );
 
-/// Helper to create the command's helps
-/// from a subsets of arguments.
-/// \param commandHelp The main help text.
-/// \param argsHelp Map of [arg, arg help]
-QString CreateHelpFromRTValArgs(
-  const QString &commandHelp,
-  const QMap<QString, QString> &argsHelp,
-  BaseRTValScriptableCommand *cmd
-  );
+    /// Helper to create the command's helps
+    /// from a subsets of arguments.
+    /// \param commandHelp The main help text.
+    /// \param argsHelp Map of [arg, arg help]
+    static QString CreateHelpFromRTValArgs(
+      const QString &commandHelp,
+      const QMap<QString, QString> &argsHelp,
+      BaseRTValScriptableCommand *cmd
+      );
+};
 
 } // namespace Commands
 } // namespace FabricUI

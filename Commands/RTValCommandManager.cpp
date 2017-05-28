@@ -4,12 +4,10 @@
 
 #include <iostream>
 #include "CommandRegistry.h"
-#include "RTValPathValueArg.h"
 #include "RTValCommandManager.h"
-#include "BaseScriptableCommand.h"
 #include "BaseRTValScriptableCommand.h"
-#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/CommandArgFlags.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 
 using namespace FabricUI;
@@ -20,9 +18,6 @@ using namespace Application;
 RTValCommandManager::RTValCommandManager() 
   : CommandManager()
 {
-  m_RTValComplexArgRegistry.registerArg(
-    new RTValPathValueArg()
-    );
 }
 
 RTValCommandManager::~RTValCommandManager() 
@@ -82,9 +77,7 @@ void RTValCommandManager::checkCommandArgs(
   BaseCommand *cmd,
   const QMap<QString, RTVal> &args)
 { 
-  std::cout << "RTValCommandManager::checkCommandArgs 1" << std::endl;
   BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
-  std::cout << "RTValCommandManager::checkCommandArgs 2 " << bool(scriptCmd) << std::endl;
 
   if(!scriptCmd) 
     FabricException::Throw(
@@ -110,12 +103,8 @@ void RTValCommandManager::checkCommandArgs(
 void RTValCommandManager::preProcessCommandArgs(
   BaseCommand* cmd)
 {
-  std::cout << "RTValCommandManager::preProcessCommandArgs 1" << std::endl;
   BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
-  std::cout << "RTValCommandManager::preProcessCommandArgs 2 " << bool(scriptCmd) << std::endl;
-
-  if(!scriptCmd)
-    return;
+  if(!scriptCmd) return;
 
   try
   {
@@ -156,12 +145,8 @@ void RTValCommandManager::preProcessCommandArgs(
 void RTValCommandManager::postProcessCommandArgs(
   BaseCommand* cmd)
 {
-  std::cout << "RTValCommandManager::postProcessCommandArgs 1" << std::endl;
   BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
-  std::cout << "RTValCommandManager::postProcessCommandArgs 2 " << bool(scriptCmd) << std::endl;
-
-  if(!scriptCmd)
-    return;
+  if(!scriptCmd) return;
 
   try
   {
@@ -177,9 +162,6 @@ void RTValCommandManager::postProcessCommandArgs(
             pathValue);
       }
     }
-
-    std::cout << "RTValCommandManager::postProcessCommandArgs 3 " << std::endl;
-
   }
    
   catch(Exception &e) 
@@ -191,16 +173,11 @@ void RTValCommandManager::postProcessCommandArgs(
       );
   }
 
-  catch (FabricException &e) 
+  catch(FabricException &e) 
   {
     FabricException::Throw(
       "RTValCommandManager::postProcessCommandArgs",
       "",
       e.what());
   }
-}
-
-RTValComplexArgRegistry& RTValCommandManager::getComplexArgRegistry()
-{
-  return m_RTValComplexArgRegistry;
 }

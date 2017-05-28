@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <QStringList>
-#include "RTValCommandManager.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
@@ -24,11 +23,6 @@ BaseRTValScriptableCommand::BaseRTValScriptableCommand()
 BaseRTValScriptableCommand::~BaseRTValScriptableCommand() 
 {
 }
-
-inline RTValCommandManager *GetManager() {
-  return qobject_cast<RTValCommandManager*>(
-    CommandManager::GetCommandManager());
-}
  
 inline bool IsKnownRTValType(
   const QString &type) 
@@ -42,6 +36,33 @@ inline QString GetMainKey(
   return key.indexOf(".") > -1
     ? key.split(".")[0]
     : key;
+}
+
+inline QString ParsePathValueArgKey(
+  QString &mainKey)
+{ 
+  if(mainKey.indexOf(".") > -1) 
+  {
+    QList<QString> temp = mainKey.split(".");
+    mainKey = temp[0];
+    return temp[1];
+  }
+  return "";
+}
+
+inline bool IsPathValueArg(
+  int flags)
+{ 
+  return (flags & CommandArgFlags::IN_ARG) || 
+    (flags & CommandArgFlags::OUT_ARG) || 
+    (flags & CommandArgFlags::IO_ARG);
+}
+
+inline bool IsPathValueArg(
+  QString json)
+{ 
+  return json.indexOf("value") > -1
+    && json.indexOf("path") > -1;
 }
 
 // BaseScriptableCommand
@@ -120,21 +141,12 @@ void BaseRTValScriptableCommand::setArg(
 
   try
   {
-    QString complexArgType;
-    int flags = m_rtvalArgSpecs[mainKey].flags;
-
-    if( GetManager()->getComplexArgRegistry().getRTValComplexArgType(
-          flags, 
-          complexArgType) && 
-        GetManager()->getComplexArgRegistry().isRTValComplexArgTypeOf(
-          flags, 
-          json)
-      )
+    if( IsPathValueArg(m_rtvalArgSpecs[mainKey].flags) && IsPathValueArg(json) )
     {
       RTVal rtVal = RTValUtil::forceJSONToRTVal(
         FabricApplicationStates::GetAppStates()->getContext(),
         json,
-        complexArgType);
+        "PathValue");
 
       setRTValArg(mainKey, rtVal);
     }
@@ -241,14 +253,10 @@ void BaseRTValScriptableCommand::declareRTValArg(
     spec.flags = flags;
 
     QString complexArgType;
-    spec.defaultValue = GetManager()->getComplexArgRegistry().getRTValComplexArgType(
-        flags, 
-        complexArgType)
+    spec.defaultValue = IsPathValueArg(flags)
       ? RTVal::Construct(
           FabricApplicationStates::GetAppStates()->getContext(), 
-          complexArgType.toUtf8().constData(), 
-          0, 
-          0)
+          "PathValue", 0, 0)
       : defaultValue;
    
     m_rtvalArgSpecs.insert(key, spec);
@@ -288,19 +296,9 @@ QString BaseRTValScriptableCommand::getRTValArgType(
       "BaseRTValScriptableCommand::getRTValArgType",
       "No arg named '" + mainKey + "' in command '" + getName() + "'");
 
-  QString complexArgType;
-  int flags = m_rtvalArgSpecs[mainKey].flags;
-
-  if(GetManager()->getComplexArgRegistry().getRTValComplexArgType(
-      flags, 
-      complexArgType)
-    )
-    return GetManager()->getComplexArgRegistry().getRTValComplexArgValueType(
-      flags,
-      key, 
-      m_rtvalArgSpecs[mainKey].type);
-    
-  return m_rtvalArgSpecs[mainKey].type;
+  return IsPathValueArg(m_rtvalArgSpecs[mainKey].flags)
+    ? getPathValueArgType(key, m_rtvalArgSpecs[mainKey].type)
+    : m_rtvalArgSpecs[mainKey].type;
 }
 
 void BaseRTValScriptableCommand::setRTValArgType(
@@ -375,16 +373,8 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
 
   try
   {
-    QString complexArgType;
-    int flags = m_rtvalArgSpecs[mainKey].flags;
-
-    val = GetManager()->getComplexArgRegistry().getRTValComplexArgType(
-        flags, 
-        complexArgType)
-      ? GetManager()->getComplexArgRegistry().getRTValComplexArgValue(
-          flags, 
-          key, 
-          RTValUtil::forceToRTVal(m_rtvalArgs[mainKey].first))
+    val = IsPathValueArg(m_rtvalArgSpecs[mainKey].flags)
+      ? getPathValueArg(key, RTValUtil::forceToRTVal(m_rtvalArgs[mainKey].first))
       : m_rtvalArgs[mainKey].first;
 
     val = RTValUtil::forceToRTVal(val);
@@ -433,32 +423,17 @@ void BaseRTValScriptableCommand::setRTValArg(
     QPair<FabricCore::RTVal, QString> pair;
 
     // Sets the RTVal.
-    QString complexArgType;
-    int flags = m_rtvalArgSpecs[mainKey].flags;
-
-    if(GetManager()->getComplexArgRegistry().getRTValComplexArgType(
-        flags, 
-        complexArgType)
-      )
+    if(IsPathValueArg(m_rtvalArgSpecs[mainKey].flags))
     {
-      RTVal complexArg = isArgSet(mainKey)
-        ? RTValUtil::forceToRTVal(
-            m_rtvalArgs[mainKey].first)
-        : RTVal::Construct(
-            FabricApplicationStates::GetAppStates()->getContext(), 
-            complexArgType.toUtf8().constData(), 
-            0, 0);
+      RTVal pathValue = isArgSet(mainKey)
+        ? RTValUtil::forceToRTVal( m_rtvalArgs[mainKey].first)
+        : RTVal::Construct(value.getContext(), "PathValue", 0, 0);
 
-      QString type = GetManager()->getComplexArgRegistry().setRTValComplexArgValue(
-        flags,
-        key, 
-        value, 
-        complexArg);
-      
+      QString type = setPathValueArg(key, value, pathValue);
       if(!type.isEmpty() && !IsKnownRTValType(m_rtvalArgSpecs[mainKey].type))
         m_rtvalArgSpecs[mainKey].type = type;
 
-      pair.first = complexArg;
+      pair.first = pathValue;
     }
 
     else
@@ -466,8 +441,7 @@ void BaseRTValScriptableCommand::setRTValArg(
       pair.first = value;
 
       if(!IsKnownRTValType(m_rtvalArgSpecs[mainKey].type))
-        m_rtvalArgSpecs[mainKey].type = RTValUtil::getRTValType(
-          value);
+        m_rtvalArgSpecs[mainKey].type = RTValUtil::getRTValType(value);
     }
 
     m_rtvalArgs.insert(mainKey, pair);
@@ -488,4 +462,108 @@ void BaseRTValScriptableCommand::setRTValArg(
       "",
       e.what());
   }
+}
+
+QString BaseRTValScriptableCommand::setPathValueArg(
+  const QString &key, 
+  RTVal value, 
+  RTVal &pathValue) 
+{
+  QString type;
+
+  try
+  {
+    QString mainKey = key;
+    QString subKey = ParsePathValueArgKey(mainKey);
+
+    if(subKey == "path")
+      pathValue.setMember("path", value);
+    
+    else if(subKey == "value" || RTValUtil::getRTValType(value) != "PathValue")
+    {
+      pathValue.setMember("value", value);
+      type = RTValUtil::getRTValType(value);
+    }
+
+    else
+    {
+      pathValue = value;
+      type = RTValUtil::getRTValType(
+        RTValUtil::forceToRTVal(value).maybeGetMember("value"));
+    }
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "BaseRTValScriptableCommand::setValue",
+      "",
+      e.getDesc_cstr());
+  }
+
+  return type;
+}
+
+QString BaseRTValScriptableCommand::getPathValueArgType(
+  const QString &key, 
+  const QString &type) 
+{
+  QString res;
+
+  try
+  {
+    QString mainKey = key;
+    QString subKey = ParsePathValueArgKey(mainKey);
+   
+    if(subKey == "path")
+      res = "String";
+
+    else if(subKey != "value")
+      res = "PathValue";
+
+    else
+      res = type;
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "BaseRTValScriptableCommand::getValueType",
+      "",
+      e.getDesc_cstr());
+  }
+
+  return res;
+}
+
+RTVal BaseRTValScriptableCommand::getPathValueArg(
+  const QString &key,
+  RTVal pathValue)
+{
+  RTVal res;
+
+  try
+  {
+    QString mainKey = key;
+    QString subKey = ParsePathValueArgKey(mainKey);
+        
+    if(subKey == "path")
+      res = pathValue.maybeGetMember("path");
+
+    else if(subKey == "value")
+      res = pathValue.maybeGetMember("value");
+
+    else
+      res = pathValue;
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "BaseRTValScriptableCommand::getValue",
+      "",
+      e.getDesc_cstr());
+  }
+
+  return res;
 }

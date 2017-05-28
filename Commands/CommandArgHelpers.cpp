@@ -8,10 +8,11 @@
 #include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
 
-namespace FabricUI {
-namespace Commands {
+using namespace FabricUI;
+using namespace Commands;
+using namespace Application;
 
-QString CreateHistoryDescFromArgs(
+QString CommandArgHelpers::CreateHistoryDescFromArgs(
   const QMap<QString, QString> &argsDesc,
   BaseScriptableCommand *cmd)
 {
@@ -42,9 +43,9 @@ QString CreateHistoryDescFromArgs(
     }
   }
  
-  catch(Application::FabricException &e) 
+  catch(FabricException &e) 
   {
-    Application::FabricException::Throw(
+    FabricException::Throw(
       "CommandArgHelpers::CreateHistoryDescFromArgs",
       "",
       e.what());
@@ -53,7 +54,7 @@ QString CreateHistoryDescFromArgs(
   return desc;
 }
 
-QString CreateHelpFromArgs(
+QString CommandArgHelpers::CreateHelpFromArgs(
   const QString &commandHelp,
   const QMap<QString, QString> &argsHelp,
   BaseScriptableCommand *cmd)
@@ -96,9 +97,9 @@ QString CreateHelpFromArgs(
     }
   }
  
-  catch(Application::FabricException &e) 
+  catch(FabricException &e) 
   {
-    Application::FabricException::Throw(
+    FabricException::Throw(
       "CommandArgHelpers::CreateHelpFromArgs",
       "",
       e.what());
@@ -107,7 +108,7 @@ QString CreateHelpFromArgs(
   return help;
 }
 
-QString CreateHelpFromRTValArgs(
+QString CommandArgHelpers::CreateHelpFromRTValArgs(
   const QString &commandHelp,
   const QMap<QString, QString> &argsHelp,
   BaseRTValScriptableCommand *cmd)
@@ -163,9 +164,9 @@ QString CreateHelpFromRTValArgs(
     }
   }
  
-  catch(Application::FabricException &e) 
+  catch(FabricException &e) 
   {
-    Application::FabricException::Throw(
+    FabricException::Throw(
       "CommandArgHelpers::CreateHelpFromRTValArgs",
       "",
       e.what());
@@ -173,6 +174,3 @@ QString CreateHelpFromRTValArgs(
 
   return help;
 }
-
-} // namespace Commands
-} // namespace FabricUI

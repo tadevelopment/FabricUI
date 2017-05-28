@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
 #include "KLCommand.h"
 #include "CommandManager.h"
 #include "CommandRegistry.h"
@@ -22,8 +21,7 @@ CommandManager::CommandManager()
   if(s_instanceFlag)
     FabricException::Throw(
       "CommandManager::CommandManager",
-      "CommandManager singleton has already been created"
-      );
+      "CommandManager singleton has already been created");
    
   // Set the pointer of the CommandManager singleton
   // equal to this instance of CommandManager.
@@ -85,8 +83,6 @@ BaseCommand* CommandManager::createCommand(
 void CommandManager::doCommand(
   BaseCommand *cmd) 
 {
-  std::cout << "CommandManager::doCommand 1 " << std::endl;
-
   if(!cmd) 
     FabricException::Throw(
       "CommandManager::doCommand",
@@ -101,25 +97,16 @@ void CommandManager::doCommand(
     clearRedoStack();
     pushTopCommand(cmd, false);
   }
-  std::cout << "CommandManager::doCommand 2 " << std::endl;
 
   // Execute the command, catch any errors.
   // The command breaks if the 'doIt' method
   // returns false or throws an exception.
   try
   {
-    std::cout << "CommandManager::doCommand 2 " << std::endl;
-
     preProcessCommandArgs(cmd);
-
     if(!cmd->doIt())
-      cleanupUnfinishedCommandsAndThrow(
-        cmd);
-
+      cleanupUnfinishedCommandsAndThrow(cmd);
     postProcessCommandArgs(cmd);
-
-    std::cout << "CommandManager::doCommand 3 " << std::endl;
-
   }
    
   catch(FabricException &e) 
@@ -144,9 +131,6 @@ void CommandManager::doCommand(
         m_undoStack[m_undoStack.size() - 1].topLevelCmd.data());
     }
   }
-
-  std::cout << "CommandManager::doCommand 4 " << std::endl;
-
 }
 
 void CommandManager::undoCommand() 
@@ -333,16 +317,13 @@ void CommandManager::checkCommandArgs(
   BaseCommand *cmd,
   const QMap<QString, QString> &args)
 { 
-  std::cout << "CommandManager::checkCommandArgs 1 " << std::endl;
   BaseScriptableCommand* scriptCommand = qobject_cast<BaseScriptableCommand*>(cmd);
-  std::cout << "CommandManager::checkCommandArgs 2 "  << bool(scriptCommand) << std::endl;
 
   if(!scriptCommand) 
     FabricException::Throw(
       "CommandManager::checkCommandArgs",
         "BaseCommand '" + cmd->getName() +  "' is created with args " + 
-        "but is not implementing the BaseScriptableCommand interface"
-        );
+        "but is not implementing the BaseScriptableCommand interface");
 
   // Try to set the arg even if not part of the specs, 
   // some commands might require this
@@ -441,9 +422,7 @@ QString CommandManager::getStackContent(
     StackedCommand stackedCmd = stack[i];
 
     BaseCommand *top = stackedCmd.topLevelCmd.data();
-    std::cout << "CommandManager::getStackContent 1.1 " << std::endl;
     BaseScriptableCommand *scriptableTop = qobject_cast<BaseScriptableCommand *>(top);
-    std::cout << "CommandManager::getStackContent 1.2 " << bool(scriptableTop) << std::endl;
 
     QString desc = scriptableTop 
       ? top->getName() + "\n" + scriptableTop->getArgsDescription() 
@@ -455,10 +434,7 @@ QString CommandManager::getStackContent(
     for (int j = 0; j < stackedCmd.lowLevelCmds.size(); ++j)
     {
       BaseCommand *low = stackedCmd.lowLevelCmds[j].data();
-
-      std::cout << "CommandManager::getStackContent 2.1 " << std::endl;
       BaseScriptableCommand *scriptableLow = qobject_cast<BaseScriptableCommand *>(low);
-      std::cout << "CommandManager::getStackContent 2.2"  << bool(scriptableLow) << std::endl;
 
       QString desc = scriptableLow ? 
         low->getName() + "\n" + scriptableLow->getArgsDescription() : 

@@ -7,8 +7,7 @@
  
 #include <FabricCore.h>
 #include "CommandManager.h"
-#include "RTValComplexArgRegistry.h"
-
+ 
 namespace FabricUI {
 namespace Commands {
 
@@ -39,10 +38,6 @@ class RTValCommandManager : public CommandManager
       BaseCommand* cmd
       );
     
-    /// Gets the Fabric client.
-    RTValComplexArgRegistry& getComplexArgRegistry();
-  
-
   protected:
     /// Implementation of CommandManager.
     virtual void preProcessCommandArgs(
@@ -60,8 +55,6 @@ class RTValCommandManager : public CommandManager
       BaseCommand *cmd,
       const QMap<QString, FabricCore::RTVal> &args
       );
-
-    RTValComplexArgRegistry m_RTValComplexArgRegistry;
 };
  
 } // namespace Commands

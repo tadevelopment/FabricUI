@@ -8,6 +8,7 @@
       <object-type name="BaseRTValScriptableCommand" />
       <object-type name="BaseScriptableCommand_Python" />
       <object-type name="BaseRTValScriptableCommand_Python" />
+      <object-type name="CommandArgHelpers" />
       <object-type name="CommandArgHelpers_Python" />
       <object-type name="CommandManager" />
       <object-type name="RTValCommandManager" />

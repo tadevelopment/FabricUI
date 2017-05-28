@@ -15,7 +15,6 @@ class CommandArgFlags
  
   */
   public:
-  	CommandArgFlags() {}
     /// Optional argument flag.
     static int OPTIONAL_ARG;
     /// Loggale argument flag.

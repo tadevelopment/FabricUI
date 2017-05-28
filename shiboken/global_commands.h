@@ -8,6 +8,7 @@
 #include <FabricUI/Commands/BaseRTValScriptableCommand.h>
 #include <FabricUI/Commands/BaseScriptableCommand_Python.h>
 #include <FabricUI/Commands/BaseRTValScriptableCommand_Python.h>
+#include <FabricUI/Commands/CommandArgHelpers.h>
 #include <FabricUI/Commands/CommandArgHelpers_Python.h>
 #include <FabricUI/Commands/CommandRegistry.h>
 #include <FabricUI/Commands/KLCommandRegistry.h>

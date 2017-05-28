@@ -96,7 +96,7 @@ QString CloseKLOptionsTargetEditorCommand::getHelp()
   argsHelp["editorID"] = "Qt objectName of the option editor / ID of the KL option in the OptionsTargetRegistry";
   argsHelp["failSilently"] = "If false, throws an error if the widget has not been closed";
 
-  return CreateHelpFromRTValArgs(
+  return CommandArgHelpers::CreateHelpFromRTValArgs(
     "Close a Qt editor to edit a KL OptionsTarget",
     argsHelp,
     this);
@@ -113,7 +113,7 @@ QString CloseKLOptionsTargetEditorCommand::getHistoryDesc()
     getRTValArg("failSilently").getBoolean()
     );
  
-  return CreateHistoryDescFromArgs(
+  return CommandArgHelpers::CreateHistoryDescFromArgs(
     argsDesc,
     this);
 }

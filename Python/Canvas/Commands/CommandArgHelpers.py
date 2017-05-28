@@ -31,7 +31,6 @@ class CommandArgHelpers:
             strArgs = {}
 
             for key, arg in args.iteritems():
-                # Unknown type, it's in JSON already
             
                 # CppCommands.BaseRTValScriptableCommand
                 if CppCommands.CommandArgHelpers_Python._IsRTValScriptableCommand_Python(cmd):
@@ -60,12 +59,7 @@ class CommandArgHelpers:
                                     else:
                                         rtValType = CppCommands.CommandArgHelpers_Python._GetRTValCommandArgType_Python(key+".value", cmd)
                                         if rtValType != "RTVal":
-
-                                            rtVal = client.RT.types.PathValue( 
-                                                "",
-                                                Util.RTValUtil.forceJSONToKLRTVal(client, arg, rtValType)
-                                                )
-         
+                                            rtVal = client.RT.types.PathValue("", Util.RTValUtil.forceJSONToKLRTVal(client, arg, rtValType))
                                             arg = Util.RTValUtil.forceRTValToJSON(rtVal)   
 
                             # If the input arg is a string and the cmd arg is not, 
@@ -73,7 +67,6 @@ class CommandArgHelpers:
                             # we create the JSON from the pyton arg.
                             elif not (CommandArgHelpers.__IsPyStringArg(arg) and not isArgStr):
                                 castArg = True
-
                                 # Check if the string has quotes.
                                 # If so, we assume that it's already a JSON
                                 if CommandArgHelpers.__IsPyStringArg(arg) and isArgStr and len(arg) > 0:
@@ -81,13 +74,11 @@ class CommandArgHelpers:
                                     last =  arg[len(arg)-1] == "'" or arg[len(arg)-1] == "\"" 
                                     castArg = not first and not last
                                      
-                                pyRTValType = getattr(client.RT.types, rtValType)
                                 if castArg:
+                                    pyRTValType = getattr(client.RT.types, rtValType)
                                     # Check if the python type can be casted as a RTVal.
                                     if pyRTValType().getSimpleType() is None:
-                                        raise Exception("Can't cast python '" + str(type(arg)) + 
-                                            "' to rtVal '" + str(rtValType) + "'")
-                                
+                                        raise Exception("Can't cast python '" + str(type(arg)) + "' to rtVal '" + str(rtValType) + "'")
                                     # Construct the python RTVal and sets its arg.
                                     rtVal = pyRTValType(arg)   
                                     arg = Util.RTValUtil.forceRTValToJSON(rtVal) 
@@ -124,7 +115,6 @@ class CommandArgHelpers:
                         rtVal = pyRTValType()   
                         rtVal.setJSON(arg)  
                         arg = client.RT.types.RTVal(rtVal)                 
-                     
                     else:
                         arg = client.RT.types.RTVal(arg)  
 
@@ -247,7 +237,6 @@ class CommandArgHelpers:
                                     rtVal = path
                                 else:
                                     rtVal = pathValue.value
-                            
                             else:
                                 rtVal = CppCommands.CommandArgHelpers_Python._GetRTValCommandArg_Python(key, cmd)                        
 
@@ -269,9 +258,7 @@ class CommandArgHelpers:
 
                             # JSON
                             else:
-                                desc += CommandArgHelpers.__EncodeJSON(
-                                    str(Util.RTValUtil.forceRTValToJSON(rtVal))
-                                    )
+                                desc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.forceRTValToJSON(rtVal)))
 
                         # ScriptableCommand, arguments are strings.
                         else:

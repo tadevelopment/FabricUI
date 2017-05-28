@@ -31,9 +31,6 @@ class SetXfoPortDefaultValueCommand : public Commands::BaseRTValScriptableComman
 
     /// Implementation of Command.
     virtual QString getHelp();
-
-    /// Implementation of Command.
-    virtual QString getHistoryDesc();
 };
 
 } // namespace DFG

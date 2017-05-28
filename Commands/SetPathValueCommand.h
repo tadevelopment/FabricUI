@@ -8,14 +8,14 @@
 namespace FabricUI {
 namespace Commands {
 
-class BaseRTValPathValueCommand : public BaseRTValScriptableCommand
+class SetPathValueCommand : public BaseRTValScriptableCommand
 {
   Q_OBJECT
   
   public:
-    BaseRTValPathValueCommand();
+    SetPathValueCommand();
 
-    virtual ~BaseRTValPathValueCommand();
+    virtual ~SetPathValueCommand();
 
     /// Implementation of BaseCommand.
     virtual bool canUndo();
@@ -31,6 +31,9 @@ class BaseRTValPathValueCommand : public BaseRTValScriptableCommand
 
     /// Implementation of BaseCommand.
     virtual QString getHistoryDesc();
+
+     /// Implementation of BaseCommand.
+    virtual QString getHelp();
 };
 
 } // namespace Commands

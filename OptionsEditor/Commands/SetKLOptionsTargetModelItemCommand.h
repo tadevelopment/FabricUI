@@ -5,12 +5,12 @@
 #ifndef __UI_SET_KL_OPTIONS_TARGET_MODEL_ITEM_COMMAND__
 #define __UI_SET_KL_OPTIONS_TARGET_MODEL_ITEM_COMMAND__
 
-#include <FabricUI/Commands/BaseRTValPathValueCommand.h>
+#include <FabricUI/Commands/SetPathValueCommand.h>
 
 namespace FabricUI {
 namespace OptionsEditor {
 
-class SetKLOptionsTargetModelItemCommand : public Commands::BaseRTValPathValueCommand
+class SetKLOptionsTargetModelItemCommand : public Commands::SetPathValueCommand
 {
   /**
     SetKLOptionsTargetModelItemCommand sets the value of a single 

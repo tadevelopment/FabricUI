@@ -143,6 +143,22 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
       );
     
   private:    
+    QString getPathValueArgType(
+      const QString &key, 
+      const QString &type
+      );
+
+    FabricCore::RTVal getPathValueArg(
+      const QString &key,
+      FabricCore::RTVal pathValue
+      );
+
+    QString setPathValueArg(
+      const QString &key, 
+      FabricCore::RTVal value, 
+      FabricCore::RTVal &pathValue
+      );
+
     /// Defines the arguments specs:
     /// type, default value, flags (optional, loggable)
     struct ScriptableCommandRTValArgSpec 

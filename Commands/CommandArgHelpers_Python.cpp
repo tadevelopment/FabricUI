@@ -13,10 +13,6 @@ using namespace Commands;
 using namespace FabricCore;
 using namespace Application;
 
-CommandArgHelpers_Python::CommandArgHelpers_Python()
-{
-}
-
 inline BaseScriptableCommand* _CastToBaseScriptableCommand(
   BaseCommand *cmd) 
 {

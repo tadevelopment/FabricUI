@@ -44,7 +44,7 @@ QString KLCommandRegistry_Python::_commandIsRegistered_Python(
       implType);
   }
 
-  catch (FabricException &e) 
+  catch(FabricException &e) 
   {
     error = FabricException::Throw(
       "KLCommandRegistry_Python::_commandIsRegistered_Python",
@@ -65,7 +65,7 @@ QString KLCommandRegistry_Python::_synchronizeKL_Python()
     KLCommandRegistry::synchronizeKL();
   }
 
-  catch (FabricException &e) 
+  catch(FabricException &e) 
   {
     error = FabricException::Throw(
       "KLCommandRegistry_Python::_synchronizeKL_Python",

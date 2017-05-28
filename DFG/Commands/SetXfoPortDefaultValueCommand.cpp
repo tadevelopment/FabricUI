@@ -137,23 +137,12 @@ QString SetXfoPortDefaultValueCommand::getHelp()
 {
   QMap<QString, QString> argsHelp;
   argsHelp["target"] = "Absolute path of the Xfo port";
-  argsHelp["newValue"] = "New value";
-  argsHelp["previousValue"] = "Previous value";
+  argsHelp["newValue"] = "New Xfo";
+  argsHelp["previousValue"] = "Previous Xfo";
   argsHelp["isUndoable"] = "If true, the command is undoable";
 
-  return CreateHelpFromRTValArgs(
+  return CommandArgHelpers::CreateHelpFromRTValArgs(
     "Sets the value of a Xfo DFG port",
     argsHelp,
-    this);
-}
-
-QString SetXfoPortDefaultValueCommand::getHistoryDesc()
-{
-  QMap<QString, QString> argsDesc;
- 
-  argsDesc["target"] = getRTValArg("target.path").getStringCString();;
- 
-  return CreateHistoryDescFromArgs(
-    argsDesc,
     this);
 }

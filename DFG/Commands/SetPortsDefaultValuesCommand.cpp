@@ -165,7 +165,7 @@ QString SetPortsDefaultValuesCommand::getHelp()
   argsHelp["previousValues"] = "Array of previous values, must be of the same type than the port.";
   argsHelp["isUndoable"] = "If true, the command is undoable and loggable.";
 
-  return CreateHelpFromRTValArgs(
+  return CommandArgHelpers::CreateHelpFromRTValArgs(
     "Sets the values of several DFG ports",
     argsHelp,
     this);
@@ -189,7 +189,7 @@ QString SetPortsDefaultValuesCommand::getHistoryDesc()
 
   argsDesc["pathValues"] = desc;
  
-  return CreateHistoryDescFromArgs(
+  return CommandArgHelpers::CreateHistoryDescFromArgs(
     argsDesc,
     this);
 }

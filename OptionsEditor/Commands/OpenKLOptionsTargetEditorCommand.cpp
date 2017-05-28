@@ -129,7 +129,7 @@ QString OpenKLOptionsTargetEditorCommand::getHelp()
   argsHelp["editorTitle"] = "Title of the widget";
   argsHelp["groupName"] = "Name of the options' group";
   
-  return CreateHelpFromRTValArgs(
+  return CommandArgHelpers::CreateHelpFromRTValArgs(
     "Open a Qt editor to edit a KL OptionsTarget",
     argsHelp,
     this);
@@ -145,7 +145,7 @@ QString OpenKLOptionsTargetEditorCommand::getHistoryDesc()
   argsDesc["editorTitle"] = getRTValArg(
     "editorTitle").getStringCString();
 
-  return CreateHistoryDescFromArgs(
+  return CommandArgHelpers::CreateHistoryDescFromArgs(
     argsDesc,
     this);
 }
