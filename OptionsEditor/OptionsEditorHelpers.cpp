@@ -76,7 +76,7 @@ inline RTVal GetKLSingleOption(
 { 
   try
   {
-    options = Util::RTValUtil::klRTValToRTVal(options);
+    options = Util::RTValUtil::toRTVal(options);
  
     QString optionName = singleOptionPaths[index];
 
@@ -165,7 +165,7 @@ inline void SetKLSingleOption(
       else
         options.setDictElement(
           key, 
-          Util::RTValUtil::rtValToKLRTVal(
+          Util::RTValUtil::toKLRTVal(
             singleOption)
           );
     }

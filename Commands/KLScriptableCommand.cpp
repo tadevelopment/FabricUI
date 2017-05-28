@@ -197,7 +197,7 @@ bool KLScriptableCommand::isArgSet(
 QString KLScriptableCommand::getArg(
   const QString &key) 
 {
-  return RTValUtil::rtValToJSON(
+  return RTValUtil::toJSON(
     getRTValArg(
       key)
     );
@@ -210,7 +210,7 @@ void KLScriptableCommand::setArg(
   try 
   {
     // Get the argument from its JSON description.
-    RTVal klRTVal = RTValUtil::jsonToRTVal(
+    RTVal klRTVal = RTValUtil::fromJSON(
         m_klCmd.getContext(),
         json,
         getRTValArgType(key));
@@ -347,7 +347,7 @@ RTVal KLScriptableCommand::getRTValArg(
       m_klCmd.getContext(), 
       key.toUtf8().constData());
 
-    res = RTValUtil::klRTValToRTVal(m_klCmd.callMethod(
+    res = RTValUtil::toRTVal(m_klCmd.callMethod(
       "RTVal", 
       "getArg", 
       1, 
@@ -386,7 +386,7 @@ void KLScriptableCommand::setRTValArg(
     
     RTVal args[3] = { 
       keyVal, 
-      RTValUtil::rtValToKLRTVal(value), 
+      RTValUtil::toKLRTVal(value), 
       // error
       RTVal::ConstructString(
         m_klCmd.getContext(), 

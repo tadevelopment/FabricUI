@@ -36,7 +36,7 @@ BaseRTValModelItem* KLOptionsTargetEditor::constructModel(
 {
   try
   {
-    options = RTValUtil::klRTValToRTVal(options);
+    options = RTValUtil::toRTVal(options);
  
     if(options.isDict()) 
       return new RTValDictModelItem(

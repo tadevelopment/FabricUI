@@ -33,7 +33,7 @@ bool DFGPathValueResolver::knownPath(
 
   try 
   {
-    pathValue = RTValUtil::klRTValToRTVal(
+    pathValue = RTValUtil::toRTVal(
       pathValue);
 
     QString path = pathValue.maybeGetMember(
@@ -71,7 +71,7 @@ QString DFGPathValueResolver::getType(
 
   try 
   {
-    pathValue = RTValUtil::klRTValToRTVal(
+    pathValue = RTValUtil::toRTVal(
       pathValue);
 
     QString path = pathValue.maybeGetMember(
@@ -104,7 +104,7 @@ void DFGPathValueResolver::getValue(
 {
   try 
   {
-    pathValue = RTValUtil::klRTValToRTVal(
+    pathValue = RTValUtil::toRTVal(
       pathValue);
 
     QString path = pathValue.maybeGetMember(
@@ -135,7 +135,7 @@ void DFGPathValueResolver::setValue(
 {
   try
   {
-    pathValue = RTValUtil::klRTValToRTVal(
+    pathValue = RTValUtil::toRTVal(
       pathValue);
 
     QString path = pathValue.maybeGetMember(
@@ -144,7 +144,7 @@ void DFGPathValueResolver::setValue(
     RTVal value = pathValue.maybeGetMember(
       "value");
 
-    value = RTValUtil::klRTValToRTVal(
+    value = RTValUtil::toRTVal(
       value);
 
     m_controller->getBinding().getExec().setPortDefaultValue( 

@@ -28,7 +28,7 @@ bool OptionsPathValueResolver::knownPath(
 
   try 
   {
-    pathValue = RTValUtil::klRTValToRTVal(
+    pathValue = RTValUtil::toRTVal(
       pathValue);
 
     QString path = pathValue.maybeGetMember(
@@ -71,7 +71,7 @@ QString OptionsPathValueResolver::getType(
     getValue(pathValue);
 
     portType = RTValUtil::getRTValType(
-      pathValue.maybeGetMember("value")
+      RTValUtil::toRTVal(pathValue.maybeGetMember("value"))
       );
   }
 
@@ -91,7 +91,7 @@ void OptionsPathValueResolver::getValue(
 {
   try 
   {
-    pathValue = RTValUtil::klRTValToRTVal(
+    pathValue = RTValUtil::toRTVal(
       pathValue);
 
     QString path = pathValue.maybeGetMember(
@@ -120,7 +120,7 @@ void OptionsPathValueResolver::setValue(
 {
   try
   {
-    pathValue = RTValUtil::klRTValToRTVal(
+    pathValue = RTValUtil::toRTVal(
       pathValue);
 
     QString path = pathValue.maybeGetMember(

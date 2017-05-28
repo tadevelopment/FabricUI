@@ -47,7 +47,7 @@ QString RTValUtil::getRTValType(
   return type;
 }
 
-RTVal RTValUtil::klRTValToRTVal(
+RTVal RTValUtil::toRTVal(
   RTVal klRTVal)
 {
   RTVal rtVal;
@@ -62,7 +62,7 @@ RTVal RTValUtil::klRTValToRTVal(
   catch(Exception &e)
   {
     FabricException::Throw(
-      "RTValUtil::rtValToKLRTVal",
+      "RTValUtil::toKLRTVal",
       "",
       e.getDesc_cstr());
   }
@@ -70,14 +70,14 @@ RTVal RTValUtil::klRTValToRTVal(
   return rtVal;
 }
 
-RTVal RTValUtil::rtValToKLRTVal(
+RTVal RTValUtil::toKLRTVal(
   RTVal rtVal)
 {
   RTVal klRTVal;
 
   try 
   {
-    klRTVal = !isKLRTVal(klRTVal)
+    klRTVal = !isKLRTVal(rtVal)
       ? RTVal::ConstructWrappedRTVal(rtVal)
       : rtVal;
   }
@@ -85,7 +85,7 @@ RTVal RTValUtil::rtValToKLRTVal(
   catch(Exception &e)
   {
     FabricException::Throw(
-      "RTValUtil::rtValToKLRTVal",
+      "RTValUtil::toKLRTVal",
       "",
       e.getDesc_cstr());
   }
@@ -93,14 +93,14 @@ RTVal RTValUtil::rtValToKLRTVal(
   return klRTVal;
 }
 
-QString RTValUtil::rtValToJSON(
+QString RTValUtil::toJSON(
   RTVal rtVal_)
 {
   QString res;
 
   try 
   {
-    RTVal rtVal = klRTValToRTVal(rtVal_);
+    RTVal rtVal = toRTVal(rtVal_);
 
     // If the value is an Object, we have use the RTValToJSONEncoder interface, if any.
     // This is the same logic as in FabricServices::Persistence::RTValToJSONEncoder, which unfortunately is not obvious to reuse.
@@ -133,7 +133,7 @@ QString RTValUtil::rtValToJSON(
   catch(Exception &e)
   {
     FabricException::Throw(
-      "RTValUtil::rtValToJSON",
+      "RTValUtil::toJSON",
       "",
       e.getDesc_cstr());
   }
@@ -141,7 +141,7 @@ QString RTValUtil::rtValToJSON(
   catch(FTL::JSONException &je)
   {
     FabricException::Throw(
-      "RTValUtil::rtValToJSON",
+      "RTValUtil::toJSON",
       "Caught JSONException",
       je.getDescCStr());
   }
@@ -149,7 +149,7 @@ QString RTValUtil::rtValToJSON(
   return res;
 }
 
-RTVal RTValUtil::jsonToRTVal(
+RTVal RTValUtil::fromJSON(
   Context context,
   const QString &json,
   const QString &rtValType)
@@ -210,7 +210,7 @@ RTVal RTValUtil::jsonToRTVal(
   catch(Exception &e)
   {
     FabricException::Throw(
-      "RTValUtil::jsonToRTVal",
+      "RTValUtil::fromJSON",
       "",
       e.getDesc_cstr());
   }
@@ -218,7 +218,7 @@ RTVal RTValUtil::jsonToRTVal(
   catch(FTL::JSONException &je)
   {
     FabricException::Throw(
-      "RTValUtil::jsonToRTVal",
+      "RTValUtil::fromJSON",
       "Caught JSONException",
       je.getDescCStr());
   }
@@ -226,12 +226,12 @@ RTVal RTValUtil::jsonToRTVal(
   return rtVal;
 }
 
-RTVal RTValUtil::jsonToRTVal(
+RTVal RTValUtil::fromJSON(
   Client client,
   const QString &json,
   const QString &rtValType)
 {
-  return jsonToRTVal(
+  return fromJSON(
     client.getContext(),
     json,
     rtValType);

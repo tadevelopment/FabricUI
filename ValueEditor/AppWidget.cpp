@@ -213,7 +213,7 @@ void AppWidget::valueChanged(
   {
     if(m_klWidget.isValid() && !m_klWidget.isNullObject())
     {
-      RTVal rtVal = Util::RTValUtil::rtValToKLRTVal(
+      RTVal rtVal = Util::RTValUtil::toKLRTVal(
         val
         );
 

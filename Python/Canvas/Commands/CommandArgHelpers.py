@@ -54,7 +54,7 @@ class CommandArgHelpers:
                                         arg = arg.replace("<", "")
                                         arg = arg.replace(">", "")
                                         rtVal = client.RT.types.PathValue(client.RT.types.String(arg))
-                                        arg = Util.RTValUtil.rtValToJSON(rtVal)   
+                                        arg = Util.RTValUtil.toJSON(rtVal)   
 
                             # If the input arg is a string and the cmd arg is not, 
                             # assume the input arg is already the JSON. Otherwise 
@@ -75,7 +75,7 @@ class CommandArgHelpers:
                                         raise Exception("Can't cast python '" + str(type(arg)) + "' to rtVal '" + str(rtValType) + "'")
                                     # Construct the python RTVal and sets its arg.
                                     rtVal = pyRTValType(arg)   
-                                    arg = Util.RTValUtil.rtValToJSON(rtVal) 
+                                    arg = Util.RTValUtil.toJSON(rtVal) 
         
                 # CppCommands.BaseScriptableCommand, all in strings
                 else:
@@ -252,7 +252,7 @@ class CommandArgHelpers:
 
                             # JSON
                             else:
-                                desc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.rtValToJSON(rtVal)))
+                                desc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.toJSON(rtVal)))
 
                         # ScriptableCommand, arguments are strings.
                         else:

@@ -106,7 +106,7 @@ RTVal RTValDictModelItem::getRTValOptions()
  
       options.setDictElement(
         key,
-        RTValUtil::rtValToKLRTVal(child->getRTValOptions())
+        RTValUtil::toKLRTVal(child->getRTValOptions())
         );
     }
   }
@@ -127,7 +127,7 @@ void RTValDictModelItem::setRTValOptions(
 {
   try
   {
-    options = RTValUtil::klRTValToRTVal(options);
+    options = RTValUtil::toRTVal(options);
 
     if(!options.isDict())
       throw("RTValDictModelItem::setRTValOptions, options is not a dictionay");

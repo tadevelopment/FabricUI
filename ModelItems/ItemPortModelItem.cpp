@@ -184,7 +184,7 @@ FabricCore::RTVal ItemPortModelItem::getCommandArgs()
         client, 
         "execPath"
         ), 
-      Util::RTValUtil::rtValToKLRTVal(
+      Util::RTValUtil::toKLRTVal(
         FabricCore::RTVal::ConstructString(
           client, 
           getExecPath().c_str()
@@ -197,7 +197,7 @@ FabricCore::RTVal ItemPortModelItem::getCommandArgs()
         client, 
         "nodeName"
         ), 
-      Util::RTValUtil::rtValToKLRTVal(
+      Util::RTValUtil::toKLRTVal(
         FabricCore::RTVal::ConstructString(
           client, 
           getItemPath().c_str()
@@ -210,7 +210,7 @@ FabricCore::RTVal ItemPortModelItem::getCommandArgs()
         client, 
         "portName"
         ), 
-      Util::RTValUtil::rtValToKLRTVal(
+      Util::RTValUtil::toKLRTVal(
         FabricCore::RTVal::ConstructString(
           client, 
           getPortName().c_str()

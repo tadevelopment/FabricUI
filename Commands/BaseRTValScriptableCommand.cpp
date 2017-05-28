@@ -122,7 +122,7 @@ QString BaseRTValScriptableCommand::getArg(
 
   // Known RTVal of known type, get the json from it.
   return (m_rtvalArgs[key].second.isEmpty() && IsKnownRTValType(m_rtvalArgSpecs[key].type))
-    ? RTValUtil::rtValToJSON(getRTValArg(key))
+    ? RTValUtil::toJSON(getRTValArg(key))
     // Otherwise, return the Json if it's been set.
     // It happens if the arg's been declared with an unknown type
     : m_rtvalArgs[key].second;
@@ -143,7 +143,7 @@ void BaseRTValScriptableCommand::setArg(
   {
     if( IsPathValueArg(m_rtvalArgSpecs[mainKey].flags) && IsPathValueArg(json) )
     {
-      RTVal rtVal = RTValUtil::jsonToRTVal(
+      RTVal rtVal = RTValUtil::fromJSON(
         FabricApplicationStates::GetAppStates()->getContext(),
         json,
         "PathValue");
@@ -154,7 +154,7 @@ void BaseRTValScriptableCommand::setArg(
     // Known type, cast the JSON to a RTVal.
     else if(IsKnownRTValType(m_rtvalArgSpecs[mainKey].type))
     {      
-      RTVal rtVal = RTValUtil::jsonToRTVal(
+      RTVal rtVal = RTValUtil::fromJSON(
         FabricApplicationStates::GetAppStates()->getContext(),
         json,
         m_rtvalArgSpecs[mainKey].type);
@@ -327,7 +327,7 @@ void BaseRTValScriptableCommand::setRTValArgType(
     // construct it since we know its type
     if(!m_rtvalArgs[mainKey].second.isEmpty())
     {
-      RTVal val = RTValUtil::jsonToRTVal(
+      RTVal val = RTValUtil::fromJSON(
         FabricApplicationStates::GetAppStates()->getContext(),
         m_rtvalArgs[mainKey].second,
         m_rtvalArgSpecs[mainKey].type);
@@ -374,10 +374,10 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
   try
   {
     val = IsPathValueArg(m_rtvalArgSpecs[mainKey].flags)
-      ? getPathValueArg(key, RTValUtil::klRTValToRTVal(m_rtvalArgs[mainKey].first))
+      ? getPathValueArg(key, RTValUtil::toRTVal(m_rtvalArgs[mainKey].first))
       : m_rtvalArgs[mainKey].first;
 
-    val = RTValUtil::klRTValToRTVal(val);
+    val = RTValUtil::toRTVal(val);
   }
 
   catch(Exception &e)
@@ -426,7 +426,7 @@ void BaseRTValScriptableCommand::setRTValArg(
     if(IsPathValueArg(m_rtvalArgSpecs[mainKey].flags))
     {
       RTVal pathValue = isArgSet(mainKey)
-        ? RTValUtil::klRTValToRTVal( m_rtvalArgs[mainKey].first)
+        ? RTValUtil::toRTVal( m_rtvalArgs[mainKey].first)
         : RTVal::Construct(value.getContext(), "PathValue", 0, 0);
 
       QString type = setPathValueArg(key, value, pathValue);
@@ -489,7 +489,7 @@ QString BaseRTValScriptableCommand::setPathValueArg(
     {
       pathValue = value;
       type = RTValUtil::getRTValType(
-        RTValUtil::klRTValToRTVal(value).maybeGetMember("value"));
+        RTValUtil::toRTVal(value).maybeGetMember("value"));
     }
   }
 
