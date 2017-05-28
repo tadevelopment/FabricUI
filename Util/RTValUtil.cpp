@@ -16,16 +16,10 @@ using namespace Util;
 using namespace FabricCore;
 using namespace Application;
 
-RTValUtil::RTValUtil()
-{
-}
-
 bool RTValUtil::isKLRTVal(
   RTVal klRTVal)
 {
-  QString dataType = 
-    klRTVal.getTypeName().getStringCString();
-  return dataType == "RTVal";
+  return klRTVal.isWrappedRTVal();
 }
 
 QString RTValUtil::getRTValType(
@@ -56,9 +50,24 @@ QString RTValUtil::getRTValType(
 RTVal RTValUtil::klRTValToRTVal(
   RTVal klRTVal)
 {
-  return klRTVal.isWrappedRTVal() 
-    ? klRTVal.getUnwrappedRTVal()
-    : klRTVal;
+  RTVal rtVal;
+
+  try 
+  {
+    rtVal = isKLRTVal(klRTVal)
+      ? klRTVal.getUnwrappedRTVal()
+      : klRTVal;
+   }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "RTValUtil::rtValToKLRTVal",
+      "",
+      e.getDesc_cstr());
+  }
+
+  return rtVal;
 }
 
 RTVal RTValUtil::rtValToKLRTVal(
@@ -68,7 +77,9 @@ RTVal RTValUtil::rtValToKLRTVal(
 
   try 
   {
-    klRTVal = RTVal::ConstructWrappedRTVal(rtVal);
+    klRTVal = !isKLRTVal(klRTVal)
+      ? RTVal::ConstructWrappedRTVal(rtVal)
+      : rtVal;
   }
 
   catch(Exception &e)
@@ -83,12 +94,14 @@ RTVal RTValUtil::rtValToKLRTVal(
 }
 
 QString RTValUtil::rtValToJSON(
-  RTVal rtVal)
+  RTVal rtVal_)
 {
   QString res;
 
   try 
   {
+    RTVal rtVal = klRTValToRTVal(rtVal_);
+
     // If the value is an Object, we have use the RTValToJSONEncoder interface, if any.
     // This is the same logic as in FabricServices::Persistence::RTValToJSONEncoder, which unfortunately is not obvious to reuse.
     if( rtVal.isObject() ) {
@@ -125,7 +138,7 @@ QString RTValUtil::rtValToJSON(
       e.getDesc_cstr());
   }
 
-  catch ( FTL::JSONException &je )
+  catch(FTL::JSONException &je)
   {
     FabricException::Throw(
       "RTValUtil::rtValToJSON",
@@ -134,15 +147,6 @@ QString RTValUtil::rtValToJSON(
   }
 
   return res;
-}
-
-QString RTValUtil::klRTValToJSON(
-  RTVal klRTVal)
-{
-  return RTValUtil::rtValToJSON(
-    klRTValToRTVal(
-      klRTVal)
-    );
 }
 
 RTVal RTValUtil::jsonToRTVal(
@@ -211,7 +215,7 @@ RTVal RTValUtil::jsonToRTVal(
       e.getDesc_cstr());
   }
 
-  catch ( FTL::JSONException &je )
+  catch(FTL::JSONException &je)
   {
     FabricException::Throw(
       "RTValUtil::jsonToRTVal",
@@ -220,20 +224,6 @@ RTVal RTValUtil::jsonToRTVal(
   }
 
   return rtVal;
-}
-
-RTVal RTValUtil::jsonToKLRTVal(
-  Context context,
-  const QString &json,
-  const QString &rtValType)
-{
-  RTVal rtVal = RTValUtil::jsonToRTVal(
-    context,
-    json,
-    rtValType);
-  
-  return RTValUtil::rtValToKLRTVal(
-    rtVal);
 }
 
 RTVal RTValUtil::jsonToRTVal(
@@ -245,81 +235,4 @@ RTVal RTValUtil::jsonToRTVal(
     client.getContext(),
     json,
     rtValType);
-}
-
-RTVal RTValUtil::jsonToKLRTVal(
-  Client client,
-  const QString &json,
-  const QString &rtValType)
-{
-  return jsonToKLRTVal(
-    client.getContext(),
-    json,
-    rtValType);
-}
-
-RTVal RTValUtil::forceJSONToRTVal(
-  Context ctxt,
-  const QString &json,
-  const QString &type) 
-{
-  RTVal rtVal;
-
-  try
-  {
-    rtVal = Util::RTValUtil::jsonToRTVal(
-      ctxt,
-      json,
-      type);
-  }
-  
-  catch(Exception &e)
-  {
-    rtVal = Util::RTValUtil::jsonToKLRTVal(
-      ctxt,
-      json,
-      type);
-  }
-
-  if(!rtVal.isValid()) 
-    printf(
-      "RTValUtil::forceJSONToRTVal, error: wasn't able to cast JSON in RTVal"
-    );
-
-  return rtVal;
-}
-
-RTVal RTValUtil::forceJSONToRTVal(
-  Client client,
-  const QString &json,
-  const QString &type) 
-{
-  return forceJSONToRTVal(
-    client.getContext(),
-    json,
-    type);
-}
-
-RTVal RTValUtil::forceToRTVal(
-  RTVal rtVal) 
-{
-  return isKLRTVal(rtVal)
-    ? klRTValToRTVal(rtVal)
-    : rtVal;
-}
-
-RTVal RTValUtil::forceToKLRTVal(
-  RTVal rtVal) 
-{
-  return !isKLRTVal(rtVal) 
-    ? rtValToKLRTVal(rtVal)
-    : rtVal;
-}
-
-QString RTValUtil::forceRTValToJSON(
-  RTVal rtVal) 
-{
-  return isKLRTVal(rtVal)
-    ? RTValUtil::klRTValToJSON(rtVal)
-    : RTValUtil::rtValToJSON(rtVal);
 }

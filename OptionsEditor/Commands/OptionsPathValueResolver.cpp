@@ -28,7 +28,7 @@ bool OptionsPathValueResolver::knownPath(
 
   try 
   {
-    pathValue = RTValUtil::forceToRTVal(
+    pathValue = RTValUtil::klRTValToRTVal(
       pathValue);
 
     QString path = pathValue.maybeGetMember(
@@ -91,7 +91,7 @@ void OptionsPathValueResolver::getValue(
 {
   try 
   {
-    pathValue = RTValUtil::forceToRTVal(
+    pathValue = RTValUtil::klRTValToRTVal(
       pathValue);
 
     QString path = pathValue.maybeGetMember(
@@ -120,7 +120,7 @@ void OptionsPathValueResolver::setValue(
 {
   try
   {
-    pathValue = RTValUtil::forceToRTVal(
+    pathValue = RTValUtil::klRTValToRTVal(
       pathValue);
 
     QString path = pathValue.maybeGetMember(

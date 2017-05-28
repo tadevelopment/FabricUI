@@ -103,7 +103,7 @@ RTVal RTValArrayModelItem::getRTValOptions()
      
       options.setArrayElement(
         count,
-        RTValUtil::forceToKLRTVal(child->getRTValOptions()) 
+        RTValUtil::rtValToKLRTVal(child->getRTValOptions()) 
         );
 
       count++;
@@ -126,7 +126,7 @@ void RTValArrayModelItem::setRTValOptions(
 {  
   try
   { 
-    options = RTValUtil::forceToRTVal(options);
+    options = RTValUtil::klRTValToRTVal(options);
 
     if(!options.isArray())
       FabricException::Throw(

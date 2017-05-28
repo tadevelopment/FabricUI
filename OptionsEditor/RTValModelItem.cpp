@@ -21,7 +21,7 @@ RTValModelItem::RTValModelItem(
   RTVal options) 
   : BaseRTValModelItem(name, path)
 {   
-  m_options = RTValUtil::forceToRTVal(options);
+  m_options = RTValUtil::klRTValToRTVal(options);
   m_originalOptions = m_options.clone();
 
   QSettings *settings = FabricApplicationStates::GetAppStates()->getSettings();
@@ -91,13 +91,13 @@ void RTValModelItem::resetToDefault()
 
 RTVal RTValModelItem::getRTValOptions()
 {
-  return RTValUtil::forceToKLRTVal(m_options);
+  return RTValUtil::rtValToKLRTVal(m_options);
 }
 
 void RTValModelItem::setRTValOptions(
   RTVal options) 
 {
   setValue(
-    toVariant(RTValUtil::forceToRTVal(options))
+    toVariant(RTValUtil::klRTValToRTVal(options))
     );
 }

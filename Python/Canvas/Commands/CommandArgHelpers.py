@@ -54,13 +54,7 @@ class CommandArgHelpers:
                                         arg = arg.replace("<", "")
                                         arg = arg.replace(">", "")
                                         rtVal = client.RT.types.PathValue(client.RT.types.String(arg))
-                                        arg = Util.RTValUtil.forceRTValToJSON(rtVal)   
-
-                                    else:
-                                        rtValType = CppCommands.CommandArgHelpers_Python._GetRTValCommandArgType_Python(key+".value", cmd)
-                                        if rtValType != "RTVal":
-                                            rtVal = client.RT.types.PathValue("", Util.RTValUtil.forceJSONToKLRTVal(client, arg, rtValType))
-                                            arg = Util.RTValUtil.forceRTValToJSON(rtVal)   
+                                        arg = Util.RTValUtil.rtValToJSON(rtVal)   
 
                             # If the input arg is a string and the cmd arg is not, 
                             # assume the input arg is already the JSON. Otherwise 
@@ -81,7 +75,7 @@ class CommandArgHelpers:
                                         raise Exception("Can't cast python '" + str(type(arg)) + "' to rtVal '" + str(rtValType) + "'")
                                     # Construct the python RTVal and sets its arg.
                                     rtVal = pyRTValType(arg)   
-                                    arg = Util.RTValUtil.forceRTValToJSON(rtVal) 
+                                    arg = Util.RTValUtil.rtValToJSON(rtVal) 
         
                 # CppCommands.BaseScriptableCommand, all in strings
                 else:
@@ -258,7 +252,7 @@ class CommandArgHelpers:
 
                             # JSON
                             else:
-                                desc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.forceRTValToJSON(rtVal)))
+                                desc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.rtValToJSON(rtVal)))
 
                         # ScriptableCommand, arguments are strings.
                         else:
