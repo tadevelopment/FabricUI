@@ -43,11 +43,11 @@ bool DFGRegisteredTypeLineEdit::checkIfTypeExist() {
     }
     else if (count = 2)
     { // [FE-8514]
-      // replace the part between the two '$' with "SInt32" including
-      // the '$' characters and then test if the result is a valid type.
-      // e.g.: "$TYPE$[][]" becomes "SInt32[][]" (is valid).
-      //       "$TYPE$[[>]" becomes "SInt32[[>]" (is invalid).
-      //       "n$ONSENS$e" becomes "n$SInt32$e" (is invalid).
+      // replace the part between the two '$' with "SInt32" (including
+      // the '$' characters) and then test if the result is a valid type.
+      // e.g.: "$TYPE$[][]" becomes "SInt32[][]" (  valid ).
+      //       "$TYPE$[[>]" becomes "SInt32[[>]" ( !valid ).
+      //       "n$ONSENS$e" becomes "n$SInt32$e" ( !valid ).
       int idx0 = t.indexOf('$');
       int idx1 = t.lastIndexOf('$');
       t.remove(idx0, idx1 - idx0 + 1);
