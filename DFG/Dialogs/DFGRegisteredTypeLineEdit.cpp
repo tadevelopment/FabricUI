@@ -41,7 +41,7 @@ bool DFGRegisteredTypeLineEdit::checkIfTypeExist() {
     {
       isValid = m_client.isValidType(t.toUtf8().data());
     }
-    else if (count = 2)
+    else if (count == 2)
     { // [FE-8514]
       // replace the part between the two '$' with "SInt32" (including
       // the '$' characters) and then test if the result is a valid type.
