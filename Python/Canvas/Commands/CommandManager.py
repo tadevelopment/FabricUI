@@ -126,7 +126,7 @@ class CommandManager(CppCommands.KLCommandManager_Python):
         try:
             cmd = GetCmdRegistry().createCmd(cmdName)
             if len(args) > 0:
-                self._checkCommandArgs_Python(cmd, CommandArgHelpers.CastCmdArgsToRTVal(cmd, args))
+                self._checkCommandArgs_Python(cmd, args)
             if doCmd:
                 self._doCommand_Python(cmd)
             return cmd

@@ -39,10 +39,10 @@ inline BaseRTValScriptableCommand* _CastToBaseRTValScriptableCommand(
   return scriptCmd;
 }
 
-bool CommandArgHelpers_Python::_IsScriptableCommand_Python(
+bool CommandArgHelpers_Python::_IsRTValScriptableCommand_Python(
   BaseCommand *cmd)
 {
-  BaseScriptableCommand* scriptCmd = qobject_cast<BaseScriptableCommand*>(cmd);
+  BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
   return scriptCmd != 0;
 }
 
@@ -71,6 +71,13 @@ bool CommandArgHelpers_Python::_IsPathValueCommandArg_Python(
   }
 
   return res;
+}
+
+bool CommandArgHelpers_Python::_IsScriptableCommand_Python(
+  BaseCommand *cmd)
+{
+  BaseScriptableCommand* scriptCmd = qobject_cast<BaseScriptableCommand*>(cmd);
+  return scriptCmd != 0;
 }
 
 bool CommandArgHelpers_Python::_IsCommandArg_Python(
@@ -124,30 +131,6 @@ bool CommandArgHelpers_Python::_IsCommandArgSet_Python(
   return res;
 }
 
-QStringList CommandArgHelpers_Python::_GetCommandArgKeys_Python(
-  BaseCommand *cmd)
-{
-  QStringList keys;
-
-  try 
-  {
-    BaseScriptableCommand* scriptCmd = _CastToBaseScriptableCommand(cmd);
-    keys = scriptCmd->getArgKeys();
-  }  
-
-  catch(FabricException &e) 
-  {
-    /*error = */FabricException::Throw(
-      "CommandArgHelpers_Python::_GetCommandArgKeys_Python",
-      "",
-      e.what(),
-      PRINT
-      );
-  }
-
-  return keys;
-}
-
 bool CommandArgHelpers_Python::_HasCommandArg_Python(
   const QString &key,
   BaseCommand *cmd)
@@ -171,6 +154,30 @@ bool CommandArgHelpers_Python::_HasCommandArg_Python(
   }
 
   return res;
+}
+
+QList<QString> CommandArgHelpers_Python::_GetCommandArgKeys_Python(
+  BaseCommand *cmd)
+{
+  QList<QString> keys;
+
+  try 
+  {
+    BaseScriptableCommand* scriptCmd = _CastToBaseScriptableCommand(cmd);
+    keys = scriptCmd->getArgKeys();
+  }  
+
+  catch(FabricException &e) 
+  {
+    /*error = */FabricException::Throw(
+      "CommandArgHelpers_Python::_GetCommandArgKeys_Python",
+      "",
+      e.what(),
+      PRINT
+      );
+  }
+
+  return keys;
 }
 
 QString CommandArgHelpers_Python::_GetCommandArg_Python(
@@ -198,13 +205,6 @@ QString CommandArgHelpers_Python::_GetCommandArg_Python(
   return res;
 }
 
-bool CommandArgHelpers_Python::_IsRTValScriptableCommand_Python(
-  BaseCommand *cmd)
-{
-  BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
-  return scriptCmd != 0;
-}
-
 RTVal CommandArgHelpers_Python::_GetRTValCommandArg_Python(
   const QString &key,
   BaseCommand *cmd)
@@ -230,7 +230,32 @@ RTVal CommandArgHelpers_Python::_GetRTValCommandArg_Python(
   return res;
 }
 
-RTVal CommandArgHelpers_Python::_GetRTValCommandArg_Python(
+RTVal CommandArgHelpers_Python::_GetRTValCommandArgValue_Python(
+  const QString &key,
+  BaseCommand *cmd)
+{
+  RTVal res;
+
+  try 
+  {
+    BaseRTValScriptableCommand* scriptCmd = _CastToBaseRTValScriptableCommand(cmd);
+    res = scriptCmd->getRTValArgValue(key);
+  }  
+
+  catch(FabricException &e) 
+  {
+    /*error = */FabricException::Throw(
+      "CommandArgHelpers_Python::_GetRTValCommandArgValue_Python",
+      "",
+      e.what(),
+      PRINT
+      );
+  }
+
+  return res;
+}
+
+RTVal CommandArgHelpers_Python::_GetRTValCommandArgValue_Python(
   const QString &key,
   const QString &type,
   BaseCommand *cmd)
@@ -240,13 +265,13 @@ RTVal CommandArgHelpers_Python::_GetRTValCommandArg_Python(
   try 
   {
     BaseRTValScriptableCommand* scriptCmd = _CastToBaseRTValScriptableCommand(cmd);
-    res = scriptCmd->getRTValArg(key, type);
+    res = scriptCmd->getRTValArgValue(key, type);
   }  
 
   catch(FabricException &e) 
   {
     /*error = */FabricException::Throw(
-      "CommandArgHelpers_Python::_GetRTValCommandArg_Python",
+      "CommandArgHelpers_Python::_GetRTValCommandArgValue_Python",
       "",
       e.what(),
       PRINT

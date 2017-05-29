@@ -5,7 +5,6 @@
 #ifndef __UI_COMMAND_ARG_HELPERS__
 #define __UI_COMMAND_ARG_HELPERS__
 
-#include <QStringList>
 #include "BaseScriptableCommand.h"
 #include "BaseRTValScriptableCommand.h"
 

@@ -21,7 +21,7 @@ KLCommandRegistry::KLCommandRegistry()
 
   try 
   {
-    m_klCmdRegistry = RTVal::Create(
+    m_klCmdRegistry = RTVal::Construct(
       FabricApplicationStates::GetAppStates()->getContext(), 
       "CommandRegistry", 
       0, 0);

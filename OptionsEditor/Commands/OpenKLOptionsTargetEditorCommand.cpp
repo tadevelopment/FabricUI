@@ -56,7 +56,7 @@ bool OpenKLOptionsTargetEditorCommand::canLog()
 
 BaseRTValOptionsEditor* OpenKLOptionsTargetEditorCommand::getOptionsEditor() 
 {
-  QString editorID = getRTValArg(
+  QString editorID = getRTValArgValue(
     "editorID"
     ).getStringCString();
 
@@ -65,7 +65,7 @@ BaseRTValOptionsEditor* OpenKLOptionsTargetEditorCommand::getOptionsEditor()
 
 QDockWidget* OpenKLOptionsTargetEditorCommand::getOptionsEditorDock() 
 {
-  QString editorID = getRTValArg(
+  QString editorID = getRTValArgValue(
     "editorID"
     ).getStringCString();
 
@@ -78,7 +78,7 @@ bool OpenKLOptionsTargetEditorCommand::doIt()
 
   try
   {
-    QString editorID = getRTValArg(
+    QString editorID = getRTValArgValue(
       "editorID"
       ).getStringCString();
 
@@ -93,12 +93,12 @@ bool OpenKLOptionsTargetEditorCommand::doIt()
 
     else
     {
-      QString editorTitle = getRTValArg(
+      QString editorTitle = getRTValArgValue(
         "editorTitle"
         ).getStringCString();
 
       QString groupName = isArgSet("groupName")
-        ? getRTValArg("groupName").getStringCString()
+        ? getRTValArgValue("groupName").getStringCString()
         : QString();
 
       CreateOptionsEditor(
@@ -139,10 +139,10 @@ QString OpenKLOptionsTargetEditorCommand::getHistoryDesc()
 {
   QMap<QString, QString> argsDesc;
 
-  argsDesc["editorID"] = getRTValArg(
+  argsDesc["editorID"] = getRTValArgValue(
     "editorID").getStringCString();
 
-  argsDesc["editorTitle"] = getRTValArg(
+  argsDesc["editorTitle"] = getRTValArgValue(
     "editorTitle").getStringCString();
 
   return CommandArgHelpers::CreateHistoryDescFromArgs(

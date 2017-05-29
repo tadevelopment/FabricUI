@@ -114,60 +114,67 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
     virtual QString getRTValArgType(
       const QString &key
       );
- 
+    
     /// Gets an argument.
-    virtual FabricCore::RTVal getRTValArg( 
+    virtual QString getRTValArgPath( 
+      const QString &key 
+      );
+
+    /// Gets an argument.
+    virtual FabricCore::RTVal getRTValArgValue( 
       const QString &key 
       );
 
     /// Gets an argument if type not been set.
     /// To use with unknown type argument. The RTVal 
     /// is constructed from the JSON and the type
-    virtual FabricCore::RTVal getRTValArg( 
+    virtual FabricCore::RTVal getRTValArgValue( 
       const QString &key,
       const QString &type
       );
 
     /// Sets an argument.
-    virtual void setRTValArg(
+    virtual void setRTValArgValue(
       const QString &key, 
       FabricCore::RTVal value
       );
 
+    virtual void setRTValArg(
+      const QString &key, 
+      FabricCore::RTVal pathValue
+      );
+
+    virtual FabricCore::RTVal getRTValArg(
+      const QString &key 
+      );
+
   protected:
-    /// Checks if the argument is a PathValue.
-    virtual bool isPathValueArg(
+    void checkHasArg(
+      const QString &methodName,
       const QString &key
       );
-   
+      
     /// Checks if the argument is a PathValue.
     bool isJSONPathValueArg(
       const QString &json
       );
 
-    /// Gets the path of a PathValue argument.
-    QString getPathValueArgPath(
+  private:
+    bool isArgTypeKnown(
       const QString &key
       );
 
-    /// Gets the value of a PathValue argument.
-    FabricCore::RTVal getPathValueArgValue( 
-      const QString &key 
+    void checkEmptyKey(
+      const QString &methodName,
+      const QString &key
       );
 
-    /// Gets the value of a PathValue argument.
-    FabricCore::RTVal getPathValueArgValue( 
+    void checkRTValType(
+      const QString &methodName,
       const QString &key,
       const QString &type
       );
 
-    /// Sets the value of a PathValue argument.
-    void setPathValueArgValue(
-      const QString &key, 
-      FabricCore::RTVal value
-      );
-
-  private:
     /// Defines the arguments specs:
     /// type, default value, flags (optional, loggable)
     struct ScriptableCommandRTValArgSpec 

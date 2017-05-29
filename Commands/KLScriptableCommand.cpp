@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <QStringList>
 #include "KLCommandHelpers.h"
 #include "KLScriptableCommand.h"
 #include <FabricUI/Util/RTValUtil.h>
@@ -49,7 +48,7 @@ bool KLScriptableCommand::canLog()
 
 bool KLScriptableCommand::doIt() 
 { 
-  bool res = false;
+  bool isDone = false;
 
   try 
   {
@@ -59,7 +58,7 @@ bool KLScriptableCommand::doIt()
       1,
       &m_klCmd);
     
-    res = DoKLCommand(cmd);
+    isDone = DoKLCommand(cmd);
   }
 
   catch(Exception &e)
@@ -70,7 +69,7 @@ bool KLScriptableCommand::doIt()
       e.getDesc_cstr());
   }
   
-  return res;
+  return isDone;
 }
 
 bool KLScriptableCommand::undoIt() 
@@ -85,14 +84,12 @@ bool KLScriptableCommand::redoIt()
 
 QString KLScriptableCommand::getHelp() 
 {
-  return GetKLCommandHelp(
-    m_klCmd);
+  return GetKLCommandHelp(m_klCmd);
 }
 
 QString KLScriptableCommand::getHistoryDesc() 
 {
-  return GetKLCommandHistoryDesc(
-    m_klCmd);
+  return GetKLCommandHistoryDesc(m_klCmd);
 }
 
 // BaseScriptableCommand
@@ -208,28 +205,45 @@ bool KLScriptableCommand::isArgSet(
 QString KLScriptableCommand::getArg(
   const QString &key) 
 {
-  return RTValUtil::toJSON(
-    getRTValArg(
-      key)
-    );
+  QString json;
+
+  try
+  {
+    json = RTValUtil::toJSON(
+      getRTValArg(key)
+      );
+   }
+
+  catch(FabricException &e) 
+  {
+    FabricException::Throw(
+      "KLScriptableCommand::getArg",
+      "",
+      e.what());
+  }
+
+  return json;
 }
 
 void KLScriptableCommand::setArg(
   const QString &key, 
   const QString &json) 
 {
-  if(!hasArg(key)) 
-    FabricException::Throw(
-      "KLScriptableCommand::setArg",
-      "No arg named " + key + "' in command '" + getName() + "'");
+  checkHasArg("KLScriptableCommand::setArg", key);
 
   try
   {
-    RTVal rtVal = isPathValueArg(key) && isJSONPathValueArg(json)
-      ? RTValUtil::fromJSON(m_klCmd.getContext(), json, "PathValue")
-      : RTValUtil::fromJSON(m_klCmd.getContext(), json, getRTValArgType(key));
-  
-    setRTValArg(key, rtVal);
+    if(isJSONPathValueArg(json))
+      setRTValArg(
+        key, 
+        RTValUtil::fromJSON(m_klCmd.getContext(), json, "PathValue")
+        );
+   
+    else
+      setRTValArgValue(
+        key, 
+        RTValUtil::fromJSON(m_klCmd.getContext(), json, getRTValArgType(key))
+        );
   }
 
   catch(Exception &e)
@@ -318,7 +332,7 @@ void KLScriptableCommand::declareRTValArg(
 QString KLScriptableCommand::getRTValArgType(
   const QString &key)
 {
-  QString res;
+  QString type;
 
   try 
   {
@@ -326,7 +340,7 @@ QString KLScriptableCommand::getRTValArgType(
       m_klCmd.getContext(), 
       key.toUtf8().constData());
 
-    res = m_klCmd.callMethod(
+    type = m_klCmd.callMethod(
       "String", 
       "getArgType", 
       1, 
@@ -342,26 +356,15 @@ QString KLScriptableCommand::getRTValArgType(
       e.getDesc_cstr());
   }
   
-  return res;
+  return type;
 }
 
-void KLScriptableCommand::setRTValArgType(
-  const QString &key,
-  const QString &type)
-{
-  // Do nothing
-}
-
-RTVal KLScriptableCommand::getRTValArg(
+QString KLScriptableCommand::getRTValArgPath(
   const QString &key)
 {
-  if(!hasArg(key)) 
-    FabricException::Throw(
-      "KLScriptableCommand::getRTValArgType",
-      "No arg named '" + key + "' in command '" + getName() + "'",
-      "");
-
-  RTVal res;
+  checkHasArg("KLScriptableCommand::getRTValArgPath", key);
+ 
+  QString path;
 
   try 
   {
@@ -369,9 +372,41 @@ RTVal KLScriptableCommand::getRTValArg(
       m_klCmd.getContext(), 
       key.toUtf8().constData());
 
-    res = RTValUtil::toRTVal(m_klCmd.callMethod(
+    path = m_klCmd.callMethod(
+      "String", 
+      "getArgValue", 
+      1, 
+      &keyVal
+      ).getStringCString();
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "KLScriptableCommand::getRTValArgPath",
+      "",
+      e.getDesc_cstr());
+  }
+  
+  return path;
+}
+
+RTVal KLScriptableCommand::getRTValArgValue(
+  const QString &key)
+{
+  checkHasArg("KLScriptableCommand::getRTValArgValue", key);
+ 
+  RTVal value;
+
+  try 
+  {
+    RTVal keyVal = RTVal::ConstructString(
+      m_klCmd.getContext(), 
+      key.toUtf8().constData());
+
+    value = RTValUtil::toRTVal(m_klCmd.callMethod(
       "RTVal", 
-      "getArg", 
+      "getArgValue", 
       1, 
       &keyVal));
   }
@@ -379,22 +414,22 @@ RTVal KLScriptableCommand::getRTValArg(
   catch(Exception &e)
   {
     FabricException::Throw(
-      "KLScriptableCommand::getRTValArg",
+      "KLScriptableCommand::getRTValArgValue",
       "",
       e.getDesc_cstr());
   }
   
-  return res;
+  return value;
 }
 
-RTVal KLScriptableCommand::getRTValArg(
+RTVal KLScriptableCommand::getRTValArgValue(
   const QString &key,
   const QString &type)
 {
-  return getRTValArg(key);
+  return getRTValArgValue(key);
 }
 
-void KLScriptableCommand::setRTValArg( 
+void KLScriptableCommand::setRTValArgValue( 
   const QString &key, 
   FabricCore::RTVal value)
 {
@@ -409,6 +444,82 @@ void KLScriptableCommand::setRTValArg(
     RTVal args[3] = { 
       keyVal, 
       RTValUtil::toKLRTVal(value), 
+      // error
+      RTVal::ConstructString(
+        m_klCmd.getContext(), 
+        "") 
+    };
+
+    m_klCmd.callMethod(
+      "", 
+      "setArgValue", 
+      3, 
+      args);
+
+    // Gets possible KL errors.
+    strError = args[2].getStringCString();
+    if(!strError.isEmpty())
+      FabricException::Throw(
+        "KLScriptableCommand::setRTValArgValue",
+        "",
+        strError);
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "KLScriptableCommand::setRTValArgValue",
+      strError,
+      e.getDesc_cstr());
+  }
+}
+
+RTVal KLScriptableCommand::getRTValArg(
+  const QString &key)
+{
+  checkHasArg("KLScriptableCommand::getRTValArg", key);
+ 
+  RTVal pathValue;
+
+  try 
+  {
+    RTVal keyVal = RTVal::ConstructString(
+      m_klCmd.getContext(), 
+      key.toUtf8().constData());
+
+    pathValue = RTValUtil::toRTVal(m_klCmd.callMethod(
+      "RTVal", 
+      "getArg", 
+      1, 
+      &keyVal));
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "KLScriptableCommand::getRTValArg",
+      "",
+      e.getDesc_cstr());
+  }
+  
+  return pathValue;
+}
+
+void KLScriptableCommand::setRTValArg( 
+  const QString &key, 
+  FabricCore::RTVal pathValue)
+{
+  QString strError;
+
+  try 
+  {  
+    RTVal keyVal = RTVal::ConstructString(
+      m_klCmd.getContext(), 
+      key.toUtf8().constData());
+    
+    RTVal args[3] = { 
+      keyVal, 
+      RTValUtil::toRTVal(pathValue), 
       // error
       RTVal::ConstructString(
         m_klCmd.getContext(), 
@@ -438,34 +549,3 @@ void KLScriptableCommand::setRTValArg(
       e.getDesc_cstr());
   }
 }
-
-bool KLScriptableCommand::isPathValueArg(
-  const QString &key)
-{
-  bool res;
-
-  try 
-  {  
-    RTVal keyVal = RTVal::ConstructString(
-      m_klCmd.getContext(), 
-      key.toUtf8().constData());
- 
-    res = m_klCmd.callMethod(
-      "Boolean", 
-      "isPathValueArg", 
-      1, 
-      &keyVal).getBoolean();
- 
-  }
-
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "KLScriptableCommand::isPathValueArg",
-      "",
-      e.getDesc_cstr());
-  }
-
-  return res;
-}
-

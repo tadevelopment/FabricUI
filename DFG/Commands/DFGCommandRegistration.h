@@ -9,7 +9,6 @@
 #include <FabricUI/DFG/DFGController.h>
 #include "SetPortDefaultValueCommand.h"
 #include "SetXfoPortDefaultValueCommand.h"
-#include "SetPortsDefaultValuesCommand.h"
 #include <FabricUI/Commands/CommandRegistry.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 
@@ -39,9 +38,6 @@ class DFGCommandRegistration
 
       Commands::CommandFactory<SetXfoPortDefaultValueCommand>::Register(
         "setXfoPortDefaultValue");
-
-      Commands::CommandFactory<SetPortsDefaultValuesCommand>::Register(
-        "setPortsDefaultValues");
     }
 };
 

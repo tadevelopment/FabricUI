@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <QStringList>
+#include <iostream>
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
@@ -23,113 +23,10 @@ BaseRTValScriptableCommand::~BaseRTValScriptableCommand()
 {
 }
  
-inline bool IsKnownRTValType(
-  const QString &type) 
+bool BaseRTValScriptableCommand::isArgTypeKnown(
+  const QString &key) 
 {
-  return type != "RTVal";
-}
-
-inline QString GetMainKey(
-  const QString &key)
-{ 
-  return key.indexOf(".") > -1
-    ? key.split(".")[0]
-    : key;
-}
-
-inline QString ParsePathValueArgKey(
-  const QString &key)
-{ 
-  return key.indexOf(".") > -1
-    ? key.split(".")[1]
-    : key;
-}
-
-inline QString GetPathValueArgType(
-  const QString &key, 
-  const QString &type) 
-{
-  return (ParsePathValueArgKey(key) == "path")
-    ? "String"
-    : type;
-}
-
-inline bool IsPathValueArg(
-  int flags)
-{ 
-  return (flags & CommandArgFlags::IN_ARG) || 
-    (flags & CommandArgFlags::OUT_ARG) || 
-    (flags & CommandArgFlags::IO_ARG);
-}
-
-inline QString SetPathValueArg(
-  const QString &key, 
-  RTVal value, 
-  RTVal &pathValue) 
-{
-  QString type;
-
-  try
-  {
-    QString subKey = ParsePathValueArgKey(key);
-
-    if(subKey == "path")
-      pathValue.setMember("path", value);
-    
-    else if(subKey == "value" || RTValUtil::getType(value) != "PathValue")
-    {
-      pathValue.setMember("value", value);
-      type = RTValUtil::getType(value);
-    }
-
-    else
-    {
-      pathValue = value;
-      type = RTValUtil::getType(
-        RTValUtil::toRTVal(value).maybeGetMember("value"));
-    }
-  }
-
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::setValue",
-      "",
-      e.getDesc_cstr());
-  }
-
-  return type;
-}
-
-inline RTVal GetPathValueArg(
-  const QString &key,
-  RTVal pathValue)
-{
-  RTVal res;
-
-  try
-  {
-    QString subKey = ParsePathValueArgKey(key);
-        
-    if(subKey == "path")
-      res = pathValue.maybeGetMember("path");
-
-    else if(subKey == "value")
-      res = pathValue.maybeGetMember("value");
-
-    else
-      res = pathValue;
-  }
-
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getValue",
-      "",
-      e.getDesc_cstr());
-  }
-
-  return res;
+  return m_rtvalArgSpecs[key].type != "RTVal";
 }
 
 void BaseRTValScriptableCommand::declareArg(
@@ -146,21 +43,43 @@ bool BaseRTValScriptableCommand::hasArg(
   return m_rtvalArgSpecs.count(key) > 0;
 }
 
+void BaseRTValScriptableCommand::checkHasArg(
+  const QString &methodName,
+  const QString &key)
+{
+  if(!hasArg(key)) 
+    FabricException::Throw(
+      methodName,
+      "No arg named '" + key + "' in command '" + getName() + "'");
+}
+
+void BaseRTValScriptableCommand::checkEmptyKey(
+  const QString &methodName,
+  const QString &key)
+{
+  if(key.isEmpty()) 
+    FabricException::Throw(
+      methodName,
+      "Command '" + getName() + "', key not specified");
+}
+
+void BaseRTValScriptableCommand::checkRTValType(
+  const QString &methodName,
+  const QString &key,
+  const QString &type)
+{
+  if(!FabricApplicationStates::GetAppStates()->getClient().isValidType(type.toUtf8().constData()))
+    FabricException::Throw(
+      methodName,
+      "Argument '" + key + "' in command '" + getName() + "' has not a valid kl type '" + type + "'");
+}
+
 bool BaseRTValScriptableCommand::isArg(
   const QString &key,
   int flag)
 {
-  if(key.isEmpty()) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::isArg",
-      "setting arg of '" + getName() + "', key not specified");
-
-  if(!hasArg(key)) 
-    // TODO: make this an optional behavior
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::isArg",
-      "Arg: '" + key + "' not supported by command '" + getName() + "'");
-
+  checkEmptyKey("BaseRTValScriptableCommand::isArg", key); 
+  checkHasArg("BaseRTValScriptableCommand::isArg", key); 
   return (m_rtvalArgSpecs[key].flags & flag);
 }
 
@@ -174,20 +93,18 @@ bool BaseRTValScriptableCommand::isArgSet(
 {
   // The arg can be set as RTVal or as JSON.
   return m_rtvalArgs.count(key) && 
-    ( m_rtvalArgs[key].first.isValid() ||
-      !m_rtvalArgs[key].second.isEmpty() );
+    ( RTValUtil::getType(getRTValArgValue(key)) == m_rtvalArgSpecs[key].type ||
+      !getRTValArgPath(key).isEmpty() || !m_rtvalArgs[key].second.isEmpty() 
+    );
 }
 
 QString BaseRTValScriptableCommand::getArg(
   const QString &key)
 {
-  if(!hasArg(key)) 
-    FabricException::Throw(  
-      "BaseRTValScriptableCommand::getArg",
-      "No arg named '" + key + "' in command '" + getName() + "'");
+  checkHasArg("BaseRTValScriptableCommand::getArg", key); 
 
   // Known RTVal of known type, get the json from it.
-  return (m_rtvalArgs[key].second.isEmpty() && IsKnownRTValType(m_rtvalArgSpecs[key].type))
+  return (m_rtvalArgs[key].second.isEmpty() && isArgTypeKnown(key))
     ? RTValUtil::toJSON(getRTValArg(key))
     // Otherwise, return the Json if it's been set.
     // It happens if the arg's been declared with an unknown type
@@ -198,40 +115,51 @@ void BaseRTValScriptableCommand::setArg(
   const QString &key, 
   const QString &json) 
 {
-  QString mainKey = GetMainKey(key);
+  checkHasArg("BaseRTValScriptableCommand::setArg", key); 
 
-  if(!hasArg(mainKey)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::setArg",
-      "No arg named " + mainKey + "' in command '" + getName() + "'");
-
+  std::cout 
+    << "BaseRTValScriptableCommand::setArg 1 "
+    << key.toUtf8().constData()
+    << " "
+    << m_rtvalArgSpecs[key].type.toUtf8().constData()
+    << " "
+    << json.toUtf8().constData()
+    << std::endl;
   try
   {
-    if( isPathValueArg(mainKey) && isJSONPathValueArg(json) )
+    if( isJSONPathValueArg(json) )
     {
-      RTVal rtVal = RTValUtil::fromJSON(
+      RTVal pathValue = RTValUtil::fromJSON(
         FabricApplicationStates::GetAppStates()->getContext(),
         json,
         "PathValue");
-
-      setRTValArg(mainKey, rtVal);
+      
+      setRTValArg(key, pathValue);
     }
 
     // Known type, cast the JSON to a RTVal.
-    else if(IsKnownRTValType(m_rtvalArgSpecs[mainKey].type))
+    else if(isArgTypeKnown(key))
     {      
       RTVal rtVal = RTValUtil::fromJSON(
         FabricApplicationStates::GetAppStates()->getContext(),
         json,
-        m_rtvalArgSpecs[mainKey].type);
+        m_rtvalArgSpecs[key].type);
 
-      setRTValArg(key, rtVal);
+      setRTValArgValue(key, rtVal);
     }
 
     // Store the JSON directly.
     else
-      m_rtvalArgs[mainKey].second = json;
+      m_rtvalArgs[key].second = json;
+
+    std::cout 
+      << "BaseRTValScriptableCommand::setArg 2 "
+      << key.toUtf8().constData()
+      << " "
+      << json.toUtf8().constData()
+      << std::endl;
   }
+
 
   catch(Exception &e)
   {
@@ -260,13 +188,11 @@ void BaseRTValScriptableCommand::validateSetArgs()
     QString key = it.key();
     ScriptableCommandRTValArgSpec spec = it.value();
 
-    QString mainKey = GetMainKey(key);
- 
     // We support unknown type.
-    if(!isArg(mainKey, CommandArgFlags::OPTIONAL_ARG) && !isArgSet(mainKey))
+    if(!isArg(key, CommandArgFlags::OPTIONAL_ARG) && !isArgSet(key))
       FabricException::Throw(
         "BaseRTValScriptableCommand::validateSetArgs",
-        "Argument '" + mainKey + "' in command '" + getName() + "' has not been set");
+        "Argument '" + key + "' in command '" + getName() + "' has not been set");
   }
 }
 
@@ -301,37 +227,43 @@ void BaseRTValScriptableCommand::declareRTValArg(
   int flags, 
   RTVal defaultValue) 
 {
-  if(key.isEmpty()) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::declareRTValArg",
-      "Key not specified  in command '" + getName() + "'");
+  checkEmptyKey("BaseRTValScriptableCommand::declareRTValArg", key); 
+  checkRTValType("BaseRTValScriptableCommand::declareRTValArg", key, type); 
  
-  if(!type.isEmpty() && !FabricApplicationStates::GetAppStates()->getClient().isValidType(type.toUtf8().constData()))
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::declareRTValArg", 
-      "Type '" + type  + "' of command '" + getName() + "' is not a valid KL type");
-
   try
   {
     ScriptableCommandRTValArgSpec spec;
     spec.type = type;
     spec.flags = flags;
-
-    QString complexArgType;
-    spec.defaultValue = IsPathValueArg(flags)
-      ? RTVal::Construct(
-          FabricApplicationStates::GetAppStates()->getContext(), 
-          "PathValue", 0, 0)
-      : defaultValue;
-   
+    spec.defaultValue = defaultValue;
     m_rtvalArgSpecs.insert(key, spec);
 
-    if(!type.isEmpty() && spec.defaultValue.isValid())
+    RTVal pathValue;
+    Context context = FabricApplicationStates::GetAppStates()->getContext();
+    
+    if(!type.isEmpty() && defaultValue.isValid())
     {
-      QPair<FabricCore::RTVal, QString> pair;
-      pair.first = spec.defaultValue;
-      m_rtvalArgs.insert(key, pair);
+      RTVal args[2] = {
+        RTVal::ConstructString(context, ""),
+        RTValUtil::toKLRTVal(defaultValue)
+      };
+
+      pathValue = RTVal::Construct(
+        context, 
+        "PathValue", 
+        2, 
+        args);
     }
+    else
+      pathValue = RTVal::Construct(
+        context, 
+        "PathValue", 
+        0, 
+        0);
+   
+    QPair<FabricCore::RTVal, QString> pair;
+    pair.first = pathValue;
+    m_rtvalArgs.insert(key, pair);
   }
 
   catch(Exception &e)
@@ -354,49 +286,28 @@ void BaseRTValScriptableCommand::declareRTValArg(
 QString BaseRTValScriptableCommand::getRTValArgType(
   const QString &key)
 {
-  QString mainKey = GetMainKey(key);
-
-  if(!hasArg(mainKey)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArgType",
-      "No arg named '" + mainKey + "' in command '" + getName() + "'");
-
-  return isPathValueArg(mainKey)
-    ? GetPathValueArgType(key, m_rtvalArgSpecs[mainKey].type)
-    : m_rtvalArgSpecs[mainKey].type;
+  checkHasArg("BaseRTValScriptableCommand::getRTValArgType", key); 
+  return m_rtvalArgSpecs[key].type;
 }
 
-RTVal BaseRTValScriptableCommand::getRTValArg(
+QString BaseRTValScriptableCommand::getRTValArgPath(
   const QString &key)
 {
-  QString mainKey = GetMainKey(key);
-
-  if(!hasArg(mainKey)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArg",
-      "No arg named '" + mainKey + "' in command '" + getName() + "'");
-  
-  if(!m_rtvalArgs[mainKey].first.isValid() && !m_rtvalArgs[mainKey].second.isEmpty())
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArg",
-        "RTVal argument '" + mainKey + "' of command '" + getName() + 
-        "' has been set in JSON only, \n !!! use getRTValArg(mainKey, type) instead !!!");
-
-  RTVal val;
+  checkHasArg("BaseRTValScriptableCommand::getRTValArgPath", key); 
+   
+  QString type;
 
   try
-  {
-    val = isPathValueArg(mainKey)
-      ? GetPathValueArg(key, RTValUtil::toRTVal(m_rtvalArgs[mainKey].first))
-      : m_rtvalArgs[mainKey].first;
-
-    val = RTValUtil::toRTVal(val);
+  { 
+    type = RTValUtil::toRTVal(
+      RTValUtil::toRTVal(m_rtvalArgs[key].first).maybeGetMember("path")
+      ).getStringCString();
   }
 
   catch(Exception &e)
   {
     FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArg",
+      "BaseRTValScriptableCommand::getRTValArgPath",
       "",
       e.getDesc_cstr());
   }
@@ -404,7 +315,46 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
   catch(FabricException &e) 
   {
     FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArg",
+      "BaseRTValScriptableCommand::getRTValArgPath",
+      "",
+      e.what());
+  }
+
+  return type;
+}
+
+RTVal BaseRTValScriptableCommand::getRTValArgValue(
+  const QString &key)
+{
+  checkHasArg("BaseRTValScriptableCommand::getRTValArgValue", key); 
+  
+  if(!m_rtvalArgs[key].first.isValid() && !m_rtvalArgs[key].second.isEmpty())
+    FabricException::Throw(
+      "BaseRTValScriptableCommand::getRTValArgValue",
+        "RTVal argument '" + key + "' of command '" + getName() + 
+        "' has been set in JSON only, \n !!! use getRTValArgValue(key, type) instead !!!");
+
+  RTVal val;
+
+  try
+  { 
+    val = RTValUtil::toRTVal(
+      RTValUtil::toRTVal(m_rtvalArgs[key].first).maybeGetMember("value")
+      );
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "BaseRTValScriptableCommand::getRTValArgValue",
+      "",
+      e.getDesc_cstr());
+  }
+
+  catch(FabricException &e) 
+  {
+    FabricException::Throw(
+      "BaseRTValScriptableCommand::getRTValArgValue",
       "",
       e.what());
   }
@@ -412,45 +362,36 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
   return val;
 }
 
-RTVal BaseRTValScriptableCommand::getRTValArg(
+RTVal BaseRTValScriptableCommand::getRTValArgValue(
   const QString &key,
   const QString &type)
 {
-  QString mainKey = GetMainKey(key);
+  checkHasArg("BaseRTValScriptableCommand::getRTValArgValue", key); 
+  checkRTValType("BaseRTValScriptableCommand::getRTValArgValue", key, type); 
 
-  if(!hasArg(mainKey)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArg",
-      "No arg named '" + mainKey + "' in command '" + getName() + "'");
- 
-  if(!FabricApplicationStates::GetAppStates()->getClient().isValidType(type.toUtf8().constData()))
-    FabricException::Throw(
-      "BaseDFGCommand::getRTValArg",
-      "Argument '" + mainKey + "' in command '" + getName() + "' has not a valid kl type '" + type + "'");
- 
   try
   {
     // If the type is unknown, set it
-    if(!IsKnownRTValType(m_rtvalArgSpecs[mainKey].type))
-      m_rtvalArgSpecs[mainKey].type = type;
+    //if(!isArgTypeKnown(key))
+      m_rtvalArgSpecs[key].type = type;
  
     // If the arg has been set in JSON,  
     // construct it since we know its type
-    if(!m_rtvalArgs[mainKey].second.isEmpty())
+    if(!m_rtvalArgs[key].second.isEmpty())
     {
       RTVal val = RTValUtil::fromJSON(
         FabricApplicationStates::GetAppStates()->getContext(),
-        m_rtvalArgs[mainKey].second,
-        m_rtvalArgSpecs[mainKey].type);
+        m_rtvalArgs[key].second,
+        m_rtvalArgSpecs[key].type);
 
-      setRTValArg(key, val);
+      setRTValArgValue(key, val);
     }
   }
 
   catch(Exception &e)
   {
     FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArg",
+      "BaseRTValScriptableCommand::getRTValArgValue",
       "",
       e.getDesc_cstr());
   }
@@ -458,52 +399,37 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
   catch(FabricException &e) 
   {
     FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArg",
+      "BaseRTValScriptableCommand::getRTValArgValue",
       "",
       e.what());
   }
 
-  return getRTValArg(key);
+  return getRTValArgValue(key);
 }
 
 void BaseRTValScriptableCommand::setRTValArg(
   const QString &key, 
-  RTVal value) 
+  RTVal pathValue) 
 { 
-  QString mainKey = GetMainKey(key);
+  checkHasArg("BaseRTValScriptableCommand::setRTValArg", key); 
 
-  if(!hasArg(mainKey)) 
-    FabricException::Throw(
+  if(RTValUtil::getType(pathValue) != "PathValue")
+     FabricException::Throw(
       "BaseRTValScriptableCommand::setRTValArg",
-      "No arg named '" + mainKey + "' in command '" + getName() + "'");
+      "Arg '" + key + "' is not a PathValue");
 
   try
   {
+    QString type = RTValUtil::getType(
+      RTValUtil::toRTVal(pathValue).maybeGetMember("value")
+      );
+
+    if(!type.isEmpty() && !isArgTypeKnown(key))
+      m_rtvalArgSpecs[key].type = type;
+
     QPair<FabricCore::RTVal, QString> pair;
-
-    // Sets the RTVal.
-    if(isPathValueArg(mainKey))
-    {
-      RTVal pathValue = isArgSet(mainKey)
-        ? RTValUtil::toRTVal( m_rtvalArgs[mainKey].first)
-        : RTVal::Construct(value.getContext(), "PathValue", 0, 0);
-
-      QString type = SetPathValueArg(key, value, pathValue);
-      if(!type.isEmpty() && !IsKnownRTValType(m_rtvalArgSpecs[mainKey].type))
-        m_rtvalArgSpecs[mainKey].type = type;
-
-      pair.first = pathValue;
-    }
-
-    else
-    {
-      pair.first = value;
-
-      if(!IsKnownRTValType(m_rtvalArgSpecs[mainKey].type))
-        m_rtvalArgSpecs[mainKey].type = RTValUtil::getType(value);
-    }
-
-    m_rtvalArgs.insert(mainKey, pair);
+    pair.first = pathValue;
+    m_rtvalArgs.insert(key, pair);
   }
 
   catch(Exception &e)
@@ -523,82 +449,66 @@ void BaseRTValScriptableCommand::setRTValArg(
   }
 }
 
-bool BaseRTValScriptableCommand::isPathValueArg(
+RTVal BaseRTValScriptableCommand::getRTValArg(
   const QString &key)
+{
+  checkHasArg("BaseRTValScriptableCommand::getRTValArg", key); 
+ 
+  RTVal pathValue;
+
+  try
+  { 
+    pathValue =/* isArgSet(key)*/
+      /*?*/ RTValUtil::toRTVal(m_rtvalArgs[key].first)
+      /*: RTVal::Construct(
+          FabricApplicationStates::GetAppStates()->getContext(), 
+          "PathValue", 0, 0
+          )*/;
+  }
+
+  catch(FabricException &e) 
+  {
+    FabricException::Throw(
+      "BaseRTValScriptableCommand::getRTValArg",
+      "",
+      e.what());
+  }
+
+  return pathValue;
+}
+
+void BaseRTValScriptableCommand::setRTValArgValue(
+  const QString &key, 
+  RTVal value) 
 { 
-  return IsPathValueArg(m_rtvalArgSpecs[key].flags);
+  checkHasArg("BaseRTValScriptableCommand::setRTValArgValue", key); 
+
+  try
+  {
+    RTVal pathValue = getRTValArg(key);
+    pathValue.setMember("value", RTValUtil::toKLRTVal(value));
+    setRTValArg(key, pathValue);
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "BaseRTValScriptableCommand::setRTValArgValue",
+      "",
+      e.getDesc_cstr());
+  }
+
+  catch(FabricException &e) 
+  {
+    FabricException::Throw(
+      "BaseRTValScriptableCommand::setRTValArgValue",
+      "",
+      e.what());
+  }
 }
 
 bool BaseRTValScriptableCommand::isJSONPathValueArg(
   const QString &json)
 { 
-  return json.indexOf("value") > -1
-    && json.indexOf("path") > -1;
+  return json.indexOf("value") > -1 && json.indexOf("path") > -1;
 }
-
-QString BaseRTValScriptableCommand::getPathValueArgPath(
-  const QString &key)
-{
-  if(!hasArg(key)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getPathValueArgPath",
-      "No arg named '" + key + "' in command '" + getName() + "'");
-  
-  if(!isPathValueArg(key)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getPathValueArgPath",
-      "Arg named '" + key + "' in command '" + getName() + "' is not a PathValue");
-
-  return getRTValArg(key+".path").getStringCString();
-}
-
-RTVal BaseRTValScriptableCommand::getPathValueArgValue(
-  const QString &key)
-{
-  if(!hasArg(key)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getPathValueArgValue",
-      "No arg named '" + key + "' in command '" + getName() + "'");
-  
-  if(!isPathValueArg(key)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getPathValueArgValue",
-      "Arg named '" + key + "' in command '" + getName() + "' is not a PathValue");
-
-  return getRTValArg(key+".value");
-}
-
-RTVal BaseRTValScriptableCommand::getPathValueArgValue(
-  const QString &key,
-  const QString &type)
-{
-  if(!hasArg(key)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getPathValueArgValue",
-      "No arg named '" + key + "' in command '" + getName() + "'");
-  
-  if(!isPathValueArg(key)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getPathValueArgValue",
-      "Arg named '" + key + "' in command '" + getName() + "' is not a PathValue");
-
-  return getRTValArg(key+".value", type);
-}
-
-void BaseRTValScriptableCommand::setPathValueArgValue(
-  const QString &key, 
-  RTVal value) 
-{ 
-  if(!hasArg(key)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::setPathValueArgValue",
-      "No arg named '" + key + "' in command '" + getName() + "'");
-
-  if(!isPathValueArg(key)) 
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::setPathValueArgValue",
-      "Arg named '" + key + "' in command '" + getName() + "' is not a PathValue");
-
-  setRTValArg(key+".value", value);
-}
- 

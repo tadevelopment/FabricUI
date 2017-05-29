@@ -60,8 +60,8 @@ bool CloseKLOptionsTargetEditorCommand::doIt()
 
   try
   {
-    bool failSilently = getRTValArg("failSilently").getBoolean();
-    QString editorID = getRTValArg("editorID").getStringCString();
+    bool failSilently = getRTValArgValue("failSilently").getBoolean();
+    QString editorID = getRTValArgValue("editorID").getStringCString();
 
     QWidget *dock = GetOptionsEditorDock(editorID);
 
@@ -106,11 +106,11 @@ QString CloseKLOptionsTargetEditorCommand::getHistoryDesc()
 {
   QMap<QString, QString> argsDesc;
 
-  argsDesc["editorID"] = getRTValArg(
+  argsDesc["editorID"] = getRTValArgValue(
     "editorID").getStringCString();
 
   argsDesc["failSilently"] = QString::number(
-    getRTValArg("failSilently").getBoolean()
+    getRTValArgValue("failSilently").getBoolean()
     );
  
   return CommandArgHelpers::CreateHistoryDescFromArgs(

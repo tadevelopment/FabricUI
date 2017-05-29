@@ -63,11 +63,11 @@ void KLOptionsTargetModelItem::setValue(
 
       RTVal prevOptionsCopy = m_options.clone();
       RTVariant::toRTVal(previousValue, prevOptionsCopy);
-      args["previousValue.value"] = prevOptionsCopy;
+      args["previousValue"] = prevOptionsCopy;
 
       RTVal optionsCopy = m_options.clone();
       RTVariant::toRTVal(value, optionsCopy);
-      args["newValue.value"] = optionsCopy.clone();
+      args["newValue"] = optionsCopy.clone();
 
       RTValCommandManager *manager = qobject_cast<RTValCommandManager*>(
         CommandManager::GetCommandManager());

@@ -180,46 +180,49 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
-      int flag, 
-      FabricCore::RTVal defaultValue
+      int flags = FabricUI::Commands::CommandArgFlags::LOGGABLE_ARG, 
+      FabricCore::RTVal defaultValue = FabricCore::RTVal()
       );
 
     /// Implementation of BaseRTValScriptableCommand.
     virtual QString getRTValArgType(
       const QString &key
       );
-
-    /// Implementation of BaseRTValScriptableCommand.
-    /// Does nothing, the arg is set in KL.
-    virtual void setRTValArgType(
-      const QString &key,
-      const QString &type
-      );
     
     /// Implementation of BaseRTValScriptableCommand.
-    virtual FabricCore::RTVal getRTValArg( 
+    virtual QString getRTValArgPath( 
       const QString &key 
       );
 
     /// Implementation of BaseRTValScriptableCommand.
-    virtual FabricCore::RTVal getRTValArg( 
+    virtual FabricCore::RTVal getRTValArgValue( 
+      const QString &key 
+      );
+
+    /// Implementation of BaseRTValScriptableCommand.
+    virtual FabricCore::RTVal getRTValArgValue( 
       const QString &key,
       const QString &type
       );
 
     /// Implementation of BaseRTValScriptableCommand.
-    /// Does nothing, the arg is set in KL.
-    virtual void setRTValArg(
+    virtual void setRTValArgValue(
       const QString &key, 
       FabricCore::RTVal value
       );
 
-  private:
     /// Implementation of BaseRTValScriptableCommand.
-    virtual bool isPathValueArg(
-      const QString &key
+    virtual FabricCore::RTVal getRTValArg(
+      const QString &key 
       );
- 
+
+    /// Implementation of BaseRTValScriptableCommand.
+    virtual void setRTValArg(
+      const QString &key, 
+      FabricCore::RTVal pathValue
+      );
+
+  private:
     /// KL BaseCommand
     FabricCore::RTVal m_klCmd;
 };

@@ -5,7 +5,6 @@
 #ifndef __UI_COMMAND_ARG_HELPERS_PYTHON__
 #define __UI_COMMAND_ARG_HELPERS_PYTHON__
 
-#include <QStringList>
 #include "BaseScriptableCommand.h"
 #include "BaseRTValScriptableCommand.h"
 
@@ -22,7 +21,7 @@ class CommandArgHelpers_Python {
     static bool _IsScriptableCommand_Python(
       BaseCommand *cmd
       );
-
+ 
     static bool _IsPathValueCommandArg_Python(
       const QString &key,
       BaseCommand *cmd
@@ -34,17 +33,17 @@ class CommandArgHelpers_Python {
       BaseCommand *cmd
       );
 
-    static bool _HasCommandArg_Python(
-      const QString &key,
-      BaseCommand *cmd
-      );
-
     static bool _IsCommandArgSet_Python(
       const QString &key,
       BaseCommand *cmd
       );
 
-    static QStringList _GetCommandArgKeys_Python(
+    static bool _HasCommandArg_Python(
+      const QString &key,
+      BaseCommand *cmd
+      );
+
+    static QList<QString> _GetCommandArgKeys_Python(
       BaseCommand *cmd
       );
 
@@ -58,7 +57,12 @@ class CommandArgHelpers_Python {
       BaseCommand *cmd
       );
 
-    static FabricCore::RTVal _GetRTValCommandArg_Python(
+    static FabricCore::RTVal _GetRTValCommandArgValue_Python(
+      const QString &key,
+      BaseCommand *cmd
+      );
+
+    static FabricCore::RTVal _GetRTValCommandArgValue_Python(
       const QString &key,
       const QString &type,
       BaseCommand *cmd

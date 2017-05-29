@@ -4,10 +4,12 @@
 
 #include "KLCommand.h"
 #include "KLCommandHelpers.h"
+#include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
 using namespace Commands;
 using namespace FabricCore;
+using namespace Application;
 
 KLCommand::KLCommand(
   FabricCore::RTVal klCmd)
@@ -24,7 +26,7 @@ QString KLCommand::getName()
 {
   return GetKLCommandName(m_klCmd);
 }
-
+ 
 bool KLCommand::canUndo() 
 {
   return CanKLCommandUndo(m_klCmd);
@@ -42,7 +44,28 @@ bool KLCommand::canLog()
 
 bool KLCommand::doIt() 
 { 
-  return DoKLCommand(m_klCmd);
+  bool isDone = false;
+
+  try 
+  {
+    RTVal cmd = RTVal::Construct(
+      m_klCmd.getContext(),
+      "Command",
+      1,
+      &m_klCmd);
+    
+    isDone = DoKLCommand(cmd);
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "KLScriptableCommand::doIt", 
+      "",
+      e.getDesc_cstr());
+  }
+  
+  return isDone;
 }
 
 bool KLCommand::undoIt() 

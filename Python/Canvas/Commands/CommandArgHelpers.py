@@ -44,12 +44,11 @@ class CommandArgHelpers:
                         isArgStr = rtValType == "String"
                         isArgRTVal = rtValType == "RTVal"
 
-                        if CppCommands.CommandArgHelpers_Python._IsPathValueCommandArg_Python(key, cmd):
-                            if CommandArgHelpers.__IsPyStringArg(arg) and ("<" in arg):
-                                arg = arg.replace("<", "")
-                                arg = arg.replace(">", "")
-                                rtVal = client.RT.types.PathValue(client.RT.types.String(arg))
-                                arg = Util.RTValUtil.toJSON(rtVal)   
+                        if CommandArgHelpers.__IsPyStringArg(arg) and ("<" in arg):
+                            arg = arg.replace("<", "")
+                            arg = arg.replace(">", "")
+                            rtVal = client.RT.types.PathValue(client.RT.types.String(arg))
+                            arg = Util.RTValUtil.toJSON(rtVal)   
 
                         # If the input arg is a string and the cmd arg is not, 
                         # assume the input arg is already the JSON. Otherwise 
@@ -217,37 +216,26 @@ class CommandArgHelpers:
                         # RTValScriptableCommand, arguments are RTVal.
                         if CppCommands.CommandArgHelpers_Python._IsRTValScriptableCommand_Python(cmd):
 
-                            rtVal = None
-                          
-                            if CppCommands.CommandArgHelpers_Python._IsPathValueCommandArg_Python(key, cmd):
-                                pathValue = client.RT.types.PathValue(CppCommands.CommandArgHelpers_Python._GetRTValCommandArg_Python(key, "PathValue", cmd))
-                                path = client.RT.types.String(pathValue.path)
-                                if len(path.getSimpleType()) > 0:
-                                    rtVal = path
-                                else:
-                                    rtVal = pathValue.value
+                            pathValue = client.RT.types.PathValue(CppCommands.CommandArgHelpers_Python._GetRTValCommandArg_Python(key, cmd))
+                            
+                            path = client.RT.types.String(pathValue.path)
+                            if len(path.getSimpleType()) > 0:                       
+                                desc += "\"" + "<" + path.getSimpleType() + ">" + "\"" 
+                            
                             else:
-                                rtVal = CppCommands.CommandArgHelpers_Python._GetRTValCommandArg_Python(key, cmd)                        
+                                rtVal = pathValue.value
+                                pythonVal = rtVal.getSimpleType()
+                               
+                                # Can cast the RTVal in simple JSON type
+                                if pythonVal is not None:
+                                    if Util.RTValUtil.getType(rtVal) == 'String':
+                                        desc += "\"" + pythonVal + "\"" 
+                                    else:
+                                        desc += str(pythonVal)
 
-                            pythonVal = rtVal.getSimpleType()
-                           
-                            # Can cast the RTVal in simple JSON type
-                            if pythonVal is not None:
-                                
-                                rtValType = Util.RTValUtil.getType(rtVal)
-
-                                if rtValType == 'String':
-                                    str_ = rtVal.getSimpleType()
-                                    if CppCommands.CommandArgHelpers_Python._IsPathValueCommandArg_Python(key, cmd):
-                                        str_ = "<" + str_ + ">" 
-                                    desc += "\"" + str_ + "\"" 
-                                
+                                # JSON
                                 else:
-                                    desc += str(pythonVal)
-
-                            # JSON
-                            else:
-                                desc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.toJSON(rtVal)))
+                                    desc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.toJSON(rtVal)))
 
                         # ScriptableCommand, arguments are strings.
                         else:

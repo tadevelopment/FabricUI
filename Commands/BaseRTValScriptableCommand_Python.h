@@ -72,6 +72,21 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
       FabricCore::RTVal defaultValue
       );
 
+     /// Wraps BaseRTValScriptableCommand::setRTValArg.
+    /// Propagates the C++ exception in python.
+    /// To override in Python.
+    virtual QString _setRTValArg_Python(
+      const QString &key,
+      FabricCore::RTVal value
+      );
+
+    /// Wraps BaseRTValScriptableCommand::getRTValArg.
+    /// Propagates the C++ exception in python.
+    /// To override in Python.
+    virtual QPair<QString, FabricCore::RTVal> _getRTValArg_Python( 
+      const QString &key
+      );
+
     /// Wraps BaseRTValScriptableCommand::getRTValArgType.
     /// Propagates the C++ exception in python.
     /// To override in Python.
@@ -79,25 +94,32 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
       const QString &key
       );
 
-    /// Wraps BaseRTValScriptableCommand::getRTValArg.
+    /// Wraps BaseRTValScriptableCommand::getRTValArgPath.
     /// Propagates the C++ exception in python.
     /// To override in Python.
-    virtual QPair<QString, FabricCore::RTVal> _getRTValArg_Python( 
+    virtual QPair<QString, QString> _getRTValArgPath_Python(
       const QString &key
       );
 
-    /// Wraps BaseRTValScriptableCommand::getRTValArg.
+    /// Wraps BaseRTValScriptableCommand::getRTValArgValue.
     /// Propagates the C++ exception in python.
     /// To override in Python.
-    virtual QPair<QString, FabricCore::RTVal> _getRTValArg_Python( 
+    virtual QPair<QString, FabricCore::RTVal> _getRTValArgValue_Python( 
+      const QString &key
+      );
+
+    /// Wraps BaseRTValScriptableCommand::getRTValArgValue.
+    /// Propagates the C++ exception in python.
+    /// To override in Python.
+    virtual QPair<QString, FabricCore::RTVal> _getRTValArgValue_Python( 
       const QString &key,
       const QString &type
       );
 
-    /// Wraps BaseRTValScriptableCommand::setRTValArg.
+    /// Wraps BaseRTValScriptableCommand::setRTValArgValue.
     /// Propagates the C++ exception in python.
     /// To override in Python.
-    virtual QString _setRTValArg_Python(
+    virtual QString _setRTValArgValue_Python(
       const QString &key,
       FabricCore::RTVal value
       );
@@ -156,15 +178,34 @@ class BaseRTValScriptableCommand_Python : public BaseRTValScriptableCommand
       );
 
     /// Implementation of BaseRTValScriptableCommand.
-    /// calls _getRTValArg_Python.
-    virtual FabricCore::RTVal getRTValArg( 
+    /// calls _setRTValArg_Python.
+    virtual void setRTValArg(
+      const QString &key,
+      FabricCore::RTVal value
+      );
+
+     /// Implementation of BaseRTValScriptableCommand.
+    /// calls _getRTValArgPath_Python.
+    virtual QString getRTValArgPath( 
+      const QString &key
+      );
+
+    /// Implementation of BaseRTValScriptableCommand.
+    /// calls _getRTValArgValue_Python.
+    virtual FabricCore::RTVal getRTValArgValue( 
+      const QString &key
+      );
+
+    /// Implementation of BaseRTValScriptableCommand.
+    /// calls _getRTValArgValue_Python.
+    virtual FabricCore::RTVal getRTValArgValue( 
       const QString &key,
       const QString &type
       );
 
     /// Implementation of BaseRTValScriptableCommand.
-    /// calls _setRTValArg_Python.
-    virtual void setRTValArg(
+    /// calls _setRTValArgValue_Python.
+    virtual void setRTValArgValue(
       const QString &key,
       FabricCore::RTVal value
       );

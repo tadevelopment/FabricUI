@@ -1,5 +1,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
+#include <iostream>
 #include "CommandArgFlags.h"
 #include "CommandArgHelpers.h"
 #include "SetPathValueCommand.h"
@@ -69,7 +70,13 @@ bool SetPathValueCommand::canUndo()
 {
   try 
   {    
-    return getRTValArg("isUndoable").getBoolean();
+    RTVal val = getRTValArgValue("isUndoable");
+    std::cout 
+      << "SetPathValueCommand::canUndo "
+      << RTValUtil::getType(val).toUtf8().constData()
+      << std::endl;
+
+    return val.getBoolean();
   }
 
   catch(FabricException &e) 
@@ -87,14 +94,36 @@ bool SetPathValueCommand::doIt()
 {
   try
   {
+    RTVal target = getRTValArg("target");
+
+    std::cout 
+      << "SetPathValueCommand::doIt 1 "
+      << RTValUtil::getType(target).toUtf8().constData()
+      << " "
+      << getRTValArgPath("target").toUtf8().constData()
+      << std::endl;
+   
     QString dataType = PathValueResolverRegistry::GetRegistry()->getType(
-      getRTValArg("target"));
+      target);
 
+    std::cout 
+      << "SetPathValueCommand::doIt 2 "
+      << dataType.toUtf8().constData()
+      << std::endl;
+    
     if(canUndo() && getRTValArgType("previousValue") != dataType)
-      setPathValueArgValue("previousValue", getPathValueArgValue("target"));
-
-    setPathValueArgValue("target", getPathValueArgValue("newValue", dataType));
+      setRTValArgValue("previousValue", getRTValArgValue("target"));
  
+     std::cout 
+      << "SetPathValueCommand::doIt 3 "
+      << std::endl;
+    
+    setRTValArgValue("target", getRTValArgValue("newValue", dataType));
+    
+    std::cout 
+      << "SetPathValueCommand::doIt 4 "
+      << std::endl;
+
     return true;
   }
 
@@ -113,7 +142,7 @@ bool SetPathValueCommand::undoIt()
 { 
   try
   {
-    setPathValueArgValue("target", getPathValueArgValue("previousValue"));
+    setRTValArgValue("target", getRTValArgValue("previousValue"));
     return true;
   }
 
@@ -151,7 +180,7 @@ QString SetPathValueCommand::getHistoryDesc()
 {
   QMap<QString, QString> argsDesc;
  
-  argsDesc["target"] = "<" + getPathValueArgPath("target") + ">";
+  argsDesc["target"] = "<" + getRTValArgPath("target") + ">";
  
   return CommandArgHelpers::CreateHistoryDescFromArgs(
     argsDesc,

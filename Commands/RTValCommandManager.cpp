@@ -2,15 +2,16 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
 #include "CommandRegistry.h"
 #include "RTValCommandManager.h"
+#include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace Application;
@@ -88,13 +89,15 @@ void RTValCommandManager::checkCommandArgs(
 
   // Sets the rtval args
   QMapIterator<QString, RTVal> ite(args);
-  while (ite.hasNext()) 
+  while(ite.hasNext()) 
   {
     ite.next();
+    RTVal arg = ite.value();
 
-    scriptCmd->setRTValArg(
-      ite.key(), 
-      ite.value());
+    if(RTValUtil::getType(arg) == "PathValue")
+      scriptCmd->setRTValArg(ite.key(), arg);
+    else
+      scriptCmd->setRTValArgValue(ite.key(), RTValUtil::toKLRTVal(arg));
   }
 
   scriptCmd->validateSetArgs();

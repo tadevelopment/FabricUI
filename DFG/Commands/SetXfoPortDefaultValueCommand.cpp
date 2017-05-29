@@ -70,7 +70,7 @@ bool SetXfoPortDefaultValueCommand::canUndo()
 {
   try 
   {    
-    return getRTValArg("isUndoable").getBoolean();
+    return getRTValArgValue("isUndoable").getBoolean();
   }
 
   catch(FabricException &e) 
@@ -88,12 +88,12 @@ bool SetXfoPortDefaultValueCommand::doIt()
 {
   try
   {
-    if(canUndo() && RTValUtil::getType(getRTValArg("previousValue.value")) != "Xfo")
-      setRTValArg("previousValue", getRTValArg("target.value"));
+    if(canUndo() && RTValUtil::getType(getRTValArgValue("previousValue")) != "Xfo")
+      setRTValArgValue("previousValue", getRTValArgValue("target"));
 
-    RTVal newValue = getRTValArg("newValue.value", "Xfo");
+    RTVal newValue = getRTValArgValue("newValue", "Xfo");
   
-    setRTValArg("target.value", newValue);
+    setRTValArgValue("target", newValue);
  
     return true;
   }
@@ -113,7 +113,7 @@ bool SetXfoPortDefaultValueCommand::undoIt()
 { 
   try
   {
-    setRTValArg("target.value", getRTValArg("previousValue.value"));
+    setRTValArgValue("target", getRTValArgValue("previousValue"));
     return true;
   }
 
