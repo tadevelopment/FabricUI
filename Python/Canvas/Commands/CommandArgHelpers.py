@@ -41,41 +41,36 @@ class CommandArgHelpers:
 
                     else:
                         rtValType = CppCommands.CommandArgHelpers_Python._GetRTValCommandArgType_Python(key, cmd)
+                        isArgStr = rtValType == "String"
+                        isArgRTVal = rtValType == "RTVal"
 
-                        #Unknown type, it's in JSON already
-                        if rtValType != "RTVal":
-                            isArgStr = rtValType == "String"
-                            
-                            if CppCommands.CommandArgHelpers_Python._IsPathValueCommandArg_Python(key, cmd):
-                            
-                                rtVal = None
-                                if CommandArgHelpers.__IsPyStringArg(arg):
-                                    if "<" in arg:
-                                        arg = arg.replace("<", "")
-                                        arg = arg.replace(">", "")
-                                        rtVal = client.RT.types.PathValue(client.RT.types.String(arg))
-                                        arg = Util.RTValUtil.toJSON(rtVal)   
+                        if CppCommands.CommandArgHelpers_Python._IsPathValueCommandArg_Python(key, cmd):
+                            if CommandArgHelpers.__IsPyStringArg(arg) and ("<" in arg):
+                                arg = arg.replace("<", "")
+                                arg = arg.replace(">", "")
+                                rtVal = client.RT.types.PathValue(client.RT.types.String(arg))
+                                arg = Util.RTValUtil.toJSON(rtVal)   
 
-                            # If the input arg is a string and the cmd arg is not, 
-                            # assume the input arg is already the JSON. Otherwise 
-                            # we create the JSON from the pyton arg.
-                            elif not (CommandArgHelpers.__IsPyStringArg(arg) and not isArgStr):
-                                castArg = True
-                                # Check if the string has quotes.
-                                # If so, we assume that it's already a JSON
-                                if CommandArgHelpers.__IsPyStringArg(arg) and isArgStr and len(arg) > 0:
-                                    first = arg[0] == "'" or arg[0] == "\"" 
-                                    last =  arg[len(arg)-1] == "'" or arg[len(arg)-1] == "\"" 
-                                    castArg = not first and not last
-                                     
-                                if castArg:
-                                    pyRTValType = getattr(client.RT.types, rtValType)
-                                    # Check if the python type can be casted as a RTVal.
-                                    if pyRTValType().getSimpleType() is None:
-                                        raise Exception("Can't cast python '" + str(type(arg)) + "' to rtVal '" + str(rtValType) + "'")
-                                    # Construct the python RTVal and sets its arg.
-                                    rtVal = pyRTValType(arg)   
-                                    arg = Util.RTValUtil.toJSON(rtVal) 
+                        # If the input arg is a string and the cmd arg is not, 
+                        # assume the input arg is already the JSON. Otherwise 
+                        # we create the JSON from the pyton arg.
+                        elif not isArgRTVal and not (CommandArgHelpers.__IsPyStringArg(arg) and not isArgStr):
+                            castArg = True
+                            # Check if the string has quotes.
+                            # If so, we assume that it's already a JSON
+                            if CommandArgHelpers.__IsPyStringArg(arg) and isArgStr and len(arg) > 0:
+                                first = arg[0] == "'" or arg[0] == "\"" 
+                                last =  arg[len(arg)-1] == "'" or arg[len(arg)-1] == "\"" 
+                                castArg = not first and not last
+                                 
+                            if castArg:
+                                pyRTValType = getattr(client.RT.types, rtValType)
+                                # Check if the python type can be casted as a RTVal.
+                                if pyRTValType().getSimpleType() is None:
+                                    raise Exception("Can't cast python '" + str(type(arg)) + "' to rtVal '" + str(rtValType) + "'")
+                                # Construct the python RTVal and sets its arg.
+                                rtVal = pyRTValType(arg)   
+                                arg = Util.RTValUtil.toJSON(rtVal) 
         
                 # CppCommands.BaseScriptableCommand, all in strings
                 else:

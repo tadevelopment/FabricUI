@@ -215,6 +215,11 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
       );
 
   private:
+    /// Implementation of BaseRTValScriptableCommand.
+    virtual bool isPathValueArg(
+      const QString &key
+      );
+ 
     /// KL BaseCommand
     FabricCore::RTVal m_klCmd;
 };

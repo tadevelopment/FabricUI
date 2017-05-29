@@ -3,6 +3,7 @@
 #include "CommandArgFlags.h"
 #include "CommandArgHelpers.h"
 #include "SetPathValueCommand.h"
+#include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
@@ -86,15 +87,13 @@ bool SetPathValueCommand::doIt()
 {
   try
   {
-    QString portType = PathValueResolverRegistry::GetRegistry()->getType(
+    QString dataType = PathValueResolverRegistry::GetRegistry()->getType(
       getRTValArg("target"));
 
-    if(canUndo() && getPathValueArgType("previousValue") != portType)
+    if(canUndo() && getRTValArgType("previousValue") != dataType)
       setPathValueArgValue("previousValue", getPathValueArgValue("target"));
 
-    RTVal newValue = getPathValueArgValue("newValue", portType);
-  
-    setPathValueArgValue("target", newValue);
+    setPathValueArgValue("target", getPathValueArgValue("newValue", dataType));
  
     return true;
   }
@@ -152,7 +151,7 @@ QString SetPathValueCommand::getHistoryDesc()
 {
   QMap<QString, QString> argsDesc;
  
-  argsDesc["target"] = getPathValueArgPath("target");
+  argsDesc["target"] = "<" + getPathValueArgPath("target") + ">";
  
   return CommandArgHelpers::CreateHistoryDescFromArgs(
     argsDesc,

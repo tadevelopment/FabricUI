@@ -139,7 +139,7 @@ QString CommandArgHelpers::CreateHelpFromRTValArgs(
       if( cmd->isArg(key, CommandArgFlags::IN_ARG) ||
           cmd->isArg(key, CommandArgFlags::OUT_ARG) ||
           cmd->isArg(key, CommandArgFlags::IO_ARG) )
-        specs += "PathValue[" + cmd->getRTValArgType(key+".value")+"]"; 
+        specs += "PathValue[" + cmd->getRTValArgType(key)+"]"; 
       else
         specs += cmd->getRTValArgType(key); 
 
