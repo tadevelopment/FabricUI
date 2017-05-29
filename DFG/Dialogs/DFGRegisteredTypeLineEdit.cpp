@@ -35,8 +35,29 @@ bool DFGRegisteredTypeLineEdit::checkIfTypeExist() {
   // Throw an exception if the type is malformed (e.g RTVal[string})
   try
   {
-    isValid = ( text().startsWith('$') && text().endsWith('$') && text().size() > 2 ) ||
-      m_client.isValidType(text().toUtf8().data());
+    QString t = text();
+    int count = t.count('$');
+    if (count == 0)
+    {
+      isValid = m_client.isValidType(t.toUtf8().data());
+    }
+    else if (count = 2)
+    { // [FE-8514]
+      // replace the part between the two '$' with "SInt32" including
+      // the '$' characters and then test if the result is a valid type.
+      // e.g.: "$TYPE$[][]" becomes "SInt32[][]" (is valid).
+      //       "$TYPE$[[>]" becomes "SInt32[[>]" (is invalid).
+      //       "n$ONSENS$e" becomes "n$SInt32$e" (is invalid).
+      int idx0 = t.indexOf('$');
+      int idx1 = t.lastIndexOf('$');
+      t.remove(idx0, idx1 - idx0 + 1);
+      t.insert(idx0, "SInt32");
+      isValid = m_client.isValidType(t.toUtf8().data());
+    }
+    else
+    {
+      isValid = false;
+    }
   }
   catch(FabricCore::Exception e)
   {
