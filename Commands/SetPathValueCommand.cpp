@@ -112,13 +112,13 @@ bool SetPathValueCommand::doIt()
       << std::endl;
     
     if(canUndo() && getRTValArgType("previousValue") != dataType)
-      setRTValArgValue("previousValue", getRTValArgValue("target"));
+      setRTValArgValue("previousValue", getRTValArgValue("target").clone());
  
      std::cout 
       << "SetPathValueCommand::doIt 3 "
       << std::endl;
     
-    setRTValArgValue("target", getRTValArgValue("newValue", dataType));
+    setRTValArgValue("target", getRTValArgValue("newValue", dataType).clone());
     
     std::cout 
       << "SetPathValueCommand::doIt 4 "
@@ -142,7 +142,7 @@ bool SetPathValueCommand::undoIt()
 { 
   try
   {
-    setRTValArgValue("target", getRTValArgValue("previousValue"));
+    setRTValArgValue("target", getRTValArgValue("previousValue").clone());
     return true;
   }
 
