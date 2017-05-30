@@ -64,7 +64,7 @@ void CommandRegistry::registerFactory(
       name,
       // Get the name of the cmd class.
       // --> FactoryClassName<CmdClassName>
-      Util::GetTemplateClassType(*factory),
+      factory->getType(),
       COMMAND_CPP);
   }
 }
