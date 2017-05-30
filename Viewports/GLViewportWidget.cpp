@@ -264,6 +264,10 @@ void GLViewportWidget::wheelEvent(QWheelEvent *event)
   ViewportWidget::wheelEvent(event);
 }
 
+void GLViewportWidget::keyPressEvent(QKeyEvent * event) {
+  QGLWidget::keyPressEvent(event);
+}
+
 bool GLViewportWidget::manipulateCamera(
   QInputEvent *event,
   bool requireModifier,

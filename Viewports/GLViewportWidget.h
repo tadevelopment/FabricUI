@@ -74,6 +74,8 @@ namespace FabricUI
       virtual void mouseMoveEvent(QMouseEvent *event);
       virtual void mouseReleaseEvent(QMouseEvent *event);
       virtual void wheelEvent(QWheelEvent *event);
+      virtual void wheelEvent(QWheelEvent *event);
+      virtual void keyPressEvent(QKeyEvent * event);
 
       int m_width;
       int m_height;

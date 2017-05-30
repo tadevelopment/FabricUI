@@ -58,23 +58,3 @@ void ViewportWidget::computeFPS() {
   m_fps = averageFps;
   m_fpsTimer.start();
 }
-
-void ViewportWidget::keyPressEvent(QKeyEvent * event) {
-  QGLWidget::keyPressEvent(event);
-}
-
-void ViewportWidget::mousePressEvent(QMouseEvent *event) {
-  QGLWidget::mousePressEvent(event);
-}
-
-void ViewportWidget::mouseMoveEvent(QMouseEvent *event) {
-  QGLWidget::mouseMoveEvent(event);
-}
-
-void ViewportWidget::mouseReleaseEvent(QMouseEvent *event) {
-  QGLWidget::mouseReleaseEvent(event);
-}
-
-void ViewportWidget::wheelEvent(QWheelEvent *event) {
-  QGLWidget::wheelEvent(event);
-}
