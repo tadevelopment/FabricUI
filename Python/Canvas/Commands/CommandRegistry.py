@@ -102,8 +102,10 @@ class CommandRegistry(CppCommands.KLCommandRegistry_Python):
         """ \internal Implementation of Commands.CommandRegistry
         """
         if super(CommandRegistry, self).isCommandRegistered(cmdName) is True:
-         
-            if super(CommandRegistry, self).getCommandSpecs(cmdName)[1] == self.COMMAND_PYTHON:
+            
+            type_, impType = super(CommandRegistry, self).getCommandSpecs(cmdName)
+
+            if impType == self.COMMAND_PYTHON:
             
                 try:
                     # Create the command

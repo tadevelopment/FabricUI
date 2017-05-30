@@ -81,7 +81,7 @@ bool CommandRegistry::isCommandRegistered(
   return m_cmdSpecs.count(cmdName) > 0;
 }
 
-QList<QString> CommandRegistry::getCommandSpecs(
+QPair<QString, QString> CommandRegistry::getCommandSpecs(
   const QString &cmdName) 
 {
   if(!isCommandRegistered(cmdName))
@@ -91,6 +91,11 @@ QList<QString> CommandRegistry::getCommandSpecs(
       );
 
   return m_cmdSpecs[cmdName];
+}
+
+QList<QString> CommandRegistry::getCommandNames() 
+{
+  return m_cmdSpecs.keys();
 }
 
 BaseCommand* CommandRegistry::createCommand(
@@ -104,9 +109,9 @@ BaseCommand* CommandRegistry::createCommand(
 
   try
   {
-    QList<QString> spec = getCommandSpecs(cmdName);
+    QPair<QString, QString> spec = getCommandSpecs(cmdName);
     
-    if(spec[1] == COMMAND_CPP) 
+    if(spec.second == COMMAND_CPP) 
     {
       Factory *factory = Util::BaseFactoryRegistry::getFactory(
         cmdName);
@@ -142,16 +147,16 @@ BaseCommand* CommandRegistry::createCommand(
 QString CommandRegistry::getContent()
 {
   QString res = "--> CommandRegistry:\n";
-  QMapIterator< QString, QList<QString> > specsIt(m_cmdSpecs);
+  QMapIterator< QString, QPair<QString, QString> > specsIt(m_cmdSpecs);
 
   while(specsIt.hasNext()) 
   {
     specsIt.next();
     QString name = specsIt.key();
-    QList<QString> spec = specsIt.value();
+    QPair<QString, QString> spec = specsIt.value();
 
     res += QString(
-      "["+ name + "] type:" + spec[0] + ", implType:" + spec[1] + "\n"
+      "["+ name + "] type:" + spec.first + ", implType:" + spec.second + "\n"
     );
   }
 
@@ -164,9 +169,9 @@ void CommandRegistry::commandIsRegistered(
   const QString &implType) 
 {
   // sets the command specs
-  QList<QString> spec;
-  spec.append(cmdType);
-  spec.append(implType);
+  QPair<QString, QString> spec;
+  spec.first = cmdType;
+  spec.second = implType;
   m_cmdSpecs[cmdName] = spec;
     
   // inform a command has been registered.

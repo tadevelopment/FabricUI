@@ -4,7 +4,7 @@
 
 import re
 from PySide import QtCore, QtGui
-from FabricEngine.FabricUI import Actions, Commands
+from FabricEngine.FabricUI import Actions, Commands as CppCommands
 from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.HotkeyEditor.CommandAction import CommandAction
 from FabricEngine.Canvas.HotkeyEditor.HotKeyTableWidgetItems import *
@@ -83,6 +83,10 @@ class HotkeyTableWidget(QtGui.QTableWidget):
 
         # qss
         self.setObjectName('HotkeyTableWidget')
+
+        for cmdName in GetCmdRegistry().getCommandNames():
+            cmdType, implType = GetCmdRegistry().getCommandSpecs(cmdName)
+            self.__onCommandRegistered(cmdName, cmdType, implType)
 
     def onEmitEditingItem(self, status):
         self.editingItem.emit(status)
@@ -206,7 +210,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             
             tooltip = cmdType+ "[" + implType + "]\n\n"
             tooltip += cmd.getHelp()
-            isScriptable = issubclass(type(cmd), Commands.BaseScriptableCommand)
+            isScriptable = CppCommands.CommandArgHelpers_Python._IsScriptableCommand_Python(cmd)
 
             # Add the action to the canvasWindow so it's available.
             # Actions of hidden widgets are not triggered.

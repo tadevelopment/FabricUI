@@ -5,6 +5,7 @@
 #ifndef __UI_COMMAND_REGISTRY__
 #define __UI_COMMAND_REGISTRY__
 
+#include <QPair>
 #include "BaseCommand.h"
 #include <FabricUI/Util/Factory.h> 
 
@@ -54,9 +55,12 @@ class CommandRegistry : public Util::BaseFactoryRegistry
 
     /// Gets the command and implementation type (C++/Python).
     /// Returns an empty list if the command is not registred.
-    QList<QString> getCommandSpecs(
+    QPair<QString, QString> getCommandSpecs(
       const QString &cmdName
       );
+
+    /// Gets the name of all the registered commands.
+    QList<QString> getCommandNames();
 
     /// Gets all the registred commands (C++/Python) 
     /// and the specs as a string, used for debugging.
@@ -100,7 +104,7 @@ class CommandRegistry : public Util::BaseFactoryRegistry
   private:
     /// Dictionaries of registered commands (Python/C++): 
     /// {cmdName, {type, implementation type}}
-    QMap< QString, QList<QString> > m_cmdSpecs;
+    QMap< QString, QPair<QString, QString> > m_cmdSpecs;
     /// CommandRegistry singleton, set from Constructor.
     static CommandRegistry *s_cmdRegistry;
     /// Check if the singleton has been set.

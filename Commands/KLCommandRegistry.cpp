@@ -5,6 +5,7 @@
 #include "KLCommand.h"
 #include "KLCommandRegistry.h"
 #include "KLScriptableCommand.h"
+#include "SetPathValueCommand.h"
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
@@ -30,6 +31,9 @@ KLCommandRegistry::KLCommandRegistry()
       "CommandRegistry", 
       "getCommandRegistry", 
       0, 0);
+
+    CommandFactory<SetPathValueCommand>::Register(
+      "setPathValue");
   }
 
   catch(Exception &e)
@@ -54,10 +58,10 @@ BaseCommand* KLCommandRegistry::createCommand(
       "Cannot create command '" + cmdName + "', it's not registered"
       );
 
-  QList<QString> spec = getCommandSpecs(
+  QPair<QString, QString> spec = getCommandSpecs(
     cmdName);
 
-  return spec[1] == COMMAND_KL
+  return spec.second == COMMAND_KL
     ? createKLCommand(cmdName)
     : CommandRegistry::createCommand(cmdName);
 }

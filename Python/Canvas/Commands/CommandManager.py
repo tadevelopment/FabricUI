@@ -62,7 +62,7 @@ class CommandManager(CppCommands.KLCommandManager_Python):
 
         # Connect our-self.
         cmdRegistry = CreateCmdRegistry()
-        cmdRegistry.commandRegistered.connect(self.__onCommandRegistered)
+        cmdRegistry.commandRegistered.connect(self._onCommandRegistered)
     
     def createCmd(self, cmdName, args = {}, doCmd = True):
         """ Creates and executes a command (if doCmd == true).
@@ -207,7 +207,7 @@ class CommandManager(CppCommands.KLCommandManager_Python):
             raise Exception(error)
         return error
      
-    def __onCommandRegistered(self, cmdName, cmdType, implType):
+    def _onCommandRegistered(self, cmdName, cmdType, implType):
         """ \internal, callback when a command is registered.
             Run-time creation of the function to create the command.
             The function is added to the "Commands" module. 
@@ -239,4 +239,8 @@ def CreateCmdManager():
     if s_cmdManagerSingleton is None:
         # Be sure the command registry is created.
         s_cmdManagerSingleton = CommandManager()
+        for cmdName in GetCmdRegistry().getCommandNames():
+            cmdType, implType = GetCmdRegistry().getCommandSpecs(cmdName)
+            s_cmdManagerSingleton._onCommandRegistered(cmdName, cmdType, implType)
+
     return s_cmdManagerSingleton

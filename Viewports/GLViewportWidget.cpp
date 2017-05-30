@@ -225,14 +225,13 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
 
   setGridVisible( m_gridVisible, shouldUpdateGL );
   emit initComplete();
-
 }
 
 void GLViewportWidget::mousePressEvent(QMouseEvent *event)
 {
-  if(manipulateCamera(event))
-    return;
   if(m_manipTool->onEvent(event))
+    return;
+  if(manipulateCamera(event))
     return;
   ViewportWidget::mousePressEvent(event);
   FabricCore::FlagUserInteraction();
@@ -240,27 +239,27 @@ void GLViewportWidget::mousePressEvent(QMouseEvent *event)
 
 void GLViewportWidget::mouseMoveEvent(QMouseEvent *event)
 {
-  if(manipulateCamera(event))
-    return;
   if(m_manipTool->onEvent(event))
+    return;
+  if(manipulateCamera(event))
     return;
   ViewportWidget::mouseMoveEvent(event);
 }
 
 void GLViewportWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-  if(manipulateCamera(event))
-    return;
   if(m_manipTool->onEvent(event))
+    return;
+  if(manipulateCamera(event))
     return;
   ViewportWidget::mouseReleaseEvent(event);
 }
 
 void GLViewportWidget::wheelEvent(QWheelEvent *event)
 {
-  if(manipulateCamera(event, m_manipTool->isActive()))
-    return;
   if(m_manipTool->onEvent(event))
+    return;
+  if(manipulateCamera(event, m_manipTool->isActive()))
     return;
   ViewportWidget::wheelEvent(event);
 }
