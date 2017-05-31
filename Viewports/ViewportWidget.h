@@ -87,7 +87,6 @@ namespace FabricUI
       protected:
         void computeFPS();
        
-
         double m_fps;
         bool m_hasCommercialLicense;
         double m_fpsStack[16];

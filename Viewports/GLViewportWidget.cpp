@@ -227,44 +227,48 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
   emit initComplete();
 }
 
-void GLViewportWidget::mousePressEvent(QMouseEvent *event)
+bool GLViewportWidget::onEvent(
+  QInputEvent *event)
 {
   if(m_manipTool->onEvent(event))
-    return;
+    return true;
   if(manipulateCamera(event))
+    return true;
+  return false;
+}
+
+void GLViewportWidget::mousePressEvent(QMouseEvent *event)
+{
+  if(onEvent(event))
     return;
-  ViewportWidget::mousePressEvent(event);
+  QGLWidget::mousePressEvent(event);
   FabricCore::FlagUserInteraction();
 }
 
 void GLViewportWidget::mouseMoveEvent(QMouseEvent *event)
 {
-  if(m_manipTool->onEvent(event))
+  if(onEvent(event))
     return;
-  if(manipulateCamera(event))
-    return;
-  ViewportWidget::mouseMoveEvent(event);
+  QGLWidget::mouseMoveEvent(event);
 }
 
 void GLViewportWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-  if(m_manipTool->onEvent(event))
+  if(onEvent(event))
     return;
-  if(manipulateCamera(event))
-    return;
-  ViewportWidget::mouseReleaseEvent(event);
+  QGLWidget::mouseReleaseEvent(event);
 }
 
 void GLViewportWidget::wheelEvent(QWheelEvent *event)
 {
-  if(m_manipTool->onEvent(event))
+  if(onEvent(event))
     return;
-  if(manipulateCamera(event, m_manipTool->isActive()))
-    return;
-  ViewportWidget::wheelEvent(event);
+  QGLWidget::wheelEvent(event);
 }
 
 void GLViewportWidget::keyPressEvent(QKeyEvent * event) {
+  if(onEvent(event))
+    return;
   QGLWidget::keyPressEvent(event);
 }
 

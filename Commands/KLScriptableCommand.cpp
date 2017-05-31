@@ -521,9 +521,7 @@ void KLScriptableCommand::setRTValArg(
       keyVal, 
       RTValUtil::toRTVal(pathValue), 
       // error
-      RTVal::ConstructString(
-        m_klCmd.getContext(), 
-        "") 
+      RTVal::ConstructString(m_klCmd.getContext(), "") 
     };
 
     m_klCmd.callMethod(

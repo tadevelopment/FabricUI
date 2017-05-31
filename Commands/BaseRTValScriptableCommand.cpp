@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
@@ -117,14 +116,6 @@ void BaseRTValScriptableCommand::setArg(
 {
   checkHasArg("BaseRTValScriptableCommand::setArg", key); 
 
-  std::cout 
-    << "BaseRTValScriptableCommand::setArg 1 "
-    << key.toUtf8().constData()
-    << " "
-    << m_rtvalArgSpecs[key].type.toUtf8().constData()
-    << " "
-    << json.toUtf8().constData()
-    << std::endl;
   try
   {
     if( isJSONPathValueArg(json) )
@@ -151,15 +142,7 @@ void BaseRTValScriptableCommand::setArg(
     // Store the JSON directly.
     else
       m_rtvalArgs[key].second = json;
-
-    std::cout 
-      << "BaseRTValScriptableCommand::setArg 2 "
-      << key.toUtf8().constData()
-      << " "
-      << json.toUtf8().constData()
-      << std::endl;
   }
-
 
   catch(Exception &e)
   {
@@ -372,7 +355,7 @@ RTVal BaseRTValScriptableCommand::getRTValArgValue(
   try
   {
     // If the type is unknown, set it
-    //if(!isArgTypeKnown(key))
+    if(!isArgTypeKnown(key))
       m_rtvalArgSpecs[key].type = type;
  
     // If the arg has been set in JSON,  
@@ -458,12 +441,7 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
 
   try
   { 
-    pathValue =/* isArgSet(key)*/
-      /*?*/ RTValUtil::toRTVal(m_rtvalArgs[key].first)
-      /*: RTVal::Construct(
-          FabricApplicationStates::GetAppStates()->getContext(), 
-          "PathValue", 0, 0
-          )*/;
+    pathValue = RTValUtil::toRTVal(m_rtvalArgs[key].first);
   }
 
   catch(FabricException &e) 

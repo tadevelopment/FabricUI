@@ -18,6 +18,9 @@ QString CommandArgHelpers::CreateHistoryDescFromArgs(
 {
   QString desc;
 
+  BaseRTValScriptableCommand *rtValScriptCmd = qobject_cast<BaseRTValScriptableCommand*>(
+    cmd);
+
   try
   {
     desc = cmd->getName();
@@ -31,8 +34,12 @@ QString CommandArgHelpers::CreateHistoryDescFromArgs(
       while(it.hasNext()) 
       {
         it.next();
+
         QString key = it.key();
-        QString argDesc = it.value();
+        QString argDesc = (rtValScriptCmd && !rtValScriptCmd->getRTValArgPath(key).isEmpty())
+          ? argDesc = "<" + it.value() + ">"
+          : it.value();
+
         desc += key + "=\"" + argDesc + "\"";
         if(count < argsDesc.size()-1)
           desc += ", ";
