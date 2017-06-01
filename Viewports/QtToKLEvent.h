@@ -1,7 +1,10 @@
+/*
+ *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
+ */
+
 #ifndef __QT2OKLEVENT_H__
 #define __QT2OKLEVENT_H__
 
-#include <QObject>
 #include <QEvent>
 #include <QPoint>
 

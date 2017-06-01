@@ -2,15 +2,16 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
-#include <iostream>
 #include <QMouseEvent>
 #include <QApplication>
 #include "QtToKLEvent.h"
 #include "GLViewportWidget.h"
+#include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
+using namespace Commands;
 using namespace Viewports;
 using namespace FabricCore;
 using namespace Application;
@@ -26,6 +27,9 @@ bool GLViewportWidgetEventFilter::eventFilter(
   QObject *, 
   QEvent *event) 
 {
+  // QEvent::ShortcutOverride is always called first.
+  // Use it instead of QEvent::KeyPress so we catch
+  // all the key-strockes.
   if( event->type() == QEvent::ShortcutOverride ||
       event->type() == QEvent::KeyRelease ||
       event->type() == QEvent::MouseButtonPress ||
@@ -85,30 +89,61 @@ GLViewportWidget::~GLViewportWidget()
 
 bool GLViewportWidget::onEvent(QEvent *event)
 {
-  bool redrawRequested;
-  QString manipulatedPortName;
+  bool isAccepted = false;
 
-  bool alt = QApplication::keyboardModifiers().testFlag(Qt::AltModifier);
-  
-  bool isAccepted = alt 
-    ? false
-    : m_manipTool->onEvent(
-        event,
-        m_viewport,
+  try
+  {
+    // Now we translate the Qt events to FabricEngine events..
+    RTVal klevent = QtToKLEvent(
+      event, 
+      FabricApplicationStates::GetAppStates()->getClient(), 
+      m_viewport, 
+      "Canvas"
+      );
+      
+    if(!klevent.isValid())
+      return false;
+
+    if(!QApplication::keyboardModifiers().testFlag(Qt::AltModifier))
+    {
+      bool redrawRequested;
+      QString manipulatedPortName;
+
+      isAccepted = m_manipTool->onEvent(
+        klevent,
         redrawRequested,
         manipulatedPortName);
 
-  if(redrawRequested)
-    updateGL();
+      if(redrawRequested)
+        updateGL();
 
-  if(!manipulatedPortName.isEmpty())
-    emit portManipulationRequested(manipulatedPortName);
-  
-  if(alt && !isAccepted)
-    isAccepted = manipulateCamera(event);
- 
-  if(!event->isAccepted() && isAccepted)
-    event->setAccepted(isAccepted);
+      if(!manipulatedPortName.isEmpty())
+        emit portManipulationRequested(manipulatedPortName);
+
+      // In certain cases, the kl event is not accepted but should be.
+      // We check if KL commands where added.
+      if(isAccepted || event->type() == QEvent::MouseButtonRelease)
+      {
+        KLCommandManager *manager = qobject_cast<KLCommandManager*>(
+          CommandManager::GetCommandManager());
+        manager->synchronizeKL();
+      }    
+    }
+    
+    else 
+      isAccepted = manipulateCamera(klevent);
+   
+    if(!event->isAccepted() && isAccepted)
+      event->setAccepted(isAccepted);
+  }
+
+  catch(Exception &e)
+  {
+    FabricException::Throw(
+      "GLViewportWidget::onEvent",
+      "",
+      e.getDesc_cstr());
+  }
 
   return isAccepted;
 }
@@ -149,22 +184,15 @@ void GLViewportWidget::setManipulationActive(bool state)
   if(state == m_manipTool->isActive())
     return;
 
-  if(state)
-  {
-    m_manipTool->toolOnSetup();
-    setFocus();
-  }
-  else
-  {
-    clearFocus();
-    m_manipTool->toolOffCleanup();
-  }
-
+  if(state) setFocus();
+  else clearFocus();
+  m_manipTool->setActive(state);
+  
   setMouseTracking(state);
   redraw();
 }
 
-void GLViewportWidget::clearInlineDrawing()
+void GLViewportWidget::clear()
 {
   if(m_viewport.isValid() && m_drawContext.isValid())
   {
@@ -195,17 +223,14 @@ void GLViewportWidget::initializeGL()
 
 void GLViewportWidget::resizeGL(int width, int height)
 {
-  m_width = width;
-  m_height = height;
-
   try
   {
     Context context = FabricApplicationStates::GetAppStates()->getContext();
 
     RTVal args[3] = {
       m_drawContext,
-      RTVal::ConstructUInt32(context, (unsigned int)m_width),
-      RTVal::ConstructUInt32(context, (unsigned int)m_height)
+      RTVal::ConstructUInt32(context, (unsigned int)width),
+      RTVal::ConstructUInt32(context, (unsigned int)height)
     };
 
     m_viewport.callMethod("", "resize", 3, args);
@@ -313,13 +338,10 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
       QCursor::pos(),
       Qt::NoButton,
       Qt::NoButton,
-      Qt::NoModifier
+      Qt::AltModifier
       );
 
-    manipulateCamera(
-      &nullEvent,
-      false // shouldUpdateGL
-      );
+    onEvent(&nullEvent);
   }
 
   catch(Exception &e)
@@ -335,17 +357,13 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
 }
 
 bool GLViewportWidget::manipulateCamera(
-  QEvent *event,
-  bool shouldUpdateGL
-  )
+  RTVal klevent,
+  bool shouldUpdateGL)
 {
   bool result = false;
 
   try
   {
-    // Now we translate the Qt events to FabricEngine events..
-    RTVal klevent = QtToKLEvent(event, FabricApplicationStates::GetAppStates()->getClient(), m_viewport, "Canvas");
-
     // And then pass the event to the camera manipulator for handling.
     m_cameraManipulator.callMethod("", "onEvent", 1, &klevent);
     result = klevent.callMethod("Boolean", "isAccepted", 0, 0).getBoolean();

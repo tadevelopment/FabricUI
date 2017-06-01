@@ -817,7 +817,7 @@ class CanvasWindow(QtGui.QMainWindow):
             self.qUndoStack.clear()
             GetCmdManager().clear()
             self.qUndoView.setEmptyLabel("Load Graph")
-            self.viewport.clearInlineDrawing()
+            self.viewport.clear()
 
             QtCore.QCoreApplication.processEvents()
 
@@ -1100,7 +1100,7 @@ class CanvasWindow(QtGui.QMainWindow):
             self.host.flushUndoRedo()
             self.qUndoStack.clear()
             GetCmdManager().clear()
-            self.viewport.clearInlineDrawing()
+            self.viewport.clear()
             QtCore.QCoreApplication.processEvents()
 
             # Note: the previous binding is no longer functional

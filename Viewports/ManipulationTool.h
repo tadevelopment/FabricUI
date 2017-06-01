@@ -42,18 +42,17 @@ namespace FabricUI
     {
     public:
       ManipulationTool();
-      virtual ~ManipulationTool();
+      ~ManipulationTool();
 
-      virtual void toolOnSetup();
-      virtual void toolOffCleanup();
-
-      bool onEvent(QEvent *event, FabricCore::RTVal viewport, bool &redrawRequested, QString &portManipulationRequested);
+      void setActive( bool active );
+ 
+      bool onEvent(FabricCore::RTVal klevent, bool &redrawRequested, QString &portManipulationRequested);
       bool isActive() { return m_active;}
 
       FabricCore::RTVal getLastManipVal() { return m_lastManipValue; }
 
     private:
-      bool  m_active;
+      bool m_active;
       FabricCore::RTVal m_eventDispatcher;
       FabricCore::RTVal m_lastManipValue;
       FabricCore::RTVal m_lastToolValue;

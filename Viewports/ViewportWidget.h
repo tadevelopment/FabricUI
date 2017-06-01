@@ -32,10 +32,16 @@ namespace FabricUI
 
       	virtual ~ViewportWidget() {};
 
-        virtual double fps() { return m_fps; }
+        virtual bool isManipulationActive() { return false; }
+
+        virtual void setManipulationActive(bool state) {}
+
+        double fps() { return m_fps; }
        
       public slots:
-        virtual void redraw() { update(); } 
+        virtual void clear() {}
+        void redraw() { update(); } 
+        void toggleManipulation() { setManipulationActive(!isManipulationActive()); }
 
       protected:
         void computeFPS();
@@ -45,6 +51,7 @@ namespace FabricUI
         double m_fpsStack[16];
      
         QTime m_fpsTimer;
+   
     };
   }
 }

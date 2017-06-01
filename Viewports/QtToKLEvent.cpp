@@ -1,7 +1,8 @@
-
+/*
+ *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
+ */
+ 
 #include "QtToKLEvent.h"
-#include <map>
-#include <iostream>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QWheelEvent>

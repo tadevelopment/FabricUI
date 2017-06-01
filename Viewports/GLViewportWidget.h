@@ -5,9 +5,9 @@
 #ifndef __FABRICUI_GLVIEWPORT_H__
 #define __FABRICUI_GLVIEWPORT_H__
 
-
 #include <FabricCore.h>
 #include "ViewportWidget.h"
+#include "ManipulationTool.h"
 
 namespace FabricUI
 {
@@ -25,7 +25,7 @@ namespace FabricUI
           );
 
         bool eventFilter(
-          QObject *, 
+          QObject *object, 
           QEvent *event
           );
 
@@ -38,8 +38,6 @@ namespace FabricUI
     	Q_OBJECT
 
       friend class MainWindow;
-      friend class ManipulationTool;
-      friend class GLViewportWidgetEventFilter;
 
     public:
     	GLViewportWidget(
@@ -49,61 +47,69 @@ namespace FabricUI
 
     	virtual ~GLViewportWidget();
       
-      virtual void setBackgroundColor(QColor color);
       virtual bool isManipulationActive();
-      virtual void setManipulationActive(bool state);
-      virtual void clearInlineDrawing();
-      QColor backgroundColor() { return m_bgColor; }
-     
       
-      FabricCore::RTVal getDrawContext() { return m_drawContext; }
-      virtual ManipulationTool * getManipTool() { return m_manipTool; }
-      virtual FabricCore::RTVal getCameraManipulator() { return m_cameraManipulator; }
+      virtual void setManipulationActive(bool state);
+     
+      ManipulationTool * getManipTool() { return m_manipTool; }
+      
       virtual FabricCore::RTVal getCamera() { return m_camera; }
-      void updateFromManip() {  emit dirty(); }
+      
+      void setGridVisible( bool gridVisible, bool update = true );
+
       bool isGridVisible();
  
     public slots:
-      void toggleManipulation() { setManipulationActive(!isManipulationActive()); }
-      void setGridVisible( bool gridVisible, bool update = true );
+      virtual void clear();
+
+      virtual bool onEvent(QEvent *event);
+
       void resetCamera();
  
     signals:
       void dirty();
+      
       void initComplete();
+      
       void redrawn();
+      
       void portManipulationRequested(QString portName);
 
     protected:
+      /// Implementation of QGLWidget
       virtual void initializeGL();
+      
+      /// Implementation of QGLWidget
       virtual void resizeGL(int w, int h);
+
+      /// Implementation of QGLWidget
       virtual void paintGL();
-      virtual bool onEvent(QEvent *event);
+
+      
+    private:
+      void setBackgroundColor(QColor color);
       
       void resetRTVals( bool shouldUpdateGL = true );
+      
       bool manipulateCamera(
-        QEvent *event,
+        FabricCore::RTVal klevent,
         bool shouldUpdateGL = true);
  
-      int m_width;
-      int m_height;
       bool m_resizedOnce;
       bool m_gridVisible;
       QColor m_bgColor;
 
       FabricCore::RTVal m_drawing;
       FabricCore::RTVal m_drawContext;
-      FabricCore::RTVal m_camera;
       FabricCore::RTVal m_cameraManipulator;
       ManipulationTool *m_manipTool;
       FabricCore::RTVal m_viewport;
+      FabricCore::RTVal m_camera;
 
       GLViewportWidgetEventFilter *m_eventFilter;
     };
 
   }
 }
-
-#include "ManipulationTool.h"
 
 #endif // __FABRICUI_GLVIEWPORT_H__
