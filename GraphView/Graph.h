@@ -134,7 +134,7 @@ namespace FabricUI
 
       virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 
-      MouseGrabber * constructMouseGrabber(QPointF pos, ConnectionTarget * target, PortType portType);
+      MouseGrabber * constructMouseGrabber(QPointF pos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious);
       MouseGrabber * getMouseGrabber();
 
       // interaction
