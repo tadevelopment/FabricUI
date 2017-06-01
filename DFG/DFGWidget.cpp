@@ -640,7 +640,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addAction(new UpdatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanUpdatePreset));
     result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanCreatePreset));
-    result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
+    result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, nodes.size() == 1 && instExec.isPreset()));
     result->addAction(new ExportGraphAction           (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
     result->addSeparator();
 
