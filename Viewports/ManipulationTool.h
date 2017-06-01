@@ -1,14 +1,14 @@
+/*
+ *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
+ */
+
 #ifndef __MANIPULATIONTOOL_H__
 #define __MANIPULATIONTOOL_H__
 
-#include <QObject>
 #include <QEvent>
-
 #include <FabricCore.h>
-
 #include <Commands/Command.h>
-#include "GLViewportWidget.h"
-
+ 
 namespace FabricUI
 {
   namespace Viewports
@@ -41,13 +41,13 @@ namespace FabricUI
     class ManipulationTool 
     {
     public:
-      ManipulationTool(GLViewportWidget * glView);
+      ManipulationTool();
       virtual ~ManipulationTool();
 
       virtual void toolOnSetup();
       virtual void toolOffCleanup();
 
-      bool onEvent(QEvent *event);
+      bool onEvent(QEvent *event, FabricCore::RTVal viewport, bool &redrawRequested, QString &portManipulationRequested);
       bool isActive() { return m_active;}
 
       FabricCore::RTVal getLastManipVal() { return m_lastManipValue; }
@@ -57,7 +57,6 @@ namespace FabricUI
       FabricCore::RTVal m_eventDispatcher;
       FabricCore::RTVal m_lastManipValue;
       FabricCore::RTVal m_lastToolValue;
-      GLViewportWidget * m_view;
     };
   };
 };

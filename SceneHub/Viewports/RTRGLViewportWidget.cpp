@@ -10,15 +10,13 @@ using namespace FabricUI::SceneHub;
 using namespace FabricUI::Viewports;
 
 RTRGLViewportWidget::RTRGLViewportWidget(
-  FabricCore::Client &client,
   SHGLRenderer *shGLRenderer,
   SHGLScene *shGLScene,
   int viewportIndex, 
   QGLContext *qglContext, 
   QWidget *parent, 
-  QGLWidget *share,
-  QSettings *settings) 
-  : ViewportWidget(client, QColor(), qglContext, parent, share, settings)
+  QGLWidget *share) 
+  : ViewportWidget( qglContext, parent, share )
   , m_viewportIndex(viewportIndex)
   , m_alwaysRefresh(false)
   , m_orthographic(false)

@@ -2,16 +2,19 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
-#include <FabricUI/Viewports/ViewportWidget.h>
+#include <FabricCore.h>
+#include "ViewportWidget.h"
+#include <FabricUI/Application/FabricApplicationStates.h>
 
-using namespace FabricUI::Viewports;
+using namespace FabricUI;
+using namespace Viewports;
+using namespace FabricCore;
+using namespace Application;
 
-void ViewportWidget::init(FabricCore::Client &client, QColor bgColor, QSettings *settings) { 
-  m_settings = settings;
-  m_client = client;
-  m_bgColor = bgColor;
+void ViewportWidget::init() { 
  
-  m_hasCommercialLicense = m_client.hasCommercialLicense();
+  Client client = FabricApplicationStates::GetAppStates()->getClient();
+  m_hasCommercialLicense = client.hasCommercialLicense();
   setFocusPolicy(Qt::StrongFocus);
  
   m_fps = 0.0;
@@ -19,26 +22,20 @@ void ViewportWidget::init(FabricCore::Client &client, QColor bgColor, QSettings 
 }
 
 ViewportWidget::ViewportWidget(
-  FabricCore::Client &client, 
-  QColor bgColor, 
   QGLContext *qglContext, 
   QWidget *parent, 
-  QGLWidget *share,
-  QSettings *settings)
+  QGLWidget *share)
   : QGLWidget(qglContext, parent, share)
 { 
-  init(client, bgColor, settings);
+  init();
 }
 
 ViewportWidget::ViewportWidget(
-  FabricCore::Client &client, 
-  QColor bgColor, 
   QGLFormat format, 
-  QWidget *parent, 
-  QSettings *settings)
+  QWidget *parent)
   : QGLWidget(format, parent)
 {	
-  init(client, bgColor, settings);
+  init();
   setAutoBufferSwap(false);
 }
  

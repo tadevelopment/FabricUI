@@ -3,11 +3,17 @@
  */
 
 #include <iostream>
+#include <QMouseEvent>
 #include <QApplication>
+#include "QtToKLEvent.h"
 #include "GLViewportWidget.h"
- 
+#include <FabricUI/Application/FabricException.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
+
 using namespace FabricUI;
 using namespace Viewports;
+using namespace FabricCore;
+using namespace Application;
 
 GLViewportWidgetEventFilter::GLViewportWidgetEventFilter(
   GLViewportWidget *viewport)
@@ -28,49 +34,44 @@ bool GLViewportWidgetEventFilter::eventFilter(
       event->type() == QEvent::Wheel ||
       event->type() == QEvent::MouseMove) 
   {
-    bool isAccepted = m_viewport->getManipTool()->onEvent(event);
-    
-    if(!isAccepted)
-      isAccepted = m_viewport->manipulateCamera(event);
-   
-    if(!event->isAccepted() && isAccepted)
-      event->setAccepted(isAccepted);
-
-    return isAccepted;
+    m_viewport->onEvent(event);
   }
 
   return false;
 }
 
 GLViewportWidget::GLViewportWidget(
-  FabricCore::Client &client, 
   QColor bgColor, 
   QGLFormat format, 
-  QWidget *parent, 
-  QSettings *settings)
-: ViewportWidget(client, bgColor, format, parent, settings)
+  QWidget *parent)
+  : ViewportWidget(format, parent)
+  , m_bgColor(bgColor)
 {	
-  m_manipTool = new ManipulationTool(this);
+  m_manipTool = new ManipulationTool();
   setAutoBufferSwap(false);
 
   m_eventFilter = new GLViewportWidgetEventFilter(this);
   installEventFilter(m_eventFilter);
 
   m_gridVisible = true; // default value
-  if(m_settings)
-  {
-    if(m_settings->contains("glviewport/gridVisible"))
-      m_gridVisible = m_settings->value("glviewport/gridVisible").toBool();
-  }
+  
+  QSettings* settings = FabricApplicationStates::GetAppStates()->getSettings();
+  if(settings && settings->contains("glviewport/gridVisible"))
+    m_gridVisible = settings->value("glviewport/gridVisible").toBool();
 
   try
   {
-    m_client.loadExtension("Manipulation", "", false);
-    m_client.loadExtension("InlineDrawing", "", false);
+    Client client = FabricApplicationStates::GetAppStates()->getClient();
+    client.loadExtension("Manipulation", "", false);
+    client.loadExtension("InlineDrawing", "", false);
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception &e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
+    FabricException::Throw(
+      "GLViewportWidget::GLViewportWidget",
+      "",
+      e.getDesc_cstr());
   }
   
   m_resizedOnce  = false;
@@ -82,6 +83,36 @@ GLViewportWidget::~GLViewportWidget()
   delete(m_manipTool);
 }
 
+bool GLViewportWidget::onEvent(QEvent *event)
+{
+  bool redrawRequested;
+  QString manipulatedPortName;
+
+  bool alt = QApplication::keyboardModifiers().testFlag(Qt::AltModifier);
+  
+  bool isAccepted = alt 
+    ? false
+    : m_manipTool->onEvent(
+        event,
+        m_viewport,
+        redrawRequested,
+        manipulatedPortName);
+
+  if(redrawRequested)
+    updateGL();
+
+  if(!manipulatedPortName.isEmpty())
+    emit portManipulationRequested(manipulatedPortName);
+  
+  if(alt && !isAccepted)
+    isAccepted = manipulateCamera(event);
+ 
+  if(!event->isAccepted() && isAccepted)
+    event->setAccepted(isAccepted);
+
+  return isAccepted;
+}
+
 void GLViewportWidget::setBackgroundColor(QColor color)
 {
   m_bgColor = color;
@@ -90,15 +121,20 @@ void GLViewportWidget::setBackgroundColor(QColor color)
   {
     try
     {
-      FabricCore::RTVal bgColorVal = m_viewport.maybeGetMember("bgColor");
-      bgColorVal.setMember("r", FabricCore::RTVal::ConstructFloat32(m_client, float(m_bgColor.red()) / 255.0f));
-      bgColorVal.setMember("g", FabricCore::RTVal::ConstructFloat32(m_client, float(m_bgColor.green()) / 255.0f));
-      bgColorVal.setMember("b", FabricCore::RTVal::ConstructFloat32(m_client, float(m_bgColor.blue()) / 255.0f));
+      Context context = FabricApplicationStates::GetAppStates()->getContext();
+      RTVal bgColorVal = m_viewport.maybeGetMember("bgColor");
+      bgColorVal.setMember("r", RTVal::ConstructFloat32(context, float(m_bgColor.red()) / 255.0f));
+      bgColorVal.setMember("g", RTVal::ConstructFloat32(context, float(m_bgColor.green()) / 255.0f));
+      bgColorVal.setMember("b", RTVal::ConstructFloat32(context, float(m_bgColor.blue()) / 255.0f));
       m_viewport.setMember("bgColor", bgColorVal);
     }
-    catch(FabricCore::Exception e)
+
+    catch(Exception &e)
     {
-      printf("Error: %s\n", e.getDesc_cstr());
+      FabricException::Throw(
+        "GLViewportWidget::setBackgroundColor",
+        "",
+        e.getDesc_cstr());
     }
   }
 }
@@ -112,10 +148,19 @@ void GLViewportWidget::setManipulationActive(bool state)
 {
   if(state == m_manipTool->isActive())
     return;
+
   if(state)
+  {
     m_manipTool->toolOnSetup();
+    setFocus();
+  }
   else
+  {
+    clearFocus();
     m_manipTool->toolOffCleanup();
+  }
+
+  setMouseTracking(state);
   redraw();
 }
 
@@ -136,12 +181,15 @@ void GLViewportWidget::initializeGL()
     m_viewport.callMethod("", "setup", 1, &m_drawContext);
     m_drawing = m_drawing.callMethod("OGLInlineDrawing", "getInstance", 0, 0);
     setGridVisible(m_gridVisible, false);
-    std::cout << "GLViewportWidget::initializeGL "<< std::endl;
     emit initComplete();
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception &e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
+    FabricException::Throw(
+      "GLViewportWidget::initializeGL",
+      "",
+      e.getDesc_cstr());
   }
 }
 
@@ -152,16 +200,24 @@ void GLViewportWidget::resizeGL(int width, int height)
 
   try
   {
-    FabricCore::RTVal args[3];
-    args[0] = m_drawContext;
-    args[1] = FabricCore::RTVal::ConstructUInt32(m_client, (unsigned int)m_width);
-    args[2] = FabricCore::RTVal::ConstructUInt32(m_client, (unsigned int)m_height);
+    Context context = FabricApplicationStates::GetAppStates()->getContext();
+
+    RTVal args[3] = {
+      m_drawContext,
+      RTVal::ConstructUInt32(context, (unsigned int)m_width),
+      RTVal::ConstructUInt32(context, (unsigned int)m_height)
+    };
+
     m_viewport.callMethod("", "resize", 3, args);
     m_resizedOnce = true;
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception &e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
+    FabricException::Throw(
+      "GLViewportWidget::resizeGL",
+      "",
+      e.getDesc_cstr());
   }
 }
 
@@ -173,18 +229,23 @@ void GLViewportWidget::paintGL()
     resizeGL(scale.width(), scale.height());
   }
 
-  ViewportWidget::computeFPS();
+  computeFPS();
 
   try
   {
-    FabricCore::RTVal args[2];
-    args[0] = FabricCore::RTVal::ConstructString(m_client, "default");
-    args[1] = m_drawContext;
+    RTVal args[2] = {
+      RTVal::ConstructString(FabricApplicationStates::GetAppStates()->getContext(), "default"),
+      m_drawContext
+    };
     m_drawing.callMethod("", "drawViewport", 2, args);
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception &e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
+    FabricException::Throw(
+      "GLViewportWidget::paintGL",
+      "",
+      e.getDesc_cstr());
   }
 
   swapBuffers();
@@ -195,7 +256,9 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
 {
   try
   {
-    m_drawing = FabricCore::RTVal::Create(m_client, "OGLInlineDrawing", 0, 0);
+    Context context = FabricApplicationStates::GetAppStates()->getContext();
+
+    m_drawing = RTVal::Create(context, "OGLInlineDrawing", 0, 0);
     if(!m_drawing.isValid())
     {
       printf("[GLWidget] Error: Cannot construct OGLInlineDrawing RTVal (extension loaded?)\n");
@@ -203,7 +266,7 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
     }
     m_drawing = m_drawing.callMethod("OGLInlineDrawing", "getNewInstance", 0, 0);
 
-    m_viewport = FabricCore::RTVal::Create(m_client, "OGLStandaloneViewport", 0, 0);
+    m_viewport = RTVal::Create(context, "OGLStandaloneViewport", 0, 0);
     if(!m_viewport.isValid())
     {
       printf("[GLWidget] Error: Cannot construct OGLStandaloneViewport RTVal (extension loaded?)\n");
@@ -211,9 +274,11 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
     }
     else
     {
-      FabricCore::RTVal args[2];
-      args[0] = FabricCore::RTVal::ConstructString(m_client, "default");
-      args[1] = m_viewport;
+      RTVal args[2] = {
+        RTVal::ConstructString(context, "default"),
+        m_viewport
+      };
+
       m_drawing.callMethod("", "registerViewport", 2, args);
 
       // [pzion 20150909] No viewport overlay, at least for now
@@ -222,16 +287,16 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
     }
 
     // Proto tool setup
-    FabricCore::RTVal::Create( m_client, "WRenderEngineInlineDrawingSetup", 0, 0 );
+    RTVal::Create( context, "WRenderEngineInlineDrawingSetup", 0, 0 );
 
     m_camera = m_viewport.maybeGetMember("camera");
-    m_cameraManipulator = FabricCore::RTVal::Create(m_client, "CameraManipulator", 1, &m_camera);
+    m_cameraManipulator = RTVal::Create(context, "CameraManipulator", 1, &m_camera);
 
-    m_viewport.setMember("windowId", FabricCore::RTVal::ConstructUInt64(m_client, (uint64_t)this->winId()));
+    m_viewport.setMember("windowId", RTVal::ConstructUInt64(context, (uint64_t)this->winId()));
 
     setBackgroundColor(m_bgColor);
 
-    m_drawContext = FabricCore::RTVal::Create(m_client, "DrawContext", 0, 0);
+    m_drawContext = RTVal::Create(context, "DrawContext", 0, 0);
     if(!m_drawContext.isValid())
     {
       printf("[GLWidget] Error: Cannot construct DrawContext RTVal (extension loaded?)\n");
@@ -250,16 +315,19 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
       Qt::NoButton,
       Qt::NoModifier
       );
-    
+
     manipulateCamera(
       &nullEvent,
-      false, // requireModifier
       false // shouldUpdateGL
       );
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception &e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
+    FabricException::Throw(
+      "GLViewportWidget::resetRTVals",
+      "",
+      e.getDesc_cstr());
   }
 
   setGridVisible( m_gridVisible, shouldUpdateGL );
@@ -268,29 +336,32 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
 
 bool GLViewportWidget::manipulateCamera(
   QEvent *event,
-  bool requireModifier,
   bool shouldUpdateGL
   )
 {
-  if(!QApplication::keyboardModifiers().testFlag(Qt::AltModifier) && requireModifier)
-    return false;
-
   bool result = false;
+
   try
   {
     // Now we translate the Qt events to FabricEngine events..
-    FabricCore::RTVal klevent = QtToKLEvent(event, m_client, m_viewport, "Canvas");
+    RTVal klevent = QtToKLEvent(event, FabricApplicationStates::GetAppStates()->getClient(), m_viewport, "Canvas");
 
     // And then pass the event to the camera manipulator for handling.
     m_cameraManipulator.callMethod("", "onEvent", 1, &klevent);
     result = klevent.callMethod("Boolean", "isAccepted", 0, 0).getBoolean();
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception &e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
+    FabricException::Throw(
+      "GLViewportWidget::manipulateCamera",
+      "",
+      e.getDesc_cstr());
   }
+
   if ( shouldUpdateGL )
     update();
+
   return result;
 }
 
@@ -302,22 +373,27 @@ bool GLViewportWidget::isGridVisible()
 void GLViewportWidget::setGridVisible( bool gridVisible, bool updateView )
 {
   m_gridVisible = gridVisible;
-  if(m_settings)
-  {
-    m_settings->setValue("glviewport/gridVisible", m_gridVisible);
-  }
+
+  QSettings* settings = FabricApplicationStates::GetAppStates()->getSettings();
+  if(settings)
+    settings->setValue("glviewport/gridVisible", m_gridVisible);
 
   if(!m_viewport.isValid())
     return;
 
   try
   {
-    FabricCore::RTVal gridVisibleVal = FabricCore::RTVal::ConstructBoolean(m_client, m_gridVisible);
+    Context context = FabricApplicationStates::GetAppStates()->getContext();
+    RTVal gridVisibleVal = RTVal::ConstructBoolean(context, m_gridVisible);
     m_viewport.callMethod("", "setGridVisible", 1, &gridVisibleVal);
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception &e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
+    FabricException::Throw(
+      "GLViewportWidget::setGridVisible",
+      "",
+      e.getDesc_cstr());
   }
 
   if( updateView )
@@ -331,26 +407,33 @@ void GLViewportWidget::resetCamera()
 
   try
   {
-    FabricCore::RTVal position[3];
-    position[0] = FabricCore::RTVal::ConstructFloat32(m_client, 30.0f);
-    position[1] = FabricCore::RTVal::ConstructFloat32(m_client, 20.0f);
-    position[2] = FabricCore::RTVal::ConstructFloat32(m_client, 40.0f);
+    Context context = FabricApplicationStates::GetAppStates()->getContext();
     
-    FabricCore::RTVal target[3];
-    target[0] = FabricCore::RTVal::ConstructFloat32(m_client, 0.0f);
-    target[1] = FabricCore::RTVal::ConstructFloat32(m_client, 0.0f);
-    target[2] = FabricCore::RTVal::ConstructFloat32(m_client, 0.0f);
+    RTVal position[3];
+    position[0] = RTVal::ConstructFloat32(context, 30.0f);
+    position[1] = RTVal::ConstructFloat32(context, 20.0f);
+    position[2] = RTVal::ConstructFloat32(context, 40.0f);
     
-    FabricCore::RTVal args[2];
-    args[0] = FabricCore::RTVal::Construct(m_client, "Vec3", 3, position);
-    args[1] = FabricCore::RTVal::Construct(m_client, "Vec3", 3, target);
+    RTVal target[3];
+    target[0] = RTVal::ConstructFloat32(context, 0.0f);
+    target[1] = RTVal::ConstructFloat32(context, 0.0f);
+    target[2] = RTVal::ConstructFloat32(context, 0.0f);
+    
+    RTVal args[2] = {
+      RTVal::Construct(context, "Vec3", 3, position),
+      RTVal::Construct(context, "Vec3", 3, target)
+    };
 
     m_camera.callMethod("", "setFromPositionAndTarget", 2, args);
-    m_cameraManipulator = FabricCore::RTVal::Create(m_client, "CameraManipulator", 1, &m_camera);
+    m_cameraManipulator = RTVal::Create(context, "CameraManipulator", 1, &m_camera);
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception &e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
+    FabricException::Throw(
+      "GLViewportWidget::resetCamera",
+      "",
+      e.getDesc_cstr());
   }
 
   update();

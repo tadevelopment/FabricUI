@@ -1,21 +1,24 @@
-#include <QApplication>
-#include <QWidget>
-#include <QKeyEvent>
-#include <QMouseEvent>
-#include <QWheelEvent>
+/*
+*  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
+*/
 
+#include <QObject>
+#include <QApplication>
 #include "ManipulationTool.h"
 #include <FabricUI/Viewports/QtToKLEvent.h>
-#include <map>
-#include <iostream>
 #include <FabricUI/Commands/KLCommandManager.h>
+#include <FabricUI/Application/FabricException.h>
+#include <FabricUI/Application/FabricApplicationStates.h>
 
-using namespace FabricUI::Viewports;
+using namespace FabricUI;
+using namespace Viewports;
+using namespace FabricCore;
+using namespace Application;
 
 
 /////////////////////////////////////////////////////
 // ManipulationCmd
-FabricCore::RTVal ManipulationCmd::s_rtval_commands;
+RTVal ManipulationCmd::s_rtval_commands;
 
 ManipulationCmd::ManipulationCmd() {
   m_rtval_commands = s_rtval_commands;
@@ -44,11 +47,11 @@ bool ManipulationCmd::undo() {
 
 /////////////////////////////////////////////////////
 // ManipulationTool
-ManipulationTool::ManipulationTool(GLViewportWidget * glView) : m_active(false), m_view(glView) {}
+ManipulationTool::ManipulationTool() : m_active(false) {}
 
 ManipulationTool::~ManipulationTool()
 {
-  ManipulationCmd::setStaticRTValCommands( FabricCore::RTVal() );
+  ManipulationCmd::setStaticRTValCommands( RTVal() );
 }
 
 void ManipulationTool::toolOnSetup() {
@@ -56,60 +59,59 @@ void ManipulationTool::toolOnSetup() {
   {
     if(!m_eventDispatcher.isValid())
     {
-
-      FabricCore::RTVal eventDispatcherHandle = FabricCore::RTVal::Create(m_view->getClient(), "EventDispatcherHandle", 0, 0);
+      RTVal eventDispatcherHandle = RTVal::Create(FabricApplicationStates::GetAppStates()->getClient(), "EventDispatcherHandle", 0, 0);
       if(eventDispatcherHandle.isValid())
-      {
         m_eventDispatcher = eventDispatcherHandle.callMethod("EventDispatcher", "getEventDispatcher", 0, 0);
-      }
     }
-    if(m_eventDispatcher.isValid())  m_eventDispatcher.callMethod("", "activateManipulation", 0, 0);
+    if(m_eventDispatcher.isValid())  
+      m_eventDispatcher.callMethod("", "activateManipulation", 0, 0);
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception &e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
-    return;
+    FabricException::Throw(
+      "ManipulationTool::toolOnSetup",
+      "",
+      e.getDesc_cstr());
   }
 
   m_active = true;
-  m_view->setFocus();
-  m_view->setMouseTracking(true);
-  m_view->updateGL();
 }
 
 void ManipulationTool::toolOffCleanup() {
-  m_view->clearFocus();
 
   try
   {
     if(m_eventDispatcher.isValid())
       m_eventDispatcher.callMethod("", "deactivateManipulation", 0, 0);
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
-    return;
+     FabricException::Throw(
+      "ManipulationTool::toolOffCleanup",
+      "",
+      e.getDesc_cstr());
   }
    
   m_active = false;
-  m_view->setMouseTracking(false);
-  m_view->updateGL();
-  m_eventDispatcher = FabricCore::RTVal();
+  m_eventDispatcher = RTVal();
 }
 
-bool ManipulationTool::onEvent(QEvent *event) {
+bool ManipulationTool::onEvent(QEvent *event, RTVal viewport, bool &redrawRequested, QString &manipulatedPortName) {
+    
+  redrawRequested = false;
+  manipulatedPortName = "";
+
   if(!m_eventDispatcher.isValid())
     return false;
 
-  // skip the alt key, so that we can continue to use the camera
-  if(QApplication::keyboardModifiers().testFlag(Qt::AltModifier))
-    return false;
-
-  // Now we translate the Qt events to FabricEngine events..
-  FabricCore::RTVal klevent = QtToKLEvent(event, m_view->getClient(), m_view->getViewport(), "Canvas");
-
+  // Now we translate the Qt events to FabricEngine events.
   try
   {
+    Client client = FabricApplicationStates::GetAppStates()->getClient();
+    RTVal klevent = QtToKLEvent(event, client, viewport, "Canvas");
+
     if(klevent.isValid())
     {
       //////////////////////////
@@ -117,26 +119,20 @@ bool ManipulationTool::onEvent(QEvent *event) {
       m_eventDispatcher.callMethod("Boolean", "onEvent", 1, &klevent);
       bool result = klevent.callMethod("Boolean", "isAccepted", 0, 0).getBoolean();
       if(result) 
-      {
         event->accept();
-        Commands::KLCommandManager *manager = dynamic_cast<Commands::KLCommandManager *>(
-          Commands::CommandManager::GetCommandManager());
-        manager->synchronizeKL();
-      }
-
+       
       // In certain cases, the kl event is not accepted but should be.
       // We check if KL commands where added.
-      if (event->type() == QEvent::MouseButtonRelease)
+      if (result || event->type() == QEvent::MouseButtonRelease)
       {
-        Commands::KLCommandManager *manager = dynamic_cast<Commands::KLCommandManager *>(
+        Commands::KLCommandManager *manager = qobject_cast<Commands::KLCommandManager *>(
           Commands::CommandManager::GetCommandManager());
         manager->synchronizeKL();
-      }
+      }     
 
-      FabricCore::RTVal host = klevent.maybeGetMember("host");
-      if(host.maybeGetMember("redrawRequested").getBoolean())
-        m_view->updateGL();
-
+      RTVal host = klevent.maybeGetMember("host");
+      redrawRequested = host.maybeGetMember("redrawRequested").getBoolean();
+ 
       // Cache the rtvals in a static variable that the command will then stor in the undo stack.
       if(host.callMethod("Boolean", "undoRedoCommandsAdded", 0, 0).getBoolean())
         ManipulationCmd::setStaticRTValCommands(host.callMethod("UndoRedoCommand[]", "getUndoRedoCommands", 0, 0));
@@ -144,23 +140,23 @@ bool ManipulationTool::onEvent(QEvent *event) {
       std::string customCommand = host.maybeGetMember("customCommand").getStringCString();
       if(customCommand == "setArg")
       {
-        FabricCore::RTVal customCommandParams = host.maybeGetMember("customCommandParams");
-        FabricCore::RTVal portNameVal = FabricCore::RTVal::ConstructString(m_view->getClient(), "portName");
-        FabricCore::RTVal xfoVal = FabricCore::RTVal::ConstructString(m_view->getClient(), "xfo");
-        std::string portName = customCommandParams.callMethod("String", "getString", 1, &portNameVal).getStringCString();
+        RTVal customCommandParams = host.maybeGetMember("customCommandParams");
+        RTVal portNameVal = RTVal::ConstructString(client, "portName");
+        RTVal xfoVal = RTVal::ConstructString(client, "xfo");
+        manipulatedPortName = customCommandParams.callMethod("String", "getString", 1, &portNameVal).getStringCString();
         m_lastManipValue = customCommandParams.callMethod("Xfo", "getXfo", 1, &xfoVal);
-        if(portName.length() > 0)
-          emit m_view->portManipulationRequested(portName.c_str());
       }
 
-      klevent.invalidate();
       return result;
     }
   }
-  catch(FabricCore::Exception e)
+
+  catch(Exception &e)
   {
-    printf("Error: %s\n", e.getDesc_cstr());
-    return false;
+    FabricException::Throw(
+      "ManipulationTool::onEvent",
+      "",
+      e.getDesc_cstr());
   }
 
   // the event was not handled by FabricEngine manipulation system. 

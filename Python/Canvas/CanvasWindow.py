@@ -501,7 +501,7 @@ class CanvasWindow(QtGui.QMainWindow):
         glFormat.setSampleBuffers(True)
         glFormat.setSamples(4)
 
-        self.viewport = Viewports.GLViewportWidget(self.client, self.config.defaultWindowColor, glFormat, self, self.settings)
+        self.viewport = Viewports.GLViewportWidget(self.config.defaultWindowColor, glFormat, self)
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
