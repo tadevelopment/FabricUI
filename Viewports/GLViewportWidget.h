@@ -13,14 +13,33 @@ namespace FabricUI
 {
   namespace Viewports
   {
- 
+    class GLViewportWidget;
+
+    class GLViewportWidgetEventFilter : public QObject 
+    {
+      Q_OBJECT
+
+      public:
+        GLViewportWidgetEventFilter(
+          GLViewportWidget *viewport
+          );
+
+        bool eventFilter(
+          QObject *, 
+          QEvent *event
+          );
+
+      private:
+        GLViewportWidget *m_viewport;
+    };
+
     class GLViewportWidget : public ViewportWidget
     {
     	Q_OBJECT
 
       friend class MainWindow;
       friend class ManipulationTool;
-
+      friend class GLViewportWidgetEventFilter;
 
     public:
     	GLViewportWidget(
@@ -44,8 +63,7 @@ namespace FabricUI
       void updateFromManip() {  emit dirty(); }
       virtual double fps() { return ViewportWidget::fps(); }
       bool isGridVisible();
-
-
+ 
     public slots:
       virtual void redraw() { ViewportWidget::redraw(); }
 
@@ -66,17 +84,10 @@ namespace FabricUI
 
       void resetRTVals( bool shouldUpdateGL = true );
       bool manipulateCamera(
-        QInputEvent *event,
+        QEvent *event,
         bool requireModifier = true,
         bool shouldUpdateGL = true);
-
-      virtual bool onEvent(QInputEvent *event);
-      virtual void mousePressEvent(QMouseEvent *event);
-      virtual void mouseMoveEvent(QMouseEvent *event);
-      virtual void mouseReleaseEvent(QMouseEvent *event);
-      virtual void wheelEvent(QWheelEvent *event);
-      virtual void keyPressEvent(QKeyEvent * event);
-
+ 
       int m_width;
       int m_height;
       bool m_resizedOnce;
@@ -87,6 +98,8 @@ namespace FabricUI
       FabricCore::RTVal m_camera;
       FabricCore::RTVal m_cameraManipulator;
       ManipulationTool *m_manipTool;
+
+      GLViewportWidgetEventFilter *m_eventFilter;
     };
 
   }

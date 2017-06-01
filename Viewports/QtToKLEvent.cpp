@@ -31,7 +31,9 @@ RTVal QtToKLEvent(QEvent *event, Client const& client, RTVal viewport, char cons
     klevent = RTVal::Create(client, "MouseEvent", 0, 0);
 
 
-  else if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease) 
+  else if ( event->type() == QEvent::KeyPress || 
+            event->type() == QEvent::ShortcutOverride || 
+            event->type() == QEvent::KeyRelease) 
   {
     QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
     klevent = RTVal::Create(client, "KeyEvent", 0, 0);
@@ -65,7 +67,10 @@ RTVal QtToKLEvent(QEvent *event, Client const& client, RTVal viewport, char cons
 
   if(klevent.isValid())
   {
-    int eventType = int(event->type());
+    int eventType = event->type() == QEvent::ShortcutOverride 
+     ? int(QEvent::KeyPress)
+     : int(event->type());
+  
     // FABRIC_TRY_RETURN("ManipulationTool::onEvent", false,
     klevent.setMember("eventType", RTVal::ConstructUInt32(client, eventType));
 

@@ -79,8 +79,8 @@ void ManipulationTool::toolOnSetup() {
   }
 
   m_active = true;
-  sEventFilterObject.tool = this;
-  m_view->installEventFilter(&sEventFilterObject);
+  //sEventFilterObject.tool = this;
+  // m_view->installEventFilter(&sEventFilterObject);
   m_view->setFocus();
   m_view->setMouseTracking(true);
   m_view->updateGL();

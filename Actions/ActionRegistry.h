@@ -142,7 +142,7 @@ class ActionRegistry : public QObject
     /// Gets all the registred actions and their
     /// shortcuts as a string, used for debugging.
     QString getContent() const;
-
+    
   signals:
     /// Emitted when an action 
     /// has been registered.

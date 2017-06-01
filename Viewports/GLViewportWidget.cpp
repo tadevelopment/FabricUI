@@ -2,10 +2,45 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
-#include "GLViewportWidget.h"
 #include <iostream>
+#include <QApplication>
+#include "GLViewportWidget.h"
+ 
+using namespace FabricUI;
+using namespace Viewports;
 
-using namespace FabricUI::Viewports;
+GLViewportWidgetEventFilter::GLViewportWidgetEventFilter(
+  GLViewportWidget *viewport)
+ : QObject()
+ , m_viewport(viewport) 
+{
+}
+
+bool GLViewportWidgetEventFilter::eventFilter(
+  QObject *, 
+  QEvent *event) 
+{
+  if( event->type() == QEvent::ShortcutOverride ||
+      event->type() == QEvent::KeyRelease ||
+      event->type() == QEvent::MouseButtonPress ||
+      event->type() == QEvent::MouseButtonDblClick ||
+      event->type() == QEvent::MouseButtonRelease ||
+      event->type() == QEvent::Wheel ||
+      event->type() == QEvent::MouseMove) 
+  {
+    bool isAccepted = m_viewport->getManipTool()->onEvent(event);
+    
+    if(!isAccepted)
+      isAccepted = m_viewport->manipulateCamera(event);
+   
+    if(!event->isAccepted() && isAccepted)
+      event->setAccepted(isAccepted);
+
+    return isAccepted;
+  }
+
+  return false;
+}
 
 GLViewportWidget::GLViewportWidget(
   FabricCore::Client &client, 
@@ -17,6 +52,9 @@ GLViewportWidget::GLViewportWidget(
 {	
   m_manipTool = new ManipulationTool(this);
   setAutoBufferSwap(false);
+
+  m_eventFilter = new GLViewportWidgetEventFilter(this);
+  installEventFilter(m_eventFilter);
 
   m_gridVisible = true; // default value
   if(m_settings)
@@ -212,6 +250,7 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
       Qt::NoButton,
       Qt::NoModifier
       );
+    
     manipulateCamera(
       &nullEvent,
       false, // requireModifier
@@ -227,58 +266,13 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
   emit initComplete();
 }
 
-bool GLViewportWidget::onEvent(
-  QInputEvent *event)
-{
-  if(m_manipTool->onEvent(event))
-    return true;
-  if(manipulateCamera(event))
-    return true;
-  return false;
-}
-
-void GLViewportWidget::mousePressEvent(QMouseEvent *event)
-{
-  if(onEvent(event))
-    return;
-  QGLWidget::mousePressEvent(event);
-  FabricCore::FlagUserInteraction();
-}
-
-void GLViewportWidget::mouseMoveEvent(QMouseEvent *event)
-{
-  if(onEvent(event))
-    return;
-  QGLWidget::mouseMoveEvent(event);
-}
-
-void GLViewportWidget::mouseReleaseEvent(QMouseEvent *event)
-{
-  if(onEvent(event))
-    return;
-  QGLWidget::mouseReleaseEvent(event);
-}
-
-void GLViewportWidget::wheelEvent(QWheelEvent *event)
-{
-  if(onEvent(event))
-    return;
-  QGLWidget::wheelEvent(event);
-}
-
-void GLViewportWidget::keyPressEvent(QKeyEvent * event) {
-  if(onEvent(event))
-    return;
-  QGLWidget::keyPressEvent(event);
-}
-
 bool GLViewportWidget::manipulateCamera(
-  QInputEvent *event,
+  QEvent *event,
   bool requireModifier,
   bool shouldUpdateGL
   )
 {
-  if(!event->modifiers().testFlag(Qt::AltModifier) && requireModifier)
+  if(!QApplication::keyboardModifiers().testFlag(Qt::AltModifier) && requireModifier)
     return false;
 
   bool result = false;
