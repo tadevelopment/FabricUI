@@ -2,7 +2,6 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
-#include <iostream>
 #include <QMouseEvent>
 #include <QApplication>
 #include "QtToKLEvent.h"
@@ -82,11 +81,13 @@ bool GLViewportWidget::onEvent(
       event, 
       m_viewport, 
       "Canvas");
-      
+
     if(!klevent.isValid())
       return false;
 
-    if(!QApplication::keyboardModifiers().testFlag(Qt::AltModifier))
+    bool alt = QApplication::keyboardModifiers().testFlag(Qt::AltModifier);
+    
+    if(!alt && m_manipTool->isActive())
     {
       bool redrawRequested;
       QString manipulatedPortName;
@@ -96,11 +97,14 @@ bool GLViewportWidget::onEvent(
         redrawRequested,
         manipulatedPortName);
 
+      if(!event->isAccepted() && isAccepted)
+        event->setAccepted(isAccepted);
+
       if(redrawRequested)
         updateGL();
 
       if(!manipulatedPortName.isEmpty())
-        emit portManipulationRequested(manipulatedPortName);
+        emit portManipulationRequested(manipulatedPortName);    
 
       // In certain cases, the kl event is not accepted but should be.
       // We check if KL commands where added.
@@ -112,11 +116,8 @@ bool GLViewportWidget::onEvent(
       }    
     }
     
-    else 
+    else if(alt)
       isAccepted = manipulateCamera(klevent);
-   
-    if(!event->isAccepted() && isAccepted)
-      event->setAccepted(isAccepted);
   }
 
   catch(Exception &e)
@@ -124,7 +125,8 @@ bool GLViewportWidget::onEvent(
     FabricException::Throw(
       "GLViewportWidget::onEvent",
       "",
-      e.getDesc_cstr());
+      e.getDesc_cstr(),
+      PRINT);
   }
 
   return isAccepted;

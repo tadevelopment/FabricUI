@@ -43,6 +43,7 @@ ViewportWidget::ViewportWidget(
  
 ViewportWidget::~ViewportWidget() 
 {
+  delete(m_eventFilter);
 }
 
 bool ViewportWidget::isManipulationActive() 

@@ -22,7 +22,7 @@ bool ViewportEventFilter::eventFilter(
   // QEvent::ShortcutOverride is always called first.
   // Use it instead of QEvent::KeyPress so we catch
   // all the key-strockes.
-  return (event->type() != QEvent::KeyPress)  
-    ? m_viewport->onEvent(event)
-    : false;
+  if(m_viewport && event->type() != QEvent::KeyPress)  
+ 		m_viewport->onEvent(event);
+	return false;
 }
