@@ -12,33 +12,12 @@
 namespace FabricUI {
 namespace Viewports {
 
-class GLViewportWidget;
-
-class GLViewportWidgetEventFilter : public QObject 
-{
-  Q_OBJECT
-
-  public:
-    GLViewportWidgetEventFilter(
-      GLViewportWidget *viewport
-      );
-
-    bool eventFilter(
-      QObject *object, 
-      QEvent *event
-      );
-
-  private:
-    GLViewportWidget *m_viewport;
-};
-
 class GLViewportWidget : public ViewportWidget
 {
 	Q_OBJECT
 
   friend class MainWindow;
-  friend class GLViewportWidgetEventFilter;
-
+ 
   public:
   	GLViewportWidget(
       QColor bgColor, 
@@ -75,6 +54,11 @@ class GLViewportWidget : public ViewportWidget
     /// Implementation of ViewportWidget.
     virtual void clear();
 
+    /// Implementation of ViewportWidget
+    virtual bool onEvent(
+      QEvent *event
+      );
+
     /// Resets the camera to its 
     /// default parameters.
     void resetCamera();
@@ -105,11 +89,6 @@ class GLViewportWidget : public ViewportWidget
     virtual void paintGL();
 
   private:
-    /// Implementation of QGLWidget
-    virtual bool onEvent(
-      QEvent *event
-      );
-
     /// Sets the background color.
     void setBackgroundColor(
       QColor color
@@ -129,16 +108,13 @@ class GLViewportWidget : public ViewportWidget
     QColor m_bgColor;
     bool m_resizedOnce;
     bool m_gridVisible;
-    bool m_hasCommercialLicense;
-
+ 
     FabricCore::RTVal m_camera;
     FabricCore::RTVal m_drawing;
     FabricCore::RTVal m_viewport;
     ManipulationTool *m_manipTool;
     FabricCore::RTVal m_drawContext;
     FabricCore::RTVal m_cameraManipulator;
-
-    GLViewportWidgetEventFilter *m_eventFilter;
 };
 
 } // namespace Viewports

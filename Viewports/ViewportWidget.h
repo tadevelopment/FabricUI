@@ -7,6 +7,7 @@
 
 #include <QTime>
 #include <QGLWidget>
+#include "ViewportEventFilter.h"
 
 namespace FabricUI {
 namespace Viewports {
@@ -47,6 +48,11 @@ class ViewportWidget : public QGLWidget
     /// To override
     virtual void clear();
 
+    /// Implementation of QGLWidget
+    virtual bool onEvent(
+      QEvent *event
+      );
+
     /// Refreshs opengl.
     void redraw();
         
@@ -64,9 +70,10 @@ class ViewportWidget : public QGLWidget
     double m_fps;
     QTime m_fpsTimer;
     double m_fpsStack[16];
+    ViewportEventFilter *m_eventFilter;
 };
   
-}
-}
+} // namespace Viewports
+} // namespace FabricUI
 
 #endif // __UI_VIEWPORT__

@@ -5,7 +5,7 @@
 #ifndef __UI_FABRIC_EXCEPTION__
 #define __UI_FABRIC_EXCEPTION__
 
-#include <stdio.h>
+#include <iostream>
 #include <QString>
 #include <exception>
 
@@ -47,7 +47,7 @@ class FabricException : public std::exception
         cmdError += childError + "\n ";
 
       if(flag & PRINT)
-        printf("%s", cmdError.toUtf8().constData());
+        std::cerr << cmdError.toUtf8().constData() << std::endl;
 
       if(flag & THROW)
         throw FabricException(cmdError);

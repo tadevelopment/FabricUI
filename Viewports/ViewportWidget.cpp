@@ -13,6 +13,9 @@ using namespace Application;
 
 void ViewportWidget::init() 
 {  
+  m_eventFilter = new ViewportEventFilter(this);
+  installEventFilter(m_eventFilter);
+
   setFocusPolicy(Qt::StrongFocus);
  
   m_fps = 0.0;
@@ -59,6 +62,12 @@ double ViewportWidget::fps()
 
 void ViewportWidget::clear() 
 {
+}
+
+bool ViewportWidget::onEvent(
+  QEvent *event) 
+{
+  return false;
 }
 
 void ViewportWidget::redraw() 

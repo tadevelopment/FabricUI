@@ -155,18 +155,21 @@ bool ManipulationTool::onEvent(
   bool &redrawRequested, 
   QString &manipulatedPortName) 
 {
-    
-  redrawRequested = false;
-  manipulatedPortName = "";
-  if(!klevent.isValid())
+  if(!isActive())
     return false;
 
-  if(!m_eventDispatcher.isValid())
-    return false;
+  redrawRequested = false;
+  manipulatedPortName = "";
 
   // Now we translate the Qt events to FabricEngine events.
   try
   {
+    if(!klevent.isValid())
+      return false;
+
+    if(!m_eventDispatcher.isValid())
+      return false;
+
     //////////////////////////
     // Invoke the event...
     m_eventDispatcher.callMethod(

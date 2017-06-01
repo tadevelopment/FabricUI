@@ -2,6 +2,7 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
+#include <iostream>
 #include <QMouseEvent>
 #include <QApplication>
 #include "QtToKLEvent.h"
@@ -16,34 +17,6 @@ using namespace Viewports;
 using namespace FabricCore;
 using namespace Application;
 
-GLViewportWidgetEventFilter::GLViewportWidgetEventFilter(
-  GLViewportWidget *viewport)
- : QObject()
- , m_viewport(viewport) 
-{
-}
-
-bool GLViewportWidgetEventFilter::eventFilter(
-  QObject *, 
-  QEvent *event) 
-{
-  // QEvent::ShortcutOverride is always called first.
-  // Use it instead of QEvent::KeyPress so we catch
-  // all the key-strockes.
-  if(event->type() == QEvent::ShortcutOverride ||
-      event->type() == QEvent::KeyRelease ||
-      event->type() == QEvent::MouseButtonPress ||
-      event->type() == QEvent::MouseButtonDblClick ||
-      event->type() == QEvent::MouseButtonRelease ||
-      event->type() == QEvent::Wheel ||
-      event->type() == QEvent::MouseMove) 
-  {
-    m_viewport->onEvent(event);
-  }
-
-  return false;
-}
-
 GLViewportWidget::GLViewportWidget(
   QColor bgColor, 
   QGLFormat format, 
@@ -53,9 +26,6 @@ GLViewportWidget::GLViewportWidget(
 {	
   m_manipTool = new ManipulationTool();
   setAutoBufferSwap(false);
-
-  m_eventFilter = new GLViewportWidgetEventFilter(this);
-  installEventFilter(m_eventFilter);
 
   m_gridVisible = true; // default value
   
@@ -68,7 +38,6 @@ GLViewportWidget::GLViewportWidget(
     Client client = FabricApplicationStates::GetAppStates()->getClient();
     client.loadExtension("Manipulation", "", false);
     client.loadExtension("InlineDrawing", "", false);
-    m_hasCommercialLicense = client.hasCommercialLicense();
   }
 
   catch(Exception &e)
@@ -79,7 +48,7 @@ GLViewportWidget::GLViewportWidget(
       e.getDesc_cstr());
   }
   
-  m_resizedOnce  = false;
+  m_resizedOnce = false;
   initializeID(false /*shouldUpdateGL*/);
 }
 
@@ -105,13 +74,14 @@ bool GLViewportWidget::onEvent(
 
   try
   {
+    if(!m_viewport.isValid())
+      return false;
+
     // Now we translate the Qt events to FabricEngine events..
     RTVal klevent = QtToKLEvent(
       event, 
-      FabricApplicationStates::GetAppStates()->getClient(), 
       m_viewport, 
-      "Canvas"
-     );
+      "Canvas");
       
     if(!klevent.isValid())
       return false;
@@ -182,7 +152,8 @@ void GLViewportWidget::setBackgroundColor(
       FabricException::Throw(
         "GLViewportWidget::setBackgroundColor",
         "",
-        e.getDesc_cstr());
+        e.getDesc_cstr(),
+        PRINT);
     }
   }
 }
@@ -207,7 +178,7 @@ void GLViewportWidget::setManipulationActive(
 }
 
 void GLViewportWidget::clear()
-{
+{    
   if(m_viewport.isValid() && m_drawContext.isValid())
   {
     initializeID();
@@ -324,7 +295,9 @@ void GLViewportWidget::initializeID(
       m_drawing.callMethod("", "registerViewport", 2, args);
 
       // [pzion 20150909] No viewport overlay, at least for now
-      // if(!m_hasCommercialLicense)
+      // Client client = FabricApplicationStates::GetAppStates()->getClient();
+      // bool hasCommercialLicense = client.hasCommercialLicense();
+      // if(!hasCommercialLicense)
       //   m_viewport.callMethod("", "setupLicensingOverlay", 0, 0);
     }
 
@@ -355,10 +328,11 @@ void GLViewportWidget::initializeID(
       QCursor::pos(),
       Qt::NoButton,
       Qt::NoButton,
-      Qt::AltModifier
-      );
+      Qt::AltModifier);
 
-    onEvent(&nullEvent);
+    manipulateCamera(
+      QtToKLEvent(&nullEvent, m_viewport, "Canvas"), 
+      false);
   }
 
   catch(Exception &e)

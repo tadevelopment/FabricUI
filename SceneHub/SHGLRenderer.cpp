@@ -220,7 +220,7 @@ QList<float> SHGLRenderer::get3DScenePosFrom2DScreenPos(unsigned int viewportID,
   QList<float> list;
   try 
   {
-    RTVal posVal = QtToKLMousePosition(pos, m_client, getOrAddViewport(viewportID), true);
+    RTVal posVal = QtToKLMousePosition(pos, getOrAddViewport(viewportID), true);
     RTVal args[2] = {
       RTVal::ConstructUInt32(m_client, viewportID),
       posVal
@@ -240,7 +240,7 @@ QList<float> SHGLRenderer::get3DScenePosFrom2DScreenPos(unsigned int viewportID,
 RTVal SHGLRenderer::getSGObjectFrom2DScreenPos(unsigned int viewportID, QPoint pos) {
   RTVal result;
   try {
-    RTVal posVal = QtToKLMousePosition(pos, m_client, getOrAddViewport(viewportID), true);
+    RTVal posVal = QtToKLMousePosition(pos, getOrAddViewport(viewportID), true);
     RTVal validVal = RTVal::ConstructBoolean(m_client, false);
     RTVal args[3] = {
       RTVal::ConstructUInt32(m_client, viewportID),
@@ -304,7 +304,6 @@ bool SHGLRenderer::onEvent(unsigned int viewportID, QEvent *event, bool dragging
 
     RTVal klEvent = QtToKLEvent(
       event, 
-      m_client, 
       getOrAddViewport(viewportID),
       "Canvas",
       true);

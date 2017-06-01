@@ -404,6 +404,7 @@ class CanvasWindow(QtGui.QMainWindow):
         client.setStatusCallback(self._statusCallback)
         self.client = client
         self.rtvalEncoderDecoder.client = self.client
+        CreateAppStates(self.client, self.settings)
 
     def _initDFG(self):
         """Initializes the Data Flow Graph.
@@ -437,7 +438,6 @@ class CanvasWindow(QtGui.QMainWindow):
         """
         self.qUndoStack = QtGui.QUndoStack()
 
-        CreateAppStates(self.client, self.settings)
         CreateCmdRegistry()
         CreateCmdManager()
         GetCmdRegistry().synchronizeKL()
@@ -809,6 +809,11 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timeLine.pause()
 
         try:
+            manipActive = self.viewport.isManipulationActive()
+            if manipActive is True:
+                self.manipAction.onTriggered()
+
+            self.viewport.clear()
             dfgController = self.dfgWidget.getDFGController()
             binding = dfgController.getBinding()
             binding.deallocValues()
@@ -817,7 +822,6 @@ class CanvasWindow(QtGui.QMainWindow):
             self.qUndoStack.clear()
             GetCmdManager().clear()
             self.qUndoView.setEmptyLabel("Load Graph")
-            self.viewport.clear()
 
             QtCore.QCoreApplication.processEvents()
 
@@ -885,6 +889,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
             if self.dfgWidget:
                 self.dfgWidget.getDFGController().log("graph loaded \"" + str(filePath) + "\"")
+
+            if manipActive is True:
+                self.manipAction.onTriggered()
 
         except Exception as e:
             sys.stderr.write("Exception: " + str(e) + "\n")
@@ -1092,6 +1099,10 @@ class CanvasWindow(QtGui.QMainWindow):
         self.lastFileName = ""
 
         try:
+            manipActive = self.viewport.isManipulationActive()
+            if manipActive is True:
+                self.manipAction.onTriggered()
+        
             dfgController = self.dfgWidget.getDFGController()
 
             binding = dfgController.getBinding()
@@ -1123,6 +1134,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
             dfgController.emitDirty()
             self.onFileNameChanged('')
+
+            if manipActive is True:
+                self.manipAction.onTriggered()
 
         except Exception as e:
             print 'Exception: ' + str(e)
