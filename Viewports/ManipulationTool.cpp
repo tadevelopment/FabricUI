@@ -2,8 +2,6 @@
 *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 */
 
-#include <QObject>
-#include <QApplication>
 #include "ManipulationTool.h"
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
@@ -18,26 +16,60 @@ using namespace Application;
 // ManipulationCmd
 RTVal ManipulationCmd::s_rtval_commands;
 
-ManipulationCmd::ManipulationCmd() {
+ManipulationCmd::ManipulationCmd() 
+{
   m_rtval_commands = s_rtval_commands;
 }
 
-ManipulationCmd::~ManipulationCmd() {}
+ManipulationCmd::~ManipulationCmd() 
+{
+}
 
-bool ManipulationCmd::invoke() {
+const char* ManipulationCmd::getName() const 
+{ 
+  return "ManipulationCmd"; 
+}
+
+const char* ManipulationCmd::getShortDesc() const 
+{ 
+  return "Performs any manipulation within a Fabric application."; 
+}
+
+const char* ManipulationCmd::getFullDesc() const 
+{ 
+  return getShortDesc(); 
+}
+
+void ManipulationCmd::setStaticRTValCommands(
+  FabricCore::RTVal commands) 
+{ 
+  s_rtval_commands = commands; 
+}
+
+bool ManipulationCmd::invoke() 
+{
   if(m_rtval_commands.isValid())
   {
     for(uint32_t i=0; i<m_rtval_commands.getArraySize(); i++)
-      m_rtval_commands.getArrayElement(i).callMethod("", "doAction", 0, 0);
+      m_rtval_commands.getArrayElement(i).callMethod(
+        "", 
+        "doAction",
+         0, 
+         0);
   }
   return true;
 }
 
-bool ManipulationCmd::undo() {
+bool ManipulationCmd::undo() 
+{
   if(m_rtval_commands.isValid())
   {
     for(uint32_t i=0; i<m_rtval_commands.getArraySize(); i++)
-      m_rtval_commands.getArrayElement(i).callMethod("", "undoAction", 0, 0);
+      m_rtval_commands.getArrayElement(i).callMethod(
+        "", 
+        "undoAction", 
+        0, 
+        0);
   }
   return true;
 }
@@ -45,34 +77,58 @@ bool ManipulationCmd::undo() {
 
 /////////////////////////////////////////////////////
 // ManipulationTool
-ManipulationTool::ManipulationTool() : m_active(false) {}
+ManipulationTool::ManipulationTool() 
+  : m_active(false) 
+{
+}
 
 ManipulationTool::~ManipulationTool()
 {
-  ManipulationCmd::setStaticRTValCommands( RTVal() );
+  ManipulationCmd::setStaticRTValCommands( 
+    RTVal());
 }
 
-void ManipulationTool::setActive( bool active ) {
+void ManipulationTool::setActive( 
+  bool active) 
+{
   try
   {
     if(active)
     {
       if(!m_eventDispatcher.isValid())
       {
-        RTVal eventDispatcherHandle = RTVal::Create(FabricApplicationStates::GetAppStates()->getClient(), "EventDispatcherHandle", 0, 0);
+        RTVal eventDispatcherHandle = RTVal::Create(
+          FabricApplicationStates::GetAppStates()->getClient(), 
+          "EventDispatcherHandle", 
+          0, 
+          0);
+
         if(eventDispatcherHandle.isValid())
-          m_eventDispatcher = eventDispatcherHandle.callMethod("EventDispatcher", "getEventDispatcher", 0, 0);
+          m_eventDispatcher = eventDispatcherHandle.callMethod(
+            "EventDispatcher", 
+            "getEventDispatcher", 
+            0, 
+            0);
       }
       
       if(m_eventDispatcher.isValid())  
-        m_eventDispatcher.callMethod("", "activateManipulation", 0, 0);
+        m_eventDispatcher.callMethod(
+          "", 
+          "activateManipulation", 
+          0, 
+          0);
     }
 
     else
     {
       if(m_eventDispatcher.isValid())
       {
-        m_eventDispatcher.callMethod("", "deactivateManipulation", 0, 0);
+        m_eventDispatcher.callMethod(
+          "", 
+          "deactivateManipulation", 
+          0, 
+          0);
+
         m_eventDispatcher = RTVal();
       }
     }
@@ -89,7 +145,16 @@ void ManipulationTool::setActive( bool active ) {
   m_active = active;
 }
 
-bool ManipulationTool::onEvent(RTVal klevent, bool &redrawRequested, QString &manipulatedPortName) {
+bool ManipulationTool::isActive() 
+{
+  return m_active;  
+}
+
+bool ManipulationTool::onEvent(
+  RTVal klevent,
+  bool &redrawRequested, 
+  QString &manipulatedPortName) 
+{
     
   redrawRequested = false;
   manipulatedPortName = "";
@@ -104,15 +169,30 @@ bool ManipulationTool::onEvent(RTVal klevent, bool &redrawRequested, QString &ma
   {
     //////////////////////////
     // Invoke the event...
-    m_eventDispatcher.callMethod("Boolean", "onEvent", 1, &klevent);
-    bool result = klevent.callMethod("Boolean", "isAccepted", 0, 0).getBoolean();
+    m_eventDispatcher.callMethod(
+      "Boolean", 
+      "onEvent", 
+      1, 
+      &klevent);
+
+    bool isAccepted = klevent.callMethod(
+      "Boolean", 
+      "isAccepted", 
+      0, 
+      0).getBoolean();
  
     RTVal host = klevent.maybeGetMember("host");
     redrawRequested = host.maybeGetMember("redrawRequested").getBoolean();
 
     // Cache the rtvals in a static variable that the command will then stor in the undo stack.
     if(host.callMethod("Boolean", "undoRedoCommandsAdded", 0, 0).getBoolean())
-      ManipulationCmd::setStaticRTValCommands(host.callMethod("UndoRedoCommand[]", "getUndoRedoCommands", 0, 0));
+      ManipulationCmd::setStaticRTValCommands(
+        host.callMethod(
+          "UndoRedoCommand[]", 
+          "getUndoRedoCommands", 
+          0, 
+          0)
+        );
 
     std::string customCommand = host.maybeGetMember("customCommand").getStringCString();
     if(customCommand == "setArg")
@@ -121,11 +201,21 @@ bool ManipulationTool::onEvent(RTVal klevent, bool &redrawRequested, QString &ma
       RTVal customCommandParams = host.maybeGetMember("customCommandParams");
       RTVal portNameVal = RTVal::ConstructString(client, "portName");
       RTVal xfoVal = RTVal::ConstructString(client, "xfo");
-      manipulatedPortName = customCommandParams.callMethod("String", "getString", 1, &portNameVal).getStringCString();
-      m_lastManipValue = customCommandParams.callMethod("Xfo", "getXfo", 1, &xfoVal);
+
+      manipulatedPortName = customCommandParams.callMethod(
+        "String", 
+        "getString", 
+        1, 
+        &portNameVal).getStringCString();
+      
+      m_lastManipValue = customCommandParams.callMethod(
+        "Xfo", 
+        "getXfo", 
+        1, 
+        &xfoVal);
     }
 
-    return result;
+    return isAccepted;
   }
 
   catch(Exception &e)
@@ -138,4 +228,9 @@ bool ManipulationTool::onEvent(RTVal klevent, bool &redrawRequested, QString &ma
 
   // the event was not handled by FabricEngine manipulation system. 
   return false;
+}
+
+RTVal ManipulationTool::getLastManipVal() 
+{ 
+  return m_lastManipValue; 
 }

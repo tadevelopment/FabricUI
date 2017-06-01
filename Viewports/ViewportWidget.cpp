@@ -11,14 +11,13 @@ using namespace Viewports;
 using namespace FabricCore;
 using namespace Application;
 
-void ViewportWidget::init() { 
- 
-  Client client = FabricApplicationStates::GetAppStates()->getClient();
-  m_hasCommercialLicense = client.hasCommercialLicense();
+void ViewportWidget::init() 
+{  
   setFocusPolicy(Qt::StrongFocus);
  
   m_fps = 0.0;
-  for(int i=0;i<16;i++) m_fpsStack[i] = 0.0;
+  for(int i=0;i<16;i++) 
+    m_fpsStack[i] = 0.0;
 }
 
 ViewportWidget::ViewportWidget(
@@ -39,8 +38,41 @@ ViewportWidget::ViewportWidget(
   setAutoBufferSwap(false);
 }
  
-void ViewportWidget::computeFPS() {
-   
+ViewportWidget::~ViewportWidget() 
+{
+}
+
+bool ViewportWidget::isManipulationActive() 
+{ 
+  return false; 
+}
+
+void ViewportWidget::setManipulationActive(
+  bool state) 
+{
+}
+
+double ViewportWidget::fps() 
+{ 
+  return m_fps; 
+}
+
+void ViewportWidget::clear() 
+{
+}
+
+void ViewportWidget::redraw() 
+{ 
+  update(); 
+} 
+
+void ViewportWidget::toggleManipulation() 
+{ 
+  setManipulationActive(!isManipulationActive()); 
+}
+
+void ViewportWidget::computeFPS() 
+{   
   // compute the fps
   double ms = m_fpsTimer.elapsed();
   m_fps = (ms == 0.0) ? 0.0 : 1000.0 / ms;

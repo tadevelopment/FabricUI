@@ -30,7 +30,7 @@ bool GLViewportWidgetEventFilter::eventFilter(
   // QEvent::ShortcutOverride is always called first.
   // Use it instead of QEvent::KeyPress so we catch
   // all the key-strockes.
-  if( event->type() == QEvent::ShortcutOverride ||
+  if(event->type() == QEvent::ShortcutOverride ||
       event->type() == QEvent::KeyRelease ||
       event->type() == QEvent::MouseButtonPress ||
       event->type() == QEvent::MouseButtonDblClick ||
@@ -68,6 +68,7 @@ GLViewportWidget::GLViewportWidget(
     Client client = FabricApplicationStates::GetAppStates()->getClient();
     client.loadExtension("Manipulation", "", false);
     client.loadExtension("InlineDrawing", "", false);
+    m_hasCommercialLicense = client.hasCommercialLicense();
   }
 
   catch(Exception &e)
@@ -79,7 +80,7 @@ GLViewportWidget::GLViewportWidget(
   }
   
   m_resizedOnce  = false;
-  resetRTVals( false /*shouldUpdateGL*/ );
+  initializeID(false /*shouldUpdateGL*/);
 }
 
 GLViewportWidget::~GLViewportWidget()
@@ -87,7 +88,18 @@ GLViewportWidget::~GLViewportWidget()
   delete(m_manipTool);
 }
 
-bool GLViewportWidget::onEvent(QEvent *event)
+ManipulationTool* GLViewportWidget::getManipTool() 
+{ 
+  return m_manipTool; 
+}
+
+RTVal GLViewportWidget::getCamera() 
+{ 
+  return m_camera; 
+}
+
+bool GLViewportWidget::onEvent(
+  QEvent *event)
 {
   bool isAccepted = false;
 
@@ -99,7 +111,7 @@ bool GLViewportWidget::onEvent(QEvent *event)
       FabricApplicationStates::GetAppStates()->getClient(), 
       m_viewport, 
       "Canvas"
-      );
+     );
       
     if(!klevent.isValid())
       return false;
@@ -148,7 +160,8 @@ bool GLViewportWidget::onEvent(QEvent *event)
   return isAccepted;
 }
 
-void GLViewportWidget::setBackgroundColor(QColor color)
+void GLViewportWidget::setBackgroundColor(
+  QColor color)
 {
   m_bgColor = color;
 
@@ -179,7 +192,8 @@ bool GLViewportWidget::isManipulationActive()
   return m_manipTool->isActive();
 }
 
-void GLViewportWidget::setManipulationActive(bool state)
+void GLViewportWidget::setManipulationActive(
+  bool state)
 {
   if(state == m_manipTool->isActive())
     return;
@@ -196,7 +210,7 @@ void GLViewportWidget::clear()
 {
   if(m_viewport.isValid() && m_drawContext.isValid())
   {
-    resetRTVals();
+    initializeID();
     initializeGL();
     resizeGL(size().width(), size().height());
   }
@@ -221,7 +235,9 @@ void GLViewportWidget::initializeGL()
   }
 }
 
-void GLViewportWidget::resizeGL(int width, int height)
+void GLViewportWidget::resizeGL(
+  int width, 
+  int height)
 {
   try
   {
@@ -277,7 +293,8 @@ void GLViewportWidget::paintGL()
   emit redrawn();
 }
 
-void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
+void GLViewportWidget::initializeID(
+  bool shouldUpdateGL)
 {
   try
   {
@@ -312,7 +329,7 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
     }
 
     // Proto tool setup
-    RTVal::Create( context, "WRenderEngineInlineDrawingSetup", 0, 0 );
+    RTVal::Create(context, "WRenderEngineInlineDrawingSetup", 0, 0);
 
     m_camera = m_viewport.maybeGetMember("camera");
     m_cameraManipulator = RTVal::Create(context, "CameraManipulator", 1, &m_camera);
@@ -347,12 +364,12 @@ void GLViewportWidget::resetRTVals( bool shouldUpdateGL )
   catch(Exception &e)
   {
     FabricException::Throw(
-      "GLViewportWidget::resetRTVals",
+      "GLViewportWidget::initializeID",
       "",
       e.getDesc_cstr());
   }
 
-  setGridVisible( m_gridVisible, shouldUpdateGL );
+  setGridVisible(m_gridVisible, shouldUpdateGL);
   emit initComplete();
 }
 
@@ -377,7 +394,7 @@ bool GLViewportWidget::manipulateCamera(
       e.getDesc_cstr());
   }
 
-  if ( shouldUpdateGL )
+  if(shouldUpdateGL)
     update();
 
   return result;
@@ -388,7 +405,9 @@ bool GLViewportWidget::isGridVisible()
   return m_gridVisible;
 }
 
-void GLViewportWidget::setGridVisible( bool gridVisible, bool updateView )
+void GLViewportWidget::setGridVisible(
+  bool gridVisible, 
+  bool updateView)
 {
   m_gridVisible = gridVisible;
 
@@ -414,7 +433,7 @@ void GLViewportWidget::setGridVisible( bool gridVisible, bool updateView )
       e.getDesc_cstr());
   }
 
-  if( updateView )
+  if(updateView)
     update();
 }
 
@@ -456,4 +475,3 @@ void GLViewportWidget::resetCamera()
 
   update();
 }
-

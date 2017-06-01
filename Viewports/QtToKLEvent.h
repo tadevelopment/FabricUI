@@ -2,16 +2,26 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
-#ifndef __QT2OKLEVENT_H__
-#define __QT2OKLEVENT_H__
+#ifndef __UI_QT_TO_KL_EVENT__
+#define __UI_QT_TO_KL_EVENT__
 
 #include <QEvent>
 #include <QPoint>
-
 #include <FabricCore.h>
 
-FabricCore::RTVal QtToKLMousePosition(QPoint pos, FabricCore::Client const& client, FabricCore::RTVal viewport, bool swapAxis = false);
+FabricCore::RTVal QtToKLMousePosition(
+  QPoint pos, 
+  FabricCore::Client const& client, 
+  FabricCore::RTVal viewport, 
+  bool swapAxis = false
+  );
 
-FabricCore::RTVal QtToKLEvent(QEvent *event, FabricCore::Client const& client, FabricCore::RTVal viewport, char const *hostName, bool swapAxis = false);
+FabricCore::RTVal QtToKLEvent(
+  QEvent *event, 
+  FabricCore::Client const& client, 
+  FabricCore::RTVal viewport, 
+  char const *hostName, 
+  bool swapAxis = false
+  );
 
-#endif
+#endif // __UI_QT_TO_KL_EVENT__

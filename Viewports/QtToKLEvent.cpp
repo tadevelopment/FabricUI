@@ -2,14 +2,19 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
  
-#include "QtToKLEvent.h"
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include "QtToKLEvent.h"
 
 using namespace FabricCore;
 
-inline FabricCore::RTVal QtToKLMousePosition(QPoint pos, Client const& client, RTVal viewport, bool swapAxis) {
+FabricCore::RTVal QtToKLMousePosition(
+  QPoint pos, 
+  Client const& client, 
+  RTVal viewport, 
+  bool swapAxis) 
+{
   RTVal klViewportDim = viewport.callMethod("Vec2", "getDimensions", 0, 0);
   RTVal klpos = RTVal::Construct(client, "Vec2", 0, 0);
   klpos.setMember("x", RTVal::ConstructFloat32(client, pos.x()));
@@ -21,7 +26,13 @@ inline FabricCore::RTVal QtToKLMousePosition(QPoint pos, Client const& client, R
   return klpos;
 }
 
-RTVal QtToKLEvent(QEvent *event, Client const& client, RTVal viewport, char const *hostName, bool swapAxis) {
+RTVal QtToKLEvent(
+  QEvent *event, 
+  Client const& client, 
+  RTVal viewport, 
+  char const *hostName, 
+  bool swapAxis) 
+{
   // Now we translate the Qt events to FabricEngine events..
   RTVal klevent;
 
