@@ -44,13 +44,6 @@ bool ManipulationCmd::undo() {
 
 /////////////////////////////////////////////////////
 // ManipulationTool
-class ManipulationEventFilterObject : public QObject {
-  public:
-    ManipulationTool *tool;
-    bool eventFilter(QObject *object, QEvent *event);
-};
-
-static ManipulationEventFilterObject sEventFilterObject;
 ManipulationTool::ManipulationTool(GLViewportWidget * glView) : m_active(false), m_view(glView) {}
 
 ManipulationTool::~ManipulationTool()
@@ -79,15 +72,12 @@ void ManipulationTool::toolOnSetup() {
   }
 
   m_active = true;
-  //sEventFilterObject.tool = this;
-  // m_view->installEventFilter(&sEventFilterObject);
   m_view->setFocus();
   m_view->setMouseTracking(true);
   m_view->updateGL();
 }
 
 void ManipulationTool::toolOffCleanup() {
-  m_view->removeEventFilter(&sEventFilterObject);
   m_view->clearFocus();
 
   try
@@ -104,11 +94,7 @@ void ManipulationTool::toolOffCleanup() {
   m_active = false;
   m_view->setMouseTracking(false);
   m_view->updateGL();
-  //m_eventDispatcher = FabricCore::RTVal();
-}
-
-bool ManipulationEventFilterObject::eventFilter(QObject *object, QEvent *event) {
-  return tool->onEvent(event);
+  m_eventDispatcher = FabricCore::RTVal();
 }
 
 bool ManipulationTool::onEvent(QEvent *event) {
