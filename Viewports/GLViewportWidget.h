@@ -61,12 +61,9 @@ namespace FabricUI
       virtual FabricCore::RTVal getCameraManipulator() { return m_cameraManipulator; }
       virtual FabricCore::RTVal getCamera() { return m_camera; }
       void updateFromManip() {  emit dirty(); }
-      virtual double fps() { return ViewportWidget::fps(); }
       bool isGridVisible();
  
     public slots:
-      virtual void redraw() { ViewportWidget::redraw(); }
-
       void toggleManipulation() { setManipulationActive(!isManipulationActive()); }
       void setGridVisible( bool gridVisible, bool update = true );
       void resetCamera();
