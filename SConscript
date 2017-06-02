@@ -194,7 +194,7 @@ if buildOS == 'Windows':
 
   msvsEnv["CPPPATH"] = msvsIncludes
   msvsProj = msvsEnv.MSVSProject(
-    target = 'FabricUI' + msvsEnv['MSVSPROJECTSUFFIX'],
+    target = 'MSVS/FabricUI' + msvsEnv['MSVSPROJECTSUFFIX'],
     srcs = strsources + strheaders,
     buildtarget = uiLib,
     variant = 'Release'
