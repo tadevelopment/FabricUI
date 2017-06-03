@@ -22,10 +22,6 @@ class OptionEditorCommandRegistration
   */
 
   public:
-    OptionEditorCommandRegistration()
-    {
-    }
-
    	static void RegisterCommands()
     {
       Commands::PathValueResolverFactory<OptionsPathValueResolver>::Register(

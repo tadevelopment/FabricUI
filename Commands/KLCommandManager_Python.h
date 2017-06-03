@@ -42,7 +42,8 @@ class KLCommandManager_Python : public KLCommandManager
     virtual BaseCommand* _createCommand_Python(
       const QString &cmdName, 
       const QMap<QString, QString> &args, 
-      bool doCmd
+      bool doCmd,
+      int interactionID = -1
       );
  
     /// Wraps CommandManager::doCommand.
@@ -89,7 +90,8 @@ class KLCommandManager_Python : public KLCommandManager
     virtual BaseCommand* _createRTValCommand_Python(
       const QString &cmdName, 
       const QMap<QString, FabricCore::RTVal> &args, 
-      bool doCmd
+      bool doCmd,
+      int interactionID = -1
       );
 
     /// Wraps RTValCommandManager::checkCommandArgs.
@@ -109,13 +111,15 @@ class KLCommandManager_Python : public KLCommandManager
     /// Wraps and redirects CommandManager::commandDone signal.
     /// Propagates the C++ signal in python 
     void _commandDone_Python(
-      BaseCommand *cmd
+      BaseCommand *cmd,
+      bool addToStack
       );
       
   private slots:
     /// Wraps CommandManager method.
     void onCommandDone(
-      BaseCommand *cmd
+      BaseCommand *cmd,
+      bool addToStack
       );
 
   private:
@@ -126,7 +130,8 @@ class KLCommandManager_Python : public KLCommandManager
     virtual BaseCommand* createCommand(
       const QString &cmdName, 
       const QMap<QString, QString> &args, 
-      bool doCmd
+      bool doCmd,
+      int interactionID = -1
       );
 
     /// Implementation of CommandManager, 
@@ -168,7 +173,8 @@ class KLCommandManager_Python : public KLCommandManager
     virtual BaseCommand* createCommand(
       const QString &cmdName, 
       const QMap<QString, FabricCore::RTVal> &args, 
-      bool doCmd
+      bool doCmd,
+      int interactionID = -1
       );
     
     /// Implementation of RTValCommandManager, 

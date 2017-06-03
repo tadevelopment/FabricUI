@@ -24,10 +24,11 @@ RTValArrayModelItem::RTValArrayModelItem(
 {
   try
   {
-    for(unsigned i=0; i<options.getArraySize(); i++) 
+    m_options = options;
+
+    for(unsigned i=0; i<m_options.getArraySize(); i++) 
     {
-      RTVal childrenOptions = options.getArrayElementRef(
-        i); 
+      RTVal childrenOptions = m_options.getArrayElementRef(i); 
 
       std::string childName = name + "_" + std::string(QString::number(i).toUtf8().constData());
       
@@ -83,17 +84,8 @@ void RTValArrayModelItem::resetToDefault()
 
 RTVal RTValArrayModelItem::getRTValOptions()
 {
-  RTVal options;
-
   try
   {
-    options = RTVal::ConstructVariableArray(
-      FabricApplicationStates::GetAppStates()->getContext(),
-      "RTVal");
-
-    options.setArraySize(
-      m_children.size());
-
     unsigned count = 0;
     
     std::map<std::string, BaseRTValModelItem*>::iterator it;
@@ -101,7 +93,7 @@ RTVal RTValArrayModelItem::getRTValOptions()
     {
       BaseRTValModelItem* child = (BaseRTValModelItem*)it->second;
      
-      options.setArrayElement(
+      m_options.setArrayElement(
         count,
         RTValUtil::toKLRTVal(child->getRTValOptions()) 
         );
@@ -118,7 +110,7 @@ RTVal RTValArrayModelItem::getRTValOptions()
       e.getDesc_cstr());
   }
 
-  return options;
+  return m_options;
 }
 
 void RTValArrayModelItem::setRTValOptions(
@@ -126,9 +118,9 @@ void RTValArrayModelItem::setRTValOptions(
 {  
   try
   { 
-    options = RTValUtil::toRTVal(options);
+    m_options = RTValUtil::toRTVal(options);
 
-    if(!options.isArray())
+    if(!m_options.isArray())
       FabricException::Throw(
         "RTValArrayModelItem::setRTValOptions",
         "options is not an array");
@@ -140,7 +132,7 @@ void RTValArrayModelItem::setRTValOptions(
     {
       BaseRTValModelItem* child = (BaseRTValModelItem*)it->second;
  
-      RTVal childrenOptions = options.getArrayElementRef(count);
+      RTVal childrenOptions = m_options.getArrayElementRef(count);
       
       child->setRTValOptions(childrenOptions);
       

@@ -1,16 +1,12 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include <FabricUI/Util/RTValUtil.h>
 #include "SetXfoPortDefaultValueCommand.h"
-#include <FabricUI/Commands/CommandArgFlags.h>
-#include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace DFG;
-using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace Application;
@@ -88,7 +84,7 @@ bool SetXfoPortDefaultValueCommand::doIt()
 {
   try
   {
-    if(canUndo() && RTValUtil::getType(getRTValArgValue("previousValue")) != "Xfo")
+    if(canUndo() && getRTValArgType("previousValue") != "Xfo")
       setRTValArgValue("previousValue", getRTValArgValue("target"));
 
     RTVal newValue = getRTValArgValue("newValue", "Xfo");

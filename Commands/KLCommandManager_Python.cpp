@@ -15,9 +15,9 @@ KLCommandManager_Python::KLCommandManager_Python()
 {
   QObject::connect(
     this,
-    SIGNAL(commandDone(BaseCommand *)),
+    SIGNAL(commandDone(BaseCommand *, bool)),
     this,
-    SLOT(onCommandDone(BaseCommand *))
+    SLOT(onCommandDone(BaseCommand *, bool))
     );
 }
 
@@ -41,7 +41,8 @@ int KLCommandManager_Python::_totalCountAtStackIndex()
 BaseCommand* KLCommandManager_Python::_createCommand_Python(
   const QString &cmdName, 
   const QMap<QString, QString> &args, 
-  bool doCmd)
+  bool doCmd,
+  int interactionID)
 {
   FabricException::Throw(
     "KLCommandManager_Python::_createCommand_Python",
@@ -165,7 +166,8 @@ void KLCommandManager_Python::_commandPushed_Python(
 BaseCommand* KLCommandManager_Python::_createRTValCommand_Python(
   const QString &cmdName, 
   const QMap<QString, RTVal> &args, 
-  bool doCmd)
+  bool doCmd,
+  int interactionID)
 {
   FabricException::Throw(
     "KLCommandManager_Python::_createRTValCommand_Python",
@@ -223,10 +225,10 @@ QString KLCommandManager_Python::_synchronizeKL_Python()
 }
 
 void KLCommandManager_Python::onCommandDone(
-  BaseCommand *cmd)
+  BaseCommand *cmd,
+  bool addToStack)
 {
-  
-  emit _commandDone_Python(cmd);
+  emit _commandDone_Python(cmd, addToStack);
 }
 
 // C++ -> Python
@@ -234,12 +236,14 @@ void KLCommandManager_Python::onCommandDone(
 BaseCommand* KLCommandManager_Python::createCommand(
   const QString &cmdName, 
   const QMap<QString, QString> &args, 
-  bool doCmd)
+  bool doCmd,
+  int interactionID)
 {
   return _createCommand_Python(
     cmdName,
     args,
-    doCmd);
+    doCmd,
+    interactionID);
 }
 
 void KLCommandManager_Python::doCommand(
@@ -289,12 +293,14 @@ void KLCommandManager_Python::commandPushed(
 BaseCommand* KLCommandManager_Python::createCommand(
   const QString &cmdName, 
   const QMap<QString, RTVal> &args, 
-  bool doCmd)
+  bool doCmd,
+  int interactionID)
 {
   return _createRTValCommand_Python(
     cmdName,
     args,
-    doCmd);
+    doCmd,
+    interactionID);
 }
 
 void KLCommandManager_Python::checkCommandArgs(

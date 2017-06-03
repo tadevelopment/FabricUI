@@ -3,6 +3,7 @@
 //
 
 #include "KLCommand.h"
+#include "KLCommandHelpers.h"
 #include "KLCommandRegistry.h"
 #include "KLScriptableCommand.h"
 #include "SetPathValueCommand.h"
@@ -19,30 +20,9 @@ KLCommandRegistry::KLCommandRegistry()
   : CommandRegistry()
 {
   COMMAND_KL = "KL";
-
-  try 
-  {
-    m_klCmdRegistry = RTVal::Construct(
-      FabricApplicationStates::GetAppStates()->getContext(), 
-      "CommandRegistry", 
-      0, 0);
-
-    m_klCmdRegistry = m_klCmdRegistry.callMethod(
-      "CommandRegistry", 
-      "getCommandRegistry", 
-      0, 0);
-
-    CommandFactory<SetPathValueCommand>::Register(
-      "setPathValue");
-  }
-
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "KLCommandManager_Python::KLCommandRegistry",
-      "",
-      e.getDesc_cstr());
-  }
+  m_klCmdRegistry = GetKLCommandRegistry();
+  CommandFactory<SetPathValueCommand>::Register(
+    "setPathValue");
 }
 
 KLCommandRegistry::~KLCommandRegistry() 
@@ -66,11 +46,6 @@ BaseCommand* KLCommandRegistry::createCommand(
     : CommandRegistry::createCommand(cmdName);
 }
 
-FabricCore::RTVal KLCommandRegistry::getKLRegistry()
-{
-  return m_klCmdRegistry;
-}
- 
 void KLCommandRegistry::synchronizeKL() 
 {
   try 
@@ -103,14 +78,14 @@ void KLCommandRegistry::registerKLCommand(
 {
   try 
   {
-    // Ne sure the command is registered in KL. 
+    // Not sure the command is registered in KL. 
     RTVal args[2] = {
       RTVal::ConstructString(
-        FabricApplicationStates::GetAppStates()->getContext(), 
+        m_klCmdRegistry.getContext(), 
         cmdName.toUtf8().constData()),
 
       RTVal::Construct(
-        FabricApplicationStates::GetAppStates()->getContext(), 
+        m_klCmdRegistry.getContext(), 
         "Type", 
         0, 0),
     };
@@ -129,7 +104,7 @@ void KLCommandRegistry::registerKLCommand(
       CommandRegistry::commandIsRegistered(
         cmdName,
         RTVal::Construct(
-          FabricApplicationStates::GetAppStates()->getContext(), 
+          m_klCmdRegistry.getContext(), 
           "String", 
           1, 
           &args[1]).getStringCString(),
@@ -154,11 +129,11 @@ BaseCommand* KLCommandRegistry::createKLCommand(
   {
     RTVal args[2] = {
       RTVal::ConstructString(
-        FabricApplicationStates::GetAppStates()->getContext(), 
+        m_klCmdRegistry.getContext(), 
         cmdName.toUtf8().constData()),
 
       RTVal::ConstructString(
-        FabricApplicationStates::GetAppStates()->getContext(), 
+        m_klCmdRegistry.getContext(), 
         "")
     };
 
@@ -191,8 +166,7 @@ BaseCommand* KLCommandRegistry::createKLCommand(
     FabricException::Throw( 
       "KLCommandRegistry::createKLCommand",
       "",
-      e.getDesc_cstr()
-      );
+      e.getDesc_cstr());
   }
 
   return 0;
@@ -206,7 +180,7 @@ void KLCommandRegistry::commandIsRegistered(
   try
   {
     RTVal nameVal = RTVal::ConstructString(
-      FabricApplicationStates::GetAppStates()->getContext(),
+      m_klCmdRegistry.getContext(),
       cmdName.toUtf8().constData());
 
     m_klCmdRegistry.callMethod(
@@ -221,8 +195,7 @@ void KLCommandRegistry::commandIsRegistered(
     FabricException::Throw( 
       "KLCommandRegistry::commandIsRegistered",
       "",
-      e.getDesc_cstr()
-      );
+      e.getDesc_cstr());
   }
   
   CommandRegistry::commandIsRegistered(

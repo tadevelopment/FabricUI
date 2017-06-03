@@ -551,9 +551,9 @@ class ScriptEditor(QtGui.QWidget):
         GetCmdManager().synchronizeKL();
 
 
-    def eval(self, code):
+    def eval(self, code, replace = False):
         if self.echoCommandsAction.isChecked():
-            self.log.appendCommand(code + "\n")
+            self.log.appendCommand(code + "\n", replace)
         oldEchoStackIndexChanges = self._echoStackIndexChanges
         self._echoStackIndexChanges = False
         # old_stdout = sys.stdout
@@ -563,7 +563,7 @@ class ScriptEditor(QtGui.QWidget):
         try:
             result = eval(code, self.eval_globals)
             if self.echoCommandsAction.isChecked() and result is not None:
-                self.log.appendCommand("Result: %s\n" % str(result))
+                self.log.appendCommand("Result: %s\n" % str(result), replace)
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             sys.stderr.writelines(
@@ -575,9 +575,9 @@ class ScriptEditor(QtGui.QWidget):
         self._echoStackIndexChanges = oldEchoStackIndexChanges
         return result
 
-    def exec_(self, code):
+    def exec_(self, code, replace = False):
         if self.echoCommandsAction.isChecked():
-            self.log.appendCommand(code + "\n")
+            self.log.appendCommand(code + "\n", replace)
         oldEchoStackIndexChanges = self._echoStackIndexChanges
         self._echoStackIndexChanges = False
         # old_stdout = sys.stdout
@@ -595,9 +595,9 @@ class ScriptEditor(QtGui.QWidget):
             # sys.stdout = old_stdout
         self._echoStackIndexChanges = oldEchoStackIndexChanges
 
-    def logText(self, text):
+    def logCommand(self, text, replace = False):
         if self.echoCommandsAction.isChecked():
-            self.log.appendCommand(text + "\n")
+            self.log.appendCommand(text + "\n", replace)
             
 class BaseScriptEditorAction(Actions.BaseAction):
  

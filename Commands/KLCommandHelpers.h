@@ -15,9 +15,28 @@ namespace Commands {
 	Helpers for KLCommand and KLScriptableCommands.
 */
 
+/// Gets the KL command manager singleton.
+FabricCore::RTVal GetKLCommandManager();
+
+/// Gets the KL command registry singleton.
+FabricCore::RTVal GetKLCommandRegistry();
+
 /// Gets the name of a KL commands.
 /// Throws an exception if an error occurs.
 QString GetKLCommandName(
+  FabricCore::RTVal klCmd
+  );
+
+/// Sets the interaction ID of a KL commands.
+/// Throws an exception if an error occurs.
+void SetKLCommandInteractionID(
+  FabricCore::RTVal klCmd,
+  int interactionID
+  );
+
+/// Gets the interaction ID of a KL commands.
+/// Throws an exception if an error occurs.
+int GetKLCommandInteractionID(
   FabricCore::RTVal klCmd
   );
 
@@ -64,6 +83,13 @@ QString GetKLCommandHelp(
 /// Throws an exception if an error occurs.
 QString GetKLCommandHistoryDesc(
   FabricCore::RTVal klCmd
+  );
+
+/// Merges a KL command with another.
+/// Throws an exception if an error occurs.
+void MergeKLCommand(
+  FabricCore::RTVal klCmd,
+  FabricCore::RTVal otherKLCmd
   );
 
 } // namespace Commands

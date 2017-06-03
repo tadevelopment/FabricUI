@@ -31,14 +31,20 @@ QString KLScriptableCommand::getName()
   return GetKLCommandName(m_klCmd);
 }
 
+void KLScriptableCommand::setInteractionID(
+  int interactionID)
+{
+  SetKLCommandInteractionID(m_klCmd, interactionID);
+}
+
+int KLScriptableCommand::getInteractionID()
+{
+  return GetKLCommandInteractionID(m_klCmd);
+}
+
 bool KLScriptableCommand::canUndo() 
 {
   return CanKLCommandUndo(m_klCmd);
-}
-
-bool KLScriptableCommand::addToUndoStack() 
-{
-  return AddKLCommandToUndoStack(m_klCmd);
 }
 
 bool KLScriptableCommand::canLog() 
@@ -317,6 +323,13 @@ QString KLScriptableCommand::getArgsDescription()
   }
 
   return "";
+}
+
+void KLScriptableCommand::merge(
+  BaseCommand *cmd) 
+{
+  KLScriptableCommand* scriptCmd = qobject_cast<KLScriptableCommand*>(cmd);
+  MergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
 }
 
 // BaseRTValScriptableCommand

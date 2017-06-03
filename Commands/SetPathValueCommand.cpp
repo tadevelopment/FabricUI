@@ -1,6 +1,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include "CommandArgFlags.h"
+#include <iostream>
+#include "CommandArgHelpers.h"
 #include "CommandArgHelpers.h"
 #include "SetPathValueCommand.h"
 #include <FabricUI/Util/RTValUtil.h>
@@ -69,7 +70,8 @@ bool SetPathValueCommand::canUndo()
 {
   try 
   {    
-    return getRTValArgValue("isUndoable").getBoolean();
+    return getRTValArgValue("isUndoable").getBoolean() ||
+      getInteractionID() > -1;
   }
 
   catch(FabricException &e) 
@@ -87,13 +89,10 @@ bool SetPathValueCommand::doIt()
 {
   try
   {
-    QString dataType = PathValueResolverRegistry::GetRegistry()->getType(
-      getRTValArg("target"));
-
-    if(canUndo() && getRTValArgType("previousValue") != dataType)
+    if(canUndo() && getRTValArgType("previousValue") != getRTValArgType("target"))
       setRTValArgValue("previousValue", getRTValArgValue("target").clone());
   
-    setRTValArgValue("target", getRTValArgValue("newValue", dataType).clone());
+    setRTValArgValue("target", getRTValArgValue("newValue", getRTValArgType("target")).clone());
     
     return true;
   }
@@ -154,4 +153,11 @@ QString SetPathValueCommand::getHistoryDesc()
   return CommandArgHelpers::CreateHistoryDescFromArgs(
     argsDesc,
     this);
+}
+
+void SetPathValueCommand::merge(
+  BaseCommand *cmd) 
+{
+  SetPathValueCommand *pathValueCmd = qobject_cast<SetPathValueCommand*>(cmd);
+  setRTValArgValue("newValue", pathValueCmd->getRTValArgValue("newValue").clone());
 }

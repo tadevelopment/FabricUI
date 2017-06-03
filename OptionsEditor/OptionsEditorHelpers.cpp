@@ -208,14 +208,12 @@ RTVal GetKLOptionsTargetRegistry()
     RTVal appOptionsTargetRegistry = RTVal::Construct(
       Application::FabricApplicationStates::GetAppStates()->getContext(),
       "AppOptionsTargetRegistry",
-      0, 
-      0);
+      0, 0);
 
     optionsTargetRegistry = appOptionsTargetRegistry.callMethod(
       "OptionsTargetRegistry",
       "getOptionsTargetRegistry",
-      0,
-      0);
+      0, 0);
   }
 
   catch(Exception &e)

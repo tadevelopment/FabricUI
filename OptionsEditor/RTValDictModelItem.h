@@ -66,6 +66,7 @@ class RTValDictModelItem : public BaseRTValModelItem
     std::vector<std::string> m_keys;
     /// Dictionary [key, value]
     std::map<std::string, BaseRTValModelItem*> m_children;
+    FabricCore::RTVal m_options;
 };
 
 } // namespace OptionsEditor 

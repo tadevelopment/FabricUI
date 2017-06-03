@@ -403,12 +403,9 @@ void BaseRTValScriptableCommand::setRTValArg(
 
   try
   {
-    QString type = RTValUtil::getType(
+    m_rtvalArgSpecs[key].type = RTValUtil::getType(
       RTValUtil::toRTVal(pathValue).maybeGetMember("value")
       );
-
-    if(!type.isEmpty() && !isArgTypeKnown(key))
-      m_rtvalArgSpecs[key].type = type;
 
     QPair<FabricCore::RTVal, QString> pair;
     pair.first = pathValue;

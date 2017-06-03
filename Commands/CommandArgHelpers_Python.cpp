@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandArgFlags.h"
+#include "CommandArgHelpers.h"
 #include "BaseScriptableCommand.h"
 #include "CommandArgHelpers_Python.h"
 #include "BaseRTValScriptableCommand.h"

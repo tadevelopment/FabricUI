@@ -33,10 +33,7 @@ class KLCommandRegistry : public CommandRegistry
     virtual BaseCommand* createCommand(
       const QString &cmdName
       );
-
-    /// Gets the KL registry.
-    FabricCore::RTVal getKLRegistry();
-  
+ 
   public slots:
     /// Synchronizes with the KL registry.
     /// Allows to create KL command from C++/Python.

@@ -58,14 +58,14 @@ class CommandManagerQtCallback(QtCore.QObject):
         GetCmdManager().cleared.connect(self.__onCleared)
         GetCmdManager()._commandDone_Python.connect(self.__onCommandDone)
 
-    def __onCommandDone(self, cmd):
+    def __onCommandDone(self, cmd, addToStack):
         """ \internal, when a command's been pushed to the manager. 
         """ 
 
         try:
             # Create a new CommandQtWrapper and  
             # pushs it to the qt undo stack.
-            if cmd.canUndo():
+            if addToStack:
                 oldEchoStackIndexChanges = self.scriptEditor._echoStackIndexChanges
                 self.scriptEditor._echoStackIndexChanges = False
                 self.qUndoStack.push( self.CommandQtWrapper( cmd.getHistoryDesc() ) )
@@ -73,9 +73,9 @@ class CommandManagerQtCallback(QtCore.QObject):
 
             #Log the commands.
             if cmd.canLog():
-                self.scriptEditor.logText( 
-                    'Commands.' + CommandArgHelpers.ParseCmdArgs(
-                        cmd))
+                self.scriptEditor.logCommand( 
+                    'Commands.' + CommandArgHelpers.ParseCmdArgs(cmd),
+                    not addToStack)
             
         except Exception as e:    
                 print str(e)

@@ -30,22 +30,16 @@ class KLCommandManager : public RTValCommandManager
     KLCommandManager();
 
     virtual ~KLCommandManager();
-    
-    /// Implementation of CommandManager
-    virtual void undoCommand();
-
-    /// Implementation of CommandManager
-    virtual void redoCommand();
-
+  
     /// Implementation of CommandManager
     virtual void clear();
-    
-    /// Gets the KL comand manager.
-    FabricCore::RTVal getKLCommandManager();
-
+   
     /// Implementation of CommandManager
     virtual QString getContent();
 
+    /// Implementation of CommandManager
+    virtual int getNewInteractionID();
+    
   public slots:
     /// Synchronizes with the KL manager.
     /// To call after KL commands' been created in KL.
@@ -56,29 +50,16 @@ class KLCommandManager : public RTValCommandManager
     virtual void clearRedoStack();
    
   private:
-    /// Implementation of CommandManager
-    virtual void pushTopCommand(
-      BaseCommand *cmd,
-      bool succeeded = false
-      );
-
-    /// \internal
-    void createCommandFromKLAppCommand(
-      unsigned &index,
-      unsigned &klCmdCount,
+    /// Creates a C++ commands 
+    void createAppCommand(
       FabricCore::RTVal appCmd
       );
 
-    /// \internal
-    void createKLCommandWrappers(
-      unsigned &index,
-      unsigned &klCmdCount,
+    /// Creates a C++ commands 
+    void doKLCommand(
       FabricCore::RTVal klCmd
       );
 
-    /// Number of KLCommand (KLScriptableCommand)
-    /// added, use to compare wit the KL manager.
-    unsigned m_klCmdUndoStackCount;
     /// KL command manager.
     FabricCore::RTVal m_klCmdManager;
 };

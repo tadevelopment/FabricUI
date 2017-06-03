@@ -22,10 +22,6 @@ class DFGCommandRegistration
   */
 
   public:
-    DFGCommandRegistration()
-    {
-    }
-
     static void RegisterCommands(
       DFG::DFGController *controller)
     {

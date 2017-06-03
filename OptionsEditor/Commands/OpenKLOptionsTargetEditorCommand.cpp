@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <FabricCore.h>
 #include "../OptionsEditorHelpers.h"
 #include "OpenKLOptionsTargetEditorCommand.h"
 #include <FabricUI/Commands/KLCommandManager.h>

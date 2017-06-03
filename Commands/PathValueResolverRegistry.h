@@ -37,7 +37,7 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
     BasePathValueResolver* getOrCreateResolver(
       const QString name
       );
-
+      
     bool knownPath(
       FabricCore::RTVal pathValue
       );
@@ -87,6 +87,7 @@ class PathValueResolverFactory : public Util::TemplateFactory<T>
         name,
         userData);
 
+      // Creates the resolver when it's registered.
       PathValueResolverRegistry::GetRegistry()->getOrCreateResolver(
         name);
     }

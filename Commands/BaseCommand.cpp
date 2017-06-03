@@ -8,7 +8,8 @@ using namespace FabricUI;
 using namespace Commands;
 
 BaseCommand::BaseCommand() 
- : QObject()
+  : QObject()
+  , m_interactionID(-1)
 {
 }
 
@@ -26,6 +27,17 @@ void BaseCommand::registrationCallback(
 QString BaseCommand::getName() 
 {
   return m_name;
+}
+
+void BaseCommand::setInteractionID(
+  int interactionID)
+{
+  m_interactionID = interactionID;
+}
+
+int BaseCommand::getInteractionID()
+{
+  return m_interactionID;
 }
 
 bool BaseCommand::canUndo() 
@@ -61,4 +73,9 @@ QString BaseCommand::getHelp()
 QString BaseCommand::getHistoryDesc() 
 {
   return getName();
+}
+
+void BaseCommand::merge(
+  BaseCommand *cmd) 
+{
 }

@@ -133,6 +133,14 @@ class BaseCommand : public QObject
     /// Gets the command name.
     virtual QString getName();
 
+    /// Sets the interaction ID.
+    virtual void setInteractionID(
+      int interactionID
+      );
+
+    /// Gets the interaction ID.
+    virtual int getInteractionID();
+
     /// Checks if the command is undoable.
     virtual bool canUndo();
 
@@ -158,9 +166,16 @@ class BaseCommand : public QObject
     /// to display in the history stack (if one).
     virtual QString getHistoryDesc();
 
+    /// Merges this command with `cmd`.
+    virtual void merge(
+      BaseCommand *cmd
+      );
+
   protected:
     /// Name of the command.
     QString m_name;
+    /// Interaction ID, for merging.
+    int m_interactionID;
 };
 
 } // namespace Commands

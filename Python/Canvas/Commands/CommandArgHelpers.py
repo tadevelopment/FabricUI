@@ -147,26 +147,9 @@ class CommandArgHelpers:
     @staticmethod
     def __EncodeJSONChars(string):
         """ \internal """
-
-        result = ""
-
-        for ch in string:
-            if ch == "\"":
-                result += "'"
-
-            elif ch == "\\":
-                result += "\\\\"
-
-            elif ch == "\r" or ch == "\n"  or ch == "\t":
-                result += ""
-                
-            else:
-                result += ch
-
-        result = result.replace(" ", "")
-
-        return result
-
+        result = string.replace("\"", "'").replace("\\", "\\\\").replace(" ", "")
+        return result.replace("\r", "").replace("\n", "").replace("\t", "")
+ 
     @staticmethod
     def __EncodeJSON(string):
         """ \internal """
@@ -192,8 +175,7 @@ class CommandArgHelpers:
         desc = cmd.getName()
 
         if CppCommands.CommandArgHelpers_Python._IsScriptableCommand_Python(cmd):
-            client = GetAppStates().getClient()
-
+ 
             try:
                 keys = CppCommands.CommandArgHelpers_Python._GetCommandArgKeys_Python(cmd)
      
@@ -216,14 +198,14 @@ class CommandArgHelpers:
                         # RTValScriptableCommand, arguments are RTVal.
                         if CppCommands.CommandArgHelpers_Python._IsRTValScriptableCommand_Python(cmd):
 
-                            pathValue = client.RT.types.PathValue(CppCommands.CommandArgHelpers_Python._GetRTValCommandArg_Python(key, cmd))
+                            pathValue = CppCommands.CommandArgHelpers_Python._GetRTValCommandArg_Python(key, cmd)
                             
-                            path = client.RT.types.String(pathValue.path)
-                            if len(path.getSimpleType()) > 0:                       
-                                desc += "\"" + "<" + path.getSimpleType() + ">" + "\"" 
+                            path = pathValue.path.getSimpleType()
+                            if path:                       
+                                desc += "\"" + "<" + path + ">" + "\"" 
                             
                             else:
-                                rtVal = pathValue.value
+                                rtVal = Util.RTValUtil.toRTVal(pathValue.value)
                                 pythonVal = rtVal.getSimpleType()
                                
                                 # Can cast the RTVal in simple JSON type

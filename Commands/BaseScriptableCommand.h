@@ -7,7 +7,7 @@
 
 #include <QMap>
 #include "BaseCommand.h"
-#include "CommandArgFlags.h"
+#include "CommandArgHelpers.h"
 
 namespace FabricUI {
 namespace Commands {

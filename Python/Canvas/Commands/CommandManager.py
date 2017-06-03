@@ -64,7 +64,7 @@ class CommandManager(CppCommands.KLCommandManager_Python):
         cmdRegistry = CreateCmdRegistry()
         cmdRegistry.commandRegistered.connect(self._onCommandRegistered)
     
-    def createCmd(self, cmdName, args = {}, doCmd = True):
+    def createCmd(self, cmdName, args = {}, doCmd = True, interactionID = -1):
         """ Creates and executes a command (if doCmd == true).
             If executed, the command is added to the manager stack.
             Raises an exception if an error occurs.
@@ -77,7 +77,9 @@ class CommandManager(CppCommands.KLCommandManager_Python):
                     self._checkRTValCommandArgs_Python(cmd, args)
                 else:
                     self._checkCommandArgs_Python(cmd, args)
-               
+            
+                cmd.setInteractionID(interactionID)
+
             if doCmd:
                 self.doCmd(cmd)
             return cmd
@@ -121,12 +123,14 @@ class CommandManager(CppCommands.KLCommandManager_Python):
         self._synchronizeKL_Python()
 
     ### \internal, don't call these methods.
-    def _createCommand_Python(self, cmdName, args = {}, doCmd = True):
+    def _createCommand_Python(self, cmdName, args, doCmd, interactionID):
         """ \internal, impl. of Commands.KLCommandManager_Python. """
         try:
             cmd = GetCmdRegistry().createCmd(cmdName)
             if len(args) > 0:
                 self._checkCommandArgs_Python(cmd, args)
+            cmd.setInteractionID(interactionID)
+
             if doCmd:
                 self._doCommand_Python(cmd)
             return cmd
@@ -140,12 +144,13 @@ class CommandManager(CppCommands.KLCommandManager_Python):
             raise Exception(error)
         return error
 
-    def _createRTValCommand_Python(self, cmdName, args = {}, doCmd = True):
+    def _createRTValCommand_Python(self, cmdName, args, doCmd, interactionID):
         """ \internal, impl. of Commands.KLCommandManager_Python. """
         try:
             cmd = GetCmdRegistry().createCmd(cmdName)
             if len(args) > 0:
                 self._checkRTValCommandArgs_Python(cmd, args)
+            cmd.setInteractionID(interactionID)
             if doCmd:
                 self._doCommand_Python(cmd)
             return cmd

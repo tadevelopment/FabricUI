@@ -28,13 +28,17 @@ RTValCommandManager::~RTValCommandManager()
 BaseCommand* RTValCommandManager::createCommand(
   const QString &cmdName, 
   const QMap<QString, RTVal> &args, 
-  bool doCmd)
+  bool doCmd,
+  int interactionID)
 {
   try 
   {  
     BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
       cmdName);
     
+    cmd->setInteractionID(
+      interactionID);
+
     if(args.size() > 0) 
       checkCommandArgs(cmd, args);
 
@@ -54,24 +58,6 @@ BaseCommand* RTValCommandManager::createCommand(
   }
  
   return 0;
-}
-
-void RTValCommandManager::doCommand(
-  BaseCommand *cmd) 
-{
-  try
-  {
-    CommandManager::doCommand(
-      cmd);
-  }
-   
-  catch(Exception &e) 
-  {
-    cleanupUnfinishedCommandsAndThrow(
-      cmd,
-      e.getDesc_cstr()
-      );
-  }
 }
 
 void RTValCommandManager::checkCommandArgs(
@@ -103,7 +89,7 @@ void RTValCommandManager::checkCommandArgs(
   scriptCmd->validateSetArgs();
 }
 
-void RTValCommandManager::preProcessCommandArgs(
+void RTValCommandManager::preDoCommand(
   BaseCommand* cmd)
 {
   BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
@@ -130,7 +116,7 @@ void RTValCommandManager::preProcessCommandArgs(
   catch(Exception &e) 
   {
     FabricException::Throw(
-      "RTValCommandManager::preProcessCommandArgs",
+      "RTValCommandManager::preDoCommand",
       "",
       e.getDesc_cstr()
       );
@@ -139,13 +125,13 @@ void RTValCommandManager::preProcessCommandArgs(
   catch(FabricException &e) 
   {
     FabricException::Throw(
-      "RTValCommandManager::preProcessCommandArgs",
+      "RTValCommandManager::preDoCommand",
       "",
       e.what());
   }
 }
 
-void RTValCommandManager::postProcessCommandArgs(
+void RTValCommandManager::postDoCommand(
   BaseCommand* cmd)
 {
   BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
@@ -170,7 +156,7 @@ void RTValCommandManager::postProcessCommandArgs(
   catch(Exception &e) 
   {
     FabricException::Throw(
-      "RTValCommandManager::postProcessCommandArgs",
+      "RTValCommandManager::postDoCommand",
       "",
       e.getDesc_cstr()
       );
@@ -179,7 +165,7 @@ void RTValCommandManager::postProcessCommandArgs(
   catch(FabricException &e) 
   {
     FabricException::Throw(
-      "RTValCommandManager::postProcessCommandArgs",
+      "RTValCommandManager::postDoCommand",
       "",
       e.what());
   }

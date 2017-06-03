@@ -30,30 +30,27 @@ class RTValCommandManager : public CommandManager
     virtual BaseCommand* createCommand(
       const QString &cmdName, 
       const QMap<QString, FabricCore::RTVal> &args, 
-      bool doCmd = true
+      bool doCmd = true,
+      int interactionID = -1
       );
 
-    /// Implementation of CommandManager.
-    virtual void doCommand(
-      BaseCommand* cmd
-      );
-    
   protected:
-    /// Implementation of CommandManager.
-    virtual void preProcessCommandArgs(
-      BaseCommand* cmd
-      );
-
-    /// Implementation of CommandManager.
-    virtual void postProcessCommandArgs(
-      BaseCommand* cmd
-      );
-
     /// Checks the command arguments before doing it.
     /// Throws an exception if an error occurs.
     virtual void checkCommandArgs(
       BaseCommand *cmd,
       const QMap<QString, FabricCore::RTVal> &args
+      );
+
+  private:
+    /// Implementation of CommandManager.
+    virtual void preDoCommand(
+      BaseCommand* cmd
+      );
+
+    /// Implementation of CommandManager.
+    virtual void postDoCommand(
+      BaseCommand* cmd
       );
 };
  

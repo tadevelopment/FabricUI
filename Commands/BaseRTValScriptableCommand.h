@@ -7,7 +7,7 @@
 
 #include <QPair>
 #include <FabricCore.h>
-#include "CommandArgFlags.h"
+#include "CommandArgHelpers.h"
 #include "BaseScriptableCommand.h"
  
 namespace FabricUI {

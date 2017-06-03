@@ -32,9 +32,15 @@ bool KLCommand::canUndo()
   return CanKLCommandUndo(m_klCmd);
 }
 
-bool KLCommand::addToUndoStack() 
+void KLCommand::setInteractionID(
+  int interactionID)
 {
-  return AddKLCommandToUndoStack(m_klCmd);
+  SetKLCommandInteractionID(m_klCmd, interactionID);
+}
+
+int KLCommand::getInteractionID()
+{
+  return GetKLCommandInteractionID(m_klCmd);
 }
 
 bool KLCommand::canLog() 
@@ -85,6 +91,12 @@ QString KLCommand::getHelp()
 
 QString KLCommand::getHistoryDesc() 
 {
-  return GetKLCommandHistoryDesc(
-    m_klCmd);
+  return GetKLCommandHistoryDesc(m_klCmd);
+}
+
+void KLCommand::merge(
+  BaseCommand *cmd) 
+{
+  KLCommand* scriptCmd = qobject_cast<KLCommand*>(cmd);
+  MergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
 }

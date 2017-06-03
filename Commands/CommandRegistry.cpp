@@ -3,7 +3,6 @@
 //
 
 #include "CommandRegistry.h"
-#include <FabricUI/Util/TypeInfo.h>
 #include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
@@ -63,7 +62,6 @@ void CommandRegistry::registerFactory(
     commandIsRegistered(
       name,
       // Get the name of the cmd class.
-      // --> FactoryClassName<CmdClassName>
       factory->getType(),
       COMMAND_CPP);
   }

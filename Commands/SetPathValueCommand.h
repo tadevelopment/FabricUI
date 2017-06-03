@@ -32,8 +32,13 @@ class SetPathValueCommand : public BaseRTValScriptableCommand
     /// Implementation of BaseCommand.
     virtual QString getHistoryDesc();
 
-     /// Implementation of BaseCommand.
+    /// Implementation of BaseCommand.
     virtual QString getHelp();
+
+    /// Implementation of BaseCommand.
+    virtual void merge(
+      BaseCommand *cmd
+      );
 };
 
 } // namespace Commands

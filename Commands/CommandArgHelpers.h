@@ -5,14 +5,36 @@
 #ifndef __UI_COMMAND_ARG_HELPERS__
 #define __UI_COMMAND_ARG_HELPERS__
 
-#include "BaseScriptableCommand.h"
-#include "BaseRTValScriptableCommand.h"
+#include <QMap>
+#include <QString>
 
 namespace FabricUI {
 namespace Commands {
 
-class CommandArgHelpers {
-  
+class CommandArgFlags
+{
+  /**
+    CommandArgFlags  
+ 
+  */
+  public:
+    /// Optional argument flag.
+    static int OPTIONAL_ARG;
+    /// Loggale argument flag.
+    static int LOGGABLE_ARG;
+    /// Input argument flag.
+    static int IN_ARG;
+    /// Output argument flag.
+    static int OUT_ARG;
+    /// IO argument flag.
+    static int IO_ARG;
+};
+
+class BaseScriptableCommand;
+class BaseRTValScriptableCommand;
+
+class CommandArgHelpers 
+{  
   public:
     /// Helper to create the command's desc
     /// from a subsets of arguments.

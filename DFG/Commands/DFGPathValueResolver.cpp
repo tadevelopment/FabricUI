@@ -33,32 +33,25 @@ bool DFGPathValueResolver::knownPath(
 
   try 
   {
-    pathValue = RTValUtil::toRTVal(
-      pathValue);
-
-    QString path = pathValue.maybeGetMember(
+    QString path = RTValUtil::toRTVal(pathValue).maybeGetMember(
       "path").getStringCString();
 
     int index = path.lastIndexOf(".");
-    
-    if(index == -1)
-      return false;
+    if(index != -1)
+    {
+      DFGExec exec = m_controller->getBinding().getExec().getSubExec(
+        path.midRef(0, index).toUtf8().constData()
+        );
 
-    DFGExec exec = m_controller->getBinding().getExec().getSubExec(
-      path.midRef(0, index).toUtf8().constData()
-      );
-
-    hasPort = exec.haveExecPort(
-      path.midRef(index+1).toUtf8().constData()
-      );
+      hasPort = exec.haveExecPort(
+        path.midRef(index+1).toUtf8().constData()
+        );
+    }
   }
 
   catch(Exception &e)
   {
-    FabricException::Throw(
-      "DFGPathValueResolver::knownPath",
-      "",
-      e.getDesc_cstr());
+    hasPort = false;
   }
 
   return hasPort;
@@ -71,10 +64,7 @@ QString DFGPathValueResolver::getType(
 
   try 
   {
-    pathValue = RTValUtil::toRTVal(
-      pathValue);
-
-    QString path = pathValue.maybeGetMember(
+    QString path = RTValUtil::toRTVal(pathValue).maybeGetMember(
       "path").getStringCString();
     
     int index = path.lastIndexOf(".");
@@ -104,8 +94,7 @@ void DFGPathValueResolver::getValue(
 {
   try 
   {
-    pathValue = RTValUtil::toRTVal(
-      pathValue);
+    pathValue = RTValUtil::toRTVal(pathValue);
 
     QString path = pathValue.maybeGetMember(
       "path").getStringCString();
@@ -115,9 +104,8 @@ void DFGPathValueResolver::getValue(
       getType(pathValue).toUtf8().constData()
       );
 
-    pathValue.setMember(
-      "value", 
-      value);
+    if(value.isValid())
+      pathValue.setMember("value", value);
   }
 
   catch(Exception &e)
@@ -135,17 +123,13 @@ void DFGPathValueResolver::setValue(
 {
   try
   {
-    pathValue = RTValUtil::toRTVal(
-      pathValue);
+    pathValue = RTValUtil::toRTVal(pathValue);
 
     QString path = pathValue.maybeGetMember(
       "path").getStringCString();
 
-    RTVal value = pathValue.maybeGetMember(
-      "value");
-
-    value = RTValUtil::toRTVal(
-      value);
+    RTVal value = RTValUtil::toRTVal(
+      pathValue.maybeGetMember("value"));
 
     m_controller->getBinding().getExec().setPortDefaultValue( 
       path.toUtf8().constData(), 

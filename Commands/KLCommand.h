@@ -79,11 +79,15 @@ class KLCommand : public BaseCommand
     virtual QString getName();
 
     /// Implementation of BaseCommand.
-    virtual bool canUndo();
+    virtual void setInteractionID(
+      int interactionID
+      );
 
-    /// Checks if the KL command can be 
-    /// added to the KL undo stack.
-    bool addToUndoStack();
+    /// Implementation of BaseCommand.
+    virtual int getInteractionID();
+
+    /// Implementation of BaseCommand.
+    virtual bool canUndo();
 
     /// Implementation of BaseCommand.
     virtual bool canLog();
@@ -103,6 +107,11 @@ class KLCommand : public BaseCommand
     /// Implementation of BaseCommand.
     virtual QString getHistoryDesc();
 
+    /// Implementation of BaseCommand.
+    virtual void merge(
+      BaseCommand *cmd
+      );
+    
   private:
     /// KL BaseCommand
     FabricCore::RTVal m_klCmd;

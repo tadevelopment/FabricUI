@@ -35,15 +35,19 @@ class Factory
     /// Creates the object, returns it as a void pointer.
     /// To override.
     virtual void* create(
-      void* args=0) = 0;
+      void* args = 0
+      ) = 0;
 
-    virtual const char* getType() = 0;
+    /// Gets the type of the object that
+    /// the factory creates.
+    virtual QString getType() = 0;
 
     /// Gets the user data (may be null).
     virtual void* getUserData() = 0;
 };
 
-class BaseFactoryRegistry : public QObject {
+class BaseFactoryRegistry : public QObject 
+{
   /**
     BaseFactoryRegistry is a base class to registers/unregisters factories.
     When a factory is created, it must be registered in a registery.
@@ -101,7 +105,7 @@ class BaseFactoryRegistry : public QObject {
       );
 
   private:
-    /// \internl
+    /// \internal
     void deleteFactory(
       QMapIterator<QString, Factory*> &it
       );
@@ -112,36 +116,34 @@ class BaseFactoryRegistry : public QObject {
 
 // From https://blog.molecular-matters.com/2015/12/11/getting-the-type-of-a-template-argument-as-string-without-rtti/
 #ifdef __GNUG__
-static const unsigned int FRONT_SIZE = sizeof("FabricUI::Util::GetTypeNameHelper<") - 1u;
-static const unsigned int BACK_SIZE = sizeof(">::GetTypeName") - 1u;
+static const unsigned int FRONT = sizeof("FabricUI::Util::GetTypeHelper<") - 1u;
+static const unsigned int BACK = sizeof(">::GetType") - 1u;
  
 template <typename T>
-struct GetTypeNameHelper
+struct GetTypeHelper
 {
-  static const char* GetTypeName(void)
+  static const char* GetType(void)
   {
-    static const size_t size = sizeof(__PRETTY_FUNCTION__) - FRONT_SIZE - BACK_SIZE;
+    static const size_t size = sizeof(__PRETTY_FUNCTION__) - FRONT - BACK;
     static char typeName[size] = {};
-    memcpy(typeName, __PRETTY_FUNCTION__ + FRONT_SIZE, size - 1u);
-
+    memcpy(typeName, __PRETTY_FUNCTION__ + FRONT, size - 1u);
     return typeName;
   }
 };
 
 #else
-static const unsigned int FRONT_SIZE = sizeof("FabricUI::Util::GetTypeNameHelper<") - 1u;
-static const unsigned int BACK_SIZE = sizeof(">::GetTypeName") - 1u;
+static const unsigned int FRONT = sizeof("FabricUI::Util::GetTypeHelper<") - 1u;
+static const unsigned int BACK = sizeof(">::GetType") - 1u;
 
 template <typename T>
-struct GetTypeNameHelper
+struct GetTypeHelper
 {
-  static const char* GetTypeName(void)
+  static const char* GetType(void)
   {
-    static const size_t size = sizeof(__FUNCTION__) - FRONT_SIZE - BACK_SIZE;
-    static char typeName[size] = {};
-    memcpy(typeName, __FUNCTION__ + FRONT_SIZE, size - 1u);
-
-    return typeName;
+    static const size_t size = sizeof(__FUNCTION__) - FRONT - BACK;
+    static char type[size] = {};
+    memcpy(type, __FUNCTION__ + FRONT, size - 1u);
+    return type;
   }
 };
 #endif
@@ -190,10 +192,6 @@ class TemplateFactory : public Factory
     { 
     } 
 
-    virtual const char* getType()
-    {
-      return FabricUI::Util::GetTypeNameHelper<T>::GetTypeName();
-    }
     /// Creates the factory and registers it in a registry.
     /// \param registry BaseFactoryRegistry owning the factory.
     /// \param name Name of the factory, should be unique.
@@ -209,13 +207,18 @@ class TemplateFactory : public Factory
         );
     }
 
-    /// Creates a new object <T>.
     /// Implementation of Factory.
     virtual void* create(
-      void* args=0) 
+      void* args = 0) 
     { 
       return new T();
     } 
+    
+    /// Implementation of Factory.
+    virtual QString getType()
+    {
+      return FabricUI::Util::GetTypeHelper<T>::GetType();
+    }
 
     /// Implementation of Factory.
     virtual void* getUserData() 

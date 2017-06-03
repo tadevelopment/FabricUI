@@ -23,13 +23,15 @@ RTValDictModelItem::RTValDictModelItem(
 {
   try
   {
-    RTVal keys = options.getDictKeys();
+    m_options = options;
+    
+    RTVal keys = m_options.getDictKeys();
     for(unsigned i = 0; i < keys.getArraySize(); i++) 
     {
       RTVal key = keys.getArrayElementRef(
         i); 
 
-      RTVal childrenOptions = options.getDictElement(
+      RTVal childrenOptions = m_options.getDictElement(
         key); 
 
       std::string childName = key.getStringCString();
@@ -86,15 +88,8 @@ void RTValDictModelItem::resetToDefault()
 
 RTVal RTValDictModelItem::getRTValOptions()
 {
-  RTVal options;
-
   try
   {
-    options = RTVal::ConstructDict(
-      FabricApplicationStates::GetAppStates()->getContext(),
-      "String",
-      "RTVal");
-
     std::map<std::string, BaseRTValModelItem*>::iterator it;
     for(it = m_children.begin(); it != m_children.end(); it++) 
     {
@@ -104,7 +99,7 @@ RTVal RTValDictModelItem::getRTValOptions()
 
       BaseRTValModelItem *child = (BaseRTValModelItem *)it->second;
  
-      options.setDictElement(
+      m_options.setDictElement(
         key,
         RTValUtil::toKLRTVal(child->getRTValOptions())
         );
@@ -119,7 +114,7 @@ RTVal RTValDictModelItem::getRTValOptions()
       e.getDesc_cstr());
   }
   
-  return options;
+  return m_options;
 }
 
 void RTValDictModelItem::setRTValOptions(
@@ -127,19 +122,19 @@ void RTValDictModelItem::setRTValOptions(
 {
   try
   {
-    options = RTValUtil::toRTVal(options);
+    m_options = RTValUtil::toRTVal(options);
 
-    if(!options.isDict())
+    if(!m_options.isDict())
       throw("RTValDictModelItem::setRTValOptions, options is not a dictionay");
 
     std::map<std::string, BaseRTValModelItem*>::iterator it;
     for(it=m_children.begin(); it!=m_children.end(); it++) 
     {
       RTVal key = RTVal::ConstructString(
-        options.getContext(),
+        m_options.getContext(),
         it->first.data());
 
-      RTVal childrenOptions = options.getDictElement(
+      RTVal childrenOptions = m_options.getDictElement(
         key); 
 
       BaseRTValModelItem *child = (BaseRTValModelItem *)it->second;
