@@ -20,6 +20,7 @@ from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
 from FabricEngine.Canvas.Application.FabricApplicationStates import *
+from FabricEngine.Canvas.Dialogs.DialogCommandRegistration import *
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -693,7 +694,8 @@ class CanvasWindow(QtGui.QMainWindow):
         try:
             FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
             FabricUI.DFG.DFGCommandRegistration.RegisterCommands(self.dfgWidget.getDFGController())
-
+            DialogCommandRegistration.RegisterCommands()
+            
             cmd = GetCmdManager().createCmd('openKLOptionsTargetEditor', { "editorID":"Rendering Options", "editorTitle":"Rendering Options" } )
             self.viewport.initComplete.connect(cmd.getOptionsEditor().resetModel)
             cmd.getOptionsEditor().updated.connect(self.viewport.redraw)

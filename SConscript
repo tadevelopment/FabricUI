@@ -525,7 +525,8 @@ if uiLibPrefix == 'ui':
       'Canvas',
       'Canvas/Application',
       'Canvas/HotkeyEditor',
-      'Canvas/Commands'
+      'Canvas/Commands',
+      'Canvas/Dialogs'
     ]
 
     for dir_ in pythonDir:
