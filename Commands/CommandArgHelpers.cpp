@@ -27,49 +27,42 @@ QString CommandArgHelpers::CreateHistoryDescFromArgs(
   const QMap<QString, QString> &argsDesc,
   BaseScriptableCommand *cmd)
 {
-  QString desc;
+  FABRIC_CATCH_BEGIN();
 
   BaseRTValScriptableCommand *rtValScriptCmd = qobject_cast<BaseRTValScriptableCommand*>(
     cmd);
 
-  try
-  {
-    desc = cmd->getName();
+  QString desc = cmd->getName();
 
-    if(argsDesc.size() > 0)
+  if(argsDesc.size() > 0)
+  {
+    int count = 0;
+    desc +=  "(";
+
+    QMapIterator<QString, QString> it(argsDesc);
+    while(it.hasNext()) 
     {
-      int count = 0;
-      desc +=  "(";
+      it.next();
 
-      QMapIterator<QString, QString> it(argsDesc);
-      while(it.hasNext()) 
-      {
-        it.next();
+      QString key = it.key();
+      QString argDesc = (rtValScriptCmd && !rtValScriptCmd->getRTValArgPath(key).isEmpty())
+        ? argDesc = "<" + it.value() + ">"
+        : it.value();
 
-        QString key = it.key();
-        QString argDesc = (rtValScriptCmd && !rtValScriptCmd->getRTValArgPath(key).isEmpty())
-          ? argDesc = "<" + it.value() + ">"
-          : it.value();
-
-        desc += key + "=\"" + argDesc + "\"";
-        if(count < argsDesc.size()-1)
-          desc += ", ";
-        count++;
-      }
-
-      desc +=  ")";
+      desc += key + "=\"" + argDesc + "\"";
+      if(count < argsDesc.size()-1)
+        desc += ", ";
+      count++;
     }
-  }
- 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "CommandArgHelpers::CreateHistoryDescFromArgs",
-      "",
-      e.what());
+
+    desc +=  ")";
   }
 
   return desc;
+
+  FABRIC_CATCH_END("CommandArgHelpers::CreateHistoryDescFromArgs");
+
+  return "";
 }
 
 QString CommandArgHelpers::CreateHelpFromArgs(
@@ -77,53 +70,46 @@ QString CommandArgHelpers::CreateHelpFromArgs(
   const QMap<QString, QString> &argsHelp,
   BaseScriptableCommand *cmd)
 {
-  QString help;
+  FABRIC_CATCH_BEGIN();
 
-  try
+  QString help = commandHelp + "\n";
+
+  if(argsHelp.size() > 0)
+    help +=  "Arguments:\n";
+
+  QMapIterator<QString, QString> it(argsHelp);
+  while(it.hasNext()) 
   {
-    help = commandHelp + "\n";
+    it.next();
+    QString key = it.key();
+    QString argHelp = it.value();
 
-    if(argsHelp.size() > 0)
-      help +=  "Arguments:\n";
-
-    QMapIterator<QString, QString> it(argsHelp);
-    while(it.hasNext()) 
+    QString specs; 
+    if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG) || cmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
     {
-      it.next();
-      QString key = it.key();
-      QString argHelp = it.value();
+      specs += "["; 
 
-      QString specs; 
-      if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG) || cmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
+      if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
+        specs += "optional"; 
+
+      if(cmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
       {
-        specs += "["; 
-
         if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
-          specs += "optional"; 
-
-        if(cmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
-        {
-          if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
-            specs += ", loggable"; 
-          specs += "loggable"; 
-        }
-
-        specs += "]"; 
+          specs += ", loggable"; 
+        specs += "loggable"; 
       }
-       
-      help +=  "- " + key + specs + ": " + argHelp + "\n";
+
+      specs += "]"; 
     }
-  }
- 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "CommandArgHelpers::CreateHelpFromArgs",
-      "",
-      e.what());
+     
+    help +=  "- " + key + specs + ": " + argHelp + "\n";
   }
 
   return help;
+
+  FABRIC_CATCH_END("CommandArgHelpers::CreateHelpFromArgs");
+
+  return "";
 }
 
 QString CommandArgHelpers::CreateHelpFromRTValArgs(
@@ -131,64 +117,57 @@ QString CommandArgHelpers::CreateHelpFromRTValArgs(
   const QMap<QString, QString> &argsHelp,
   BaseRTValScriptableCommand *cmd)
 {
-  QString help;
+  FABRIC_CATCH_BEGIN();
 
-  try
+  QString help = commandHelp + "\n";
+
+  if(argsHelp.size() > 0)
+    help +=  "Arguments:\n";
+
+  QMapIterator<QString, QString> it(argsHelp);
+  while(it.hasNext()) 
   {
-    help = commandHelp + "\n";
+    it.next();
+    QString key = it.key();
 
-    if(argsHelp.size() > 0)
-      help +=  "Arguments:\n";
+    if(!cmd->hasArg(key)) 
+      return "";
 
-    QMapIterator<QString, QString> it(argsHelp);
-    while(it.hasNext()) 
-    {
-      it.next();
-      QString key = it.key();
+    QString argHelp = it.value();
 
-      if(!cmd->hasArg(key)) 
-        return "";
+    QString specs; 
+    specs += " ["; 
 
-      QString argHelp = it.value();
+    if( cmd->isArg(key, CommandArgFlags::IN_ARG) ||
+        cmd->isArg(key, CommandArgFlags::OUT_ARG) ||
+        cmd->isArg(key, CommandArgFlags::IO_ARG) )
+      specs += "PathValue[" + cmd->getRTValArgType(key)+"]"; 
+    else
+      specs += cmd->getRTValArgType(key); 
 
-      QString specs; 
-      specs += " ["; 
+    if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
+      specs += ", optional"; 
 
-      if( cmd->isArg(key, CommandArgFlags::IN_ARG) ||
-          cmd->isArg(key, CommandArgFlags::OUT_ARG) ||
-          cmd->isArg(key, CommandArgFlags::IO_ARG) )
-        specs += "PathValue[" + cmd->getRTValArgType(key)+"]"; 
-      else
-        specs += cmd->getRTValArgType(key); 
+    if(cmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
+      specs += ", loggable"; 
 
-      if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
-        specs += ", optional"; 
+    if(cmd->isArg(key, CommandArgFlags::IN_ARG))
+      specs += ", IN"; 
 
-      if(cmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
-        specs += ", loggable"; 
+    if(cmd->isArg(key, CommandArgFlags::OUT_ARG))
+      specs += ", OUT"; 
 
-      if(cmd->isArg(key, CommandArgFlags::IN_ARG))
-        specs += ", IN"; 
-
-      if(cmd->isArg(key, CommandArgFlags::OUT_ARG))
-        specs += ", OUT"; 
-
-      if(cmd->isArg(key, CommandArgFlags::IO_ARG))
-        specs += ", IO"; 
-      
-      specs += "]"; 
-       
-      help +=  "- " + key + specs + ": " + argHelp + "\n";
-    }
+    if(cmd->isArg(key, CommandArgFlags::IO_ARG))
+      specs += ", IO"; 
+    
+    specs += "]"; 
+     
+    help +=  "- " + key + specs + ": " + argHelp + "\n";
   }
  
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "CommandArgHelpers::CreateHelpFromRTValArgs",
-      "",
-      e.what());
-  }
-
   return help;
+  
+  FABRIC_CATCH_END("CommandArgHelpers::CreateHelpFromRTValArgs");
+
+  return "";
 }

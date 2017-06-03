@@ -14,81 +14,54 @@ namespace Commands {
 
 RTVal GetKLCommandManager() 
 {
-  RTVal klCmdManager;
+  FABRIC_CATCH_BEGIN();
 
-  try 
-  {
-    klCmdManager = RTVal::Create(
-      Application::FabricApplicationStates::GetAppStates()->getContext(), 
-      "AppCommandManager", 
-      0, 0);
+  RTVal klCmdManager = RTVal::Create(
+    Application::FabricApplicationStates::GetAppStates()->getContext(), 
+    "AppCommandManager", 
+    0, 0);
 
-    klCmdManager = klCmdManager.callMethod(
-      "AppCommandManager", 
-      "getCommandManager", 
-      0, 0);
-  } 
+  return klCmdManager.callMethod(
+    "AppCommandManager", 
+    "getCommandManager", 
+    0, 0);
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "KLCommandHelpers::GetKLCommandManager",
-      "",
-      e.getDesc_cstr());
-  }
+  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandManager");
 
-  return klCmdManager;
+  return RTVal();
 }
 
 RTVal GetKLCommandRegistry() 
 {
-  RTVal klCmdRegistry;
+  FABRIC_CATCH_BEGIN();
 
-  try 
-  {
-    klCmdRegistry = RTVal::Construct(
-      Application::FabricApplicationStates::GetAppStates()->getContext(), 
-      "AppCommandRegistry", 
-      0, 0);
+  RTVal klCmdRegistry = RTVal::Construct(
+    Application::FabricApplicationStates::GetAppStates()->getContext(), 
+    "AppCommandRegistry", 
+    0, 0);
 
-    klCmdRegistry = klCmdRegistry.callMethod(
-      "AppCommandRegistry", 
-      "getCommandRegistry", 
-      0, 0);
-  } 
+  return klCmdRegistry.callMethod(
+    "AppCommandRegistry", 
+    "getCommandRegistry", 
+    0, 0);
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "KLCommandHelpers::GetKLCommandRegistry",
-      "",
-      e.getDesc_cstr());
-  }
+  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandRegistry");
 
-  return klCmdRegistry;
+  return RTVal();
 }
 
 QString GetKLCommandName(
   RTVal klCmd) 
 {
-  try 
-  {
-    RTVal strVal = klCmd.callMethod(
-      "String", 
-      "getName", 
-      0, 
-      0);
+  FABRIC_CATCH_BEGIN();
 
-    return strVal.getStringCString();
-  }
-
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "KLCommandHelpers::GetKLCommandName",
-      "",
-      e.getDesc_cstr());
-  }
+  return klCmd.callMethod(
+    "String", 
+    "getName", 
+    0, 
+    0).getStringCString();
+  
+  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandName");
 
   return "";
 }
@@ -97,93 +70,65 @@ void SetKLCommandInteractionID(
   FabricCore::RTVal klCmd,
   int interactionID)
 {
-  try 
-  {
-    RTVal interactionIDVal = RTVal::ConstructSInt32(
-      klCmd.getContext(),
-      interactionID);
+  FABRIC_CATCH_BEGIN();
 
-    klCmd.callMethod(
-      "", 
-      "setInteractionID", 
-      1, 
-      &interactionIDVal);
-  }
+  RTVal interactionIDVal = RTVal::ConstructSInt32(
+    klCmd.getContext(),
+    interactionID);
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "KLCommandHelpers::SetKLCommandInteractionID",
-      "",
-      e.getDesc_cstr());
-  }
+  klCmd.callMethod(
+    "", 
+    "setInteractionID", 
+    1, 
+    &interactionIDVal);
+
+ FABRIC_CATCH_END("KLCommandHelpers::SetKLCommandInteractionID");
 }
 
 int GetKLCommandInteractionID(
   FabricCore::RTVal klCmd)
 {
-  try 
-  {
-    return klCmd.callMethod(
-      "SInt32", 
-      "getInteractionID", 
-      0, 
-      0).getSInt32();
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "KLCommandHelpers::GetKLCommandInteractionID",
-      "",
-      e.getDesc_cstr());
-  }
+  return klCmd.callMethod(
+    "SInt32", 
+    "getInteractionID", 
+    0, 
+    0).getSInt32();
   
+  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandInteractionID");
+
   return -1;
 }
 
 bool CanKLCommandUndo(
   RTVal klCmd) 
 {
-  try 
-  {
-    return klCmd.callMethod(
-      "Boolean", 
-      "canUndo", 
-      0, 
-      0).getBoolean();
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "KLCommandHelpers::CanKLCommandUndo",
-      "",
-      e.getDesc_cstr());
-  }
-  
+  return klCmd.callMethod(
+    "Boolean", 
+    "canUndo", 
+    0, 
+    0).getBoolean();
+
+  FABRIC_CATCH_END("KLCommandHelpers::CanKLCommandUndo");
+
   return false;
 }
 
 bool CanKLCommandLog(
   RTVal klCmd) 
 {
-  try 
-  {
-    return klCmd.callMethod(
-      "Boolean", 
-      "canLog", 
-      0, 
-      0).getBoolean();
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "KLCommandHelpers::CanKLCommandLog",
-      "",
-      e.getDesc_cstr());
-  }
+  return klCmd.callMethod(
+    "Boolean", 
+    "canLog", 
+    0, 
+    0).getBoolean();
+
+  FABRIC_CATCH_END("KLCommandHelpers::CanKLCommandLog");
   
   return false;
 }
@@ -191,141 +136,99 @@ bool CanKLCommandLog(
 bool DoKLCommand( 
   RTVal klCmd) 
 { 
-  QString strError;
+  FABRIC_CATCH_BEGIN();
 
-  try 
-  {
-    RTVal args[2] = { 
-      klCmd, 
-      // error
-      RTVal::ConstructString(klCmd.getContext(), "") 
-    };
+  RTVal args[2] = { 
+    klCmd, 
+    // error
+    RTVal::ConstructString(klCmd.getContext(), "") 
+  };
 
-    GetKLCommandManager().callMethod(
-      "", 
-      "_doCommand", 
-      2, 
-      args);
-    
-    strError = args[1].getStringCString();
-    if(!strError.isEmpty())
-      Application::FabricException::Throw(
-        "KLCommandHelpers::DoKLCommand",
-        strError);
-
-    return true;
-  }
-
-  catch(Exception &e)
-  {
+  GetKLCommandManager().callMethod(
+    "", 
+    "_doCommand", 
+    2, 
+    args);
+  
+  QString strError = args[1].getStringCString();
+  if(!strError.isEmpty())
     Application::FabricException::Throw(
       "KLCommandHelpers::DoKLCommand",
-      strError,
-      e.getDesc_cstr());
-  }
+      strError);
+
+  return true;
+  
+  FABRIC_CATCH_END("KLCommandHelpers::DoKLCommand");
 
   return false;
 }
 
 bool UndoKLCommand() 
 { 
-  QString strError;
+  FABRIC_CATCH_BEGIN();
+ 
+  RTVal valError = RTVal::ConstructString(
+    Application::FabricApplicationStates::GetAppStates()->getContext(), 
+    "");
 
-  try 
-  { 
-    RTVal valError = RTVal::ConstructString(
-      Application::FabricApplicationStates::GetAppStates()->getContext(), 
-      "");
-
-    bool res = GetKLCommandManager().callMethod(
-      "Boolean", 
-      "undoCommand", 
-      1, 
-      &valError).getBoolean();
-    
-    strError = valError.getStringCString();
-    if(!res || !strError.isEmpty())
-    {
-      Application::FabricException::Throw(
-        "KLCommandHelpers::UndoKLCommand",
-        strError);
-
-      return false;
-    }
-
-    return true;
-  }
-
-  catch(Exception &e)
-  {
+  bool res = GetKLCommandManager().callMethod(
+    "Boolean", 
+    "undoCommand", 
+    1, 
+    &valError).getBoolean();
+  
+  QString strError = valError.getStringCString();
+  if(!res || !strError.isEmpty())
     Application::FabricException::Throw(
       "KLCommandHelpers::UndoKLCommand",
-      strError,
-      e.getDesc_cstr());
-  }
+      strError);
+
+  return true;
+  
+  FABRIC_CATCH_END("KLCommandHelpers::UndoKLCommand");
 
   return false;
 }
 
 bool RedoKLCommand() 
 {  
-  QString strError;
+  FABRIC_CATCH_BEGIN();
 
-  try 
-  {
-    RTVal valError = RTVal::ConstructString(
-      Application::FabricApplicationStates::GetAppStates()->getContext(), 
-      "");
+  RTVal valError = RTVal::ConstructString(
+    Application::FabricApplicationStates::GetAppStates()->getContext(), 
+    "");
 
-    bool res = GetKLCommandManager().callMethod(
-      "Boolean", 
-      "redoCommand", 
-      1, 
-      &valError).getBoolean();
+  bool res = GetKLCommandManager().callMethod(
+    "Boolean", 
+    "redoCommand", 
+    1, 
+    &valError).getBoolean();
 
-    strError = valError.getStringCString();
-    if(!res || !strError.isEmpty())
-    {
-      Application::FabricException::Throw(
-        "KLCommandHelpers::RedoKLCommand",
-        strError);
-
-      return false;      
-    }
-
-    return true;
-  }
-
-  catch(Exception &e)
-  {
+  QString strError = valError.getStringCString();
+  if(!res || !strError.isEmpty())
     Application::FabricException::Throw(
       "KLCommandHelpers::RedoKLCommand",
-      strError,
-      e.getDesc_cstr());
-  }
-  
+      strError);
+
+  return true;
+
+  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandHelp");
+
   return false;
 }
 
 QString GetKLCommandHelp(
   RTVal klCmd) 
 {
-  try 
-  {
-    return klCmd.callMethod(
-      "String", 
-      "getHelp", 
-      0, 
-      0).getStringCString();
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "KLCommandHelpers::GetKLCommandHelp",
-      "",
-      e.getDesc_cstr());
-  }
+  return klCmd.callMethod(
+    "String", 
+    "getHelp", 
+    0, 
+    0).getStringCString();
+  
+  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandHelp");
 
   return "";
 }
@@ -333,22 +236,15 @@ QString GetKLCommandHelp(
 QString GetKLCommandHistoryDesc(
   RTVal klCmd) 
 {
-  try 
-  {
-    return klCmd.callMethod(
-      "String", 
-      "getHistoryDesc", 
-      0, 
-      0).getStringCString();
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "KLCommandHelpers::GetKLCommandHistoryDesc",
-      "",
-      e.getDesc_cstr());
-  }
+  return klCmd.callMethod(
+    "String", 
+    "getHistoryDesc", 
+    0, 
+    0).getStringCString();
+
+  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandHistoryDesc");
 
   return "";
 }
@@ -357,22 +253,15 @@ void MergeKLCommand(
   FabricCore::RTVal klCmd,
   FabricCore::RTVal otherKLCmd)
 {
-  try 
-  {
-    klCmd.callMethod(
-      "", 
-      "merge", 
-      1, 
-      &otherKLCmd);
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "KLCommandHelpers::MergeKLCommand",
-      "",
-      e.getDesc_cstr());
-  }
+  klCmd.callMethod(
+    "", 
+    "merge", 
+    1, 
+    &otherKLCmd);
+
+  FABRIC_CATCH_END("KLCommandHelpers::MergeKLCommand");
 }
 
 } // namespace Commands

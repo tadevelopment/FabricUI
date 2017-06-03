@@ -11,32 +11,24 @@
 using namespace FabricUI;
 using namespace Commands;
 using namespace FabricCore;
-using namespace Application;
 using namespace OptionsEditor;
 
 OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand() 
   : BaseRTValScriptableCommand()
   , m_canLog(true)
 {
-  try
-  {
-    declareRTValArg("editorID", "String");
-    
-    declareRTValArg("editorTitle", "String");
+  FABRIC_CATCH_BEGIN();
 
-    declareRTValArg(
-      "groupName",
-      "String",
-      CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG);
-  }
+  declareRTValArg("editorID", "String");
+  
+  declareRTValArg("editorTitle", "String");
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand",
-      "",
-      e.what());
-  }
+  declareRTValArg(
+    "groupName",
+    "String",
+    CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG);
+ 
+  FABRIC_CATCH_END("OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand");
 };
 
 OpenKLOptionsTargetEditorCommand::~OpenKLOptionsTargetEditorCommand()
@@ -75,47 +67,40 @@ bool OpenKLOptionsTargetEditorCommand::doIt()
 { 
   bool res = false;
 
-  try
+  FABRIC_CATCH_BEGIN();
+
+  QString editorID = getRTValArgValue(
+    "editorID"
+    ).getStringCString();
+
+  QWidget *dock = GetOptionsEditorDock(editorID);
+  if(dock != 0)
   {
-    QString editorID = getRTValArgValue(
-      "editorID"
+    if(dock->isHidden())
+      dock->show();
+    else
+      m_canLog = false;
+  }
+
+  else
+  {
+    QString editorTitle = getRTValArgValue(
+      "editorTitle"
       ).getStringCString();
 
-    QWidget *dock = GetOptionsEditorDock(editorID);
-    if(dock != 0)
-    {
-      if(dock->isHidden())
-        dock->show();
-      else
-        m_canLog = false;
-    }
+    QString groupName = isArgSet("groupName")
+      ? getRTValArgValue("groupName").getStringCString()
+      : QString();
 
-    else
-    {
-      QString editorTitle = getRTValArgValue(
-        "editorTitle"
-        ).getStringCString();
-
-      QString groupName = isArgSet("groupName")
-        ? getRTValArgValue("groupName").getStringCString()
-        : QString();
-
-      CreateOptionsEditor(
-        editorID,
-        editorTitle,
-        groupName);
-    }
-
-    res = true;
+    CreateOptionsEditor(
+      editorID,
+      editorTitle,
+      groupName);
   }
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "OpenKLOptionsTargetEditorCommand::doIt",
-      "",
-      e.what());
-  }
+  res = true;
+
+  FABRIC_CATCH_END("OpenKLOptionsTargetEditorCommand::doIt");
 
   return res;
 }

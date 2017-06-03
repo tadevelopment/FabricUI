@@ -15,7 +15,6 @@ using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace ValueEditor;
-using namespace Application;
 using namespace OptionsEditor;
 
 KLOptionsTargetModelItem::KLOptionsTargetModelItem(
@@ -40,69 +39,54 @@ void KLOptionsTargetModelItem::setValue(
   bool commit,
   QVariant valueAtInteractionBegin) 
 {
-  try
+  FABRIC_CATCH_BEGIN();
+
+  if(commit)
   {
-    if(commit)
-    {
-      QMap<QString, RTVal> args;
+    QMap<QString, RTVal> args;
+
+    RTVal pathVal = RTVal::ConstructString(
+      m_options.getContext(), 
+      m_path.c_str());
+  
+    args["target"] = RTVal::Construct(
+      m_options.getContext(), 
+      "PathValue",
+      1,
+      &pathVal);
+
+    // might be invalid when changing a Float with the keyboard (as text), for example
+    QVariant previousValue = valueAtInteractionBegin.isValid() 
+      ? valueAtInteractionBegin 
+      : getValue();
+
+    RTVal prevOptionsCopy = m_options.clone();
+    RTVariant::toRTVal(previousValue, prevOptionsCopy);
+    args["previousValue"] = prevOptionsCopy;
+
+    RTVal optionsCopy = m_options.clone();
+    RTVariant::toRTVal(value, optionsCopy);
+    args["newValue"] = optionsCopy;
+
+    RTValCommandManager *manager = qobject_cast<RTValCommandManager*>(
+      CommandManager::GetCommandManager());
+
+    manager->createCommand(
+      "setKLOptionsTargetModelItem",
+      args);
+  }
+
+  else
+  {
+    RTValModelItem::setValue(
+      value, 
+      commit, 
+      valueAtInteractionBegin);
+
+    SetKLOptionsTargetSingleOption(
+      QString(m_path.c_str()),
+      m_options);
+  }
  
-      RTVal pathVal = RTVal::ConstructString(
-        m_options.getContext(), 
-        m_path.c_str());
-    
-      args["target"] = RTVal::Construct(
-        m_options.getContext(), 
-        "PathValue",
-        1,
-        &pathVal);
-
-      // might be invalid when changing a Float with the keyboard (as text), for example
-      QVariant previousValue = valueAtInteractionBegin.isValid() 
-        ? valueAtInteractionBegin 
-        : getValue();
-
-      RTVal prevOptionsCopy = m_options.clone();
-      RTVariant::toRTVal(previousValue, prevOptionsCopy);
-      args["previousValue"] = prevOptionsCopy;
-
-      RTVal optionsCopy = m_options.clone();
-      RTVariant::toRTVal(value, optionsCopy);
-      args["newValue"] = optionsCopy;
-
-      RTValCommandManager *manager = qobject_cast<RTValCommandManager*>(
-        CommandManager::GetCommandManager());
-
-      manager->createCommand(
-        "setKLOptionsTargetModelItem",
-        args);
-    }
-
-    else
-    {
-      RTValModelItem::setValue(
-        value, 
-        commit, 
-        valueAtInteractionBegin);
-
-      SetKLOptionsTargetSingleOption(
-        QString(m_path.c_str()),
-        m_options);
-    }
-  }
-
-  catch(FabricException &e)
-  {
-    FabricException::Throw(
-      "KLOptionsTargetModelItem::getRTValOptions",
-      "",
-      e.what());
-  }
-
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "KLOptionsTargetModelItem::getRTValOptions",
-      "",
-      e.getDesc_cstr());
-  }
+  FABRIC_CATCH_END("KLOptionsTargetModelItem::getRTValOptions");
 }

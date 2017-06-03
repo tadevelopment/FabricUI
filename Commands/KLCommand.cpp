@@ -50,28 +50,19 @@ bool KLCommand::canLog()
 
 bool KLCommand::doIt() 
 { 
-  bool isDone = false;
+  FABRIC_CATCH_BEGIN();
 
-  try 
-  {
-    RTVal cmd = RTVal::Construct(
-      m_klCmd.getContext(),
-      "Command",
-      1,
-      &m_klCmd);
+  RTVal cmd = RTVal::Construct(
+    m_klCmd.getContext(),
+    "Command",
+    1,
+    &m_klCmd);
     
-    isDone = DoKLCommand(cmd);
-  }
-
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "KLScriptableCommand::doIt", 
-      "",
-      e.getDesc_cstr());
-  }
+  return DoKLCommand(cmd);
   
-  return isDone;
+  FABRIC_CATCH_END("KLScriptableCommand::doIt");
+ 
+  return false;
 }
 
 bool KLCommand::undoIt() 

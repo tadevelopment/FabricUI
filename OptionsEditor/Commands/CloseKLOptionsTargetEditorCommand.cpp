@@ -18,27 +18,20 @@ CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand()
   : BaseRTValScriptableCommand()
   , m_canLog(true)
 {
-  try
-  {
-    declareRTValArg("editorID", "String");
+  FABRIC_CATCH_BEGIN();
 
-    declareRTValArg(
-      "failSilently",
-      "Boolean",
-      CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG,
-      RTVal::ConstructBoolean(
-        Application::FabricApplicationStates::GetAppStates()->getContext(), 
-        false)
-      );
-  }
+  declareRTValArg("editorID", "String");
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand",
-      "",
-      e.what());
-  }
+  declareRTValArg(
+    "failSilently",
+    "Boolean",
+    CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG,
+    RTVal::ConstructBoolean(
+      FabricApplicationStates::GetAppStates()->getContext(), 
+      false)
+    );
+
+  FABRIC_CATCH_END("CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand");
 };
 
 CloseKLOptionsTargetEditorCommand::~CloseKLOptionsTargetEditorCommand()
@@ -57,33 +50,26 @@ bool CloseKLOptionsTargetEditorCommand::doIt()
 { 
   bool res = false;
 
-  try
+  FABRIC_CATCH_BEGIN();
+
+  bool failSilently = getRTValArgValue("failSilently").getBoolean();
+  QString editorID = getRTValArgValue("editorID").getStringCString();
+
+  QWidget *dock = GetOptionsEditorDock(editorID);
+
+  if(dock == 0)
   {
-    bool failSilently = getRTValArgValue("failSilently").getBoolean();
-    QString editorID = getRTValArgValue("editorID").getStringCString();
-
-    QWidget *dock = GetOptionsEditorDock(editorID);
-
-    if(dock == 0)
-    {
-      m_canLog = false;
-      res = failSilently;
-    }
-
-    else
-    {
-      dock->close();
-      res = true;
-    }
+    m_canLog = false;
+    res = failSilently;
   }
 
-  catch(FabricException &e) 
+  else
   {
-    FabricException::Throw(
-      "CloseKLOptionsTargetEditorCommand::doIt",
-      "",
-      e.what());
+    dock->close();
+    res = true;
   }
+
+  FABRIC_CATCH_END("CloseKLOptionsTargetEditorCommand::doIt");
 
   return res;
 }

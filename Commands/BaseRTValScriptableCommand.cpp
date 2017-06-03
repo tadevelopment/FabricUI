@@ -116,49 +116,34 @@ void BaseRTValScriptableCommand::setArg(
 {
   checkHasArg("BaseRTValScriptableCommand::setArg", key); 
 
-  try
+  FABRIC_CATCH_BEGIN();
+  
+  if( isJSONPathValueArg(json) )
   {
-    if( isJSONPathValueArg(json) )
-    {
-      RTVal pathValue = RTValUtil::fromJSON(
-        FabricApplicationStates::GetAppStates()->getContext(),
-        json,
-        "PathValue");
-      
-      setRTValArg(key, pathValue);
-    }
-
-    // Known type, cast the JSON to a RTVal.
-    else if(isArgTypeKnown(key))
-    {      
-      RTVal rtVal = RTValUtil::fromJSON(
-        FabricApplicationStates::GetAppStates()->getContext(),
-        json,
-        m_rtvalArgSpecs[key].type);
-
-      setRTValArgValue(key, rtVal);
-    }
-
-    // Store the JSON directly.
-    else
-      m_rtvalArgs[key].second = json;
+    RTVal pathValue = RTValUtil::fromJSON(
+      FabricApplicationStates::GetAppStates()->getContext(),
+      json,
+      "PathValue");
+    
+    setRTValArg(key, pathValue);
   }
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::setArg",
-      "",
-      e.getDesc_cstr());
+  // Known type, cast the JSON to a RTVal.
+  else if(isArgTypeKnown(key))
+  {      
+    RTVal rtVal = RTValUtil::fromJSON(
+      FabricApplicationStates::GetAppStates()->getContext(),
+      json,
+      m_rtvalArgSpecs[key].type);
+
+    setRTValArgValue(key, rtVal);
   }
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::setArg",
-      "",
-      e.what());
-  }
+  // Store the JSON directly.
+  else
+    m_rtvalArgs[key].second = json;
+
+  FABRIC_CATCH_END("BaseRTValScriptableCommand::setArg");
 }
 
 void BaseRTValScriptableCommand::validateSetArgs()
@@ -213,57 +198,42 @@ void BaseRTValScriptableCommand::declareRTValArg(
   checkEmptyKey("BaseRTValScriptableCommand::declareRTValArg", key); 
   checkRTValType("BaseRTValScriptableCommand::declareRTValArg", key, type); 
  
-  try
+  FABRIC_CATCH_BEGIN();
+
+  ScriptableCommandRTValArgSpec spec;
+  spec.type = type;
+  spec.flags = flags;
+  spec.defaultValue = defaultValue;
+  m_rtvalArgSpecs.insert(key, spec);
+
+  RTVal pathValue;
+  Context context = FabricApplicationStates::GetAppStates()->getContext();
+  
+  if(!type.isEmpty() && defaultValue.isValid())
   {
-    ScriptableCommandRTValArgSpec spec;
-    spec.type = type;
-    spec.flags = flags;
-    spec.defaultValue = defaultValue;
-    m_rtvalArgSpecs.insert(key, spec);
+    RTVal args[2] = {
+      RTVal::ConstructString(context, ""),
+      RTValUtil::toKLRTVal(defaultValue)
+    };
 
-    RTVal pathValue;
-    Context context = FabricApplicationStates::GetAppStates()->getContext();
-    
-    if(!type.isEmpty() && defaultValue.isValid())
-    {
-      RTVal args[2] = {
-        RTVal::ConstructString(context, ""),
-        RTValUtil::toKLRTVal(defaultValue)
-      };
-
-      pathValue = RTVal::Construct(
-        context, 
-        "PathValue", 
-        2, 
-        args);
-    }
-    else
-      pathValue = RTVal::Construct(
-        context, 
-        "PathValue", 
-        0, 
-        0);
-   
-    QPair<FabricCore::RTVal, QString> pair;
-    pair.first = pathValue;
-    m_rtvalArgs.insert(key, pair);
+    pathValue = RTVal::Construct(
+      context, 
+      "PathValue", 
+      2, 
+      args);
   }
-
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::declareRTValArg",
-      "",
-      e.getDesc_cstr());
-  }
-
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::declareRTValArg",
-      "",
-      e.what());
-  }
+  else
+    pathValue = RTVal::Construct(
+      context, 
+      "PathValue", 
+      0, 
+      0);
+ 
+  QPair<FabricCore::RTVal, QString> pair;
+  pair.first = pathValue;
+  m_rtvalArgs.insert(key, pair);
+  
+  FABRIC_CATCH_END("BaseRTValScriptableCommand::declareRTValArg");
 }
 
 QString BaseRTValScriptableCommand::getRTValArgType(
@@ -277,33 +247,16 @@ QString BaseRTValScriptableCommand::getRTValArgPath(
   const QString &key)
 {
   checkHasArg("BaseRTValScriptableCommand::getRTValArgPath", key); 
-   
-  QString type;
+     
+  FABRIC_CATCH_BEGIN();
 
-  try
-  { 
-    type = RTValUtil::toRTVal(
-      RTValUtil::toRTVal(m_rtvalArgs[key].first).maybeGetMember("path")
-      ).getStringCString();
-  }
+  return RTValUtil::toRTVal(
+    RTValUtil::toRTVal(m_rtvalArgs[key].first).maybeGetMember("path")
+    ).getStringCString();
+ 
+  FABRIC_CATCH_END("BaseRTValScriptableCommand::getRTValArgPath");
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArgPath",
-      "",
-      e.getDesc_cstr());
-  }
-
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArgPath",
-      "",
-      e.what());
-  }
-
-  return type;
+  return "";
 }
 
 RTVal BaseRTValScriptableCommand::getRTValArgValue(
@@ -317,32 +270,15 @@ RTVal BaseRTValScriptableCommand::getRTValArgValue(
         "RTVal argument '" + key + "' of command '" + getName() + 
         "' has been set in JSON only, \n !!! use getRTValArgValue(key, type) instead !!!");
 
-  RTVal val;
+  FABRIC_CATCH_BEGIN();
+ 
+  return RTValUtil::toRTVal(
+    RTValUtil::toRTVal(m_rtvalArgs[key].first).maybeGetMember("value")
+    );
+ 
+  FABRIC_CATCH_END("BaseRTValScriptableCommand::getRTValArgValue");
 
-  try
-  { 
-    val = RTValUtil::toRTVal(
-      RTValUtil::toRTVal(m_rtvalArgs[key].first).maybeGetMember("value")
-      );
-  }
-
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArgValue",
-      "",
-      e.getDesc_cstr());
-  }
-
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArgValue",
-      "",
-      e.what());
-  }
-
-  return val;
+  return RTVal();
 }
 
 RTVal BaseRTValScriptableCommand::getRTValArgValue(
@@ -352,40 +288,25 @@ RTVal BaseRTValScriptableCommand::getRTValArgValue(
   checkHasArg("BaseRTValScriptableCommand::getRTValArgValue", key); 
   checkRTValType("BaseRTValScriptableCommand::getRTValArgValue", key, type); 
 
-  try
+  FABRIC_CATCH_BEGIN();
+
+  // If the type is unknown, set it
+  if(!isArgTypeKnown(key))
+    m_rtvalArgSpecs[key].type = type;
+
+  // If the arg has been set in JSON,  
+  // construct it since we know its type
+  if(!m_rtvalArgs[key].second.isEmpty())
   {
-    // If the type is unknown, set it
-    if(!isArgTypeKnown(key))
-      m_rtvalArgSpecs[key].type = type;
+    RTVal val = RTValUtil::fromJSON(
+      FabricApplicationStates::GetAppStates()->getContext(),
+      m_rtvalArgs[key].second,
+      m_rtvalArgSpecs[key].type);
+
+    setRTValArgValue(key, val);
+  }
  
-    // If the arg has been set in JSON,  
-    // construct it since we know its type
-    if(!m_rtvalArgs[key].second.isEmpty())
-    {
-      RTVal val = RTValUtil::fromJSON(
-        FabricApplicationStates::GetAppStates()->getContext(),
-        m_rtvalArgs[key].second,
-        m_rtvalArgSpecs[key].type);
-
-      setRTValArgValue(key, val);
-    }
-  }
-
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArgValue",
-      "",
-      e.getDesc_cstr());
-  }
-
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArgValue",
-      "",
-      e.what());
-  }
+  FABRIC_CATCH_END("BaseRTValScriptableCommand::getRTValArgValue");
 
   return getRTValArgValue(key);
 }
@@ -401,32 +322,17 @@ void BaseRTValScriptableCommand::setRTValArg(
       "BaseRTValScriptableCommand::setRTValArg",
       "Arg '" + key + "' is not a PathValue");
 
-  try
-  {
-    m_rtvalArgSpecs[key].type = RTValUtil::getType(
-      RTValUtil::toRTVal(pathValue).maybeGetMember("value")
-      );
+  FABRIC_CATCH_BEGIN();
 
-    QPair<FabricCore::RTVal, QString> pair;
-    pair.first = pathValue;
-    m_rtvalArgs.insert(key, pair);
-  }
+  m_rtvalArgSpecs[key].type = RTValUtil::getType(
+    RTValUtil::toRTVal(pathValue).maybeGetMember("value")
+    );
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::setRTValArg",
-      "",
-      e.getDesc_cstr());
-  }
-
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::setRTValArg",
-      "",
-      e.what());
-  }
+  QPair<FabricCore::RTVal, QString> pair;
+  pair.first = pathValue;
+  m_rtvalArgs.insert(key, pair);
+ 
+  FABRIC_CATCH_END("BaseRTValScriptableCommand::setRTValArg")
 }
 
 RTVal BaseRTValScriptableCommand::getRTValArg(
@@ -434,22 +340,13 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
 {
   checkHasArg("BaseRTValScriptableCommand::getRTValArg", key); 
  
-  RTVal pathValue;
+  FABRIC_CATCH_BEGIN();
 
-  try
-  { 
-    pathValue = RTValUtil::toRTVal(m_rtvalArgs[key].first);
-  }
+  return RTValUtil::toRTVal(m_rtvalArgs[key].first);
+ 
+  FABRIC_CATCH_END("BaseRTValScriptableCommand::getRTValArg")
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::getRTValArg",
-      "",
-      e.what());
-  }
-
-  return pathValue;
+  return RTVal();
 }
 
 void BaseRTValScriptableCommand::setRTValArgValue(
@@ -458,28 +355,13 @@ void BaseRTValScriptableCommand::setRTValArgValue(
 { 
   checkHasArg("BaseRTValScriptableCommand::setRTValArgValue", key); 
 
-  try
-  {
-    RTVal pathValue = getRTValArg(key);
-    pathValue.setMember("value", RTValUtil::toKLRTVal(value));
-    setRTValArg(key, pathValue);
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::setRTValArgValue",
-      "",
-      e.getDesc_cstr());
-  }
-
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "BaseRTValScriptableCommand::setRTValArgValue",
-      "",
-      e.what());
-  }
+  RTVal pathValue = getRTValArg(key);
+  pathValue.setMember("value", RTValUtil::toKLRTVal(value));
+  setRTValArg(key, pathValue);
+  
+  FABRIC_CATCH_END("BaseRTValScriptableCommand::setRTValArgValue")
 }
 
 bool BaseRTValScriptableCommand::isJSONPathValueArg(

@@ -95,40 +95,24 @@ void RTValCommandManager::preDoCommand(
   BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
   if(!scriptCmd) return;
 
-  try
+  FABRIC_CATCH_BEGIN();
+
+  QString key;
+  foreach(key, scriptCmd->getArgKeys())
   {
-    QString key;
-    foreach(key, scriptCmd->getArgKeys())
+    if( scriptCmd->isArg(key, CommandArgFlags::IN_ARG) ||
+        scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
     {
-      if( scriptCmd->isArg(key, CommandArgFlags::IN_ARG) ||
-          scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
+      RTVal pathValue = scriptCmd->getRTValArg(key);
+      if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
       {
-        RTVal pathValue = scriptCmd->getRTValArg(key);
-        if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
-        {
-          PathValueResolverRegistry::GetRegistry()->getValue(pathValue);
-          scriptCmd->setRTValArg(key, pathValue);
-        }
+        PathValueResolverRegistry::GetRegistry()->getValue(pathValue);
+        scriptCmd->setRTValArg(key, pathValue);
       }
     }
   }
-   
-  catch(Exception &e) 
-  {
-    FabricException::Throw(
-      "RTValCommandManager::preDoCommand",
-      "",
-      e.getDesc_cstr()
-      );
-  }
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "RTValCommandManager::preDoCommand",
-      "",
-      e.what());
-  }
+  FABRIC_CATCH_END("RTValCommandManager::preDoCommand");
 }
 
 void RTValCommandManager::postDoCommand(
@@ -137,36 +121,20 @@ void RTValCommandManager::postDoCommand(
   BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
   if(!scriptCmd) return;
 
-  try
-  {
-    QString key;
-    foreach(key, scriptCmd->getArgKeys())
-    {         
-      if( scriptCmd->isArg(key, CommandArgFlags::OUT_ARG) ||
-          scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
-      {
-        RTVal pathValue = scriptCmd->getRTValArg(key);
-        if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
-          PathValueResolverRegistry::GetRegistry()->setValue(
-            pathValue);
-      }
+  FABRIC_CATCH_BEGIN();
+
+  QString key;
+  foreach(key, scriptCmd->getArgKeys())
+  {         
+    if( scriptCmd->isArg(key, CommandArgFlags::OUT_ARG) ||
+        scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
+    {
+      RTVal pathValue = scriptCmd->getRTValArg(key);
+      if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
+        PathValueResolverRegistry::GetRegistry()->setValue(
+          pathValue);
     }
   }
-   
-  catch(Exception &e) 
-  {
-    FabricException::Throw(
-      "RTValCommandManager::postDoCommand",
-      "",
-      e.getDesc_cstr()
-      );
-  }
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "RTValCommandManager::postDoCommand",
-      "",
-      e.what());
-  }
+  FABRIC_CATCH_END("RTValCommandManager::postDoCommand");
 }

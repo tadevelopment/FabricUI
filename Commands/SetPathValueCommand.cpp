@@ -1,6 +1,5 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include <iostream>
 #include "CommandArgHelpers.h"
 #include "CommandArgHelpers.h"
 #include "SetPathValueCommand.h"
@@ -18,48 +17,41 @@ using namespace Application;
 SetPathValueCommand::SetPathValueCommand() 
   : BaseRTValScriptableCommand()
 {
-  try
-  {
-    declareRTValArg(
-      "target", 
-      "RTVal",
-      CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IO_ARG
-      );
-    
-    // No-optional arg of unknown KL type, which
-    // is retrieved when executing the command.
-    declareRTValArg(
-      "newValue",
-      "RTVal",
-      CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IN_ARG
-      );
+  FABRIC_CATCH_BEGIN();
 
-    // Optional arg of unknown KL type, which
-    // is retrieved when executing the command.
-    declareRTValArg(
-      "previousValue", 
-      "RTVal",
-      CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::IN_ARG
-      );
- 
-    // Optional arg of known KL type, with default value.                  
-    declareRTValArg( 
-      "isUndoable",
-      "Boolean",
-      CommandArgFlags::OPTIONAL_ARG,
-      RTVal::ConstructBoolean(
-        FabricApplicationStates::GetAppStates()->getContext(), 
-        true)
-      );
-  }
+  declareRTValArg(
+    "target", 
+    "RTVal",
+    CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IO_ARG
+    );
+  
+  // No-optional arg of unknown KL type, which
+  // is retrieved when executing the command.
+  declareRTValArg(
+    "newValue",
+    "RTVal",
+    CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IN_ARG
+    );
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "SetPathValueCommand::SetPathValueCommand",
-      "",
-      e.what());
-  }
+  // Optional arg of unknown KL type, which
+  // is retrieved when executing the command.
+  declareRTValArg(
+    "previousValue", 
+    "RTVal",
+    CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::IN_ARG
+    );
+
+  // Optional arg of known KL type, with default value.                  
+  declareRTValArg( 
+    "isUndoable",
+    "Boolean",
+    CommandArgFlags::OPTIONAL_ARG,
+    RTVal::ConstructBoolean(
+      FabricApplicationStates::GetAppStates()->getContext(), 
+      true)
+    );
+  
+  FABRIC_CATCH_END("SetPathValueCommand::SetPathValueCommand");
 }
 
 SetPathValueCommand::~SetPathValueCommand() 
@@ -68,62 +60,40 @@ SetPathValueCommand::~SetPathValueCommand()
 
 bool SetPathValueCommand::canUndo()
 {
-  try 
-  {    
-    return getRTValArgValue("isUndoable").getBoolean() ||
-      getInteractionID() > -1;
-  }
+  FABRIC_CATCH_BEGIN();
+   
+  return getRTValArgValue("isUndoable").getBoolean() ||
+    getInteractionID() > -1;
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "SetPathValueCommand::canUndo",
-      "",
-      e.what());
-  }
+  FABRIC_CATCH_END("SetPathValueCommand::canUndo");
 
   return false;
 }
 
 bool SetPathValueCommand::doIt()
 {
-  try
-  {
-    if(canUndo() && getRTValArgType("previousValue") != getRTValArgType("target"))
-      setRTValArgValue("previousValue", getRTValArgValue("target").clone());
-  
-    setRTValArgValue("target", getRTValArgValue("newValue", getRTValArgType("target")).clone());
-    
-    return true;
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "SetPathValueCommand::doIt",
-      "",
-      e.what());
-  }
+  if(canUndo() && getRTValArgType("previousValue") != getRTValArgType("target"))
+    setRTValArgValue("previousValue", getRTValArgValue("target").clone());
+
+  setRTValArgValue("target", getRTValArgValue("newValue", getRTValArgType("target")).clone());
+  return true;
+
+  FABRIC_CATCH_END("SetPathValueCommand::doIt");
  
   return false;
 } 
 
 bool SetPathValueCommand::undoIt()
 { 
-  try
-  {
-    setRTValArgValue("target", getRTValArgValue("previousValue").clone());
-    return true;
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "SetPathValueCommand::undoIt",
-      "",
-      e.what());
-  }
- 
+  setRTValArgValue("target", getRTValArgValue("previousValue").clone());
+  return true;
+  
+  FABRIC_CATCH_END("SetPathValueCommand::undoIt");
+
   return false;
 } 
 
@@ -158,6 +128,10 @@ QString SetPathValueCommand::getHistoryDesc()
 void SetPathValueCommand::merge(
   BaseCommand *cmd) 
 {
+  FABRIC_CATCH_BEGIN();
+
   SetPathValueCommand *pathValueCmd = qobject_cast<SetPathValueCommand*>(cmd);
   setRTValArgValue("newValue", pathValueCmd->getRTValArgValue("newValue").clone());
+
+  FABRIC_CATCH_END("SetPathValueCommand::merge");
 }

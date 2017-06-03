@@ -14,48 +14,41 @@ using namespace Application;
 SetXfoPortDefaultValueCommand::SetXfoPortDefaultValueCommand() 
   : BaseRTValScriptableCommand()
 {
-  try
-  {
-    declareRTValArg(
-      "target", 
-      "Xfo",
-      CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IO_ARG
-      );
-    
-    // No-optional arg of unknown KL type, which
-    // is retrieved when executing the command.
-    declareRTValArg(
-      "newValue",
-      "Xfo",
-      CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IN_ARG
-      );
+  FABRIC_CATCH_BEGIN();
 
-    // Optional arg of unknown KL type, which
-    // is retrieved when executing the command.
-    declareRTValArg(
-      "previousValue", 
-      "Xfo",
-      CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::IN_ARG
-      );
- 
-    // Optional arg of known KL type, with default value.                  
-    declareRTValArg( 
-      "isUndoable",
-      "Boolean",
-      CommandArgFlags::OPTIONAL_ARG,
-      RTVal::ConstructBoolean(
-        FabricApplicationStates::GetAppStates()->getContext(), 
-        true)
-      );
-  }
+  declareRTValArg(
+    "target", 
+    "Xfo",
+    CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IO_ARG
+    );
+  
+  // No-optional arg of unknown KL type, which
+  // is retrieved when executing the command.
+  declareRTValArg(
+    "newValue",
+    "Xfo",
+    CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IN_ARG
+    );
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "SetXfoPortDefaultValueCommand::SetXfoPortDefaultValueCommand",
-      "",
-      e.what());
-  }
+  // Optional arg of unknown KL type, which
+  // is retrieved when executing the command.
+  declareRTValArg(
+    "previousValue", 
+    "Xfo",
+    CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::IN_ARG
+    );
+
+  // Optional arg of known KL type, with default value.                  
+  declareRTValArg( 
+    "isUndoable",
+    "Boolean",
+    CommandArgFlags::OPTIONAL_ARG,
+    RTVal::ConstructBoolean(
+      FabricApplicationStates::GetAppStates()->getContext(), 
+      true)
+    );
+
+  FABRIC_CATCH_END("SetXfoPortDefaultValueCommand::SetXfoPortDefaultValueCommand");
 }
 
 SetXfoPortDefaultValueCommand::~SetXfoPortDefaultValueCommand() 
@@ -64,63 +57,40 @@ SetXfoPortDefaultValueCommand::~SetXfoPortDefaultValueCommand()
 
 bool SetXfoPortDefaultValueCommand::canUndo()
 {
-  try 
-  {    
-    return getRTValArgValue("isUndoable").getBoolean();
-  }
+  FABRIC_CATCH_BEGIN();
+  
+  return getRTValArgValue("isUndoable").getBoolean();
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "SetXfoPortDefaultValueCommand::canUndo",
-      "",
-      e.what());
-  }
+  FABRIC_CATCH_END("SetXfoPortDefaultValueCommand::canUndo");
 
   return false;
 }
 
 bool SetXfoPortDefaultValueCommand::doIt()
 {
-  try
-  {
-    if(canUndo() && getRTValArgType("previousValue") != "Xfo")
-      setRTValArgValue("previousValue", getRTValArgValue("target"));
+  FABRIC_CATCH_BEGIN();
 
-    RTVal newValue = getRTValArgValue("newValue", "Xfo");
-  
-    setRTValArgValue("target", newValue);
- 
-    return true;
-  }
+  if(canUndo() && getRTValArgType("previousValue") != "Xfo")
+    setRTValArgValue("previousValue", getRTValArgValue("target"));
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "SetXfoPortDefaultValueCommand::doIt",
-      "",
-      e.what());
-  }
- 
+  setRTValArgValue("target", getRTValArgValue("newValue", "Xfo"));
+
+  return true;
+
+  FABRIC_CATCH_END("SetXfoPortDefaultValueCommand::doIt");
+
   return false;
 } 
 
 bool SetXfoPortDefaultValueCommand::undoIt()
 { 
-  try
-  {
-    setRTValArgValue("target", getRTValArgValue("previousValue"));
-    return true;
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "SetXfoPortDefaultValueCommand::undoIt",
-      "",
-      e.what());
-  }
- 
+  setRTValArgValue("target", getRTValArgValue("previousValue"));
+  return true;
+  
+  FABRIC_CATCH_END("SetXfoPortDefaultValueCommand::undoIt");
+
   return false;
 } 
 

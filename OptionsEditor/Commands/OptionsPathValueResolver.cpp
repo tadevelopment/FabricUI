@@ -9,7 +9,6 @@
 using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
-using namespace Application;
 using namespace OptionsEditor;
 
 OptionsPathValueResolver::OptionsPathValueResolver()
@@ -26,37 +25,30 @@ bool OptionsPathValueResolver::knownPath(
 {
   bool hasOption = false;
 
-  try 
-  {
-    pathValue = RTValUtil::toRTVal(
-      pathValue);
+  FABRIC_CATCH_BEGIN();
 
-    QString path = pathValue.maybeGetMember(
-      "path").getStringCString();
+  pathValue = RTValUtil::toRTVal(
+    pathValue);
 
-    int index = path.indexOf("/");
-    
-    RTVal id = RTVal::ConstructString(
-      pathValue.getContext(),
-      path.midRef(0, index).toUtf8().constData()
-      );
+  QString path = pathValue.maybeGetMember(
+    "path").getStringCString();
 
-    RTVal optionsTarget = GetKLOptionsTargetRegistry().callMethod(
-      "OptionsTarget",
-      "getTarget",
-      1,
-      &id);
+  int index = path.indexOf("/");
+  
+  RTVal id = RTVal::ConstructString(
+    pathValue.getContext(),
+    path.midRef(0, index).toUtf8().constData()
+    );
 
-    hasOption = optionsTarget.isValid() && !optionsTarget.isNullObject();
-  }
+  RTVal optionsTarget = GetKLOptionsTargetRegistry().callMethod(
+    "OptionsTarget",
+    "getTarget",
+    1,
+    &id);
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "OptionsPathValueResolver::knownPath",
-      "",
-      e.getDesc_cstr());
-  }
+  hasOption = optionsTarget.isValid() && !optionsTarget.isNullObject();
+
+  FABRIC_CATCH_END("OptionsPathValueResolver::knownPath");
 
   return hasOption;
 }
@@ -64,87 +56,63 @@ bool OptionsPathValueResolver::knownPath(
 QString OptionsPathValueResolver::getType(
   RTVal pathValue)
 {
-  QString portType;
+  FABRIC_CATCH_BEGIN();
 
-  try 
-  {
-    getValue(pathValue);
+  getValue(pathValue);
 
-    portType = RTValUtil::getType(
-      RTValUtil::toRTVal(pathValue.maybeGetMember("value"))
-      );
-  }
+  return RTValUtil::getType(
+    RTValUtil::toRTVal(pathValue.maybeGetMember("value"))
+    );
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "OptionsPathValueResolver::getType",
-      "",
-      e.getDesc_cstr());
-  }
+  FABRIC_CATCH_END("OptionsPathValueResolver::getType");
 
-  return portType;
+  return "";
 }
 
 void OptionsPathValueResolver::getValue(
   RTVal pathValue)
 {
-  try 
-  {
-    pathValue = RTValUtil::toRTVal(
-      pathValue);
+  FABRIC_CATCH_BEGIN();
 
-    QString path = pathValue.maybeGetMember(
-      "path").getStringCString();
+  pathValue = RTValUtil::toRTVal(
+    pathValue);
 
-    RTVal singleOption = GetKLOptionsTargetSingleOption(
-      path);
+  QString path = pathValue.maybeGetMember(
+    "path").getStringCString();
 
-    pathValue.setMember(
-      "value", 
-      singleOption);
-  }
+  RTVal singleOption = GetKLOptionsTargetSingleOption(
+    path);
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "OptionsPathValueResolver::getValue",
-      "",
-      e.getDesc_cstr()
-      );
-  }
+  pathValue.setMember(
+    "value", 
+    singleOption);
+
+  FABRIC_CATCH_END("OptionsPathValueResolver::getValue");
 }
 
 void OptionsPathValueResolver::setValue(
   RTVal pathValue)
 {
-  try
-  {
-    pathValue = RTValUtil::toRTVal(
-      pathValue);
+  FABRIC_CATCH_BEGIN();
 
-    QString path = pathValue.maybeGetMember(
-      "path").getStringCString();
-    
-    RTVal option = pathValue.maybeGetMember(
-      "value");
- 
-    SetKLOptionsTargetSingleOption(
-      path,
-      option);
-    
-    int index = path.indexOf("/");
-    
-    GetOptionsEditor(
-      path.midRef(0, index).toUtf8().constData()
-      )->updateModel();
-  }
+  pathValue = RTValUtil::toRTVal(
+    pathValue);
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "OptionsPathValueResolver::setValue",
-      "",
-      e.getDesc_cstr());
-  }
+  QString path = pathValue.maybeGetMember(
+    "path").getStringCString();
+  
+  RTVal option = pathValue.maybeGetMember(
+    "value");
+
+  SetKLOptionsTargetSingleOption(
+    path,
+    option);
+  
+  int index = path.indexOf("/");
+  
+  GetOptionsEditor(
+    path.midRef(0, index).toUtf8().constData()
+    )->updateModel();
+
+  FABRIC_CATCH_END("OptionsPathValueResolver::setValue");
 }

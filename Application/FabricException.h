@@ -5,9 +5,10 @@
 #ifndef __UI_FABRIC_EXCEPTION__
 #define __UI_FABRIC_EXCEPTION__
 
-#include <iostream>
 #include <QString>
+#include <iostream>
 #include <exception>
+#include <FabricCore.h>
 
 namespace FabricUI {
 namespace Application {
@@ -67,5 +68,27 @@ class FabricException : public std::exception
 
 } // namespace Commands
 } // namespace FabricUI
+
+#define FABRIC_CATCH_BEGIN() \
+  try {
+
+#define FABRIC_CATCH_END(methodName) \
+  } \
+  catch (FabricCore::Exception &e) \
+  { \
+    FabricUI::Application::FabricException::Throw( \
+      methodName, \
+      "", \
+      e.getDesc_cstr() \
+      ); \
+  } \
+  catch (FabricUI::Application::FabricException &e) \
+  { \
+    FabricUI::Application::FabricException::Throw( \
+      methodName, \
+      "", \
+      e.what() \
+      ); \
+  } 
 
 #endif // __UI_FABRIC_EXCEPTION__

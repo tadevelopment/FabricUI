@@ -26,22 +26,15 @@ KLCommandManager::~KLCommandManager()
  
 void KLCommandManager::clear() 
 {
-  try 
-  {
-    m_klCmdManager.callMethod(
-      "", 
-      "clear", 
-      0, 0);
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "KLCommandManager::clear",
-      "",
-      e.getDesc_cstr());
-  }
-  
+  m_klCmdManager.callMethod(
+    "", 
+    "clear", 
+    0, 0);
+
+  FABRIC_CATCH_END("KLCommandManager::clear");
+
   CommandManager::clear();
 }
 
@@ -49,21 +42,14 @@ QString KLCommandManager::getContent()
 {
   QString res = CommandManager::getContent();
 
-  try 
-  {
-    res += QString("\n") + m_klCmdManager.callMethod(
-      "String", 
-      "getContent", 
-      0, 0).getStringCString();  
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "KLCommandManager::getContent",
-      "",
-      e.getDesc_cstr());
-  }
+  res += QString("\n") + m_klCmdManager.callMethod(
+    "String", 
+    "getContent", 
+    0, 0).getStringCString();  
+  
+  FABRIC_CATCH_END("KLCommandManager::getContent");
 
   return res;
 }
@@ -71,119 +57,93 @@ QString KLCommandManager::getContent()
 int KLCommandManager::getNewInteractionID()
 {
   m_interactionIDCounter++;
-  try
+  
+  FABRIC_CATCH_BEGIN();
+
+  int interactionIDCounter = m_klCmdManager.callMethod(
+    "UInt32", 
+    "getInteractionIDCounter", 
+    0, 0).getUInt32();
+
+  if(interactionIDCounter < m_interactionIDCounter)
   {
-    int interactionIDCounter = m_klCmdManager.callMethod(
-      "UInt32", 
-      "getInteractionIDCounter", 
-      0, 0).getUInt32();
+    RTVal interactionIDCounterVal = RTVal::ConstructUInt32(
+      m_klCmdManager.getContext(),
+      m_interactionIDCounter);
 
-    if(interactionIDCounter < m_interactionIDCounter)
-    {
-      RTVal interactionIDCounterVal = RTVal::ConstructUInt32(
-        m_klCmdManager.getContext(),
-        m_interactionIDCounter);
-
-      m_klCmdManager.callMethod(
-        "", 
-        "setInteractionIDCounter", 
-        1, &interactionIDCounterVal);
-    }
-
-    else if(m_interactionIDCounter > interactionIDCounter)
-      m_interactionIDCounter = interactionIDCounter;
+    m_klCmdManager.callMethod(
+      "", 
+      "setInteractionIDCounter", 
+      1, &interactionIDCounterVal);
   }
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "KLCommandManager::getNewInteractionID",
-      "",
-      e.getDesc_cstr());
-  }
+  else if(m_interactionIDCounter > interactionIDCounter)
+    m_interactionIDCounter = interactionIDCounter;
+
+  FABRIC_CATCH_END("KLCommandManager::getNewInteractionID");
 
   return m_interactionIDCounter;
 }
 
 void KLCommandManager::clearRedoStack() 
 {
-  try 
-  {
-    m_klCmdManager.callMethod(
-      "", 
-      "clearRedoStack", 
-      0, 0);
-      
-    CommandManager::clearRedoStack();
-  }
+  FABRIC_CATCH_BEGIN();
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "KLCommandManager::clearRedoStack",
-      "",
-      e.getDesc_cstr());
-  }
+  m_klCmdManager.callMethod(
+    "", 
+    "clearRedoStack", 
+    0, 0);
+    
+  CommandManager::clearRedoStack();
+
+  FABRIC_CATCH_END("KLCommandManager::clearRedoStack");
 }
 
 void KLCommandManager::synchronizeKL() 
 {
-  try
+  FABRIC_CATCH_BEGIN();
+
+  // Gets the KL command from the KL manager. 
+  RTVal klAppCmdStack = m_klCmdManager.callMethod(
+    "Command[]", 
+    "getAppStack", 
+    0, 0);
+
+  for(unsigned i=0; i<klAppCmdStack.getArraySize(); ++i)
   {
     // Gets the KL command from the KL manager. 
-    RTVal klAppCmdStack = m_klCmdManager.callMethod(
-      "Command[]", 
-      "getAppStack", 
-      0, 0);
+    RTVal klCmd = klAppCmdStack.getArrayElementRef(i);
 
-    for(unsigned i=0; i<klAppCmdStack.getArraySize(); ++i)
-    {
-      // Gets the KL command from the KL manager. 
-      RTVal klCmd = klAppCmdStack.getArrayElementRef(i);
+    // Check if it's an AppCommand.
+    // Construct C++ commands from KL
+    RTVal appCmd = RTVal::Construct(
+      klCmd.getContext(),
+      "AppCommand", 
+      1, 
+      &klCmd);
 
-      // Check if it's an AppCommand.
-      // Construct C++ commands from KL
-      RTVal appCmd = RTVal::Construct(
-        klCmd.getContext(),
-        "AppCommand", 
-        1, 
-        &klCmd);
+    if(appCmd.isValid() && !appCmd.isNullObject())
+      createAppCommand(appCmd);
 
-      if(appCmd.isValid() && !appCmd.isNullObject())
-        createAppCommand(appCmd);
+    // KL commands have actually been 
+    // created, create the C++ wrappers.
+    else
+      doKLCommand(klCmd);
+  } 
 
-      // KL commands have actually been 
-      // created, create the C++ wrappers.
-      else
-        doKLCommand(klCmd);
-    } 
+  m_klCmdManager.callMethod(
+    "", 
+    "clearAppStack", 
+    0, 0);
 
-    m_klCmdManager.callMethod(
-      "", 
-      "clearAppStack", 
-      0, 0);
-  }
-
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "KLCommandManager::synchronizeKL",
-      "",
-      e.getDesc_cstr());
-  }
-
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "KLCommandManager::synchronizeKL",
-      "",
-      e.what());
-  }
+  FABRIC_CATCH_END("KLCommandManager::synchronizeKL");
 }
 
 void KLCommandManager::createAppCommand(
   RTVal appCmd)
 {
+  FABRIC_CATCH_BEGIN();
+
   RTVal keys = appCmd.callMethod(
     "String[]", 
     "getArgKeys", 
@@ -206,11 +166,15 @@ void KLCommandManager::createAppCommand(
     true, 
     appCmd.callMethod("SInt32", "getInteractionID", 0, 0).getSInt32()
     ); 
+
+  FABRIC_CATCH_END("KLCommandManager::createAppCommand");
 }
 
 void KLCommandManager::doKLCommand(
   RTVal klCmd)
 {
+  FABRIC_CATCH_BEGIN();
+
   RTVal klScriptCmd = RTVal::Construct(
     klCmd.getContext(),
     "BaseScriptableCommand", 
@@ -222,4 +186,6 @@ void KLCommandManager::doKLCommand(
     : (BaseCommand *)new KLCommand(klCmd);
 
   doCommand(cmd);
+
+  FABRIC_CATCH_END("KLCommandManager::doKLCommand");
 }

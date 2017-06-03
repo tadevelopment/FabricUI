@@ -105,40 +105,33 @@ BaseCommand* CommandRegistry::createCommand(
       "cannot create command '" + cmdName + "', it's not registered"
       );
 
-  try
+  FABRIC_CATCH_BEGIN();
+
+  QPair<QString, QString> spec = getCommandSpecs(cmdName);
+  
+  if(spec.second == COMMAND_CPP) 
   {
-    QPair<QString, QString> spec = getCommandSpecs(cmdName);
-    
-    if(spec.second == COMMAND_CPP) 
-    {
-      Factory *factory = Util::BaseFactoryRegistry::getFactory(
-        cmdName);
+    Factory *factory = Util::BaseFactoryRegistry::getFactory(
+      cmdName);
 
-      BaseCommand* cmd = (BaseCommand*)factory->create(); 
-      if(cmd == 0)
-        FabricException::Throw(
-          "CommandRegistry::createCommand",
-          "resulting command is null" 
-          );
+    BaseCommand* cmd = (BaseCommand*)factory->create(); 
+    if(cmd == 0)
+      FabricException::Throw(
+        "CommandRegistry::createCommand",
+        "resulting command is null" 
+        );
 
-      void *userData = factory->getUserData();
-    
-      cmd->registrationCallback(
-        cmdName,
-        userData);
+    void *userData = factory->getUserData();
+  
+    cmd->registrationCallback(
+      cmdName,
+      userData);
 
-      return cmd;
-    }
+    return cmd;
   }
-    
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "CommandRegistry::createCommand",
-      e.what()
-      );
-  }
- 
+
+  FABRIC_CATCH_END("CommandRegistry::createCommand");
+
   return 0;
 }
 

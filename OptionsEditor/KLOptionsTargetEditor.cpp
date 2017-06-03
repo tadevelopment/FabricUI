@@ -14,7 +14,6 @@ using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
 using namespace ValueEditor;
-using namespace Application;
 using namespace OptionsEditor;
 
 KLOptionsTargetEditor::KLOptionsTargetEditor(
@@ -34,39 +33,32 @@ BaseRTValModelItem* KLOptionsTargetEditor::constructModel(
   BaseRTValOptionsEditor *editor,
   RTVal options) 
 {
-  try
-  {
-    options = RTValUtil::toRTVal(options);
- 
-    if(options.isDict()) 
-      return new RTValDictModelItem(
-        name,
-        path,
-        editor,
-        options);
+  FABRIC_CATCH_BEGIN();
 
-    else if(options.isArray())
-      return new RTValArrayModelItem(
-        name,
-        path,
-        editor,
-        options);
+  options = RTValUtil::toRTVal(options);
 
-    else
-      return new KLOptionsTargetModelItem(
-        name,
-        path,
-        editor,
-        options);
-  }
+  if(options.isDict()) 
+    return new RTValDictModelItem(
+      name,
+      path, 
+      editor,
+      options);
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "KLOptionsTargetEditor::constructModel",
-      "",
-      e.getDesc_cstr());
-  }
+  else if(options.isArray())
+    return new RTValArrayModelItem(
+      name,
+      path,
+      editor,
+      options);
+
+  else
+    return new KLOptionsTargetModelItem(
+      name,
+      path,
+      editor,
+      options);
+
+  FABRIC_CATCH_END("KLOptionsTargetEditor::constructModel");
 
   return 0;
 }

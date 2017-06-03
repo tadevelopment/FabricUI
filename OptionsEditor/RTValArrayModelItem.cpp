@@ -6,8 +6,7 @@
 #include "RTValArrayModelItem.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Application/FabricException.h>
-#include <FabricUI/Application/FabricApplicationStates.h>
-
+ 
 using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
@@ -22,34 +21,27 @@ RTValArrayModelItem::RTValArrayModelItem(
   RTVal options) 
   : BaseRTValModelItem(name, path)
 {
-  try
+  FABRIC_CATCH_BEGIN();
+
+  m_options = options;
+
+  for(unsigned i=0; i<m_options.getArraySize(); i++) 
   {
-    m_options = options;
+    RTVal childrenOptions = m_options.getArrayElementRef(i); 
 
-    for(unsigned i=0; i<m_options.getArraySize(); i++) 
-    {
-      RTVal childrenOptions = m_options.getArrayElementRef(i); 
+    std::string childName = name + "_" + std::string(QString::number(i).toUtf8().constData());
+    
+    BaseRTValModelItem* item = editor->constructModel(
+      childName,
+      m_path,
+      editor,
+      childrenOptions);
 
-      std::string childName = name + "_" + std::string(QString::number(i).toUtf8().constData());
-      
-      BaseRTValModelItem* item = editor->constructModel(
-        childName,
-        m_path,
-        editor,
-        childrenOptions);
-
-      m_children[childName] = item;
-      m_keys.push_back(childName); 
-    }
+    m_children[childName] = item;
+    m_keys.push_back(childName); 
   }
-  
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "RTValArrayModelItem::RTValArrayModelItem",
-      "",
-      e.getDesc_cstr());
-  }
+
+  FABRIC_CATCH_END("RTValArrayModelItem::RTValArrayModelItem");
 }
  
 RTValArrayModelItem::~RTValArrayModelItem() 
@@ -84,31 +76,21 @@ void RTValArrayModelItem::resetToDefault()
 
 RTVal RTValArrayModelItem::getRTValOptions()
 {
-  try
-  {
-    unsigned count = 0;
-    
-    std::map<std::string, BaseRTValModelItem*>::iterator it;
-    for(it=m_children.begin(); it!=m_children.end(); it++) 
-    {
-      BaseRTValModelItem* child = (BaseRTValModelItem*)it->second;
-     
-      m_options.setArrayElement(
-        count,
-        RTValUtil::toKLRTVal(child->getRTValOptions()) 
-        );
+  FABRIC_CATCH_BEGIN();
 
-      count++;
-    }
-  }
-
-  catch(Exception &e)
+  unsigned count = 0;
+  std::map<std::string, BaseRTValModelItem*>::iterator it;
+  for(it=m_children.begin(); it!=m_children.end(); it++) 
   {
-    FabricException::Throw(
-      "RTValArrayModelItem::getRTValOptions",
-      "",
-      e.getDesc_cstr());
+    BaseRTValModelItem* child = (BaseRTValModelItem*)it->second;
+    m_options.setArrayElement(
+      count,
+      RTValUtil::toKLRTVal(child->getRTValOptions()) 
+      );
+    count++;
   }
+ 
+  FABRIC_CATCH_END("RTValArrayModelItem::getRTValOptions");
 
   return m_options;
 }
@@ -116,35 +98,23 @@ RTVal RTValArrayModelItem::getRTValOptions()
 void RTValArrayModelItem::setRTValOptions(
   RTVal options) 
 {  
-  try
-  { 
-    m_options = RTValUtil::toRTVal(options);
+  FABRIC_CATCH_BEGIN();
 
-    if(!m_options.isArray())
-      FabricException::Throw(
-        "RTValArrayModelItem::setRTValOptions",
-        "options is not an array");
+  m_options = RTValUtil::toRTVal(options);
 
-    unsigned count = 0;
-
-    std::map<std::string, BaseRTValModelItem*>::iterator it;
-    for(it=m_children.begin(); it!=m_children.end(); it++) 
-    {
-      BaseRTValModelItem* child = (BaseRTValModelItem*)it->second;
- 
-      RTVal childrenOptions = m_options.getArrayElementRef(count);
-      
-      child->setRTValOptions(childrenOptions);
-      
-      count++;
-    }
-  }
-
-  catch(Exception &e)
-  {
+  if(!m_options.isArray())
     FabricException::Throw(
       "RTValArrayModelItem::setRTValOptions",
-      "",
-      e.getDesc_cstr());
+      "options is not an array");
+
+  unsigned count = 0;
+  std::map<std::string, BaseRTValModelItem*>::iterator it;
+  for(it=m_children.begin(); it!=m_children.end(); it++) 
+  {
+    BaseRTValModelItem* child = (BaseRTValModelItem*)it->second;    
+    child->setRTValOptions(m_options.getArrayElementRef(count));
+    count++;
   }
+
+  FABRIC_CATCH_END("RTValArrayModelItem::setRTValOptionssetRTValOptions");
 }

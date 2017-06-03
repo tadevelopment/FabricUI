@@ -74,63 +74,55 @@ inline RTVal GetKLSingleOption(
   QList<QString> &singleOptionPaths,
   RTVal &options) 
 { 
-  try
+  FABRIC_CATCH_BEGIN();
+
+  options = Util::RTValUtil::toRTVal(options);
+
+  QString optionName = singleOptionPaths[index];
+
+  RTVal key = RTVal::ConstructString(
+    options.getContext(),
+    optionName.toUtf8().constData()); 
+
+  if(options.isDict()) 
   {
-    options = Util::RTValUtil::toRTVal(options);
- 
-    QString optionName = singleOptionPaths[index];
+    RTVal childrenOptions = options.getDictElement( 
+      key); 
 
-    RTVal key = RTVal::ConstructString(
-      options.getContext(),
-      optionName.toUtf8().constData()); 
-
-    if(options.isDict()) 
-    {
-      RTVal childrenOptions = options.getDictElement( 
-        key); 
-
-      if(childrenOptions.isDict() || childrenOptions.isArray())
-        return GetKLSingleOption(
-          index+1, 
-          singleOptionPaths, 
-          childrenOptions);
-
-      else
-        return childrenOptions;
-    }
-
-    else if(options.isArray()) 
-    {
-      // RTVal key = RTVal::ConstructString(
-      //   context,
-      //   optionName.toUtf8().constData()); 
-
-      // RTVal childrenOptions = rtValOptions->getDictElement( key); 
-
-      // if( Util::RTValUtil::getType(options) == "RTVal[String]" || 
-      //     Util::RTValUtil::getType(options) == "RTVal[]")
-        
-      //   GetKLSingleOption(
-      //     index+1, 
-      //     singleOptionPaths, 
-      //     singleOption,
-      //     childrenOptions);
-    }
+    if(childrenOptions.isDict() || childrenOptions.isArray())
+      return GetKLSingleOption(
+        index+1, 
+        singleOptionPaths, 
+        childrenOptions);
 
     else
-      return options;
+      return childrenOptions;
   }
 
-  catch(Exception &e)
+  else if(options.isArray()) 
   {
-    Application::FabricException::Throw(
-      "OptionsEditorHelpers::GetKLSingleOption",
-      "",
-      e.getDesc_cstr());
+    // RTVal key = RTVal::ConstructString(
+    //   context,
+    //   optionName.toUtf8().constData()); 
+
+    // RTVal childrenOptions = rtValOptions->getDictElement( key); 
+
+    // if( Util::RTValUtil::getType(options) == "RTVal[String]" || 
+    //     Util::RTValUtil::getType(options) == "RTVal[]")
+      
+    //   GetKLSingleOption(
+    //     index+1, 
+    //     singleOptionPaths, 
+    //     singleOption,
+    //     childrenOptions);
   }
 
-  RTVal dumb;
-  return dumb;
+  else
+    return options;
+
+  FABRIC_CATCH_END("OptionsEditorHelpers::GetKLSingleOption");
+
+  return RTVal();
 }
 
 inline void SetKLSingleOption(
@@ -139,206 +131,161 @@ inline void SetKLSingleOption(
   RTVal singleOption,
   RTVal options) 
 { 
+  FABRIC_CATCH_BEGIN();
+
   if(options.isWrappedRTVal()) 
     options = options.getUnwrappedRTVal(); 
+ 
+  QString optionName = singleOptionPaths[index];
 
-  try
+  RTVal key = RTVal::ConstructString(
+    singleOption.getContext(),
+    optionName.toUtf8().constData()); 
+
+  if(options.isDict()) 
   {
-    QString optionName = singleOptionPaths[index];
+    RTVal childrenOptions = options.getDictElement( 
+      key); 
 
-    RTVal key = RTVal::ConstructString(
-      singleOption.getContext(),
-      optionName.toUtf8().constData()); 
+    if(childrenOptions.isDict() || childrenOptions.isArray())
+      SetKLSingleOption(
+        index+1, 
+        singleOptionPaths, 
+        singleOption,
+        childrenOptions);
 
-    if(options.isDict()) 
-    {
-      RTVal childrenOptions = options.getDictElement( 
-        key); 
-
-      if(childrenOptions.isDict() || childrenOptions.isArray())
-        SetKLSingleOption(
-          index+1, 
-          singleOptionPaths, 
-          singleOption,
-          childrenOptions);
-
-      else
-        options.setDictElement(
-          key, 
-          Util::RTValUtil::toKLRTVal(
-            singleOption)
-          );
-    }
-
-    else if(options.isArray()) 
-    {
-      // RTVal key = RTVal::ConstructString(
-      //   singleOption.getContext(),
-      //   optionName.toUtf8().constData()); 
-
-      // RTVal childrenOptions = rtValOptions->getDictElement( key); 
-
-      // if( Util::RTValUtil::getType(options) == "RTVal[String]" || 
-      //     Util::RTValUtil::getType(options) == "RTVal[]")
-        
-      //   SetKLSingleOption(
-      //     index+1, 
-      //     singleOptionPaths, 
-      //     singleOption,
-      //     childrenOptions);
-    }
+    else
+      options.setDictElement(
+        key, 
+        Util::RTValUtil::toKLRTVal(
+          singleOption)
+        );
   }
 
-  catch(Exception &e)
+  else if(options.isArray()) 
   {
-    Application::FabricException::Throw(
-      "OptionsEditorHelpers::SetKLSingleOption",
-      "",
-      e.getDesc_cstr());
+    // RTVal key = RTVal::ConstructString(
+    //   singleOption.getContext(),
+    //   optionName.toUtf8().constData()); 
+
+    // RTVal childrenOptions = rtValOptions->getDictElement( key); 
+
+    // if( Util::RTValUtil::getType(options) == "RTVal[String]" || 
+    //     Util::RTValUtil::getType(options) == "RTVal[]")
+      
+    //   SetKLSingleOption(
+    //     index+1, 
+    //     singleOptionPaths, 
+    //     singleOption,
+    //     childrenOptions);
   }
+
+  FABRIC_CATCH_END("OptionsEditorHelpers::SetKLSingleOption");
 }
   
 // KL OptionsTarget helpers
 RTVal GetKLOptionsTargetRegistry() 
 {
-  RTVal optionsTargetRegistry;
+  FABRIC_CATCH_BEGIN();
 
-  try
-  {
-    RTVal appOptionsTargetRegistry = RTVal::Construct(
-      Application::FabricApplicationStates::GetAppStates()->getContext(),
-      "AppOptionsTargetRegistry",
-      0, 0);
+  RTVal appOptionsTargetRegistry = RTVal::Construct(
+    Application::FabricApplicationStates::GetAppStates()->getContext(),
+    "AppOptionsTargetRegistry",
+    0, 0);
 
-    optionsTargetRegistry = appOptionsTargetRegistry.callMethod(
-      "OptionsTargetRegistry",
-      "getOptionsTargetRegistry",
-      0, 0);
-  }
+  return appOptionsTargetRegistry.callMethod(
+    "OptionsTargetRegistry",
+    "getOptionsTargetRegistry",
+    0, 0);
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "OptionsEditorHelpers::GetKLOptionsTargetRegistry",
-      "",
-      e.getDesc_cstr());
-  }
+  FABRIC_CATCH_END("OptionsEditorHelpers::GetKLOptionsTargetRegistry");
 
-  return optionsTargetRegistry;
+  return RTVal();
 }
  
 RTVal GetKLOptionsTargetOptions(
   QString registryID) 
 {
-  RTVal options;
+  FABRIC_CATCH_BEGIN();
+
+  RTVal registryIDVal = RTVal::ConstructString(
+    Application::FabricApplicationStates::GetAppStates()->getContext(),
+    registryID.toUtf8().constData());
   
-  try
-  {
-    RTVal registryIDVal = RTVal::ConstructString(
-      Application::FabricApplicationStates::GetAppStates()->getContext(),
-      registryID.toUtf8().constData());
+  return GetKLOptionsTargetRegistry().callMethod(
+    "RTVal", 
+    "getTargetOptions",
+    1,
+    &registryIDVal);
 
-    RTVal optionsTargetRegistry = GetKLOptionsTargetRegistry();
-    
-    options = optionsTargetRegistry.callMethod(
-      "RTVal", 
-      "getTargetOptions",
-      1,
-      &registryIDVal);
-  }
+  FABRIC_CATCH_END("OptionsEditorHelpers::GetKLOptionsTargetRegistry");
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "OptionsEditorHelpers::GetKLOptionsTargetOptions",
-      "",
-      e.getDesc_cstr());
-  }
-
-  return options;
+  return RTVal();
 }
 
 RTVal GetKLOptionsTargetSingleOption(
   QString path) 
 { 
-  RTVal res;
+  FABRIC_CATCH_BEGIN();
 
-  try
-  {
-    int index = path.indexOf("/");
+  int index = path.indexOf("/");
 
-    QString registryID = path.midRef(
-      0, index).toUtf8().constData();
+  QString registryID = path.midRef(
+    0, index).toUtf8().constData();
 
-    RTVal options = GetKLOptionsTargetOptions(
-      registryID);
+  RTVal options = GetKLOptionsTargetOptions(
+    registryID);
 
-    res = GetKLSingleOption(
-      1,
-      path.split('/'),
-      options);
-  }
+  return GetKLSingleOption(
+    1,
+    path.split('/'),
+    options);
 
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "OptionsEditorHelpers::GetKLOptionsTargetSingleOption",
-      "",
-      e.getDesc_cstr());
-  }
+  FABRIC_CATCH_END("OptionsEditorHelpers::GetKLOptionsTargetSingleOption");
 
-  return res;
+  return RTVal();
 }
 
 void SetKLOptionsTargetSingleOption(
   QString path,
   RTVal singleOption) 
 { 
-  try
+  FABRIC_CATCH_BEGIN();
+
+  int index = path.indexOf("/");
+
+  QString registryID = path.midRef(
+    0, index).toUtf8().constData();
+
+  RTVal options = GetKLOptionsTargetOptions(
+    registryID);
+
+  SetKLSingleOption(
+    1,
+    path.split('/'),
+    singleOption,
+    options);
+
+  RTVal args[2] = 
   {
-    int index = path.indexOf("/");
-
-    QString registryID = path.midRef(
-      0, index).toUtf8().constData();
-
-    RTVal options = GetKLOptionsTargetOptions(
-      registryID);
-
-    SetKLSingleOption(
+    RTVal::ConstructString(
+      options.getContext(), 
+      registryID.toUtf8().constData())
+    ,
+    RTVal::Construct(
+      options.getContext(), 
+      "RTVal",
       1,
-      path.split('/'),
-      singleOption,
-      options);
- 
-    RTVal optionsTargetRegistry = GetKLOptionsTargetRegistry();    
+      &options)
+  };
 
-    RTVal args[2] = 
-    {
-      RTVal::ConstructString(
-        options.getContext(), 
-        registryID.toUtf8().constData())
-      ,
-      RTVal::Construct(
-        options.getContext(), 
-        "RTVal",
-        1,
-        &options)
-    };
-
-    optionsTargetRegistry.callMethod(
-      "", 
-      "setTargetOptions",
-      2,
-      args);
-  }
-
-  catch(Exception &e)
-  {
-    Application::FabricException::Throw(
-      "OptionsEditorHelpers::SetKLOptionsTargetSingleOption",
-      "",
-      e.getDesc_cstr());
-  }
+  GetKLOptionsTargetRegistry().callMethod(
+    "", 
+    "setTargetOptions",
+    2,
+    args);
+  
+  FABRIC_CATCH_END("OptionsEditorHelpers::SetKLOptionsTargetSingleOption");
 }
 
 } // namespace OptionsEditor 
