@@ -4,6 +4,7 @@
 
 #include "CommandArgHelpers.h"
 #include "CommandArgHelpers.h"
+#include "BaseCommand.h"
 #include "BaseScriptableCommand.h"
 #include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
@@ -25,7 +26,7 @@ using namespace Application;
 
 QString CommandArgHelpers::CreateHistoryDescFromArgs(
   const QMap<QString, QString> &argsDesc,
-  BaseScriptableCommand *cmd)
+  BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
 
@@ -42,11 +43,11 @@ QString CommandArgHelpers::CreateHistoryDescFromArgs(
     QMapIterator<QString, QString> it(argsDesc);
     while(it.hasNext()) 
     {
-      it.next();
+       it.next();
 
       QString key = it.key();
-      QString argDesc = (rtValScriptCmd && !rtValScriptCmd->getRTValArgPath(key).isEmpty())
-        ? argDesc = "<" + it.value() + ">"
+      QString argDesc = ( (rtValScriptCmd != 0) && !rtValScriptCmd->getRTValArgPath(key).isEmpty())
+        ? "<" + it.value() + ">"
         : it.value();
 
       desc += key + "=\"" + argDesc + "\"";
@@ -68,9 +69,15 @@ QString CommandArgHelpers::CreateHistoryDescFromArgs(
 QString CommandArgHelpers::CreateHelpFromArgs(
   const QString &commandHelp,
   const QMap<QString, QString> &argsHelp,
-  BaseScriptableCommand *cmd)
+  BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
+
+  BaseScriptableCommand *scriptCmd = qobject_cast<BaseScriptableCommand*>(
+    cmd);
+
+  if(scriptCmd == 0)
+    return "";
 
   QString help = commandHelp + "\n";
 
@@ -85,16 +92,16 @@ QString CommandArgHelpers::CreateHelpFromArgs(
     QString argHelp = it.value();
 
     QString specs; 
-    if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG) || cmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
+    if(scriptCmd->isArg(key, CommandArgFlags::OPTIONAL_ARG) || scriptCmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
     {
       specs += "["; 
 
-      if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
+      if(scriptCmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
         specs += "optional"; 
 
-      if(cmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
+      if(scriptCmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
       {
-        if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
+        if(scriptCmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
           specs += ", loggable"; 
         specs += "loggable"; 
       }
@@ -115,9 +122,15 @@ QString CommandArgHelpers::CreateHelpFromArgs(
 QString CommandArgHelpers::CreateHelpFromRTValArgs(
   const QString &commandHelp,
   const QMap<QString, QString> &argsHelp,
-  BaseRTValScriptableCommand *cmd)
+  BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
+
+  BaseRTValScriptableCommand *rtValScriptCmd = qobject_cast<BaseRTValScriptableCommand*>(
+    cmd);
+
+  if(rtValScriptCmd == 0)
+    return "";
 
   QString help = commandHelp + "\n";
 
@@ -130,7 +143,7 @@ QString CommandArgHelpers::CreateHelpFromRTValArgs(
     it.next();
     QString key = it.key();
 
-    if(!cmd->hasArg(key)) 
+    if(!rtValScriptCmd->hasArg(key)) 
       return "";
 
     QString argHelp = it.value();
@@ -138,26 +151,26 @@ QString CommandArgHelpers::CreateHelpFromRTValArgs(
     QString specs; 
     specs += " ["; 
 
-    if( cmd->isArg(key, CommandArgFlags::IN_ARG) ||
-        cmd->isArg(key, CommandArgFlags::OUT_ARG) ||
-        cmd->isArg(key, CommandArgFlags::IO_ARG) )
-      specs += "PathValue[" + cmd->getRTValArgType(key)+"]"; 
+    if( rtValScriptCmd->isArg(key, CommandArgFlags::IN_ARG) ||
+        rtValScriptCmd->isArg(key, CommandArgFlags::OUT_ARG) ||
+        rtValScriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
+      specs += "PathValue[" + rtValScriptCmd->getRTValArgType(key)+"]"; 
     else
-      specs += cmd->getRTValArgType(key); 
+      specs += rtValScriptCmd->getRTValArgType(key); 
 
-    if(cmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
+    if(rtValScriptCmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
       specs += ", optional"; 
 
-    if(cmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
+    if(rtValScriptCmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
       specs += ", loggable"; 
 
-    if(cmd->isArg(key, CommandArgFlags::IN_ARG))
+    if(rtValScriptCmd->isArg(key, CommandArgFlags::IN_ARG))
       specs += ", IN"; 
 
-    if(cmd->isArg(key, CommandArgFlags::OUT_ARG))
+    if(rtValScriptCmd->isArg(key, CommandArgFlags::OUT_ARG))
       specs += ", OUT"; 
 
-    if(cmd->isArg(key, CommandArgFlags::IO_ARG))
+    if(rtValScriptCmd->isArg(key, CommandArgFlags::IO_ARG))
       specs += ", IO"; 
     
     specs += "]"; 

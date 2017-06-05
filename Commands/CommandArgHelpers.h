@@ -30,9 +30,8 @@ class CommandArgFlags
     static int IO_ARG;
 };
 
-class BaseScriptableCommand;
-class BaseRTValScriptableCommand;
-
+class BaseCommand;
+ 
 class CommandArgHelpers 
 {  
   public:
@@ -41,7 +40,7 @@ class CommandArgHelpers
     /// \param argsHelp Map of [arg, arg desc]
     static QString CreateHistoryDescFromArgs(
       const QMap<QString, QString> &argsDesc,
-      BaseScriptableCommand *cmd
+      BaseCommand *cmd
       );
 
     /// Helper to create the command's helps
@@ -51,7 +50,7 @@ class CommandArgHelpers
     static QString CreateHelpFromArgs(
       const QString &commandHelp,
       const QMap<QString, QString> &argsHelp,
-      BaseScriptableCommand *cmd
+      BaseCommand *cmd
       );
 
     /// Helper to create the command's helps
@@ -61,7 +60,7 @@ class CommandArgHelpers
     static QString CreateHelpFromRTValArgs(
       const QString &commandHelp,
       const QMap<QString, QString> &argsHelp,
-      BaseRTValScriptableCommand *cmd
+      BaseCommand *cmd
       );
 };
 
