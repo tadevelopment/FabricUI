@@ -2,6 +2,7 @@
 
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/MainPanel.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/InstBlockHeader.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
@@ -221,7 +222,10 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
   ConnectionTarget * newTargetUnderMouse = NULL;
   ConnectionTarget * prevTargetUnderMouse = m_targetUnderMouse;
-  float distance = 1000000.0f;
+
+  MainPanel * mainPanel = graph()->mainPanel();
+  float zoom = mainPanel->canvasZoom();
+  float distance = m_radius * zoom;
   for(int i=0;i<items.count();i++)
   {
     if(items[i]->type() == QGraphicsItemType_PinCircle)
@@ -236,8 +240,10 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
         success = target->canConnectTo(m_target, failureReason);
       if(success)
       {
-        float newDistance = (pinCircle->centerInSceneCoords() - mousePos).manhattanLength();
-        if(newDistance < distance)
+        QPointF diff = (pinCircle->centerInSceneCoords() - m_connectionPos); // use m_connectionPos so we're working scene space
+        float newDistanceSquarred = diff.x() * diff.x() + diff.y() * diff.y(); // is good enough to compare distances (not need for the expensive sqrt)
+        float newDistance = sqrt( newDistanceSquarred );
+        if(newDistance <= distance)
         {
           distance = newDistance;
           newTargetUnderMouse = target;
