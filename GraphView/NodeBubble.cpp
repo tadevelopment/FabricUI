@@ -109,36 +109,47 @@ void NodeBubble::setText( QString t )
 {
   m_textItem->setText( t );
 
+  setToolTip( t );
+
   updateChildrenGeometries();
 }
 
 void NodeBubble::mousePressEvent( QGraphicsSceneMouseEvent *event )
 {
-  if( MainPanel::filterMousePressEvent( event ) )
+  if ( MainPanel::filterMousePressEvent( event ) )
     return event->ignore();
 
-  if ( event->button() == Qt::RightButton )
+  if ( event->button() == Qt::MiddleButton )
   {
-    // toggle the expanded state
-    m_node->m_graph->controller()->gvcDoSetNodeCommentExpanded(
-      m_node,
-      isCollapsed()
-      );
-    event->accept();
-    return;
+    QGraphicsObject::mousePressEvent(event);
   }
-
-  QGraphicsObject::mousePressEvent(event);
+  else
+  {
+    if ( event->button() == Qt::RightButton )
+    {
+      // toggle the expanded state
+      m_node->m_graph->controller()->gvcDoSetNodeCommentExpanded(
+        m_node,
+        isCollapsed()
+        );
+    }
+    event->accept();
+  }
 }
 
 void NodeBubble::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event )
 {
-  if ( isCollapsed() )
-    m_node->m_graph->controller()->gvcDoSetNodeCommentExpanded( m_node, true );
-  else
-    emit bubbleEditRequested( this );
+  if ( event->button() == Qt::LeftButton )
+  {
+    if ( isCollapsed() )
+      m_node->m_graph->controller()->gvcDoSetNodeCommentExpanded( m_node, true );
+    else
+      emit bubbleEditRequested( this );
+    event->accept();
+    return;
+  }
 
-  event->accept();
+  QGraphicsObject::mouseDoubleClickEvent(event);
 }
 
 void NodeBubble::onNodePositionChanged(
@@ -147,6 +158,13 @@ void NodeBubble::onNodePositionChanged(
   )
 {
   updateChildrenGeometries();
+}
+
+void NodeBubble::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
+{
+  // [FE-7862] we don't want any context menus
+  // when right-clicking on a node bubble.
+  event->accept();
 }
 
 void NodeBubble::updateChildrenGeometries()

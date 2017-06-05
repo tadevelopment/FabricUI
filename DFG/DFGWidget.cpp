@@ -242,8 +242,12 @@ DFGWidget::DFGWidget(
     this, SLOT( onBackdropAddedFromTabSearch() )
   );
   QObject::connect(
-    m_tabSearchWidget, SIGNAL( selectedCreateNewVariable() ),
-    this, SLOT( onVariableCreationRequestedFromTabSearch() )
+    m_tabSearchWidget, SIGNAL( selectedBackdrop() ),
+    this, SLOT( onBackdropAddedFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedNewBlock() ),
+    this, SLOT( onNewBlockAddedFromTabSearch() )
   );
   QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
@@ -301,6 +305,24 @@ DFGKLEditorWidget * DFGWidget::getKLEditor()
 DFGController * DFGWidget::getUIController()
 {
   return m_uiController.get();
+}
+
+const DFGController * DFGWidget::getUIController() const
+{
+  return m_uiController.get();
+}
+
+std::string DFGWidget::getBindingHostApp() const
+{
+  std::string host_app = "";
+  DFGController *controller = (DFGController *)getUIController();
+  if (controller)
+  {
+    const char *host_app_ptr = controller->getBinding().getMetadata("host_app");
+    if (host_app_ptr)
+      host_app = host_app_ptr;
+  }
+  return host_app;
 }
 
 const char* legacyTabSearchKey = "useLegacyTabSearch";
@@ -378,10 +400,12 @@ static void CountNodeTypes(
 
 QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, void* userData)
 {
-  DFGWidget * graphWidget = (DFGWidget*)userData;
-  DFGController *controller =
-    static_cast<DFGController *>( graph->controller() );
-  if ( !controller )
+  DFGWidget     *graphWidget = (DFGWidget*)userData;
+  DFGController *controller  = static_cast<DFGController *>(graph->controller());
+  if (!controller)
+    return NULL;
+
+  if (graphWidget->isQuickZoomActive())  // [FE-7950]
     return NULL;
 
   std::vector<GraphView::Node *> nodes = graph->selectedNodes();
@@ -409,10 +433,14 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  result->addAction(new NewGraphNodeAction              (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewFunctionNodeAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new NewBackdropNodeAction           (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
-  result->addAction(new ImplodeSelectedNodesAction      (graphWidget, result, graphWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
+  result->addAction(new NewGraphNodeAction   (graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewFunctionNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+  result->addAction(new NewBackdropNodeAction(graphWidget, QCursor::pos(), result, graphWidget->isEditable()));
+
+  result->addSeparator();
+
+  result->addAction(new ImplodeSelectedNodesAction(graphWidget, result, graphWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
+  result->addAction(new ExplodeSelectedNodesAction(graphWidget, result, graphWidget->isEditable() && instNodeCount + userNodeCount > 0));
 
   result->addSeparator();
 
@@ -442,6 +470,8 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addAction(new ResetZoomAction(graphWidget, result));
 
+  result->setFocus( Qt::OtherFocusReason );
+
   return result;
 }
 
@@ -456,6 +486,9 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     FabricCore::DFGExec &exec      = dfgWidget->m_uiController->getExec();
     GraphView::Graph    *graph     = dfgWidget->m_uiGraph;
     if (graph->controller() == NULL)
+      return NULL;
+
+    if (dfgWidget->isQuickZoomActive())  // [FE-7950]
       return NULL;
 
     std::vector<GraphView::Node *> nodes = dfgWidget->getUIController()->graph()->selectedNodes();
@@ -607,10 +640,12 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addAction(new UpdatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanUpdatePreset));
     result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanCreatePreset));
-    result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
+    result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, nodes.size() == 1 && instExec.isPreset()));
     result->addAction(new ExportGraphAction           (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
-    result->addAction(new ImplodeSelectedNodesAction  (dfgWidget, result, dfgWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
-    result->addAction(new ExplodeNodeAction           (dfgWidget, uiNode, result, dfgWidget->isEditable() && onlyInstNodes && instNodeCount == 1 && exec.getSubExec(nodeName).getType() == FabricCore::DFGExecType_Graph));
+    result->addSeparator();
+
+    result->addAction(new ImplodeSelectedNodesAction(dfgWidget, result, dfgWidget->isEditable() && blockNodeCount == 0 && nodes.size() > 0));
+    result->addAction(new ExplodeSelectedNodesAction(dfgWidget, result, dfgWidget->isEditable() && instNodeCount + userNodeCount > 0));
 
     result->addSeparator();
 
@@ -620,6 +655,8 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addAction(new SetNodeCommentAction   (dfgWidget, uiNode, result, uiNode->comment().isEmpty(), dfgWidget->isEditable()));
     result->addAction(new RemoveNodeCommentAction(dfgWidget, uiNode, result, dfgWidget->isEditable() && !uiNode->comment().isEmpty()));
+
+    result->setFocus( Qt::OtherFocusReason );
 
     return result;
   }
@@ -639,6 +676,10 @@ QMenu *DFGWidget::portContextMenuCallback(
   GraphView::Graph * graph = graphWidget->m_uiGraph;
   if (!graph->controller())
     return NULL;
+
+  if (graphWidget->isQuickZoomActive())  // [FE-7950]
+    return NULL;
+
   FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
 
   bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
@@ -664,7 +705,9 @@ QMenu *DFGWidget::portContextMenuCallback(
 
   result->addAction( new MoveInputPortsToEndAction ( graphWidget, result, editable && exec.getExecPortCount() > 1 && numPortsIn  > 0 ) );
   result->addAction( new MoveOutputPortsToEndAction( graphWidget, result, editable && exec.getExecPortCount() > 1 && numPortsOut > 0 ) );
-  
+
+  result->setFocus( Qt::OtherFocusReason );
+
   return result;
 }
 
@@ -678,6 +721,9 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   if(graph->controller() == NULL)
     return NULL;
 
+  if (graphWidget->isQuickZoomActive())  // [FE-7950]
+    return NULL;
+
   bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
 
   QMenu *menu = new QMenu( fixedPort->scene()->views()[0] );
@@ -685,6 +731,8 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
   QAction *dummyAction = new QAction( "Port is locked", menu );
   dummyAction->setEnabled( editable && false );
   menu->addAction( dummyAction );
+
+  menu->setFocus( Qt::OtherFocusReason );
 
   return menu;
 }
@@ -695,6 +743,9 @@ QMenu *DFGWidget::connectionContextMenuCallback(
   )
 {
   DFGWidget * dfgWidget = (DFGWidget*)userData;
+
+  if (dfgWidget->isQuickZoomActive())  // [FE-7950]
+    return NULL;  // [FE-7950]
 
   QMenu *result = new QMenu(connection->scene()->views()[0]);
 
@@ -757,6 +808,8 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "",
                                                                dfgWidget->isEditable()));
 
+  result->setFocus( Qt::OtherFocusReason );
+
   return result;
 }
 
@@ -769,6 +822,10 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
   GraphView::Graph * graph = graphWidget->m_uiGraph;
   if (graph->controller() == NULL)
     return NULL;
+
+  if (graphWidget->isQuickZoomActive())  // [FE-7950]
+    return NULL;
+
   FabricCore::DFGExec &exec = graphWidget->getDFGController()->getExec();
 
   bool editable = (graphWidget->isEditable() && graphWidget->getDFGController()->validPresetSplit());
@@ -790,26 +847,30 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
 
   result->addSeparator();
 
-  QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
-  timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );
+  // [FE-8248] we only show the 'Timeline' menu for certain host applications (e.g. Canvas standalone).
+  if ( graphWidget->isBindingHostAppStandalone() )
   {
-    QString portname[4] = {"timeline", "timelineStart", "timelineEnd", "timelineFramerate"};
-    bool canAddTimelinePort[4];
-    bool canAddAllTimelinePorts = false;
-    for (int i=0;i<4;i++)
+    QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
+    timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );
     {
-      canAddTimelinePort[i] = (   editable
-                               && portType == FabricUI::GraphView::PortType_Output
-                               && exec.getExecPath().getLength() == 0
-                               && graph->ports(portname[i].toUtf8().data()).size() == 0 );
-      canAddAllTimelinePorts |= canAddTimelinePort[i];
-      timelinePortsMenu->addAction( new CreateTimelinePortAction( graphWidget, timelinePortsMenu, i, canAddTimelinePort[i] ) );
+      QString portname[4] = {"timeline", "timelineStart", "timelineEnd", "timelineFramerate"};
+      bool canAddTimelinePort[4];
+      bool canAddAllTimelinePorts = false;
+      for (int i=0;i<4;i++)
+      {
+        canAddTimelinePort[i] = (   editable
+                                  && portType == FabricUI::GraphView::PortType_Output
+                                  && exec.getExecPath().getLength() == 0
+                                  && graph->ports(portname[i].toUtf8().data()).size() == 0 );
+        canAddAllTimelinePorts |= canAddTimelinePort[i];
+        timelinePortsMenu->addAction( new CreateTimelinePortAction( graphWidget, timelinePortsMenu, i, canAddTimelinePort[i] ) );
+      }
+      timelinePortsMenu->addSeparator();
+      timelinePortsMenu->addAction( new CreateAllTimelinePortsAction( graphWidget, timelinePortsMenu, true /* createOnlyMissingPorts */, canAddAllTimelinePorts ) );
     }
-    timelinePortsMenu->addSeparator();
-    timelinePortsMenu->addAction( new CreateAllTimelinePortsAction( graphWidget, timelinePortsMenu, true /* createOnlyMissingPorts */, canAddAllTimelinePorts ) );
-  }
 
-  result->addSeparator();
+    result->addSeparator();
+  }
   
   bool canDeleteAllPorts = (    editable
                             &&  exec.getExecPortCount() > 1
@@ -824,6 +885,8 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
                         || (numPortsOut > 0 && portType == FabricUI::GraphView::PortType_Input) ) );
   result->addAction( new SidePanelScrollUpAction  ( graphWidget, panel, result, canScroll ) );
   result->addAction( new SidePanelScrollDownAction( graphWidget, panel, result, canScroll ) );
+
+  result->setFocus( Qt::OtherFocusReason );
 
   return result;
 }
@@ -844,7 +907,7 @@ void DFGWidget::tabSearch()
 {
   if (m_isEditable)
   {
-    if (getUIController()->validPresetSplit())
+    if (getUIController()->validPresetSplit() && this->getGraphViewWidget()->hasFocus())
     {
       QPoint pos = getGraphViewWidget()->lastEventPos();
       m_tabSearchPos = pos;
@@ -883,6 +946,14 @@ void DFGWidget::onBackdropAddedFromTabSearch()
 {
   this->getUIController()->cmdAddBackDrop(
     "backdrop",
+    getTabSearchScenePos()
+  );
+}
+
+void DFGWidget::onNewBlockAddedFromTabSearch()
+{
+  this->getUIController()->cmdAddBlock(
+    "block",
     getTabSearchScenePos()
   );
 }
@@ -978,6 +1049,16 @@ void DFGWidget::tabSearchVariablesUpdate()
   m_tabSearchVariablesDirty = false;
 
   m_tabSearchWidget->updateResults();
+}
+
+void DFGWidget::tabSearchBlockToggleChanged()
+{
+  FabricCore::DFGExec &exec = this->getUIController()->getExec();
+  m_tabSearchWidget->toggleNewBlocks(
+    exec.isValid()
+    && this->isEditable()
+    && exec.allowsBlocks()
+  );
 }
 
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)
@@ -1996,17 +2077,20 @@ void DFGWidget::exportGraph( const char *nodeName )
   }
 }
 
-void DFGWidget::explodeNode( const char *nodeName )
+void DFGWidget::explodeNode( const char *nodeName, bool clearCurrentSelection, bool selectNewNodes )
 {
   QList<QString> newNodeNames =
     m_uiController->cmdExplodeNode( QString::fromUtf8( nodeName ) );
 
-  m_uiGraph->clearSelection();
-  for ( int i = 0; i < newNodeNames.size(); ++i )
-  {
-    if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeNames.at( i ) ) )
-      uiNode->setSelected( true );
-  }
+  if (clearCurrentSelection)
+    m_uiGraph->clearSelection();
+
+  if (selectNewNodes)
+    for (int i=0;i<newNodeNames.size();i++)
+    {
+      if ( GraphView::Node *uiNode = m_uiGraph->node( newNodeNames.at(i) ) )
+        uiNode->setSelected( true );
+    }
 }
 
 void DFGWidget::keyPressEvent(QKeyEvent * event)
@@ -2058,7 +2142,7 @@ void DFGWidget::keyReleaseEvent(QKeyEvent * event)
 {
   if ( event->key() == Qt::Key_Z
     && !event->isAutoRepeat()
-    && m_uiGraphZoomBeforeQuickZoom != 0 )
+    && isQuickZoomActive() )
   {
     event->accept();
 
@@ -2858,6 +2942,8 @@ void DFGWidget::onExecChanged()
     emit onGraphSet(m_uiGraph);
   }
 
+  this->tabSearchBlockToggleChanged();
+
   m_uiController->updateNodeErrors();
 
   emit execChanged();
@@ -2912,6 +2998,7 @@ void DFGWidget::onExecSplitChanged()
     if ( m_uiGraph )
       m_uiGraph->setEditable( m_isEditable );
   }
+  this->tabSearchBlockToggleChanged();
 }
 
 void DFGWidget::replaceBinding(
