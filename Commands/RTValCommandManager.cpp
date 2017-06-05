@@ -6,7 +6,6 @@
 #include "RTValCommandManager.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
-#include <FabricUI/Commands/CommandArgFlags.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 
