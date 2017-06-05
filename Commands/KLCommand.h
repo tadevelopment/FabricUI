@@ -77,15 +77,7 @@ class KLCommand : public BaseCommand
 
     /// Implementation of BaseCommand.
     virtual QString getName();
-
-    /// Implementation of BaseCommand.
-    virtual void setInteractionID(
-      int interactionID
-      );
-
-    /// Implementation of BaseCommand.
-    virtual int getInteractionID();
-
+ 
     /// Implementation of BaseCommand.
     virtual bool canUndo();
 
@@ -106,6 +98,19 @@ class KLCommand : public BaseCommand
 
     /// Implementation of BaseCommand.
     virtual QString getHistoryDesc();
+
+    /// Implementation of BaseCommand.
+    virtual void setCanMergeID(
+      int canMergeID
+      );
+
+    /// Implementation of BaseCommand.
+    virtual int getCanMergeID();
+
+    /// Implementation of BaseCommand.
+    virtual bool canMerge(
+      BaseCommand *cmd
+      );
 
     /// Implementation of BaseCommand.
     virtual void merge(

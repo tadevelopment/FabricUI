@@ -63,7 +63,7 @@ bool SetPathValueCommand::canUndo()
   FABRIC_CATCH_BEGIN();
    
   return getRTValArgValue("isUndoable").getBoolean() ||
-    getInteractionID() > -1;
+    getCanMergeID() > -1;
 
   FABRIC_CATCH_END("SetPathValueCommand::canUndo");
 

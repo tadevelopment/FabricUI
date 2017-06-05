@@ -28,15 +28,15 @@ BaseCommand* RTValCommandManager::createCommand(
   const QString &cmdName, 
   const QMap<QString, RTVal> &args, 
   bool doCmd,
-  int interactionID)
+  int canMergeID)
 {
   try 
   {  
     BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
       cmdName);
     
-    cmd->setInteractionID(
-      interactionID);
+    cmd->setCanMergeID(
+      canMergeID);
 
     if(args.size() > 0) 
       checkCommandArgs(cmd, args);

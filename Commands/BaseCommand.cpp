@@ -3,13 +3,13 @@
 //
 
 #include "BaseCommand.h"
- 
+
 using namespace FabricUI;
 using namespace Commands;
 
 BaseCommand::BaseCommand() 
   : QObject()
-  , m_interactionID(-1)
+  , m_canMergeID(-1)
 {
 }
 
@@ -27,17 +27,6 @@ void BaseCommand::registrationCallback(
 QString BaseCommand::getName() 
 {
   return m_name;
-}
-
-void BaseCommand::setInteractionID(
-  int interactionID)
-{
-  m_interactionID = interactionID;
-}
-
-int BaseCommand::getInteractionID()
-{
-  return m_interactionID;
 }
 
 bool BaseCommand::canUndo() 
@@ -73,6 +62,23 @@ QString BaseCommand::getHelp()
 QString BaseCommand::getHistoryDesc() 
 {
   return getName();
+}
+
+void BaseCommand::setCanMergeID(
+  int canMergeID)
+{
+  m_canMergeID = canMergeID;
+}
+
+int BaseCommand::getCanMergeID()
+{
+  return m_canMergeID;
+}
+
+bool BaseCommand::canMerge(
+  BaseCommand *cmd) 
+{
+  return getCanMergeID() == cmd->getCanMergeID();
 }
 
 void BaseCommand::merge(

@@ -27,19 +27,6 @@ QString GetKLCommandName(
   FabricCore::RTVal klCmd
   );
 
-/// Sets the interaction ID of a KL commands.
-/// Throws an exception if an error occurs.
-void SetKLCommandInteractionID(
-  FabricCore::RTVal klCmd,
-  int interactionID
-  );
-
-/// Gets the interaction ID of a KL commands.
-/// Throws an exception if an error occurs.
-int GetKLCommandInteractionID(
-  FabricCore::RTVal klCmd
-  );
-
 /// Checks if the KL command is undoable.
 /// Throws an exception if an error occurs.
 bool CanKLCommandUndo(
@@ -83,6 +70,26 @@ QString GetKLCommandHelp(
 /// Throws an exception if an error occurs.
 QString GetKLCommandHistoryDesc(
   FabricCore::RTVal klCmd
+  );
+
+/// Sets the interaction ID of a KL commands.
+/// Throws an exception if an error occurs.
+void SetKLCommandCanMergeID(
+  FabricCore::RTVal klCmd,
+  int canMergeID
+  );
+
+/// Gets the interaction ID of a KL commands.
+/// Throws an exception if an error occurs.
+int GetKLCommandCanMergeID(
+  FabricCore::RTVal klCmd
+  );
+
+/// Merges a KL command with another.
+/// Throws an exception if an error occurs.
+bool CanMergeKLCommand(
+  FabricCore::RTVal klCmd,
+  FabricCore::RTVal otherKLCmd
   );
 
 /// Merges a KL command with another.

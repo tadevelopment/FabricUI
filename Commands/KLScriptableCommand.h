@@ -105,14 +105,6 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
     virtual QString getName();
 
     /// Implementation of BaseCommand.
-    virtual void setInteractionID(
-      int interactionID
-      );
-
-    /// Implementation of BaseCommand.
-    virtual int getInteractionID();
-
-    /// Implementation of BaseCommand.
     virtual bool canUndo();
 
     /// Implementation of BaseCommand.
@@ -132,6 +124,24 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
 
     /// Implementation of BaseCommand.
     virtual QString getHistoryDesc();
+
+    /// Implementation of BaseCommand.
+    virtual void setCanMergeID(
+      int canMergeID
+      );
+
+    /// Implementation of BaseCommand.
+    virtual int getCanMergeID();
+
+    /// Implementation of BaseCommand.
+    virtual bool canMerge(
+      BaseCommand *cmd
+      );
+
+    /// Implementation of BaseCommand.
+    virtual void merge(
+      BaseCommand *cmd
+      );
 
     /// Implementation of BaseScriptableCommand.
     /// Does nothing, the arg is set in KL.
@@ -178,11 +188,6 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
 
     /// Implementation of BaseScriptableCommand.
     virtual QString getArgsDescription();
-
-    /// Implementation of BaseCommand.
-    virtual void merge(
-      BaseCommand *cmd
-      );
 
     /// Implementation of BaseRTValScriptableCommand.
     /// Does nothing, the arg is set in KL.

@@ -31,7 +31,7 @@ class RTValCommandManager : public CommandManager
       const QString &cmdName, 
       const QMap<QString, FabricCore::RTVal> &args, 
       bool doCmd = true,
-      int interactionID = -1
+      int canMergeID = -1
       );
 
   protected:

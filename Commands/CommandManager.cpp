@@ -17,7 +17,7 @@ CommandManager* CommandManager::s_cmdManager = 0;
 
 CommandManager::CommandManager() 
   : QObject()
-  , m_interactionIDCounter(0)
+  , m_canMergeIDCounter(0)
 {
   if(s_instanceFlag)
     FabricException::Throw(
@@ -55,14 +55,14 @@ BaseCommand* CommandManager::createCommand(
   const QString &cmdName, 
   const QMap<QString, QString> &args, 
   bool doCmd,
-  int interactionID)
+  int canMergeID)
 {
   FABRIC_CATCH_BEGIN();
 
   BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
     cmdName);
 
-  cmd->setInteractionID(interactionID);
+  cmd->setCanMergeID(canMergeID);
 
   if(args.size() > 0) 
     checkCommandArgs(cmd, args);
@@ -84,32 +84,19 @@ void CommandManager::doCommand(
     FabricException::Throw(
       "CommandManager::doCommand",
       "BaseCommand is null");
-  
+
+  FABRIC_CATCH_BEGIN();
+
+  bool canMerge = m_undoStack.size() > 0 && 
+    m_undoStack[m_undoStack.size() - 1].topLevelCmd.data()->canMerge(cmd);
+
   bool subCmd = m_undoStack.size() != 0 && 
     !m_undoStack[m_undoStack.size() - 1].succeeded;
     
-  bool pushTopCmd = false;
-  bool interactiveCmd = cmd->getInteractionID() > -1;
-
-  if(!subCmd)
+  if(!subCmd && cmd->canUndo() && !canMerge)
   {
-    // If undoable command, push it.
-    if(cmd->canUndo() && !interactiveCmd) 
-      pushTopCmd = true;
-
-    // otherwise, check if this is the first command
-    // with this interaction ID.
-    else if(interactiveCmd) 
-      pushTopCmd = (m_undoStack.size() == 0)
-        ? true
-        : cmd->getInteractionID() != 
-          m_undoStack[m_undoStack.size() - 1].topLevelCmd.data()->getInteractionID();
-
-    if(pushTopCmd)
-    {
-      clearRedoStack();
-      pushTopCommand(cmd, false);
-    }
+    clearRedoStack();
+    pushTopCommand(cmd, false);
   }
 
   // Execute the command, catch any errors.
@@ -126,44 +113,30 @@ void CommandManager::doCommand(
   catch(FabricException &e) 
   {
     cleanupUnfinishedCommandsAndThrow(
-      cmd,
-      e.what());
+      cmd,e.what());
   }
 
   // If subCmd, push it.
-  if(subCmd)
-    pushLowCommand(cmd);
- 
-  if(pushTopCmd)
-    m_undoStack[m_undoStack.size() - 1].succeeded = true;
-
-  if(!subCmd)
-    // Inform a command has been succefully executed.
-    emit commandDone(mergeCommands(cmd), pushTopCmd);
-}
-
-BaseCommand* CommandManager::mergeCommands(
-  BaseCommand *cmd) 
-{
-  BaseCommand* prevCmd = 0;
-  
-  FABRIC_CATCH_BEGIN();
-
-  int undoStackSize = m_undoStack.size();
-  int id = cmd->getInteractionID();
-
-  if(undoStackSize > 0 && id > -1)
+  if(cmd->canUndo())
   {
-    prevCmd = m_undoStack[undoStackSize - 1].topLevelCmd.data();
-    if(prevCmd->getInteractionID() == id)
-      prevCmd->merge(cmd);
+    if(subCmd)
+      pushLowCommand(cmd);
+   
+    else if(!subCmd && !canMerge)
+      m_undoStack[m_undoStack.size() - 1].succeeded = true;
   }
- 
-  FABRIC_CATCH_END("CommandManager::mergeCommands");
- 
-  return prevCmd == 0 ? cmd : prevCmd;
-}
 
+  if(canMerge)
+  {
+    m_undoStack[m_undoStack.size() - 1].topLevelCmd.data()->merge(cmd);
+    emit commandDone(m_undoStack[m_undoStack.size() - 1].topLevelCmd.data(), false);
+  }
+  else if(!subCmd)
+    emit commandDone(cmd, true);
+
+  FABRIC_CATCH_END("CommandManager::doCommand");
+}
+ 
 void CommandManager::undoCommand() 
 {
   if(m_undoStack.size() == 0)
@@ -191,8 +164,7 @@ void CommandManager::undoCommand()
       {
         if(!stackedCmd.lowLevelCmds[i]->undoIt())
           cleanupUnfinishedUndoLowCommandsAndThrow(
-            i, 
-            stackedCmd);
+            i, stackedCmd);
 
         postDoCommand(stackedCmd.lowLevelCmds[i].data());
       }
@@ -200,9 +172,7 @@ void CommandManager::undoCommand()
       catch(FabricException &e) 
       {
         cleanupUnfinishedUndoLowCommandsAndThrow(
-          i, 
-          stackedCmd, 
-          e.what());
+          i, stackedCmd, e.what());
       }
     }
   }
@@ -213,8 +183,8 @@ void CommandManager::undoCommand()
     {
       if(!top->undoIt())
         FabricException::Throw(
-        "CommandManager::undoCommand top", 
-        "Undoing command '" + top->getName() + "'");
+          "CommandManager::undoCommand top", 
+          "Undoing command '" + top->getName() + "'");
 
       postDoCommand(top);
     }
@@ -257,8 +227,7 @@ void CommandManager::redoCommand()
       {
         if(!stackedCmd.lowLevelCmds[i]->redoIt())
           cleanupUnfinishedRedoLowCommandsAndThrow(
-            i, 
-            stackedCmd);
+            i, stackedCmd);
         
         postDoCommand(stackedCmd.lowLevelCmds[i].data());
      }
@@ -266,9 +235,7 @@ void CommandManager::redoCommand()
       catch(FabricException &e) 
       {
         cleanupUnfinishedRedoLowCommandsAndThrow(
-          i, 
-          stackedCmd, 
-          e.what());
+          i, stackedCmd, e.what());
       }
     }
   }
@@ -328,10 +295,10 @@ BaseCommand* CommandManager::getCommandAtIndex(
   return 0;
 }
 
-int CommandManager::getNewInteractionID()
+int CommandManager::getNewCanMergeID()
 {
-  m_interactionIDCounter++;
-  return m_interactionIDCounter;
+  m_canMergeIDCounter++;
+  return m_canMergeIDCounter;
 }
 
 QString CommandManager::getContent()
@@ -367,10 +334,7 @@ void CommandManager::checkCommandArgs(
   while(ite.hasNext()) 
   {
     ite.next();
-
-    scriptCommand->setArg(
-      ite.key(), 
-      ite.value());
+    scriptCommand->setArg(ite.key(), ite.value());
   }
 
   scriptCommand->validateSetArgs();

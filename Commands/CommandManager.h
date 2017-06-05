@@ -54,7 +54,7 @@ class CommandManager : public QObject
       const QString &cmdName, 
       const QMap<QString, QString> &args = QMapString(), 
       bool doCmd = true,
-      int interactionID = -1
+      int canMergeID = -1
       );
 
     /// Executes a command and adds it to the undo stack.
@@ -91,7 +91,7 @@ class CommandManager : public QObject
       );
 
     /// Gets a new interaction ID.
-    virtual int getNewInteractionID();
+    virtual int getNewCanMergeID();
 
   signals:
     /// Emitted when a top command has 
@@ -152,7 +152,7 @@ class CommandManager : public QObject
     /// Undo-redo stacks
     QList<StackedCommand> m_undoStack, m_redoStack;
     /// 
-    int m_interactionIDCounter;
+    int m_canMergeIDCounter;
 
   private:
     /// Clears a specific stack.
@@ -177,13 +177,7 @@ class CommandManager : public QObject
       const QString& stackName, 
       const QList<StackedCommand> &stack
       );
-
-    /// Merges the last pushed command
-    /// with the command `cmd`.
-    BaseCommand* mergeCommands(
-      BaseCommand *cmd
-      );
-
+ 
     /// Cleans the stacks if errors occur when
     /// doing a command and throws an exception.
     void cleanupUnfinishedCommandsAndThrow(

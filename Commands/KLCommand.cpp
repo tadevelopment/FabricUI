@@ -32,17 +32,6 @@ bool KLCommand::canUndo()
   return CanKLCommandUndo(m_klCmd);
 }
 
-void KLCommand::setInteractionID(
-  int interactionID)
-{
-  SetKLCommandInteractionID(m_klCmd, interactionID);
-}
-
-int KLCommand::getInteractionID()
-{
-  return GetKLCommandInteractionID(m_klCmd);
-}
-
 bool KLCommand::canLog() 
 {
   return CanKLCommandLog(m_klCmd);
@@ -60,7 +49,7 @@ bool KLCommand::doIt()
     
   return DoKLCommand(cmd);
   
-  FABRIC_CATCH_END("KLScriptableCommand::doIt");
+  FABRIC_CATCH_END("KLCommand::doIt");
  
   return false;
 }
@@ -83,6 +72,24 @@ QString KLCommand::getHelp()
 QString KLCommand::getHistoryDesc() 
 {
   return GetKLCommandHistoryDesc(m_klCmd);
+}
+
+void KLCommand::setCanMergeID(
+  int canMergeID)
+{
+  SetKLCommandCanMergeID(m_klCmd, canMergeID);
+}
+
+int KLCommand::getCanMergeID()
+{
+  return GetKLCommandCanMergeID(m_klCmd);
+}
+
+bool KLCommand::canMerge(
+  BaseCommand *cmd) 
+{
+  KLCommand* scriptCmd = qobject_cast<KLCommand*>(cmd);
+  return CanMergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
 }
 
 void KLCommand::merge(

@@ -54,35 +54,35 @@ QString KLCommandManager::getContent()
   return res;
 }
  
-int KLCommandManager::getNewInteractionID()
+int KLCommandManager::getNewCanMergeID()
 {
-  m_interactionIDCounter++;
+  m_canMergeIDCounter++;
   
   FABRIC_CATCH_BEGIN();
 
-  int interactionIDCounter = m_klCmdManager.callMethod(
+  int canMergeIDCounter = m_klCmdManager.callMethod(
     "UInt32", 
-    "getInteractionIDCounter", 
+    "getCanMergeID", 
     0, 0).getUInt32();
 
-  if(interactionIDCounter < m_interactionIDCounter)
+  if(canMergeIDCounter < m_canMergeIDCounter)
   {
-    RTVal interactionIDCounterVal = RTVal::ConstructUInt32(
+    RTVal canMergeIDCounterVal = RTVal::ConstructUInt32(
       m_klCmdManager.getContext(),
-      m_interactionIDCounter);
+      m_canMergeIDCounter);
 
     m_klCmdManager.callMethod(
       "", 
-      "setInteractionIDCounter", 
-      1, &interactionIDCounterVal);
+      "setCanMergeID", 
+      1, &canMergeIDCounterVal);
   }
 
-  else if(m_interactionIDCounter > interactionIDCounter)
-    m_interactionIDCounter = interactionIDCounter;
+  else if(m_canMergeIDCounter > canMergeIDCounter)
+    m_canMergeIDCounter = canMergeIDCounter;
 
-  FABRIC_CATCH_END("KLCommandManager::getNewInteractionID");
+  FABRIC_CATCH_END("KLCommandManager::getNewCanMergeID");
 
-  return m_interactionIDCounter;
+  return m_canMergeIDCounter;
 }
 
 void KLCommandManager::clearRedoStack() 
@@ -164,7 +164,7 @@ void KLCommandManager::createAppCommand(
     appCmd.callMethod("String", "getName", 0, 0).getStringCString(), 
     args, 
     true, 
-    appCmd.callMethod("SInt32", "getInteractionID", 0, 0).getSInt32()
+    appCmd.callMethod("SInt32", "getCanMergeID", 0, 0).getSInt32()
     ); 
 
   FABRIC_CATCH_END("KLCommandManager::createAppCommand");

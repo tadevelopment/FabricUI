@@ -43,7 +43,7 @@ class KLCommandManager_Python : public KLCommandManager
       const QString &cmdName, 
       const QMap<QString, QString> &args, 
       bool doCmd,
-      int interactionID = -1
+      int canMergeID = -1
       );
  
     /// Wraps CommandManager::doCommand.
@@ -91,7 +91,7 @@ class KLCommandManager_Python : public KLCommandManager
       const QString &cmdName, 
       const QMap<QString, FabricCore::RTVal> &args, 
       bool doCmd,
-      int interactionID = -1
+      int canMergeID = -1
       );
 
     /// Wraps RTValCommandManager::checkCommandArgs.
@@ -131,7 +131,7 @@ class KLCommandManager_Python : public KLCommandManager
       const QString &cmdName, 
       const QMap<QString, QString> &args, 
       bool doCmd,
-      int interactionID = -1
+      int canMergeID = -1
       );
 
     /// Implementation of CommandManager, 
@@ -174,7 +174,7 @@ class KLCommandManager_Python : public KLCommandManager
       const QString &cmdName, 
       const QMap<QString, FabricCore::RTVal> &args, 
       bool doCmd,
-      int interactionID = -1
+      int canMergeID = -1
       );
     
     /// Implementation of RTValCommandManager, 

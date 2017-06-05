@@ -7,11 +7,12 @@
 
 #include <QObject>
 #include <QString>
+#include "Command.h"
 
 namespace FabricUI {
 namespace Commands {
 
-class BaseCommand : public QObject
+class BaseCommand : public QObject, public Command
 {
   /**
     BaseCommand defines the functionalities of a command.
@@ -116,6 +117,8 @@ class BaseCommand : public QObject
 
   Q_OBJECT
   
+  Q_INTERFACES(FabricUI::Commands::Command)
+
   public:
     BaseCommand();
 
@@ -132,14 +135,6 @@ class BaseCommand : public QObject
 
     /// Gets the command name.
     virtual QString getName();
-
-    /// Sets the interaction ID.
-    virtual void setInteractionID(
-      int interactionID
-      );
-
-    /// Gets the interaction ID.
-    virtual int getInteractionID();
 
     /// Checks if the command is undoable.
     virtual bool canUndo();
@@ -166,7 +161,21 @@ class BaseCommand : public QObject
     /// to display in the history stack (if one).
     virtual QString getHistoryDesc();
 
-    /// Merges this command with `cmd`.
+    /// Sets the interaction ID.
+    virtual void setCanMergeID(
+      int canMergeID
+      );
+
+    /// Gets the interaction ID.
+    virtual int getCanMergeID();
+
+    /// Checks if the command `cmd` can
+    /// be merged with `this` command.
+    virtual bool canMerge(
+      BaseCommand *cmd
+      );
+
+    /// Merges a command `cmd` with `this` command.
     virtual void merge(
       BaseCommand *cmd
       );
@@ -175,7 +184,7 @@ class BaseCommand : public QObject
     /// Name of the command.
     QString m_name;
     /// Interaction ID, for merging.
-    int m_interactionID;
+    int m_canMergeID;
 };
 
 } // namespace Commands

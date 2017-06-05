@@ -42,7 +42,7 @@ BaseCommand* KLCommandManager_Python::_createCommand_Python(
   const QString &cmdName, 
   const QMap<QString, QString> &args, 
   bool doCmd,
-  int interactionID)
+  int canMergeID)
 {
   FabricException::Throw(
     "KLCommandManager_Python::_createCommand_Python",
@@ -167,7 +167,7 @@ BaseCommand* KLCommandManager_Python::_createRTValCommand_Python(
   const QString &cmdName, 
   const QMap<QString, RTVal> &args, 
   bool doCmd,
-  int interactionID)
+  int canMergeID)
 {
   FabricException::Throw(
     "KLCommandManager_Python::_createRTValCommand_Python",
@@ -237,13 +237,13 @@ BaseCommand* KLCommandManager_Python::createCommand(
   const QString &cmdName, 
   const QMap<QString, QString> &args, 
   bool doCmd,
-  int interactionID)
+  int canMergeID)
 {
   return _createCommand_Python(
     cmdName,
     args,
     doCmd,
-    interactionID);
+    canMergeID);
 }
 
 void KLCommandManager_Python::doCommand(
@@ -294,13 +294,13 @@ BaseCommand* KLCommandManager_Python::createCommand(
   const QString &cmdName, 
   const QMap<QString, RTVal> &args, 
   bool doCmd,
-  int interactionID)
+  int canMergeID)
 {
   return _createRTValCommand_Python(
     cmdName,
     args,
     doCmd,
-    interactionID);
+    canMergeID);
 }
 
 void KLCommandManager_Python::checkCommandArgs(

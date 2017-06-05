@@ -65,41 +65,6 @@ QString GetKLCommandName(
 
   return "";
 }
- 
-void SetKLCommandInteractionID(
-  FabricCore::RTVal klCmd,
-  int interactionID)
-{
-  FABRIC_CATCH_BEGIN();
-
-  RTVal interactionIDVal = RTVal::ConstructSInt32(
-    klCmd.getContext(),
-    interactionID);
-
-  klCmd.callMethod(
-    "", 
-    "setInteractionID", 
-    1, 
-    &interactionIDVal);
-
- FABRIC_CATCH_END("KLCommandHelpers::SetKLCommandInteractionID");
-}
-
-int GetKLCommandInteractionID(
-  FabricCore::RTVal klCmd)
-{
-  FABRIC_CATCH_BEGIN();
-
-  return klCmd.callMethod(
-    "SInt32", 
-    "getInteractionID", 
-    0, 
-    0).getSInt32();
-  
-  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandInteractionID");
-
-  return -1;
-}
 
 bool CanKLCommandUndo(
   RTVal klCmd) 
@@ -247,6 +212,59 @@ QString GetKLCommandHistoryDesc(
   FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandHistoryDesc");
 
   return "";
+}
+ 
+void SetKLCommandCanMergeID(
+  FabricCore::RTVal klCmd,
+  int canMergeID)
+{
+  FABRIC_CATCH_BEGIN();
+
+  RTVal interactionIDVal = RTVal::ConstructSInt32(
+    klCmd.getContext(),
+    canMergeID);
+
+  klCmd.callMethod(
+    "", 
+    "setCanMergeID", 
+    1, 
+    &interactionIDVal);
+
+  FABRIC_CATCH_END("KLCommandHelpers::SetKLCommandCanMergeID");
+}
+
+int GetKLCommandCanMergeID(
+  FabricCore::RTVal klCmd)
+{
+  FABRIC_CATCH_BEGIN();
+
+  return klCmd.callMethod(
+    "SInt32", 
+    "getCanMergeID", 
+    0, 
+    0).getSInt32();
+  
+  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandCanMergeID");
+
+  return -1;
+}
+
+bool CanMergeKLCommand(
+  FabricCore::RTVal klCmd,
+  FabricCore::RTVal otherKLCmd)
+{
+  FABRIC_CATCH_BEGIN();
+
+  return klCmd.callMethod(
+    "Boolean", 
+    "canMerge", 
+    1, 
+    &otherKLCmd
+    ).getBoolean();
+
+  FABRIC_CATCH_END("KLCommandHelpers::CanMergeKLCommand");
+
+  return false;
 }
 
 void MergeKLCommand(

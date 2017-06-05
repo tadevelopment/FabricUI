@@ -31,17 +31,6 @@ QString KLScriptableCommand::getName()
   return GetKLCommandName(m_klCmd);
 }
 
-void KLScriptableCommand::setInteractionID(
-  int interactionID)
-{
-  SetKLCommandInteractionID(m_klCmd, interactionID);
-}
-
-int KLScriptableCommand::getInteractionID()
-{
-  return GetKLCommandInteractionID(m_klCmd);
-}
-
 bool KLScriptableCommand::canUndo() 
 {
   return CanKLCommandUndo(m_klCmd);
@@ -87,6 +76,31 @@ QString KLScriptableCommand::getHelp()
 QString KLScriptableCommand::getHistoryDesc() 
 {
   return GetKLCommandHistoryDesc(m_klCmd);
+}
+
+void KLScriptableCommand::setCanMergeID(
+  int canMergeID)
+{
+  SetKLCommandCanMergeID(m_klCmd, canMergeID);
+}
+
+int KLScriptableCommand::getCanMergeID()
+{
+  return GetKLCommandCanMergeID(m_klCmd);
+}
+
+bool KLScriptableCommand::canMerge(
+  BaseCommand *cmd) 
+{
+  KLScriptableCommand* scriptCmd = qobject_cast<KLScriptableCommand*>(cmd);
+  return CanMergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
+}
+
+void KLScriptableCommand::merge(
+  BaseCommand *cmd) 
+{
+  KLScriptableCommand* scriptCmd = qobject_cast<KLScriptableCommand*>(cmd);
+  MergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
 }
 
 // BaseScriptableCommand
@@ -247,13 +261,6 @@ QString KLScriptableCommand::getArgsDescription()
   FABRIC_CATCH_END("KLScriptableCommand::getArgsDescription");
 
   return "";
-}
-
-void KLScriptableCommand::merge(
-  BaseCommand *cmd) 
-{
-  KLScriptableCommand* scriptCmd = qobject_cast<KLScriptableCommand*>(cmd);
-  MergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
 }
 
 // BaseRTValScriptableCommand

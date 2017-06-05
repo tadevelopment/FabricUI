@@ -38,7 +38,7 @@ class KLCommandManager : public RTValCommandManager
     virtual QString getContent();
 
     /// Implementation of CommandManager
-    virtual int getNewInteractionID();
+    virtual int getNewCanMergeID();
     
   public slots:
     /// Synchronizes with the KL manager.
