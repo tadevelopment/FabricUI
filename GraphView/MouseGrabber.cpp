@@ -441,10 +441,16 @@ void MouseGrabber::performUngrab( ConnectionTarget *fromCT )
 
 void MouseGrabber::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
-  QColor color = m_connection->color();
-  color.setAlpha(125);
-  painter->setPen(color);
-  painter->drawEllipse(windowFrameRect().center(), m_radius, m_radius);
+  if(m_targetUnderMouse == NULL)
+  { 
+    QBrush outlineBrush = painter->brush();
+    outlineBrush.setStyle(Qt::NoBrush);
+    QColor color = m_connection->color();
+    color.setAlpha(125);
+    painter->setBrush(outlineBrush);
+    painter->setPen(color);
+    painter->drawEllipse(windowFrameRect().center(), m_radius, m_radius);
+  }
   QGraphicsWidget::paint(painter, option, widget);
 }
 
