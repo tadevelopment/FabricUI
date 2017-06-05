@@ -179,7 +179,14 @@ for d in dirs:
 
 uiLib = env.StaticLibrary('FabricUI', sources)
 
-if buildOS == 'Windows':
+try:
+  # HACK : this script is called several times, but only
+  # once with this variable exported (hence the try/except here)
+  Import( "registerFabricUIMSVS" )
+except:
+  registerFabricUIMSVS = False
+  
+if buildOS == 'Windows' and registerFabricUIMSVS :
 
   msvsEnv = env.Clone()
 
@@ -199,7 +206,6 @@ if buildOS == 'Windows':
     buildtarget = uiLib,
     variant = 'Release'
   )
-  msvsEnv.Requires( msvsProj, uiLib )
   msvsEnv.Alias( "FabricUIMSVS", msvsProj )
 
 import copy
