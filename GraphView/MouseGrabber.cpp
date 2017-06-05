@@ -40,8 +40,8 @@ MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * 
   m_radius = config.mouseGrabberRadius;
 
   setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  setPreferredSize(QSizeF(diameter(), diameter()));
-  setPos(-radius(), -radius());
+  setPreferredSize(QSizeF(diameter() * 2.0, diameter() * 2.0));
+  setPos(-diameter(), -diameter());
   setWindowFrameMargins(0, 0, 0, 0);
 
   QPointF localPos = parent->itemGroup()->mapFromScene(m_connectionPos);
@@ -225,7 +225,7 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
   MainPanel * mainPanel = graph()->mainPanel();
   float zoom = mainPanel->canvasZoom();
-  float distance = m_radius * zoom;
+  float distance = diameter() * zoom;
   for(int i=0;i<items.count();i++)
   {
     if(items[i]->type() == QGraphicsItemType_PinCircle)
@@ -452,10 +452,10 @@ void MouseGrabber::paint(QPainter * painter, const QStyleOptionGraphicsItem * op
     QBrush outlineBrush = painter->brush();
     outlineBrush.setStyle(Qt::NoBrush);
     QColor color = m_connection->color();
-    color.setAlpha(125);
+    color.setAlpha(85);
     painter->setBrush(outlineBrush);
     painter->setPen(color);
-    painter->drawEllipse(windowFrameRect().center(), m_radius, m_radius);
+    painter->drawEllipse(windowFrameRect().center(), diameter(), diameter());
   }
   QGraphicsWidget::paint(painter, option, widget);
 }
