@@ -436,13 +436,14 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+  float radius = m_graph->config().pinRadius;
   if (!m_dst || m_dst->isDragging())
   {
     QBrush thing = painter->brush();
     thing.setStyle(Qt::SolidPattern);
     thing.setColor(m_color);
     painter->setBrush(thing);
-    painter->drawEllipse(dstPoint(), 4, 4);
+    painter->drawEllipse(dstPoint(), radius, radius);
     thing.setStyle(Qt::NoBrush);
   }
 
@@ -452,7 +453,7 @@ void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
     thing.setStyle(Qt::SolidPattern);
     thing.setColor(m_color);
     painter->setBrush(thing);
-    painter->drawEllipse(srcPoint(), 4, 4);
+    painter->drawEllipse(srcPoint(), radius, radius);
     thing.setStyle(Qt::NoBrush);
   }
 
