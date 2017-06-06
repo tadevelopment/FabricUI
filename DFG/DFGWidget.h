@@ -107,7 +107,6 @@ namespace DFG {
       bool isBindingHostAppCanvasPy()   const { return (getBindingHostApp() == "Canvas.py"); }
       bool isBindingHostAppCanvasExe()  const { return (getBindingHostApp() == "Canvas.exe"); }
       bool isBindingHostAppMaya()       const { return (getBindingHostApp() == "Maya"); }
-      bool isBindingHostAppSoftimage()  const { return (getBindingHostApp() == "Softimage"); }
       bool isBindingHostAppModo()       const { return (getBindingHostApp() == "Modo"); }
       bool isBindingHostApp3dsMax()     const { return (getBindingHostApp() == "3dsMax"); }
 
