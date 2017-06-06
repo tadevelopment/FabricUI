@@ -220,7 +220,7 @@ void SetKLCommandCanMergeID(
 {
   FABRIC_CATCH_BEGIN();
 
-  RTVal interactionIDVal = RTVal::ConstructSInt32(
+  RTVal canMergeIDVal = RTVal::ConstructSInt32(
     klCmd.getContext(),
     canMergeID);
 
@@ -228,7 +228,7 @@ void SetKLCommandCanMergeID(
     "", 
     "setCanMergeID", 
     1, 
-    &interactionIDVal);
+    &canMergeIDVal);
 
   FABRIC_CATCH_END("KLCommandHelpers::SetKLCommandCanMergeID");
 }

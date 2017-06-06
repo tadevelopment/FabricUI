@@ -27,7 +27,6 @@ QString SetKLOptionsTargetModelItemCommand::getHelp()
   argsHelp["target"] = "Absolute path of the port";
   argsHelp["newValue"] = "New value, must be of the same type than the port.";
   argsHelp["previousValue"] = "Previous value, must be of the same type than the port.";
-  argsHelp["isUndoable"] = "If true, the command is undoable.";
 
   return CommandArgHelpers::CreateHelpFromRTValArgs(
     "Sets the value of a KL OptionsEditorTarget model item",

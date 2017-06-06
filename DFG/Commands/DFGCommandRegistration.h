@@ -7,8 +7,6 @@
 
 #include "DFGPathValueResolver.h"
 #include <FabricUI/DFG/DFGController.h>
-#include "SetPortDefaultValueCommand.h"
-#include "SetXfoPortDefaultValueCommand.h"
 #include <FabricUI/Commands/CommandRegistry.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 
@@ -28,12 +26,6 @@ class DFGCommandRegistration
       Commands::PathValueResolverFactory<DFGPathValueResolver>::Register(
         "DFGPathValueResolver",
         (void*)(controller));
-
-      Commands::CommandFactory<SetPortDefaultValueCommand>::Register(
-        "setPortDefaultValue");
-
-      Commands::CommandFactory<SetXfoPortDefaultValueCommand>::Register(
-        "setXfoPortDefaultValue");
     }
 };
 
