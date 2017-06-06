@@ -147,7 +147,7 @@ class HotkeyEditorDialog(QtGui.QDialog):
         """ Implementation of QtGui.QDialog.
         """
         super(HotkeyEditorDialog, self).showEvent(event)
-        GetCmdRegistry().synchronizeKL();
+        GetCommandRegistry().synchronizeKL();
 
     def closeEvent(self, event):
         """ Implementation of QtGui.QDialog.

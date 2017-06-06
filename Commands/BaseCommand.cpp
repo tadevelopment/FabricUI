@@ -78,7 +78,8 @@ int BaseCommand::getCanMergeID()
 bool BaseCommand::canMerge(
   BaseCommand *cmd) 
 {
-  return getCanMergeID() == cmd->getCanMergeID();
+  return getCanMergeID() > -1 && 
+    getCanMergeID() == cmd->getCanMergeID();
 }
 
 void BaseCommand::merge(

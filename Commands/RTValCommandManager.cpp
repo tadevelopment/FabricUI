@@ -34,15 +34,12 @@ BaseCommand* RTValCommandManager::createCommand(
   {  
     BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
       cmdName);
-    
-    cmd->setCanMergeID(
-      canMergeID);
-
+ 
     if(args.size() > 0) 
-      checkCommandArgs(cmd, args);
+      checkRTValCommandArgs(cmd, args);
 
     if(doCmd) 
-      doCommand(cmd);
+      doCommand(cmd, canMergeID);
 
     return cmd;
   }
@@ -59,7 +56,7 @@ BaseCommand* RTValCommandManager::createCommand(
   return 0;
 }
 
-void RTValCommandManager::checkCommandArgs(
+void RTValCommandManager::checkRTValCommandArgs(
   BaseCommand *cmd,
   const QMap<QString, RTVal> &args)
 { 
@@ -67,7 +64,7 @@ void RTValCommandManager::checkCommandArgs(
 
   if(!scriptCmd) 
     FabricException::Throw(
-      "RTValCommandManager::checkCommandArgs",
+      "RTValCommandManager::checkRTValCommandArgs",
       "BaseCommand '" + cmd->getName() + "' is created with args, " + 
       "but is not implementing the BaseRTValScriptableCommand interface"
       );

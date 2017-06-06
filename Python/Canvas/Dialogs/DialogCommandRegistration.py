@@ -9,5 +9,5 @@ class DialogCommandRegistration():
 
     @staticmethod
     def RegisterCommands():
-    	GetCmdRegistry().registerCmd('openHelpDialog', OpenHelpDialogCommand)
+    	GetCommandRegistry().registerCommand('openHelpDialog', OpenHelpDialogCommand)
         

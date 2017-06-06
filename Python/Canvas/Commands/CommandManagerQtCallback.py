@@ -30,7 +30,7 @@ class CommandManagerQtCallback(QtCore.QObject):
             """ Implementation of QUndoCommand
             """
             try:
-                GetCmdManager().undoCmd()
+                GetCommandManager().undoCommand()
             except Exception as e:    
                 print str(e)
 
@@ -41,7 +41,7 @@ class CommandManagerQtCallback(QtCore.QObject):
                 # 'redo' is called when a Qt command is pushed to the 
                 #  stack. http://doc.qt.io/qt-4.8/qundostack.html#push.
                 if self.canRedo is True:
-                    GetCmdManager().redoCmd()
+                    GetCommandManager().redoCommand()
                 else:
                     self.canRedo = True
 
@@ -55,17 +55,17 @@ class CommandManagerQtCallback(QtCore.QObject):
 
         self.qUndoStack = qUndoStack
         self.scriptEditor = scriptEditor
-        GetCmdManager().cleared.connect(self.__onCleared)
-        GetCmdManager()._commandDone_Python.connect(self.__onCommandDone)
+        GetCommandManager().cleared.connect(self.__onCleared)
+        GetCommandManager().commandDone.connect(self.__onCommandDone)
 
-    def __onCommandDone(self, cmd, addToStack):
+    def __onCommandDone(self, cmd, pushedToStack, replace):
         """ \internal, when a command's been pushed to the manager. 
         """ 
 
         try:
             # Create a new CommandQtWrapper and  
             # pushs it to the qt undo stack.
-            if addToStack:
+            if pushedToStack:
                 oldEchoStackIndexChanges = self.scriptEditor._echoStackIndexChanges
                 self.scriptEditor._echoStackIndexChanges = False
                 self.qUndoStack.push( self.CommandQtWrapper( cmd.getHistoryDesc() ) )
@@ -75,7 +75,7 @@ class CommandManagerQtCallback(QtCore.QObject):
             if cmd.canLog():
                 self.scriptEditor.logCommand( 
                     'Commands.' + CommandArgHelpers.ParseCmdArgs(cmd),
-                    not addToStack)
+                    replace)
             
         except Exception as e:    
                 print str(e)

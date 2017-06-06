@@ -6,9 +6,8 @@ import os
 from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import Commands as CppCommands
 from FabricEngine.Canvas.Dialogs.HelpDialog import HelpDialog
-from FabricEngine.Canvas.Commands.BaseScriptableCommand import BaseScriptableCommand
-
-class OpenHelpDialogCommand(BaseScriptableCommand):
+ 
+class OpenHelpDialogCommand(CppCommands.BaseRTValScriptableCommand):
 
     def __init__(self):
         super(OpenHelpDialogCommand, self).__init__()

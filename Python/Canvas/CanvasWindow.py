@@ -16,7 +16,6 @@ from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.Commands.CommandManager import *
-from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
 from FabricEngine.Canvas.Application.FabricApplicationStates import *
@@ -438,11 +437,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         """
         self.qUndoStack = QtGui.QUndoStack()
-
-        CreateCmdRegistry()
-        CreateCmdManager()
-        GetCmdRegistry().synchronizeKL()
-
+        GetCommandManager()
         self.hotkeyEditorDialog = HotkeyEditorDialog(self)
 
         self.qUndoView = QtGui.QUndoView(self.qUndoStack)
@@ -475,7 +470,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget.urlDropped.connect(self.onUrlDropped)
 
         controller = self.dfgWidget.getDFGController()
-        controller.topoDirty.connect(GetCmdManager().synchronizeKL)
+        controller.topoDirty.connect(GetCommandManager().synchronizeKL)
 
     def _initTreeView(self):
         """Initializes the preset TreeView.
@@ -696,7 +691,8 @@ class CanvasWindow(QtGui.QMainWindow):
             FabricUI.DFG.DFGCommandRegistration.RegisterCommands(self.dfgWidget.getDFGController())
             DialogCommandRegistration.RegisterCommands()
             
-            cmd = GetCmdManager().createCmd('openKLOptionsTargetEditor', { "editorID":"Rendering Options", "editorTitle":"Rendering Options" } )
+            args = { "editorID":"Rendering Options", "editorTitle":"Rendering Options" }
+            cmd = GetCommandManager().createCommand('openKLOptionsTargetEditor', args)
             self.viewport.initComplete.connect(cmd.getOptionsEditor().resetModel)
             cmd.getOptionsEditor().updated.connect(self.viewport.redraw)
             cmd.getOptionsEditorDock().hide()
@@ -707,7 +703,7 @@ class CanvasWindow(QtGui.QMainWindow):
             windowMenu.addAction( toggleAction )
         
         except Exception as e:
-            print str(type(e))#.encode('utf-8'))
+            print str(e)#.encode('utf-8'))
 
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested by manipulators
@@ -822,7 +818,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
             self.host.flushUndoRedo()
             self.qUndoStack.clear()
-            GetCmdManager().clear()
+            GetCommandManager().clear()
             self.qUndoView.setEmptyLabel("Load Graph")
 
             QtCore.QCoreApplication.processEvents()
@@ -1112,7 +1108,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
             self.host.flushUndoRedo()
             self.qUndoStack.clear()
-            GetCmdManager().clear()
+            GetCommandManager().clear()
             self.viewport.clear()
             QtCore.QCoreApplication.processEvents()
 

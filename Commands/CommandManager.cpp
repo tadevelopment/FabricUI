@@ -62,8 +62,6 @@ BaseCommand* CommandManager::createCommand(
   BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
     cmdName);
 
-  cmd->setCanMergeID(canMergeID);
-
   if(args.size() > 0) 
     checkCommandArgs(cmd, args);
 
@@ -78,7 +76,8 @@ BaseCommand* CommandManager::createCommand(
 }
 
 void CommandManager::doCommand(
-  BaseCommand *cmd) 
+  BaseCommand *cmd,
+  int canMergeID) 
 {
   if(!cmd) 
     FabricException::Throw(
@@ -86,6 +85,8 @@ void CommandManager::doCommand(
       "BaseCommand is null");
 
   FABRIC_CATCH_BEGIN();
+  
+  cmd->setCanMergeID(canMergeID);
 
   bool canMerge = m_undoStack.size() > 0 && 
     m_undoStack[m_undoStack.size() - 1].topLevelCmd.data()->canMerge(cmd);
@@ -129,10 +130,10 @@ void CommandManager::doCommand(
   if(canMerge)
   {
     m_undoStack[m_undoStack.size() - 1].topLevelCmd.data()->merge(cmd);
-    emit commandDone(m_undoStack[m_undoStack.size() - 1].topLevelCmd.data(), false);
+    emit commandDone(m_undoStack[m_undoStack.size() - 1].topLevelCmd.data(), false, true);
   }
   else if(!subCmd)
-    emit commandDone(cmd, true);
+    emit commandDone(cmd, cmd->canUndo(), false);
 
   FABRIC_CATCH_END("CommandManager::doCommand");
 }
@@ -273,23 +274,34 @@ void CommandManager::clear()
   emit cleared();
 }
 
-unsigned CommandManager::count()
+int CommandManager::count()
 {
   return unsigned(m_redoStack.size() + m_undoStack.size());
 }
 
+int CommandManager::totalUndoCount()
+{
+  int count = 0;
+  for(int i=0; i<m_undoStack.size(); ++i)
+  {
+    StackedCommand stackedCmd = m_undoStack[i];
+    count += /*top command*/1 + stackedCmd.lowLevelCmds.size();
+  }
+  return count;
+}
+
 int CommandManager::getStackIndex()
 {
-  return int(m_undoStack.size() - 1);
+  return unsigned(m_undoStack.size() - 1);
 }
 
 BaseCommand* CommandManager::getCommandAtIndex(
-  unsigned index)
+  int index)
 {
-  if(index >= 0 && index < unsigned(m_undoStack.size()))
+  if(index >= 0 && index < m_undoStack.size())
     return m_undoStack[index].topLevelCmd.data();
 
-  else if (index >= unsigned(m_undoStack.size()) && index < count())
+  else if (index >= m_undoStack.size() && index < count())
     return m_redoStack[index - m_undoStack.size()].topLevelCmd.data();
 
   return 0;

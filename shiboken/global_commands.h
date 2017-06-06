@@ -5,15 +5,10 @@
 #include <FabricUI/Commands/BaseCommand.h>
 #include <FabricUI/Commands/BaseScriptableCommand.h>
 #include <FabricUI/Commands/BaseRTValScriptableCommand.h>
-#include <FabricUI/Commands/BaseScriptableCommand_Python.h>
-#include <FabricUI/Commands/BaseRTValScriptableCommand_Python.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
-#include <FabricUI/Commands/CommandArgHelpers_Python.h>
 #include <FabricUI/Commands/CommandRegistry.h>
 #include <FabricUI/Commands/KLCommandRegistry.h>
-#include <FabricUI/Commands/KLCommandRegistry_Python.h>
 #include <FabricUI/Commands/CommandManager.h>
 #include <FabricUI/Commands/RTValCommandManager.h>
 #include <FabricUI/Commands/KLCommandManager.h>
-#include <FabricUI/Commands/KLCommandManager_Python.h>
 #include <FabricUI/Commands/CppTestCommand.h>

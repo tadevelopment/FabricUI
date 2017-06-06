@@ -2,11 +2,12 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_COMMAND_ARG_HELPERS__
-#define __UI_COMMAND_ARG_HELPERS__
+#ifndef _UI_COMMAND_ARG_HELPERS__
+#define _UI_COMMAND_ARG_HELPERS__
 
 #include <QMap>
 #include <QString>
+#include <FabricCore.h>
 
 namespace FabricUI {
 namespace Commands {
@@ -62,9 +63,68 @@ class CommandArgHelpers
       const QMap<QString, QString> &argsHelp,
       BaseCommand *cmd
       );
+ 
+    static bool IsRTValScriptableCommand(
+      BaseCommand *cmd
+      );
+
+    static bool IsScriptableCommand(
+      BaseCommand *cmd
+      );
+ 
+    static bool IsPathValueCommandArg(
+      const QString &key,
+      BaseCommand *cmd
+      );
+
+    static bool IsCommandArg(
+      const QString &key,
+      int flags,
+      BaseCommand *cmd
+      );
+
+    static bool IsCommandArgSet(
+      const QString &key,
+      BaseCommand *cmd
+      );
+
+    static bool HasCommandArg(
+      const QString &key,
+      BaseCommand *cmd
+      );
+
+    static QList<QString> GetCommandArgKeys(
+      BaseCommand *cmd
+      );
+
+    static QString GetCommandArg(
+      const QString &key,
+      BaseCommand *cmd
+      );
+
+    static FabricCore::RTVal GetRTValCommandArg(
+      const QString &key,
+      BaseCommand *cmd
+      );
+
+    static FabricCore::RTVal GetRTValCommandArgValue(
+      const QString &key,
+      BaseCommand *cmd
+      );
+
+    static FabricCore::RTVal GetRTValCommandArgValue(
+      const QString &key,
+      const QString &type,
+      BaseCommand *cmd
+      );
+
+    static QString GetRTValCommandArgType(
+      const QString &key,
+      BaseCommand *cmd
+      );
 };
 
 } // namespace Commands
 } // namespace FabricUI
 
-#endif // __UI_COMMAND_ARG_HELPERS__
+#endif // _UI_COMMAND_ARG_HELPERS__

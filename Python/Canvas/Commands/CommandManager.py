@@ -7,9 +7,9 @@ from FabricEngine.FabricUI import Commands as CppCommands
 from FabricEngine.Canvas.Commands.CommandRegistry import *
 from FabricEngine.Canvas.Commands.CommandArgHelpers import CommandArgHelpers
 
-class CommandManager(CppCommands.KLCommandManager_Python):
+class KLCommandManager(CppCommands.KLCommandManager):
     
-    """ CommandManager specializes KLCommandManager_Python (C++). See Commands/CommandManager.h(cpp),
+    """ KLCommandManager specializes KLCommandManager_Python (C++). See Commands/KLCommandManager.h(cpp),
         Commands/KLCommandManager.h(cpp) and Commands/KLCommandManager_Python.h(cpp). The manager is 
         shared between the C++ and Python, so commands defined in Python can be created from C++ code, 
         and vice versa.
@@ -17,10 +17,10 @@ class CommandManager(CppCommands.KLCommandManager_Python):
         The CommandManager is a singleton and should not be created directly.
         - Create the singleton: cmdManager = CommandManager(fabricClient)
 
-        - Get the singleton: cmdManager = GetCmdManager()
+        - Get the singleton: cmdManager = GetCommandManager()
 
         Available methods:
-        - Create a command (KL/C++/Python): cmd = cmdManager.createCmd(cmdName, args, doIt)
+        - Create a command (KL/C++/Python): cmd = cmdManager.createCommand(cmdName, args, doIt)
                 
         - Execute a command: cmdManager.doCmd(cmd)
 
@@ -49,169 +49,66 @@ class CommandManager(CppCommands.KLCommandManager_Python):
 
         This is equivalent to (see CommandManager.py):
         - args = {arg_1:"foo_1", arg_2:"foo_2"}
-        - GetCmdManager().createCommand("FooCmd", args, True)
+        - GetCommandManager().createCommand("FooCmd", args, True)
     """
     
     def __init__(self):
-        """ Initializes the CommandManager.
+        """ Initializes the KLCommandManager.
         """
-        super(CommandManager, self).__init__()
+        super(KLCommandManager, self).__init__()
         # There is no "new" in python, we need to own the commands created
-        # in Python. They are referenced in the C++ CommandManager stacks. 
+        # in Python. They are referenced in the C++ KLCommandManager stacks. 
         self.__flatCommandsStack = []
 
         # Connect our-self.
-        cmdRegistry = CreateCmdRegistry()
-        cmdRegistry.commandRegistered.connect(self._onCommandRegistered)
+        GetCommandRegistry().commandRegistered.connect(self._onCommandRegistered)
     
-    def createCmd(self, cmdName, args = {}, doCmd = True, canMergeID = -1):
+    def createCommand(self, cmdName, args={}, doCmd=True, canMergeID=-1):
         """ Creates and executes a command (if doCmd == true).
             If executed, the command is added to the manager stack.
             Raises an exception if an error occurs.
         """
         try:
-            cmd = GetCmdRegistry().createCmd(cmdName)
+            cmd = GetCommandRegistry().createCommand(cmdName)
             if len(args) > 0:
+                print "createCommand 1 " 
+                # print args
                 createRTValCommand, args = CommandArgHelpers.CastAndCheckCmdArgs(cmd, args)
                 if createRTValCommand:
-                    self._checkRTValCommandArgs_Python(cmd, args)
+                   self.checkRTValCommandArgs(cmd, args)
                 else:
-                    self._checkCommandArgs_Python(cmd, args)
-            
-                cmd.setCanMergeID(canMergeID)
+                    self.checkCommandArgs(cmd, args)
+                print "createCommand 2 " 
 
             if doCmd:
-                self.doCmd(cmd)
+                self.doCommand(cmd, canMergeID)
+
             return cmd
         except Exception as e:   
             raise Exception(e)
 
-    def doCmd(self, cmd):
-        """ Executes a command and adds it to the undo stack.
-            Raises an exception if an error occurs.
-        """
-        return self._doCommand_Python(cmd)
-
-    def undoCmd(self):
-        """ Undoes the current command.
-            Raises an exception if an error occurs. 
-        """
-        self._undoCommand_Python()
-        
-    def redoCmd(self):
-        """ Redoes the next command.
-            Raises an exception if an error occurs. 
-        """
-        self._redoCommand_Python()
-
     def clear(self):
         """ Clears all the commands.
         """
-        super(CommandManager, self).clear()
+        super(KLCommandManager, self).clear()
         self.__flatCommandsStack = []
-
-    def getCmdAtIndex(self, index):
-        """ Gets the command at index 'index'.
-            Returns none if the index is out of ranges.
-        """
-        error, cmd = self._getCommandAtIndex_Python(index)
-        return cmd
-
-    def synchronizeKL(self):
-        """ Implementation of Commands.KLCommandManager
-        """
-        self._synchronizeKL_Python()
-
-    ### \internal, don't call these methods.
-    def _createCommand_Python(self, cmdName, args, doCmd, canMergeID):
-        """ \internal, impl. of Commands.KLCommandManager_Python. """
-        try:
-            cmd = GetCmdRegistry().createCmd(cmdName)
-            if len(args) > 0:
-                self._checkCommandArgs_Python(cmd, args)
-            cmd.setCanMergeID(canMergeID)
-
-            if doCmd:
-                self._doCommand_Python(cmd)
-            return cmd
-        except Exception as e:    
-            raise Exception(e)
-
-    def _checkCommandArgs_Python(self, cmd, args):
-        """ \internal, impl. of Commands.KLCommandManager_Python. """
-        error = super(CommandManager, self)._checkCommandArgs_Python(cmd, args)
-        if error:
-            raise Exception(error)
-        return error
-
-    def _createRTValCommand_Python(self, cmdName, args, doCmd, canMergeID):
-        """ \internal, impl. of Commands.KLCommandManager_Python. """
-        try:
-            cmd = GetCmdRegistry().createCmd(cmdName)
-            if len(args) > 0:
-                self._checkRTValCommandArgs_Python(cmd, args)
-            cmd.setCanMergeID(canMergeID)
-            if doCmd:
-                self._doCommand_Python(cmd)
-            return cmd
-        except Exception as e:    
-            raise Exception(e)
-
-    def _checkRTValCommandArgs_Python(self, cmd, args):
-        """ \internal, impl. of Commands.KLCommandManager_Python. """
-        error = super(CommandManager, self)._checkRTValCommandArgs_Python(
-            cmd, args)
-        if error:
-            raise Exception(error)
-        return error
-
-    def _doCommand_Python(self, cmd):
-        """ \internal, impl. of Commands.KLCommandManager_Python. """
-        error = super(CommandManager, self)._doCommand_Python(cmd)
-        if error:
-            raise Exception(error)
-        return error
-
-    def _undoCommand_Python(self):
-        """ \internal, impl. of Commands.KLCommandManager_Python. """
-        error = super(CommandManager, self)._undoCommand_Python()
-        if error:
-            raise Exception(error)
-        return error
-
-    def _redoCommand_Python(self):
-        """ \internal, impl. of Commands.KLCommandManager_Python. """
-        error = super(CommandManager, self)._redoCommand_Python()
-        if error:
-            raise Exception(error)
-        return error
-
-    def _getCommandAtIndex_Python(self, index):
-        """ \internal, impl. of Commands.KLCommandManager_Python. """
-        error, cmd = super(CommandManager, self)._getCommandAtIndex_Python()
-        if cmd is None:
-            raise Exception(error)
-        return error, cmd
-
+ 
+    # def createRTValCommand(self, cmdName, args, doCmd, canMergeID):
+    #     """ \internal, impl. of Commands.KLCommandManager_Python. """
+    #     return self.createCommand(cmdName, args, doCmd, canMergeID)
+      
     def clearRedoStack(self):
         """ \internal, impl. of Commands.KLCommandManager_Python. """
-        count = self._totalCountAtStackIndex()
-        super(CommandManager, self).clearRedoStack()
+        count = self.totalUndoCount()
+        super(KLCommandManager, self).clearRedoStack()
         self.__flatCommandsStack = self.__flatCommandsStack[:count]
 
-    def _commandPushed_Python(self, cmd, isLowCmd):
+    def commandPushed(self, cmd, isLowCmd):
         """ \internal, impl. of Commands.KLCommandManager_Python. 
             Add the commands to the python stack.
         """
         self.__flatCommandsStack.append(cmd)
-    
-    def _synchronizeKL_Python(self):
-        """ \internal, impl. of Commands.KLCommandRegistry_Python. """
-        error = super(CommandManager, self)._synchronizeKL_Python()
-        if error:
-            raise Exception(error)
-        return error
-     
+  
     def _onCommandRegistered(self, cmdName, cmdType, implType):
         """ \internal, callback when a command is registered.
             Run-time creation of the function to create the command.
@@ -220,7 +117,7 @@ class CommandManager(CppCommands.KLCommandManager_Python):
         exec('\
 def ' + cmdName + '(**kwargs):\n\
     try:\n\
-        return GetCmdManager().createCmd("' + cmdName + '", kwargs )\n\
+        return GetCommandManager().createCommand("' + cmdName + '", kwargs )\n\
     except Exception as e:\n\
         raise Exception(e)\n\
 setattr(GetOrCreateModule("Commands") , "' + cmdName + '", '+ cmdName + ')')
@@ -231,21 +128,18 @@ setattr(GetOrCreateModule("Commands") , "' + cmdName + '", '+ cmdName + ')')
 GetOrCreateModule('Commands')
 
 # \internal, store the manager singleton
-global s_cmdManagerSingleton
-s_cmdManagerSingleton = None
-
-def GetCmdManager():
-    return CreateCmdManager()
-
-def CreateCmdManager():
+global s_klCmdManagerSingleton
+s_klCmdManagerSingleton = None
+ 
+def GetCommandManager():
     """ Creates the CommandManager singleton.
     """
-    global s_cmdManagerSingleton
-    if s_cmdManagerSingleton is None:
+    global s_klCmdManagerSingleton
+    if s_klCmdManagerSingleton is None:
         # Be sure the command registry is created.
-        s_cmdManagerSingleton = CommandManager()
-        for cmdName in GetCmdRegistry().getCommandNames():
-            cmdType, implType = GetCmdRegistry().getCommandSpecs(cmdName)
-            s_cmdManagerSingleton._onCommandRegistered(cmdName, cmdType, implType)
+        s_klCmdManagerSingleton = KLCommandManager()
+        for cmdName in GetCommandRegistry().getCommandNames():
+            cmdType, implType = GetCommandRegistry().getCommandSpecs(cmdName)
+            s_klCmdManagerSingleton._onCommandRegistered(cmdName, cmdType, implType)
 
-    return s_cmdManagerSingleton
+    return s_klCmdManagerSingleton

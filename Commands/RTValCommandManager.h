@@ -37,7 +37,7 @@ class RTValCommandManager : public CommandManager
   protected:
     /// Checks the command arguments before doing it.
     /// Throws an exception if an error occurs.
-    virtual void checkCommandArgs(
+    void checkRTValCommandArgs(
       BaseCommand *cmd,
       const QMap<QString, FabricCore::RTVal> &args
       );

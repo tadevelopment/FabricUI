@@ -7,12 +7,11 @@
 
 #include <QObject>
 #include <QString>
-#include "Command.h"
 
 namespace FabricUI {
 namespace Commands {
 
-class BaseCommand : public QObject, public Command
+class BaseCommand : public QObject
 {
   /**
     BaseCommand defines the functionalities of a command.
@@ -117,8 +116,6 @@ class BaseCommand : public QObject, public Command
 
   Q_OBJECT
   
-  Q_INTERFACES(FabricUI::Commands::Command)
-
   public:
     BaseCommand();
 
@@ -180,7 +177,7 @@ class BaseCommand : public QObject, public Command
       BaseCommand *cmd
       );
 
-  protected:
+  private:
     /// Name of the command.
     QString m_name;
     /// Interaction ID, for merging.

@@ -6,17 +6,12 @@
       <object-type name="CommandArgFlags" />
       <object-type name="BaseScriptableCommand" />
       <object-type name="BaseRTValScriptableCommand" />
-      <object-type name="BaseScriptableCommand_Python" />
-      <object-type name="BaseRTValScriptableCommand_Python" />
       <object-type name="CommandArgHelpers" />
-      <object-type name="CommandArgHelpers_Python" />
       <object-type name="CommandManager" />
       <object-type name="RTValCommandManager" />
       <object-type name="KLCommandManager" />
-      <object-type name="KLCommandManager_Python" />
       <object-type name="CommandRegistry" />
       <object-type name="KLCommandRegistry" />
-      <object-type name="KLCommandRegistry_Python" />
       <object-type name="CppToPythonTestCommand" />
     </namespace-type>
   </namespace-type>

@@ -1,7 +1,6 @@
 __all__ = [
+	'CommandArgHelpers',
 	'CommandManager',
     'CommandRegistry',
-    'BaseScriptableCommand',
-    'BaseRTValScriptableCommand',
     'CommandManagerQtCallback'
 ]

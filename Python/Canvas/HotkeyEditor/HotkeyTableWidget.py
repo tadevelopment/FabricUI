@@ -63,7 +63,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         actionRegistry.actionUnregistered.connect(self.__onActionUnregistered)
 
         # Notify when an command is registered.
-        GetCmdRegistry().commandRegistered.connect(self.__onCommandRegistered)
+        GetCommandRegistry().commandRegistered.connect(self.__onCommandRegistered)
         
         # Construct the item-delegate
         itemDelegate = HotkeyTableWidgetItemDelegate(self)
@@ -84,8 +84,8 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         # qss
         self.setObjectName('HotkeyTableWidget')
 
-        for cmdName in GetCmdRegistry().getCommandNames():
-            cmdType, implType = GetCmdRegistry().getCommandSpecs(cmdName)
+        for cmdName in GetCommandRegistry().getCommandNames():
+            cmdType, implType = GetCommandRegistry().getCommandSpecs(cmdName)
             self.__onCommandRegistered(cmdName, cmdType, implType)
 
     def onEmitEditingItem(self, status):
@@ -206,11 +206,11 @@ class HotkeyTableWidget(QtGui.QTableWidget):
 
         if actionRegistry.getAction(cmdName) is None:
             # Must construct the command to get the tooltip
-            cmd = GetCmdRegistry().createCmd(cmdName)
+            cmd = GetCommandRegistry().createCommand(cmdName)
             
             tooltip = cmdType+ "[" + implType + "]\n\n"
             tooltip += cmd.getHelp()
-            isScriptable = CppCommands.CommandArgHelpers_Python._IsScriptableCommand_Python(cmd)
+            isScriptable = CppCommands.CommandArgHelpers.IsScriptableCommand(cmd)
 
             # Add the action to the canvasWindow so it's available.
             # Actions of hidden widgets are not triggered.
@@ -312,7 +312,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             if  (   (searchByShortcut and regex.search(shortCut.lower()) ) or 
                     (not searchByShortcut and regex.search(actionName.lower()) ) ):
 
-                isCommand = GetCmdRegistry().isCommandRegistered(actionName)
+                isCommand = GetCommandRegistry().isCommandRegistered(actionName)
                 
                 showEditable = True
                 if edit == 1 and isEditable == False:

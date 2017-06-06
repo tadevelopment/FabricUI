@@ -59,23 +59,28 @@ class CommandManager : public QObject
 
     /// Executes a command and adds it to the undo stack.
     /// Throws an exception if an error occurs.
-    virtual void doCommand(
-      BaseCommand* cmd
+    void doCommand(
+      BaseCommand* cmd,
+      int canMergeID = -1
       );
 
     /// Undoes the current command.
     /// Throws an exception if an error occurs.
-    virtual void undoCommand();
+    void undoCommand();
 
     /// Redoes the next command.
     /// Throws an exception if an error occurs.
-    virtual void redoCommand();
+    void redoCommand();
 
     /// Clears all the commands.
     virtual void clear();
 
-    /// Returns the number of commands.
-    unsigned count();
+    /// Returns the number of top commands.
+    int count();
+
+    /// Returns the number of commands
+    /// (top+low) in the undo stack.
+    int totalUndoCount ();
 
     /// Gets the current index (next command to undo).
     /// If -1 is returned, there is no command to undo.
@@ -87,7 +92,7 @@ class CommandManager : public QObject
 
     /// Gets the command at index 'index'.
     BaseCommand* getCommandAtIndex(
-      unsigned index
+      int index
       );
 
     /// Gets a new interaction ID.
@@ -98,7 +103,8 @@ class CommandManager : public QObject
     /// been succefully pushed to the stack.
     void commandDone(
       BaseCommand *cmd,
-      bool addToStack
+      bool addToStack,
+      bool replaceLog
       );
 
     /// Emitted when the manager is cleared.
@@ -107,7 +113,7 @@ class CommandManager : public QObject
   protected:
     /// Checks the command arguments before doing it.
     /// Throws an exception if an error occurs.
-    virtual void checkCommandArgs(
+    void checkCommandArgs(
       BaseCommand *cmd,
       const QMap<QString, QString> &args
       );
