@@ -71,11 +71,17 @@ class CommandArgHelpers:
                                 arg = Util.RTValUtil.toJSON(rtVal) 
         
                 # CppCommands.BaseScriptableCommand, all in strings
-                else:
-                    if not CommandArgHelpers.__IsPyStringArg(arg):
+                elif CppCommands.CommandArgHelpers.IsScriptableCommand(cmd):
+                    if CommandArgHelpers.__IsPyRTValArg(arg):
+                        pathValue = Util.RTValUtil.toRTVal(arg)
+                        val = Util.RTValUtil.toRTVal(pathValue.value)
+ 
+                        if CommandArgHelpers.__IsPyRTValArg(arg) and Util.RTValUtil.getType(val) == 'String':
+                            arg = val.getSimpleType()
+                    else:
                         raise Exception(
                             "CommandManagerQtCallback.__CastCmdArgsToStr, error: \n" + 
-                            "The argument '" + str(key) + "' is not astring, but a " + str(type(arg)))
+                            "The argument '" + str(key) + "' is not a string, but a " + str(type(arg)))
 
                 strArgs[key] = arg
  
@@ -118,6 +124,7 @@ class CommandArgHelpers:
     def CastAndCheckCmdArgs(cmd, args):
         """ \internal, casts the commands's args depending of their types.
         """
+        print "CastAndCheckCmdArgs " + str(isinstance(cmd, CppCommands.BaseScriptableCommand))
         if not CppCommands.CommandArgHelpers.IsScriptableCommand(cmd):
             raise Exception(
                 "CommandManager.CommandArgHelpers.CastAndCheckCmdArgs, error: Command '" +
@@ -125,7 +132,7 @@ class CommandArgHelpers:
 
         # If the command is a RTValScriptable and its RTVal args type have
         # been set, call checkRTValCommandArgs, checkCommandArgs otherwise.
-        createRTValCommand = False
+        isRTValCommand = False
         for key, arg in args.iteritems():
             if CppCommands.CommandArgHelpers.HasCommandArg(key, cmd) is False:
                 raise Exception(
@@ -134,10 +141,10 @@ class CommandArgHelpers:
 
             if CppCommands.CommandArgHelpers.IsRTValScriptableCommand(cmd):
                 if CommandArgHelpers.__IsPyRTValArg(arg):
-                    createRTValCommand = True
+                    isRTValCommand = True
                     break
 
-        if createRTValCommand:
+        if isRTValCommand:
             return True, CommandArgHelpers.CastCmdArgsToRTVal(cmd, args)
         else:
             return False, CommandArgHelpers.__CastCmdArgsToStr(cmd, args)

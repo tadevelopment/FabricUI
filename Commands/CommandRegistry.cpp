@@ -19,8 +19,7 @@ CommandRegistry::CommandRegistry()
   if(s_instanceFlag)
     FabricException::Throw(
       "CommandRegistry::CommandRegistry",
-      "singleton has already been created"
-      );
+      "singleton has already been created");
    
   COMMAND_CPP = "CPP";
  
@@ -40,8 +39,7 @@ CommandRegistry* CommandRegistry::GetCommandRegistry()
   if(!s_instanceFlag)
     FabricException::Throw(
       "CommandRegistry::GetCommandRegistry",
-      "the registry is null"
-      );
+      "the registry is null");
 
   return s_cmdRegistry;
 }
@@ -57,8 +55,10 @@ void CommandRegistry::registerFactory(
 {
   if(!isCommandRegistered(name))
   {
-    Util::BaseFactoryRegistry::registerFactory(name, factory);
-
+    Util::BaseFactoryRegistry::registerFactory(
+      name, 
+      factory);
+    
     commandIsRegistered(
       name,
       // Get the name of the cmd class.
@@ -85,8 +85,7 @@ QPair<QString, QString> CommandRegistry::getCommandSpecs(
   if(!isCommandRegistered(cmdName))
     FabricException::Throw( 
       "CommandRegistry::getCommandSpecs",
-      "cannot create command '" + cmdName + "', it's not registered"
-      );
+      "cannot create command '" + cmdName + "', it's not registered");
 
   return m_cmdSpecs[cmdName];
 }
@@ -102,8 +101,7 @@ BaseCommand* CommandRegistry::createCommand(
   if(!isCommandRegistered(cmdName))
     FabricException::Throw( 
       "CommandRegistry::createCommand",
-      "cannot create command '" + cmdName + "', it's not registered"
-      );
+      "cannot create command '" + cmdName + "', it's not registered");
 
   FABRIC_CATCH_BEGIN();
 
@@ -118,8 +116,7 @@ BaseCommand* CommandRegistry::createCommand(
     if(cmd == 0)
       FabricException::Throw(
         "CommandRegistry::createCommand",
-        "resulting command is null" 
-        );
+        "resulting command is null");
 
     void *userData = factory->getUserData();
   

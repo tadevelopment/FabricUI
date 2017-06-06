@@ -3,6 +3,7 @@
 //
 
 #include "BaseCommand.h"
+#include "KLCommandManager.h"
 #include "CommandArgHelpers.h"
 #include "BaseScriptableCommand.h"
 #include "BaseRTValScriptableCommand.h"

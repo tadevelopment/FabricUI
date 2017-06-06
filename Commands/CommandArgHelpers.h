@@ -6,6 +6,7 @@
 #define _UI_COMMAND_ARG_HELPERS__
 
 #include <QMap>
+#include <QObject>
 #include <QString>
 #include <FabricCore.h>
 

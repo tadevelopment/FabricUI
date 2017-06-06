@@ -7,12 +7,12 @@ from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import Commands as CppCommands
 from FabricEngine.Canvas.Dialogs.HelpDialog import HelpDialog
  
-class OpenHelpDialogCommand(CppCommands.BaseRTValScriptableCommand):
+class OpenHelpDialogCommand(CppCommands.BaseScriptableCommand):
 
     def __init__(self):
         super(OpenHelpDialogCommand, self).__init__()
-        self.declareArg("title")
-        self.declareArg("text")
+        self.declareArg("title", False, "")
+        self.declareArg("text", False, "")
 
     def canUndo(self):
         return False

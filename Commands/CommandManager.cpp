@@ -113,8 +113,7 @@ void CommandManager::doCommand(
    
   catch(FabricException &e) 
   {
-    cleanupUnfinishedCommandsAndThrow(
-      cmd,e.what());
+    cleanupUnfinishedCommandsAndThrow(cmd,e.what());
   }
 
   // If subCmd, push it.
@@ -180,23 +179,16 @@ void CommandManager::undoCommand()
   
   else 
   {
-    try
-    {
-      if(!top->undoIt())
-        FabricException::Throw(
-          "CommandManager::undoCommand top", 
-          "Undoing command '" + top->getName() + "'");
+    FABRIC_CATCH_BEGIN();
 
-      postDoCommand(top);
-    }
-     
-    catch(FabricException &e) 
-    {
+    if(!top->undoIt())
       FabricException::Throw(
         "CommandManager::undoCommand top", 
-        "Undoing command '" + top->getName() + "'",
-        e.what());
-    }
+        "'" + top->getName() + "'");
+
+    postDoCommand(top);
+
+    FABRIC_CATCH_END("CommandManager::undoCommand top '" + top->getName()+ "'");
   }
  
   m_undoStack.pop_back();
@@ -243,24 +235,16 @@ void CommandManager::redoCommand()
 
   else 
   {
-    try
-    {
-      if(!top->redoIt())
-        FabricException::Throw(
-          "CommandManager::redoCommand top", 
-          "Undoing command '" + top->getName() + "'"
-          );
+    FABRIC_CATCH_BEGIN();
 
-      postDoCommand(top);
-    }
-     
-    catch(FabricException &e) 
-    {
+    if(!top->redoIt())
       FabricException::Throw(
         "CommandManager::redoCommand top", 
-        "Undoing command '" + top->getName() + "'",
-        e.what());
-    }
+        "'" + top->getName() + "'");
+
+    postDoCommand(top);
+
+    FABRIC_CATCH_END("CommandManager::redoCommand top '" + top->getName()+ "'");
   }
 
   m_redoStack.pop_back();
@@ -418,6 +402,7 @@ void CommandManager::commandPushed(
   BaseCommand *cmd,
   bool isLowCmd) 
 { 
+  // Do nothing.
 }
 
 QString CommandManager::getStackContent(
@@ -496,8 +481,8 @@ void CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow(
 {
   FABRIC_CATCH_BEGIN();
 
-  for(int j = topLevelCmdIndex+1; j<int(stackedCmd.lowLevelCmds.size()); ++j)
-    stackedCmd.lowLevelCmds[j]->redoIt();
+  for(int i = topLevelCmdIndex+1; i<int(stackedCmd.lowLevelCmds.size()); ++i)
+    stackedCmd.lowLevelCmds[i]->redoIt();
   
   FABRIC_CATCH_END("CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow");
 
@@ -515,8 +500,8 @@ void CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow(
 {
   FABRIC_CATCH_BEGIN();
 
-  for(int j = topLevelCmdIndex; j--;)
-    stackedCmd.lowLevelCmds[j]->undoIt();
+  for(int i = topLevelCmdIndex; i--;)
+    stackedCmd.lowLevelCmds[i]->undoIt();
  
   FABRIC_CATCH_END("CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow");
  

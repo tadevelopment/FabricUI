@@ -185,7 +185,10 @@ void KLCommandManager::doKLCommand(
     ? (BaseCommand *)new KLScriptableCommand(klScriptCmd)
     : (BaseCommand *)new KLCommand(klCmd);
 
-  doCommand(cmd);
+  doCommand(
+    cmd,
+    klCmd.callMethod("SInt32", "getCanMergeID", 0, 0).getSInt32()
+    );
 
   FABRIC_CATCH_END("KLCommandManager::doKLCommand");
 }

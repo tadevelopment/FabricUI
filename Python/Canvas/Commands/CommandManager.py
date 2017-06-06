@@ -71,17 +71,16 @@ class KLCommandManager(CppCommands.KLCommandManager):
         try:
             cmd = GetCommandRegistry().createCommand(cmdName)
             if len(args) > 0:
-                print "createCommand 1 " 
-                # print args
-                createRTValCommand, args = CommandArgHelpers.CastAndCheckCmdArgs(cmd, args)
-                if createRTValCommand:
-                   self.checkRTValCommandArgs(cmd, args)
+ 
+                isRTValCommand, args = CommandArgHelpers.CastAndCheckCmdArgs(cmd, args)
+            
+                if isRTValCommand:
+                   super(KLCommandManager, self).checkRTValCommandArgs(cmd, args)
                 else:
-                    self.checkCommandArgs(cmd, args)
-                print "createCommand 2 " 
-
+                    super(KLCommandManager, self).checkCommandArgs(cmd, args)
+ 
             if doCmd:
-                self.doCommand(cmd, canMergeID)
+                super(KLCommandManager, self).doCommand(cmd, canMergeID)
 
             return cmd
         except Exception as e:   
