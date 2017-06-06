@@ -58,7 +58,7 @@ class CommandArgHelpers:
                             # If so, we assume that it's already a JSON
                             if CommandArgHelpers.__IsPyStringArg(arg) and isArgStr and len(arg) > 0:
                                 first = arg[0] == "'" or arg[0] == "\"" 
-                                last =  arg[len(arg)-1] == "'" or arg[len(arg)-1] == "\"" 
+                                last = arg[len(arg)-1] == "'" or arg[len(arg)-1] == "\"" 
                                 castArg = not first and not last
                                  
                             if castArg:
@@ -124,7 +124,7 @@ class CommandArgHelpers:
     def CastAndCheckCmdArgs(cmd, args):
         """ \internal, casts the commands's args depending of their types.
         """
-        print "CastAndCheckCmdArgs " + str(isinstance(cmd, CppCommands.BaseScriptableCommand))
+
         if not CppCommands.CommandArgHelpers.IsScriptableCommand(cmd):
             raise Exception(
                 "CommandManager.CommandArgHelpers.CastAndCheckCmdArgs, error: Command '" +

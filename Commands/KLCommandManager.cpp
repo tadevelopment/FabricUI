@@ -185,9 +185,15 @@ void KLCommandManager::doKLCommand(
     ? (BaseCommand *)new KLScriptableCommand(klScriptCmd)
     : (BaseCommand *)new KLCommand(klCmd);
 
+  RTVal baseCmd = RTVal::Construct(
+    klCmd.getContext(),
+    "BaseCommand", 
+    1, 
+    &klCmd);
+
   doCommand(
     cmd,
-    klCmd.callMethod("SInt32", "getCanMergeID", 0, 0).getSInt32()
+    baseCmd.callMethod("SInt32", "getCanMergeID", 0, 0).getSInt32()
     );
 
   FABRIC_CATCH_END("KLCommandManager::doKLCommand");
