@@ -24,6 +24,8 @@
 #include <QAction>
 #include <QApplication>
 
+#include <math.h>
+
 using namespace FabricUI::GraphView;
 
 MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
