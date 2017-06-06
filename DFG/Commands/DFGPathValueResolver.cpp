@@ -112,6 +112,16 @@ void DFGPathValueResolver::setValue(
   RTVal value = RTValUtil::toRTVal(
     pathValue.maybeGetMember("value"));
 
+  if( !value.isValid() )
+    return; // no value specified
+
+  // TODO: properly support empty RTVal values (see comment in PathValue.kl)
+  if( value.isString() ) {
+    std::string str( value.getStringCString() );
+    if( str == "!empty!" )
+      return; // no value specified
+  }
+
   m_controller->getBinding().getExec().setPortDefaultValue( 
     path.toUtf8().constData(), 
     value, 

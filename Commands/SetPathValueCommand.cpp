@@ -33,24 +33,6 @@ SetPathValueCommand::SetPathValueCommand()
     CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IN_ARG
     );
 
-  // Optional arg of unknown KL type, which
-  // is retrieved when executing the command.
-  declareRTValArg(
-    "previousValue", 
-    "RTVal",
-    CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::IN_ARG
-    );
-
-  // Optional arg of known KL type, with default value.                  
-  declareRTValArg( 
-    "isUndoable",
-    "Boolean",
-    CommandArgFlags::OPTIONAL_ARG,
-    RTVal::ConstructBoolean(
-      FabricApplicationStates::GetAppStates()->getContext(), 
-      true)
-    );
-  
   FABRIC_CATCH_END("SetPathValueCommand::SetPathValueCommand");
 }
 
@@ -60,36 +42,28 @@ SetPathValueCommand::~SetPathValueCommand()
 
 bool SetPathValueCommand::canUndo()
 {
-  FABRIC_CATCH_BEGIN();
-   
-  return getRTValArgValue("isUndoable").getBoolean() ||
-    getCanMergeID() > -1;
-
-  FABRIC_CATCH_END("SetPathValueCommand::canUndo");
-
-  return false;
+  return true;
 }
 
 bool SetPathValueCommand::doIt()
 {
   FABRIC_CATCH_BEGIN();
 
-  if(canUndo() && getRTValArgType("previousValue") != getRTValArgType("target"))
-    setRTValArgValue("previousValue", getRTValArgValue("target").clone());
+  if( canUndo() )
+    this->previousValue = getRTValArgValue( "target" ).clone();
 
-  setRTValArgValue("target", getRTValArgValue("newValue", getRTValArgType("target")).clone());
-  return true;
+  return redoIt();
 
-  FABRIC_CATCH_END("SetPathValueCommand::doIt");
- 
+  FABRIC_CATCH_END( "SetPathValueCommand::doIt" );
+
   return false;
-} 
+}
 
 bool SetPathValueCommand::undoIt()
 { 
   FABRIC_CATCH_BEGIN();
 
-  setRTValArgValue("target", getRTValArgValue("previousValue").clone());
+  setRTValArgValue("target", this->previousValue.clone());
   return true;
   
   FABRIC_CATCH_END("SetPathValueCommand::undoIt");
@@ -99,7 +73,14 @@ bool SetPathValueCommand::undoIt()
 
 bool SetPathValueCommand::redoIt()
 {
-  return doIt();
+  FABRIC_CATCH_BEGIN();
+
+  setRTValArgValue("target", getRTValArgValue("newValue", getRTValArgType("target")).clone());
+  return true;
+
+  FABRIC_CATCH_END("SetPathValueCommand::doIt");
+ 
+  return false;
 } 
 
 QString SetPathValueCommand::getHelp()
@@ -107,8 +88,6 @@ QString SetPathValueCommand::getHelp()
   QMap<QString, QString> argsHelp;
   argsHelp["target"] = "Path of the target";
   argsHelp["newValue"] = "New value";
-  argsHelp["previousValue"] = "Previous value";
-  argsHelp["isUndoable"] = "If true, the command is undoable";
 
   return CommandArgHelpers::CreateHelpFromRTValArgs(
     "Sets the value of a PathValue arg",
