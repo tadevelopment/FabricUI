@@ -93,6 +93,9 @@ bool KLScriptableCommand::canMerge(
   BaseCommand *cmd) 
 {
   KLScriptableCommand* scriptCmd = qobject_cast<KLScriptableCommand*>(cmd);
+  if(scriptCmd == 0)
+    return false;
+  
   return CanMergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
 }
 
