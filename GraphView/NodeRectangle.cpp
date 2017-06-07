@@ -66,6 +66,12 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
     rect, int( 150.0f * m_node->m_cornerRadius / rect.width() ),
     int( 150.0f * m_node->m_cornerRadius / rect.height() ) );
 
+  QRectF inspected_rect = rect.adjusted(-2, -2, 2, 2);
+  QPainterPath inspected_rounded_rect;
+  inspected_rounded_rect.addRoundRect(
+    inspected_rect, int( 150.0f * m_node->m_cornerRadius / inspected_rect.width() ),
+    int( 150.0f * m_node->m_cornerRadius / (inspected_rect.height() + 5.0f) ) );
+
   // fill everything
   painter->fillPath(rounded_rect,painter->brush());     
 
@@ -80,7 +86,7 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
   painter->fillPath(rounded_rect,painter->brush());     
 
   // remove the clipping
-  painter->setClipRect(rect.adjusted(-2, -2, 2, 2));
+  painter->setClipRect(rect.adjusted(-4, -4, 4, 4));
 
   // draw the header lines
   // FE-4157
@@ -98,7 +104,7 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
   if (m_node->isInspected())
   {
     QPen pen = m_node->m_inspectedPen;
-    painter->strokePath(rounded_rect, pen);
+    painter->strokePath(inspected_rounded_rect, pen);
   }
 
 #ifdef FABRICUI_TIMERS
