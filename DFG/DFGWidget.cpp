@@ -242,12 +242,12 @@ DFGWidget::DFGWidget(
     this, SLOT( onBackdropAddedFromTabSearch() )
   );
   QObject::connect(
-    m_tabSearchWidget, SIGNAL( selectedBackdrop() ),
-    this, SLOT( onBackdropAddedFromTabSearch() )
-  );
-  QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedNewBlock() ),
     this, SLOT( onNewBlockAddedFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedCreateNewVariable() ),
+    this, SLOT( onVariableCreationRequestedFromTabSearch() )
   );
   QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
@@ -944,18 +944,20 @@ void DFGWidget::onPresetAddedFromTabSearch( QString preset )
 
 void DFGWidget::onBackdropAddedFromTabSearch()
 {
-  this->getUIController()->cmdAddBackDrop(
+  QString addedBackdrop = this->getUIController()->cmdAddBackDrop(
     "backdrop",
     getTabSearchScenePos()
   );
+  MaybeSelectNode(this->getGraphViewWidget()->graph(), addedBackdrop);
 }
 
 void DFGWidget::onNewBlockAddedFromTabSearch()
 {
-  this->getUIController()->cmdAddBlock(
+  QString addedBlock = this->getUIController()->cmdAddBlock(
     "block",
     getTabSearchScenePos()
   );
+  MaybeSelectNode(this->getGraphViewWidget()->graph(), addedBlock);
 }
 
 void DFGWidget::onVariableCreationRequestedFromTabSearch()
@@ -1097,10 +1099,15 @@ void DFGWidget::createNewBlockNode( QPoint const &globalPos )
 
 void DFGWidget::createNewCacheNode( QPoint const &globalPos )
 {
-  m_uiController->cmdAddInstFromPreset(
-    "Fabric.Core.Data.Cache",
-    m_uiGraphViewWidget->mapToGraph( globalPos )
-    );
+  QString nodeName =
+    m_uiController->cmdAddInstFromPreset(
+      "Fabric.Core.Data.Cache",
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::createNewGraphNode( QPoint const &globalPos )
@@ -1184,6 +1191,10 @@ dfgEntry {\n\
       QString::fromUtf8( initialCode.c_str() ),
       m_uiGraphViewWidget->mapToGraph( globalPos )
       );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
@@ -1204,10 +1215,15 @@ void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
       return; }
   }
 
-  m_uiController->cmdAddBackDrop(
-    text.toUtf8().constData(),
-    m_uiGraphViewWidget->mapToGraph( globalPos )
-    );
+  QString nodeName =
+    m_uiController->cmdAddBackDrop(
+      text.toUtf8().constData(),
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::createNewVariableNode( QPoint const &globalPos )
@@ -1232,12 +1248,17 @@ void DFGWidget::createNewVariableNode( QPoint const &globalPos )
   { controller->log("Warning: no variable created (empty type).");
     return; }
 
-  m_uiController->cmdAddVar(
-    name,
-    dataType,
-    extension,
-    m_uiGraphViewWidget->mapToGraph( globalPos )
-    );
+  QString nodeName =
+    m_uiController->cmdAddVar(
+      name,
+      dataType,
+      extension,
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::createNewVariableGetNode( QPoint const &globalPos )
@@ -1255,11 +1276,16 @@ void DFGWidget::createNewVariableGetNode( QPoint const &globalPos )
   if(name.length() == 0)
     return;
 
-  m_uiController->cmdAddGet(
-    "get",
-    name.toUtf8().constData(),
-    m_uiGraphViewWidget->mapToGraph( globalPos )
-    );
+  QString nodeName =
+    m_uiController->cmdAddGet(
+      "get",
+      name.toUtf8().constData(),
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::createNewVariableSetNode( QPoint const &globalPos )
@@ -1277,11 +1303,16 @@ void DFGWidget::createNewVariableSetNode( QPoint const &globalPos )
   if(name.length() == 0)
     return;
 
-  m_uiController->cmdAddSet(
-    "set",
-    name.toUtf8().constData(),
-    m_uiGraphViewWidget->mapToGraph( globalPos )
-    );
+  QString nodeName =
+    m_uiController->cmdAddSet(
+      "set",
+      name.toUtf8().constData(),
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
