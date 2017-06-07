@@ -50,11 +50,6 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
     gradient.setColorAt(0.0, m_node->m_colorA.lighter(110));
     gradient.setColorAt(1.0, m_node->m_colorB.lighter(110));
   }
-  if ( m_node->isInspected() )
-  {
-    gradient.setColorAt(0.0, m_node->m_colorA.lighter(510));
-    gradient.setColorAt(1.0, m_node->m_colorB.lighter(510));
-  }
   else
   {
     gradient.setColorAt(0.0, m_node->m_colorA);
@@ -80,8 +75,6 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
   painter->setClipRect(labelRect, Qt::IntersectClip);
   if ( m_node->isHighlighted() )
     painter->setBrush(m_node->m_titleColor.lighter(120));
-  if ( m_node->isInspected() )
-    painter->setBrush(m_node->m_titleColor.lighter(520));
   else
     painter->setBrush(m_node->m_titleColor);
   painter->fillPath(rounded_rect,painter->brush());     
@@ -101,11 +94,17 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
   // draw the outline
   painter->strokePath(rounded_rect, standardPen);
 
+  // draw the "is inspected" outline
+  if (m_node->isInspected())
+  {
+    QPen pen = m_node->m_inspectedPen;
+    painter->strokePath(rounded_rect, pen);
+  }
+
 #ifdef FABRICUI_TIMERS
   timer->pause();
 #endif
 
   painter->setClipping(false);
   QGraphicsWidget::paint(painter, option, widget);
-
 }

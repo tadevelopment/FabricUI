@@ -123,6 +123,8 @@ namespace FabricUI
         { return m_defaultPen; }
       QPen selectedPen() const
         { return m_selectedPen; }
+      QPen inspectedPen() const
+        { return m_inspectedPen; }
 
       QString comment() const;
 
@@ -275,6 +277,7 @@ namespace FabricUI
       QColor m_fontColor;
       QPen m_defaultPen;
       QPen m_selectedPen;
+      QPen m_inspectedPen;
       QPen m_errorPen;
       float m_cornerRadius;
       qreal m_pinRadius;
