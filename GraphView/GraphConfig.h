@@ -52,6 +52,7 @@ namespace FabricUI
       float nodeMinHeight;
       QColor nodeDefaultColor;
       QColor nodeDefaultLabelColor;
+      QColor nodeInspectedOutlineColor;
       QPen nodeDefaultPen;
       bool nodeDefaultPenUsesNodeColor;
       QPen nodeSelectedPen;
@@ -60,7 +61,6 @@ namespace FabricUI
       QFont nodeFont;
       QColor nodeFontColor;
       QColor nodeFontHighlightColor;
-      QColor nodeFontInspectedColor;
       QFont instBlockHeaderFont;
       float nodeContentMargins;
       float nodeWidthReduction;
