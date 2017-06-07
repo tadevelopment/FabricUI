@@ -91,56 +91,49 @@ ManipulationTool::~ManipulationTool()
 void ManipulationTool::setActive( 
   bool active) 
 {
-  try
-  {
-    if(active)
-    {
-      if(!m_eventDispatcher.isValid())
-      {
-        RTVal eventDispatcherHandle = RTVal::Create(
-          FabricApplicationStates::GetAppStates()->getClient(), 
-          "EventDispatcherHandle", 
-          0, 
-          0);
+  FABRIC_CATCH_BEGIN();
 
-        if(eventDispatcherHandle.isValid())
-          m_eventDispatcher = eventDispatcherHandle.callMethod(
-            "EventDispatcher", 
-            "getEventDispatcher", 
-            0, 
-            0);
-      }
-      
-      if(m_eventDispatcher.isValid())  
-        m_eventDispatcher.callMethod(
-          "", 
-          "activateManipulation", 
+  if(active)
+  {
+    if(!m_eventDispatcher.isValid())
+    {
+      RTVal eventDispatcherHandle = RTVal::Create(
+        FabricApplicationStates::GetAppStates()->getClient(), 
+        "EventDispatcherHandle", 
+        0, 
+        0);
+
+      if(eventDispatcherHandle.isValid())
+        m_eventDispatcher = eventDispatcherHandle.callMethod(
+          "EventDispatcher", 
+          "getEventDispatcher", 
           0, 
           0);
     }
+    
+    if(m_eventDispatcher.isValid())  
+      m_eventDispatcher.callMethod(
+        "", 
+        "activateManipulation", 
+        0, 
+        0);
+  }
 
-    else
+  else
+  {
+    if(m_eventDispatcher.isValid())
     {
-      if(m_eventDispatcher.isValid())
-      {
-        m_eventDispatcher.callMethod(
-          "", 
-          "deactivateManipulation", 
-          0, 
-          0);
+      m_eventDispatcher.callMethod(
+        "", 
+        "deactivateManipulation", 
+        0, 
+        0);
 
-        m_eventDispatcher = RTVal();
-      }
+      m_eventDispatcher = RTVal();
     }
   }
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "ManipulationTool::toolOnSetup",
-      "",
-      e.getDesc_cstr());
-  }
+  FABRIC_CATCH_END("ManipulationTool::setActive");
 
   m_active = active;
 }
@@ -162,72 +155,65 @@ bool ManipulationTool::onEvent(
   manipulatedPortName = "";
 
   // Now we translate the Qt events to FabricEngine events.
-  try
+  FABRIC_CATCH_BEGIN();
+
+  if(!klevent.isValid())
+    return false;
+
+  if(!m_eventDispatcher.isValid())
+    return false;
+
+  //////////////////////////
+  // Invoke the event...
+  m_eventDispatcher.callMethod(
+    "Boolean", 
+    "onEvent", 
+    1, 
+    &klevent);
+
+  bool isAccepted = klevent.callMethod(
+    "Boolean", 
+    "isAccepted", 
+    0, 
+    0).getBoolean();
+
+  RTVal host = klevent.maybeGetMember("host");
+  redrawRequested = host.maybeGetMember("redrawRequested").getBoolean();
+
+  // Cache the rtvals in a static variable that the command will then stor in the undo stack.
+  if(host.callMethod("Boolean", "undoRedoCommandsAdded", 0, 0).getBoolean())
+    ManipulationCmd::setStaticRTValCommands(
+      host.callMethod(
+        "UndoRedoCommand[]", 
+        "getUndoRedoCommands", 
+        0, 
+        0)
+      );
+
+  std::string customCommand = host.maybeGetMember("customCommand").getStringCString();
+  if(customCommand == "setArg")
   {
-    if(!klevent.isValid())
-      return false;
+    Client client = FabricApplicationStates::GetAppStates()->getClient();
+    RTVal customCommandParams = host.maybeGetMember("customCommandParams");
+    RTVal portNameVal = RTVal::ConstructString(client, "portName");
+    RTVal xfoVal = RTVal::ConstructString(client, "xfo");
 
-    if(!m_eventDispatcher.isValid())
-      return false;
-
-    //////////////////////////
-    // Invoke the event...
-    m_eventDispatcher.callMethod(
-      "Boolean", 
-      "onEvent", 
+    manipulatedPortName = customCommandParams.callMethod(
+      "String", 
+      "getString", 
       1, 
-      &klevent);
-
-    bool isAccepted = klevent.callMethod(
-      "Boolean", 
-      "isAccepted", 
-      0, 
-      0).getBoolean();
- 
-    RTVal host = klevent.maybeGetMember("host");
-    redrawRequested = host.maybeGetMember("redrawRequested").getBoolean();
-
-    // Cache the rtvals in a static variable that the command will then stor in the undo stack.
-    if(host.callMethod("Boolean", "undoRedoCommandsAdded", 0, 0).getBoolean())
-      ManipulationCmd::setStaticRTValCommands(
-        host.callMethod(
-          "UndoRedoCommand[]", 
-          "getUndoRedoCommands", 
-          0, 
-          0)
-        );
-
-    std::string customCommand = host.maybeGetMember("customCommand").getStringCString();
-    if(customCommand == "setArg")
-    {
-      Client client = FabricApplicationStates::GetAppStates()->getClient();
-      RTVal customCommandParams = host.maybeGetMember("customCommandParams");
-      RTVal portNameVal = RTVal::ConstructString(client, "portName");
-      RTVal xfoVal = RTVal::ConstructString(client, "xfo");
-
-      manipulatedPortName = customCommandParams.callMethod(
-        "String", 
-        "getString", 
-        1, 
-        &portNameVal).getStringCString();
-      
-      m_lastManipValue = customCommandParams.callMethod(
-        "Xfo", 
-        "getXfo", 
-        1, 
-        &xfoVal);
-    }
-
-    return isAccepted;
+      &portNameVal).getStringCString();
+    
+    m_lastManipValue = customCommandParams.callMethod(
+      "Xfo", 
+      "getXfo", 
+      1, 
+      &xfoVal);
   }
 
-  catch(Exception &e)
-  {
-    FabricException::Throw(
-      "ManipulationTool::onEvent",
-      "",
-      e.getDesc_cstr());
-  }
+  return isAccepted;
+  
+  FABRIC_CATCH_END("ManipulationTool::onEvent");
 
   // the event was not handled by FabricEngine manipulation system. 
   return false;
