@@ -30,29 +30,21 @@ BaseCommand* RTValCommandManager::createCommand(
   bool doCmd,
   int canMergeID)
 {
-  try 
-  {  
-    BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
-      cmdName);
- 
-    if(args.size() > 0) 
-      checkRTValCommandArgs(cmd, args);
+  FABRIC_CATCH_BEGIN();
 
-    if(doCmd) 
-      doCommand(cmd, canMergeID);
+  BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
+    cmdName);
 
-    return cmd;
-  }
+  if(args.size() > 0) 
+    checkRTValCommandArgs(cmd, args);
 
-  catch(FabricException &e) 
-  {
-    FabricException::Throw(
-      "RTValCommandManager::createCommand",
-      "Cannot create command '" + cmdName + "'",
-      e.what()
-      );
-  }
- 
+  if(doCmd) 
+    doCommand(cmd, canMergeID);
+
+  return cmd;
+
+  FABRIC_CATCH_END("RTValCommandManager::createCommand");
+
   return 0;
 }
 

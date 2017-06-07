@@ -83,6 +83,6 @@ bool BaseCommand::canMerge(
 }
 
 void BaseCommand::merge(
-  BaseCommand *cmd) 
+  BaseCommand *prevCmd) 
 {
 }

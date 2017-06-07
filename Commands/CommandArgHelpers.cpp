@@ -67,20 +67,64 @@ QString CommandArgHelpers::CreateHistoryDescFromArgs(
   return "";
 }
 
+QString CommandArgHelpers::GetArgsTypeSpecs(
+  BaseCommand *cmd,
+  const QString &key)
+{
+  BaseScriptableCommand *scriptCmd = qobject_cast<BaseScriptableCommand*>(
+    cmd);
+ 
+  QString specs; 
+
+  if(scriptCmd &&scriptCmd->hasArg(key)) 
+  {
+    specs += "["; 
+
+    BaseRTValScriptableCommand *rtValScriptCmd = qobject_cast<BaseRTValScriptableCommand*>(
+      cmd);
+
+    if(rtValScriptCmd)
+      specs += "PathValue(" + rtValScriptCmd->getRTValArgType(key) + ")"; 
+    else
+      specs += "String";
+
+    if(scriptCmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
+      specs += ", optional"; 
+
+    if(scriptCmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
+      specs += ", loggable"; 
+
+    if(scriptCmd->isArg(key, CommandArgFlags::IN_ARG))
+      specs += ", IN"; 
+
+    if(scriptCmd->isArg(key, CommandArgFlags::OUT_ARG))
+      specs += ", OUT"; 
+
+    if(scriptCmd->isArg(key, CommandArgFlags::IO_ARG))
+      specs += ", IO"; 
+    
+    specs += "]"; 
+  }
+
+  return specs;
+}
+
 QString CommandArgHelpers::CreateHelpFromArgs(
   const QString &commandHelp,
   const QMap<QString, QString> &argsHelp,
   BaseCommand *cmd)
 {
+  QString help;
+  
   FABRIC_CATCH_BEGIN();
 
   BaseScriptableCommand *scriptCmd = qobject_cast<BaseScriptableCommand*>(
     cmd);
 
-  if(scriptCmd == 0)
+  if(scriptCmd == 0) 
     return "";
 
-  QString help = commandHelp + "\n";
+  help = commandHelp + "\n";
 
   if(argsHelp.size() > 0)
     help +=  "Arguments:\n";
@@ -90,34 +134,12 @@ QString CommandArgHelpers::CreateHelpFromArgs(
   {
     it.next();
     QString key = it.key();
-    QString argHelp = it.value();
-
-    QString specs; 
-    if(scriptCmd->isArg(key, CommandArgFlags::OPTIONAL_ARG) || scriptCmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
-    {
-      specs += "["; 
-
-      if(scriptCmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
-        specs += "optional"; 
-
-      if(scriptCmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
-      {
-        if(scriptCmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
-          specs += ", loggable"; 
-        specs += "loggable"; 
-      }
-
-      specs += "]"; 
-    }
-     
-    help +=  "- " + key + specs + ": " + argHelp + "\n";
+    help +=  "- " + key + GetArgsTypeSpecs(cmd, key) + ": " + it.value() + "\n";
   }
-
-  return help;
 
   FABRIC_CATCH_END("CommandArgHelpers::CreateHelpFromArgs");
 
-  return "";
+  return help;
 }
 
 QString CommandArgHelpers::CreateHelpFromRTValArgs(
@@ -125,6 +147,8 @@ QString CommandArgHelpers::CreateHelpFromRTValArgs(
   const QMap<QString, QString> &argsHelp,
   BaseCommand *cmd)
 {
+  QString help;
+  
   FABRIC_CATCH_BEGIN();
 
   BaseRTValScriptableCommand *rtValScriptCmd = qobject_cast<BaseRTValScriptableCommand*>(
@@ -133,7 +157,7 @@ QString CommandArgHelpers::CreateHelpFromRTValArgs(
   if(rtValScriptCmd == 0)
     return "";
 
-  QString help = commandHelp + "\n";
+  help = commandHelp + "\n";
 
   if(argsHelp.size() > 0)
     help +=  "Arguments:\n";
@@ -143,47 +167,13 @@ QString CommandArgHelpers::CreateHelpFromRTValArgs(
   {
     it.next();
     QString key = it.key();
-
-    if(!rtValScriptCmd->hasArg(key)) 
-      return "";
-
-    QString argHelp = it.value();
-
-    QString specs; 
-    specs += " ["; 
-
-    if( rtValScriptCmd->isArg(key, CommandArgFlags::IN_ARG) ||
-        rtValScriptCmd->isArg(key, CommandArgFlags::OUT_ARG) ||
-        rtValScriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
-      specs += "PathValue[" + rtValScriptCmd->getRTValArgType(key)+"]"; 
-    else
-      specs += rtValScriptCmd->getRTValArgType(key); 
-
-    if(rtValScriptCmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
-      specs += ", optional"; 
-
-    if(rtValScriptCmd->isArg(key, CommandArgFlags::LOGGABLE_ARG))
-      specs += ", loggable"; 
-
-    if(rtValScriptCmd->isArg(key, CommandArgFlags::IN_ARG))
-      specs += ", IN"; 
-
-    if(rtValScriptCmd->isArg(key, CommandArgFlags::OUT_ARG))
-      specs += ", OUT"; 
-
-    if(rtValScriptCmd->isArg(key, CommandArgFlags::IO_ARG))
-      specs += ", IO"; 
-    
-    specs += "]"; 
-     
-    help +=  "- " + key + specs + ": " + argHelp + "\n";
+    if(rtValScriptCmd->hasArg(key)) 
+      help += "- " + key + GetArgsTypeSpecs(cmd, key) + ": " + it.value() + "\n";
   }
  
-  return help;
-  
   FABRIC_CATCH_END("CommandArgHelpers::CreateHelpFromRTValArgs");
-
-  return "";
+  
+  return help;
 }
 
 inline BaseScriptableCommand* CastToBaseScriptableCommand(
@@ -224,14 +214,11 @@ bool CommandArgHelpers::IsPathValueCommandArg(
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
-
   BaseScriptableCommand* scriptCmd = CastToBaseScriptableCommand(cmd);
   return scriptCmd->isArg(key, CommandArgFlags::IO_ARG) ||
       scriptCmd->isArg(key, CommandArgFlags::IN_ARG) ||
     scriptCmd->isArg(key, CommandArgFlags::OUT_ARG);
-   
   FABRIC_CATCH_END("CommandArgHelpers::IsPathValueCommandArg");
-
   return false;
 }
 
@@ -248,12 +235,9 @@ bool CommandArgHelpers::IsCommandArg(
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
-
   BaseScriptableCommand* scriptCmd = CastToBaseScriptableCommand(cmd);
   return scriptCmd->isArg(key, flags);
-  
   FABRIC_CATCH_END("CommandArgHelpers::IsCommandArg");
-
   return false;
 }
 
@@ -262,12 +246,9 @@ bool CommandArgHelpers::IsCommandArgSet(
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
-
   BaseScriptableCommand* scriptCmd = qobject_cast<BaseScriptableCommand*>(cmd);
   return scriptCmd->isArgSet(key);
-  
   FABRIC_CATCH_END("CommandArgHelpers::IsCommandArgSet");
-
   return false;
 }
 
@@ -276,12 +257,9 @@ bool CommandArgHelpers::HasCommandArg(
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
-
   BaseScriptableCommand* scriptCmd = CastToBaseScriptableCommand(cmd);
   return scriptCmd->hasArg(key);
-  
   FABRIC_CATCH_END("CommandArgHelpers::HasCommandArg");
-
   return false;
 }
 
@@ -289,14 +267,10 @@ QList<QString> CommandArgHelpers::GetCommandArgKeys(
   BaseCommand *cmd)
 {
   QList<QString> keys;
-
   FABRIC_CATCH_BEGIN();
-
   BaseScriptableCommand* scriptCmd = CastToBaseScriptableCommand(cmd);
   keys = scriptCmd->getArgKeys();
-  
   FABRIC_CATCH_END("CommandArgHelpers::GetCommandArgKeys");
-
   return keys;
 }
 
@@ -305,12 +279,9 @@ QString CommandArgHelpers::GetCommandArg(
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
-
   BaseScriptableCommand* scriptCmd = CastToBaseScriptableCommand(cmd);
   return scriptCmd->getArg(key);
-  
   FABRIC_CATCH_END("CommandArgHelpers::GetCommandArg");
-
   return "";
 }
 
@@ -319,12 +290,9 @@ RTVal CommandArgHelpers::GetRTValCommandArg(
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
-
   BaseRTValScriptableCommand* scriptCmd = CastToBaseRTValScriptableCommand(cmd);
   return scriptCmd->getRTValArg(key);
-  
   FABRIC_CATCH_END("CommandArgHelpers::GetRTValCommandArg");
-
   return RTVal();
 }
 
@@ -333,12 +301,9 @@ RTVal CommandArgHelpers::GetRTValCommandArgValue(
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
-
   BaseRTValScriptableCommand* scriptCmd = CastToBaseRTValScriptableCommand(cmd);
   return scriptCmd->getRTValArgValue(key);
-  
   FABRIC_CATCH_END("CommandArgHelpers::GetRTValCommandArgValue");
-
   return RTVal();
 }
 
@@ -348,12 +313,9 @@ RTVal CommandArgHelpers::GetRTValCommandArgValue(
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
-
   BaseRTValScriptableCommand* scriptCmd = CastToBaseRTValScriptableCommand(cmd);
   return scriptCmd->getRTValArgValue(key, type);
-  
   FABRIC_CATCH_END("CommandArgHelpers::GetRTValCommandArgValue");
-
   return RTVal();
 }
 
@@ -362,11 +324,8 @@ QString CommandArgHelpers::GetRTValCommandArgType(
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
-
   BaseRTValScriptableCommand* scriptCmd = CastToBaseRTValScriptableCommand(cmd);
   return scriptCmd->getRTValArgType(key);
-  
   FABRIC_CATCH_END("CommandArgHelpers::GetRTValCommandArgType");
-
   return "";
 }

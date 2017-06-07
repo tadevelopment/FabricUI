@@ -5,7 +5,6 @@
 #ifndef __UI_CPP_TEST_COMMAND_REGISTRY__
 #define __UI_CPP_TEST_COMMAND_REGISTRY__
 
-#include <iostream>
 #include "KLCommandRegistry.h"
 #include "RTValCommandManager.h"
 #include "BaseScriptableCommand.h"

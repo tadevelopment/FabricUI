@@ -50,11 +50,11 @@ bool SetPathValueCommand::doIt()
   FABRIC_CATCH_BEGIN();
 
   if( canUndo() )
-    this->previousValue = getRTValArgValue( "target" ).clone();
+    m_previousValue = getRTValArgValue("target").clone();
 
   return redoIt();
 
-  FABRIC_CATCH_END( "SetPathValueCommand::doIt" );
+  FABRIC_CATCH_END("SetPathValueCommand::doIt");
 
   return false;
 }
@@ -63,7 +63,7 @@ bool SetPathValueCommand::undoIt()
 { 
   FABRIC_CATCH_BEGIN();
 
-  setRTValArgValue("target", this->previousValue.clone());
+  setRTValArgValue("target", m_previousValue.clone());
   return true;
   
   FABRIC_CATCH_END("SetPathValueCommand::undoIt");
@@ -105,12 +105,8 @@ QString SetPathValueCommand::getHistoryDesc()
 }
 
 void SetPathValueCommand::merge(
-  BaseCommand *cmd) 
+  BaseCommand *prevCmd) 
 {
-  FABRIC_CATCH_BEGIN();
-
-  SetPathValueCommand *pathValueCmd = qobject_cast<SetPathValueCommand*>(cmd);
-  setRTValArgValue("newValue", pathValueCmd->getRTValArgValue("newValue").clone());
-
-  FABRIC_CATCH_END("SetPathValueCommand::merge");
+  SetPathValueCommand *pathValueCmd = qobject_cast<SetPathValueCommand*>(prevCmd);
+  m_previousValue = pathValueCmd->m_previousValue;
 }

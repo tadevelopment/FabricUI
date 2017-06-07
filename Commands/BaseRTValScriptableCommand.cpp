@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include "CommandArgHelpers.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
@@ -102,12 +103,18 @@ QString BaseRTValScriptableCommand::getArg(
 {
   checkHasArg("BaseRTValScriptableCommand::getArg", key); 
 
+  FABRIC_CATCH_BEGIN();
+
   // Known RTVal of known type, get the json from it.
   return (m_rtvalArgs[key].second.isEmpty() && isArgTypeKnown(key))
-    ? RTValUtil::toJSON(getRTValArg(key))
+    ? RTValUtil::toJSON(getRTValArgValue(key))
     // Otherwise, return the Json if it's been set.
     // It happens if the arg's been declared with an unknown type
     : m_rtvalArgs[key].second;
+  
+  FABRIC_CATCH_END("BaseRTValScriptableCommand::getArg");
+
+  return "";
 }
 
 void BaseRTValScriptableCommand::setArg(
@@ -166,25 +173,31 @@ void BaseRTValScriptableCommand::validateSetArgs()
 
 QString BaseRTValScriptableCommand::getArgsDescription() 
 {
-  QMapIterator<QString, ScriptableCommandRTValArgSpec> it(m_rtvalArgSpecs);
+  QString res;
+
+  FABRIC_CATCH_BEGIN();
 
   int count = 0;
-  QString res;
+  QMapIterator<QString, ScriptableCommandRTValArgSpec> it(m_rtvalArgSpecs);
   while(it.hasNext()) 
   {
     it.next();
     QString key = it.key();
     ScriptableCommandRTValArgSpec spec = it.value();
 
-    res += "    ["  + key 
-      + "] opt: "   + QString::number(isArg(key, CommandArgFlags::OPTIONAL_ARG))
-      + " val: "    + getArg(key)
-      + " defVal: " + spec.defaultValue;
+    res += "    ["  + key + "]";
+    res += ", opt: " + CommandArgHelpers::GetArgsTypeSpecs(this, key);
+    res += ", path: <" + getRTValArgPath(key) + ">";
+    res += ", val: " + getArg(key);
 
-    res += (count < m_rtvalArgs.size() - 1) ? "\n" : "";
-
+    if(spec.defaultValue.isValid())
+      res += ", defVal: " + RTValUtil::toJSON(spec.defaultValue);
+ 
+    res += (count < m_rtvalArgSpecs.size() - 1) ? "\n" : "";
     count++;
   }
+  
+  FABRIC_CATCH_END("BaseRTValScriptableCommand::getArgsDescription");
 
   return res;
 }
@@ -337,7 +350,7 @@ void BaseRTValScriptableCommand::setRTValArg(
 
 RTVal BaseRTValScriptableCommand::getRTValArg(
   const QString &key)
-{
+{ 
   checkHasArg("BaseRTValScriptableCommand::getRTValArg", key); 
  
   FABRIC_CATCH_BEGIN();

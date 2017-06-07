@@ -90,9 +90,9 @@ int KLScriptableCommand::getCanMergeID()
 }
 
 bool KLScriptableCommand::canMerge(
-  BaseCommand *cmd) 
+  BaseCommand *prevCmd) 
 {
-  KLScriptableCommand* scriptCmd = qobject_cast<KLScriptableCommand*>(cmd);
+  KLScriptableCommand* scriptCmd = qobject_cast<KLScriptableCommand*>(prevCmd);
   if(scriptCmd == 0)
     return false;
   
@@ -100,10 +100,21 @@ bool KLScriptableCommand::canMerge(
 }
 
 void KLScriptableCommand::merge(
-  BaseCommand *cmd) 
+  BaseCommand *prevCmd) 
 {
-  KLScriptableCommand* scriptCmd = qobject_cast<KLScriptableCommand*>(cmd);
-  MergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
+  FABRIC_CATCH_BEGIN();
+
+  KLScriptableCommand* scriptCmd = qobject_cast<KLScriptableCommand*>(prevCmd);
+
+  RTVal cmd = RTVal::Construct(
+    m_klCmd.getContext(),
+    "Command",
+    1,
+    &scriptCmd->m_klCmd);
+
+  MergeKLCommand(m_klCmd, cmd);
+
+  FABRIC_CATCH_END("KLScriptableCommand::merge");
 }
 
 // BaseScriptableCommand

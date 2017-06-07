@@ -50,7 +50,16 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
       );
 
   private:
-    ///
+    /// Type of DFG data.
+    enum DFGType { DFGUnknow, DFGPort, DFGVar };
+  
+    /// Gets the DFG data type (DFGUnknow, DFGPort, DFGVar)
+    /// at this pathValue.
+    DFGType checkDFGType(
+      FabricCore::RTVal pathValue
+      );
+
+    /// Pointor to the controller.
     DFGController *m_controller;
 };
 

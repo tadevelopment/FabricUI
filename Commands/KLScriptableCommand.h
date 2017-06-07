@@ -135,12 +135,12 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
 
     /// Implementation of BaseCommand.
     virtual bool canMerge(
-      BaseCommand *cmd
+      BaseCommand *prevCmd
       );
 
     /// Implementation of BaseCommand.
     virtual void merge(
-      BaseCommand *cmd
+      BaseCommand *prevCmd
       );
 
     /// Implementation of BaseScriptableCommand.

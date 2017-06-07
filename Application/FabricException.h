@@ -9,6 +9,10 @@
 #include <iostream>
 #include <exception>
 #include <FabricCore.h>
+#include <FTL/StrRef.h>
+#include <FTL/JSONEnc.h>
+#include <FTL/JSONDec.h>
+#include <FTL/JSONValue.h>
 
 namespace FabricUI {
 namespace Application {
@@ -78,15 +82,23 @@ class FabricException : public std::exception
   { \
     FabricUI::Application::FabricException::Throw( \
       methodName, \
-      "", \
+      "Caught Core Exception", \
       e.getDesc_cstr() \
+      ); \
+  } \
+  catch (FTL::JSONException &je) \
+  { \
+    FabricUI::Application::FabricException::Throw( \
+      methodName, \
+      "Caught JSON Exception", \
+      je.getDescCStr() \
       ); \
   } \
   catch (FabricUI::Application::FabricException &e) \
   { \
     FabricUI::Application::FabricException::Throw( \
       methodName, \
-      "", \
+      "Caught App Exception", \
       e.what() \
       ); \
   } 

@@ -166,15 +166,16 @@ class BaseCommand : public QObject
     /// Gets the interaction ID.
     virtual int getCanMergeID();
 
-    /// Checks if the command `cmd` can
-    /// be merged with `this` command.
+    /// Checks if the command `this` can
+    /// be merged with `prevCmd` command.
     virtual bool canMerge(
-      BaseCommand *cmd
+      BaseCommand *prevCmd
       );
 
-    /// Merges a command `cmd` with `this` command.
+    /// Merges a command `this` with 
+    /// `prevCmd` command.
     virtual void merge(
-      BaseCommand *cmd
+      BaseCommand *prevCmd
       );
 
   private:

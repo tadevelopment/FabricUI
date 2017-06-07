@@ -37,11 +37,11 @@ class SetPathValueCommand : public BaseRTValScriptableCommand
 
     /// Implementation of BaseCommand.
     virtual void merge(
-      BaseCommand *cmd
+      BaseCommand *prevCmd
       );
 
   private:
-    FabricCore::RTVal previousValue;
+    FabricCore::RTVal m_previousValue;
 };
 
 } // namespace Commands

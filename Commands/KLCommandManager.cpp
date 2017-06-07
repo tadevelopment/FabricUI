@@ -33,25 +33,27 @@ void KLCommandManager::clear()
     "clear", 
     0, 0);
 
-  FABRIC_CATCH_END("KLCommandManager::clear");
-
   CommandManager::clear();
+
+  FABRIC_CATCH_END("KLCommandManager::clear");
 }
 
 QString KLCommandManager::getContent()
 {
-  QString res = CommandManager::getContent();
-
   FABRIC_CATCH_BEGIN();
+
+  QString res = CommandManager::getContent();
 
   res += QString("\n") + m_klCmdManager.callMethod(
     "String", 
     "getContent", 
     0, 0).getStringCString();  
   
+  return res;
+
   FABRIC_CATCH_END("KLCommandManager::getContent");
 
-  return res;
+  return "";
 }
  
 int KLCommandManager::getNewCanMergeID()
@@ -181,9 +183,11 @@ void KLCommandManager::doKLCommand(
     1, 
     &klCmd);
 
-  BaseCommand *cmd = klScriptCmd.isValid() && !klScriptCmd.isNullObject()
-    ? (BaseCommand *)new KLScriptableCommand(klScriptCmd)
-    : (BaseCommand *)new KLCommand(klCmd);
+  BaseCommand *cmd = 0;
+  if(klScriptCmd.isValid() && !klScriptCmd.isNullObject())
+    cmd = new KLScriptableCommand(klScriptCmd);
+  else
+    cmd = new KLCommand(klCmd);
 
   RTVal baseCmd = RTVal::Construct(
     klCmd.getContext(),

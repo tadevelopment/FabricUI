@@ -251,7 +251,7 @@ int GetKLCommandCanMergeID(
 
 bool CanMergeKLCommand(
   FabricCore::RTVal klCmd,
-  FabricCore::RTVal otherKLCmd)
+  FabricCore::RTVal prevKlCmd)
 {
   FABRIC_CATCH_BEGIN();
 
@@ -259,7 +259,7 @@ bool CanMergeKLCommand(
     "Boolean", 
     "canMerge", 
     1, 
-    &otherKLCmd
+    &prevKlCmd
     ).getBoolean();
 
   FABRIC_CATCH_END("KLCommandHelpers::CanMergeKLCommand");
@@ -269,7 +269,7 @@ bool CanMergeKLCommand(
 
 void MergeKLCommand(
   FabricCore::RTVal klCmd,
-  FabricCore::RTVal otherKLCmd)
+  FabricCore::RTVal prevKlCmd)
 {
   FABRIC_CATCH_BEGIN();
 
@@ -277,7 +277,7 @@ void MergeKLCommand(
     "", 
     "merge", 
     1, 
-    &otherKLCmd);
+    &prevKlCmd);
 
   FABRIC_CATCH_END("KLCommandHelpers::MergeKLCommand");
 }

@@ -46,6 +46,12 @@ class CommandArgHelpers
       );
 
     /// Helper to create the command's helps
+    static QString GetArgsTypeSpecs(
+      BaseCommand *cmd,
+      const QString &key
+      );
+
+    /// Helper to create the command's helps
     /// from a subsets of arguments.
     /// \param commandHelp The main help text.
     /// \param argsHelp Map of [arg, arg help]

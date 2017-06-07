@@ -109,12 +109,12 @@ class KLCommand : public BaseCommand
 
     /// Implementation of BaseCommand.
     virtual bool canMerge(
-      BaseCommand *cmd
+      BaseCommand *prevCmd
       );
 
     /// Implementation of BaseCommand.
     virtual void merge(
-      BaseCommand *cmd
+      BaseCommand *prevCmd
       );
     
   private:

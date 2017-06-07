@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include "CommandArgHelpers.h"
 #include "BaseScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
 
@@ -119,25 +120,30 @@ void BaseScriptableCommand::validateSetArgs()
 
 QString BaseScriptableCommand::getArgsDescription() 
 {
-  QMapIterator<QString, ScriptableCommandArgSpec> it(m_argSpecs);
+  QString res;
+
+  FABRIC_CATCH_BEGIN();
 
   int count = 0;
-  QString res;
+  QMapIterator<QString, ScriptableCommandArgSpec> it(m_argSpecs);
   while(it.hasNext()) 
   {
     it.next();
     QString key = it.key();
     ScriptableCommandArgSpec spec = it.value();
 
-    res += "    ["  + key 
-      + "] opt: "   + QString::number(isArg(key, CommandArgFlags::OPTIONAL_ARG))
-      + " val: "    + getArg(key)
-      + " defVal: " + spec.defaultValue;
+    res += "    ["  + key + "]";
+    res += ", opt: " + CommandArgHelpers::GetArgsTypeSpecs(this, key);
+    res +=  ", val: " + getArg(key);
 
-    res += (count < m_args.size() - 1) ? "\n" : "";
-
+    if(!spec.defaultValue.isEmpty())
+      res += ", defVal: " + spec.defaultValue;
+ 
+    res += (count < m_argSpecs.size() - 1) ? "\n" : "";
     count++;
   }
+
+  FABRIC_CATCH_END("BaseScriptableCommand::getArgsDescription");
 
   return res;
 }

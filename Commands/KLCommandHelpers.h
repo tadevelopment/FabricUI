@@ -89,14 +89,14 @@ int GetKLCommandCanMergeID(
 /// Throws an exception if an error occurs.
 bool CanMergeKLCommand(
   FabricCore::RTVal klCmd,
-  FabricCore::RTVal otherKLCmd
+  FabricCore::RTVal prevKlCmd
   );
 
 /// Merges a KL command with another.
 /// Throws an exception if an error occurs.
 void MergeKLCommand(
   FabricCore::RTVal klCmd,
-  FabricCore::RTVal otherKLCmd
+  FabricCore::RTVal prevKlCmd
   );
 
 } // namespace Commands
