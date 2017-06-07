@@ -67,6 +67,7 @@ void Graph::requestSidePanelInspect(
   )
 {
   emit sidePanelInspectRequested();
+  clearInspection();
 }
 
 void Graph::requestMainPanelAction(
@@ -362,6 +363,12 @@ void Graph::clearSelection() const
 {
   for (size_t i=0;i<m_nodes.size();i++)
     m_nodes[i]->setSelected( false );
+}
+
+void Graph::clearInspection() const
+{
+  for (size_t i=0;i<m_nodes.size();i++)
+    m_nodes[i]->setInspected( false );
 }
 
 void Graph::addFixedPort( FixedPort *fixedPort )

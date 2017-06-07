@@ -49,6 +49,7 @@ Node::Node(
   , m_duplicateNodesOnDrag( false )
   , m_canEdit( false )
   , m_isHighlighted( false )
+  , m_isInspected( false )
   , m_isConnectionHighlighted( false )
 {
   m_defaultPen = graph()->config().nodeDefaultPen;
@@ -258,6 +259,15 @@ void Node::setSelected(bool state, bool quiet)
     else
       emit graph()->nodeDeselected(this);
   }
+  updateEffect();
+  update();
+}
+
+void Node::setInspected(bool state)
+{
+  if(state == m_isInspected)
+    return;
+  m_isInspected = state;
   updateEffect();
   update();
 }

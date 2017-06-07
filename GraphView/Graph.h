@@ -94,6 +94,7 @@ namespace FabricUI
       virtual std::vector<Node *> selectedNodes() const;
       void selectAllNodes();
       void clearSelection() const;
+      void clearInspection() const;
 
       // ports
       std::vector<Port *> ports() const;

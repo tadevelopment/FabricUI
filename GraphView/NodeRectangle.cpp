@@ -50,6 +50,11 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
     gradient.setColorAt(0.0, m_node->m_colorA.lighter(110));
     gradient.setColorAt(1.0, m_node->m_colorB.lighter(110));
   }
+  if ( m_node->isInspected() )
+  {
+    gradient.setColorAt(0.0, m_node->m_colorA.lighter(510));
+    gradient.setColorAt(1.0, m_node->m_colorB.lighter(510));
+  }
   else
   {
     gradient.setColorAt(0.0, m_node->m_colorA);
@@ -75,6 +80,8 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
   painter->setClipRect(labelRect, Qt::IntersectClip);
   if ( m_node->isHighlighted() )
     painter->setBrush(m_node->m_titleColor.lighter(120));
+  if ( m_node->isInspected() )
+    painter->setBrush(m_node->m_titleColor.lighter(520));
   else
     painter->setBrush(m_node->m_titleColor);
   painter->fillPath(rounded_rect,painter->brush());     

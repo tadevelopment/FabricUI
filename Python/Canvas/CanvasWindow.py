@@ -1433,7 +1433,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self.treeWidget.onExpandToAndSelectItem(nodeName)
 
-    def onNodeInspectRequested(self, nodeName):
+    def onNodeInspectRequested(self, node):
         """Callback for when 'Inspect node' is invoked.
         """
 
@@ -1441,3 +1441,7 @@ class CanvasWindow(QtGui.QMainWindow):
         if not self.valueEditorDockWidget.isVisible() or self.valueEditorDockWidget.visibleRegion().isEmpty():
           self.valueEditorDockWidget.setVisible(True);
           self.valueEditorDockWidget.raise_();
+
+        graph = self.dfgWidget.getUIGraph();
+        graph.clearInspection();
+        node.setInspected(True);
