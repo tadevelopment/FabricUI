@@ -216,6 +216,9 @@ void DFGCombinedWidget::onNodeInspectRequested(FabricUI::GraphView::Node * node)
     s[1] -= s[2];
     m_hSplitter->setSizes(s);
   }
+
+  node->graph()->clearInspection();
+  node->setInspected(true);
 }
 
 void DFGCombinedWidget::onRevealPresetInExplorer(QString nodeName)
