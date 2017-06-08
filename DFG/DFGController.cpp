@@ -347,21 +347,23 @@ bool DFGController::gvcDoRemoveNodes(
   return true;
 }
 
-void DFGController::cmdAddBackDrop(
+QString DFGController::cmdAddBackDrop(
   QString title,
   QPointF pos
   )
 {
   if(!validPresetSplit())
-    return;
+    return "";
 
-  m_cmdHandler->dfgDoAddBackDrop(
-    getBinding(),
-    getExecPath_QS(),
-    getExec(),
-    title,
-    pos
-    );
+  QString nodeName =
+    m_cmdHandler->dfgDoAddBackDrop(
+      getBinding(),
+      getExecPath_QS(),
+      getExec(),
+      title,
+      pos
+      );
+  return nodeName;
 }
 
 QString DFGController::cmdEditNode(

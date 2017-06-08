@@ -250,9 +250,9 @@ void PinCircle::mousePressEvent(QGraphicsSceneMouseEvent * event)
     target()->graph()->controller()->beginInteraction();
 
     if(portType() == PortType_Output)
-      target()->graph()->constructMouseGrabber(scenePos, target(), PortType_Input);
+      target()->graph()->constructMouseGrabber(scenePos, target(), PortType_Input, NULL);
     else
-      target()->graph()->constructMouseGrabber(scenePos, target(), PortType_Output);
+      target()->graph()->constructMouseGrabber(scenePos, target(), PortType_Output, NULL);
   }
   else if(event->button() == Qt::RightButton)
   {

@@ -28,7 +28,7 @@
 
 using namespace FabricUI::GraphView;
 
-MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
+MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious)
 : ConnectionTarget(parent->itemGroup())
   , m_lastSidePanel( NULL )
 {
@@ -37,6 +37,7 @@ MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * 
   m_target->setHighlighted( true );
   m_otherPortType = portType;
   m_targetUnderMouse = NULL;
+  m_connectionPrevious = connectionPrevious;
 
   const GraphConfig & config = parent->config();
   m_radius = config.mouseGrabberRadius;
@@ -63,7 +64,7 @@ MouseGrabber::~MouseGrabber()
     m_target->setHighlighted( false );
 }
 
-MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
+MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious)
 {
   switch ( target->targetType() )
   {
@@ -109,7 +110,7 @@ MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, Connect
       if(!pin)
         return NULL;
 
-      return construct(parent, mousePos, pin, portType);
+      return construct(parent, mousePos, pin, portType, connectionPrevious);
     }
     break;
 
@@ -156,12 +157,12 @@ MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, Connect
       if(!instBlockPort)
         return NULL;
 
-      return construct(parent, mousePos, instBlockPort, portType);
+      return construct(parent, mousePos, instBlockPort, portType, connectionPrevious);
     }
     break;
 
     default:
-      return new MouseGrabber(parent, mousePos, target, portType);
+      return new MouseGrabber(parent, mousePos, target, portType, connectionPrevious);
   }
 }
 
@@ -337,6 +338,14 @@ void MouseGrabber::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 
   if( m_lastSidePanel )
     m_lastSidePanel->onDroppingPort();
+
+  if (m_connectionPrevious) // [FE-8122]
+  {
+    std::vector<Connection *> conns;
+    conns.push_back(m_connectionPrevious);
+    graph()->controller()->gvcDoRemoveConnections(conns);
+    m_connectionPrevious = NULL;
+  }
 
   if(m_targetUnderMouse)
   {

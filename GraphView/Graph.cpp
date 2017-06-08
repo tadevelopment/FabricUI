@@ -852,11 +852,11 @@ bool Graph::removeConnections()
   return (conns.size() ? controller()->gvcDoRemoveConnections(conns) : true);
 }
 
-MouseGrabber * Graph::constructMouseGrabber(QPointF pos, ConnectionTarget * target, PortType portType)
+MouseGrabber * Graph::constructMouseGrabber(QPointF pos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious)
 {
   if(!m_isEditable)
     return NULL;
-  m_mouseGrabber = MouseGrabber::construct(this, pos, target, portType);
+  m_mouseGrabber = MouseGrabber::construct(this, pos, target, portType, connectionPrevious);
   return m_mouseGrabber;
 }
 

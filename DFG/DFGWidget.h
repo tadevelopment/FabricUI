@@ -180,6 +180,7 @@ namespace DFG {
       void onGoUpPressed();
       void onNodeEditRequested(FabricUI::GraphView::Node *);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
+      void onToggleBlockCompilations();
       void onToggleDimConnections();
       void onToggleConnectionShowTooltip();
       void onToggleHighlightConnectionTargets();
@@ -2595,6 +2596,38 @@ namespace DFG {
     private:
 
       QUrl m_url;
+    };
+
+    class BlockCompilationsAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      BlockCompilationsAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true)
+        : QAction(parent)
+        , m_dfgWidget(dfgWidget)
+      {
+        setText("Disable graph compilations");
+        setShortcut(Qt::SHIFT + Qt::CTRL + Qt::Key_Return);
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(this, SIGNAL(triggered()), this, SLOT(onTriggered()));
+        setEnabled(enable);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->onToggleBlockCompilations();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
     };
 
 } // namespace DFG
