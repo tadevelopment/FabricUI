@@ -2271,6 +2271,13 @@ void DFGWidget::onRevealPresetInExplorer(char const *nodeName)
     emit revealPresetInExplorer(presetPath);
 }
 
+void DFGWidget::onToggleBlockCompilations()
+{
+  static bool blockCompilations = false;
+  blockCompilations = !blockCompilations;
+  getDFGController()->setBlockCompilations( blockCompilations );
+}
+
 void DFGWidget::onToggleDimConnections()
 {
   m_uiGraph->config().dimConnectionLines = !m_uiGraph->config().dimConnectionLines;
@@ -2789,6 +2796,14 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
     // add separators if required
     if(viewMenu->actions().count() > 0)
       viewMenu->addSeparator();
+
+    // block graph compilations.
+    QAction * blockCompilationsAction = new BlockCompilationsAction(this, menuBar);
+    blockCompilationsAction->setCheckable(true);
+    blockCompilationsAction->setChecked(false);
+    blockCompilationsAction->setShortcutContext(Qt::WindowShortcut);
+    viewMenu->addAction(blockCompilationsAction);
+    viewMenu->addSeparator();
 
     // view -> graph view submenu
     QMenu *graphViewMenu = viewMenu->addMenu(tr("Graph View"));
