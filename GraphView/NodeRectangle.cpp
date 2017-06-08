@@ -70,7 +70,7 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
   QPainterPath inspected_rounded_rect;
   inspected_rounded_rect.addRoundRect(
     inspected_rect, int( 150.0f * m_node->m_cornerRadius / inspected_rect.width() ),
-    int( 150.0f * m_node->m_cornerRadius / (inspected_rect.height() + 5.0f) ) );
+    int( 150.0f * m_node->m_cornerRadius / (inspected_rect.height() ) ) );
 
   // fill everything
   painter->fillPath(rounded_rect,painter->brush());     
@@ -103,7 +103,13 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
   // draw the "is inspected" outline
   if (m_node->isInspected())
   {
-    QPen pen = m_node->m_inspectedPen;
+    QPen pen;
+    if(m_node->selected())
+      pen = m_node->m_inspectedSelectedPen;
+    else
+    {
+      pen = m_node->m_inspectedPen;
+    }
     painter->strokePath(inspected_rounded_rect, pen);
   }
 

@@ -53,10 +53,12 @@ namespace FabricUI
       QColor nodeDefaultColor;
       QColor nodeDefaultLabelColor;
       QColor nodeInspectedOutlineColor;
+      QColor nodeInspectedSelectedOutlineColor;
       QPen nodeDefaultPen;
       bool nodeDefaultPenUsesNodeColor;
       QPen nodeSelectedPen;
       QPen nodeInspectedPen;
+      QPen nodeInspectedSelectedPen;
       QPen nodeErrorPen;
       QFont nodeFont;
       QColor nodeFontColor;

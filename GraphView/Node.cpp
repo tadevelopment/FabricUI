@@ -55,6 +55,7 @@ Node::Node(
   m_defaultPen = graph()->config().nodeDefaultPen;
   m_selectedPen = graph()->config().nodeSelectedPen;
   m_inspectedPen = graph()->config().nodeInspectedPen;
+  m_inspectedSelectedPen = graph()->config().nodeInspectedSelectedPen;
   m_errorPen = graph()->config().nodeErrorPen;
   m_cornerRadius = graph()->config().nodeCornerRadius;
   m_pinRadius = graph()->config().pinRadius;
