@@ -432,22 +432,30 @@ void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
   float radius = m_graph->config().pinRadius;
   if (!m_dst || m_dst->isDragging())
   {
-    QBrush thing = painter->brush();
-    thing.setStyle(Qt::SolidPattern);
-    thing.setColor(m_color);
-    painter->setBrush(thing);
-    painter->drawEllipse(dstPoint(), radius, radius);
-    thing.setStyle(Qt::NoBrush);
+    bool isSnapped = static_cast<const MouseGrabber*>( m_dst )->targetUnderMouse() != NULL;
+    if(!isSnapped)
+    {
+      QBrush tipBrush = painter->brush();
+      tipBrush.setStyle(Qt::SolidPattern);
+      tipBrush.setColor(m_color);
+      painter->setBrush(tipBrush);
+      painter->drawEllipse(dstPoint(), radius, radius);
+      tipBrush.setStyle(Qt::NoBrush);
+    }
   }
 
   if (!m_src || m_src->isDragging())
   {
-    QBrush thing = painter->brush();
-    thing.setStyle(Qt::SolidPattern);
-    thing.setColor(m_color);
-    painter->setBrush(thing);
-    painter->drawEllipse(srcPoint(), radius, radius);
-    thing.setStyle(Qt::NoBrush);
+    bool isSnapped = static_cast<const MouseGrabber*>( m_src )->targetUnderMouse() != NULL;
+    if(!isSnapped)
+    {
+      QBrush tipBrush = painter->brush();
+      tipBrush.setStyle(Qt::SolidPattern);
+      tipBrush.setColor(m_color);
+      painter->setBrush(tipBrush);
+      painter->drawEllipse(srcPoint(), radius, radius);
+      tipBrush.setStyle(Qt::NoBrush);
+    }
   }
 
   // [FE-6836] connections of IO ports are always dimmed.
