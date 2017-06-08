@@ -18,7 +18,6 @@ class CommandManagerQtCallback(QtCore.QObject):
             added to the Qt undo stack. The commands don't undo -
             redo them-selves, but ask the command manager to do it.
         """
-
         def __init__(self, name):
             """ Initializes the CommandQtWrapper.
             """
@@ -52,7 +51,6 @@ class CommandManagerQtCallback(QtCore.QObject):
         """ Initializes the CommandManagerQtCallback.
         """
         super(CommandManagerQtCallback, self).__init__()
-
         self.qUndoStack = qUndoStack
         self.scriptEditor = scriptEditor
         GetCommandManager().cleared.connect(self.__onCleared)
@@ -61,7 +59,6 @@ class CommandManagerQtCallback(QtCore.QObject):
     def __onCommandDone(self, cmd, pushedToStack, replace):
         """ \internal, when a command's been pushed to the manager. 
         """ 
-
         try:
             # Create a new CommandQtWrapper and  
             # pushs it to the qt undo stack.
@@ -73,9 +70,7 @@ class CommandManagerQtCallback(QtCore.QObject):
 
             #Log the commands.
             if cmd.canLog():
-                self.scriptEditor.logCommand( 
-                    'Commands.' + CommandArgHelpers.ParseCmdArgs(cmd),
-                    replace)
+                self.scriptEditor.logCommand(CommandArgHelpers.ParseCmdArgs(cmd),replace)
             
         except Exception as e:    
                 print str(e)

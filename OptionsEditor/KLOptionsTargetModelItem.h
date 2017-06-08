@@ -41,6 +41,9 @@ class KLOptionsTargetModelItem : public RTValModelItem
       bool commit = false,
       QVariant valueAtInteractionBegin = QVariant()
       );
+
+    private:
+      int m_canMergeID;
 };
 
 } // namespace OptionsEditor 

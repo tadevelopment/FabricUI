@@ -28,18 +28,6 @@ QDockWidget* CreateOptionsEditor(
   const QString &groupeName = QString()
 	);
 
-/// Gets the options editor dock.
-/// \param editorID ID of the QtWidget (objectName).
-QDockWidget* GetOptionsEditorDock(
-  const QString &editorID
-	);
-
-/// Gets the options editor.
-/// \param editorID ID of the QtWidget (objectName).
-BaseRTValOptionsEditor* GetOptionsEditor(
-  const QString &editorID
-	);
-
 FabricCore::RTVal GetKLOptionsTargetRegistry();
 
 /// Gets the options of a KL OptionsTarget.

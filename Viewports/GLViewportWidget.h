@@ -64,12 +64,6 @@ class GLViewportWidget : public ViewportWidget
     void resetCamera();
 
   signals:
-    /// Emitted when OpenGL has been initialized.
-    void initComplete();
-      
-    /// Emitted after the vewport redraw.
-    void redrawn();
-        
     /// \internal, depreciated.
     void portManipulationRequested(
       QString portName

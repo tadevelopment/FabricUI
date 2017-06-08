@@ -75,7 +75,7 @@ class CommandArgHelpers:
                     if CommandArgHelpers.__IsPyRTValArg(arg):
                         pathValue = Util.RTValUtil.toRTVal(arg)
                         val = Util.RTValUtil.toRTVal(pathValue.value)
- 
+
                         if CommandArgHelpers.__IsPyRTValArg(arg) and Util.RTValUtil.getType(val) == 'String':
                             arg = val.getSimpleType()
                     else:
@@ -85,7 +85,6 @@ class CommandArgHelpers:
 
                 strArgs[key] = arg
  
-
         except Exception as e:    
             raise Exception("CommandHelpers.__CastCmdArgsToStr, error: " + str(e) )
         
@@ -124,7 +123,6 @@ class CommandArgHelpers:
     def CastAndCheckCmdArgs(cmd, args):
         """ \internal, casts the commands's args depending of their types.
         """
-
         if not CppCommands.CommandArgHelpers.IsScriptableCommand(cmd):
             raise Exception(
                 "CommandManager.CommandArgHelpers.CastAndCheckCmdArgs, error: Command '" +
@@ -148,7 +146,6 @@ class CommandArgHelpers:
             return True, CommandArgHelpers.CastCmdArgsToRTVal(cmd, args)
         else:
             return False, CommandArgHelpers.__CastCmdArgsToStr(cmd, args)
-
 
     ### CommandManagerQtCallback
     @staticmethod
@@ -178,35 +175,27 @@ class CommandArgHelpers:
         """ \internal, parses the command argumentss to construct
             a description of the command logged in the scrip-editor. 
         """
-
-        desc = cmd.getName()
-
+        desc = 'Commands.' + cmd.getName()
         if CppCommands.CommandArgHelpers.IsScriptableCommand(cmd):
- 
             try:
                 keys = CppCommands.CommandArgHelpers.GetCommandArgKeys(cmd)
-     
                 desc += '('
                 previous = ""
                 count = 0
                 
                 for key in keys:
-
                     # Log only loggable commands.
                     if (CppCommands.CommandArgHelpers.IsCommandArgSet(key, cmd) and 
                         CppCommands.CommandArgHelpers.IsCommandArg(key, CppCommands.CommandArgFlags.LOGGABLE_ARG, cmd)):
 
                         if len(previous) > 0 and count < len(keys):
                             desc += ', '
-
                         desc += str(key) + '='
                         previous = str(key)
 
                         # RTValScriptableCommand, arguments are RTVal.
                         if CppCommands.CommandArgHelpers.IsRTValScriptableCommand(cmd):
-
                             pathValue = CppCommands.CommandArgHelpers.GetRTValCommandArg(key, cmd)
-                            
                             path = pathValue.path.getSimpleType()
                             if path:                       
                                 desc += "\"" + "<" + path + ">" + "\"" 
@@ -221,7 +210,6 @@ class CommandArgHelpers:
                                         desc += "\"" + pythonVal + "\"" 
                                     else:
                                         desc += str(pythonVal)
-
                                 # JSON
                                 else:
                                     desc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.toJSON(rtVal)))
@@ -229,9 +217,7 @@ class CommandArgHelpers:
                         # ScriptableCommand, arguments are strings.
                         else:
                             desc += str(CppCommands.CommandArgHelpers.GetCommandArg(key, cmd))
-                   
                     count += 1   
-
                 desc += ')'
  
             except Exception as e:    

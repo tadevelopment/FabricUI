@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
  
+#include <FabricUI/Util/QtUtil.h>
 #include "../OptionsEditorHelpers.h"
 #include "CloseKLOptionsTargetEditorCommand.h"
 #include <FabricUI/Commands/CommandArgHelpers.h>
@@ -9,6 +10,7 @@
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace Application;
@@ -55,7 +57,7 @@ bool CloseKLOptionsTargetEditorCommand::doIt()
   bool failSilently = getRTValArgValue("failSilently").getBoolean();
   QString editorID = getRTValArgValue("editorID").getStringCString();
 
-  QWidget *dock = GetOptionsEditorDock(editorID);
+  QWidget *dock = QtUtil::getDockWidget(editorID);
 
   if(dock == 0)
   {

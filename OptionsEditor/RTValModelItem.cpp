@@ -5,6 +5,7 @@
 #include "RTValModelItem.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
+#include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
@@ -21,6 +22,8 @@ RTValModelItem::RTValModelItem(
   RTVal options) 
   : BaseRTValModelItem(name, path)
 {   
+  FABRIC_CATCH_BEGIN();
+
   m_options = RTValUtil::toRTVal(options);
   m_originalOptions = m_options.clone();
 
@@ -42,6 +45,8 @@ RTValModelItem::RTValModelItem(
     editor,
     SLOT(modelUpdated())
     );
+
+  FABRIC_CATCH_END("RTValModelItem::RTValModelItem");
 }
 
 RTValModelItem::~RTValModelItem()
@@ -77,8 +82,8 @@ void RTValModelItem::setValue(
       QString(m_options.getJSON().getStringCString())
       );
 
-  emitModelValueChanged( getValue() );
-  emit updated();
+   emitModelValueChanged( getValue() );
+   emit updated();
 }
 
 void RTValModelItem::resetToDefault() 
@@ -97,7 +102,7 @@ RTVal RTValModelItem::getRTValOptions()
 void RTValModelItem::setRTValOptions(
   RTVal options) 
 {
-  setValue(
+  RTValModelItem::setValue(
     toVariant(RTValUtil::toRTVal(options))
     );
 }

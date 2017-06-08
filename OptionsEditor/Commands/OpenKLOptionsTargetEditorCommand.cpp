@@ -3,12 +3,14 @@
 //
 
 #include "../OptionsEditorHelpers.h"
+#include <FabricUI/Util/QtUtil.h>
 #include "OpenKLOptionsTargetEditorCommand.h"
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
 #include <FabricUI/Application/FabricException.h>
  
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace OptionsEditor;
@@ -45,24 +47,6 @@ bool OpenKLOptionsTargetEditorCommand::canLog()
   return m_canLog;
 }
 
-BaseRTValOptionsEditor* OpenKLOptionsTargetEditorCommand::getOptionsEditor() 
-{
-  QString editorID = getRTValArgValue(
-    "editorID"
-    ).getStringCString();
-
-  return GetOptionsEditor(editorID);
-}
-
-QDockWidget* OpenKLOptionsTargetEditorCommand::getOptionsEditorDock() 
-{
-  QString editorID = getRTValArgValue(
-    "editorID"
-    ).getStringCString();
-
-  return GetOptionsEditorDock(editorID);
-}
-
 bool OpenKLOptionsTargetEditorCommand::doIt() 
 { 
   bool res = false;
@@ -73,7 +57,7 @@ bool OpenKLOptionsTargetEditorCommand::doIt()
     "editorID"
     ).getStringCString();
 
-  QWidget *dock = GetOptionsEditorDock(editorID);
+  QWidget *dock = QtUtil::getDockWidget(editorID);
   if(dock != 0)
   {
     if(dock->isHidden())

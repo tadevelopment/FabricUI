@@ -43,10 +43,6 @@ class OpenKLOptionsTargetEditorCommand : public Commands::BaseRTValScriptableCom
     /// Implementation of Command.
     virtual QString getHistoryDesc();
 
-    BaseRTValOptionsEditor* getOptionsEditor();
-
-    QDockWidget* getOptionsEditorDock();
-
   private:
     bool m_canLog;
 };

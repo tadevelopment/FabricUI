@@ -3,10 +3,11 @@
 //
 
 #include <QMainWindow>
-#include <QApplication>
 #include "OptionsEditorHelpers.h"
+#include <FabricUI/Util/QtUtil.h>
 #include "KLOptionsTargetEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
@@ -15,24 +16,16 @@ using namespace FabricCore;
 namespace FabricUI {
 namespace OptionsEditor {
 
-// Qt helpers
-inline QMainWindow* GetMainWindow() 
-{
-  foreach(QWidget *wiget, QApplication::topLevelWidgets())
-  { 
-    QMainWindow *mainWindow = qobject_cast<QMainWindow *>(wiget);
-    if(mainWindow != 0)
-      return mainWindow;
-  }
-  return 0;
-}
-
 QDockWidget* CreateOptionsEditor( 
   const QString &editorID,
   const QString &title,
   const QString &groupeName)
 {
-  QMainWindow* mainWindow = GetMainWindow();
+  QMainWindow* mainWindow = Util::QtUtil::getMainWindow();
+  if(mainWindow == 0)
+    Application::FabricException::Throw(
+      "OptionsEditorHelpers::CreateOptionsEditor",
+      "mainWindow is null");
 
   QDockWidget *dock = new QDockWidget(
     title, 
@@ -46,26 +39,31 @@ QDockWidget* CreateOptionsEditor(
   dock->setWidget(optionsEditor);
 
   mainWindow->addDockWidget( 
-      Qt::RightDockWidgetArea, 
-      dock, 
-      Qt::Vertical);
+    Qt::RightDockWidgetArea, 
+    dock, 
+    Qt::Vertical);
 
+  Viewports::ViewportWidget *viewport = Util::QtUtil::getQWidget<Viewports::ViewportWidget>();
+  if(viewport == 0)
+    Application::FabricException::Throw(
+      "OptionsEditorHelpers::CreateOptionsEditor",
+      "Viewport is null");
+
+  QObject::connect(
+    viewport,
+    SIGNAL(initComplete()),
+    optionsEditor,
+    SLOT(resetModel())
+    );
+
+  QObject::connect(
+    optionsEditor,
+    SIGNAL(updated()),
+    viewport,
+    SLOT(redraw())
+    );  
+ 
   return dock;
-}
-
-QDockWidget* GetOptionsEditorDock(
-  const QString &editorID) 
-{ 
-  QMainWindow* mainWindow = GetMainWindow();
-  return mainWindow->findChild<QDockWidget *>(editorID);
-}
-
-BaseRTValOptionsEditor* GetOptionsEditor(
-  const QString &editorID) 
-{
-  QDockWidget *dock = GetOptionsEditorDock(editorID);
-  BaseRTValOptionsEditor* editor = dock->findChild<BaseRTValOptionsEditor *>();
-  return editor;
 }
 
 // KL generic editor (use for Viewport options editor too)
@@ -284,7 +282,7 @@ void SetKLOptionsTargetSingleOption(
     "setTargetOptions",
     2,
     args);
-  
+
   FABRIC_CATCH_END("OptionsEditorHelpers::SetKLOptionsTargetSingleOption");
 }
 

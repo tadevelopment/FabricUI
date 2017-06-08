@@ -9,3 +9,4 @@
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Util/LoadPixmap.h>
 #include <FabricUI/Util/Factory.h>
+#include <FabricUI/Util/QtUtil.h>

@@ -14,6 +14,8 @@ namespace Viewports {
 
 class ViewportWidget : public QGLWidget
 { 
+  Q_OBJECT
+  
   public:
     /// Constructor for RTRGLViewportWidget.
     ViewportWidget( 
@@ -42,7 +44,14 @@ class ViewportWidget : public QGLWidget
 
     /// Gets the FPS.
     double fps();
-   
+  
+  signals:
+    /// Emitted when OpenGL has been initialized.
+    void initComplete();
+      
+    /// Emitted after the vewport redraw.
+    void redrawn();
+
   public slots:
     /// Clear the widget.
     /// To override

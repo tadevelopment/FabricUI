@@ -64,7 +64,7 @@ int KLCommandManager::getNewCanMergeID()
 
   int canMergeIDCounter = m_klCmdManager.callMethod(
     "UInt32", 
-    "getCanMergeID", 
+    "getCanMergeIDCounter", 
     0, 0).getUInt32();
 
   if(canMergeIDCounter < m_canMergeIDCounter)
@@ -75,7 +75,7 @@ int KLCommandManager::getNewCanMergeID()
 
     m_klCmdManager.callMethod(
       "", 
-      "setCanMergeID", 
+      "setCanMergeIDCounter", 
       1, &canMergeIDCounterVal);
   }
 

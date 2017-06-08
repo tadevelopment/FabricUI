@@ -28,12 +28,8 @@ RTValDictModelItem::RTValDictModelItem(
   RTVal keys = m_options.getDictKeys();
   for(unsigned i = 0; i < keys.getArraySize(); i++) 
   {
-    RTVal key = keys.getArrayElementRef(
-      i); 
-
-    RTVal childrenOptions = m_options.getDictElement(
-      key); 
-
+    RTVal key = keys.getArrayElementRef(i); 
+    RTVal childrenOptions = m_options.getDictElement(key); 
     std::string childName = key.getStringCString();
 
     BaseRTValModelItem* item = editor->constructModel(
@@ -113,7 +109,7 @@ void RTValDictModelItem::setRTValOptions(
   if(!m_options.isDict())
     FabricException::Throw(
       "RTValDictModelItem::setRTValOptions",
-      "RTValDictModelItem::setRTValOptions, options is not a dictionay" 
+      "Options is not a dictionay" 
       );
 
   std::map<std::string, BaseRTValModelItem*>::iterator it;

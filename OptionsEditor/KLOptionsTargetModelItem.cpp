@@ -27,6 +27,7 @@ KLOptionsTargetModelItem::KLOptionsTargetModelItem(
     path, 
     editor, 
     options)
+  , m_canMergeID(-1)
 {   
 }
 
@@ -41,52 +42,39 @@ void KLOptionsTargetModelItem::setValue(
 {
   FABRIC_CATCH_BEGIN();
 
+  RTValCommandManager *manager = qobject_cast<RTValCommandManager*>(
+    CommandManager::GetCommandManager());
+
+  if(m_canMergeID == -1)
+    m_canMergeID = manager->getNewCanMergeID();
+
+  QMap<QString, RTVal> args;
+
+  RTVal pathVal = RTVal::ConstructString(
+    m_options.getContext(), 
+    m_path.c_str()
+    );
+
+  args["target"] = RTVal::Construct(
+    m_options.getContext(), 
+    "PathValue",
+    1,
+    &pathVal
+    );
+
+  RTVal optionsCopy = m_options.clone();
+  RTVariant::toRTVal(value, optionsCopy);
+  args["newValue"] = optionsCopy;
+
+  manager->createCommand(
+    "setPathValue",
+    args, 
+    true, 
+    m_canMergeID
+    );
+
   if(commit)
-  {
-    QMap<QString, RTVal> args;
-
-    RTVal pathVal = RTVal::ConstructString(
-      m_options.getContext(), 
-      m_path.c_str());
-  
-    args["target"] = RTVal::Construct(
-      m_options.getContext(), 
-      "PathValue",
-      1,
-      &pathVal);
-
-    // might be invalid when changing a Float with the keyboard (as text), for example
-    QVariant previousValue = valueAtInteractionBegin.isValid() 
-      ? valueAtInteractionBegin 
-      : getValue();
-
-    RTVal prevOptionsCopy = m_options.clone();
-    RTVariant::toRTVal(previousValue, prevOptionsCopy);
-    args["previousValue"] = prevOptionsCopy;
-
-    RTVal optionsCopy = m_options.clone();
-    RTVariant::toRTVal(value, optionsCopy);
-    args["newValue"] = optionsCopy;
-
-    RTValCommandManager *manager = qobject_cast<RTValCommandManager*>(
-      CommandManager::GetCommandManager());
-
-    manager->createCommand(
-      "setKLOptionsTargetModelItem",
-      args);
-  }
-
-  else
-  {
-    RTValModelItem::setValue(
-      value, 
-      commit, 
-      valueAtInteractionBegin);
-
-    SetKLOptionsTargetSingleOption(
-      QString(m_path.c_str()),
-      m_options);
-  }
+    m_canMergeID = -1;
  
   FABRIC_CATCH_END("KLOptionsTargetModelItem::getRTValOptions");
 }

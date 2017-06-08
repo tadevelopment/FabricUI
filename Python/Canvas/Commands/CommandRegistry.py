@@ -75,21 +75,16 @@ class KLCommandRegistry(CppCommands.KLCommandRegistry):
     
     def createCommand(self, cmdName):
         if super(KLCommandRegistry, self).isCommandRegistered(cmdName) is True:
-            
             type_, impType = super(KLCommandRegistry, self).getCommandSpecs(cmdName)
-
-            if impType == self.COMMAND_PYTHON:
             
+            if impType == self.COMMAND_PYTHON:
                 try:
                     # Create the command
                     cmd = self.__cmdObjectTypeDict[cmdName]() 
                     # Callback -> set name and user-data
-                    cmd.registrationCallback(
-                        cmdName, 
-                        self.__cmdUserDataDict[cmdName])
+                    cmd.registrationCallback(cmdName, self.__cmdUserDataDict[cmdName])
                 except Exception as e:    
                     raise Exception(e)
-
                 return cmd
 
             # Otherwise (C++/KL), create it in C++.

@@ -2,6 +2,7 @@
 <typesystem package="FabricUI">
   <namespace-type name="FabricUI" generate="no">
     <namespace-type name="Util" generate="yes">
+      <object-type name="QtUtil" copyable="false"/>
       <object-type name="RTValUtil" copyable="false"/>
 			<object-type name="StringUtil" copyable="false"/>
       <object-type name="BaseFactoryRegistry" copyable="false"/>

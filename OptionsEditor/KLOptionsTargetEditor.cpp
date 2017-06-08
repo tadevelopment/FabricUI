@@ -20,6 +20,7 @@ KLOptionsTargetEditor::KLOptionsTargetEditor(
   const QString &title)
   : BaseRTValOptionsEditor(title, 0)
 {
+  setObjectName(title);
   resetModel();
 }
 
@@ -65,18 +66,20 @@ BaseRTValModelItem* KLOptionsTargetEditor::constructModel(
 
 void KLOptionsTargetEditor::updateModel(
   RTVal options) 
-{
-  m_model->setRTValOptions(
-    GetKLOptionsTargetOptions(
-      m_title)
-    );
+{  
+  FABRIC_CATCH_BEGIN();
+
+  m_model->setRTValOptions( GetKLOptionsTargetOptions(  m_title) );
+
+  FABRIC_CATCH_END("KLOptionsTargetEditor::updateModel");
 }
 
 void KLOptionsTargetEditor::resetModel(
   RTVal options) 
 {
-  BaseRTValOptionsEditor::resetModel(
-    GetKLOptionsTargetOptions(
-      m_title)
-    );
+  FABRIC_CATCH_BEGIN();
+  
+  BaseRTValOptionsEditor::resetModel( GetKLOptionsTargetOptions( m_title) );
+  
+  FABRIC_CATCH_END("KLOptionsTargetEditor::resetModel");
 }

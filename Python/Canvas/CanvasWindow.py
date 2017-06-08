@@ -693,17 +693,16 @@ class CanvasWindow(QtGui.QMainWindow):
             
             args = { "editorID":"Rendering Options", "editorTitle":"Rendering Options" }
             cmd = GetCommandManager().createCommand('openKLOptionsTargetEditor', args)
-            self.viewport.initComplete.connect(cmd.getOptionsEditor().resetModel)
-            cmd.getOptionsEditor().updated.connect(self.viewport.redraw)
-            cmd.getOptionsEditorDock().hide()
-
-            toggleAction = cmd.getOptionsEditorDock().toggleViewAction()
+         
+            dockWidget = FabricUI.Util.QtUtil.getDockWidget("Rendering Options")
+            dockWidget.hide()
+            toggleAction = dockWidget.toggleViewAction()
             toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
             Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
             windowMenu.addAction( toggleAction )
         
         except Exception as e:
-            print str(e)#.encode('utf-8'))
+            print str(e)
 
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested by manipulators
@@ -793,7 +792,6 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.recentFilesAction[i].setData(filepath)
                 self.recentFilesAction[i].setVisible(True)
             
-
     def loadGraph(self, filePath):
         """Method to load a graph from disk.
 

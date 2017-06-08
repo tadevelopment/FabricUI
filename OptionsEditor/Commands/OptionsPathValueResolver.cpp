@@ -1,6 +1,8 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
+#include <iostream>
 #include <QStringList>
+#include <FabricUI/Util/QtUtil.h>
 #include "../OptionsEditorHelpers.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "OptionsPathValueResolver.h"
@@ -110,9 +112,15 @@ void OptionsPathValueResolver::setValue(
   
   int index = path.indexOf("/");
   
-  GetOptionsEditor(
-    path.midRef(0, index).toUtf8().constData()
-    )->updateModel();
+  BaseRTValOptionsEditor *editor = QtUtil::getQWidget<BaseRTValOptionsEditor>(
+    path.midRef(0, index).toUtf8().constData());
+
+  if(editor == 0)
+    FabricException::Throw(
+      "OptionsPathValueResolver::setValue",
+      "editor is null");
+  
+  editor->updateModel();
 
   FABRIC_CATCH_END("OptionsPathValueResolver::setValue");
 }

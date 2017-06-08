@@ -28,7 +28,6 @@ RTValArrayModelItem::RTValArrayModelItem(
   for(unsigned i=0; i<m_options.getArraySize(); i++) 
   {
     RTVal childrenOptions = m_options.getArrayElementRef(i); 
-
     std::string childName = name + "_" + std::string(QString::number(i).toUtf8().constData());
     
     BaseRTValModelItem* item = editor->constructModel(
@@ -105,7 +104,7 @@ void RTValArrayModelItem::setRTValOptions(
   if(!m_options.isArray())
     FabricException::Throw(
       "RTValArrayModelItem::setRTValOptions",
-      "options is not an array");
+      "Options is not an array");
 
   unsigned count = 0;
   std::map<std::string, BaseRTValModelItem*>::iterator it;
@@ -116,5 +115,5 @@ void RTValArrayModelItem::setRTValOptions(
     count++;
   }
 
-  FABRIC_CATCH_END("RTValArrayModelItem::setRTValOptionssetRTValOptions");
+  FABRIC_CATCH_END("RTValArrayModelItem::setRTValOptions");
 }
