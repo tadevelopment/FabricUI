@@ -90,15 +90,6 @@ bool GLViewportWidget::onEvent(
       redrawRequested,
       manipulatedPortName);
 
-    if(!event->isAccepted() && isAccepted)
-      event->setAccepted(isAccepted);
-
-    if(redrawRequested)
-      updateGL();
-
-    if(!manipulatedPortName.isEmpty())
-      emit portManipulationRequested(manipulatedPortName);    
-
     // In certain cases, the kl event is not accepted but should be.
     // We check if KL commands where added.
     if(isAccepted || event->type() == QEvent::MouseButtonRelease)
@@ -107,6 +98,16 @@ bool GLViewportWidget::onEvent(
         CommandManager::GetCommandManager());
       manager->synchronizeKL();
     }    
+
+    if(!event->isAccepted() && isAccepted)
+      event->setAccepted(isAccepted);
+
+    ///!!!Force the graph to update correclty
+    if(isAccepted)
+      emit portManipulationRequested(manipulatedPortName);    
+
+    if(redrawRequested)
+      updateGL();
   }
   
   else if(alt)

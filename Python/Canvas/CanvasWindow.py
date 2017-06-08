@@ -715,27 +715,31 @@ class CanvasWindow(QtGui.QMainWindow):
 
         try:
             controller = self.dfgWidget.getDFGController()
-            binding = controller.getBinding()
-            dfgExec = binding.getExec()
-            portResolvedType = dfgExec.getExecPortResolvedType(str(portName))
-            value = self.viewport.getManipTool().getLastManipVal()
-            if portResolvedType == 'Xfo':
-                pass
-            elif portResolvedType == 'Mat44':
-                value = value.toMat44('Mat44')
-            elif portResolvedType == 'Vec3':
-                value = value.tr
-            elif portResolvedType == 'Quat':
-                value = value.ori
-            else:
-                message = "Port '" + portName
-                message += "'to be driven has unsupported type '"
-                message += portResolvedType.data()
-                message += "'."
-                self.dfgWidget.getDFGController().logError(message)
-                return
-            controller.cmdSetArgValue(portName, value)
+            if len(portName) > 0:
+                binding = controller.getBinding()
+                dfgExec = binding.getExec()
+                portResolvedType = dfgExec.getExecPortResolvedType(str(portName))
+                value = self.viewport.getManipTool().getLastManipVal()
+                if portResolvedType == 'Xfo':
+                    pass
+                elif portResolvedType == 'Mat44':
+                    value = value.toMat44('Mat44')
+                elif portResolvedType == 'Vec3':
+                    value = value.tr
+                elif portResolvedType == 'Quat':
+                    value = value.ori
+                else:
+                    message = "Port '" + portName
+                    message += "'to be driven has unsupported type '"
+                    message += portResolvedType.data()
+                    message += "'."
+                    self.dfgWidget.getDFGController().logError(message)
+                    return
+                controller.cmdSetArgValue(portName, value)
+            
+            # Force the graph execution
             controller.processDelayedEvents() # [FE-6568]
+
         except Exception as e:
             self.dfgWidget.getDFGController().logError(str(e))
 
