@@ -2,7 +2,7 @@
 # Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 #
 
-from PySide import QtGui
+from PySide import QtCore, QtGui
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
   
 class HelpDialog(QtGui.QDialog):
@@ -25,16 +25,16 @@ class HelpDialog(QtGui.QDialog):
         mainlayout.setContentsMargins( 5, 5, 5, 5 )
         mainlayout.setSpacing(2)
 
-        self.text = QtGui.QLabel(text, self)
-        self.text.setContentsMargins( 0, 0, 0, 0 )
- 
-        self.text.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum);
-        self.text.setWordWrap(True);
+        self.label = QtGui.QLabel(text, self)
+        self.label.setContentsMargins( 0, 0, 0, 0 )
+        self.label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse | QtCore.Qt.TextSelectableByKeyboard)
+        self.label.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
+        self.label.setWordWrap(True)
     
         inputsLayout = QtGui.QVBoxLayout()
         inputsLayout.setContentsMargins( 0, 0, 0, 0 )
         inputsLayout.setSpacing(2)
-        self.text.setLayout(inputsLayout)
+        self.label.setLayout(inputsLayout)
 
-        mainlayout.addWidget(self.text)
+        mainlayout.addWidget(self.label)
  
