@@ -805,21 +805,9 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timeLine.pause()
 
         try:
-            manipActive = self.viewport.isManipulationActive()
-            if manipActive is True:
-                self.manipAction.onTriggered()
+            manipActive, binding = self.__clearApp()
 
-            self.viewport.clear()
-            dfgController = self.dfgWidget.getDFGController()
-            binding = dfgController.getBinding()
-            binding.deallocValues()
-
-            self.host.flushUndoRedo()
-            self.qUndoStack.clear()
-            GetCommandManager().clear()
             self.qUndoView.setEmptyLabel("Load Graph")
-
-            QtCore.QCoreApplication.processEvents()
 
             jsonVal = open(filePath, 'rb').read()
             binding = self.host.createBindingFromJSON(jsonVal)
@@ -869,7 +857,7 @@ class CanvasWindow(QtGui.QMainWindow):
                 except Exception as e:
                     sys.stderr.write("Exception: " + str(e) + "\n")
 
-            dfgController.emitDirty()
+            self.dfgWidget.getDFGController().emitDirty()
             self.onFileNameChanged(filePath)
 
             QtCore.QCoreApplication.processEvents()
@@ -1074,6 +1062,26 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self.scriptEditor.exec_("newGraph(skip_save=%s)" % str(skip_save))
 
+    def __clearApp(self):
+            """ Clear the app before loading a new graph.
+            """
+            manipActive = self.viewport.isManipulationActive()
+            if manipActive is True:
+                self.manipAction.onTriggered()
+        
+            binding = self.dfgWidget.getDFGController().getBinding()
+            binding.deallocValues()
+
+            self.host.flushUndoRedo()
+            self.qUndoStack.clear()
+            GetCommandManager().clear()
+            self.logWidget.clear()
+            self.viewport.clear()
+            self.scriptEditor.clear()
+            QtCore.QCoreApplication.processEvents()
+
+            return manipActive, binding
+
     def onNewGraph(self, skip_save=False):
         """Callback Executed when a call to create a new graph has been made.
 
@@ -1095,20 +1103,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.lastFileName = ""
 
         try:
-            manipActive = self.viewport.isManipulationActive()
-            if manipActive is True:
-                self.manipAction.onTriggered()
-        
-            dfgController = self.dfgWidget.getDFGController()
-
-            binding = dfgController.getBinding()
-            binding.deallocValues()
-
-            self.host.flushUndoRedo()
-            self.qUndoStack.clear()
-            GetCommandManager().clear()
-            self.viewport.clear()
-            QtCore.QCoreApplication.processEvents()
+            manipActive, binding = self.__clearApp()
 
             # Note: the previous binding is no longer functional
             #             create the new one before resetting the timeline options
@@ -1128,7 +1123,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
             self.qUndoView.setEmptyLabel("New Graph")
 
-            dfgController.emitDirty()
+            self.dfgWidget.getDFGController().emitDirty()
             self.onFileNameChanged('')
 
             if manipActive is True:

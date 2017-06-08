@@ -550,7 +550,6 @@ class ScriptEditor(QtGui.QWidget):
         # can be created with 'named-arg' syntax. 
         GetCommandManager().synchronizeKL();
 
-
     def eval(self, code, replace = False):
         if self.echoCommandsAction.isChecked():
             self.log.appendCommand(code + "\n", replace)
@@ -598,7 +597,10 @@ class ScriptEditor(QtGui.QWidget):
     def logCommand(self, text, replace = False):
         if self.echoCommandsAction.isChecked():
             self.log.appendCommand(text + "\n", replace)
-            
+    
+    def clear(self):
+        self.log.clear()
+        
 class BaseScriptEditorAction(Actions.BaseAction):
  
     def __init__(self,
