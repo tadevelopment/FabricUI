@@ -3,10 +3,12 @@
 //
 
 #include "BaseRTValOptionsEditor.h"
-  
+#include <FabricUI/Application/FabricException.h>
+
 using namespace FabricUI;
 using namespace FabricCore;
 using namespace ValueEditor;
+using namespace Application;
 using namespace OptionsEditor;
 
 BaseRTValOptionsEditor::BaseRTValOptionsEditor(
@@ -33,8 +35,10 @@ BaseRTValModelItem* BaseRTValOptionsEditor::constructModel(
   BaseRTValOptionsEditor *editor,
   RTVal options) 
 {
-  throw(
-    "BaseRTValOptionsEditor::constructModel must be overridden");
+  FabricException::Throw(
+    "BaseRTValOptionsEditor::constructModel",
+    "must be overridden");
+  return 0;
 }
 
 void BaseRTValOptionsEditor::modelUpdated()
@@ -57,13 +61,13 @@ void BaseRTValOptionsEditor::resetModel(
     this,
     options);
  
-  onSetModelItem(
-    m_model);
+  onSetModelItem(m_model);
 }
 
 void BaseRTValOptionsEditor::updateModel(
   RTVal options) 
 {
-  throw(
-    "BaseRTValOptionsEditor::updateModel must be overridden");
+  FabricException::Throw(
+    "BaseRTValOptionsEditor::updateModel",
+    "must be overridden");
 }

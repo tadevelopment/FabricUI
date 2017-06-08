@@ -9,7 +9,6 @@
 #include "OpenKLOptionsTargetEditorCommand.h"
 #include "CloseKLOptionsTargetEditorCommand.h"
 #include <FabricUI/Commands/CommandRegistry.h>
-#include "SetKLOptionsTargetModelItemCommand.h"
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
 
 namespace FabricUI {
@@ -26,9 +25,6 @@ class OptionEditorCommandRegistration
     {
       Commands::PathValueResolverFactory<OptionsPathValueResolver>::Register(
         "OptionsPathValueResolver");
-
-      Commands::CommandFactory<SetKLOptionsTargetModelItemCommand>::Register(
-        "setKLOptionsTargetModelItem");
 
       Commands::CommandFactory<OpenKLOptionsTargetEditorCommand>::Register(
         "openKLOptionsTargetEditor");

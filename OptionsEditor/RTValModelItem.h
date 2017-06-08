@@ -57,8 +57,7 @@ class RTValModelItem : public BaseRTValModelItem
 
   signals:
     /// Emitted when the value of one option has changed.
-    void updated(
-      );
+    void updated();
     
   protected:
     /// Current value

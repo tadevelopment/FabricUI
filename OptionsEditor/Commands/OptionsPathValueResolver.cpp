@@ -1,6 +1,5 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#include <iostream>
 #include <QStringList>
 #include <FabricUI/Util/QtUtil.h>
 #include "../OptionsEditorHelpers.h"
@@ -11,6 +10,7 @@
 using namespace FabricUI;
 using namespace Util;
 using namespace FabricCore;
+using namespace Application;
 using namespace OptionsEditor;
 
 OptionsPathValueResolver::OptionsPathValueResolver()

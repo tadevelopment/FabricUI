@@ -52,15 +52,13 @@ void KLOptionsTargetModelItem::setValue(
 
   RTVal pathVal = RTVal::ConstructString(
     m_options.getContext(), 
-    m_path.c_str()
-    );
+    m_path.c_str());
 
   args["target"] = RTVal::Construct(
     m_options.getContext(), 
     "PathValue",
     1,
-    &pathVal
-    );
+    &pathVal);
 
   RTVal optionsCopy = m_options.clone();
   RTVariant::toRTVal(value, optionsCopy);
@@ -70,8 +68,7 @@ void KLOptionsTargetModelItem::setValue(
     "setPathValue",
     args, 
     true, 
-    m_canMergeID
-    );
+    m_canMergeID);
 
   if(commit)
     m_canMergeID = -1;

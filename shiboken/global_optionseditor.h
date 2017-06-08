@@ -3,6 +3,5 @@
 */
 
 #include <FabricUI/OptionsEditor/BaseRTValOptionsEditor.h>
-#include <FabricUI/OptionsEditor/Commands/OpenKLOptionsTargetEditorCommand.h>
 #include <FabricUI/OptionsEditor/Commands/OptionEditorCommandRegistration.h>
  

@@ -84,7 +84,7 @@ QString CloseKLOptionsTargetEditorCommand::getHelp()
   argsHelp["failSilently"] = "If false, throws an error if the widget has not been closed";
 
   return CommandArgHelpers::CreateHelpFromRTValArgs(
-    "Close a Qt editor to edit a KL OptionsTarget",
+    "Close a Qt editor that edits a KL OptionsTarget",
     argsHelp,
     this);
 }

@@ -15,13 +15,18 @@ class OpenHelpDialogCommand(Commands.BaseScriptableCommand):
         self.declareArg("text", False, "")
  
     def canUndo(self):
+        """ \internal, impl. of BaseCommand. 
+        """ 
         return False
 
     def canLog(self):
+        """ \internal, impl. of BaseCommand. 
+        """
         return False
 
     def doIt(self):
-
+        """ \internal, impl. of BaseCommand. 
+        """
         mainWIndow = Util.QtUtil.getMainWindow()
 
         dialog = HelpDialog(
@@ -34,4 +39,15 @@ class OpenHelpDialogCommand(Commands.BaseScriptableCommand):
 
         dialog.show()
         return True
- 
+
+    def getHelp(self):
+        """ \internal, impl. of BaseCommand. 
+        """
+        argsHelp = {
+            "title" : "Title of the Dialog widget",
+            "text " : "Text to display"
+        }
+        return Commands.CommandArgHelpers.CreateHelpFromArgs(
+            "Open a Dialog placed at the current mouse position",
+            argsHelp,
+            self);

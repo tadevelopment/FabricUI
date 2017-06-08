@@ -122,7 +122,9 @@ QString CommandArgHelpers::CreateHelpFromArgs(
     cmd);
 
   if(scriptCmd == 0) 
-    return "";
+    FabricException::Throw(
+      "CommandArgHelpers::CreateHelpFromArgs",
+      "cmd '" + cmd->getName() + "' is not a BaseScriptableCommand");
 
   help = commandHelp + "\n";
 
@@ -155,7 +157,9 @@ QString CommandArgHelpers::CreateHelpFromRTValArgs(
     cmd);
 
   if(rtValScriptCmd == 0)
-    return "";
+    FabricException::Throw(
+      "CommandArgHelpers::CreateHelpFromArgs",
+      "cmd '" + cmd->getName() + "' is not a BaseRTValScriptableCommand");
 
   help = commandHelp + "\n";
 

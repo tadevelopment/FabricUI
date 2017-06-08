@@ -271,8 +271,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
                 self.manager, 
                 actionName, 
                 currentKeySequence,
-                keySequence
-                ) 
+                keySequence) 
 
             if cmd.doIt():
                 self.qUndoStack.push(cmd)
