@@ -341,6 +341,22 @@ Node * Graph::node( FTL::StrRef name ) const
   return m_nodes[it->second];
 }
 
+QRectF Graph::selectedNodesRect() const
+{
+  QRectF rect;
+  std::vector<Node *> nodes = selectedNodes();
+  if (nodes.size() == 0)
+    return rect;
+  for ( size_t i = 0; i < nodes.size(); ++i )
+  {
+    Node *node = nodes[i];
+    QRectF nodeBoundingRect = node->boundingRect();
+    QPointF nodeTopLeftPos = node->topLeftGraphPos();
+    rect |= nodeBoundingRect.translated( nodeTopLeftPos );
+  }
+  return rect;
+}
+
 std::vector<Node *> Graph::selectedNodes() const
 {
   std::vector<Node *> result;

@@ -948,6 +948,15 @@ void DFGWidget::onBackdropAddedFromTabSearch()
     "backdrop",
     getTabSearchScenePos()
   );
+  if (GraphView::Node *uiNode = m_uiGraph->node(addedBackdrop))
+  {
+    QRectF rect = getUIGraph()->selectedNodesRect();
+    if (!rect.isEmpty())
+    {
+      rect.adjust(-16, -40, 16, 13);
+      m_uiController->cmdResizeBackDropNode(uiNode->name_QS(), rect.topLeft(), rect.size());
+    }
+  }
   MaybeSelectNode(this->getGraphViewWidget()->graph(), addedBackdrop);
 }
 
@@ -1197,7 +1206,7 @@ dfgEntry {\n\
     uiNode->setSelected( true );
 }
 
-void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
+void DFGWidget::createNewBackdropNode( QPoint const &globalPos)
 {
   QString text = "backdrop";
 
@@ -1221,9 +1230,18 @@ void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
       m_uiGraphViewWidget->mapToGraph( globalPos )
       );
 
-  m_uiGraph->clearSelection();
-  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
-    uiNode->setSelected( true );
+  GraphView::Node *uiNode = m_uiGraph->node(nodeName);
+  if (uiNode)
+  {
+    QRectF rect = getUIGraph()->selectedNodesRect();
+    if (!rect.isEmpty())
+    {
+      rect.adjust(-16, -40, 16, 13);
+      m_uiController->cmdResizeBackDropNode(uiNode->name_QS(), rect.topLeft(), rect.size());
+    }
+    m_uiGraph->clearSelection();
+    uiNode->setSelected(true);
+  }
 }
 
 void DFGWidget::createNewVariableNode( QPoint const &globalPos )

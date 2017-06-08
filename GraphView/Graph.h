@@ -91,6 +91,7 @@ namespace FabricUI
         { return node( path ); }
       Node *renameNode( FTL::StrRef oldName, FTL::StrRef newName );
 
+      virtual QRectF selectedNodesRect() const;
       virtual std::vector<Node *> selectedNodes() const;
       void selectAllNodes();
       void clearSelection() const;

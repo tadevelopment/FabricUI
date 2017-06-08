@@ -145,7 +145,7 @@ namespace DFG {
       void createNewNodeFromJSON( QPoint const &globalPos );
       void createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const &pos );
       void createNewFunctionNode( QPoint const &globalPos );
-      void createNewBackdropNode( QPoint const &globalPos );
+      void createNewBackdropNode( QPoint const &globalPos);
       void createNewBlockNode( QPoint const &globalPos );
       void createNewCacheNode( QPoint const &globalPos );
       void createNewVariableNode( QPoint const &globalPos );
@@ -2127,7 +2127,7 @@ namespace DFG {
 
       void onTriggered()
       {
-        m_dfgWidget->createNewBackdropNode( m_pos );
+        m_dfgWidget->createNewBackdropNode( m_pos);
       }
 
     private:
