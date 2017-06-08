@@ -3,6 +3,7 @@
 #include <QStringList>
 #include <FabricUI/Util/QtUtil.h>
 #include "../OptionsEditorHelpers.h"
+#include "../BaseRTValOptionsEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "OptionsPathValueResolver.h"
 #include <FabricUI/Application/FabricException.h>
@@ -35,14 +36,14 @@ bool OptionsPathValueResolver::knownPath(
   QString path = pathValue.maybeGetMember(
     "path").getStringCString();
 
-  int index = path.indexOf("/");
+  int index = path.indexOf(OptionsEditorHelpers::pathSeparator);
   
   RTVal id = RTVal::ConstructString(
     pathValue.getContext(),
     path.midRef(0, index).toUtf8().constData()
     );
 
-  RTVal optionsTarget = GetKLOptionsTargetRegistry().callMethod(
+  RTVal optionsTarget = OptionsEditorHelpers::getKLOptionsTargetRegistry().callMethod(
     "OptionsTarget",
     "getTarget",
     1,
@@ -82,7 +83,7 @@ void OptionsPathValueResolver::getValue(
   QString path = pathValue.maybeGetMember(
     "path").getStringCString();
 
-  RTVal singleOption = GetKLOptionsTargetSingleOption(
+  RTVal singleOption = OptionsEditorHelpers::getKLOptionsTargetSingleOption(
     path);
 
   pathValue.setMember(
@@ -106,11 +107,11 @@ void OptionsPathValueResolver::setValue(
   RTVal option = pathValue.maybeGetMember(
     "value");
 
-  SetKLOptionsTargetSingleOption(
+  OptionsEditorHelpers::setKLOptionsTargetSingleOption(
     path,
     option);
   
-  int index = path.indexOf("/");
+  int index = path.indexOf(OptionsEditorHelpers::pathSeparator);
   
   BaseRTValOptionsEditor *editor = QtUtil::getQWidget<BaseRTValOptionsEditor>(
     path.midRef(0, index).toUtf8().constData());

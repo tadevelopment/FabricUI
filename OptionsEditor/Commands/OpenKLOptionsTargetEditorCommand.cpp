@@ -2,13 +2,16 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "../OptionsEditorHelpers.h"
 #include <FabricUI/Util/QtUtil.h>
+#include "../OptionsEditorHelpers.h"
+#include "../KLOptionsTargetEditor.h"
+#include "../BaseRTValOptionsEditor.h"
 #include "OpenKLOptionsTargetEditorCommand.h"
+#include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CommandArgHelpers.h>
 #include <FabricUI/Application/FabricException.h>
- 
+
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
@@ -45,6 +48,56 @@ bool OpenKLOptionsTargetEditorCommand::canUndo()
 bool OpenKLOptionsTargetEditorCommand::canLog() 
 {
   return m_canLog;
+}
+
+inline QDockWidget* CreateOptionsEditor( 
+  const QString &editorID,
+  const QString &title,
+  const QString &groupeName)
+{
+  QMainWindow* mainWindow = Util::QtUtil::getMainWindow();
+  if(mainWindow == 0)
+    Application::FabricException::Throw(
+      "OptionsEditorHelpers::CreateOptionsEditor",
+      "mainWindow is null");
+
+  QDockWidget *dock = new QDockWidget(
+    title, 
+    mainWindow);
+
+  dock->setObjectName(editorID);
+
+  BaseRTValOptionsEditor *optionsEditor = new KLOptionsTargetEditor(
+    editorID);
+
+  dock->setWidget(optionsEditor);
+
+  mainWindow->addDockWidget( 
+    Qt::RightDockWidgetArea, 
+    dock, 
+    Qt::Vertical);
+
+  Viewports::ViewportWidget *viewport = Util::QtUtil::getQWidget<Viewports::ViewportWidget>();
+  if(viewport == 0)
+    Application::FabricException::Throw(
+      "OptionsEditorHelpers::CreateOptionsEditor",
+      "Viewport is null");
+
+  QObject::connect(
+    viewport,
+    SIGNAL(initComplete()),
+    optionsEditor,
+    SLOT(resetModel())
+    );
+
+  QObject::connect(
+    optionsEditor,
+    SIGNAL(updated()),
+    viewport,
+    SLOT(redraw())
+    );  
+ 
+  return dock;
 }
 
 bool OpenKLOptionsTargetEditorCommand::doIt() 

@@ -69,7 +69,9 @@ void KLOptionsTargetEditor::updateModel(
 {  
   FABRIC_CATCH_BEGIN();
 
-  m_model->setRTValOptions( GetKLOptionsTargetOptions(  m_title) );
+  m_model->setRTValOptions( 
+    OptionsEditorHelpers::getKLOptionsTargetOptions(m_title)
+    );
 
   FABRIC_CATCH_END("KLOptionsTargetEditor::updateModel");
 }
@@ -79,7 +81,9 @@ void KLOptionsTargetEditor::resetModel(
 {
   FABRIC_CATCH_BEGIN();
   
-  BaseRTValOptionsEditor::resetModel( GetKLOptionsTargetOptions( m_title) );
+  BaseRTValOptionsEditor::resetModel( 
+    OptionsEditorHelpers::getKLOptionsTargetOptions(m_title)
+    );
   
   FABRIC_CATCH_END("KLOptionsTargetEditor::resetModel");
 }

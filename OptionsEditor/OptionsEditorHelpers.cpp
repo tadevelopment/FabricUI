@@ -2,81 +2,28 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <QMainWindow>
 #include "OptionsEditorHelpers.h"
-#include <FabricUI/Util/QtUtil.h>
 #include "KLOptionsTargetEditor.h"
 #include <FabricUI/Util/RTValUtil.h>
-#include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
+const char FabricUI::OptionsEditor::OptionsEditorHelpers::pathSeparator = '/';
+const char FabricUI::OptionsEditor::OptionsEditorHelpers::arraySeparator = '_';
+
+using namespace FabricUI;
+using namespace OptionsEditor;
 using namespace FabricCore;
- 
-namespace FabricUI {
-namespace OptionsEditor {
 
-QDockWidget* CreateOptionsEditor( 
-  const QString &editorID,
-  const QString &title,
-  const QString &groupeName)
-{
-  QMainWindow* mainWindow = Util::QtUtil::getMainWindow();
-  if(mainWindow == 0)
-    Application::FabricException::Throw(
-      "OptionsEditorHelpers::CreateOptionsEditor",
-      "mainWindow is null");
-
-  QDockWidget *dock = new QDockWidget(
-    title, 
-    mainWindow);
-
-  dock->setObjectName(editorID);
-
-  BaseRTValOptionsEditor *optionsEditor = new KLOptionsTargetEditor(
-    editorID);
-
-  dock->setWidget(optionsEditor);
-
-  mainWindow->addDockWidget( 
-    Qt::RightDockWidgetArea, 
-    dock, 
-    Qt::Vertical);
-
-  Viewports::ViewportWidget *viewport = Util::QtUtil::getQWidget<Viewports::ViewportWidget>();
-  if(viewport == 0)
-    Application::FabricException::Throw(
-      "OptionsEditorHelpers::CreateOptionsEditor",
-      "Viewport is null");
-
-  QObject::connect(
-    viewport,
-    SIGNAL(initComplete()),
-    optionsEditor,
-    SLOT(resetModel())
-    );
-
-  QObject::connect(
-    optionsEditor,
-    SIGNAL(updated()),
-    viewport,
-    SLOT(redraw())
-    );  
- 
-  return dock;
-}
-
-// KL generic editor (use for Viewport options editor too)
 inline RTVal GetKLSingleOption(
-  int index,
+  int optIndex,
   QList<QString> &singleOptionPaths,
   RTVal &options) 
 { 
   FABRIC_CATCH_BEGIN();
 
   options = Util::RTValUtil::toRTVal(options);
-
-  QString optionName = singleOptionPaths[index];
+  QString optionName = singleOptionPaths[optIndex];
 
   RTVal key = RTVal::ConstructString(
     options.getContext(),
@@ -84,12 +31,10 @@ inline RTVal GetKLSingleOption(
 
   if(options.isDict()) 
   {
-    RTVal childrenOptions = options.getDictElement( 
-      key); 
-
+    RTVal childrenOptions = options.getDictElement(key); 
     if(childrenOptions.isDict() || childrenOptions.isArray())
       return GetKLSingleOption(
-        index+1, 
+        optIndex+1, 
         singleOptionPaths, 
         childrenOptions);
 
@@ -99,20 +44,18 @@ inline RTVal GetKLSingleOption(
 
   else if(options.isArray()) 
   {
-    // RTVal key = RTVal::ConstructString(
-    //   context,
-    //   optionName.toUtf8().constData()); 
+    int sepIndex = optionName.lastIndexOf(OptionsEditorHelpers::arraySeparator);
+    int arrayIndex = optionName.mid(sepIndex+1).toInt();
+    RTVal childrenOptions = options.getArrayElementRef(arrayIndex); 
 
-    // RTVal childrenOptions = rtValOptions->getDictElement( key); 
+    if(childrenOptions.isDict() || childrenOptions.isArray())
+      GetKLSingleOption(
+        optIndex+1, 
+        singleOptionPaths, 
+        childrenOptions);
 
-    // if( Util::RTValUtil::getType(options) == "RTVal[String]" || 
-    //     Util::RTValUtil::getType(options) == "RTVal[]")
-      
-    //   GetKLSingleOption(
-    //     index+1, 
-    //     singleOptionPaths, 
-    //     singleOption,
-    //     childrenOptions);
+    else
+      return childrenOptions;
   }
 
   else
@@ -124,7 +67,7 @@ inline RTVal GetKLSingleOption(
 }
 
 inline void SetKLSingleOption(
-  int index,
+  int optIndex,
   QList<QString> &singleOptionPaths,
   RTVal singleOption,
   RTVal options) 
@@ -134,7 +77,7 @@ inline void SetKLSingleOption(
   if(options.isWrappedRTVal()) 
     options = options.getUnwrappedRTVal(); 
  
-  QString optionName = singleOptionPaths[index];
+  QString optionName = singleOptionPaths[optIndex];
 
   RTVal key = RTVal::ConstructString(
     singleOption.getContext(),
@@ -142,12 +85,10 @@ inline void SetKLSingleOption(
 
   if(options.isDict()) 
   {
-    RTVal childrenOptions = options.getDictElement( 
-      key); 
-
+    RTVal childrenOptions = options.getDictElement(key); 
     if(childrenOptions.isDict() || childrenOptions.isArray())
       SetKLSingleOption(
-        index+1, 
+        optIndex+1, 
         singleOptionPaths, 
         singleOption,
         childrenOptions);
@@ -155,34 +96,37 @@ inline void SetKLSingleOption(
     else
       options.setDictElement(
         key, 
-        Util::RTValUtil::toKLRTVal(
-          singleOption)
+        Util::RTValUtil::toKLRTVal(singleOption)
         );
   }
 
   else if(options.isArray()) 
   {
-    // RTVal key = RTVal::ConstructString(
-    //   singleOption.getContext(),
-    //   optionName.toUtf8().constData()); 
+    int sepIndex = optionName.lastIndexOf(OptionsEditorHelpers::arraySeparator);
+    int arrayIndex = optionName.mid(sepIndex+1).toInt();
+    RTVal childrenOptions = options.getArrayElementRef(arrayIndex); 
 
-    // RTVal childrenOptions = rtValOptions->getDictElement( key); 
+    if(childrenOptions.isDict() || childrenOptions.isArray())
+      SetKLSingleOption(
+        optIndex+1, 
+        singleOptionPaths, 
+        singleOption,
+        childrenOptions);
 
-    // if( Util::RTValUtil::getType(options) == "RTVal[String]" || 
-    //     Util::RTValUtil::getType(options) == "RTVal[]")
-      
-    //   SetKLSingleOption(
-    //     index+1, 
-    //     singleOptionPaths, 
-    //     singleOption,
-    //     childrenOptions);
+    else
+      options.setArrayElement(
+        arrayIndex, 
+        Util::RTValUtil::toKLRTVal(singleOption)
+        );
   }
+
+  else
+    options = singleOption;
 
   FABRIC_CATCH_END("OptionsEditorHelpers::SetKLSingleOption");
 }
   
-// KL OptionsTarget helpers
-RTVal GetKLOptionsTargetRegistry() 
+RTVal OptionsEditorHelpers::getKLOptionsTargetRegistry() 
 {
   FABRIC_CATCH_BEGIN();
 
@@ -196,12 +140,12 @@ RTVal GetKLOptionsTargetRegistry()
     "getOptionsTargetRegistry",
     0, 0);
 
-  FABRIC_CATCH_END("OptionsEditorHelpers::GetKLOptionsTargetRegistry");
+  FABRIC_CATCH_END("OptionsEditorHelpers::getKLOptionsTargetRegistry");
 
   return RTVal();
 }
  
-RTVal GetKLOptionsTargetOptions(
+RTVal OptionsEditorHelpers::getKLOptionsTargetOptions(
   QString registryID) 
 {
   FABRIC_CATCH_BEGIN();
@@ -210,57 +154,50 @@ RTVal GetKLOptionsTargetOptions(
     Application::FabricApplicationStates::GetAppStates()->getContext(),
     registryID.toUtf8().constData());
   
-  return GetKLOptionsTargetRegistry().callMethod(
+  return getKLOptionsTargetRegistry().callMethod(
     "RTVal", 
     "getTargetOptions",
     1,
     &registryIDVal);
 
-  FABRIC_CATCH_END("OptionsEditorHelpers::GetKLOptionsTargetRegistry");
+  FABRIC_CATCH_END("OptionsEditorHelpers::getKLOptionsTargetRegistry");
 
   return RTVal();
 }
 
-RTVal GetKLOptionsTargetSingleOption(
+RTVal OptionsEditorHelpers::getKLOptionsTargetSingleOption(
   QString path) 
 { 
   FABRIC_CATCH_BEGIN();
 
-  int index = path.indexOf("/");
-
-  QString registryID = path.midRef(
-    0, index).toUtf8().constData();
-
-  RTVal options = GetKLOptionsTargetOptions(
-    registryID);
+  int index = path.indexOf(pathSeparator);
+  QString registryID = path.midRef(0, index).toUtf8().constData();
+  RTVal options = getKLOptionsTargetOptions(registryID);
 
   return GetKLSingleOption(
     1,
-    path.split('/'),
+    path.split(pathSeparator),
     options);
 
-  FABRIC_CATCH_END("OptionsEditorHelpers::GetKLOptionsTargetSingleOption");
+  FABRIC_CATCH_END("OptionsEditorHelpers::getKLOptionsTargetSingleOption");
 
   return RTVal();
 }
 
-void SetKLOptionsTargetSingleOption(
+void OptionsEditorHelpers::setKLOptionsTargetSingleOption(
   QString path,
   RTVal singleOption) 
 { 
   FABRIC_CATCH_BEGIN();
 
-  int index = path.indexOf("/");
+  int index = path.indexOf(pathSeparator);
+  QString registryID = path.midRef(0, index).toUtf8().constData();
 
-  QString registryID = path.midRef(
-    0, index).toUtf8().constData();
-
-  RTVal options = GetKLOptionsTargetOptions(
-    registryID);
+  RTVal options = getKLOptionsTargetOptions(registryID);
 
   SetKLSingleOption(
     1,
-    path.split('/'),
+    path.split(pathSeparator),
     singleOption,
     options);
 
@@ -277,14 +214,11 @@ void SetKLOptionsTargetSingleOption(
       &options)
   };
 
-  GetKLOptionsTargetRegistry().callMethod(
+  getKLOptionsTargetRegistry().callMethod(
     "", 
     "setTargetOptions",
     2,
     args);
 
-  FABRIC_CATCH_END("OptionsEditorHelpers::SetKLOptionsTargetSingleOption");
+  FABRIC_CATCH_END("OptionsEditorHelpers::setKLOptionsTargetSingleOption");
 }
-
-} // namespace OptionsEditor 
-} // namespace FabricUI

@@ -4,6 +4,7 @@
  
 #include <QString>
 #include "RTValArrayModelItem.h"
+#include "OptionsEditorHelpers.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Application/FabricException.h>
  
@@ -28,7 +29,10 @@ RTValArrayModelItem::RTValArrayModelItem(
   for(unsigned i=0; i<m_options.getArraySize(); i++) 
   {
     RTVal childrenOptions = m_options.getArrayElementRef(i); 
-    std::string childName = name + "_" + std::string(QString::number(i).toUtf8().constData());
+    std::string childName = 
+      name + 
+      OptionsEditorHelpers::arraySeparator + 
+      std::string(QString::number(i).toUtf8().constData());
     
     BaseRTValModelItem* item = editor->constructModel(
       childName,
