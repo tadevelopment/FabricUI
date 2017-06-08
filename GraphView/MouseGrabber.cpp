@@ -242,9 +242,9 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
         success = target->canConnectTo(m_target, failureReason);
       if(success)
       {
-        QPointF diff = (pinCircle->centerInSceneCoords() - m_connectionPos); // use m_connectionPos so we're working scene space
-        float newDistanceSquarred = diff.x() * diff.x() + diff.y() * diff.y(); // is good enough to compare distances (not need for the expensive sqrt)
-        float newDistance = sqrt( newDistanceSquarred );
+        QPointF diff = (pinCircle->centerInSceneCoords() - m_connectionPos); // use m_connectionPos so we're working in scene space
+        float newDistanceSquared = diff.x() * diff.x() + diff.y() * diff.y(); // is good enough to compare distances (not need for the expensive sqrt)
+        float newDistance = sqrt( newDistanceSquared );
         if(newDistance <= distance)
         {
           distance = newDistance;
