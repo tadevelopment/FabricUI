@@ -27,10 +27,10 @@ namespace FabricUI
 
     public:
 
-      MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType);
+      MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious);
       ~MouseGrabber();
 
-      static MouseGrabber * construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType);
+      static MouseGrabber * construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious);
 
       float radius() const;
       float diameter() const;
@@ -95,6 +95,7 @@ namespace FabricUI
       PortType m_otherPortType;
       float m_radius;
       Connection * m_connection;
+      Connection * m_connectionPrevious;
       ConnectionTarget * m_targetUnderMouse;
       SidePanel* m_lastSidePanel;
     };

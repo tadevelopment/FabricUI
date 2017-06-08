@@ -399,6 +399,8 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     QPointF scenePos = mapToScene(event->pos());
     QPointF delta = scenePos - m_lastDragPoint;
 
+    bool isCTRL = event->modifiers().testFlag(Qt::ControlModifier);
+
     // todo: the disconnect threshold maybe should be a graph setting
     if(delta.manhattanLength() > 0)
     {
@@ -411,22 +413,13 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
       graph->controller()->beginInteraction();
 
-      std::vector<Connection*> conns;
-      conns.push_back(this);
-      if(graph->controller()->gvcDoRemoveConnections(conns))
+      if(!draggingInput)
       {
-        if(!draggingInput)
-        {
-          graph->constructMouseGrabber(scenePos, (Pin*)src, PortType_Input);
-        }
-        else
-        {
-          graph->constructMouseGrabber(scenePos, (Pin*)dst, PortType_Output);
-        }
+        graph->constructMouseGrabber(scenePos, (Pin*)src, PortType_Input, isCTRL ? NULL : this);
       }
       else
       {
-        graph->controller()->endInteraction();
+        graph->constructMouseGrabber(scenePos, (Pin*)dst, PortType_Output, isCTRL ? NULL : this);
       }
     }
   }
