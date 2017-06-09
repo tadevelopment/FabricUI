@@ -16,6 +16,7 @@
 #include <FabricUI/GraphView/Controller.h>
 #include <FabricUI/GraphView/SidePanel.h>
 #include <FabricUI/GraphView/SelectionRect.h>
+#include <FabricUI/GraphView/Connection.h>
 
 #include <math.h>
 
@@ -100,6 +101,10 @@ void MainPanel::setCanvasZoom(float state, bool quiet)
     graphicsView->setRenderHint(QPainter::SmoothPixmapTransform, true);
     m_itemGroup->setScale(state);
   }
+
+  const std::vector<Connection*> connections = graph()->connections();
+  for( size_t i = 0; i < connections.size(); i++ )
+    connections[i]->setZoomModifier( 1/state );
 
   update();
 

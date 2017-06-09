@@ -74,6 +74,8 @@ namespace FabricUI
       void enableToolTip(bool state)
         { setToolTip(state ? m_tooltip : QString()); }
 
+      void setZoomModifier( float w );
+
     public slots:
 
       virtual void dependencyMoved();
@@ -92,7 +94,9 @@ namespace FabricUI
       QPen m_defaultPen;
       float m_shapePathWidth;
       QPen m_hoverPen;
+      float m_penZoomModifier;
       bool m_hovered;
+      void updatePen();
 
       bool m_dragging;
       bool m_draggingInput; // or Output
