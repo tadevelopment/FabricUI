@@ -146,6 +146,11 @@ void CommandManager::doCommand(
       cmd->canUndo(), 
       false);
 
+  // std::cout 
+  //   << "CommandManager::doCommand "
+  //   << getContent().toUtf8().constData() 
+  //   << std::endl;
+  
   FABRIC_CATCH_END("CommandManager::doCommand");
 }
  
@@ -205,6 +210,11 @@ void CommandManager::undoCommand()
  
   m_undoStack.pop_back();
   m_redoStack.push_back(stackedCmd);
+
+  // std::cout 
+  //   << "CommandManager::undoCommand "
+  //   << getContent().toUtf8().constData() 
+  //   << std::endl;
 }
 
 void CommandManager::redoCommand() 
@@ -261,6 +271,11 @@ void CommandManager::redoCommand()
 
   m_redoStack.pop_back();
   m_undoStack.push_back(stackedCmd);
+
+  // std::cout 
+  //   << "CommandManager::redoCommand "
+  //   << getContent().toUtf8().constData() 
+  //   << std::endl;
 }
 
 void CommandManager::clear() 
