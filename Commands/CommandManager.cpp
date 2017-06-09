@@ -193,6 +193,8 @@ void CommandManager::undoCommand()
   {
     FABRIC_CATCH_BEGIN();
 
+    preDoCommand( top );
+
     if(!top->undoIt())
       FabricException::Throw(
         "CommandManager::undoCommand", 
@@ -248,6 +250,8 @@ void CommandManager::redoCommand()
   else 
   {
     FABRIC_CATCH_BEGIN();
+
+    preDoCommand( top );
 
     if(!top->redoIt())
       FabricException::Throw(
