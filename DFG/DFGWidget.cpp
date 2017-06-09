@@ -1075,6 +1075,8 @@ void DFGWidget::tabSearchBlockToggleChanged()
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)
 {
   emit nodeInspectRequested(node);
+  node->graph()->clearInspection();
+  node->setInspected(true);
 }
 
 void DFGWidget::createNewBlockNode( QPoint const &globalPos )

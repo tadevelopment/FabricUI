@@ -121,11 +121,23 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( nodeFontHighlightColor, QColor(195, 195, 195, 255) );
   GET_PARAMETER( nodeDefaultPen, QPen(nodeFontColor, 1.0) );
   GET_PARAMETER( nodeDefaultPenUsesNodeColor, false );
+  GET_PARAMETER( nodeInspectedOutlineColor, QColor(223, 94, 39, 125) );
+  GET_PARAMETER( nodeInspectedSelectedOutlineColor, QColor(223, 94, 39, 255) );
 
   nodeSelectedPen = QPen(Qt::SolidLine);
   nodeSelectedPen.setColor(nodeFontHighlightColor);
   nodeSelectedPen.setWidth(1);
   GET_PEN( nodeSelectedPen );
+
+  nodeInspectedPen = QPen();
+  nodeInspectedPen.setColor(nodeInspectedOutlineColor);
+  nodeInspectedPen.setWidth(2);
+  GET_PEN(nodeInspectedPen);
+
+  nodeInspectedSelectedPen = QPen();
+  nodeInspectedSelectedPen.setColor(nodeInspectedSelectedOutlineColor);
+  nodeInspectedSelectedPen.setWidth(2);
+  GET_PEN(nodeInspectedSelectedPen);
 
   nodeErrorPen = QPen(Qt::SolidLine);
   nodeErrorPen.setColor(QColor(255, 0, 0, 255));
