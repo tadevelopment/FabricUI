@@ -2,6 +2,7 @@
 
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/MainPanel.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/InstBlockHeader.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
@@ -23,6 +24,8 @@
 #include <QAction>
 #include <QApplication>
 
+#include <math.h>
+
 using namespace FabricUI::GraphView;
 
 MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious)
@@ -40,8 +43,8 @@ MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * 
   m_radius = config.mouseGrabberRadius;
 
   setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  setPreferredSize(QSizeF(diameter(), diameter()));
-  setPos(-radius(), -radius());
+  setPreferredSize(QSizeF(diameter() * 2.0, diameter() * 2.0));
+  setPos(-diameter(), -diameter());
   setWindowFrameMargins(0, 0, 0, 0);
 
   QPointF localPos = parent->itemGroup()->mapFromScene(m_connectionPos);
@@ -222,7 +225,10 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
   ConnectionTarget * newTargetUnderMouse = NULL;
   ConnectionTarget * prevTargetUnderMouse = m_targetUnderMouse;
-  float distance = 1000000.0f;
+
+  MainPanel * mainPanel = graph()->mainPanel();
+  float zoom = mainPanel->canvasZoom();
+  float distance = diameter() * zoom;
   for(int i=0;i<items.count();i++)
   {
     if(items[i]->type() == QGraphicsItemType_PinCircle)
@@ -237,8 +243,10 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
         success = target->canConnectTo(m_target, failureReason);
       if(success)
       {
-        float newDistance = (pinCircle->centerInSceneCoords() - mousePos).manhattanLength();
-        if(newDistance < distance)
+        QPointF diff = (pinCircle->centerInSceneCoords() - m_connectionPos); // use m_connectionPos so we're working in scene space
+        float newDistanceSquared = diff.x() * diff.x() + diff.y() * diff.y(); // is good enough to compare distances (not need for the expensive sqrt)
+        float newDistance = sqrt( newDistanceSquared );
+        if(newDistance <= distance)
         {
           distance = newDistance;
           newTargetUnderMouse = target;
@@ -450,10 +458,16 @@ void MouseGrabber::performUngrab( ConnectionTarget *fromCT )
 
 void MouseGrabber::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
-  QColor color = m_connection->color();
-  color.setAlpha(125);
-  painter->setPen(color);
-  painter->drawRect(windowFrameRect());
+  if(m_targetUnderMouse == NULL)
+  { 
+    QBrush outlineBrush = painter->brush();
+    outlineBrush.setStyle(Qt::NoBrush);
+    QColor color = m_connection->color();
+    color.setAlpha(85);
+    painter->setBrush(outlineBrush);
+    painter->setPen(color);
+    painter->drawEllipse(windowFrameRect().center(), diameter(), diameter());
+  }
   QGraphicsWidget::paint(painter, option, widget);
 }
 

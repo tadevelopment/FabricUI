@@ -429,6 +429,35 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+  float radius = m_graph->config().pinRadius;
+  if (!m_dst || m_dst->isDragging())
+  {
+    bool isSnapped = static_cast<const MouseGrabber*>( m_dst )->targetUnderMouse() != NULL;
+    if(!isSnapped)
+    {
+      QBrush tipBrush = painter->brush();
+      tipBrush.setStyle(Qt::SolidPattern);
+      tipBrush.setColor(m_color);
+      painter->setBrush(tipBrush);
+      painter->drawEllipse(dstPoint(), radius, radius);
+      tipBrush.setStyle(Qt::NoBrush);
+    }
+  }
+
+  if (!m_src || m_src->isDragging())
+  {
+    bool isSnapped = static_cast<const MouseGrabber*>( m_src )->targetUnderMouse() != NULL;
+    if(!isSnapped)
+    {
+      QBrush tipBrush = painter->brush();
+      tipBrush.setStyle(Qt::SolidPattern);
+      tipBrush.setColor(m_color);
+      painter->setBrush(tipBrush);
+      painter->drawEllipse(srcPoint(), radius, radius);
+      tipBrush.setStyle(Qt::NoBrush);
+    }
+  }
+
   // [FE-6836] connections of IO ports are always dimmed.
   if (m_src->path() == m_dst->path() && !m_dragging && m_src->isRealPort() && m_dst->isRealPort())
   {
