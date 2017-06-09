@@ -47,7 +47,7 @@ bool SetPathValueCommand::doIt()
 {
   FABRIC_CATCH_BEGIN();
 
-  m_prevValue = getRTValArgValue("target").clone();
+  m_prevValue = getRTValArgValue("target");
 
   return redoIt();
 
@@ -60,7 +60,7 @@ bool SetPathValueCommand::undoIt()
 { 
   FABRIC_CATCH_BEGIN();
 
-  setRTValArgValue("target", m_prevValue.clone());
+  setRTValArgValue("target", m_prevValue);
   return true;
   
   FABRIC_CATCH_END("SetPathValueCommand::undoIt");
@@ -72,7 +72,7 @@ bool SetPathValueCommand::redoIt()
 {
   FABRIC_CATCH_BEGIN();
 
-  setRTValArgValue("target", getRTValArgValue("newValue", getRTValArgType("target")).clone());
+  setRTValArgValue("target", getRTValArgValue("newValue", getRTValArgType("target")));
   return true;
 
   FABRIC_CATCH_END("SetPathValueCommand::redoIt");
