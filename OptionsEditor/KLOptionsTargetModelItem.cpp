@@ -27,7 +27,7 @@ KLOptionsTargetModelItem::KLOptionsTargetModelItem(
     path, 
     editor, 
     options)
-  , m_canMergeID(-1)
+  , m_canMergeID(CommandManager::NoCanMergeID)
 {   
 }
 
@@ -43,9 +43,9 @@ void KLOptionsTargetModelItem::setValue(
   FABRIC_CATCH_BEGIN();
 
   RTValCommandManager *manager = qobject_cast<RTValCommandManager*>(
-    CommandManager::GetCommandManager());
+    CommandManager::getCommandManager());
 
-  if(m_canMergeID == -1)
+  if(m_canMergeID == CommandManager::NoCanMergeID)
     m_canMergeID = manager->getNewCanMergeID();
 
   QMap<QString, RTVal> args;
@@ -71,7 +71,7 @@ void KLOptionsTargetModelItem::setValue(
     m_canMergeID);
 
   if(commit)
-    m_canMergeID = -1;
+    m_canMergeID = CommandManager::NoCanMergeID;
  
   FABRIC_CATCH_END("KLOptionsTargetModelItem::getRTValOptions");
 }

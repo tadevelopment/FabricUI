@@ -22,16 +22,14 @@ SetPathValueCommand::SetPathValueCommand()
   declareRTValArg(
     "target", 
     "RTVal",
-    CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IO_ARG
-    );
+    CommandArgFlags::IO_ARG);
   
   // No-optional arg of unknown KL type, which
   // is retrieved when executing the command.
   declareRTValArg(
     "newValue",
     "RTVal",
-    CommandArgFlags::LOGGABLE_ARG | CommandArgFlags::IN_ARG
-    );
+    CommandArgFlags::IN_ARG);
 
   FABRIC_CATCH_END("SetPathValueCommand::SetPathValueCommand");
 }
@@ -49,8 +47,7 @@ bool SetPathValueCommand::doIt()
 {
   FABRIC_CATCH_BEGIN();
 
-  if( canUndo() )
-    m_previousValue = getRTValArgValue("target").clone();
+  m_prevValue = getRTValArgValue("target").clone();
 
   return redoIt();
 
@@ -63,7 +60,7 @@ bool SetPathValueCommand::undoIt()
 { 
   FABRIC_CATCH_BEGIN();
 
-  setRTValArgValue("target", m_previousValue.clone());
+  setRTValArgValue("target", m_prevValue.clone());
   return true;
   
   FABRIC_CATCH_END("SetPathValueCommand::undoIt");
@@ -78,35 +75,54 @@ bool SetPathValueCommand::redoIt()
   setRTValArgValue("target", getRTValArgValue("newValue", getRTValArgType("target")).clone());
   return true;
 
-  FABRIC_CATCH_END("SetPathValueCommand::doIt");
+  FABRIC_CATCH_END("SetPathValueCommand::redoIt");
  
   return false;
 } 
 
 QString SetPathValueCommand::getHelp()
 {
+  FABRIC_CATCH_BEGIN();
+
   QMap<QString, QString> argsHelp;
   argsHelp["target"] = "Path of the target";
   argsHelp["newValue"] = "New value";
 
-  return CommandArgHelpers::CreateHelpFromRTValArgs(
+  return CommandArgHelpers::createHelpFromRTValArgs(
     "Sets the value of a PathValue arg",
     argsHelp,
     this);
+
+  FABRIC_CATCH_END("SetPathValueCommand::redoIt");
+
+  return "";
 }
 
 QString SetPathValueCommand::getHistoryDesc()
 {
+  FABRIC_CATCH_BEGIN();
+
   QMap<QString, QString> argsDesc;
   argsDesc["target"] = getRTValArgPath("target");
-  return CommandArgHelpers::CreateHistoryDescFromArgs(
+  
+  return CommandArgHelpers::createHistoryDescFromArgs(
     argsDesc,
     this);
+  
+  FABRIC_CATCH_END("SetPathValueCommand::getHistoryDesc");
+
+  return "";
 }
 
 void SetPathValueCommand::merge(
   BaseCommand *prevCmd) 
 {
   SetPathValueCommand *pathValueCmd = qobject_cast<SetPathValueCommand*>(prevCmd);
-  m_previousValue = pathValueCmd->m_previousValue;
+  
+  if(pathValueCmd == 0)
+    FabricException::Throw(
+      "SetPathValueCommand::merge",
+      "Command '" + prevCmd->getName() + "is not a SetPathValueCommand");
+  
+  m_prevValue = pathValueCmd->m_prevValue;
 }

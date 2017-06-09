@@ -40,13 +40,13 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
       }
 
       // Register the command
-      GetCommandRegistry().registerCommand(
+      getCommandRegistry().registerCommand(
         "myCommand", 
         MyCommand);
 
     - C++:
       KLCommandRegistry *registry = qobject_cast<KLCommandRegistry *>(
-        Commands::CommandRegistry::GetCommandRegistry());
+        Commands::CommandRegistry::getCommandRegistry());
 
       // Create the arguments values as RTVal
       FabricCore::RTVal strRTVal = FabricCore::RTVal::ConstructString(
@@ -63,7 +63,7 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
       args["arg_2"] = floatRTVal.getJSON().getStringCString();
       
       // Create an execute the command
-      CommandManager *manager = CommandManager.GetCommandManager();
+      CommandManager *manager = CommandManager.getCommandManager();
       BaseCommand *cmd = manager->createCommand("myCommand", args);
       
       // Get back the arguments
@@ -84,7 +84,7 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
       }
 
       // Create an execute the command
-      manager = GetCommandManager()
+      manager = getCommandManager()
       cmd = manager.createCommand("myCommand", args) 
 
       // Get back the arguments
@@ -194,7 +194,7 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
-      int flags = FabricUI::Commands::CommandArgFlags::LOGGABLE_ARG, 
+      int flags = FabricUI::Commands::CommandArgFlags::NO_FLAG_ARG, 
       FabricCore::RTVal defaultValue = FabricCore::RTVal()
       );
 

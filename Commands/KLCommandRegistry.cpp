@@ -20,7 +20,9 @@ KLCommandRegistry::KLCommandRegistry()
   : CommandRegistry()
 {
   COMMAND_KL = "KL";
-  m_klCmdRegistry = GetKLCommandRegistry();
+  
+  m_klCmdRegistry = KLCommandHelpers::getKLCommandRegistry();
+  
   CommandFactory<SetPathValueCommand>::Register(
     "setPathValue");
 }

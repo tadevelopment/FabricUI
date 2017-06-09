@@ -59,7 +59,7 @@ class KLCommandManager(CppCommands.KLCommandManager):
         # There is no "new" in python, we need to own the commands created
         # in Python. They are referenced in the C++ KLCommandManager stacks. 
         self.__flatCommandsStack = []
-
+        self.NoCanMergeID = -1
         # Connect our-self.
         GetCommandRegistry().commandRegistered.connect(self._onCommandRegistered)
     
@@ -92,10 +92,6 @@ class KLCommandManager(CppCommands.KLCommandManager):
         super(KLCommandManager, self).clear()
         self.__flatCommandsStack = []
  
-    # def createRTValCommand(self, cmdName, args, doCmd, canMergeID):
-    #     """ \internal, impl. of Commands.KLCommandManager_Python. """
-    #     return self.createCommand(cmdName, args, doCmd, canMergeID)
-      
     def clearRedoStack(self):
         """ \internal, impl. of Commands.KLCommandManager_Python. """
         count = self.totalUndoCount()

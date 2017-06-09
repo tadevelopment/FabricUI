@@ -27,7 +27,7 @@ CloseKLOptionsTargetEditorCommand::CloseKLOptionsTargetEditorCommand()
   declareRTValArg(
     "failSilently",
     "Boolean",
-    CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG,
+    CommandArgFlags::OPTIONAL_ARG,
     RTVal::ConstructBoolean(
       FabricApplicationStates::GetAppStates()->getContext(), 
       false)
@@ -83,7 +83,7 @@ QString CloseKLOptionsTargetEditorCommand::getHelp()
   argsHelp["editorID"] = "Qt objectName of the option editor / ID of the KL option in the OptionsTargetRegistry";
   argsHelp["failSilently"] = "If false, throws an error if the widget has not been closed";
 
-  return CommandArgHelpers::CreateHelpFromRTValArgs(
+  return CommandArgHelpers::createHelpFromRTValArgs(
     "Close a Qt editor that edits a KL OptionsTarget",
     argsHelp,
     this);
@@ -100,7 +100,7 @@ QString CloseKLOptionsTargetEditorCommand::getHistoryDesc()
     getRTValArgValue("failSilently").getBoolean()
     );
  
-  return CommandArgHelpers::CreateHistoryDescFromArgs(
+  return CommandArgHelpers::createHistoryDescFromArgs(
     argsDesc,
     this);
 }

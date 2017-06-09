@@ -41,7 +41,7 @@ class SetPathValueCommand : public BaseRTValScriptableCommand
       );
 
   private:
-    FabricCore::RTVal m_previousValue;
+    FabricCore::RTVal m_prevValue;
 };
 
 } // namespace Commands

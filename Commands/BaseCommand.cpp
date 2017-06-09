@@ -3,13 +3,14 @@
 //
 
 #include "BaseCommand.h"
+#include "CommandManager.h"
 
 using namespace FabricUI;
 using namespace Commands;
 
 BaseCommand::BaseCommand() 
   : QObject()
-  , m_canMergeID(-1)
+  , m_canMergeID(CommandManager::NoCanMergeID)
 {
 }
 
@@ -78,7 +79,7 @@ int BaseCommand::getCanMergeID()
 bool BaseCommand::canMerge(
   BaseCommand *cmd) 
 {
-  return getCanMergeID() > -1 && 
+  return getCanMergeID() > CommandManager::NoCanMergeID && 
     getCanMergeID() == cmd->getCanMergeID();
 }
 

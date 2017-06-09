@@ -6,9 +6,9 @@ for ((i=0; i<${#Target[*]}; i++));
 do
  echo ${Target[i]}
 
-#  diff -u ./build/Windows/x86_64/Release/Native/FabricUI/pyside/python2.7/FabricUI/${Target[i]}.cpp \
-# ./build/Windows/x86_64/Release/Native/FabricUI/pysideRef/python2.7/FabricUI/${Target[i]}.cpp > \
-# ./Native/FabricUI/shiboken/${Target[i]}.diff 2>&1
+ diff -u ./build/Windows/x86_64/Release/Native/FabricUI/pyside/python2.7/FabricUI/${Target[i]}.cpp \
+./build/Windows/x86_64/Release/Native/FabricUI/pysideRef/python2.7/FabricUI/${Target[i]}.cpp > \
+./Native/FabricUI/shiboken/${Target[i]}.diff 2>&1
 
 done
 

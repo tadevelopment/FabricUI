@@ -133,7 +133,7 @@ QString BaseScriptableCommand::getArgsDescription()
     ScriptableCommandArgSpec spec = it.value();
 
     res += "    ["  + key + "]";
-    res += ", opt: " + CommandArgHelpers::GetArgsTypeSpecs(this, key);
+    res += ", opt: " + CommandArgHelpers::getArgsTypeSpecs(this, key);
     res +=  ", val: " + getArg(key);
 
     if(!spec.defaultValue.isEmpty())

@@ -31,7 +31,7 @@ class CommandManager : public QObject
     
     The manager sets it-self as a singleton when it's constructed:
     - Create the singleton: new CommandManager();
-    - Get the singleton: CommandManager *cmdManager = CommandManager::GetCommandManager();
+    - Get the singleton: CommandManager *cmdManager = CommandManager::getCommandManager();
   */
   Q_OBJECT
 
@@ -42,10 +42,13 @@ class CommandManager : public QObject
   
     /// Gets the manager singleton.
     /// Thows an error if the manager has not been created.
-    static CommandManager* GetCommandManager();
+    static CommandManager* getCommandManager();
     
     /// Checks if the manager has been created.
-    static bool IsInitalized();
+    static bool isInitalized();
+
+    /// 
+    static int NoCanMergeID;
 
     /// Creates and executes a command (if doCmd == true).
     /// If executed, the command is added to the manager stack.
@@ -54,14 +57,14 @@ class CommandManager : public QObject
       const QString &cmdName, 
       const QMap<QString, QString> &args = QMapString(), 
       bool doCmd = true,
-      int canMergeID = -1
+      int canMergeID = NoCanMergeID
       );
 
     /// Executes a command and adds it to the undo stack.
     /// Throws an exception if an error occurs.
     void doCommand(
       BaseCommand* cmd,
-      int canMergeID = -1
+      int canMergeID = NoCanMergeID
       );
 
     /// Undoes the current command.

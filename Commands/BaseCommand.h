@@ -50,7 +50,7 @@ class BaseCommand : public QObject
           ... Do you logic
 
           --> Create a sub command
-          CommandManager *manager = CommandManager.GetCommandManager();
+          CommandManager *manager = CommandManager.getCommandManager();
           BaseCommand *mySubCommand = manager->createCommand("mySubCommand")
           
           return true;
@@ -73,7 +73,7 @@ class BaseCommand : public QObject
       CommandFactory<MyCommand>::Register("myCommand");
 
       // Create an execute the command
-      CommandManager *manager = CommandManager.GetCommandManager();
+      CommandManager *manager = CommandManager.getCommandManager();
       BaseCommand *cmd = manager->createCommand("myCommand") 
 
     - Python:
@@ -93,7 +93,7 @@ class BaseCommand : public QObject
           ... Do you logic
 
           --> Create a sub command
-          mySubCommand = GetCommandManager().createCommand("mySubCommand")
+          mySubCommand = getCommandManager().createCommand("mySubCommand")
           return True
 
         def undoIt(self):
@@ -105,10 +105,10 @@ class BaseCommand : public QObject
           return True
       
       // Register the command
-      GetCommandRegistry().registerCommand("myCommand", MyCommand)
+      getCommandRegistry().registerCommand("myCommand", MyCommand)
 
       // Create an execute the command
-      myCommand = GetCommandManager().createCommand("myCommand")
+      myCommand = getCommandManager().createCommand("myCommand")
 
     C++ interfaces cannot be wrapped in python by shiboken. New commands
     must specialize this class to be accessible from python.
@@ -157,7 +157,7 @@ class BaseCommand : public QObject
     /// Gets a description of the command
     /// to display in the history stack (if one).
     virtual QString getHistoryDesc();
-
+    
     /// Sets the interaction ID.
     virtual void setCanMergeID(
       int canMergeID

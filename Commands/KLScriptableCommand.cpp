@@ -28,17 +28,20 @@ KLScriptableCommand::~KLScriptableCommand()
 // BaseCommand
 QString KLScriptableCommand::getName() 
 {
-  return GetKLCommandName(m_klCmd);
+  return KLCommandHelpers::getKLCommandName(
+    m_klCmd);
 }
 
 bool KLScriptableCommand::canUndo() 
 {
-  return CanKLCommandUndo(m_klCmd);
+  return KLCommandHelpers::canKLCommandUndo(
+    m_klCmd);
 }
 
 bool KLScriptableCommand::canLog() 
 {
-  return CanKLCommandLog(m_klCmd);
+  return KLCommandHelpers::canKLCommandLog(
+    m_klCmd);
 }
 
 bool KLScriptableCommand::doIt() 
@@ -51,7 +54,7 @@ bool KLScriptableCommand::doIt()
     1,
     &m_klCmd);
   
-  return DoKLCommand(cmd);
+  return KLCommandHelpers::doKLCommand(cmd);
 
   FABRIC_CATCH_END("KLScriptableCommand::doIt");
 
@@ -60,33 +63,38 @@ bool KLScriptableCommand::doIt()
 
 bool KLScriptableCommand::undoIt() 
 { 
-  return UndoKLCommand();
+  return KLCommandHelpers::undoKLCommand();
 }
 
 bool KLScriptableCommand::redoIt() 
 {  
-  return RedoKLCommand();
+  return KLCommandHelpers::redoKLCommand();
 }
 
 QString KLScriptableCommand::getHelp() 
 {
-  return GetKLCommandHelp(m_klCmd);
+  return KLCommandHelpers::getKLCommandHelp(
+    m_klCmd);
 }
 
 QString KLScriptableCommand::getHistoryDesc() 
 {
-  return GetKLCommandHistoryDesc(m_klCmd);
+  return KLCommandHelpers::getKLCommandHistoryDesc(
+    m_klCmd);
 }
 
 void KLScriptableCommand::setCanMergeID(
   int canMergeID)
 {
-  SetKLCommandCanMergeID(m_klCmd, canMergeID);
+  KLCommandHelpers::setKLCommandCanMergeID(
+    m_klCmd, 
+    canMergeID);
 }
 
 int KLScriptableCommand::getCanMergeID()
 {
-  return GetKLCommandCanMergeID(m_klCmd);
+  return KLCommandHelpers::getKLCommandCanMergeID(
+    m_klCmd);
 }
 
 bool KLScriptableCommand::canMerge(
@@ -96,7 +104,9 @@ bool KLScriptableCommand::canMerge(
   if(scriptCmd == 0)
     return false;
   
-  return CanMergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
+  return KLCommandHelpers::canMergeKLCommand(
+    m_klCmd, 
+    scriptCmd->m_klCmd);
 }
 
 void KLScriptableCommand::merge(
@@ -112,7 +122,7 @@ void KLScriptableCommand::merge(
     1,
     &scriptCmd->m_klCmd);
 
-  MergeKLCommand(m_klCmd, cmd);
+  KLCommandHelpers::mergeKLCommand(m_klCmd, cmd);
 
   FABRIC_CATCH_END("KLScriptableCommand::merge");
 }

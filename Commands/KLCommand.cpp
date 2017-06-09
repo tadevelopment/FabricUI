@@ -24,17 +24,20 @@ KLCommand::~KLCommand()
 
 QString KLCommand::getName() 
 {
-  return GetKLCommandName(m_klCmd);
+  return KLCommandHelpers::getKLCommandName(
+    m_klCmd);
 }
  
 bool KLCommand::canUndo() 
 {
-  return CanKLCommandUndo(m_klCmd);
+  return KLCommandHelpers::canKLCommandUndo(
+    m_klCmd);
 }
 
 bool KLCommand::canLog() 
 {
-  return CanKLCommandLog(m_klCmd);
+  return KLCommandHelpers::canKLCommandLog(
+    m_klCmd);
 }
 
 bool KLCommand::doIt() 
@@ -47,7 +50,7 @@ bool KLCommand::doIt()
     1,
     &m_klCmd);
     
-  return DoKLCommand(cmd);
+  return KLCommandHelpers::doKLCommand(cmd);
   
   FABRIC_CATCH_END("KLCommand::doIt");
  
@@ -56,33 +59,37 @@ bool KLCommand::doIt()
 
 bool KLCommand::undoIt() 
 { 
-  return UndoKLCommand();
+  return KLCommandHelpers::undoKLCommand();
 }
 
 bool KLCommand::redoIt() 
 {  
-  return RedoKLCommand();
+  return KLCommandHelpers::redoKLCommand();
 }
 
 QString KLCommand::getHelp() 
 {
-  return GetKLCommandHelp(m_klCmd);
+  return KLCommandHelpers::getKLCommandHelp(
+    m_klCmd);
 }
 
 QString KLCommand::getHistoryDesc() 
 {
-  return GetKLCommandHistoryDesc(m_klCmd);
+  return KLCommandHelpers::getKLCommandHistoryDesc(
+    m_klCmd);
 }
 
 void KLCommand::setCanMergeID(
   int canMergeID)
 {
-  SetKLCommandCanMergeID(m_klCmd, canMergeID);
+  KLCommandHelpers::setKLCommandCanMergeID(
+    m_klCmd, 
+    canMergeID);
 }
 
 int KLCommand::getCanMergeID()
 {
-  return GetKLCommandCanMergeID(m_klCmd);
+  return KLCommandHelpers::getKLCommandCanMergeID(m_klCmd);
 }
 
 bool KLCommand::canMerge(
@@ -91,12 +98,12 @@ bool KLCommand::canMerge(
   KLCommand* scriptCmd = qobject_cast<KLCommand*>(prevCmd);
   if(scriptCmd == 0)
     return false;
-  return CanMergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
+  return KLCommandHelpers::canMergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
 }
 
 void KLCommand::merge(
   BaseCommand *prevCmd) 
 {
   KLCommand* scriptCmd = qobject_cast<KLCommand*>(prevCmd);
-  MergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
+  KLCommandHelpers::mergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
 }

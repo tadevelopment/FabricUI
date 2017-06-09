@@ -1,24 +1,20 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 
-#ifndef __UI_Application_FabricApplication__
-#define __UI_Application_FabricApplication__
+#ifndef __UI_FABRIC_APPLICATION__
+#define __UI_FABRIC_APPLICATION__
 
 #include <QApplication>
 
-namespace FabricUI
+namespace FabricUI {
+namespace Application {
+
+class FabricApplication : public QApplication
 {
-
-  namespace Application
-  {
-
-    class FabricApplication : public QApplication
-    {
-    public:
-        FabricApplication();
-    };
-
-  };
-
+	public:
+    FabricApplication();
 };
 
-#endif // __UI_Application_FabricApplication__
+} // namespace Application
+} // namespace FabricUI
+
+#endif // __UI_FABRIC_APPLICATION__

@@ -47,7 +47,7 @@ class OpenHelpDialogCommand(Commands.BaseScriptableCommand):
             "title" : "Title of the Dialog widget",
             "text " : "Text to display"
         }
-        return Commands.CommandArgHelpers.CreateHelpFromArgs(
+        return Commands.CommandArgHelpers.createHelpFromArgs(
             "Open a Dialog placed at the current mouse position",
             argsHelp,
             self);

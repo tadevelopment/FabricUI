@@ -34,17 +34,17 @@ CommandRegistry::~CommandRegistry()
   s_instanceFlag = false;
 }
 
-CommandRegistry* CommandRegistry::GetCommandRegistry()
+CommandRegistry* CommandRegistry::getCommandRegistry()
 {
   if(!s_instanceFlag)
     FabricException::Throw(
-      "CommandRegistry::GetCommandRegistry",
+      "CommandRegistry::getCommandRegistry",
       "the registry is null");
 
   return s_cmdRegistry;
 }
 
-bool CommandRegistry::IsInitalized()
+bool CommandRegistry::isInitalized()
 {
   return s_instanceFlag;
 }

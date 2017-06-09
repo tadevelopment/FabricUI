@@ -15,89 +15,86 @@ namespace Commands {
 	Helpers for KLCommand and KLScriptableCommands.
 */
 
-/// Gets the KL command manager singleton.
-FabricCore::RTVal GetKLCommandManager();
+class KLCommandHelpers
+{
+  public:
+    /// Gets the KL command manager singleton.
+    static FabricCore::RTVal getKLCommandManager();
 
-/// Gets the KL command registry singleton.
-FabricCore::RTVal GetKLCommandRegistry();
+    /// Gets the KL command registry singleton.
+    static FabricCore::RTVal getKLCommandRegistry();
 
-/// Gets the name of a KL commands.
-/// Throws an exception if an error occurs.
-QString GetKLCommandName(
-  FabricCore::RTVal klCmd
-  );
+    /// Gets the name of a KL commands.
+    /// Throws an exception if an error occurs.
+    static QString getKLCommandName(
+      FabricCore::RTVal klCmd
+      );
 
-/// Checks if the KL command is undoable.
-/// Throws an exception if an error occurs.
-bool CanKLCommandUndo(
-  FabricCore::RTVal klCmd
-  );
+    /// Checks if the KL command is undoable.
+    /// Throws an exception if an error occurs.
+    static bool canKLCommandUndo(
+      FabricCore::RTVal klCmd
+      );
 
-/// Checks if the KL command can be 
-/// added to the KL undo stack.
-/// Throws an exception if an error occurs.
-bool AddKLCommandToUndoStack(
-  FabricCore::RTVal klCmd
-  );
+    /// Checks if the KL command is undoable.
+    /// Throws an exception if an error occurs.
+    static bool canKLCommandLog(
+      FabricCore::RTVal klCmd
+      );
 
-/// Checks if the KL command is undoable.
-/// Throws an exception if an error occurs.
-bool CanKLCommandLog(
-  FabricCore::RTVal klCmd
-  );
+    /// Executes a KL commands.
+    /// Throws an exception if an error occurs.
+    static bool doKLCommand(
+      FabricCore::RTVal klCmd
+      );
 
-/// Executes a KL commands.
-/// Throws an exception if an error occurs.
-bool DoKLCommand(
-  FabricCore::RTVal klCmd
-  );
+    /// Undoes the current KL command.
+    /// Throws an exception if an error occurs.
+    static bool undoKLCommand();
 
-/// Undoes the current KL command.
-/// Throws an exception if an error occurs.
-bool UndoKLCommand();
+    /// Redoes the current KL command.
+    /// Throws an exception if an error occurs.
+    static bool redoKLCommand();
 
-/// Redoes the current KL command.
-/// Throws an exception if an error occurs.
-bool RedoKLCommand();
+    /// Gets a KL command's description.
+    /// Throws an exception if an error occurs.
+    static QString getKLCommandHelp(
+      FabricCore::RTVal klCmd
+      );
 
-/// Gets a KL command's description.
-/// Throws an exception if an error occurs.
-QString GetKLCommandHelp(
-  FabricCore::RTVal klCmd
-  );
+    /// Gets a KL command's history description.
+    /// Throws an exception if an error occurs.
+    static QString getKLCommandHistoryDesc(
+      FabricCore::RTVal klCmd
+      );
 
-/// Gets a KL command's history description.
-/// Throws an exception if an error occurs.
-QString GetKLCommandHistoryDesc(
-  FabricCore::RTVal klCmd
-  );
+    /// Sets the interaction ID of a KL commands.
+    /// Throws an exception if an error occurs.
+    static void setKLCommandCanMergeID(
+      FabricCore::RTVal klCmd,
+      int canMergeID
+      );
 
-/// Sets the interaction ID of a KL commands.
-/// Throws an exception if an error occurs.
-void SetKLCommandCanMergeID(
-  FabricCore::RTVal klCmd,
-  int canMergeID
-  );
+    /// Gets the interaction ID of a KL commands.
+    /// Throws an exception if an error occurs.
+    static int getKLCommandCanMergeID(
+      FabricCore::RTVal klCmd
+      );
 
-/// Gets the interaction ID of a KL commands.
-/// Throws an exception if an error occurs.
-int GetKLCommandCanMergeID(
-  FabricCore::RTVal klCmd
-  );
+    /// Merges a KL command with another.
+    /// Throws an exception if an error occurs.
+    static bool canMergeKLCommand(
+      FabricCore::RTVal klCmd,
+      FabricCore::RTVal prevKlCmd
+      );
 
-/// Merges a KL command with another.
-/// Throws an exception if an error occurs.
-bool CanMergeKLCommand(
-  FabricCore::RTVal klCmd,
-  FabricCore::RTVal prevKlCmd
-  );
-
-/// Merges a KL command with another.
-/// Throws an exception if an error occurs.
-void MergeKLCommand(
-  FabricCore::RTVal klCmd,
-  FabricCore::RTVal prevKlCmd
-  );
+    /// Merges a KL command with another.
+    /// Throws an exception if an error occurs.
+    static void mergeKLCommand(
+      FabricCore::RTVal klCmd,
+      FabricCore::RTVal prevKlCmd
+      );
+};
 
 } // namespace Commands
 } // namespace FabricUI

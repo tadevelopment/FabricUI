@@ -95,7 +95,7 @@ bool GLViewportWidget::onEvent(
     if(isAccepted || event->type() == QEvent::MouseButtonRelease)
     {
       KLCommandManager *manager = qobject_cast<KLCommandManager*>(
-        CommandManager::GetCommandManager());
+        CommandManager::getCommandManager());
       manager->synchronizeKL();
     }    
 

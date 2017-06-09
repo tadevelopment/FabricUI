@@ -210,7 +210,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             
             tooltip = cmdType+ "[" + implType + "]\n\n"
             tooltip += cmd.getHelp()
-            isScriptable = CppCommands.CommandArgHelpers.IsScriptableCommand(cmd)
+            isScriptable = CppCommands.CommandArgHelpers.isScriptableCommand(cmd)
 
             # Add the action to the canvasWindow so it's available.
             # Actions of hidden widgets are not triggered.

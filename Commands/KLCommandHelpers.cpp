@@ -7,17 +7,17 @@
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
+using namespace FabricUI;
+using namespace Commands;
 using namespace FabricCore;
+using namespace Application;
 
-namespace FabricUI {
-namespace Commands {
-
-RTVal GetKLCommandManager() 
+RTVal KLCommandHelpers::getKLCommandManager() 
 {
   FABRIC_CATCH_BEGIN();
 
   RTVal klCmdManager = RTVal::Create(
-    Application::FabricApplicationStates::GetAppStates()->getContext(), 
+    FabricApplicationStates::GetAppStates()->getContext(), 
     "AppCommandManager", 
     0, 0);
 
@@ -26,17 +26,17 @@ RTVal GetKLCommandManager()
     "getCommandManager", 
     0, 0);
 
-  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandManager");
+  FABRIC_CATCH_END("KLCommandHelpers::getKLCommandManager");
 
   return RTVal();
 }
 
-RTVal GetKLCommandRegistry() 
+RTVal KLCommandHelpers::getKLCommandRegistry() 
 {
   FABRIC_CATCH_BEGIN();
 
   RTVal klCmdRegistry = RTVal::Construct(
-    Application::FabricApplicationStates::GetAppStates()->getContext(), 
+    FabricApplicationStates::GetAppStates()->getContext(), 
     "AppCommandRegistry", 
     0, 0);
 
@@ -45,12 +45,12 @@ RTVal GetKLCommandRegistry()
     "getCommandRegistry", 
     0, 0);
 
-  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandRegistry");
+  FABRIC_CATCH_END("KLCommandHelpers::getKLCommandRegistry");
 
   return RTVal();
 }
 
-QString GetKLCommandName(
+QString KLCommandHelpers::getKLCommandName(
   RTVal klCmd) 
 {
   FABRIC_CATCH_BEGIN();
@@ -61,12 +61,12 @@ QString GetKLCommandName(
     0, 
     0).getStringCString();
   
-  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandName");
+  FABRIC_CATCH_END("KLCommandHelpers::getKLCommandName");
 
   return "";
 }
 
-bool CanKLCommandUndo(
+bool KLCommandHelpers::canKLCommandUndo(
   RTVal klCmd) 
 {
   FABRIC_CATCH_BEGIN();
@@ -77,12 +77,12 @@ bool CanKLCommandUndo(
     0, 
     0).getBoolean();
 
-  FABRIC_CATCH_END("KLCommandHelpers::CanKLCommandUndo");
+  FABRIC_CATCH_END("KLCommandHelpers::canKLCommandUndo");
 
   return false;
 }
 
-bool CanKLCommandLog(
+bool KLCommandHelpers::canKLCommandLog(
   RTVal klCmd) 
 {
   FABRIC_CATCH_BEGIN();
@@ -93,12 +93,12 @@ bool CanKLCommandLog(
     0, 
     0).getBoolean();
 
-  FABRIC_CATCH_END("KLCommandHelpers::CanKLCommandLog");
+  FABRIC_CATCH_END("KLCommandHelpers::canKLCommandLog");
   
   return false;
 }
 
-bool DoKLCommand( 
+bool KLCommandHelpers::doKLCommand( 
   RTVal klCmd) 
 { 
   FABRIC_CATCH_BEGIN();
@@ -109,7 +109,7 @@ bool DoKLCommand(
     RTVal::ConstructString(klCmd.getContext(), "") 
   };
 
-  GetKLCommandManager().callMethod(
+  getKLCommandManager().callMethod(
     "", 
     "_doCommand", 
     2, 
@@ -117,26 +117,26 @@ bool DoKLCommand(
   
   QString strError = args[1].getStringCString();
   if(!strError.isEmpty())
-    Application::FabricException::Throw(
-      "KLCommandHelpers::DoKLCommand",
+    FabricException::Throw(
+      "KLCommandHelpers::doKLCommand",
       strError);
 
   return true;
   
-  FABRIC_CATCH_END("KLCommandHelpers::DoKLCommand");
+  FABRIC_CATCH_END("KLCommandHelpers::doKLCommand");
 
   return false;
 }
 
-bool UndoKLCommand() 
+bool KLCommandHelpers::undoKLCommand() 
 { 
   FABRIC_CATCH_BEGIN();
  
   RTVal valError = RTVal::ConstructString(
-    Application::FabricApplicationStates::GetAppStates()->getContext(), 
+    FabricApplicationStates::GetAppStates()->getContext(), 
     "");
 
-  bool res = GetKLCommandManager().callMethod(
+  bool res = getKLCommandManager().callMethod(
     "Boolean", 
     "undoCommand", 
     1, 
@@ -144,26 +144,26 @@ bool UndoKLCommand()
   
   QString strError = valError.getStringCString();
   if(!res || !strError.isEmpty())
-    Application::FabricException::Throw(
-      "KLCommandHelpers::UndoKLCommand",
+    FabricException::Throw(
+      "KLCommandHelpers::undoKLCommand",
       strError);
 
   return true;
   
-  FABRIC_CATCH_END("KLCommandHelpers::UndoKLCommand");
+  FABRIC_CATCH_END("KLCommandHelpers::undoKLCommand");
 
   return false;
 }
 
-bool RedoKLCommand() 
+bool KLCommandHelpers::redoKLCommand() 
 {  
   FABRIC_CATCH_BEGIN();
 
   RTVal valError = RTVal::ConstructString(
-    Application::FabricApplicationStates::GetAppStates()->getContext(), 
+    FabricApplicationStates::GetAppStates()->getContext(), 
     "");
 
-  bool res = GetKLCommandManager().callMethod(
+  bool res = getKLCommandManager().callMethod(
     "Boolean", 
     "redoCommand", 
     1, 
@@ -171,18 +171,18 @@ bool RedoKLCommand()
 
   QString strError = valError.getStringCString();
   if(!res || !strError.isEmpty())
-    Application::FabricException::Throw(
-      "KLCommandHelpers::RedoKLCommand",
+    FabricException::Throw(
+      "KLCommandHelpers::redoKLCommand",
       strError);
 
   return true;
 
-  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandHelp");
+  FABRIC_CATCH_END("KLCommandHelpers::getKLCommandHelp");
 
   return false;
 }
 
-QString GetKLCommandHelp(
+QString KLCommandHelpers::getKLCommandHelp(
   RTVal klCmd) 
 {
   FABRIC_CATCH_BEGIN();
@@ -193,12 +193,12 @@ QString GetKLCommandHelp(
     0, 
     0).getStringCString();
   
-  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandHelp");
+  FABRIC_CATCH_END("KLCommandHelpers::getKLCommandHelp");
 
   return "";
 }
 
-QString GetKLCommandHistoryDesc(
+QString KLCommandHelpers::getKLCommandHistoryDesc(
   RTVal klCmd) 
 {
   FABRIC_CATCH_BEGIN();
@@ -209,12 +209,12 @@ QString GetKLCommandHistoryDesc(
     0, 
     0).getStringCString();
 
-  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandHistoryDesc");
+  FABRIC_CATCH_END("KLCommandHelpers::getKLCommandHistoryDesc");
 
   return "";
 }
  
-void SetKLCommandCanMergeID(
+void KLCommandHelpers::setKLCommandCanMergeID(
   FabricCore::RTVal klCmd,
   int canMergeID)
 {
@@ -230,10 +230,10 @@ void SetKLCommandCanMergeID(
     1, 
     &canMergeIDVal);
 
-  FABRIC_CATCH_END("KLCommandHelpers::SetKLCommandCanMergeID");
+  FABRIC_CATCH_END("KLCommandHelpers::setKLCommandCanMergeID");
 }
 
-int GetKLCommandCanMergeID(
+int KLCommandHelpers::getKLCommandCanMergeID(
   FabricCore::RTVal klCmd)
 {
   FABRIC_CATCH_BEGIN();
@@ -244,12 +244,12 @@ int GetKLCommandCanMergeID(
     0, 
     0).getSInt32();
   
-  FABRIC_CATCH_END("KLCommandHelpers::GetKLCommandCanMergeID");
+  FABRIC_CATCH_END("KLCommandHelpers::getKLCommandCanMergeID");
 
   return -1;
 }
 
-bool CanMergeKLCommand(
+bool KLCommandHelpers::canMergeKLCommand(
   FabricCore::RTVal klCmd,
   FabricCore::RTVal prevKlCmd)
 {
@@ -262,12 +262,12 @@ bool CanMergeKLCommand(
     &prevKlCmd
     ).getBoolean();
 
-  FABRIC_CATCH_END("KLCommandHelpers::CanMergeKLCommand");
+  FABRIC_CATCH_END("KLCommandHelpers::canMergeKLCommand");
 
   return false;
 }
 
-void MergeKLCommand(
+void KLCommandHelpers::mergeKLCommand(
   FabricCore::RTVal klCmd,
   FabricCore::RTVal prevKlCmd)
 {
@@ -279,8 +279,5 @@ void MergeKLCommand(
     1, 
     &prevKlCmd);
 
-  FABRIC_CATCH_END("KLCommandHelpers::MergeKLCommand");
+  FABRIC_CATCH_END("KLCommandHelpers::mergeKLCommand");
 }
-
-} // namespace Commands
-} // namespace FabricUI

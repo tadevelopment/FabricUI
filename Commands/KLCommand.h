@@ -51,18 +51,18 @@ class KLCommand : public BaseCommand
       }
       
       // Register the command
-      GetCommandRegistry().registerCommand(
+      getCommandRegistry().registerCommand(
         "myCommand", 
         MyCommand);
 
     - C++:
       // Create an execute the command
-      CommandManager *manager = CommandManager.GetCommandManager();
+      CommandManager *manager = CommandManager.getCommandManager();
       BaseCommand *cmd = manager->createCommand("myCommand") 
 
     - Python:
       // Create an execute the command
-      manager = GetCommandManager()
+      manager = getCommandManager()
       cmd = manager.createCommand("myCommand") 
   */
   

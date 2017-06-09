@@ -20,15 +20,17 @@ class CommandArgFlags
  
   */
   public:
-    /// Optional argument flag.
+    /// No flag argument.
+    static int NO_FLAG_ARG;
+    /// Optional argument.
     static int OPTIONAL_ARG;
-    /// Loggale argument flag.
-    static int LOGGABLE_ARG;
-    /// Input argument flag.
+    /// No-loggale argument.
+    static int NO_LOGGABLE_ARG;
+    /// Input argument.
     static int IN_ARG;
-    /// Output argument flag.
+    /// Output argument.
     static int OUT_ARG;
-    /// IO argument flag.
+    /// IO argument.
     static int IO_ARG;
 };
 
@@ -40,13 +42,13 @@ class CommandArgHelpers
     /// Helper to create the command's desc
     /// from a subsets of arguments.
     /// \param argsHelp Map of [arg, arg desc]
-    static QString CreateHistoryDescFromArgs(
+    static QString createHistoryDescFromArgs(
       const QMap<QString, QString> &argsDesc,
       BaseCommand *cmd
       );
 
     /// Helper to create the command's helps
-    static QString GetArgsTypeSpecs(
+    static QString getArgsTypeSpecs(
       BaseCommand *cmd,
       const QString &key
       );
@@ -55,7 +57,7 @@ class CommandArgHelpers
     /// from a subsets of arguments.
     /// \param commandHelp The main help text.
     /// \param argsHelp Map of [arg, arg help]
-    static QString CreateHelpFromArgs(
+    static QString createHelpFromArgs(
       const QString &commandHelp,
       const QMap<QString, QString> &argsHelp,
       BaseCommand *cmd
@@ -65,67 +67,67 @@ class CommandArgHelpers
     /// from a subsets of arguments.
     /// \param commandHelp The main help text.
     /// \param argsHelp Map of [arg, arg help]
-    static QString CreateHelpFromRTValArgs(
+    static QString createHelpFromRTValArgs(
       const QString &commandHelp,
       const QMap<QString, QString> &argsHelp,
       BaseCommand *cmd
       );
  
-    static bool IsRTValScriptableCommand(
+    static bool isRTValScriptableCommand(
       BaseCommand *cmd
       );
 
-    static bool IsScriptableCommand(
+    static bool isScriptableCommand(
       BaseCommand *cmd
       );
  
-    static bool IsPathValueCommandArg(
+    static bool isPathValueCommandArg(
       const QString &key,
       BaseCommand *cmd
       );
 
-    static bool IsCommandArg(
+    static bool isCommandArg(
       const QString &key,
       int flags,
       BaseCommand *cmd
       );
 
-    static bool IsCommandArgSet(
+    static bool isCommandArgSet(
       const QString &key,
       BaseCommand *cmd
       );
 
-    static bool HasCommandArg(
+    static bool hasCommandArg(
       const QString &key,
       BaseCommand *cmd
       );
 
-    static QList<QString> GetCommandArgKeys(
+    static QList<QString> getCommandArgKeys(
       BaseCommand *cmd
       );
 
-    static QString GetCommandArg(
+    static QString getCommandArg(
       const QString &key,
       BaseCommand *cmd
       );
 
-    static FabricCore::RTVal GetRTValCommandArg(
+    static FabricCore::RTVal getRTValCommandArg(
       const QString &key,
       BaseCommand *cmd
       );
 
-    static FabricCore::RTVal GetRTValCommandArgValue(
+    static FabricCore::RTVal getRTValCommandArgValue(
       const QString &key,
       BaseCommand *cmd
       );
 
-    static FabricCore::RTVal GetRTValCommandArgValue(
+    static FabricCore::RTVal getRTValCommandArgValue(
       const QString &key,
       const QString &type,
       BaseCommand *cmd
       );
 
-    static QString GetRTValCommandArgType(
+    static QString getRTValCommandArgType(
       const QString &key,
       BaseCommand *cmd
       );

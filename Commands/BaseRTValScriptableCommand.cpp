@@ -186,7 +186,7 @@ QString BaseRTValScriptableCommand::getArgsDescription()
     ScriptableCommandRTValArgSpec spec = it.value();
 
     res += "    ["  + key + "]";
-    res += ", opt: " + CommandArgHelpers::GetArgsTypeSpecs(this, key);
+    res += ", opt: " + CommandArgHelpers::getArgsTypeSpecs(this, key);
     res += ", path: <" + getRTValArgPath(key) + ">";
     res += ", val: " + getArg(key);
 

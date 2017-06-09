@@ -17,7 +17,7 @@ using namespace Application;
 KLCommandManager::KLCommandManager() 
   : RTValCommandManager()
 {
-  m_klCmdManager = GetKLCommandManager();
+  m_klCmdManager = KLCommandHelpers::getKLCommandManager();
 }
 
 KLCommandManager::~KLCommandManager() 

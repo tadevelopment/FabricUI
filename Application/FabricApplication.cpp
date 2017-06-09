@@ -8,7 +8,8 @@ using namespace FabricUI::Application;
 static int    s_argc = 0;
 static char **s_argv = NULL;
 
-FabricApplication::FabricApplication() : QApplication(s_argc, s_argv)
+FabricApplication::FabricApplication() 
+  : QApplication(s_argc, s_argv)
 {
   setStyle(new FabricUI::Style::FabricStyle());
 }

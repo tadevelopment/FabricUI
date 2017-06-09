@@ -22,7 +22,7 @@ class CommandRegistry : public Util::BaseFactoryRegistry
     
     The registry sets it-self as a singleton when it's constructed:
     - Create the singleton: new CommandRegistry();
-    - Get the singleton: CommandRegistry *cmdRegistry = CommandRegistry::GetCommandRegistry();
+    - Get the singleton: CommandRegistry *cmdRegistry = CommandRegistry::getCommandRegistry();
   */  
   Q_OBJECT
 
@@ -36,10 +36,10 @@ class CommandRegistry : public Util::BaseFactoryRegistry
 
     /// Gets the registry singleton.
     /// Thows an error if the registry has not been created.
-    static CommandRegistry* GetCommandRegistry();
+    static CommandRegistry* getCommandRegistry();
     
     /// Checks if the registry has been created.
-    static bool IsInitalized();
+    static bool isInitalized();
 
     /// Creates a command named 'cmdName'.
     /// Throws an error if the command isn't registered.
@@ -130,7 +130,7 @@ class CommandFactory : public Util::TemplateFactory<T>
       void *userData=0) 
     {
       Util::TemplateFactory<T>::Register(
-        CommandRegistry::GetCommandRegistry(),
+        CommandRegistry::getCommandRegistry(),
         cmdName,
         userData);
     }

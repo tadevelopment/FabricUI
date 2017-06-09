@@ -31,7 +31,7 @@ OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand()
   declareRTValArg(
     "groupName",
     "String",
-    CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG);
+    CommandArgFlags::OPTIONAL_ARG);
  
   FABRIC_CATCH_END("OpenKLOptionsTargetEditorCommand::OpenKLOptionsTargetEditorCommand");
 };
@@ -150,7 +150,7 @@ QString OpenKLOptionsTargetEditorCommand::getHelp()
   argsHelp["editorTitle"] = "Title of the widget";
   argsHelp["groupName"] = "Name of the options' group";
   
-  return CommandArgHelpers::CreateHelpFromRTValArgs(
+  return CommandArgHelpers::createHelpFromRTValArgs(
     "Open a Qt editor to edit a KL OptionsTarget",
     argsHelp,
     this);
@@ -166,7 +166,7 @@ QString OpenKLOptionsTargetEditorCommand::getHistoryDesc()
   argsDesc["editorTitle"] = getRTValArgValue(
     "editorTitle").getStringCString();
 
-  return CommandArgHelpers::CreateHistoryDescFromArgs(
+  return CommandArgHelpers::createHistoryDescFromArgs(
     argsDesc,
     this);
 }

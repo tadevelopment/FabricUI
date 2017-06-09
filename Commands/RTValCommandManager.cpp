@@ -32,7 +32,7 @@ BaseCommand* RTValCommandManager::createCommand(
 {
   FABRIC_CATCH_BEGIN();
 
-  BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
+  BaseCommand *cmd = CommandRegistry::getCommandRegistry()->createCommand(
     cmdName);
 
   if(args.size() > 0) 

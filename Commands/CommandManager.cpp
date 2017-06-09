@@ -12,6 +12,7 @@ using namespace FabricUI;
 using namespace Commands;
 using namespace Application;
 
+int CommandManager::NoCanMergeID = -1;
 bool CommandManager::s_instanceFlag = false;
 CommandManager* CommandManager::s_cmdManager = 0;
 
@@ -36,17 +37,17 @@ CommandManager::~CommandManager()
   s_instanceFlag = false;
 }
 
-CommandManager* CommandManager::GetCommandManager()
+CommandManager* CommandManager::getCommandManager()
 {
   if(!s_instanceFlag)
     FabricException::Throw(
-      "CommandManager::CommandManager",
+      "CommandManager::getCommandManager",
       "The manager is null");
 
   return s_cmdManager;
 }
 
-bool CommandManager::IsInitalized()
+bool CommandManager::isInitalized()
 {
   return s_instanceFlag;
 }
@@ -59,7 +60,7 @@ BaseCommand* CommandManager::createCommand(
 {
   FABRIC_CATCH_BEGIN();
 
-  BaseCommand *cmd = CommandRegistry::GetCommandRegistry()->createCommand(
+  BaseCommand *cmd = CommandRegistry::getCommandRegistry()->createCommand(
     cmdName);
 
   if(args.size() > 0) 

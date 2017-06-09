@@ -47,7 +47,7 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
     /// To set the argument as JSON, use `setArg`.
     virtual void declareArg( 
       const QString &key, 
-      int flags = FabricUI::Commands::CommandArgFlags::LOGGABLE_ARG, 
+      int flags = FabricUI::Commands::CommandArgFlags::NO_FLAG_ARG, 
       const QString &defaultValue = QString()
       );
 
@@ -106,7 +106,7 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
     virtual void declareRTValArg( 
       const QString &key, 
       const QString &type,
-      int flags = FabricUI::Commands::CommandArgFlags::LOGGABLE_ARG, 
+      int flags = FabricUI::Commands::CommandArgFlags::NO_FLAG_ARG, 
       FabricCore::RTVal defaultValue = FabricCore::RTVal()
       );
 

@@ -27,7 +27,7 @@ class CppTestScriptableCommand : public BaseScriptableCommand
     {
       BaseScriptableCommand::declareArg(
         "arg_1",
-        CommandArgFlags::OPTIONAL_ARG | CommandArgFlags::LOGGABLE_ARG,
+        CommandArgFlags::OPTIONAL_ARG,
         "arg_1_default_Cpp");
     }
 
@@ -82,11 +82,11 @@ class CppTestMetaCommand : public CppTestScriptableCommand
       QMap<QString, QString> args;
       args["arg_1"] = "string_Cpp";
 
-      CommandManager::GetCommandManager()->createCommand(
+      CommandManager::getCommandManager()->createCommand(
         "cppTestScriptableCommand", 
         args);
 
-      CommandManager::GetCommandManager()->createCommand(
+      CommandManager::getCommandManager()->createCommand(
         "cppTestScriptableCommand", 
         args);
 
@@ -114,11 +114,11 @@ class CppToPythonTestCommand
       QMap<QString, QString> args;
       args["arg_1"] = "string_Cpp";
 
-      CommandManager::GetCommandManager()->createCommand(
+      CommandManager::getCommandManager()->createCommand(
         "cppTestScriptableCommand", 
         args);
 
-      CommandManager::GetCommandManager()->createCommand(
+      CommandManager::getCommandManager()->createCommand(
         "cppTestMetaCommand");
     }
 
@@ -128,11 +128,11 @@ class CppToPythonTestCommand
       QMap<QString, QString> args;
       args["arg_1"] = "string_Cpp";
 
-      CommandManager::GetCommandManager()->createCommand(
+      CommandManager::getCommandManager()->createCommand(
         "testScriptableCommand", 
         args);
 
-      CommandManager::GetCommandManager()->createCommand(
+      CommandManager::getCommandManager()->createCommand(
         "testMetaCommand");
     }
 
@@ -143,7 +143,7 @@ class CppToPythonTestCommand
       try
       {
         KLCommandRegistry *registry = qobject_cast<KLCommandRegistry *>(
-          CommandRegistry::GetCommandRegistry());
+          CommandRegistry::getCommandRegistry());
 
         FabricCore::RTVal CppToKLTestCommand = FabricCore::RTVal::Create(
           Application::FabricApplicationStates::GetAppStates()->getContext(), 
@@ -205,7 +205,7 @@ class CppToPythonTestCommand
       try
       {
         RTValCommandManager *manager = (RTValCommandManager *)(
-          CommandManager::GetCommandManager());
+          CommandManager::getCommandManager());
 
         manager->CommandManager::createCommand("klTestCommand");
         manager->CommandManager::createCommand("klTestMetaCommand");
