@@ -60,7 +60,7 @@ bool SetPathValueCommand::undoIt()
 { 
   FABRIC_CATCH_BEGIN();
 
-  setRTValArgValue("target", m_prevValue.clone() );
+  setRTValArgValue("target", m_prevValue.clone());
   return true;
   
   FABRIC_CATCH_END("SetPathValueCommand::undoIt");
