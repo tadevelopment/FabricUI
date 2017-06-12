@@ -82,7 +82,7 @@ class BaseLogWidgetAction(Actions.BaseAction):
         name, 
         text, 
         shortcut = QtGui.QKeySequence(), 
-        context = QtCore.Qt.ApplicationShortcut):
+        context = QtCore.Qt.WidgetShortcut):
 
         self.logWidget = logWidget
 
@@ -102,7 +102,7 @@ class CopyLogAction(BaseLogWidgetAction):
             "LogWidget.CopyLogAction", 
             "Copy", 
             QtGui.QKeySequence.Copy)
- 
+        
         self.setEnabled(self.logWidget.textCursor().hasSelection())
 
     def onTriggered(self):
@@ -116,6 +116,7 @@ class ClearLogAction(BaseLogWidgetAction):
             logWidget, 
             "LogWidget.clearAction", 
             desc)
- 
+        logWidget.addAction(self)
+
     def onTriggered(self):
         self.logWidget.clear()
