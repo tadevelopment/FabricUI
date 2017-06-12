@@ -39,7 +39,7 @@ Connection::Connection(
   , m_graph( graph )
   , m_src( src )
   , m_dst( dst )
-  , m_penZoomModifier( 1.0 )
+  , m_cosmeticPen( false )
   , m_hovered( false )
   , m_dragging( false )
   , m_aboutToBeDeleted( false )
@@ -347,18 +347,16 @@ void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
     graph()->update();
 }
 
-void Connection::setZoomModifier( float w )
+void Connection::setCosmetic( bool cosmetic )
 {
-  m_penZoomModifier = w;
-  if( m_penZoomModifier < 1 )
-    m_penZoomModifier = 1;
+  m_cosmeticPen = cosmetic;
   this->updatePen();
 }
 
 void Connection::updatePen()
 {
   QPen pen = m_hovered ? m_hoverPen : m_defaultPen;
-  pen.setWidthF( m_penZoomModifier * pen.widthF() );
+  pen.setCosmetic( m_cosmeticPen );
   this->setPen( pen );
 }
 

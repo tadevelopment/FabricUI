@@ -89,6 +89,8 @@ void MainPanel::setCanvasZoom(float state, bool quiet)
 
   m_mouseWheelZoomState = state;
 
+  float previousState = m_itemGroup->scale();
+
   QGraphicsView * graphicsView = graph()->scene()->views()[0];
   if ( state > s_minZoomForOne
     && state < s_maxZoomForOne )
@@ -102,9 +104,20 @@ void MainPanel::setCanvasZoom(float state, bool quiet)
     m_itemGroup->setScale(state);
   }
 
-  const std::vector<Connection*> connections = graph()->connections();
-  for( size_t i = 0; i < connections.size(); i++ )
-    connections[i]->setZoomModifier( 1/state );
+  const float cosmeticThreshold = 1.0f;
+  if( state != previousState &&
+    // update the connections only if the boolean argument "cosmetic" changed
+    ( ( state < cosmeticThreshold ) != ( previousState < cosmeticThreshold ) )
+  )
+  {
+    // If the scale is < 1, make the connection's pen sizes invariant
+    // to zoom ( QPen::setCosmetic( true ) ). Otherwhise, their width
+    // will scale with zoom.
+    bool cosmetic = ( state < cosmeticThreshold );
+    const std::vector<Connection*> connections = graph()->connections();
+    for( size_t i = 0; i < connections.size(); i++ )
+      connections[i]->setCosmetic( cosmetic );
+  }
 
   update();
 

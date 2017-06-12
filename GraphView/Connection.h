@@ -74,7 +74,7 @@ namespace FabricUI
       void enableToolTip(bool state)
         { setToolTip(state ? m_tooltip : QString()); }
 
-      void setZoomModifier( float w );
+      void setCosmetic( bool );
 
     public slots:
 
@@ -94,7 +94,7 @@ namespace FabricUI
       QPen m_defaultPen;
       float m_shapePathWidth;
       QPen m_hoverPen;
-      float m_penZoomModifier;
+      bool m_cosmeticPen;
       bool m_hovered;
       void updatePen();
 
