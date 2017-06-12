@@ -614,11 +614,10 @@ class BaseScriptEditorAction(Actions.BaseAction):
         name, 
         text, 
         shortcut, 
-        context = QtCore.Qt.ApplicationShortcut, 
+        context = QtCore.Qt.WidgetWithChildrenShortcut, 
         enable = True):
 
         self.scriptEditor = scriptEditor
-
         super(BaseScriptEditorAction, self).__init__(
             scriptEditor, 
             name, 
@@ -626,6 +625,7 @@ class BaseScriptEditorAction(Actions.BaseAction):
             shortcut, 
             context, 
             enable)
+        self.scriptEditor.addAction(self)
  
 class NewScriptAction(BaseScriptEditorAction):
  

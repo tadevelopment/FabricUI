@@ -92,6 +92,7 @@ class BaseLogWidgetAction(Actions.BaseAction):
             text, 
             shortcut, 
             context)
+        self.logWidget.addAction(self)
 
 class CopyLogAction(BaseLogWidgetAction):
  
@@ -116,7 +117,6 @@ class ClearLogAction(BaseLogWidgetAction):
             logWidget, 
             "LogWidget.clearAction", 
             desc)
-        logWidget.addAction(self)
 
     def onTriggered(self):
         self.logWidget.clear()
