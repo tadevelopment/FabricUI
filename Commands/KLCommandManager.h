@@ -35,7 +35,8 @@ class KLCommandManager : public RTValCommandManager
     virtual void clear();
    
     /// Implementation of CommandManager
-    virtual QString getContent();
+    virtual QString getContent(
+      bool withArgs = true);
 
     /// Implementation of CommandManager
     virtual int getNewCanMergeID();
