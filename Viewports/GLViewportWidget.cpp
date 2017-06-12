@@ -2,6 +2,7 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
+#include <iostream>
 #include <QMouseEvent>
 #include <QApplication>
 #include "QtToKLEvent.h"
@@ -90,17 +91,34 @@ bool GLViewportWidget::onEvent(
       redrawRequested,
       manipulatedPortName);
 
+    if(!event->isAccepted() && isAccepted)
+      event->setAccepted(isAccepted);
+
     // In certain cases, the kl event is not accepted but should be.
     // We check if KL commands where added.
     if(isAccepted || event->type() == QEvent::MouseButtonRelease)
     {
       KLCommandManager *manager = qobject_cast<KLCommandManager*>(
         CommandManager::getCommandManager());
-      manager->synchronizeKL();
-    }    
 
-    if(!event->isAccepted() && isAccepted)
-      event->setAccepted(isAccepted);
+      // Check the command execution and print the exception, 
+      // we don't want to crash the app if the command fails.
+      try
+      {
+        manager->synchronizeKL();
+      }
+
+      catch(FabricException &e)
+      {
+        FabricException::Throw(
+          "GLViewportWidget::onEvent",
+          "",
+          e.what(),
+          PRINT);
+        
+        return isAccepted;
+      }
+    }    
 
     ///!!!Force the graph to update correclty
     if(isAccepted)
