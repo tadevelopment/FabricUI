@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include "KLCommand.h"
 #include "CommandManager.h"
 #include "CommandRegistry.h"
@@ -13,12 +14,16 @@ using namespace Commands;
 using namespace Application;
 
 int CommandManager::NoCanMergeID = -1;
+int CommandManager::NoDebug = -1;
+int CommandManager::Debug = 0;
+int CommandManager::VerboseDebug = 1;
 bool CommandManager::s_instanceFlag = false;
 CommandManager* CommandManager::s_cmdManager = 0;
 
 CommandManager::CommandManager() 
   : QObject()
   , m_canMergeIDCounter(0)
+  , m_debugMode(NoDebug)
 {
   if(s_instanceFlag)
     FabricException::Throw(
@@ -146,6 +151,12 @@ void CommandManager::doCommand(
       cmd->canUndo(), 
       false);
 
+  if(m_debugMode != NoDebug)
+    std::cout 
+      << "CommandManager::doCommand, content \n"
+      << getContent(m_debugMode == VerboseDebug).toUtf8().constData()
+      << std::endl;
+ 
   FABRIC_CATCH_END("CommandManager::doCommand");
 }
  
@@ -168,17 +179,21 @@ void CommandManager::undoCommand()
   int lowLevelCmdsCount = int(stackedCmd.lowLevelCmds.size());
   if(lowLevelCmdsCount > 0)
   { 
+    BaseCommand *low = stackedCmd.topLevelCmd.data();
+
     // The undo breaks if the 'undoIt' method
     // returns false or throws an exception.
     for(int i=lowLevelCmdsCount; i--;)
     {
       try
       {
-        if(!stackedCmd.lowLevelCmds[i]->undoIt())
+        preDoCommand(low);
+
+        if(!low->undoIt())
           cleanupUnfinishedUndoLowCommandsAndThrow(
             i, stackedCmd);
 
-        postDoCommand(stackedCmd.lowLevelCmds[i].data());
+        postDoCommand(low);
       }
        
       catch(FabricException &e) 
@@ -207,6 +222,12 @@ void CommandManager::undoCommand()
  
   m_undoStack.pop_back();
   m_redoStack.push_back(stackedCmd);
+
+  if(m_debugMode != NoDebug)
+    std::cout 
+      << "CommandManager::undoCommand, content \n"
+      << getContent(m_debugMode == VerboseDebug).toUtf8().constData()
+      << std::endl;
 }
 
 void CommandManager::redoCommand() 
@@ -230,13 +251,16 @@ void CommandManager::redoCommand()
   {
     for(int i=0; i<lowLevelCmdsCount; ++i)
     {
+      BaseCommand *low = stackedCmd.topLevelCmd.data();
       try
       {
-        if(!stackedCmd.lowLevelCmds[i]->redoIt())
+        preDoCommand(low);
+
+        if(!low->redoIt())
           cleanupUnfinishedRedoLowCommandsAndThrow(
             i, stackedCmd);
         
-        postDoCommand(stackedCmd.lowLevelCmds[i].data());
+        postDoCommand(low);
      }
        
       catch(FabricException &e) 
@@ -265,6 +289,12 @@ void CommandManager::redoCommand()
 
   m_redoStack.pop_back();
   m_undoStack.push_back(stackedCmd);
+
+  if(m_debugMode != NoDebug)
+    std::cout 
+      << "CommandManager::redoCommand, content \n"
+      << getContent(m_debugMode == VerboseDebug).toUtf8().constData()
+      << std::endl;
 }
 
 void CommandManager::clear() 
@@ -313,7 +343,14 @@ int CommandManager::getNewCanMergeID()
   return m_canMergeIDCounter;
 }
 
-QString CommandManager::getContent()
+void CommandManager::setDebugMode(
+  int debugMode)
+{
+  m_debugMode = debugMode;
+}
+
+QString CommandManager::getContent(
+  bool withArgs)
 {
   QString res = QString(
     "--> BaseCommand Manager-size:"+ QString::number(count()) + 
@@ -322,8 +359,8 @@ QString CommandManager::getContent()
     ", redo:" + QString::number(m_redoStack.size()) + 
     "\n");
   
-  res += getStackContent("Undo", m_undoStack);
-  res += getStackContent("Redo", m_redoStack);
+  res += getStackContent("Undo", m_undoStack, withArgs);
+  res += getStackContent("Redo", m_redoStack, withArgs);
  
   return res;
 }
@@ -422,7 +459,8 @@ void CommandManager::commandPushed(
 
 QString CommandManager::getStackContent(
   const QString& stackName, 
-  const QList<StackedCommand>& stack)
+  const QList<StackedCommand>& stack,
+  bool withArgs)
 {
   int offset = stackName == "Redo" ? m_undoStack.size() : 0;
   QString inf = stackName == "Redo" ? "-" : "+";
@@ -435,7 +473,7 @@ QString CommandManager::getStackContent(
     BaseCommand *top = stackedCmd.topLevelCmd.data();
     BaseScriptableCommand *scriptableTop = qobject_cast<BaseScriptableCommand *>(top);
 
-    QString desc = scriptableTop != 0
+    QString desc = withArgs && scriptableTop != 0
       ? top->getName() + "\n" + scriptableTop->getArgsDescription() 
       : top->getName();
 
@@ -447,7 +485,7 @@ QString CommandManager::getStackContent(
       BaseCommand *low = stackedCmd.lowLevelCmds[j].data();
       BaseScriptableCommand *scriptableLow = qobject_cast<BaseScriptableCommand *>(low);
 
-      QString desc = scriptableLow != 0 
+      QString desc = withArgs && scriptableLow != 0 
         ? low->getName() + "\n" + scriptableLow->getArgsDescription() 
         : low->getName();
 
