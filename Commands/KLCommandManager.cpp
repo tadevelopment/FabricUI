@@ -38,11 +38,13 @@ void KLCommandManager::clear()
   FABRIC_CATCH_END("KLCommandManager::clear");
 }
 
-QString KLCommandManager::getContent()
+QString KLCommandManager::getContent(
+  bool withArgs)
 {
   FABRIC_CATCH_BEGIN();
 
-  QString res = CommandManager::getContent();
+  QString res = CommandManager::getContent(
+    withArgs);
 
   res += QString("\n") + m_klCmdManager.callMethod(
     "String", 

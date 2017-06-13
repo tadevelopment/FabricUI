@@ -188,10 +188,10 @@ QString BaseRTValScriptableCommand::getArgsDescription()
     res += "    ["  + key + "]";
     res += ", opt: " + CommandArgHelpers::getArgsTypeSpecs(this, key);
     res += ", path: <" + getRTValArgPath(key) + ">";
-    // res += ", val: " + getArg(key);
+    res += ", val: " + getArg(key);
 
-    // if(spec.defaultValue.isValid())
-    //   res += ", defVal: " + RTValUtil::toJSON(spec.defaultValue);
+    if(spec.defaultValue.isValid())
+      res += ", defVal: " + RTValUtil::toJSON(spec.defaultValue);
  
     res += (count < m_rtvalArgSpecs.size() - 1) ? "\n" : "";
     count++;

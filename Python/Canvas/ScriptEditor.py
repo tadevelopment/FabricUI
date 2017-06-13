@@ -542,13 +542,19 @@ class ScriptEditor(QtGui.QWidget):
 
         # Synchronize the KL-C++ registry so KL commands 
         # can be created with 'named-arg' syntax. 
-        GetCommandRegistry().synchronizeKL();
+        try:
+            GetCommandRegistry().synchronizeKL();
+        except Exception as e:    
+            print str(e)
 
         self.exec_(code)
 
         # Synchronize the KL-C++ registry so KL commands 
         # can be created with 'named-arg' syntax. 
-        GetCommandManager().synchronizeKL();
+        try:
+            GetCommandManager().synchronizeKL();
+        except Exception as e:    
+            print str(e)
 
     def eval(self, code, replace = False):
         if self.echoCommandsAction.isChecked():

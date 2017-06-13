@@ -41,6 +41,5 @@ class CommandAction(Actions.BaseAction):
         try:
             GetCommandManager().createCommand(self.cmdName)
             GetCommandManager().synchronizeKL()
-
         except Exception as e:    
             print str(e)

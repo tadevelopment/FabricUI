@@ -36,6 +36,12 @@ class CommandManager : public QObject
   Q_OBJECT
 
   public:
+    /// 
+    static int NoCanMergeID;
+    static int NoDebug;
+    static int Debug;
+    static int VerboseDebug;
+
     CommandManager();
 
     virtual ~CommandManager();
@@ -46,9 +52,6 @@ class CommandManager : public QObject
     
     /// Checks if the manager has been created.
     static bool isInitalized();
-
-    /// 
-    static int NoCanMergeID;
 
     /// Creates and executes a command (if doCmd == true).
     /// If executed, the command is added to the manager stack.
@@ -91,7 +94,9 @@ class CommandManager : public QObject
 
     /// Gets the stack content as a string.
     /// Used for debugging.
-    virtual QString getContent();
+    virtual QString getContent(
+      bool withArgs = true
+      );
 
     /// Gets the command at index 'index'.
     BaseCommand* getCommandAtIndex(
@@ -100,6 +105,10 @@ class CommandManager : public QObject
 
     /// Gets a new interaction ID.
     virtual int getNewCanMergeID();
+
+    void setDebugMode(
+      int debugMode
+      );
 
   signals:
     /// Emitted when a top command has 
@@ -151,11 +160,7 @@ class CommandManager : public QObject
       // Use shared pointer so th
       QSharedPointer< BaseCommand > topLevelCmd;
       QList< QSharedPointer<BaseCommand> > lowLevelCmds;
-
-      StackedCommand() 
-      {
-        succeeded = false;
-      }
+      StackedCommand() { succeeded = false; }
     };
 
     /// Undo-redo stacks
@@ -184,7 +189,8 @@ class CommandManager : public QObject
     /// as a string, used for debugging.
     QString getStackContent(
       const QString& stackName, 
-      const QList<StackedCommand> &stack
+      const QList<StackedCommand> &stack,
+      bool withArgs = true
       );
  
     /// Cleans the stacks if errors occur when
@@ -214,6 +220,7 @@ class CommandManager : public QObject
     static CommandManager *s_cmdManager;
     /// Check if the singleton has been set.
     static bool s_instanceFlag;
+    int m_debugMode;
 };
  
 } // namespace Commands
