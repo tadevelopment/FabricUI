@@ -261,7 +261,7 @@ void GLViewportWidget::initializeID(
   }
 
   // Proto tool setup
-  RTVal::Create(context, "WRenderEngineInlineDrawingSetup", 0, 0);
+  RTVal::Create(context, "Tool::WRenderEngineInlineDrawingSetup", 0, 0);
 
   m_camera = m_viewport.maybeGetMember("camera");
   m_cameraManipulator = RTVal::Create(context, "CameraManipulator", 1, &m_camera);
