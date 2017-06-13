@@ -17,7 +17,7 @@ using namespace FabricCore;
 
 inline RTVal GetKLSingleOption(
   int optIndex,
-  QList<QString> &singleOptionPaths,
+  QList<QString> singleOptionPaths,
   RTVal &options) 
 { 
   FABRIC_CATCH_BEGIN();
@@ -68,7 +68,7 @@ inline RTVal GetKLSingleOption(
 
 inline void SetKLSingleOption(
   int optIndex,
-  QList<QString> &singleOptionPaths,
+  QList<QString> singleOptionPaths,
   RTVal singleOption,
   RTVal options) 
 { 
