@@ -142,18 +142,26 @@ class ActionRegistry : public QObject
     /// Gets all the registred actions and their
     /// shortcuts as a string, used for debugging.
     QString getContent() const;
+
+    /// Checks if the action context is global,
+    /// Qt::WindowShortcut or Qt::ApplicationShortcut.
+    bool isActionContextGlobal(
+      const QString &actionName
+      ) const;
     
   signals:
     /// Emitted when an action 
     /// has been registered.
     void actionRegistered(
       const QString &actionName,
-      QAction *action);
+      QAction *action
+      );
 
     /// Emitted when an action 
     /// is unregistered.
     void actionUnregistered(
-      const QString &actionName);
+      const QString &actionName
+      );
 
   private slots:
     /// Called when an action 
@@ -164,7 +172,7 @@ class ActionRegistry : public QObject
 
   private:
     /// Dictionaries of registered actions.
-    QMap< QString, QSet< QAction * > > m_registeredActions;
+    QMap< QString, QSet<QAction*> > m_registeredActions;
     /// Registry singleton.
     static ActionRegistry * s_actionRegistry;
     /// Check if the singleton has been set.

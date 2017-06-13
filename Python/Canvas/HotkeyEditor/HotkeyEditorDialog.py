@@ -2,10 +2,9 @@
 # Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 #
 
-import os
 from PySide import QtCore, QtGui
 from FabricEngine.Canvas.Commands.CommandRegistry import *
-from FabricEngine.Canvas.HotkeyEditor.HotKeyEditorActions import *
+from FabricEngine.Canvas.HotkeyEditor.HotkeyActions import *
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidget import HotkeyTableWidget
     
@@ -17,13 +16,13 @@ class HotkeyLineEdit(QtGui.QLineEdit):
         super(HotkeyLineEdit, self).__init__(parent)
 
     def focusInEvent(self, event):
-        """ Implementation of QtGui.QLineEdit.
+        """ Impl. of QtGui.QLineEdit.
         """
         super(HotkeyLineEdit, self).focusInEvent(event) 
         self.updateFocus.emit(True)
 
     def focusOutEvent(self, event):
-        """ Implementation of QtGui.QLineEdit.
+        """ Impl. of QtGui.QLineEdit.
         """
         super(HotkeyLineEdit, self).focusOutEvent(event) 
         self.updateFocus.emit(False)
@@ -35,9 +34,7 @@ class HotkeyEditorDialog(QtGui.QDialog):
             Arguments:
             - canvasWindow: A reference to the canvasWindow widget.
         """
-
         super(HotkeyEditorDialog, self).__init__(canvasWindow) 
-        
         self.baseTitle = "Hotkey Editor"  
        
         # qss
@@ -45,15 +42,8 @@ class HotkeyEditorDialog(QtGui.QDialog):
         self.setObjectName('HotkeyEditorDialog')
         self.setStyleSheet(LoadFabricStyleSheet('FabricUI.qss'))
 
-       # HotkeyTableWidget
-        self.hotkeyTable = HotkeyTableWidget(
-            self, 
-            canvasWindow
-            )
-
-        self.hotkeyTable.manager.stateIsDirty.connect(
-            self.onUpdate
-            )
+        # HotkeyTableWidget
+        self.hotkeyTable = HotkeyTableWidget(self, canvasWindow)
 
         # Controls
         comboBoxLabel = QtGui.QLabel('Set')
@@ -71,7 +61,7 @@ class HotkeyEditorDialog(QtGui.QDialog):
         self.__editComboBox.currentIndexChanged.connect(self.__onFilterItems)
 
         lineEditLabel =  QtGui.QLabel('Search')
-        lineEditLabel.setToolTip("Trie")
+        lineEditLabel.setToolTip("Sort")
         self.__lineEdit = HotkeyLineEdit(self)
         self.__lineEdit.updateFocus.connect(self.hotkeyTable.onEmitEditingItem)
         self.__lineEdit.textChanged.connect(self.__onFilterItems)
@@ -83,23 +73,16 @@ class HotkeyEditorDialog(QtGui.QDialog):
         ctrlLayout.addWidget(self.__itemComboBox)
         ctrlLayout.addWidget(checkBoxLabel)
         ctrlLayout.addWidget(self.__editComboBox)
- 
+  
         # Toolbar
-        openHotkeyFileAction = OpenHotkeyFileAction(self)
-        saveHotkeyFileAction = SaveHotkeyFileAction(self)
-        saveHotkeyFileAsAction = SaveHotkeyFileAsAction(self)
-        acceptActionChanges = AcceptActionChangesAndExit(self)
-        rejectActionChanges = RejectActionChangesAndExit(self)
-        UndoActionChanges(self)
-        RedoActionChanges(self)
-
         toolBar = QtGui.QToolBar()
-        toolBar.addAction(openHotkeyFileAction)
-        toolBar.addAction(saveHotkeyFileAction)
-        toolBar.addAction(saveHotkeyFileAsAction)
+        toolBar.addAction(OpenFileAction(self))
+        toolBar.addAction(SaveFileAction(self))
         toolBar.addSeparator()
-        toolBar.addAction(acceptActionChanges)
-        toolBar.addAction(rejectActionChanges)
+        toolBar.addAction(UndoAction(self))
+        toolBar.addAction(RedoAction(self))
+        toolBar.addSeparator()
+        toolBar.addAction(ExitAction(self))
     
         # All
         layout = QtGui.QVBoxLayout()
@@ -113,47 +96,21 @@ class HotkeyEditorDialog(QtGui.QDialog):
         self.setMinimumHeight(350)
         self.setMinimumWidth(550)
         self.adjustSize()
-    
-    def onUpdate(self, isDirty, clear): 
-        """ Update the widget.
-        """
-
-        dirtyText = ''
-        if isDirty:
-            dirtyText = "*"
-
-        fileName = self.hotkeyTable.manager.filename
-        if fileName:
-            baseName = os.path.basename(fileName)
-            self.setWindowTitle(self.baseTitle + ' : ' + baseName + dirtyText)
         
-        else:
-            self.setWindowTitle(self.baseTitle + dirtyText)
-
-        if clear:
-            self.hotkeyTable.qUndoStack.clear()
-
     def __onFilterItems(self):
-        """ \internal.
-            Filter the actions.
+        """ \internal. filter the items.
         """
-
         self.hotkeyTable.filterItems(
             self.__lineEdit.text(), 
             self.__editComboBox.currentIndex(),
             self.__itemComboBox.currentIndex())
 
     def showEvent(self, event):
-        """ Implementation of QtGui.QDialog.
+        """ Impl. of QtGui.QDialog.
         """
         super(HotkeyEditorDialog, self).showEvent(event)
         try:
             GetCommandRegistry().synchronizeKL();
         except Exception as e:    
             print str(e)
-
-    def closeEvent(self, event):
-        """ Implementation of QtGui.QDialog.
-        """
-        self.hotkeyTable.manager.rejectShortcutChanges()
-        super(HotkeyEditorDialog, self).closeEvent(event)
+ 

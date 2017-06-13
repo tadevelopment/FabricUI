@@ -16,10 +16,10 @@ from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.Commands.CommandManager import *
-from FabricEngine.Canvas.Commands.CommandManagerQtCallback import *
-from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import *
 from FabricEngine.Canvas.Application.FabricApplicationStates import *
-from FabricEngine.Canvas.Dialogs.DialogCommandRegistration import *
+from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import HotkeyEditorDialog
+from FabricEngine.Canvas.Commands.CommandManagerQtCallback import CommandManagerQtCallback
+from FabricEngine.Canvas.Dialogs.DialogCommandRegistration import DialogCommandRegistration
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -130,17 +130,16 @@ class ToggleManipulationAction(BaseCanvasWindowAction):
         super(ToggleManipulationAction, self).__init__(
             viewport,     
             None, 
-            "CanvasWindow.ToggleManipulationAction", 
+            "Viewport.ToggleManipulationAction", 
             "Toggle manipulation", 
             QtGui.QKeySequence(QtCore.Qt.Key_Q),
             QtCore.Qt.WidgetWithChildrenShortcut)
         
         viewport.addAction(self)
-        self.canvasWindow = canvasWindow
         self.viewport = viewport
         self.setCheckable(True)
         self.setChecked(self.viewport.isManipulationActive())
-        self.toggled.connect( self.canvasWindow.valueEditor.toggleManipulation)
+        self.toggled.connect( canvasWindow.valueEditor.toggleManipulation)
     
     def onTriggered(self):
         self.viewport.toggleManipulation()
@@ -151,7 +150,7 @@ class GridVisibilityAction(BaseCanvasWindowAction):
         super(GridVisibilityAction, self).__init__(
             parent,     
             None, 
-            "CanvasWindow.GridVisibilityAction", 
+            "Viewport.GridVisibilityAction", 
             "&Display Grid", 
             QtGui.QKeySequence(QtCore.Qt.Key_G),
             QtCore.Qt.WidgetWithChildrenShortcut)
@@ -167,7 +166,7 @@ class ResetCameraAction(BaseCanvasWindowAction):
         super(ResetCameraAction, self).__init__(
             parent,     
             None, 
-            "CanvasWindow.ResetCameraAction", 
+            "Viewport.ResetCameraAction", 
             "&Reset Camera", 
             QtGui.QKeySequence(QtCore.Qt.Key_R),
             QtCore.Qt.WidgetWithChildrenShortcut)

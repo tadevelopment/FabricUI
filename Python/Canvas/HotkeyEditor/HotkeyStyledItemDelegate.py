@@ -5,15 +5,12 @@
 from PySide import QtCore, QtGui
 from FabricEngine.Canvas.Utils import *
 
-class HotkeyTableWidgetItemDelegate(QtGui.QStyledItemDelegate):
-
-    """ Used to override the event in QTableWidgetItem.    
-    """
+class HotkeyStyledItemDelegate(QtGui.QStyledItemDelegate):
 
     keyPressed = QtCore.Signal(QtGui.QKeySequence)
 
     def __init__(self, parent=None):
-        super(HotkeyTableWidgetItemDelegate, self).__init__(parent)
+        super(HotkeyStyledItemDelegate, self).__init__(parent)
         self.parent = parent
 
     def createEditor(self, parent, option, index):
@@ -34,7 +31,6 @@ class HotkeyTableWidgetItemDelegate(QtGui.QStyledItemDelegate):
         editor.setGeometry(option.rect)
 
     def eventFilter(self, target, event):
-
         if target is self.editor:
             if event.type() == QtCore.QEvent.KeyPress:
                 

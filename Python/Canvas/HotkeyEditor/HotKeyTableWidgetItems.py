@@ -3,7 +3,7 @@
 #
 
 from PySide import QtCore, QtGui
-from FabricEngine.FabricUI import Actions, Util
+from FabricEngine.FabricUI import Actions as CppActions
  
 class TableWidgetItemColor:
     Disabled = QtCore.Qt.gray
@@ -13,19 +13,9 @@ class TableWidgetItemColor:
     IsPythonCommand = QtGui.QColor(39, 168, 223 , 255)
  
 class BaseTableWidgetItem(QtGui.QTableWidgetItem):
-    """ BaseTableWidgetItem specializes QTableWidgetItem.
-    """
     
     def __init__(self, text, isEditable):
-        """ Initializes the BaseTableWidgetItem.
-        
-            Arguments:
-            - text: The name of the item
-            - isEditable: If true, the item is editable
-        """
-        
         super(BaseTableWidgetItem, self).__init__(text)
-        
         self.widgetItemColor = TableWidgetItemColor
         if not isEditable:
             font = self.font()
@@ -33,25 +23,10 @@ class BaseTableWidgetItem(QtGui.QTableWidgetItem):
             self.setForeground(self.widgetItemColor.Disabled)
  
 class ActionTableWidgetItem(BaseTableWidgetItem):
-    """ ActionTableWidgetItem specializes BaseTableWidgetItem
-        to update the item tooltip according to the action's one.
-    """
     
-    def __init__(self, actionName, tooltip, isEditable, cmdImplType = None):
-        """ Initializes the ActionTableWidgetItem.
-        
-            Arguments:
-            - actionName: The name of the action
-            - tooltip: The action tool tip
-            - isEditable: If true, the item is editable
-        """
-
-        super(ActionTableWidgetItem, self).__init__(
-            actionName, 
-            isEditable, 
-            )
-        
-        self.actionName = actionName
+    def __init__(self, actName, tooltip, isEditable, cmdImplType = None):
+        super(ActionTableWidgetItem, self).__init__(actName, isEditable)
+        self.actName = actName
         self.setToolTip(tooltip)
         self.setFlags(QtCore.Qt.NoItemFlags)
         
@@ -71,30 +46,21 @@ class ActionTableWidgetItem(BaseTableWidgetItem):
         self.__setIcon(color)
 
     def __setIcon(self, color):
-      
         img = QtGui.QImage(20, 20, QtGui.QImage.Format_ARGB32)
         img.fill(QtGui.QColor(0, 0, 0, 0))
 
         for i in range(0, 20):
             for j in range(8, 12):
-                img.setPixel(
-                    j, 
-                    i, 
-                    color.rgba()
-                    )
+                img.setPixel(j, i, color.rgba())
 
         # https://forum.qt.io/topic/6971/solved-qicon-disabled-full-color/7
         icon = QtGui.QIcon()
-        icon.addPixmap(
-            QtGui.QPixmap.fromImage(img),
-            QtGui.QIcon.Disabled
-            )
-
+        icon.addPixmap(QtGui.QPixmap.fromImage(img), QtGui.QIcon.Disabled)
         self.setIcon(icon)
 
     def onActionChanged(self):
-        actionRegistry = Actions.ActionRegistry.GetActionRegistry()
-        action = actionRegistry.getAction(self.actionName)
+        actionRegistry = CppActions.ActionRegistry.GetActionRegistry()
+        action = actionRegistry.getAction(self.actName)
         if action:
             tooltip = action.toolTip()
             if not tooltip:
@@ -102,22 +68,10 @@ class ActionTableWidgetItem(BaseTableWidgetItem):
             self.setToolTip(tooltip)
 
 class ShorcutTableWidgetItem(BaseTableWidgetItem):
-    """ ShorcutTableWidgetItem specializes BaseTableWidgetItem.
-    """
-    
-    def __init__(self, shorcut, isEditable, isGlobal):
-        """ Initializes the ShorcutTableWidgetItem.
-        
-            Arguments:
-            - shorcut: The action shortcut
-            - isEditable: If true, the item is editable
-        """
-        
-        super(ShorcutTableWidgetItem, self).__init__(
-            shorcut, 
-            isEditable
-            )
 
+    def __init__(self, shorcut, isEditable, isGlobal):
+
+        super(ShorcutTableWidgetItem, self).__init__(shorcut, isEditable)
         if not isEditable:
             self.setFlags(QtCore.Qt.NoItemFlags)
 

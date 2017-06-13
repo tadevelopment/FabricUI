@@ -1,11 +1,8 @@
 __all__ = [
-'CommandAction',
-'HotkeyTableWidgetItemDelegate',
-'HotkeyTableWidgetActionItem',
-'HotkeyTableWidget',
-'SetActionItemKeySequenceCommand',
-'HotkeyTableWidgetItems',
-'HotkeyTableManager',
-'HotKeyEditorActions',
-'HotkeyEditorDialog'
+	'HotkeyActions',
+	'HotkeyEditorDialog',
+	'HotkeyTableWidget',
+	'HotkeyCommands',
+	'HotkeyStyledItemDelegate',
+	'HotkeyTableWidgetItems'
 ]

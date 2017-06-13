@@ -4,14 +4,13 @@
 
 import re
 from PySide import QtCore, QtGui
-from FabricEngine.FabricUI import Actions, Commands as CppCommands
 from FabricEngine.Canvas.Commands.CommandRegistry import *
-from FabricEngine.Canvas.HotkeyEditor.CommandAction import CommandAction
-from FabricEngine.Canvas.HotkeyEditor.HotKeyTableWidgetItems import *
-from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetItemDelegate import HotkeyTableWidgetItemDelegate
-from FabricEngine.Canvas.HotkeyEditor.SetActionItemKeySequenceCommand import SetActionItemKeySequenceCommand
-from FabricEngine.Canvas.HotkeyEditor.HotkeyTableManager import HotkeyTableManager
-
+from FabricEngine.FabricUI import Actions as CppActions, Commands as CppCommands
+from FabricEngine.Canvas.HotkeyEditor.HotkeyActions import *
+from FabricEngine.Canvas.HotkeyEditor.HotkeyCommands import *
+from FabricEngine.Canvas.HotkeyEditor.HotkeyTableModel import *
+from FabricEngine.Canvas.HotkeyEditor.HotkeyTableWidgetItems import *
+from FabricEngine.Canvas.HotkeyEditor.HotkeyStyledItemDelegate import *
 
 class HotkeyTableWidget(QtGui.QTableWidget):
 
@@ -25,7 +24,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         the user can accept or reject the changes to actually update the 
         actions' shortcuts.
          
-        A list of pair {actionName, shortcut} can be saved in as json.
+        A list of pair {actName, shortcut} can be saved in as json.
         The file can be opened and sets the shortucts of the actions it 
         lists. When an action is registered, we check if it's litsed in
         the file to override its shortcut.
@@ -41,36 +40,28 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             - canvasWindow: A reference the canvasWindow.
         """
         super(HotkeyTableWidget, self).__init__(parent)
-
         self.qUndoStack = QtGui.QUndoStack()
 
         # Used to attached the Command actions
         self.canvasWindow = canvasWindow
-
-        self.manager = HotkeyTableManager(
-            self,
-            self.canvasWindow.settings
-            )
-
-        self.manager.updateShortcutItem.connect(
-            self.__onUpdateShortcutItem
-            )
+        self.model = HotkeyTableModel(self)
+        self.model.updateShortcutItem.connect(self.__onUpdateShortcutItem)
 
         # Notify when an action is registered-
-        # unregistered from Actions.ActionRegistry.
-        actionRegistry = Actions.ActionRegistry.GetActionRegistry()
-        actionRegistry.actionRegistered.connect(self.__onActionRegistered)
-        actionRegistry.actionUnregistered.connect(self.__onActionUnregistered)
+        # unregistered from CppActions.ActionRegistry.
+        actRegistry = CppActions.ActionRegistry.GetActionRegistry()
+        actRegistry.actionRegistered.connect(self.__onActionRegistered)
+        actRegistry.actionUnregistered.connect(self.__onActionUnregistered)
 
         # Notify when an command is registered.
         GetCommandRegistry().commandRegistered.connect(self.__onCommandRegistered)
         
         # Construct the item-delegate
-        itemDelegate = HotkeyTableWidgetItemDelegate(self)
+        itemDelegate = HotkeyStyledItemDelegate(self)
         itemDelegate.keyPressed.connect(self.__onSetItemKeySequence)
         self.setItemDelegate(itemDelegate)
 
-        # Two coloums: [actionName, shortcut]
+        # Two coloums: [actName, shortcut]
         self.setColumnCount(2)
         self.setHorizontalHeaderItem(0, QtGui.QTableWidgetItem('Name'))
         self.setHorizontalHeaderItem(1, QtGui.QTableWidgetItem('Shortcut'))
@@ -88,15 +79,14 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             cmdType, implType = GetCommandRegistry().getCommandSpecs(cmdName)
             self.__onCommandRegistered(cmdName, cmdType, implType)
 
-    def onEmitEditingItem(self, status):
-        self.editingItem.emit(status)
+    def onEmitEditingItem(self, editing):
+        self.editingItem.emit(editing)
 
-    def __onUpdateShortcutItem(self, actionName, shortcut):
-        item = self.__getShorcutItem(actionName)
+    def __onUpdateShortcutItem(self, actName, shortcut):
+        item = self.__getShorcutItem(actName)
         if item :
             item.setText(shortcut)
-            self.scrollToItem(item)
-
+ 
     def __getCurrentShortcutItem(self):
         """ \internal.
             Gets the current shortcut item
@@ -104,19 +94,19 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         if self.currentColumn() == self.columnCount()-1:
             return self.item(self.currentRow(), self.currentColumn())
 
-    def __getShorcutItem(self, actionName):
+    def __getShorcutItem(self, actName):
         """ \internal.
             Gets the shortcut item from the command name.
         """
-        items = self.findItems(actionName, QtCore.Qt.MatchExactly)
+        items = self.findItems(actName, QtCore.Qt.MatchExactly)
         if items:
             return self.item(items[0].row(), 1)
 
-    def __getActionItem(self, actionName):
+    def __getActionItem(self, actName):
         """ \internal.
             Gets the shortcut item from the command name.
         """
-        items = self.findItems(actionName, QtCore.Qt.MatchExactly)
+        items = self.findItems(actName, QtCore.Qt.MatchExactly)
         if items:
             return self.item(items[0].row(), 0)
  
@@ -124,11 +114,8 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         """ Implementation of QtGui.QTableWidget.
             Directly edit the item to simulate a double-click.
         """
-
         self.setCurrentItem(None)
-
         super(HotkeyTableWidget, self).mousePressEvent(event)
-        
         item = self.__getCurrentShortcutItem()
         if item is not None:
             self.onEmitEditingItem(True)
@@ -148,17 +135,16 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         """
         pass
 
-    def __createNewRow(self, actionName, action):
+    def __createNewRow(self, actName, action):
         """ \internal.
-            Create a new row: [actionName, shortcut] items.
+            Create a new row: [actName, shortcut] items.
         """
-        
         rowCount = self.rowCount() 
         self.insertRow(rowCount)
         
         # Check if the action is editable
         isEditable = True
-        if issubclass(type(action), Actions.BaseAction):
+        if issubclass(type(action), CppActions.BaseAction):
             isEditable = action.isEditable()
 
         # Check if the action is associated to a command.
@@ -167,34 +153,15 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             isCommand = action.implType
             
         # 1. Action item
-        item = ActionTableWidgetItem(
-            actionName, 
-            action.toolTip(), 
-            isEditable,
-            isCommand
-            ) 
-
+        item = ActionTableWidgetItem(actName, action.toolTip(), isEditable, isCommand) 
         self.setItem(rowCount, 0, item)
 
         # 2. Shortcut item
-        # Get the shorcut, from the action or the json data.
-        shortcut = self.manager.getShortcutFromJSON(actionName)
-        if shortcut:
-            actionRegistry = Actions.ActionRegistry.GetActionRegistry()
-            actionRegistry.setShortcut(actionName, QtGui.QKeySequence(shortcut))
-        else:
-            shortcut = action.shortcut().toString(QtGui.QKeySequence.NativeText)
-
-        isActionGlobal = self.manager.isActionContextGlobal(action) 
-
-        item = ShorcutTableWidgetItem(
-            shortcut, 
-            isEditable, 
-            isActionGlobal
-            ) 
-
+        shortcut = action.shortcut().toString(QtGui.QKeySequence.NativeText)
+        actRegistry = CppActions.ActionRegistry.GetActionRegistry()
+        isActGlobal = actRegistry.isActionContextGlobal(actName) 
+        item = ShorcutTableWidgetItem(shortcut, isEditable, isActGlobal) 
         self.setItem(rowCount, 1, item)
-
         self.resizeColumnsToContents()
 
     def __onCommandRegistered(self, cmdName, cmdType, implType):
@@ -202,12 +169,11 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             Called when an command has been registered in CommandRegistry.
             Create an action associated to the command. 
         """
-        actionRegistry = Actions.ActionRegistry.GetActionRegistry()
+        actRegistry = CppActions.ActionRegistry.GetActionRegistry()
 
-        if actionRegistry.getAction(cmdName) is None:
+        if actRegistry.getAction(cmdName) is None:
             # Must construct the command to get the tooltip
             cmd = GetCommandRegistry().createCommand(cmdName)
-            
             tooltip = cmdType+ "[" + implType + "]\n\n"
             tooltip += cmd.getHelp()
             isScriptable = CppCommands.CommandArgHelpers.isScriptableCommand(cmd)
@@ -224,65 +190,56 @@ class HotkeyTableWidget(QtGui.QTableWidget):
 
             self.canvasWindow.addAction(action)
  
-    def __onActionRegistered(self, actionName, action):
+    def __onActionRegistered(self, actName, action):
         """ \internal.
-            Called when an action has been registered in Actions.ActionRegistry.
+            Called when an action has been registered in CppActions.ActionRegistry.
             Create an item associated to the action. 
         """
-        actionRegistry = Actions.ActionRegistry.GetActionRegistry()
+        actRegistry = CppActions.ActionRegistry.GetActionRegistry()
 
         # Check it's the first time the action is registered.
-        if actionRegistry.getRegistrationCount(actionName) == 1:     
-            self.__createNewRow(actionName, action)
+        if actRegistry.getRegistrationCount(actName) == 1:     
+            self.__createNewRow(actName, action)
         
         # To update the item tool tip.
-        actionTableWidgetItem = self.__getActionItem(actionName)
+        actionTableWidgetItem = self.__getActionItem(actName)
         if actionTableWidgetItem:
             action.changed.connect(actionTableWidgetItem.onActionChanged)
 
-    def __onActionUnregistered(self, actionName):
+    def __onActionUnregistered(self, actName):
         """ \internal.
             Called when an action has been  
-            unregistered from Actions.ActionRegistry.
+            unregistered from CppActions.ActionRegistry.
         """
-        actionRegistry = Actions.ActionRegistry.GetActionRegistry()
-        
-        # Check there is no more action registered under `actionName`.
-        if actionRegistry.getRegistrationCount(actionName) == 0:
+        actRegistry = CppActions.ActionRegistry.GetActionRegistry()
+        # Check there is no more action registered under `actName`.
+        if actRegistry.getRegistrationCount(actName) == 0:
             # if so, remove the item.
-            item = self.__getShorcutItem(actionName)
+            item = self.__getShorcutItem(actName)
             if item:
                 self.removeRow(item.row())
 
-    def __onSetItemKeySequence(self, keySequence):
+    def __onSetItemKeySequence(self, keySeq):
         """ \internal.
-            Sets the keySequence of the current 
+            Sets the keySeq of the current 
             item when the user press a key.
         """
         item = self.__getCurrentShortcutItem()
-        actionName = self.item(item.row(), 0).text()
+        actName = self.item(item.row(), 0).text()
+        curKeySeq = QtGui.QKeySequence(item.text())
 
-        currentKeySequence = QtGui.QKeySequence(item.text())
-
-        if item and keySequence != currentKeySequence:
-
-            cmd = SetActionItemKeySequenceCommand( 
-                self.qUndoStack,
-                self.manager, 
-                actionName, 
-                currentKeySequence,
-                keySequence) 
-
+        if item and keySeq != curKeySeq:
+            cmd = SetKeySequenceCommand(self.model, actName, curKeySeq, keySeq) 
             if cmd.doIt():
                 self.qUndoStack.push(cmd)
+                self.onEmitEditingItem(True)
 
     def filterItems(self, query, edit = 0, show = 0):
         """ \internal.
             Filters the items according the actions' names or shorcuts.
             To filter by shortcut, use '#' before the query.  
         """
-
-        actionRegistry = Actions.ActionRegistry.GetActionRegistry()
+        actRegistry = CppActions.ActionRegistry.GetActionRegistry()
 
         searchByShortcut = False
         if len(query):
@@ -300,18 +257,18 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         for i in range(0, self.rowCount()):
 
             # Checks the action's name/shortcut matches.
-            actionName = self.item(i, 0).text()
+            actName = self.item(i, 0).text()
             shortCut = self.item(i, 1).text()
 
             isEditable = True
-            action = actionRegistry.getAction(actionName)
+            action = actRegistry.getAction(actName)
             if issubclass(type(action), Actions.BaseAction):
                 isEditable = action.isEditable()
  
             if  (   (searchByShortcut and regex.search(shortCut.lower()) ) or 
-                    (not searchByShortcut and regex.search(actionName.lower()) ) ):
+                    (not searchByShortcut and regex.search(actName.lower()) ) ):
 
-                isCommand = GetCommandRegistry().isCommandRegistered(actionName)
+                isCommand = GetCommandRegistry().isCommandRegistered(actName)
                 
                 showEditable = True
                 if edit == 1 and isEditable == False:
@@ -342,3 +299,4 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             # If nothing found, hide the row.    
             else:
                 self.setRowHidden(i, True)
+

@@ -226,3 +226,16 @@ QString ActionRegistry::getContent() const
   }
   return res;
 }
+
+bool ActionRegistry::isActionContextGlobal(
+  const QString &actionName) const
+{
+  if(isActionRegistered(actionName))
+  {
+    QAction *action = getAction(actionName);
+    return action->shortcutContext() == Qt::WindowShortcut ||  
+      action->shortcutContext() == Qt::ApplicationShortcut;
+  }
+  return false;
+}
+    
