@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef FABRICUI_KL_WIDGET_VIEWITEM_H
-#define FABRICUI_KL_WIDGET_VIEWITEM_H
+#ifndef FABRICUI_KL_TOOL_VIEWITEM_H
+#define FABRICUI_KL_TOOL_VIEWITEM_H
 
 #include <QCheckBox>
 #include <FabricCore.h>
@@ -13,36 +13,36 @@ namespace ValueEditor {
  
 class BaseViewItem;
 
-class AppWidget : public QObject
+class AppTool : public QObject
 {
   /**
-    AppWidget creates a kl widget (3D tool) from
+    AppTool creates a kl tool from
     the value-editor to set the data value. It's
     owned by the BaseViewItem that sets it.
   */
   Q_OBJECT
 
   public:
-    AppWidget(
+    AppTool(
       BaseViewItem *viewItem
       );
 
-    ~AppWidget();
+    ~AppTool();
 
-    /// Creates the KL widget and returns
+    /// Creates the KL tool and returns
     /// a checbox to set its visibily.
-    QCheckBox* createKLWidget(
+    QCheckBox* createKLTool(
       FabricCore::RTVal drivenDataType
       );
 
-    /// Updates the widget from
+    /// Updates the tool from
     /// the value-editor.
     void valueChanged(
       FabricCore::RTVal val
       );
 
   signals:
-    /// Emitted when the widget 
+    /// Emitted when the tool 
     /// is updated.
     void refreshViewPort();
 
@@ -52,22 +52,22 @@ class AppWidget : public QObject
       );
 
   protected slots:
-    /// Set the widget visibility.
+    /// Set the tool visibility.
     void setVisible(
       bool visibility
       );
 
   protected:
     /// Get the KL app registry.
-    FabricCore::RTVal getAppWidgetRegistry();
+    FabricCore::RTVal getAppToolRegistry();
     /// Reference to the view item.
     BaseViewItem *m_viewItem;
-    /// The KL widget.
-    FabricCore::RTVal m_klWidget;
+    /// The KL tool.
+    FabricCore::RTVal m_klTool;
     QCheckBox* m_checkbox;
 };
 
 } // namespace FabricUI 
 } // namespace ValueEditor 
 
-#endif // FABRICUI_KL_WIDGET_VIEWITEM_H
+#endif // FABRICUI_KL_TOOL_VIEWITEM_H

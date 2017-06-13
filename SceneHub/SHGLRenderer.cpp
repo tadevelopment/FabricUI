@@ -349,7 +349,7 @@ RTVal SHGLRenderer::getRootDispatcher() {
   RTVal rootDispatcher;
   try 
   {
-    rootDispatcher = m_shGLRendererVal.callMethod("RootDispatcher", "getRootDispatcher", 0, 0);
+    rootDispatcher = m_shGLRendererVal.callMethod("LegacyRootDispatcher", "getRootDispatcher", 0, 0);
   }
   catch(Exception e)
   {
@@ -363,7 +363,7 @@ RTVal SHGLRenderer::getDescription() {
   try 
   {
     RTVal rootDispatcher = getRootDispatcher();
-    list = rootDispatcher.callMethod("DispatcherDescription", "getDescription", 0, 0);
+    list = rootDispatcher.callMethod("LegacyDispatcherDescription", "getDescription", 0, 0);
   }
   catch(Exception e)
   {

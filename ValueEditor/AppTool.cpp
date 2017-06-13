@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "AppWidget.h"
+#include "AppTool.h"
 #include "BaseViewItem.h"
 #include "BaseModelItem.h"
 #include <FabricUI/Util/RTValUtil.h>
@@ -15,7 +15,7 @@ using namespace FabricCore;
 using namespace Application;
 using namespace ValueEditor;
 
-AppWidget::AppWidget(
+AppTool::AppTool(
   BaseViewItem *viewItem)
   : m_viewItem(viewItem)
   , m_checkbox(0)
@@ -28,68 +28,68 @@ AppWidget::AppWidget(
     );
 }
 
-AppWidget::~AppWidget()
+AppTool::~AppTool()
 {
   try
   {
-    if(m_klWidget.isValid() && !m_klWidget.isNullObject())
+    if(m_klTool.isValid() && !m_klTool.isNullObject())
     {
-      RTVal baseWidget = RTVal::Create(
-        m_klWidget.getContext(),
-        "BaseWidget",
+      RTVal baseTool = RTVal::Create(
+        m_klTool.getContext(),
+        "Tool::BaseTool",
         1,
-        &m_klWidget
+        &m_klTool
         );
 
       // To prevent possible leacks.
-      baseWidget.callMethod(
+      baseTool.callMethod(
         "", 
         "invalidate", 
         0, 
         0
         );
 
-      m_klWidget = RTVal();
+      m_klTool = RTVal();
     }
   }
 
   catch(Exception &e)
   {
     printf(
-      "AppWidget::~AppWidget: exception: %s\n", 
+      "AppTool::~AppTool: exception: %s\n", 
       e.getDesc_cstr()
       );
   }
 }
 
-RTVal AppWidget::getAppWidgetRegistry() 
+RTVal AppTool::getAppToolRegistry()
 {
-  RTVal widgetRegistry;
+  RTVal toolRegistry;
 
   try
   {    
-    widgetRegistry = RTVal::Create(
+    toolRegistry = RTVal::Create(
       Application::FabricApplicationStates::GetAppStates()->getContext(),
-      "AppWidgetRegistry",
+      "Tool::AppToolRegistry",
       0,
       0
       );
 
-    widgetRegistry = widgetRegistry.callMethod(
-      "AppWidgetRegistry",
-      "getAppWidgetRegistry",
+    toolRegistry = toolRegistry.callMethod(
+      "Tool::AppToolRegistry",
+      "getAppToolRegistry",
       0,
       0
       );
 
-    widgetRegistry.callMethod(
+    toolRegistry.callMethod(
       "",
-      "registerAppWidgets",
+      "registerAppTools",
       0,
       0
       );
 
-    widgetRegistry.callMethod(
+    toolRegistry.callMethod(
       "",
       "registerAppTargets",
       0,
@@ -100,15 +100,15 @@ RTVal AppWidget::getAppWidgetRegistry()
   catch(Exception &e)
   {
     printf(
-      "AppWidget::getAppWidgetRegistry: exception: %s\n", 
+      "AppTool::getAppToolRegistry: exception: %s\n", 
       e.getDesc_cstr()
       );
   }
 
-  return widgetRegistry;
+  return toolRegistry;
 }
 
-QCheckBox* AppWidget::createKLWidget(
+QCheckBox* AppTool::createKLTool(
   FabricCore::RTVal drivenDataType)
 {
   BaseModelItem *modelItem = m_viewItem->getModelItem();
@@ -123,20 +123,20 @@ QCheckBox* AppWidget::createKLWidget(
 
     if(cmdArgs.isValid())
     {
-      RTVal widgetArgs[2] =
+      RTVal toolArgs[2] =
       {
         drivenDataType,  
         cmdArgs
       };
 
-      m_klWidget = getAppWidgetRegistry().callMethod(
-        "AppWidget",
-        "createWidget",
+      m_klTool = getAppToolRegistry().callMethod(
+        "Tool::AppTool",
+        "createTool",
         2,
-        widgetArgs
+        toolArgs
         );
 
-      QString widgetName = m_klWidget.callMethod(
+      QString toolName = m_klTool.callMethod(
         "String",
         "type",
         0,
@@ -146,7 +146,7 @@ QCheckBox* AppWidget::createKLWidget(
       setVisible(false);
       
       m_checkbox = new QCheckBox(
-        widgetName
+        toolName
         );
 
       QObject::connect(
@@ -163,7 +163,7 @@ QCheckBox* AppWidget::createKLWidget(
   catch(Exception &e)
   {
     printf(
-      "AppWidget::createKLWidget: exception: %s\n", 
+      "AppTool::createKLTool: exception: %s\n", 
       e.getDesc_cstr()
       );
   }
@@ -171,24 +171,24 @@ QCheckBox* AppWidget::createKLWidget(
   return 0;
 }
 
-void AppWidget::setVisible(
+void AppTool::setVisible(
   bool visibility)
 {
   try
   {
     RTVal visibilityVal = RTVal::ConstructBoolean(
-      m_klWidget.getContext(), 
+      m_klTool.getContext(),
       visibility
       );
     
-    RTVal baseWidget = RTVal::Create(
-      m_klWidget.getContext(),
-      "BaseWidget",
+    RTVal baseTool = RTVal::Create(
+      m_klTool.getContext(),
+      "Tool::BaseTool",
       1,
-      &m_klWidget
+      &m_klTool
       );
 
-    baseWidget.callMethod(
+    baseTool.callMethod(
       "",
       "setVisible",
       1,
@@ -201,23 +201,23 @@ void AppWidget::setVisible(
   catch(Exception &e)
   {
     printf(
-      "AppWidget::setVisible: exception: %s\n", 
+      "AppTool::setVisible: exception: %s\n", 
       e.getDesc_cstr());
   }
 }
  
-void AppWidget::valueChanged(
+void AppTool::valueChanged(
   RTVal val) 
 {
   try
   {
-    if(m_klWidget.isValid() && !m_klWidget.isNullObject())
+    if(m_klTool.isValid() && !m_klTool.isNullObject())
     {
       RTVal rtVal = Util::RTValUtil::toKLRTVal(
         val
         );
 
-      m_klWidget.callMethod(
+      m_klTool.callMethod(
         "",
         "valueChanged",
         1,
@@ -231,13 +231,13 @@ void AppWidget::valueChanged(
   catch(Exception &e)
   {
     printf(
-      "AppWidget::valueChanged: exception: %s\n", 
+      "AppTool::valueChanged: exception: %s\n", 
       e.getDesc_cstr()
       );
   }
 }
 
-void AppWidget::onToggleManipulation(bool toggled) {
+void AppTool::onToggleManipulation(bool toggled) {
   if(m_checkbox)
     m_checkbox->setEnabled(toggled);
 }

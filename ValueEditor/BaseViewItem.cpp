@@ -20,7 +20,7 @@ BaseViewItem::BaseViewItem( QString const &name, ItemMetadata* metadata )
   : m_name( name )
   , m_metadata(metadata)
 {
-  m_appWidget = new AppWidget(this);
+  m_appTool = new AppTool(this);
   s_nInstances++;
 }
 
@@ -63,8 +63,8 @@ void BaseViewItem::setBaseModelItem( BaseModelItem* item )
 
 BaseViewItem::~BaseViewItem()
 {
-  delete m_appWidget;
-  m_appWidget = 0;
+  delete m_appTool;
+  m_appTool = 0;
   s_nInstances--;
 }
 

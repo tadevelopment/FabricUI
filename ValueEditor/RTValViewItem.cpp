@@ -60,7 +60,7 @@ void RTValViewItem::setBaseModelItem( BaseModelItem* item )
   {
     //TODO: uncomment this when the widget is not created right away
     /*
-    QCheckBox *checkbox = m_appWidget->createKLWidget( 
+    QCheckBox *checkbox = m_appTool->createKLWidget( 
       m_val.callMethod("Type", "type", 0, 0)
       );
 
@@ -69,7 +69,7 @@ void RTValViewItem::setBaseModelItem( BaseModelItem* item )
       layout->addWidget(checkbox);
       layout->addStretch(2);
 
-      m_appWidget->valueChanged(m_val);
+      m_appTool->valueChanged(m_val);
     }*/
   }
 
@@ -110,7 +110,7 @@ void RTValViewItem::onModelValueChanged( QVariant const &value )
     }
   }
 
-  m_appWidget->valueChanged(m_val);
+  m_appTool->valueChanged(m_val);
 
   UpdateWidget();
 }
