@@ -6,7 +6,7 @@
 #define FABRICUI_VALUEEDITOR_BASEVIEWITEM_H
 
 #include "ItemMetadata.h"
-#include "AppWidget.h"
+#include "AppTool.h"
 #include <vector>
 #include <QObject>
 #include <QVariant>
@@ -54,7 +54,7 @@ class BaseViewItem : public QObject
 protected:
 
   // 
-  AppWidget *m_appWidget;
+  AppTool *m_appTool;
 
   // We cache our metadata for passing on to our children
   ViewItemMetadata m_metadata;
@@ -128,7 +128,7 @@ public:
   // the memory is released in the same Dll as it was allocated in
   virtual void deleteMe() {}
 
-  AppWidget * getAppWidget() { return m_appWidget; }
+  AppTool * getAppTool() { return m_appTool; }
 
 public slots:
 
@@ -156,7 +156,7 @@ signals:
   // should be the item who requires children rebuilt
   void rebuildChildren(FabricUI::ValueEditor::BaseViewItem* item);
 
-  // Refreshes the viewport, if a klWidget
+  // Refreshes the viewport, if a klTool
   // has been activated-deactivated.
   void refreshViewport();
 
