@@ -45,7 +45,8 @@ class OpenFileCommand(BaseHotkeyCommand):
         self.preShortcutList = {}
         self.prevWindowTitle = None
         self.hotkeyEditor = hotkeyEditor
- 
+         
+    def doIt(self):
         lastDir = str(GetAppStates().getSettings().value("hotkeyEditor/lastFolder"))
         fname, _ = QtGui.QFileDialog.getOpenFileName(None, "Open Hotkey file", lastDir, "*.json")
  
@@ -64,7 +65,10 @@ class OpenFileCommand(BaseHotkeyCommand):
 
             self.state = self.State.REDO_IT
             self.redo()
-    
+            return True
+
+        return False
+
     def __setKeySequenceList(self, items, windowTitle):
         for actName, shortcutList in items.iteritems():
             keySeq = QtGui.QKeySequence()

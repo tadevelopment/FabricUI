@@ -4,6 +4,7 @@
 
 from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import Actions as CppActions
+from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyCommands import *
 
 class CommandAction(CppActions.BaseAction):
@@ -51,8 +52,10 @@ class OpenFileAction(BaseHotkeyEditorAction):
         self.setToolTip('Open file')
         
     def onTriggered(self):
-        self.hotkeyEditor.hotkeyTable.qUndoStack.push(OpenFileCommand(self.hotkeyEditor))
-        self.hotkeyEditor.hotkeyTable.onEmitEditingItem(False)
+        cmd = OpenFileCommand(self.hotkeyEditor)
+        if cmd.doIt():
+            self.hotkeyEditor.hotkeyTable.qUndoStack.push(cmd)
+            self.hotkeyEditor.hotkeyTable.onEmitEditingItem(False)
             
 class SaveFileAction(BaseHotkeyEditorAction):
  
