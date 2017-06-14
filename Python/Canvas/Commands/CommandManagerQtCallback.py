@@ -19,8 +19,6 @@ class CommandManagerQtCallback(QtCore.QObject):
             redo them-selves, but ask the command manager to do it.
         """
         def __init__(self, name):
-            """ Initializes the CommandQtWrapper.
-            """
             QtGui.QUndoCommand.__init__(self)
             self.setText(name)
             self.canRedo = False
@@ -48,8 +46,6 @@ class CommandManagerQtCallback(QtCore.QObject):
                 print str(e)
 
     def __init__(self, qUndoStack, scriptEditor):
-        """ Initializes the CommandManagerQtCallback.
-        """
         super(CommandManagerQtCallback, self).__init__()
         self.qUndoStack = qUndoStack
         self.scriptEditor = scriptEditor

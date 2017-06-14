@@ -146,9 +146,9 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
     /// Implementation of BaseScriptableCommand.
     /// Does nothing, the arg is set in KL.
     virtual void declareArg( 
-      const QString &key, 
+      QString key, 
       int flag, 
-      const QString &defaultValue
+      QString defaultValue
       );
 
     /// Implementation of BaseScriptableCommand.
@@ -156,31 +156,31 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
 
     /// Implementation of BaseScriptableCommand.
     virtual bool isArgSet(
-      const QString &key
+      QString key
       );
 
     /// Implementation of BaseScriptableCommand.
     virtual bool hasArg(
-      const QString &key 
+      QString key 
       );
     
     /// Implementation of BaseScriptableCommand.
     virtual bool isArg(
-      const QString &key,
+      QString key,
       int flag
       );
 
     /// Implementation of BaseScriptableCommand.
     /// Gets the RTVal JSON representation.
     virtual QString getArg( 
-      const QString &key
+      QString key
       );
 
     /// Implementation of BaseScriptableCommand.
     /// Sets the RTVal from JSON.
     virtual void setArg(
-      const QString &key, 
-      const QString &json
+      QString key, 
+      QString json
       );
 
     /// Implementation of BaseScriptableCommand.
@@ -192,47 +192,47 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
     /// Implementation of BaseRTValScriptableCommand.
     /// Does nothing, the arg is set in KL.
     virtual void declareRTValArg( 
-      const QString &key, 
-      const QString &type,
+      QString key, 
+      QString type,
       int flags = FabricUI::Commands::CommandArgFlags::NO_FLAG_ARG, 
       FabricCore::RTVal defaultValue = FabricCore::RTVal()
       );
 
     /// Implementation of BaseRTValScriptableCommand.
     virtual QString getRTValArgType(
-      const QString &key
+      QString key
       );
     
     /// Implementation of BaseRTValScriptableCommand.
     virtual QString getRTValArgPath( 
-      const QString &key 
+      QString key 
       );
 
     /// Implementation of BaseRTValScriptableCommand.
     virtual FabricCore::RTVal getRTValArgValue( 
-      const QString &key 
+      QString key 
       );
 
     /// Implementation of BaseRTValScriptableCommand.
     virtual FabricCore::RTVal getRTValArgValue( 
-      const QString &key,
-      const QString &type
+      QString key,
+      QString type
       );
 
     /// Implementation of BaseRTValScriptableCommand.
     virtual void setRTValArgValue(
-      const QString &key, 
+      QString key, 
       FabricCore::RTVal value
       );
 
     /// Implementation of BaseRTValScriptableCommand.
     virtual FabricCore::RTVal getRTValArg(
-      const QString &key 
+      QString key 
       );
 
     /// Implementation of BaseRTValScriptableCommand.
     virtual void setRTValArg(
-      const QString &key, 
+      QString key, 
       FabricCore::RTVal pathValue
       );
 

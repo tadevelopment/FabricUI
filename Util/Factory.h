@@ -65,13 +65,13 @@ class BaseFactoryRegistry : public QObject
     /// Returns null if no factory is registered under 'name'.
     /// \param name Name of the factory.
     Factory* getFactory(
-      const QString &name
+      QString name
       );
 
     /// Checks is the registry has a factory.
     /// \param name Name of the factory.
     bool hasFactory(
-      const QString &name
+      QString name
       );
 
   public slots:
@@ -79,14 +79,14 @@ class BaseFactoryRegistry : public QObject
     /// \param name Name of the factory.
     /// \param factory Pointer to the factory.
     virtual void registerFactory(
-      const QString &name, 
+      QString name, 
       Factory *factory
       );
 
     /// Unregisters a factory.
     /// \param name Name of the factory.
     virtual void unregisterFactory(
-      const QString &name 
+      QString name 
       );
 
   signals:
@@ -94,14 +94,14 @@ class BaseFactoryRegistry : public QObject
     /// \param name Name of the factory.
     /// \param factory Pointer to the factory.
     void factoryRegistered(
-      const QString &name, 
+      QString name, 
       Factory *factory
       );
 
     /// Emitted when a factory is unregistered.
     /// \param name Name of the factory.
     void factoryUnregistered(
-      const QString &name
+      QString name
       );
 
   private:
@@ -200,7 +200,7 @@ class TemplateFactory : public Factory
     /// \param userData The user data.
     static void Register(
       BaseFactoryRegistry *registry,
-      const QString &name,
+      QString name,
       void* userData = 0) 
     {
       registry->registerFactory(

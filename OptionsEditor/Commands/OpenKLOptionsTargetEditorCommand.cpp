@@ -51,9 +51,9 @@ bool OpenKLOptionsTargetEditorCommand::canLog()
 }
 
 inline QDockWidget* CreateOptionsEditor( 
-  const QString &editorID,
-  const QString &title,
-  const QString &groupeName)
+  QString editorID,
+  QString title,
+  QString groupeName)
 {
   QMainWindow* mainWindow = Util::QtUtil::getMainWindow();
   if(mainWindow == 0)

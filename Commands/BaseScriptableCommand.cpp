@@ -20,9 +20,9 @@ BaseScriptableCommand::~BaseScriptableCommand()
 }
 
 void BaseScriptableCommand::declareArg(
-  const QString &key, 
+  QString key, 
   int flags, 
-  const QString &defaultValue) 
+  QString defaultValue) 
 {
   if(key.isEmpty())
     FabricException::Throw(
@@ -39,13 +39,13 @@ void BaseScriptableCommand::declareArg(
 }
 
 bool BaseScriptableCommand::hasArg(
-  const QString &key)
+  QString key)
 {
   return m_argSpecs.count(key) > 0;
 }
 
 bool BaseScriptableCommand::isArg(
-  const QString &key,
+  QString key,
   int flag)
 {
   if(key.isEmpty()) 
@@ -63,7 +63,7 @@ bool BaseScriptableCommand::isArg(
 }
 
 QString BaseScriptableCommand::getArg(
-  const QString &key)
+  QString key)
 {
   return m_args.count(key) > 0 
     ? m_args[key]
@@ -76,15 +76,15 @@ QList<QString> BaseScriptableCommand::getArgKeys()
 }
 
 bool BaseScriptableCommand::isArgSet(
-  const QString &key)
+  QString key)
 {
   return m_args.count(key) && 
         !m_args[key].isEmpty();
 }
 
 void BaseScriptableCommand::setArg(
-  const QString &key, 
-  const QString &value) 
+  QString key, 
+  QString value) 
 {
   if(key.isEmpty()) 
     FabricException::Throw(

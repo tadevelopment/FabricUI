@@ -6,29 +6,33 @@ from FabricEngine.FabricUI import Application as CppApplication
 
 class FabricApplicationStates(CppApplication.FabricApplicationStates):
 
-    """ FabricApplicationStates registers commands used in the Canvas application. It specializes the C++ 
+    """ FabricApplicationStates specializes 
+        CppApplication.FabricApplicationStates in python
     """
-
     def __init__(self, client, settings): 
-        """ Initializes the FabricApplicationStates.
-        """
         super(FabricApplicationStates, self).__init__(client, settings)
-     
         self.__client = client
 
     def getClient(self):
-        return self.__client;
+        """ Impl. of CppApplication.FabricApplicationStates.
+        """
+        return self.__client
+
+    def getContext(self):
+        """ Impl. of CppApplication.FabricApplicationStates.
+        """
+        return self.__client.getContext()
    
-# \internal, store the registry singleton 
+# \internal, store the app-states singleton 
 global s_appStatesSingleton
 s_appStatesSingleton = None
 
 def GetAppStates():
     """ Gets the FabricApplicationStates singleton.
-        Raises an exception if the registry is not created. 
+        Raises an exception if the app-states is not created. 
     """
     if s_appStatesSingleton is None:
-        raise Exception('FabricApplicationStates.GetAppStates, the registry is null.\n\
+        raise Exception('FabricApplicationStates.GetAppStates, the app-states is null.\n\
             To create it : CreateAppStates(FabricCore.Client).')
     else:
         return s_appStatesSingleton

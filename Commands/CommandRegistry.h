@@ -44,19 +44,19 @@ class CommandRegistry : public Util::BaseFactoryRegistry
     /// Creates a command named 'cmdName'.
     /// Throws an error if the command isn't registered.
     virtual BaseCommand* createCommand(
-      const QString &cmdName
+      QString cmdName
       );
 
     /// Checks if a command (C++/Python) 
     /// has been registered under 'cmdName'.
     bool isCommandRegistered(
-      const QString &cmdName
+      QString cmdName
       );
 
     /// Gets the command and implementation type (C++/Python).
     /// Returns an empty list if the command is not registred.
     QPair<QString, QString> getCommandSpecs(
-      const QString &cmdName
+      QString cmdName
       );
 
     /// Gets the name of all the registered commands.
@@ -72,22 +72,22 @@ class CommandRegistry : public Util::BaseFactoryRegistry
     /// \param cmdType Object type
     /// \param implType Implementation : C++ or Python
     void commandRegistered(
-      const QString &cmdName,
-      const QString &cmdType,
-      const QString &implType
+      QString cmdName,
+      QString cmdType,
+      QString implType
       );
 
   public slots:
     /// Implementation of Util::FactoryRegistry.
     virtual void registerFactory(
-      const QString &name, 
+      QString name, 
       Util::Factory *factory
       );
 
     /// Implementation of Util::FactoryRegistry.
     /// Does nothing.
     virtual void unregisterFactory(
-      const QString &name 
+      QString name 
       );
     
   protected:
@@ -96,9 +96,9 @@ class CommandRegistry : public Util::BaseFactoryRegistry
     /// \param cmdType Object type
     /// \param implType Implementation : C++ or Python
     virtual void commandIsRegistered(
-      const QString &cmdName,
-      const QString &cmdType,
-      const QString &implType
+      QString cmdName,
+      QString cmdType,
+      QString implType
       );
 
   private:
@@ -126,7 +126,7 @@ class CommandFactory : public Util::TemplateFactory<T>
 
     /// Registers the command <T> under "cmdName".
     static void Register(
-      const QString &cmdName,
+      QString cmdName,
       void *userData=0) 
     {
       Util::TemplateFactory<T>::Register(

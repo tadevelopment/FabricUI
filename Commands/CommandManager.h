@@ -36,8 +36,10 @@ class CommandManager : public QObject
   Q_OBJECT
 
   public:
-    /// 
+    /// Command merging
     static int NoCanMergeID;
+
+    /// Debug modes
     static int NoDebug;
     static int Debug;
     static int VerboseDebug;
@@ -57,8 +59,8 @@ class CommandManager : public QObject
     /// If executed, the command is added to the manager stack.
     /// Throws an exception if an error occurs.
     virtual BaseCommand* createCommand(
-      const QString &cmdName, 
-      const QMap<QString, QString> &args = QMapString(), 
+      QString cmdName, 
+      QMap<QString, QString> args = QMapString(), 
       bool doCmd = true,
       int canMergeID = NoCanMergeID
       );
@@ -86,7 +88,7 @@ class CommandManager : public QObject
 
     /// Returns the number of commands
     /// (top+low) in the undo stack.
-    int totalUndoCount ();
+    int totalUndoCount();
 
     /// Gets the current index (next command to undo).
     /// If -1 is returned, there is no command to undo.
@@ -106,13 +108,13 @@ class CommandManager : public QObject
     /// Gets a new interaction ID.
     virtual int getNewCanMergeID();
 
+    /// Sets the debug mode (NoDebug, Debug or VerboseDebug)
     void setDebugMode(
       int debugMode
       );
 
   signals:
-    /// Emitted when a top command has 
-    /// been succefully pushed to the stack.
+    /// Emitted when a top command has been succefully executed.
     void commandDone(
       BaseCommand *cmd,
       bool addToStack,
@@ -127,7 +129,7 @@ class CommandManager : public QObject
     /// Throws an exception if an error occurs.
     void checkCommandArgs(
       BaseCommand *cmd,
-      const QMap<QString, QString> &args
+      QMap<QString, QString> args
       );
 
     /// Informs a command has been pushed. 
@@ -165,7 +167,7 @@ class CommandManager : public QObject
 
     /// Undo-redo stacks
     QList<StackedCommand> m_undoStack, m_redoStack;
-    /// 
+    /// Command merging counter.
     int m_canMergeIDCounter;
 
   private:
@@ -179,7 +181,7 @@ class CommandManager : public QObject
       BaseCommand *cmd
       );
 
-    /// Pushes a top command.
+    /// Pushes a top-command.
     void pushTopCommand(
       BaseCommand *cmd,
       bool succeeded = false
@@ -188,8 +190,8 @@ class CommandManager : public QObject
     /// getStackContent a specific stack content 
     /// as a string, used for debugging.
     QString getStackContent(
-      const QString& stackName, 
-      const QList<StackedCommand> &stack,
+      QString stackName, 
+      QList<StackedCommand> stack,
       bool withArgs = true
       );
  
@@ -197,7 +199,7 @@ class CommandManager : public QObject
     /// doing a command and throws an exception.
     void cleanupUnfinishedCommandsAndThrow(
       BaseCommand *cmd,
-      const QString& error = QString()
+      QString error = QString()
       );
 
     /// Cleans the stacks if errors occur when
@@ -205,7 +207,7 @@ class CommandManager : public QObject
     void cleanupUnfinishedUndoLowCommandsAndThrow(
       int topLevelCmdIndex, 
       StackedCommand &stackedCmd,
-      const QString &error = QString()
+      QString error = QString()
       );
 
     /// Cleans the stacks if errors occur when
@@ -213,13 +215,14 @@ class CommandManager : public QObject
     void cleanupUnfinishedRedoLowCommandsAndThrow(
       int topLevelCmdIndex, 
       StackedCommand &stackedCmd,
-      const QString &error = QString()
+      QString error = QString()
       );
     
     /// CommandManager singleton, set from Constructor.
     static CommandManager *s_cmdManager;
     /// Check if the singleton has been set.
     static bool s_instanceFlag;
+    /// Debug mode (NoDebug, Debug or VerboseDebug)
     int m_debugMode;
 };
  

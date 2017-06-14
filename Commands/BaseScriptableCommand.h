@@ -41,50 +41,42 @@ class BaseScriptableCommand : public BaseCommand
     virtual ~BaseScriptableCommand();
 
     /// Declares an argument, called from constructor.
-    /// \param key Argument key
-    /// \param optional If true, default.
-    /// \param defaultValue Default value 
-    /// \param loggable If true, the arg is logged in the script-editor. 
     virtual void declareArg( 
-      const QString &key, 
+      QString key, 
       int flag, 
-      const QString &defaultValue
+      QString defaultValue
       );
 
-    /// Checks if the command has an arg.
-    /// \param key Argument key
+    /// Checks if the command has the arg `key`.
     virtual bool hasArg(
-      const QString &key 
+      QString key 
       );
 
-    /// Checks if an arg is optional.
-    /// \param key Argument key
+    /// Checks if the arg `key` is optional.
     virtual bool isArg(
-      const QString &key,
+      QString key,
       int flag
       );
 
-    /// Gets the arguments keys.
+    /// Gets the arguments keys list.
     virtual QList<QString> getArgKeys();
 
     /// Checks if an arg has been set.
     /// To get safely optional argument.
     virtual bool isArgSet(
-      const QString &key
+      QString key
       );
 
-    /// Gets an argument.
-    /// \param key Argument key
+    /// Gets the `key` argument value.
     virtual QString getArg( 
-      const QString &key 
+      QString key 
       );
  
-    /// Sets an argument, called from the manager.
-    /// \param key Argument key
-    /// \param value The new arg.
+    /// Sets the `key` argument value,
+    /// called from the manager.
     virtual void setArg(
-      const QString &key, 
-      const QString &value
+      QString key, 
+      QString value
       );
 
     /// Checks the args are correctly set before  
@@ -105,7 +97,6 @@ class BaseScriptableCommand : public BaseCommand
 
     /// List of arguments {argName, argValue}
     QMap<QString, QString> m_args;
-  
     /// List of arguments specs {argName, spec}
     QMap<QString, ScriptableCommandArgSpec> m_argSpecs;
 };

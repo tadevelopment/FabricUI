@@ -24,27 +24,34 @@ namespace Application {
 class FabricException : public std::exception
 {
   /**
-    Exception for commands.
+    FabricException is the exception class for Fabric applications.
+    It provides a static method `Throw` that propagates the exceptions
+    in order to provide the complete code-path of the error.
+
+    It defines a macro FABRIC_CATCH_BEGIN() - FABRIC_CATCH_END() that catchs: 
+    - JSONException
+    - FabricException
+    - FabricCore::Exception
   */
 
   public: 
     FabricException(
-      const QString &message)
+      QString message)
       : m_message(message)
     {
     }
  
     virtual ~FabricException() throw() {}
 
-    /// Trows and/or prints a FabricException.
+    /// Throws and/or prints a FabricException.
     /// \param method Name of the method that fails.
     /// \param error The error to throw/print.
     /// \param childError A child error
     /// \param flag (THROW, PRINT)
     static QString Throw(
-      const QString &method,
-      const QString &error = QString(),
-      const QString &childError = QString(),
+      QString method,
+      QString error = QString(),
+      QString childError = QString(),
       int flag = THROW)
     {
       QString cmdError = method + ", error: " + error + "\n ";

@@ -32,7 +32,7 @@ KLCommandRegistry::~KLCommandRegistry()
 }
 
 BaseCommand* KLCommandRegistry::createCommand(
-  const QString &cmdName) 
+  QString cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
     FabricException::Throw( 
@@ -68,7 +68,7 @@ void KLCommandRegistry::synchronizeKL()
 }
  
 void KLCommandRegistry::registerKLCommand(
-  const QString &cmdName) 
+  QString cmdName) 
 {
   FABRIC_CATCH_BEGIN();
 
@@ -106,7 +106,7 @@ void KLCommandRegistry::registerKLCommand(
 }
  
 BaseCommand* KLCommandRegistry::createKLCommand(
-  const QString &cmdName)
+  QString cmdName)
 {  
   FABRIC_CATCH_BEGIN();
 
@@ -149,9 +149,9 @@ BaseCommand* KLCommandRegistry::createKLCommand(
 }
 
 void KLCommandRegistry::commandIsRegistered(
-  const QString &cmdName,
-  const QString &cmdType,
-  const QString &implType) 
+  QString cmdName,
+  QString cmdType,
+  QString implType) 
 {
   FABRIC_CATCH_BEGIN();
 

@@ -19,7 +19,7 @@ BaseCommand::~BaseCommand()
 }
 
 void BaseCommand::registrationCallback(
-  const QString &name,
+  QString name,
   void *userData) 
 {
   m_name = name;

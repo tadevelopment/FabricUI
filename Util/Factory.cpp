@@ -8,7 +8,7 @@ using namespace FabricUI;
 using namespace Util;
 
 BaseFactoryRegistry::BaseFactoryRegistry() 
-: QObject()
+  : QObject()
 {
 }
 
@@ -23,7 +23,7 @@ BaseFactoryRegistry::~BaseFactoryRegistry()
 }
 
 Factory* BaseFactoryRegistry::getFactory(
-  const QString &name) 
+  QString name) 
 {
   return hasFactory(name) 
     ? m_factories[name] 
@@ -31,13 +31,13 @@ Factory* BaseFactoryRegistry::getFactory(
 }
 
 bool BaseFactoryRegistry::hasFactory(
-  const QString &name) 
+  QString name) 
 {
   return m_factories.count(name) > 0;
 }
 
 void BaseFactoryRegistry::registerFactory(
-  const QString &name, 
+  QString name, 
   Factory *factory) 
 {
   if(!hasFactory(name))
@@ -50,7 +50,7 @@ void BaseFactoryRegistry::registerFactory(
 }
 
 void BaseFactoryRegistry::unregisterFactory(
-  const QString &name) 
+  QString name) 
 {
   QMapIterator<QString, Factory*> it(m_factories);
   while(it.hasNext()) 

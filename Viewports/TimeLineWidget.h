@@ -252,8 +252,8 @@ class BaseTimeLineAction : public Actions::BaseAction
   public:
     BaseTimeLineAction(
       TimeLineWidget *timeLine,
-      const QString &name, 
-      const QString &text = "", 
+      QString name, 
+      QString text = "", 
       QKeySequence shortcut = QKeySequence(),
       Qt::ShortcutContext context = Qt::ApplicationShortcut,
       bool enable = true)

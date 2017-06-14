@@ -25,8 +25,8 @@ RTValCommandManager::~RTValCommandManager()
 }
  
 BaseCommand* RTValCommandManager::createCommand(
-  const QString &cmdName, 
-  const QMap<QString, RTVal> &args, 
+  QString cmdName, 
+  QMap<QString, RTVal> args, 
   bool doCmd,
   int canMergeID)
 {
@@ -50,7 +50,7 @@ BaseCommand* RTValCommandManager::createCommand(
 
 void RTValCommandManager::checkRTValCommandArgs(
   BaseCommand *cmd,
-  const QMap<QString, RTVal> &args)
+  QMap<QString, RTVal> args)
 { 
   BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
 

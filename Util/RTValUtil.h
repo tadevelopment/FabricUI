@@ -52,16 +52,16 @@ class RTValUtil
     /// and sets it's value from the json.
     static FabricCore::RTVal fromJSON(
       FabricCore::Client client,
-      const QString &json,
-      const QString &type
+      QString json,
+      QString type
       );
 
     /// Creates a C++ RTVal of KL type 'type' 
     /// and sets it's value from the json.
     static FabricCore::RTVal fromJSON(
       FabricCore::Context ctxt,
-      const QString &json,
-      const QString &type
+      QString json,
+      QString type
       ); 
 };
 

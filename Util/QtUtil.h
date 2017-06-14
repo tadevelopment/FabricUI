@@ -21,15 +21,15 @@ class QtUtil
     static QMainWindow* getMainWindow();
 
     static QGLWidget* getQGLWidget(
-      const QString &widgetName = ""
+      QString widgetName = ""
       );
 
     static QDockWidget* getDockWidget(
-      const QString &dockName = ""
+      QString dockName = ""
       );
 
     template <class T> static T* getQWidget(
-      const QString &widgetName = "")
+      QString widgetName = "")
     {
       return getMainWindow()->findChild<T*>(
         widgetName

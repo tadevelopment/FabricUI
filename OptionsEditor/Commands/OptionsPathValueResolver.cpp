@@ -1,4 +1,6 @@
+//
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
+//
 
 #include <QStringList>
 #include <FabricUI/Util/QtUtil.h>

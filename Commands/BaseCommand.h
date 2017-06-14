@@ -29,7 +29,7 @@ class BaseCommand : public QObject
         }
 
         virtual void registrationCallback(
-          const QString &name, 
+          QString name, 
           void *userData)
         {
           BaseCommand::registrationCallback(
@@ -126,7 +126,7 @@ class BaseCommand : public QObject
     /// The data is referenced by the registry, and given to the
     /// command with this callback.
     virtual void registrationCallback(
-      const QString &name, 
+      QString name, 
       void *userData
       );
 
@@ -140,15 +140,15 @@ class BaseCommand : public QObject
     virtual bool canLog();
 
     /// Defines the command logic.
-    /// Returns true if succeded, false otherwise.
+    /// Must return true if succeded, false otherwise.
     virtual bool doIt();
 
     /// Defines the undo logic.
-    /// Returns true if succeded, false otherwise.
+    /// Must return true if succeded, false otherwise.
     virtual bool undoIt();
 
     /// Defines the redo logic.
-    /// Returns true if succeded, false otherwise.
+    /// Must return true if succeded, false otherwise.
     virtual bool redoIt();
     
     /// Gets the command's help (description)
@@ -158,30 +158,27 @@ class BaseCommand : public QObject
     /// to display in the history stack (if one).
     virtual QString getHistoryDesc();
     
-    /// Sets the interaction ID.
+    /// Sets the CanMerge ID.
     virtual void setCanMergeID(
       int canMergeID
       );
 
-    /// Gets the interaction ID.
+    /// Gets the CanMerge ID.
     virtual int getCanMergeID();
 
-    /// Checks if the command `this` can
-    /// be merged with `prevCmd` command.
+    /// Checks if `this` and `prevCmd`  
+    /// commands `this` can be merged.
     virtual bool canMerge(
       BaseCommand *prevCmd
       );
 
-    /// Merges a command `this` with 
-    /// `prevCmd` command.
+    /// Merges `this` with `prevCmd` command.
     virtual void merge(
       BaseCommand *prevCmd
       );
 
   private:
-    /// Name of the command.
     QString m_name;
-    /// Interaction ID, for merging.
     int m_canMergeID;
 };
 

@@ -37,7 +37,7 @@ void ActionRegistry::registerAction(
 }
 
 void ActionRegistry::registerAction(
-  const QString &actionName,
+  QString actionName,
   QAction *action)
 {
   QObject::connect(
@@ -72,13 +72,13 @@ void ActionRegistry::onUnregisterAction(
 }
 
 bool ActionRegistry::isActionRegistered(
-  const QString &actionName) const
+  QString actionName) const
 {
   return m_registeredActions.count(actionName) > 0;
 }
 
 int ActionRegistry::getRegistrationCount(
-  const QString &actionName) const
+  QString actionName) const
 {
   if(!isActionRegistered(actionName))
     return 0;
@@ -130,7 +130,7 @@ QList<QAction*> ActionRegistry::isShortcutUsed(
 }
 
 void ActionRegistry::setShortcut(
-  const QString &actionName,
+  QString actionName,
   QKeySequence shortcut) const
 {
   if(!isActionRegistered(actionName))
@@ -141,7 +141,7 @@ void ActionRegistry::setShortcut(
 }
 
 void ActionRegistry::setShortcuts(
-  const QString &actionName,
+  QString actionName,
   const QList<QKeySequence> &shortcuts) const
 {
   if(!isActionRegistered(actionName))
@@ -152,7 +152,7 @@ void ActionRegistry::setShortcuts(
 }
  
 QKeySequence ActionRegistry::getShortcut(
-  const QString &actionName) const
+  QString actionName) const
 {
   return isActionRegistered(actionName)
     ? getAction(actionName)->shortcut()
@@ -160,7 +160,7 @@ QKeySequence ActionRegistry::getShortcut(
 }
 
 QList<QKeySequence> ActionRegistry::getShortcuts(
-  const QString &actionName) const
+  QString actionName) const
 {
   QList<QKeySequence> dum;
   return isActionRegistered(actionName)
@@ -169,7 +169,7 @@ QList<QKeySequence> ActionRegistry::getShortcuts(
 }
 
 QAction* ActionRegistry::getAction(
-  const QString &actionName) const
+  QString actionName) const
 {
   if(!isActionRegistered(actionName))
     return 0;
@@ -228,7 +228,7 @@ QString ActionRegistry::getContent() const
 }
 
 bool ActionRegistry::isActionContextGlobal(
-  const QString &actionName) const
+  QString actionName) const
 {
   if(isActionRegistered(actionName))
   {

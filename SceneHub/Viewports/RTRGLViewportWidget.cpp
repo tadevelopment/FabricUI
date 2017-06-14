@@ -2,6 +2,7 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
+#include <QMimeData>
 #include <FabricUI/Viewports/QtToKLEvent.h>
 //#include <FabricUI/SceneHub/Editors/SHEditorWidget.h>
 #include "FabricUI/SceneHub/Viewports/RTRGLViewportWidget.h"

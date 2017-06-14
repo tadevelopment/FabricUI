@@ -1,4 +1,6 @@
+//
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
+//
 
 #include "PathValueResolverRegistry.h"
  
@@ -36,30 +38,26 @@ PathValueResolverRegistry* PathValueResolverRegistry::GetRegistry()
 }
 
 bool PathValueResolverRegistry::hasResolver(
-  const QString name)
+  QString name)
 {
   return m_registeredResolvers.count(name);
 }
 
 BasePathValueResolver* PathValueResolverRegistry::getOrCreateResolver(
-  const QString name)
+  QString name)
 {
   if(hasResolver(name))
     return m_registeredResolvers[name];
   
   else
   {
-    Factory *factory = Util::BaseFactoryRegistry::getFactory(
-      name);
-
+    Factory *factory = Util::BaseFactoryRegistry::getFactory(name);
+    
     BasePathValueResolver* resolver = (BasePathValueResolver*)factory->create(); 
     m_registeredResolvers[name] = resolver;
 
     void *userData = factory->getUserData();
-
-    resolver->registrationCallback(
-      userData);
-
+    resolver->registrationCallback(userData);
     return resolver;
   }
 }

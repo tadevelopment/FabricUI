@@ -12,7 +12,7 @@ using namespace Application;
 using namespace OptionsEditor;
 
 BaseRTValOptionsEditor::BaseRTValOptionsEditor(
-  const QString &title,
+  QString title,
   RTVal options)
   : VETreeWidget()
   , m_title(title)

@@ -5,7 +5,7 @@
 
 using namespace FabricUI::Application;
 
-static int    s_argc = 0;
+static int s_argc = 0;
 static char **s_argv = NULL;
 
 FabricApplication::FabricApplication() 

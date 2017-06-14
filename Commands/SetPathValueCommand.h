@@ -1,4 +1,6 @@
+//
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
+//
 
 #ifndef __UI_BASE_RTVAL_PATH_VALUE_COMMAND__
 #define __UI_BASE_RTVAL_PATH_VALUE_COMMAND__

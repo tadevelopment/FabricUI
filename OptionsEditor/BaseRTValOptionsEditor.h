@@ -33,7 +33,7 @@ class BaseRTValOptionsEditor : public ValueEditor::VETreeWidget
     /// \param title Title of the editor.
     /// \param options The options to edit.
     BaseRTValOptionsEditor(
-      const QString &title = QString(),
+      QString title = QString(),
       FabricCore::RTVal options = FabricCore::RTVal()
       );
 

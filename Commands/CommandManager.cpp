@@ -58,8 +58,8 @@ bool CommandManager::isInitalized()
 }
 
 BaseCommand* CommandManager::createCommand(
-  const QString &cmdName, 
-  const QMap<QString, QString> &args, 
+  QString cmdName,  
+  QMap<QString, QString> args, 
   bool doCmd,
   int canMergeID)
 {
@@ -367,7 +367,7 @@ QString CommandManager::getContent(
 
 void CommandManager::checkCommandArgs(
   BaseCommand *cmd,
-  const QMap<QString, QString> &args)
+  QMap<QString, QString> args)
 { 
   BaseScriptableCommand* scriptCommand = qobject_cast<BaseScriptableCommand*>(cmd);
 
@@ -458,8 +458,8 @@ void CommandManager::commandPushed(
 }
 
 QString CommandManager::getStackContent(
-  const QString& stackName, 
-  const QList<StackedCommand>& stack,
+  QString stackName, 
+  QList<StackedCommand> stack,
   bool withArgs)
 {
   int offset = stackName == "Redo" ? m_undoStack.size() : 0;
@@ -499,7 +499,7 @@ QString CommandManager::getStackContent(
 
 void CommandManager::cleanupUnfinishedCommandsAndThrow(
   BaseCommand *cmd,
-  const QString &error) 
+  QString error) 
 {
   QString cmdForErrorLog = (cmd != 0) 
     ? cmd->getName()
@@ -530,7 +530,7 @@ void CommandManager::cleanupUnfinishedCommandsAndThrow(
 void CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow(
   int topLevelCmdIndex, 
   StackedCommand &stackedCmd,
-  const QString &error) 
+  QString error) 
 {
   FABRIC_CATCH_BEGIN();
 
@@ -549,7 +549,7 @@ void CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow(
 void CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow(
   int topLevelCmdIndex, 
   StackedCommand &stackedCmd,
-  const QString &error) 
+  QString error) 
 {
   FABRIC_CATCH_BEGIN();
 

@@ -36,11 +36,6 @@ CommandRegistry::~CommandRegistry()
 
 CommandRegistry* CommandRegistry::getCommandRegistry()
 {
-  if(!s_instanceFlag)
-    FabricException::Throw(
-      "CommandRegistry::getCommandRegistry",
-      "the registry is null");
-
   return s_cmdRegistry;
 }
 
@@ -50,7 +45,7 @@ bool CommandRegistry::isInitalized()
 }
 
 void CommandRegistry::registerFactory(
-  const QString &name, 
+  QString name, 
   Factory *factory) 
 {
   if(!isCommandRegistered(name))
@@ -68,19 +63,19 @@ void CommandRegistry::registerFactory(
 }
 
 void CommandRegistry::unregisterFactory(
-  const QString &name)
+  QString name)
 {
   // Does nothing.
 }
 
 bool CommandRegistry::isCommandRegistered(
-  const QString &cmdName) 
+  QString cmdName) 
 {
   return m_cmdSpecs.count(cmdName) > 0;
 }
 
 QPair<QString, QString> CommandRegistry::getCommandSpecs(
-  const QString &cmdName) 
+  QString cmdName) 
 {
   if(!isCommandRegistered(cmdName))
     FabricException::Throw( 
@@ -96,7 +91,7 @@ QList<QString> CommandRegistry::getCommandNames()
 }
 
 BaseCommand* CommandRegistry::createCommand(
-  const QString &cmdName) 
+  QString cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
     FabricException::Throw( 
@@ -152,9 +147,9 @@ QString CommandRegistry::getContent()
 }
 
 void CommandRegistry::commandIsRegistered(
-  const QString &cmdName,
-  const QString &cmdType,
-  const QString &implType) 
+  QString cmdName,
+  QString cmdType,
+  QString implType) 
 {
   // sets the command specs
   QPair<QString, QString> spec;

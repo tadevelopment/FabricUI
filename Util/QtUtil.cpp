@@ -22,13 +22,13 @@ QMainWindow* QtUtil::getMainWindow()
 }
 
 QGLWidget* QtUtil::getQGLWidget(
-	const QString &widgetName) 
+	QString widgetName) 
 {
   return getQWidget<QGLWidget>(widgetName);
 }
 
 QDockWidget* QtUtil::getDockWidget(
-	const QString &dockName) 
+	QString dockName) 
 {
   return getQWidget<QDockWidget>(dockName);
 }

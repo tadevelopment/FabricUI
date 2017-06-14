@@ -14,36 +14,42 @@ namespace Application {
 class FabricApplicationStates  
 {
   /**
-    FabricApplicationStates is a default implementation of Command.
-    New commands can inheritated this class.
-
-    C++ interfaces cannot be wrapped in python by shiboken. New commands
-    must specialize this class to be accessible from python.
+    FabricApplicationStates singleton provides a global access
+    to the FabricCore context/client and application Settings 
+    that are shared by all the user-interface components.
+    
+    Usage:
+    - Create the singleton : new FabricApplicationStates(client, settings);
+    - Get the singleton : FabricApplicationStates* states = FabricApplicationStates::GetAppStates();
   */
 
   public:
     FabricApplicationStates(
       FabricCore::Client client,
-      QSettings *settings
+      QSettings *settings = 0
       );
 
     virtual ~FabricApplicationStates();
 
+    /// Gets the App states singleton.
+    /// Throws an error if the singleton has not been crated.
     static FabricApplicationStates* GetAppStates();
- 
+    
+    /// Gets the FabricCore context.
     virtual FabricCore::Context getContext();
         
+    /// Gets the FabricCore client.
     virtual FabricCore::Client getClient();
 
     QSettings* getSettings();
 
   private:
-    /// Name of the command.
+    /// Reference to the core client.
     FabricCore::Client m_client;
-    ///
+    /// Pointor to tha app settings.
     QSettings *m_settings;
 
-    /// CommandManager singleton, set from Constructor.
+    /// ApplicationStates singleton, set from Constructor.
     static FabricApplicationStates *s_appStates;
     /// Check if the singleton has been set.
     static bool s_instanceFlag;

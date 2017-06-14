@@ -10,7 +10,7 @@ namespace Application {
 
 class FabricApplication : public QApplication
 {
-	public:
+  public:
     FabricApplication();
 };
 

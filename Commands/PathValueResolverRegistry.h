@@ -30,12 +30,12 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
     
     /// Registers a resolver.
     bool hasResolver(
-      const QString name
+      QString name
       );
 
     /// Registers a resolver.
     BasePathValueResolver* getOrCreateResolver(
-      const QString name
+      QString name
       );
       
     bool knownPath(
@@ -79,7 +79,7 @@ class PathValueResolverFactory : public Util::TemplateFactory<T>
 
     /// Registers the command <T> under "name".
     static void Register(
-      const QString &name,
+      QString name,
       void *userData=0) 
     {
       Util::TemplateFactory<T>::Register(
