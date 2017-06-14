@@ -260,7 +260,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
 
             isEditable = True
             action = actRegistry.getAction(actName)
-            if issubclass(type(action), Actions.BaseAction):
+            if issubclass(type(action), CppActions.BaseAction):
                 isEditable = action.isEditable()
  
             if  (   (searchByShortcut and regex.search(shortCut.lower()) ) or 

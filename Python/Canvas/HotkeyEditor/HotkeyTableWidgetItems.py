@@ -7,10 +7,10 @@ from FabricEngine.FabricUI import Actions as CppActions
  
 class TableWidgetItemColor:
     Disabled = QtCore.Qt.gray
-    IsAction = QtGui.QColor(204, 102, 0, 255)
+    IsAction = QtGui.QColor(223, 102, 0, 255)
     IsCppCommand = QtGui.QColor(0, 191, 191, 255)
-    IsKLCommand = QtGui.QColor(0, 102, 204, 255)
-    IsPythonCommand = QtGui.QColor(39, 168, 223 , 255)
+    IsKLCommand = QtGui.QColor(0, 102, 223, 255)
+    IsPythonCommand = QtGui.QColor(0, 168, 102, 255)
  
 class BaseTableWidgetItem(QtGui.QTableWidgetItem):
     
