@@ -229,10 +229,8 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         curKeySeq = QtGui.QKeySequence(item.text())
 
         if item and keySeq != curKeySeq:
-            cmd = SetKeySequenceCommand(self.model, actName, curKeySeq, keySeq) 
-            if cmd.doIt():
-                self.qUndoStack.push(cmd)
-                self.onEmitEditingItem(True)
+            self.qUndoStack.push(SetKeySequenceCommand(self.model, actName, curKeySeq, keySeq))
+            self.onEmitEditingItem(True)
 
     def filterItems(self, query, edit = 0, show = 0):
         """ \internal.

@@ -51,10 +51,8 @@ class OpenFileAction(BaseHotkeyEditorAction):
         self.setToolTip('Open file')
         
     def onTriggered(self):
-        cmd = OpenFileCommand(self.hotkeyEditor.hotkeyTable.model) 
-        if cmd.doIt():
-            self.hotkeyEditor.hotkeyTable.qUndoStack.push(cmd)
-            self.hotkeyEditor.hotkeyTable.onEmitEditingItem(False)
+        self.hotkeyEditor.hotkeyTable.qUndoStack.push(OpenFileCommand(self.hotkeyEditor))
+        self.hotkeyEditor.hotkeyTable.onEmitEditingItem(False)
             
 class SaveFileAction(BaseHotkeyEditorAction):
  
@@ -68,10 +66,8 @@ class SaveFileAction(BaseHotkeyEditorAction):
         self.setToolTip('Save file')
         
     def onTriggered(self):
-        cmd = SaveFileCommand() 
-        if cmd.doIt():
-            self.hotkeyEditor.hotkeyTable.qUndoStack.push(cmd)
-            self.hotkeyEditor.hotkeyTable.onEmitEditingItem(False)
+        SaveFileCommand()
+        self.hotkeyEditor.hotkeyTable.onEmitEditingItem(False)
 
 class ExitAction(BaseHotkeyEditorAction):
  

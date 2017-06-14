@@ -4,8 +4,7 @@
 
 from PySide import QtCore, QtGui
 from FabricEngine.FabricUI import Actions as CppActions
-#from FabricEngine.Canvas.Application.FabricApplicationStates import *
- 
+  
 class HotkeyTableModel(QtCore.QObject):
 
     """ HotkeyTableModel. 
@@ -17,43 +16,43 @@ class HotkeyTableModel(QtCore.QObject):
         super(HotkeyTableModel, self).__init__()
         self.parentWidget = parentWidget
 
-    def __setItemKeySequenceAndShortcut(self, actionName, keySeq = QtGui.QKeySequence(), shortcut = ''):
+    def __setItemKeySequenceAndShortcut(self, actName, keySeq = QtGui.QKeySequence(), shortcut = ''):
         """ \internal.
         """
-        CppActions.ActionRegistry.GetActionRegistry().setShortcut(actionName, keySeq)
-        self.updateShortcutItem.emit(actionName, shortcut)
+        CppActions.ActionRegistry.GetActionRegistry().setShortcut(actName, keySeq)
+        self.updateShortcutItem.emit(actName, shortcut)
 
-    def __shortcutIsUsedBy(self, actionName, shortcut):
+    def __shortcutIsUsedBy(self, actName, shortcut):
         """ \internal.
-            Check if the action named `actionName` can use the shorcut.
+            Check if the action named `actName` can use the shorcut.
             If true, returns None. Otherwise, returns the name of the 
             action using the short cut alredy.
         """
         actRegistry = CppActions.ActionRegistry.GetActionRegistry()
-        otherActionList = actRegistry.isShortcutUsed(shortcut)
-        globalContext = actRegistry.isActionContextGlobal(actionName) 
+        otherActList = actRegistry.isShortcutUsed(shortcut)
+        globalContext = actRegistry.isActionContextGlobal(actName) 
 
-        action = actRegistry.getAction(actionName)
+        action = actRegistry.getAction(actName)
         if action is None:
             return
 
-        if action in otherActionList:
-            otherActionList.remove(action)
+        if action in otherActList:
+            otherActList.remove(action)
 
-        for otherAction in otherActionList:
-            otherActionName = actRegistry.getActionName(otherAction)
-            otherGlobalContext = actRegistry.isActionContextGlobal(otherActionName) 
+        for otherAction in otherActList:
+            otherActName = actRegistry.getActionName(otherAction)
+            otherGlobalContext = actRegistry.isActionContextGlobal(otherActName) 
             
             # If both actions are local (to their widget),
             # check if they have the same parent.
-            sharedSameParent = False
+            shareParent = False
             if not otherGlobalContext and not globalContext:
-                sharedSameParent = otherAction.parentWidget() == action.parentWidget()
+                shareParent = otherAction.parentWidget() == action.parentWidget()
 
-            if otherGlobalContext or globalContext or sharedSameParent:
-                return otherActionName
+            if otherGlobalContext or globalContext or shareParent:
+                return otherActName
  
-    def setItemKeySequence(self, actionName, keySeq, force = True):
+    def setItemKeySequence(self, actName, keySeq, force = True):
         """ \internal.
             Sets the keySeq to the item. If another items/actions 
             used the keySeq already, a warning is displayed and 
@@ -67,18 +66,18 @@ class HotkeyTableModel(QtCore.QObject):
                 keySeq != QtGui.QKeySequence('Backspace') ):
 
             shortcut = keySeq.toString(QtGui.QKeySequence.NativeText)
-            actionName_ = self.__shortcutIsUsedBy(actionName, keySeq)
+            actName_ = self.__shortcutIsUsedBy(actName, keySeq)
                 
-            if actionName_ and not force:
+            if actName_ and not force:
                 message = QtGui.QMessageBox()
                 message.warning(self.parentWidget, 'Hotkey editor', 
-                    'shorcut ' + str(shortcut) + ' already used by ' + str(actionName_))
+                    'shorcut ' + str(shortcut) + ' already used by ' + str(actName_))
                 return False
 
-            elif not actionName_ or force:
-                self.__setItemKeySequenceAndShortcut(actionName, keySeq, shortcut)
+            elif not actName_ or force:
+                self.__setItemKeySequenceAndShortcut(actName, keySeq, shortcut)
         
         else:
-            self.__setItemKeySequenceAndShortcut(actionName)
+            self.__setItemKeySequenceAndShortcut(actName)
 
         return True

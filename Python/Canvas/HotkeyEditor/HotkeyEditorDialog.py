@@ -35,8 +35,7 @@ class HotkeyEditorDialog(QtGui.QDialog):
             - canvasWindow: A reference to the canvasWindow widget.
         """
         super(HotkeyEditorDialog, self).__init__(canvasWindow) 
-        self.baseTitle = "Hotkey Editor"  
-       
+        
         # qss
         self.setWindowTitle('Hotkey Editor')
         self.setObjectName('HotkeyEditorDialog')
