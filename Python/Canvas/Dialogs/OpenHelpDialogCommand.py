@@ -34,7 +34,7 @@ class OpenHelpDialogCommand(Commands.BaseScriptableCommand):
             self.getArg("text"), 
             mainWIndow)
 
-        pos = mainWIndow.mapFromGlobal(QtGui.QCursor.pos())
+        pos = QtGui.QCursor.pos()
         dialog.move(pos.x(), pos.y())
 
         dialog.show()

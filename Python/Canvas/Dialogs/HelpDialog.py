@@ -37,4 +37,5 @@ class HelpDialog(QtGui.QDialog):
         self.label.setLayout(inputsLayout)
 
         mainlayout.addWidget(self.label)
+        self.setFixedSize(self.sizeHint())
  
