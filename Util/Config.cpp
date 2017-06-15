@@ -108,7 +108,8 @@ Config::Config()
   {
     m_json->replace( VersionKeyStr, new FTL::JSONString( FabricCore::GetVersionStr() ) );
     m_json->replace( "DefaultConfigPath", new FTL::JSONString( defaultConfigPath ) );
-    std::ofstream( m_fileName.data() ) << m_json->encode();
+    std::ofstream file( m_fileName.data() );
+    file << m_json->encode();
   }
 }
 
