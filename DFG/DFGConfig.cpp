@@ -79,6 +79,8 @@ DFGConfig::DFGConfig()
   REGISTER_DATA_TYPE_COLOR( "Execute", QColor( "#60D4E7" ) );
 
   // todo: to be removed
+  // these colors should be defined as metadata above the KL code
+  // that defines these types (in their extension)
   REGISTER_DATA_TYPE_COLOR( "Regex", QColor( 134, 55, 41 ) );
   REGISTER_DATA_TYPE_COLOR( "Vec2", QColor( 255, 242, 0 ) );
   REGISTER_DATA_TYPE_COLOR( "Vec3", QColor( 255, 242, 0 ) );
