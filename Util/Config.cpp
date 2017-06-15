@@ -106,7 +106,7 @@ Config::Config()
   // is the only thing we change; aside from the malformed entries
   // that will be removed)
   {
-    m_json->replace( VersionKeyStr, new FTL::JSONString( "2.6.0" ) );
+    m_json->replace( VersionKeyStr, new FTL::JSONString( FabricCore::GetVersionStr() ) );
     m_json->replace( "DefaultConfigPath", new FTL::JSONString( defaultConfigPath ) );
     std::ofstream( m_fileName.data() ) << m_json->encode();
   }
