@@ -91,9 +91,9 @@ Config::Config()
     file << "{" << std::endl;
     file << "  \"GraphView\" : {" << std::endl;
     file << "    \"mainPanelBackgroundColor\" : {" << std::endl;
-    file << "      \"r\" : 68," << std::endl;
-    file << "      \"g\" : 68," << std::endl;
-    file << "      \"b\" : 68," << std::endl;
+    file << "      \"r\" : 58," << std::endl;
+    file << "      \"g\" : 58," << std::endl;
+    file << "      \"b\" : 58," << std::endl;
     file << "      \"a\" : 255" << std::endl;
     file << "    }" << std::endl;
     file << "  }" << std::endl;
