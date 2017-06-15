@@ -81,17 +81,35 @@ Config::Config()
   this->setAccess( ReadOnly );
   std::string userConfigPath = FTL::PathJoin( FabricCore::GetFabricUserDir(), "user.config.json" );
 
-  // [FE-7891] Creating a sample file if none exists
-  if ( !std::ifstream( userConfigPath.data() ).is_open() )
-  {
-    std::ofstream file( userConfigPath.data() );
-    // TODO : instead of writing the sample file like this, we could read it
-    // from the disk (see how it's done in Config::open above)
-    file << "// This file will override the default settings that are located in " << defaultConfigPath << std::endl;
-    file << "{" << std::endl;
-    file << "}" << std::endl;
-  }
   this->open( userConfigPath );
+
+  const char* VersionKeyStr = "ConfigVersion";
+
+  // Retro-compatibility
+  if( !m_json->has( VersionKeyStr ) )
+  {
+    // Detecting a previous file that we automatically wrote in Fabric 2.5.0
+    // with default values that have changed since then (so we ignore these values)
+    if( m_json->size() == 1 && m_json->has( "GraphView" ) )
+    {
+      FTL::JSONValue* gv = m_json->get( "GraphView" );
+      if( gv->isObject() )
+      {
+        FTL::JSONObject* gvo = gv->cast<FTL::JSONObject>();
+        if( gvo->size() == 1 && gvo->has( "mainPanelBackgroundColor" ) )
+          gvo->clear();
+      }
+    }
+  }
+
+  // Writing the latest version to that ReadOnly file (this
+  // is the only thing we change; aside from the malformed entries
+  // that will be removed)
+  {
+    m_json->replace( VersionKeyStr, new FTL::JSONString( "2.6.0" ) );
+    m_json->replace( "DefaultConfigPath", new FTL::JSONString( defaultConfigPath ) );
+    std::ofstream( m_fileName.data() ) << m_json->encode();
+  }
 }
 
 Config::~Config()
