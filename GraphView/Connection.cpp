@@ -39,7 +39,7 @@ Connection::Connection(
   , m_graph( graph )
   , m_src( src )
   , m_dst( dst )
-  , m_cosmeticPen( false )
+  , m_cosmeticPen( graph->cosmeticConnections() )
   , m_hovered( false )
   , m_dragging( false )
   , m_aboutToBeDeleted( false )

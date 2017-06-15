@@ -114,9 +114,7 @@ void MainPanel::setCanvasZoom(float state, bool quiet)
     // to zoom ( QPen::setCosmetic( true ) ). Otherwhise, their width
     // will scale with zoom.
     bool cosmetic = ( state < cosmeticThreshold );
-    const std::vector<Connection*> connections = graph()->connections();
-    for( size_t i = 0; i < connections.size(); i++ )
-      connections[i]->setCosmetic( cosmetic );
+    m_graph->setConnectionsCosmetic( cosmetic );
   }
 
   update();
