@@ -39,6 +39,7 @@ Connection::Connection(
   , m_graph( graph )
   , m_src( src )
   , m_dst( dst )
+  , m_cosmeticPen( graph->cosmeticConnections() )
   , m_hovered( false )
   , m_dragging( false )
   , m_aboutToBeDeleted( false )
@@ -135,7 +136,7 @@ Connection::Connection(
   }
   setColor(color);
   setAcceptHoverEvents(true);
-  setPen(m_defaultPen);
+  updatePen();
 
   setZValue(-1);
 
@@ -263,7 +264,7 @@ void Connection::setColor(QColor color)
 
   m_color = color;
   m_defaultPen.setColor(color);
-  setPen(m_defaultPen);
+  updatePen();
 }
 
 QPointF Connection::srcPoint() const
@@ -291,7 +292,7 @@ void Connection::invalidate()
 void Connection::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
   m_hovered = true;
-  setPen(m_hoverPen);
+  updatePen();
 
   if (graph()->config().highlightConnectionTargets)
   {
@@ -320,7 +321,7 @@ void Connection::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
   m_hovered = false;
-  setPen(m_defaultPen);
+  updatePen();
 
   if (graph()->config().highlightConnectionTargets)
   {
@@ -344,6 +345,19 @@ void Connection::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 
   if (graph()->config().highlightConnectionTargets)
     graph()->update();
+}
+
+void Connection::setCosmetic( bool cosmetic )
+{
+  m_cosmeticPen = cosmetic;
+  this->updatePen();
+}
+
+void Connection::updatePen()
+{
+  QPen pen = m_hovered ? m_hoverPen : m_defaultPen;
+  pen.setCosmetic( m_cosmeticPen );
+  this->setPen( pen );
 }
 
 void Connection::mousePressEvent(QGraphicsSceneMouseEvent * event)
@@ -399,6 +413,8 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     QPointF scenePos = mapToScene(event->pos());
     QPointF delta = scenePos - m_lastDragPoint;
 
+    bool isCTRL = event->modifiers().testFlag(Qt::ControlModifier);
+
     // todo: the disconnect threshold maybe should be a graph setting
     if(delta.manhattanLength() > 0)
     {
@@ -411,22 +427,13 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
       graph->controller()->beginInteraction();
 
-      std::vector<Connection*> conns;
-      conns.push_back(this);
-      if(graph->controller()->gvcDoRemoveConnections(conns))
+      if(!draggingInput)
       {
-        if(!draggingInput)
-        {
-          graph->constructMouseGrabber(scenePos, (Pin*)src, PortType_Input);
-        }
-        else
-        {
-          graph->constructMouseGrabber(scenePos, (Pin*)dst, PortType_Output);
-        }
+        graph->constructMouseGrabber(scenePos, (Pin*)src, PortType_Input, isCTRL ? NULL : this);
       }
       else
       {
-        graph->controller()->endInteraction();
+        graph->constructMouseGrabber(scenePos, (Pin*)dst, PortType_Output, isCTRL ? NULL : this);
       }
     }
   }
@@ -436,6 +443,35 @@ void Connection::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void Connection::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+  float radius = m_graph->config().pinRadius;
+  if (!m_dst || m_dst->isDragging())
+  {
+    bool isSnapped = static_cast<const MouseGrabber*>( m_dst )->targetUnderMouse() != NULL;
+    if(!isSnapped)
+    {
+      QBrush tipBrush = painter->brush();
+      tipBrush.setStyle(Qt::SolidPattern);
+      tipBrush.setColor(m_color);
+      painter->setBrush(tipBrush);
+      painter->drawEllipse(dstPoint(), radius, radius);
+      tipBrush.setStyle(Qt::NoBrush);
+    }
+  }
+
+  if (!m_src || m_src->isDragging())
+  {
+    bool isSnapped = static_cast<const MouseGrabber*>( m_src )->targetUnderMouse() != NULL;
+    if(!isSnapped)
+    {
+      QBrush tipBrush = painter->brush();
+      tipBrush.setStyle(Qt::SolidPattern);
+      tipBrush.setColor(m_color);
+      painter->setBrush(tipBrush);
+      painter->drawEllipse(srcPoint(), radius, radius);
+      tipBrush.setStyle(Qt::NoBrush);
+    }
+  }
+
   // [FE-6836] connections of IO ports are always dimmed.
   if (m_src->path() == m_dst->path() && !m_dragging && m_src->isRealPort() && m_dst->isRealPort())
   {

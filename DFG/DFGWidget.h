@@ -107,7 +107,6 @@ namespace DFG {
       bool isBindingHostAppCanvasPy()   const { return (getBindingHostApp() == "Canvas.py"); }
       bool isBindingHostAppCanvasExe()  const { return (getBindingHostApp() == "Canvas.exe"); }
       bool isBindingHostAppMaya()       const { return (getBindingHostApp() == "Maya"); }
-      bool isBindingHostAppSoftimage()  const { return (getBindingHostApp() == "Softimage"); }
       bool isBindingHostAppModo()       const { return (getBindingHostApp() == "Modo"); }
       bool isBindingHostApp3dsMax()     const { return (getBindingHostApp() == "3dsMax"); }
 
@@ -145,7 +144,7 @@ namespace DFG {
       void createNewNodeFromJSON( QPoint const &globalPos );
       void createNewNodeFromJSON( QFileInfo const &fileInfo, QPointF const &pos );
       void createNewFunctionNode( QPoint const &globalPos );
-      void createNewBackdropNode( QPoint const &globalPos );
+      void createNewBackdropNode( QPoint const &globalPos);
       void createNewBlockNode( QPoint const &globalPos );
       void createNewCacheNode( QPoint const &globalPos );
       void createNewVariableNode( QPoint const &globalPos );
@@ -180,6 +179,7 @@ namespace DFG {
       void onGoUpPressed();
       void onNodeEditRequested(FabricUI::GraphView::Node *);
       void onBubbleEditRequested(FabricUI::GraphView::Node * node);
+      void onToggleBlockCompilations();
       void onToggleDimConnections();
       void onToggleConnectionShowTooltip();
       void onToggleHighlightConnectionTargets();
@@ -2126,7 +2126,7 @@ namespace DFG {
 
       void onTriggered()
       {
-        m_dfgWidget->createNewBackdropNode( m_pos );
+        m_dfgWidget->createNewBackdropNode( m_pos);
       }
 
     private:
@@ -2595,6 +2595,38 @@ namespace DFG {
     private:
 
       QUrl m_url;
+    };
+
+    class BlockCompilationsAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+
+      BlockCompilationsAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true)
+        : QAction(parent)
+        , m_dfgWidget(dfgWidget)
+      {
+        setText("Disable graph compilations");
+        setShortcut(Qt::SHIFT + Qt::CTRL + Qt::Key_Return);
+        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(this, SIGNAL(triggered()), this, SLOT(onTriggered()));
+        setEnabled(enable);
+      }
+
+    private slots:
+
+      void onTriggered()
+      {
+        m_dfgWidget->onToggleBlockCompilations();
+      }
+
+    private:
+
+      DFGWidget *m_dfgWidget;
     };
 
 } // namespace DFG

@@ -174,21 +174,6 @@ class ResetCameraAction(BaseCanvasWindowAction):
         viewport.addAction(self)
         self.triggered.connect(viewport.resetCamera)
        
-class BlockGraphCompilationAction(BaseCanvasWindowAction):
-
-    def __init__(self, canvasWindow):
-        super(BlockGraphCompilationAction, self).__init__(
-            None,     
-            canvasWindow, 
-            "CanvasWindow.BlockGraphCompilationAction", 
-            "Disable graph compilations", 
-            QtGui.QKeySequence(QtCore.Qt.SHIFT  + QtCore.Qt.CTRL + QtCore.Qt.Key_Return),
-            QtCore.Qt.WidgetWithChildrenShortcut)
-        
-        self.canvasWindow.addAction(self)
-        self.setCheckable(True)
-        self.setChecked(False)
-        self.toggled.connect(self.canvasWindow.setBlockCompilations)
 
 class ShowHotkeyEditorDialogAction(BaseCanvasWindowAction):
 
@@ -311,7 +296,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setGridVisibleAction = None
         self.resetCameraAction = None
         self.clearLogAction = None
-        self.blockCompilationsAction = None
         self.showHotkeyEditorDialogAction = None
 
 
@@ -1288,17 +1272,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
         return True
 
-    def setBlockCompilations(self, blockCompilations):
-        """Sets the graph to block compilations.
-
-        Arguments:
-            blockCompilations (bool): Whether to block compilations or not.
-
-        """
-
-        dfgController = self.dfgWidget.getDFGController()
-        dfgController.setBlockCompilations(blockCompilations)
-
     def onFileNameChanged(self, fileName):
         """Callback for when the file name has changed.
 
@@ -1340,8 +1313,6 @@ class CanvasWindow(QtGui.QMainWindow):
             self.resetCameraAction.blockSignals(enabled)
         if self.clearLogAction:
             self.clearLogAction.blockSignals(enabled)
-        if self.blockCompilationsAction:
-            self.blockCompilationsAction.blockSignals(enabled)
         if self.showHotkeyEditorDialogAction:
             self.showHotkeyEditorDialogAction.blockSignals(enabled)
 
@@ -1424,7 +1395,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
                 self.clearLogAction = QtGui.QAction('&Clear Log Messages', None)
                 self.clearLogAction.triggered.connect(self.logWidget.clear)
-                self.blockCompilationsAction = BlockGraphCompilationAction(self)
 
                 if self.isCanvas:
                     menu.addAction(self.setGridVisibleAction)
@@ -1432,8 +1402,6 @@ class CanvasWindow(QtGui.QMainWindow):
                     menu.addAction(self.resetCameraAction)
                     menu.addSeparator()
                 menu.addAction(self.clearLogAction)
-                menu.addSeparator()
-                menu.addAction(self.blockCompilationsAction)
 
     def onGraphSet(self, graph):
         """Callback when the graph is set.
@@ -1507,11 +1475,17 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self.treeWidget.onExpandToAndSelectItem(nodeName)
 
-    def onNodeInspectRequested(self, nodeName):
+    def onNodeInspectRequested(self, node):
         """Callback for when 'Inspect node' is invoked.
         """
+        if node.isBackDropNode():
+          return;
 
         # [FE-8411] ensure the value editor is visible.
         if not self.valueEditorDockWidget.isVisible() or self.valueEditorDockWidget.visibleRegion().isEmpty():
           self.valueEditorDockWidget.setVisible(True);
           self.valueEditorDockWidget.raise_();
+
+        graph = self.dfgWidget.getUIGraph();
+        graph.clearInspection();
+        node.setInspected(True);

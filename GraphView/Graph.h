@@ -91,9 +91,11 @@ namespace FabricUI
         { return node( path ); }
       Node *renameNode( FTL::StrRef oldName, FTL::StrRef newName );
 
+      virtual QRectF selectedNodesRect() const;
       virtual std::vector<Node *> selectedNodes() const;
       void selectAllNodes();
       void clearSelection() const;
+      void clearInspection() const;
 
       // ports
       std::vector<Port *> ports() const;
@@ -134,7 +136,7 @@ namespace FabricUI
 
       virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 
-      MouseGrabber * constructMouseGrabber(QPointF pos, ConnectionTarget * target, PortType portType);
+      MouseGrabber * constructMouseGrabber(QPointF pos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious);
       MouseGrabber * getMouseGrabber();
 
       // interaction
@@ -171,6 +173,8 @@ namespace FabricUI
       virtual bool autoConnections();
       virtual bool removeConnections();
       virtual void resetMouseGrabber();
+      void setConnectionsCosmetic( bool cosmetic );
+      inline bool cosmeticConnections() const { return m_cosmeticConnections; }
 
       void updateOverlays(float width, float height);
       void setupBackgroundOverlay(QPointF pos, QString filePath);
@@ -236,7 +240,7 @@ namespace FabricUI
       double m_nodeZValue;
       double m_backdropZValue;
       double m_connectionZValue;
-
+      bool m_cosmeticConnections;
     };
 
   };

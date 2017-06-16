@@ -87,9 +87,7 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( disconnectInputsAutomatically, true );
   GET_PARAMETER( middleClickDeletesConnections, false );
 
-  // warning : this value might also be defined as an example in ~/Fabric/user.config.json
-  // If the default value is changed, it should also be updated there (see FabricUI/Util/Config.cpp)
-  GET_PARAMETER( mainPanelBackgroundColor, QColor(68, 68, 68, 255) );
+  GET_PARAMETER( mainPanelBackgroundColor, QColor(58, 58, 58, 255) );
 
   GET_PARAMETER( mainPanelHotkeyZoomBackgroundColor, QColor(56, 56, 56, 255) );
   GET_PARAMETER( mainPanelHotkeyZoomBorderColor, QColor(255, 255, 255, 160) );
@@ -98,7 +96,7 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( mainPanelGridSpan, 30 );
   GET_PARAMETER( mainPanelGridSnap, false );
   GET_PARAMETER( mainPanelGridSnapSize, 10 );
-  GET_PARAMETER( mainPanelGridPen, QPen(QColor(55, 55, 55, 255), 1.0) );
+  GET_PARAMETER( mainPanelGridPen, QPen(QColor(44, 44, 44, 255), 1.0) );
 
   GET_PARAMETER( mainPanelBackGroundPanFixed, true );
   
@@ -121,11 +119,23 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( nodeFontHighlightColor, QColor(195, 195, 195, 255) );
   GET_PARAMETER( nodeDefaultPen, QPen(nodeFontColor, 1.0) );
   GET_PARAMETER( nodeDefaultPenUsesNodeColor, false );
+  GET_PARAMETER( nodeInspectedOutlineColor, QColor(223, 94, 39, 125) );
+  GET_PARAMETER( nodeInspectedSelectedOutlineColor, QColor(223, 94, 39, 255) );
 
   nodeSelectedPen = QPen(Qt::SolidLine);
   nodeSelectedPen.setColor(nodeFontHighlightColor);
   nodeSelectedPen.setWidth(1);
   GET_PEN( nodeSelectedPen );
+
+  nodeInspectedPen = QPen();
+  nodeInspectedPen.setColor(nodeInspectedOutlineColor);
+  nodeInspectedPen.setWidth(2);
+  GET_PEN(nodeInspectedPen);
+
+  nodeInspectedSelectedPen = QPen();
+  nodeInspectedSelectedPen.setColor(nodeInspectedSelectedOutlineColor);
+  nodeInspectedSelectedPen.setWidth(2);
+  GET_PEN(nodeInspectedSelectedPen);
 
   nodeErrorPen = QPen(Qt::SolidLine);
   nodeErrorPen.setColor(QColor(255, 0, 0, 255));

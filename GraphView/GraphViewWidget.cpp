@@ -12,6 +12,7 @@
 #include <FabricUI/GraphView/MainPanel.h>
 #include <FabricUI/GraphView/SidePanel.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/MouseGrabber.h>
 
 #ifdef FABRICUI_TIMERS
   #include <Util/Timer.h>
@@ -120,6 +121,22 @@ void GraphViewWidget::mouseMoveEvent(QMouseEvent * event)
   if (getUiGraphZoomBeforeQuickZoom() > 0)
     update();
   QGraphicsView::mouseMoveEvent(event);
+}
+
+void GraphViewWidget::keyPressEvent(QKeyEvent * event)
+{
+  if (event->key() == Qt::Key_Escape)
+  {
+    MouseGrabber *mouseGrabber = graph()->getMouseGrabber();
+    if (mouseGrabber)
+    {
+      mouseGrabber->performUngrab(NULL);
+      graph()->resetMouseGrabber();
+      event->accept();
+      return;
+    }
+  }
+  QGraphicsView::keyPressEvent(event);
 }
 
 void GraphViewWidget::contextMenuEvent(QContextMenuEvent * event)

@@ -67,6 +67,7 @@ namespace FabricUI
       ConnectionTarget *getConnectionTarget( FTL::StrRef name );
 
       virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
+      virtual void mousePressEvent( QGraphicsSceneMouseEvent* ) FTL_OVERRIDE;
       virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * event);
       virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
       virtual void wheelEvent(QGraphicsSceneWheelEvent * event);

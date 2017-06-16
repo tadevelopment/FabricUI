@@ -64,6 +64,7 @@ namespace FabricUI
       virtual bool isConnected() const;
       virtual bool isConnectedAsSource() const;
       virtual bool isConnectedAsTarget() const;
+      virtual bool isDragging();
 
       virtual bool selected() const;
 

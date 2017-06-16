@@ -242,12 +242,12 @@ DFGWidget::DFGWidget(
     this, SLOT( onBackdropAddedFromTabSearch() )
   );
   QObject::connect(
-    m_tabSearchWidget, SIGNAL( selectedBackdrop() ),
-    this, SLOT( onBackdropAddedFromTabSearch() )
-  );
-  QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedNewBlock() ),
     this, SLOT( onNewBlockAddedFromTabSearch() )
+  );
+  QObject::connect(
+    m_tabSearchWidget, SIGNAL( selectedCreateNewVariable() ),
+    this, SLOT( onVariableCreationRequestedFromTabSearch() )
   );
   QObject::connect(
     m_tabSearchWidget, SIGNAL( selectedGetVariable( const std::string ) ),
@@ -360,6 +360,7 @@ static void CountNodeTypes(
   unsigned &setNodeCount,
   unsigned &instNodeCount,
   unsigned &userNodeCount,
+  unsigned &backdropNodeCount,
   unsigned &blockNodeCount
   )
 {
@@ -368,12 +369,13 @@ static void CountNodeTypes(
   setNodeCount = 0;
   instNodeCount = 0;
   userNodeCount = 0;
+  backdropNodeCount = 0;
   blockNodeCount = 0;
   for(unsigned int i=0;i<nodes.size();i++)
   {
     if (nodes[i]->isBackDropNode())
     {
-      userNodeCount++;
+      backdropNodeCount++;
       continue;
     }
 
@@ -415,6 +417,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
   unsigned setNodeCount;
   unsigned instNodeCount;
   unsigned userNodeCount;
+  unsigned backdropNodeCount;
   unsigned blockNodeCount;
   CountNodeTypes(
     controller->getExec(),
@@ -424,6 +427,7 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
     setNodeCount,
     instNodeCount,
     userNodeCount,
+    backdropNodeCount,
     blockNodeCount
     );
 
@@ -497,6 +501,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
     unsigned setNodeCount;
     unsigned instNodeCount;
     unsigned userNodeCount;
+    unsigned backdropNodeCount;
     unsigned blockNodeCount;
     CountNodeTypes(
       exec,
@@ -506,6 +511,7 @@ QMenu *DFGWidget::nodeContextMenuCallback(
       setNodeCount,
       instNodeCount,
       userNodeCount,
+      backdropNodeCount,
       blockNodeCount
       );
     bool onlyInstNodes        = (instNodeCount == nodes.size());
@@ -632,15 +638,15 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addSeparator();
 
-    result->addAction(new AutoConnectionsAction  (dfgWidget, result, dfgWidget->isEditable() && nodes.size() > 1));
-    result->addAction(new RemoveConnectionsAction(dfgWidget, result, dfgWidget->isEditable()));
+    result->addAction(new AutoConnectionsAction  (dfgWidget, result, dfgWidget->isEditable() && nodes.size() - backdropNodeCount > 1));
+    result->addAction(new RemoveConnectionsAction(dfgWidget, result, dfgWidget->isEditable() && nodes.size() != backdropNodeCount));
     result->addAction(new SplitFromPresetAction  (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && exec.getSubExec(uiNode->name().c_str()).editWouldSplitFromPreset()));
 
     result->addSeparator();
 
     result->addAction(new UpdatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanUpdatePreset));
     result->addAction(new CreatePresetAction          (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && dfgWidget->isEditable() && instExecCanCreatePreset));
-    result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
+    result->addAction(new RevealPresetInExplorerAction(dfgWidget, uiNode, result, nodes.size() == 1 && instExec.isValid() && instExec.isPreset()));
     result->addAction(new ExportGraphAction           (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1));
     result->addSeparator();
 
@@ -944,18 +950,29 @@ void DFGWidget::onPresetAddedFromTabSearch( QString preset )
 
 void DFGWidget::onBackdropAddedFromTabSearch()
 {
-  this->getUIController()->cmdAddBackDrop(
+  QString addedBackdrop = this->getUIController()->cmdAddBackDrop(
     "backdrop",
     getTabSearchScenePos()
   );
+  if (GraphView::Node *uiNode = m_uiGraph->node(addedBackdrop))
+  {
+    QRectF rect = getUIGraph()->selectedNodesRect();
+    if (!rect.isEmpty())
+    {
+      rect.adjust(-16, -40, 16, 13);
+      m_uiController->cmdResizeBackDropNode(uiNode->name_QS(), rect.topLeft(), rect.size());
+    }
+  }
+  MaybeSelectNode(this->getGraphViewWidget()->graph(), addedBackdrop);
 }
 
 void DFGWidget::onNewBlockAddedFromTabSearch()
 {
-  this->getUIController()->cmdAddBlock(
+  QString addedBlock = this->getUIController()->cmdAddBlock(
     "block",
     getTabSearchScenePos()
   );
+  MaybeSelectNode(this->getGraphViewWidget()->graph(), addedBlock);
 }
 
 void DFGWidget::onVariableCreationRequestedFromTabSearch()
@@ -1064,6 +1081,8 @@ void DFGWidget::tabSearchBlockToggleChanged()
 void DFGWidget::emitNodeInspectRequested(FabricUI::GraphView::Node *node)
 {
   emit nodeInspectRequested(node);
+  node->graph()->clearInspection();
+  node->setInspected(true);
 }
 
 void DFGWidget::createNewBlockNode( QPoint const &globalPos )
@@ -1097,10 +1116,15 @@ void DFGWidget::createNewBlockNode( QPoint const &globalPos )
 
 void DFGWidget::createNewCacheNode( QPoint const &globalPos )
 {
-  m_uiController->cmdAddInstFromPreset(
-    "Fabric.Core.Data.Cache",
-    m_uiGraphViewWidget->mapToGraph( globalPos )
-    );
+  QString nodeName =
+    m_uiController->cmdAddInstFromPreset(
+      "Fabric.Core.Data.Cache",
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::createNewGraphNode( QPoint const &globalPos )
@@ -1184,9 +1208,13 @@ dfgEntry {\n\
       QString::fromUtf8( initialCode.c_str() ),
       m_uiGraphViewWidget->mapToGraph( globalPos )
       );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
-void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
+void DFGWidget::createNewBackdropNode( QPoint const &globalPos)
 {
   QString text = "backdrop";
 
@@ -1204,10 +1232,24 @@ void DFGWidget::createNewBackdropNode( QPoint const &globalPos )
       return; }
   }
 
-  m_uiController->cmdAddBackDrop(
-    text.toUtf8().constData(),
-    m_uiGraphViewWidget->mapToGraph( globalPos )
-    );
+  QString nodeName =
+    m_uiController->cmdAddBackDrop(
+      text.toUtf8().constData(),
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  GraphView::Node *uiNode = m_uiGraph->node(nodeName);
+  if (uiNode)
+  {
+    QRectF rect = getUIGraph()->selectedNodesRect();
+    if (!rect.isEmpty())
+    {
+      rect.adjust(-16, -40, 16, 13);
+      m_uiController->cmdResizeBackDropNode(uiNode->name_QS(), rect.topLeft(), rect.size());
+    }
+    m_uiGraph->clearSelection();
+    uiNode->setSelected(true);
+  }
 }
 
 void DFGWidget::createNewVariableNode( QPoint const &globalPos )
@@ -1232,12 +1274,17 @@ void DFGWidget::createNewVariableNode( QPoint const &globalPos )
   { controller->log("Warning: no variable created (empty type).");
     return; }
 
-  m_uiController->cmdAddVar(
-    name,
-    dataType,
-    extension,
-    m_uiGraphViewWidget->mapToGraph( globalPos )
-    );
+  QString nodeName =
+    m_uiController->cmdAddVar(
+      name,
+      dataType,
+      extension,
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::createNewVariableGetNode( QPoint const &globalPos )
@@ -1255,11 +1302,16 @@ void DFGWidget::createNewVariableGetNode( QPoint const &globalPos )
   if(name.length() == 0)
     return;
 
-  m_uiController->cmdAddGet(
-    "get",
-    name.toUtf8().constData(),
-    m_uiGraphViewWidget->mapToGraph( globalPos )
-    );
+  QString nodeName =
+    m_uiController->cmdAddGet(
+      "get",
+      name.toUtf8().constData(),
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::createNewVariableSetNode( QPoint const &globalPos )
@@ -1277,11 +1329,16 @@ void DFGWidget::createNewVariableSetNode( QPoint const &globalPos )
   if(name.length() == 0)
     return;
 
-  m_uiController->cmdAddSet(
-    "set",
-    name.toUtf8().constData(),
-    m_uiGraphViewWidget->mapToGraph( globalPos )
-    );
+  QString nodeName =
+    m_uiController->cmdAddSet(
+      "set",
+      name.toUtf8().constData(),
+      m_uiGraphViewWidget->mapToGraph( globalPos )
+      );
+
+  m_uiGraph->clearSelection();
+  if ( GraphView::Node *uiNode = m_uiGraph->node( nodeName ) )
+    uiNode->setSelected( true );
 }
 
 void DFGWidget::createPort( FabricUI::GraphView::PortType portType )
@@ -2240,6 +2297,13 @@ void DFGWidget::onRevealPresetInExplorer(char const *nodeName)
     emit revealPresetInExplorer(presetPath);
 }
 
+void DFGWidget::onToggleBlockCompilations()
+{
+  static bool blockCompilations = false;
+  blockCompilations = !blockCompilations;
+  getDFGController()->setBlockCompilations( blockCompilations );
+}
+
 void DFGWidget::onToggleDimConnections()
 {
   m_uiGraph->config().dimConnectionLines = !m_uiGraph->config().dimConnectionLines;
@@ -2758,6 +2822,14 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
     // add separators if required
     if(viewMenu->actions().count() > 0)
       viewMenu->addSeparator();
+
+    // block graph compilations.
+    QAction * blockCompilationsAction = new BlockCompilationsAction(this, menuBar);
+    blockCompilationsAction->setCheckable(true);
+    blockCompilationsAction->setChecked(false);
+    blockCompilationsAction->setShortcutContext(Qt::WindowShortcut);
+    viewMenu->addAction(blockCompilationsAction);
+    viewMenu->addSeparator();
 
     // view -> graph view submenu
     QMenu *graphViewMenu = viewMenu->addMenu(tr("Graph View"));

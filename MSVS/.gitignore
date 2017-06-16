@@ -1,0 +1,3 @@
+# call "scons FabricUIMSVS" on Windows to generate files here
+*
+!.gitignore

@@ -66,6 +66,12 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
     rect, int( 150.0f * m_node->m_cornerRadius / rect.width() ),
     int( 150.0f * m_node->m_cornerRadius / rect.height() ) );
 
+  QRectF inspected_rect = rect.adjusted(-2, -2, 2, 2);
+  QPainterPath inspected_rounded_rect;
+  inspected_rounded_rect.addRoundRect(
+    inspected_rect, int( 150.0f * m_node->m_cornerRadius / inspected_rect.width() ),
+    int( 150.0f * m_node->m_cornerRadius / (inspected_rect.height() ) ) );
+
   // fill everything
   painter->fillPath(rounded_rect,painter->brush());     
 
@@ -80,7 +86,7 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
   painter->fillPath(rounded_rect,painter->brush());     
 
   // remove the clipping
-  painter->setClipRect(rect.adjusted(-2, -2, 2, 2));
+  painter->setClipRect(rect.adjusted(-4, -4, 4, 4));
 
   // draw the header lines
   // FE-4157
@@ -94,11 +100,23 @@ void NodeRectangle::paint(QPainter * painter, const QStyleOptionGraphicsItem * o
   // draw the outline
   painter->strokePath(rounded_rect, standardPen);
 
+  // draw the "is inspected" outline
+  if (m_node->isInspected())
+  {
+    QPen pen;
+    if(m_node->selected())
+      pen = m_node->m_inspectedSelectedPen;
+    else
+    {
+      pen = m_node->m_inspectedPen;
+    }
+    painter->strokePath(inspected_rounded_rect, pen);
+  }
+
 #ifdef FABRICUI_TIMERS
   timer->pause();
 #endif
 
   painter->setClipping(false);
   QGraphicsWidget::paint(painter, option, widget);
-
 }

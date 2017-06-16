@@ -296,7 +296,7 @@ namespace FabricUI
         QString nodeName
         );
 
-      void cmdAddBackDrop(
+      QString cmdAddBackDrop(
         QString title,
         QPointF pos
         );

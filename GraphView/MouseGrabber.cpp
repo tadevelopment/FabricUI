@@ -2,6 +2,7 @@
 
 #include <FabricUI/GraphView/Connection.h>
 #include <FabricUI/GraphView/Graph.h>
+#include <FabricUI/GraphView/MainPanel.h>
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/GraphView/InstBlockHeader.h>
 #include <FabricUI/GraphView/InstBlockPort.h>
@@ -23,9 +24,11 @@
 #include <QAction>
 #include <QApplication>
 
+#include <math.h>
+
 using namespace FabricUI::GraphView;
 
-MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
+MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious)
 : ConnectionTarget(parent->itemGroup())
   , m_lastSidePanel( NULL )
 {
@@ -34,13 +37,14 @@ MouseGrabber::MouseGrabber(Graph * parent, QPointF mousePos, ConnectionTarget * 
   m_target->setHighlighted( true );
   m_otherPortType = portType;
   m_targetUnderMouse = NULL;
+  m_connectionPrevious = connectionPrevious;
 
   const GraphConfig & config = parent->config();
   m_radius = config.mouseGrabberRadius;
 
   setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  setPreferredSize(QSizeF(diameter(), diameter()));
-  setPos(-radius(), -radius());
+  setPreferredSize(QSizeF(diameter() * 2.0, diameter() * 2.0));
+  setPos(-diameter(), -diameter());
   setWindowFrameMargins(0, 0, 0, 0);
 
   QPointF localPos = parent->itemGroup()->mapFromScene(m_connectionPos);
@@ -60,7 +64,7 @@ MouseGrabber::~MouseGrabber()
     m_target->setHighlighted( false );
 }
 
-MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType)
+MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious)
 {
   switch ( target->targetType() )
   {
@@ -106,7 +110,7 @@ MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, Connect
       if(!pin)
         return NULL;
 
-      return construct(parent, mousePos, pin, portType);
+      return construct(parent, mousePos, pin, portType, connectionPrevious);
     }
     break;
 
@@ -153,12 +157,12 @@ MouseGrabber * MouseGrabber::construct(Graph * parent, QPointF mousePos, Connect
       if(!instBlockPort)
         return NULL;
 
-      return construct(parent, mousePos, instBlockPort, portType);
+      return construct(parent, mousePos, instBlockPort, portType, connectionPrevious);
     }
     break;
 
     default:
-      return new MouseGrabber(parent, mousePos, target, portType);
+      return new MouseGrabber(parent, mousePos, target, portType, connectionPrevious);
   }
 }
 
@@ -221,7 +225,10 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
   ConnectionTarget * newTargetUnderMouse = NULL;
   ConnectionTarget * prevTargetUnderMouse = m_targetUnderMouse;
-  float distance = 1000000.0f;
+
+  MainPanel * mainPanel = graph()->mainPanel();
+  float zoom = mainPanel->canvasZoom();
+  float distance = diameter() * zoom;
   for(int i=0;i<items.count();i++)
   {
     if(items[i]->type() == QGraphicsItemType_PinCircle)
@@ -236,8 +243,10 @@ void MouseGrabber::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
         success = target->canConnectTo(m_target, failureReason);
       if(success)
       {
-        float newDistance = (pinCircle->centerInSceneCoords() - mousePos).manhattanLength();
-        if(newDistance < distance)
+        QPointF diff = (pinCircle->centerInSceneCoords() - m_connectionPos); // use m_connectionPos so we're working in scene space
+        float newDistanceSquared = diff.x() * diff.x() + diff.y() * diff.y(); // is good enough to compare distances (not need for the expensive sqrt)
+        float newDistance = sqrt( newDistanceSquared );
+        if(newDistance <= distance)
         {
           distance = newDistance;
           newTargetUnderMouse = target;
@@ -329,6 +338,14 @@ void MouseGrabber::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 
   if( m_lastSidePanel )
     m_lastSidePanel->onDroppingPort();
+
+  if (m_connectionPrevious) // [FE-8122]
+  {
+    std::vector<Connection *> conns;
+    conns.push_back(m_connectionPrevious);
+    graph()->controller()->gvcDoRemoveConnections(conns);
+    m_connectionPrevious = NULL;
+  }
 
   if(m_targetUnderMouse)
   {
@@ -441,10 +458,16 @@ void MouseGrabber::performUngrab( ConnectionTarget *fromCT )
 
 void MouseGrabber::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
-  QColor color = m_connection->color();
-  color.setAlpha(125);
-  painter->setPen(color);
-  painter->drawRect(windowFrameRect());
+  if(m_targetUnderMouse == NULL)
+  { 
+    QBrush outlineBrush = painter->brush();
+    outlineBrush.setStyle(Qt::NoBrush);
+    QColor color = m_connection->color();
+    color.setAlpha(85);
+    painter->setBrush(outlineBrush);
+    painter->setPen(color);
+    painter->drawEllipse(windowFrameRect().center(), diameter(), diameter());
+  }
   QGraphicsWidget::paint(painter, option, widget);
 }
 
