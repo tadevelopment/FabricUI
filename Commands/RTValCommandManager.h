@@ -24,6 +24,14 @@ class RTValCommandManager : public CommandManager
 
     virtual ~RTValCommandManager();
     
+    /// Implementation of CommandManager.
+    virtual BaseCommand* createCommand(
+      QString cmdName, 
+      QMap<QString, QString> args, 
+      bool doCmd = true,
+      int canMergeID = -1
+      );
+
     /// Creates and executes a command (if doCmd == true).
     /// If executed, the command is added to the manager stack.
     /// Throws an exception if an error occurs.
