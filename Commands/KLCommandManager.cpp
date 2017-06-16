@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include "KLCommand.h"
 #include "KLCommandManager.h"
 #include "KLCommandHelpers.h"
@@ -17,7 +18,11 @@ using namespace Application;
 KLCommandManager::KLCommandManager() 
   : RTValCommandManager()
 {
-  m_klCmdManager = KLCommandHelpers::getKLCommandManager();
+  std::cout 
+    << "KLCommandManager::KLCommandManager " 
+    << std::endl;
+
+ // m_klCmdManager = KLCommandHelpers::getKLCommandManager();
 }
 
 KLCommandManager::~KLCommandManager() 
@@ -28,7 +33,7 @@ void KLCommandManager::clear()
 {
   FABRIC_CATCH_BEGIN();
 
-  m_klCmdManager.callMethod(
+  KLCommandHelpers::getKLCommandManager().callMethod(
     "", 
     "clear", 
     0, 0);
@@ -46,7 +51,7 @@ QString KLCommandManager::getContent(
   QString res = CommandManager::getContent(
     withArgs);
 
-  res += QString("\n") + m_klCmdManager.callMethod(
+  res += QString("\n") + KLCommandHelpers::getKLCommandManager().callMethod(
     "String", 
     "getContent", 
     0, 0).getStringCString();  
@@ -64,7 +69,7 @@ int KLCommandManager::getNewCanMergeID()
   
   FABRIC_CATCH_BEGIN();
 
-  int canMergeIDCounter = m_klCmdManager.callMethod(
+  int canMergeIDCounter = KLCommandHelpers::getKLCommandManager().callMethod(
     "UInt32", 
     "getCanMergeIDCounter", 
     0, 0).getUInt32();
@@ -72,10 +77,10 @@ int KLCommandManager::getNewCanMergeID()
   if(canMergeIDCounter < m_canMergeIDCounter)
   {
     RTVal canMergeIDCounterVal = RTVal::ConstructUInt32(
-      m_klCmdManager.getContext(),
+      KLCommandHelpers::getKLCommandManager().getContext(),
       m_canMergeIDCounter);
 
-    m_klCmdManager.callMethod(
+    KLCommandHelpers::getKLCommandManager().callMethod(
       "", 
       "setCanMergeIDCounter", 
       1, &canMergeIDCounterVal);
@@ -93,7 +98,7 @@ void KLCommandManager::clearRedoStack()
 {
   FABRIC_CATCH_BEGIN();
 
-  m_klCmdManager.callMethod(
+  KLCommandHelpers::getKLCommandManager().callMethod(
     "", 
     "clearRedoStack", 
     0, 0);
@@ -108,10 +113,11 @@ void KLCommandManager::synchronizeKL()
   FABRIC_CATCH_BEGIN();
 
   // Gets the KL command from the KL manager. 
-  RTVal klAppCmdStack = m_klCmdManager.callMethod(
+  RTVal klAppCmdStack = KLCommandHelpers::getKLCommandManager().callMethod(
     "Command[]", 
     "getAppStack", 
     0, 0);
+  std::cout << "KLCommandManager::synchronizeKL " << klAppCmdStack.getArraySize() << std::endl;
 
   for(unsigned i=0; i<klAppCmdStack.getArraySize(); ++i)
   {
@@ -135,7 +141,7 @@ void KLCommandManager::synchronizeKL()
       doKLCommand(klCmd);
   } 
 
-  m_klCmdManager.callMethod(
+  KLCommandHelpers::getKLCommandManager().callMethod(
     "", 
     "clearAppStack", 
     0, 0);
@@ -163,6 +169,8 @@ void KLCommandManager::createAppCommand(
       1, 
       &argNameVal);
   }
+
+  std::cout << "KLCommandManager::createAppCommand " << appCmd.callMethod("String", "getName", 0, 0).getStringCString() << std::endl;
 
   createCommand(
     appCmd.callMethod("String", "getName", 0, 0).getStringCString(), 

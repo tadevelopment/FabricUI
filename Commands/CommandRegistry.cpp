@@ -151,6 +151,11 @@ void CommandRegistry::commandIsRegistered(
   QString cmdType,
   QString implType) 
 {
+  std::cout 
+    << "CommandRegistry::commandIsRegistered " 
+    << cmdName.toUtf8().constData() 
+    << std::endl;
+    
   // sets the command specs
   QPair<QString, QString> spec;
   spec.first = cmdType;

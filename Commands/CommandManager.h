@@ -116,7 +116,7 @@ class CommandManager : public QObject
   signals:
     /// Emitted when a top command has been succefully executed.
     void commandDone(
-      BaseCommand *cmd,
+      FabricUI::Commands::BaseCommand *cmd,
       bool addToStack,
       bool replaceLog
       );
