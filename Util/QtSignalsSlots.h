@@ -8,11 +8,11 @@
 #include <QObject>
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-#define QOBJECT_CONNECT( objA, ClassA, methodA, ArgsA, objB, ClassB, methodB, ArgsB ) \
+#define QOBJECT_CONNECT( objA, TA, ClassA, methodA, ArgsA, objB, TB, ClassB, methodB, ArgsB ) \
     QObject::connect( objA, & ClassA :: methodA, objB, & ClassB :: methodB );
 #else
-#define QOBJECT_CONNECT( objA, ClassA, methodA, ArgsA, objB, ClassB, methodB, ArgsB ) \
-    QObject::connect( objA, SIGNAL( methodA( Args A ) ), objB, SLOT( methodB( ArgsB ) ) );
+#define QOBJECT_CONNECT( objA, TA, ClassA, methodA, ArgsA, objB, TB, ClassB, methodB, ArgsB ) \
+    QObject::connect( objA, TA ( methodA( Args A ) ), objB, TB ( methodB( ArgsB ) ) );
 #endif
 
 #endif //_FABRICUI_UTIL_QT_SIGNALS_SLOTS_H
