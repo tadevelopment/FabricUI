@@ -12,7 +12,7 @@
     QObject::connect( objA, & ClassA :: methodA, objB, & ClassB :: methodB );
 #else
 #define QOBJECT_CONNECT( objA, TA, ClassA, methodA, ArgsA, objB, TB, ClassB, methodB, ArgsB ) \
-    QObject::connect( objA, TA ( methodA( Args A ) ), objB, TB ( methodB( ArgsB ) ) );
+    QObject::connect( objA, TA ( methodA ArgsA ), objB, TB ( methodB ArgsB ) );
 #endif
 
 #endif //_FABRICUI_UTIL_QT_SIGNALS_SLOTS_H

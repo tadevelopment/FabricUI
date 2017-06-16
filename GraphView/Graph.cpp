@@ -85,20 +85,20 @@ void Graph::initialize()
 {
   m_mainPanel = new MainPanel(this);
   QOBJECT_CONNECT(
-    m_mainPanel, SIGNAL, MainPanel, doubleClicked, Qt::KeyboardModifiers,
-    this, SLOT, Graph, requestMainPanelAction, Qt::KeyboardModifiers
+    m_mainPanel, SIGNAL, MainPanel, doubleClicked, (Qt::KeyboardModifiers),
+    this, SLOT, Graph, requestMainPanelAction, (Qt::KeyboardModifiers)
   );
 
   m_leftPanel = new SidePanel(this, PortType_Output);
   QOBJECT_CONNECT(
-    m_leftPanel, SIGNAL, SidePanel, doubleClicked, FabricUI::GraphView::SidePanel*,
-    this, SLOT, Graph, requestSidePanelInspect, FabricUI::GraphView::SidePanel*
+    m_leftPanel, SIGNAL, SidePanel, doubleClicked, (FabricUI::GraphView::SidePanel*),
+    this, SLOT, Graph, requestSidePanelInspect, (FabricUI::GraphView::SidePanel*)
   );
 
   m_rightPanel = new SidePanel(this, PortType_Input);
   QOBJECT_CONNECT(
-    m_rightPanel, SIGNAL, SidePanel, doubleClicked, FabricUI::GraphView::SidePanel*,
-    this, SLOT, Graph, requestSidePanelInspect, FabricUI::GraphView::SidePanel*
+    m_rightPanel, SIGNAL, SidePanel, doubleClicked, (FabricUI::GraphView::SidePanel*),
+    this, SLOT, Graph, requestSidePanelInspect, (FabricUI::GraphView::SidePanel*)
   );
 
   QGraphicsLinearLayout * layout = new QGraphicsLinearLayout();
