@@ -2558,11 +2558,11 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandregistry_wrapper.cpp FabricU
 diff -purN FabricUI.orig/fabricui_commands_rtvalcommandmanager_wrapper.cpp FabricUI/fabricui_commands_rtvalcommandmanager_wrapper.cpp
 --- FabricUI.ori/fabricui_commands_rtvalcommandmanager_wrapper.cpp  Mon Jun 12 09:42:04 2017
 +++ FabricUI/fabricui_commands_rtvalcommandmanager_wrapper.cpp  Mon Jun 12 09:33:15 2017
-@@ -447,15 +447,30 @@
+@@ -482,15 +482,30 @@
          if (!PyErr_Occurred()) {
              // RTValCommandManager()
              void* addr = PySide::nextQObjectMemoryAddr();
-+             std::string errorMessage = "";
++            std::string errorMessage = "";
              PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
 -            if (addr) {
 -                cptr = new (addr) ::RTValCommandManagerWrapper();
@@ -2594,11 +2594,11 @@ diff -purN FabricUI.orig/fabricui_commands_rtvalcommandmanager_wrapper.cpp Fabri
          }
      }
  
-@@ -519,9 +534,25 @@
+@@ -554,9 +569,25 @@
  
          if (!PyErr_Occurred()) {
              // checkRTValCommandArgs(FabricUI::Commands::BaseCommand*,QMap<QString,FabricCore::RTVal>)
-+             std::string errorMessage = "";
++            std::string errorMessage = "";
              PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
 -            ((::RTValCommandManagerWrapper*) cppSelf)->RTValCommandManagerWrapper::checkRTValCommandArgs_protected(cppArg0, cppArg1);
 +            try
@@ -2621,31 +2621,59 @@ diff -purN FabricUI.orig/fabricui_commands_rtvalcommandmanager_wrapper.cpp Fabri
          }
      }
  
-@@ -616,9 +647,26 @@
+@@ -664,9 +695,26 @@
  
-         if (!PyErr_Occurred()) {
-             // createCommand(QString,QMap<QString,FabricCore::RTVal>,bool,int)
-+             std::string errorMessage = "";
-+             FabricUI::Commands::BaseCommand * cppResult = 0;
-             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
--            FabricUI::Commands::BaseCommand * cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::RTValCommandManager::createCommand(cppArg0, cppArg1, cppArg2, cppArg3) : cppSelf->createCommand(cppArg0, cppArg1, cppArg2, cppArg3);
-+            try
-+            {
-+                cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::RTValCommandManager::createCommand(cppArg0, cppArg1, cppArg2, cppArg3) : cppSelf->createCommand(cppArg0, cppArg1, cppArg2, cppArg3);
-+            }
+             if (!PyErr_Occurred()) {
+                 // createCommand(QString,QMap<QString,FabricCore::RTVal>,bool,int)
++                std::string errorMessage = "";
++                FabricUI::Commands::BaseCommand * cppResult = 0;
+                 PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+-                FabricUI::Commands::BaseCommand * cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::RTValCommandManager::createCommand(cppArg0, cppArg1, cppArg2, cppArg3) : cppSelf->createCommand(cppArg0, cppArg1, cppArg2, cppArg3);
++                try
++                {
++                    cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::RTValCommandManager::createCommand(cppArg0, cppArg1, cppArg2, cppArg3) : cppSelf->createCommand(cppArg0, cppArg1, cppArg2, cppArg3);
++                }
 +
-+            catch( std::exception &e )
-+            {
-+                errorMessage = e.what();
-+            }
++                catch( std::exception &e )
++                {
++                    errorMessage = e.what();
++                }
 +
-             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-+            
-+            if(!errorMessage.empty())
-+            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
-+                return 0;
-+            }
-             pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_BASECOMMAND_IDX], cppResult);
-             Shiboken::Object::setParent(self, pyResult);
-         }
+                 PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
++                
++                if(!errorMessage.empty())
++                {
++                    PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                    return 0;
++                }
+                 pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_BASECOMMAND_IDX], cppResult);
+                 Shiboken::Object::setParent(self, pyResult);
+             }
+@@ -705,9 +753,26 @@
+ 
+             if (!PyErr_Occurred()) {
+                 // createCommand(QString,QMap<QString,QString>,bool,int)
++                std::string errorMessage = "";
++                FabricUI::Commands::BaseCommand * cppResult = 0;
+                 PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+-                FabricUI::Commands::BaseCommand * cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::RTValCommandManager::createCommand(cppArg0, cppArg1, cppArg2, cppArg3) : cppSelf->createCommand(cppArg0, cppArg1, cppArg2, cppArg3);
++                try
++                {
++                    cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::RTValCommandManager::createCommand(cppArg0, cppArg1, cppArg2, cppArg3) : cppSelf->createCommand(cppArg0, cppArg1, cppArg2, cppArg3);
++                }
++
++                catch( std::exception &e )
++                {
++                    errorMessage = e.what();
++                }
++
+                 PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
++                
++                if(!errorMessage.empty())
++                {
++                    PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                    return 0;
++                }
+                 pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_BASECOMMAND_IDX], cppResult);
+                 Shiboken::Object::setParent(self, pyResult);
+             }
