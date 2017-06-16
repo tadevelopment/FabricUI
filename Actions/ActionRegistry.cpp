@@ -238,4 +238,4 @@ bool ActionRegistry::isActionContextGlobal(
   }
   return false;
 }
-    
+
