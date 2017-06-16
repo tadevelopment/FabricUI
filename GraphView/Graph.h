@@ -179,6 +179,7 @@ namespace FabricUI
       void updateOverlays(float width, float height);
       void setupBackgroundOverlay(QPointF pos, QString filePath);
       void setCentralOverlayText(QString text);
+      void setCompsBlockedOverlayVisibility(bool state);
 
       void removeConnectionsForConnectionTarget( ConnectionTarget *target );
 
@@ -233,6 +234,7 @@ namespace FabricUI
       void * m_sidePanelContextMenuCallbackUD;
       InfoOverlay * m_centralOverlay;
       QString m_centralOverlayText;
+      InfoOverlay * m_compsBlockedOverlay;
       bool m_isEditable;
       QPointF m_overlayPos;
       QPixmap m_overlayPixmap;
