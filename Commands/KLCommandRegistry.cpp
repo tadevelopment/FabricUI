@@ -2,8 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-
-#include <iostream>
 #include "KLCommand.h"
 #include "KLCommandHelpers.h"
 #include "KLCommandRegistry.h"
@@ -21,10 +19,6 @@ using namespace Application;
 KLCommandRegistry::KLCommandRegistry() 
   : CommandRegistry()
 {
-  std::cout 
-    << "KLCommandRegistry::KLCommandRegistry " 
-    << std::endl;
-
   COMMAND_KL = "KL";
   
  /* m_klCmdRegistry =*/ KLCommandHelpers::getKLCommandRegistry();
@@ -56,10 +50,6 @@ BaseCommand* KLCommandRegistry::createCommand(
 
 void KLCommandRegistry::synchronizeKL() 
 {
-  std::cout 
-    << "KLCommandRegistry::synchronizeKL " 
-    << std::endl;
-
   FABRIC_CATCH_BEGIN();
 
   // KL -> C++ synchronization
@@ -214,12 +204,7 @@ void KLCommandRegistry::commandIsRegistered(
   QString implType) 
 {
   FABRIC_CATCH_BEGIN();
-
-  std::cout 
-    << "KLCommandRegistry::commandIsRegistered " 
-    << cmdName.toUtf8().constData() 
-    << std::endl;
-
+ 
   RTVal nameVal = RTVal::ConstructString(
     KLCommandHelpers::getKLCommandRegistry().getContext(),
     cmdName.toUtf8().constData());

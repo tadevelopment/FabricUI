@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
 #include "KLCommand.h"
 #include "KLCommandManager.h"
 #include "KLCommandHelpers.h"
@@ -18,10 +17,6 @@ using namespace Application;
 KLCommandManager::KLCommandManager() 
   : RTValCommandManager()
 {
-  std::cout 
-    << "KLCommandManager::KLCommandManager " 
-    << std::endl;
-
  // m_klCmdManager = KLCommandHelpers::getKLCommandManager();
 }
 
@@ -117,8 +112,7 @@ void KLCommandManager::synchronizeKL()
     "Command[]", 
     "getAppStack", 
     0, 0);
-  std::cout << "KLCommandManager::synchronizeKL " << klAppCmdStack.getArraySize() << std::endl;
-
+ 
   for(unsigned i=0; i<klAppCmdStack.getArraySize(); ++i)
   {
     // Gets the KL command from the KL manager. 
@@ -169,8 +163,6 @@ void KLCommandManager::createAppCommand(
       1, 
       &argNameVal);
   }
-
-  std::cout << "KLCommandManager::createAppCommand " << appCmd.callMethod("String", "getName", 0, 0).getStringCString() << std::endl;
 
   createCommand(
     appCmd.callMethod("String", "getName", 0, 0).getStringCString(), 

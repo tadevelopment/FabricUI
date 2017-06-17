@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
 #include "KLCommand.h"
 #include "CommandManager.h"
 #include "CommandRegistry.h"
@@ -63,7 +62,6 @@ BaseCommand* CommandManager::createCommand(
   bool doCmd,
   int canMergeID)
 {
-  std::cout << "CommandManager::createCommand " << cmdName.toUtf8().constData() << std::endl;
   FABRIC_CATCH_BEGIN();
 
   BaseCommand *cmd = CommandRegistry::getCommandRegistry()->createCommand(
@@ -140,12 +138,7 @@ void CommandManager::doCommand(
     cmd->merge(m_undoStack[m_undoStack.size()-1].topLevelCmd.data());
     QSharedPointer< BaseCommand > prt(cmd);
     m_undoStack[m_undoStack.size()-1].topLevelCmd = prt;
-      
-    std::cout 
-      << "CommandManager::commandDone canMerge " 
-      << cmd->getName().toUtf8().constData() 
-      << std::endl;
-
+ 
     emit commandDone(
       cmd, 
       false, // Don't add the command to the app stack, 
@@ -155,11 +148,6 @@ void CommandManager::doCommand(
 
   else if(!subCmd)
   {
-    std::cout 
-      << "CommandManager::commandDone not canMerge " 
-      << cmd->getName().toUtf8().constData() 
-      << std::endl;
-
     emit commandDone(
       cmd, 
       cmd->canUndo(), 
