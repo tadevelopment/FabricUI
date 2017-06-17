@@ -5,7 +5,6 @@
 #ifndef __UI_DFG_PATH_VALUE_RESOLVER__
 #define __UI_DFG_PATH_VALUE_RESOLVER__
 
-#include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/Commands/BasePathValueResolver.h>
 
 namespace FabricUI {
@@ -21,7 +20,7 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
   
   public:
     DFGPathValueResolver();
-
+ 
     virtual ~DFGPathValueResolver();
    
     /// Implementation of BasePathValueResolver.
@@ -49,6 +48,11 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
       FabricCore::RTVal pathValue
       );
 
+  public slots:
+    void onBindingChanged(
+      FabricCore::DFGBinding const &binding
+      );
+
   private:
     /// Type of DFG data.
     enum DFGType { DFGUnknow, DFGPort, DFGVar };
@@ -58,9 +62,9 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
     DFGType checkDFGType(
       FabricCore::RTVal pathValue
       );
-
+ 
     /// Pointor to the controller.
-    DFGController *m_controller;
+    FabricCore::DFGBinding m_binding;
 };
 
 } // namespace DFG

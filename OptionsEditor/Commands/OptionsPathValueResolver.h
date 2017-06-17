@@ -41,6 +41,11 @@ class OptionsPathValueResolver : public Commands::BasePathValueResolver
     virtual void setValue(
       FabricCore::RTVal pathValue
       );
+
+  private:
+    bool hasOptions(
+      FabricCore::RTVal pathValue
+      );
 };
 
 } // namespace DFG

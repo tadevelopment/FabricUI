@@ -4,6 +4,7 @@
 
 #include "DFGPathValueResolver.h"
 #include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
@@ -13,10 +14,10 @@ using namespace Commands;
 using namespace FabricCore;
  
 DFGPathValueResolver::DFGPathValueResolver()
- : BasePathValueResolver()
+  : BasePathValueResolver()
 {
 }
-
+ 
 DFGPathValueResolver::~DFGPathValueResolver()
 {
 }
@@ -24,7 +25,25 @@ DFGPathValueResolver::~DFGPathValueResolver()
 void DFGPathValueResolver::registrationCallback(
   void *userData)
 {
-  m_controller = static_cast<DFGController*>(userData);
+  if(userData != 0)
+  {
+    DFGController* controller = static_cast<DFGController*>(userData);
+    onBindingChanged(controller->getBinding());
+ 
+    QObject::connect(
+      controller,
+      SIGNAL(bindingChanged(FabricCore::DFGBinding const &)),
+      this,
+      SLOT(onBindingChanged(FabricCore::DFGBinding const &))
+      );
+  }
+}
+
+void DFGPathValueResolver::onBindingChanged(
+  DFGBinding const &binding)
+{
+  m_binding = binding;
+  onSetEvalContextID(m_binding.getMetadata("maya_id"));
 }
 
 DFGPathValueResolver::DFGType DFGPathValueResolver::checkDFGType(
@@ -32,10 +51,9 @@ DFGPathValueResolver::DFGType DFGPathValueResolver::checkDFGType(
 {
   try 
   {
-    QString path = RTValUtil::toRTVal(pathValue).maybeGetMember(
-      "path").getStringCString();
+    QString path = getPathValuePath(pathValue);
 
-    if(m_controller->getBinding().getExec().hasVar(
+    if(m_binding.getExec().hasVar(
         path.toUtf8().constData()
       ))
       return DFGVar;
@@ -43,7 +61,7 @@ DFGPathValueResolver::DFGType DFGPathValueResolver::checkDFGType(
     int index = path.lastIndexOf(".");
     if(index != -1)
     {
-      DFGExec exec = m_controller->getBinding().getExec().getSubExec(
+      DFGExec exec = m_binding.getExec().getSubExec(
         path.midRef(0, index).toUtf8().constData()
         );
 
@@ -65,7 +83,9 @@ DFGPathValueResolver::DFGType DFGPathValueResolver::checkDFGType(
 bool DFGPathValueResolver::knownPath(
   RTVal pathValue)
 {
-  return checkDFGType(pathValue) != DFGUnknow;
+  return !m_evalContextID.isEmpty()
+    ? BasePathValueResolver::knownPath(pathValue) && checkDFGType(pathValue) != DFGUnknow
+    : checkDFGType(pathValue) != DFGUnknow;
 }
 
 QString DFGPathValueResolver::getType(
@@ -73,17 +93,15 @@ QString DFGPathValueResolver::getType(
 {
   FABRIC_CATCH_BEGIN();
 
-  QString path = RTValUtil::toRTVal(pathValue).maybeGetMember(
-    "path").getStringCString();
-  
-  DFGExec exec = m_controller->getBinding().getExec();
+  QString path = getPathValuePath(pathValue);
+  DFGExec exec = m_binding.getExec();
 
   return checkDFGType(pathValue) == DFGVar 
     ? exec.getVarType(path.toUtf8().constData())
     : exec.getPortResolvedType(path.toUtf8().constData());
 
   FABRIC_CATCH_END("DFGPathValueResolver::getType");
- 
+
   return "";
 }
 
@@ -93,11 +111,8 @@ void DFGPathValueResolver::getValue(
   FABRIC_CATCH_BEGIN();
 
   pathValue = RTValUtil::toRTVal(pathValue);
-
-  QString path = pathValue.maybeGetMember(
-    "path").getStringCString();
- 
-  DFGExec exec = m_controller->getBinding().getExec();
+  QString path = getPathValuePath(pathValue);
+  DFGExec exec = m_binding.getExec();
   
   RTVal value = checkDFGType(pathValue) == DFGVar 
     ? exec.getVarValue(path.toUtf8().constData())
@@ -118,9 +133,7 @@ void DFGPathValueResolver::setValue(
   FABRIC_CATCH_BEGIN();
 
   pathValue = RTValUtil::toRTVal(pathValue);
-
-  QString path = pathValue.maybeGetMember(
-    "path").getStringCString();
+  QString path = getPathValuePath(pathValue);
 
   RTVal value = RTValUtil::toRTVal(
     pathValue.maybeGetMember("value"));
@@ -135,7 +148,7 @@ void DFGPathValueResolver::setValue(
       return; // no value specified
   }
 
-  DFGExec exec = m_controller->getBinding().getExec();
+  DFGExec exec = m_binding.getExec();
 
   if(checkDFGType(pathValue) == DFGVar)
     exec.setVarValue( 

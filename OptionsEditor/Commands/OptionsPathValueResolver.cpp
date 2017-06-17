@@ -25,7 +25,7 @@ OptionsPathValueResolver::~OptionsPathValueResolver()
 {
 }
 
-bool OptionsPathValueResolver::knownPath(
+bool OptionsPathValueResolver::hasOptions(
   RTVal pathValue)
 {
   bool hasOption = false;
@@ -53,9 +53,17 @@ bool OptionsPathValueResolver::knownPath(
 
   hasOption = optionsTarget.isValid() && !optionsTarget.isNullObject();
 
-  FABRIC_CATCH_END("OptionsPathValueResolver::knownPath");
+  FABRIC_CATCH_END("OptionsPathValueResolver::hasOptions");
 
   return hasOption;
+}
+
+bool OptionsPathValueResolver::knownPath(
+  RTVal pathValue)
+{
+  return !m_evalContextID.isEmpty()
+    ? BasePathValueResolver::knownPath(pathValue) && hasOptions(pathValue)
+    : hasOptions(pathValue);
 }
 
 QString OptionsPathValueResolver::getType(

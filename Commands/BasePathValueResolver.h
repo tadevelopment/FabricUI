@@ -43,6 +43,19 @@ class BasePathValueResolver : public QObject
     virtual void setValue(
       FabricCore::RTVal pathValue
       );
+
+  public slots:
+    void onSetEvalContextID(
+      QString evalContextID
+      );
+
+  protected:
+    QString getPathValuePath(
+      FabricCore::RTVal pathValue
+      );
+
+    /// 
+    QString m_evalContextID;
 };
 
 } // namespace Commands
