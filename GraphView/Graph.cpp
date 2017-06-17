@@ -67,6 +67,7 @@ void Graph::requestSidePanelInspect(
   )
 {
   emit sidePanelInspectRequested();
+  clearInspection();
 }
 
 void Graph::requestMainPanelAction(
@@ -341,6 +342,22 @@ Node * Graph::node( FTL::StrRef name ) const
   return m_nodes[it->second];
 }
 
+QRectF Graph::selectedNodesRect() const
+{
+  QRectF rect;
+  std::vector<Node *> nodes = selectedNodes();
+  if (nodes.size() == 0)
+    return rect;
+  for ( size_t i = 0; i < nodes.size(); ++i )
+  {
+    Node *node = nodes[i];
+    QRectF nodeBoundingRect = node->boundingRect();
+    QPointF nodeTopLeftPos = node->topLeftGraphPos();
+    rect |= nodeBoundingRect.translated( nodeTopLeftPos );
+  }
+  return rect;
+}
+
 std::vector<Node *> Graph::selectedNodes() const
 {
   std::vector<Node *> result;
@@ -362,6 +379,12 @@ void Graph::clearSelection() const
 {
   for (size_t i=0;i<m_nodes.size();i++)
     m_nodes[i]->setSelected( false );
+}
+
+void Graph::clearInspection() const
+{
+  for (size_t i=0;i<m_nodes.size();i++)
+    m_nodes[i]->setInspected( false );
 }
 
 void Graph::addFixedPort( FixedPort *fixedPort )
@@ -577,6 +600,7 @@ Connection * Graph::addConnection(ConnectionTarget * src, ConnectionTarget * dst
 
   Connection * connection = new Connection(this, src, dst);
   m_connections.push_back(connection);
+  connection->setCosmetic( m_cosmeticConnections );
 
   if(connection->src()->targetType() == TargetType_Pin)
   {
@@ -852,11 +876,11 @@ bool Graph::removeConnections()
   return (conns.size() ? controller()->gvcDoRemoveConnections(conns) : true);
 }
 
-MouseGrabber * Graph::constructMouseGrabber(QPointF pos, ConnectionTarget * target, PortType portType)
+MouseGrabber * Graph::constructMouseGrabber(QPointF pos, ConnectionTarget * target, PortType portType, Connection *connectionPrevious)
 {
   if(!m_isEditable)
     return NULL;
-  m_mouseGrabber = MouseGrabber::construct(this, pos, target, portType);
+  m_mouseGrabber = MouseGrabber::construct(this, pos, target, portType, connectionPrevious);
   return m_mouseGrabber;
 }
 
@@ -868,6 +892,20 @@ MouseGrabber * Graph::getMouseGrabber()
 void Graph::resetMouseGrabber()
 {
   m_mouseGrabber = NULL;
+}
+
+void Graph::setConnectionsCosmetic( bool cosmetic )
+{
+  m_cosmeticConnections = cosmetic;
+  const std::vector<Connection*> connections = this->connections();
+  for( size_t i = 0; i < connections.size(); i++ )
+    connections[i]->setCosmetic( m_cosmeticConnections );
+  if( getMouseGrabber() )
+  {
+    Connection* connection = getMouseGrabber()->connection();
+    if( connection )
+      connection->setCosmetic( m_cosmeticConnections );
+  }
 }
 
 void Graph::updateOverlays(float width, float height)

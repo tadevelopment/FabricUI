@@ -12,7 +12,6 @@
 #include <QColor>
 #include <QPushButton>
 
-
 namespace FabricUI {
 namespace ValueEditor {
 
@@ -51,7 +50,9 @@ private:
   QWidget* m_widget;
   AlphaButton *m_alphaButton;
 
-  FabricCore::RTVal m_colorRTVal;
+  QVariant m_val;
+
+  bool hasAlpha() const;
 
   // We store the desired format of
   // the color (HSV or RGB)

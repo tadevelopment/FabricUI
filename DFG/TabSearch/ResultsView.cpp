@@ -794,9 +794,15 @@ std::vector<Query::Tag> GetTagsToDisplay(
   // instead, we should give a low rank to these Tags, so that they
   // are implicitly not displayed
   {
-    Query::Tag toRemove = Query::Tag( PathCompCat, "Exts" );
-    if( tags.find( toRemove ) != tags.end() )
-      tags.erase( toRemove );
+    const size_t toRemoveS = 2;
+    Query::Tag toRemove[toRemoveS] =
+    {
+      Query::Tag( PathCompCat, "Exts" ),
+      Query::Tag( PathCompCat, "Func" )
+    };
+    for( size_t i = 0; i < toRemoveS; i++ )
+      if( tags.find( toRemove[i] ) != tags.end() )
+        tags.erase( toRemove[i] );
   }
 
   std::vector<Query::Tag> dst;

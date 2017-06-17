@@ -41,7 +41,7 @@ void DFGCombinedWidget::initMenu() {
     this, SLOT(onAdditionalMenuActionsRequested(QString, QMenu *, bool))
     );
 
-  m_dfgWidget->populateMenuBar(m_menuBar, false /* addFileMenu */, true /* addEditMenu */, true /* ddViewMenu */, true /* addDCCMenu */, true /* addHelpMenu */);
+  m_dfgWidget->populateMenuBar(m_menuBar, false /* addFileMenu */, true /* addEditMenu */, true /* addViewMenu */, true /* addDCCMenu */, true /* addHelpMenu */);
 }
 
 void DFGCombinedWidget::initTreeView() {
@@ -216,6 +216,9 @@ void DFGCombinedWidget::onNodeInspectRequested(FabricUI::GraphView::Node * node)
     s[1] -= s[2];
     m_hSplitter->setSizes(s);
   }
+
+  node->graph()->clearInspection();
+  node->setInspected(true);
 }
 
 void DFGCombinedWidget::onRevealPresetInExplorer(QString nodeName)

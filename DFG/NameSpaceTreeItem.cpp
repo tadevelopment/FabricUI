@@ -62,6 +62,7 @@ unsigned int NameSpaceTreeItem::numChildren()
       }
     }
 
+    // NameSpaces are listed in an std::map, so they are automatically sorted
     for(std::map<std::string, std::string>::iterator it=nameSpaceLookup.begin();it!=nameSpaceLookup.end();it++)
     {
       QStringList filters;
@@ -81,6 +82,8 @@ unsigned int NameSpaceTreeItem::numChildren()
 
     if(m_showsPresets)
     {
+      // Presets are listed in an std::vector, so they require manual sorting
+      std::sort( presetLookup.begin(), presetLookup.end() );
       for(std::vector<std::string>::iterator it=presetLookup.begin();it!=presetLookup.end();it++)
       {
         if(!includeChildName(it->c_str()))

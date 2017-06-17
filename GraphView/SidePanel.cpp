@@ -237,6 +237,13 @@ void SidePanel::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
   QGraphicsWidget::mouseMoveEvent(event);
 }
 
+void SidePanel::mousePressEvent( QGraphicsSceneMouseEvent* event )
+{
+  // FE-7949: intercept the mousePressEvents to make sure that
+  // Nodes can't be clicked through the SidePanel
+  return event->accept();
+}
+
 void SidePanel::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
 {
   QGraphicsWidget::mouseReleaseEvent(event);

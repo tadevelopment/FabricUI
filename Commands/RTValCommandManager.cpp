@@ -26,6 +26,19 @@ RTValCommandManager::~RTValCommandManager()
  
 BaseCommand* RTValCommandManager::createCommand(
   QString cmdName, 
+  QMap<QString, QString> args, 
+  bool doCmd,
+  int canMergeID)
+{
+  return CommandManager::createCommand(
+    cmdName, 
+    args, 
+    doCmd, 
+    canMergeID);
+}
+
+BaseCommand* RTValCommandManager::createCommand(
+  QString cmdName, 
   QMap<QString, RTVal> args, 
   bool doCmd,
   int canMergeID)

@@ -43,6 +43,10 @@ bool ConnectionTarget::isConnectedAsTarget() const
   return graph()->isConnectedAsTarget(this);
 }
 
+bool ConnectionTarget::isDragging() {
+  return targetType() == TargetType_MouseGrabber;
+}
+
 void ConnectionTarget::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
   PinCircle * circle = findPinCircle(event->pos());

@@ -49,10 +49,13 @@ Node::Node(
   , m_duplicateNodesOnDrag( false )
   , m_canEdit( false )
   , m_isHighlighted( false )
+  , m_isInspected( false )
   , m_isConnectionHighlighted( false )
 {
   m_defaultPen = graph()->config().nodeDefaultPen;
   m_selectedPen = graph()->config().nodeSelectedPen;
+  m_inspectedPen = graph()->config().nodeInspectedPen;
+  m_inspectedSelectedPen = graph()->config().nodeInspectedSelectedPen;
   m_errorPen = graph()->config().nodeErrorPen;
   m_cornerRadius = graph()->config().nodeCornerRadius;
   m_pinRadius = graph()->config().pinRadius;
@@ -258,6 +261,15 @@ void Node::setSelected(bool state, bool quiet)
     else
       emit graph()->nodeDeselected(this);
   }
+  updateEffect();
+  update();
+}
+
+void Node::setInspected(bool state)
+{
+  if(state == m_isInspected)
+    return;
+  m_isInspected = state;
   updateEffect();
   update();
 }

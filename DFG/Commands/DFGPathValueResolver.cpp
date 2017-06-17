@@ -144,7 +144,7 @@ void DFGPathValueResolver::setValue(
   // TODO: properly support empty RTVal values (see comment in PathValue.kl)
   if( value.isString() ) {
     std::string str( value.getStringCString() );
-    if( str == "!empty!" )
+    if( str == "(none)" )
       return; // no value specified
   }
 

@@ -29,7 +29,7 @@ IntSliderViewItem::IntSliderViewItem(
 {
   m_lineEdit = new VELineEdit;
   m_lineEdit->setObjectName( "VELeft" );
-  m_lineEdit->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::MinimumExpanding );
+  m_lineEdit->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::MinimumExpanding );
 
   m_slider = new IntSlider;
   m_slider->setObjectName( "VERight" );
@@ -54,7 +54,10 @@ IntSliderViewItem::IntSliderViewItem(
   layout->setSpacing( 0 );
   layout->addWidget( m_lineEdit );
   layout->addWidget( m_slider );
-
+  
+  layout->setStretchFactor(m_lineEdit, 1);
+  layout->setStretchFactor(m_slider, 5);
+  
   m_widget = new QWidget;
   m_widget->setObjectName( "VEIntSliderViewItem" );
   m_widget->setLayout( layout );
