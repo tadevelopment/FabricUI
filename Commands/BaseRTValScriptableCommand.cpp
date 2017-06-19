@@ -74,12 +74,12 @@ void BaseRTValScriptableCommand::checkRTValType(
       "Argument '" + key + "' in command '" + getName() + "' has not a valid kl type '" + type + "'");
 }
 
-bool BaseRTValScriptableCommand::isArg(
+bool BaseRTValScriptableCommand::hasArgFlag(
   QString key,
   int flag)
 {
-  checkEmptyKey("BaseRTValScriptableCommand::isArg", key); 
-  checkHasArg("BaseRTValScriptableCommand::isArg", key); 
+  checkEmptyKey("BaseRTValScriptableCommand::hasArgFlag", key); 
+  checkHasArg("BaseRTValScriptableCommand::hasArgFlag", key); 
   return (m_rtvalArgSpecs[key].flags & flag);
 }
 
@@ -164,7 +164,7 @@ void BaseRTValScriptableCommand::validateSetArgs()
     ScriptableCommandRTValArgSpec spec = it.value();
 
     // We support unknown type.
-    if(!isArg(key, CommandArgFlags::OPTIONAL_ARG) && !isArgSet(key))
+    if(!hasArgFlag(key, CommandArgFlags::OPTIONAL_ARG) && !isArgSet(key))
       FabricException::Throw(
         "BaseRTValScriptableCommand::validateSetArgs",
         "Argument '" + key + "' in command '" + getName() + "' has not been set");

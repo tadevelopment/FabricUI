@@ -165,7 +165,7 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
       );
     
     /// Implementation of BaseScriptableCommand.
-    virtual bool isArg(
+    virtual bool hasArgFlag(
       QString key,
       int flag
       );

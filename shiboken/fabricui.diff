@@ -453,14 +453,14 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 @@ -1837,9 +2053,26 @@
  
          if (!PyErr_Occurred()) {
-             // isArg(QString,int)
+             // hasArgFlag(QString,int)
 +            std::string errorMessage = "";
 +            bool cppResult = false;
              PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
--            bool cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::BaseRTValScriptableCommand::isArg(cppArg0, cppArg1) : cppSelf->isArg(cppArg0, cppArg1);
+-            bool cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::BaseRTValScriptableCommand::hasArgFlag(cppArg0, cppArg1) : cppSelf->hasArgFlag(cppArg0, cppArg1);
 +            try
 +            {
-+                cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::BaseRTValScriptableCommand::isArg(cppArg0, cppArg1) : cppSelf->isArg(cppArg0, cppArg1);
++                cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::BaseRTValScriptableCommand::hasArgFlag(cppArg0, cppArg1) : cppSelf->hasArgFlag(cppArg0, cppArg1);
 +            }
 +
 +            catch( std::exception &e )
@@ -823,14 +823,14 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 @@ -1194,9 +1293,26 @@
  
          if (!PyErr_Occurred()) {
-             // isArg(QString,int)
+             // hasArgFlag(QString,int)
 +            std::string errorMessage = "";
 +            bool cppResult = false;
              PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
--            bool cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::BaseScriptableCommand::isArg(cppArg0, cppArg1) : cppSelf->isArg(cppArg0, cppArg1);
+-            bool cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::BaseScriptableCommand::hasArgFlag(cppArg0, cppArg1) : cppSelf->hasArgFlag(cppArg0, cppArg1);
 +            try
 +            {
-+                cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::BaseScriptableCommand::isArg(cppArg0, cppArg1) : cppSelf->isArg(cppArg0, cppArg1);
++                cppResult = Shiboken::Object::hasCppWrapper(reinterpret_cast<SbkObject*>(self)) ? cppSelf->::FabricUI::Commands::BaseScriptableCommand::hasArgFlag(cppArg0, cppArg1) : cppSelf->hasArgFlag(cppArg0, cppArg1);
 +            }
 +
 +            catch( std::exception &e )

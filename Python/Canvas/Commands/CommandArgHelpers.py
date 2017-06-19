@@ -186,7 +186,7 @@ class CommandArgHelpers:
                 for key in keys:
                     # Log only loggable commands.
                     if (CppCommands.CommandArgHelpers.isCommandArgSet(key, cmd) and 
-                        not CppCommands.CommandArgHelpers.isCommandArg(key, CppCommands.CommandArgFlags.NO_LOGGABLE_ARG, cmd)):
+                        not CppCommands.CommandArgHelpers.isCommandArg(key, CppCommands.CommandArgFlags.DONT_LOG_ARG, cmd)):
 
                         if len(previous) > 0 and count < len(keys):
                             desc += ', '

@@ -19,7 +19,7 @@ int CommandArgFlags::NO_FLAG_ARG = 0;
 /// Optional argument flag
 int CommandArgFlags::OPTIONAL_ARG = 1;
 /// Loggale argument flag
-int CommandArgFlags::NO_LOGGABLE_ARG = 2;
+int CommandArgFlags::DONT_LOG_ARG = 2;
 /// Input argument flag
 int CommandArgFlags::IN_ARG = 4;
 /// Output argument flag
@@ -90,19 +90,19 @@ QString CommandArgHelpers::getArgsTypeSpecs(
     else
       specs += "String";
 
-    if(scriptCmd->isArg(key, CommandArgFlags::OPTIONAL_ARG))
+    if(scriptCmd->hasArgFlag(key, CommandArgFlags::OPTIONAL_ARG))
       specs += ", optional"; 
 
-    if(scriptCmd->isArg(key, CommandArgFlags::NO_LOGGABLE_ARG))
-      specs += ", no-loggable"; 
+    if(scriptCmd->hasArgFlag(key, CommandArgFlags::DONT_LOG_ARG ))
+      specs += ", dont-log"; 
 
-    if(scriptCmd->isArg(key, CommandArgFlags::IN_ARG))
+    if(scriptCmd->hasArgFlag(key, CommandArgFlags::IN_ARG))
       specs += ", IN"; 
 
-    if(scriptCmd->isArg(key, CommandArgFlags::OUT_ARG))
+    if(scriptCmd->hasArgFlag(key, CommandArgFlags::OUT_ARG))
       specs += ", OUT"; 
 
-    if(scriptCmd->isArg(key, CommandArgFlags::IO_ARG))
+    if(scriptCmd->hasArgFlag(key, CommandArgFlags::IO_ARG))
       specs += ", IO"; 
     
     specs += "]"; 
@@ -221,9 +221,9 @@ bool CommandArgHelpers::isPathValueCommandArg(
 {
   FABRIC_CATCH_BEGIN();
   BaseScriptableCommand* scriptCmd = CastToBaseScriptableCommand(cmd);
-  return scriptCmd->isArg(key, CommandArgFlags::IO_ARG) ||
-      scriptCmd->isArg(key, CommandArgFlags::IN_ARG) ||
-    scriptCmd->isArg(key, CommandArgFlags::OUT_ARG);
+  return scriptCmd->hasArgFlag(key, CommandArgFlags::IO_ARG) ||
+      scriptCmd->hasArgFlag(key, CommandArgFlags::IN_ARG) ||
+    scriptCmd->hasArgFlag(key, CommandArgFlags::OUT_ARG);
   FABRIC_CATCH_END("CommandArgHelpers::isPathValueCommandArg");
   return false;
 }
@@ -242,7 +242,7 @@ bool CommandArgHelpers::isCommandArg(
 {
   FABRIC_CATCH_BEGIN();
   BaseScriptableCommand* scriptCmd = CastToBaseScriptableCommand(cmd);
-  return scriptCmd->isArg(key, flags);
+  return scriptCmd->hasArgFlag(key, flags);
   FABRIC_CATCH_END("CommandArgHelpers::isCommandArg");
   return false;
 }

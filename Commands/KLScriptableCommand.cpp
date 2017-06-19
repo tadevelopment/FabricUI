@@ -157,7 +157,7 @@ bool KLScriptableCommand::hasArg(
   return false;
 }
 
-bool KLScriptableCommand::isArg(
+bool KLScriptableCommand::hasArgFlag(
   QString key,
   int flag) 
 {
@@ -176,12 +176,12 @@ bool KLScriptableCommand::isArg(
 
   return m_klCmd.callMethod(
     "Boolean",
-    "isArg",
+    "hasArgFlag",
     2,
     args
     ).getBoolean();
   
-  FABRIC_CATCH_END("KLScriptableCommand::isArg");
+  FABRIC_CATCH_END("KLScriptableCommand::hasArgFlag");
 
   return false;
 }

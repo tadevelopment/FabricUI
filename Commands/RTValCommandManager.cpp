@@ -101,8 +101,8 @@ void RTValCommandManager::preDoCommand(
   QString key;
   foreach(key, scriptCmd->getArgKeys())
   {
-    if( scriptCmd->isArg(key, CommandArgFlags::IN_ARG) ||
-        scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
+    if( scriptCmd->hasArgFlag(key, CommandArgFlags::IN_ARG) ||
+        scriptCmd->hasArgFlag(key, CommandArgFlags::IO_ARG) )
     {
       RTVal pathValue = scriptCmd->getRTValArg(key);
       if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
@@ -127,8 +127,8 @@ void RTValCommandManager::postDoCommand(
   QString key;
   foreach(key, scriptCmd->getArgKeys())
   {         
-    if( scriptCmd->isArg(key, CommandArgFlags::OUT_ARG) ||
-        scriptCmd->isArg(key, CommandArgFlags::IO_ARG) )
+    if( scriptCmd->hasArgFlag(key, CommandArgFlags::OUT_ARG) ||
+        scriptCmd->hasArgFlag(key, CommandArgFlags::IO_ARG) )
     {
       RTVal pathValue = scriptCmd->getRTValArg(key);
       if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))

@@ -25,7 +25,7 @@ class CommandArgFlags
     /// Optional argument.
     static int OPTIONAL_ARG;
     /// No-loggale argument.
-    static int NO_LOGGABLE_ARG;
+    static int DONT_LOG_ARG;
     /// Input argument.
     static int IN_ARG;
     /// Output argument.
