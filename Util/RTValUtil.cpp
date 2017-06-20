@@ -118,8 +118,8 @@ QString RTValUtil::toJSON(
 
 RTVal RTValUtil::fromJSON(
   Context context,
-  QString json,
-  QString rtValType)
+  QString const&json,
+  QString const&rtValType)
 {
   RTVal rtVal;
   
@@ -183,8 +183,8 @@ RTVal RTValUtil::fromJSON(
 
 RTVal RTValUtil::fromJSON(
   Client client,
-  QString json,
-  QString rtValType)
+  QString const&json,
+  QString const&rtValType)
 {
   return fromJSON(
     client.getContext(),

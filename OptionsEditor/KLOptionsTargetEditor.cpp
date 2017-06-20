@@ -17,7 +17,7 @@ using namespace ValueEditor;
 using namespace OptionsEditor;
 
 KLOptionsTargetEditor::KLOptionsTargetEditor(
-  QString title)
+  QString const&title)
   : BaseRTValOptionsEditor(title, 0)
 {
   setObjectName(title);

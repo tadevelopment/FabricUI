@@ -43,14 +43,14 @@ class CommandArgHelpers
     /// from a subsets of arguments.
     /// \param argsHelp Map of [arg, arg desc]
     static QString createHistoryDescFromArgs(
-      QMap<QString, QString> argsDesc,
+      QMap<QString, QString> const&argsDesc,
       BaseCommand *cmd
       );
 
     /// Helper to create the command's helps
     static QString getArgsTypeSpecs(
       BaseCommand *cmd,
-      QString key
+      QString const&key
       );
 
     /// Helper to create the command's helps
@@ -58,8 +58,8 @@ class CommandArgHelpers
     /// \param commandHelp The main help text.
     /// \param argsHelp Map of [arg, arg help]
     static QString createHelpFromArgs(
-      QString commandHelp,
-      QMap<QString, QString> argsHelp,
+      QString const&commandHelp,
+      QMap<QString, QString> const&argsHelp,
       BaseCommand *cmd
       );
 
@@ -68,8 +68,8 @@ class CommandArgHelpers
     /// \param commandHelp The main help text.
     /// \param argsHelp Map of [arg, arg help]
     static QString createHelpFromRTValArgs(
-      QString commandHelp,
-      QMap<QString, QString> argsHelp,
+      QString const&commandHelp,
+      QMap<QString, QString> const&argsHelp,
       BaseCommand *cmd
       );
  
@@ -82,23 +82,23 @@ class CommandArgHelpers
       );
  
     static bool isPathValueCommandArg(
-      QString key,
+      QString const&key,
       BaseCommand *cmd
       );
 
     static bool isCommandArg(
-      QString key,
+      QString const&key,
       int flags,
       BaseCommand *cmd
       );
 
     static bool isCommandArgSet(
-      QString key,
+      QString const&key,
       BaseCommand *cmd
       );
 
     static bool hasCommandArg(
-      QString key,
+      QString const&key,
       BaseCommand *cmd
       );
 
@@ -107,28 +107,28 @@ class CommandArgHelpers
       );
 
     static QString getCommandArg(
-      QString key,
+      QString const&key,
       BaseCommand *cmd
       );
 
     static FabricCore::RTVal getRTValCommandArg(
-      QString key,
+      QString const&key,
       BaseCommand *cmd
       );
 
     static FabricCore::RTVal getRTValCommandArgValue(
-      QString key,
+      QString const&key,
       BaseCommand *cmd
       );
 
     static FabricCore::RTVal getRTValCommandArgValue(
-      QString key,
-      QString type,
+      QString const&key,
+      QString const&type,
       BaseCommand *cmd
       );
 
     static QString getRTValCommandArgType(
-      QString key,
+      QString const&key,
       BaseCommand *cmd
       );
 };

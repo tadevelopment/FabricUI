@@ -38,13 +38,13 @@ PathValueResolverRegistry* PathValueResolverRegistry::GetRegistry()
 }
 
 bool PathValueResolverRegistry::hasResolver(
-  QString name)
+  QString const&name)
 {
   return m_registeredResolvers.count(name);
 }
 
 BasePathValueResolver* PathValueResolverRegistry::getOrCreateResolver(
-  QString name)
+  QString const&name)
 {
   if(hasResolver(name))
     return m_registeredResolvers[name];

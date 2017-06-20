@@ -28,7 +28,7 @@ int CommandArgFlags::OUT_ARG = 8;
 int CommandArgFlags::IO_ARG = 16;
 
 QString CommandArgHelpers::createHistoryDescFromArgs(
-  QMap<QString, QString> argsDesc,
+  QMap<QString, QString> const&argsDesc,
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
@@ -71,7 +71,7 @@ QString CommandArgHelpers::createHistoryDescFromArgs(
 
 QString CommandArgHelpers::getArgsTypeSpecs(
   BaseCommand *cmd,
-  QString key)
+  QString const&key)
 {
   BaseScriptableCommand *scriptCmd = qobject_cast<BaseScriptableCommand*>(
     cmd);
@@ -112,8 +112,8 @@ QString CommandArgHelpers::getArgsTypeSpecs(
 }
 
 QString CommandArgHelpers::createHelpFromArgs(
-  QString commandHelp,
-  QMap<QString, QString> argsHelp,
+  QString const&commandHelp,
+  QMap<QString, QString> const&argsHelp,
   BaseCommand *cmd)
 {
   QString help;
@@ -147,8 +147,8 @@ QString CommandArgHelpers::createHelpFromArgs(
 }
 
 QString CommandArgHelpers::createHelpFromRTValArgs(
-  QString commandHelp,
-  QMap<QString, QString> argsHelp,
+  QString const&commandHelp,
+  QMap<QString, QString> const&argsHelp,
   BaseCommand *cmd)
 {
   QString help;
@@ -216,7 +216,7 @@ bool CommandArgHelpers::isRTValScriptableCommand(
 }
 
 bool CommandArgHelpers::isPathValueCommandArg(
-  QString key,
+  QString const&key,
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
@@ -236,7 +236,7 @@ bool CommandArgHelpers::isScriptableCommand(
 }
 
 bool CommandArgHelpers::isCommandArg(
-  QString key,
+  QString const&key,
   int flags,
   BaseCommand *cmd)
 {
@@ -248,7 +248,7 @@ bool CommandArgHelpers::isCommandArg(
 }
 
 bool CommandArgHelpers::isCommandArgSet(
-  QString key,
+  QString const&key,
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
@@ -259,7 +259,7 @@ bool CommandArgHelpers::isCommandArgSet(
 }
 
 bool CommandArgHelpers::hasCommandArg(
-  QString key,
+  QString const&key,
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
@@ -281,7 +281,7 @@ QList<QString> CommandArgHelpers::getCommandArgKeys(
 }
 
 QString CommandArgHelpers::getCommandArg(
-  QString key,
+  QString const&key,
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
@@ -292,7 +292,7 @@ QString CommandArgHelpers::getCommandArg(
 }
 
 RTVal CommandArgHelpers::getRTValCommandArg(
-  QString key,
+  QString const&key,
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
@@ -303,7 +303,7 @@ RTVal CommandArgHelpers::getRTValCommandArg(
 }
 
 RTVal CommandArgHelpers::getRTValCommandArgValue(
-  QString key,
+  QString const&key,
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
@@ -314,8 +314,8 @@ RTVal CommandArgHelpers::getRTValCommandArgValue(
 }
 
 RTVal CommandArgHelpers::getRTValCommandArgValue(
-  QString key,
-  QString type,
+  QString const&key,
+  QString const&type,
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();
@@ -326,7 +326,7 @@ RTVal CommandArgHelpers::getRTValCommandArgValue(
 }
 
 QString CommandArgHelpers::getRTValCommandArgType(
-  QString key,
+  QString const&key,
   BaseCommand *cmd)
 {
   FABRIC_CATCH_BEGIN();

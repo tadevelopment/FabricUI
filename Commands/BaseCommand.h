@@ -126,7 +126,7 @@ class BaseCommand : public QObject
     /// The data is referenced by the registry, and given to the
     /// command with this callback.
     virtual void registrationCallback(
-      QString name, 
+      QString const&name, 
       void *userData
       );
 

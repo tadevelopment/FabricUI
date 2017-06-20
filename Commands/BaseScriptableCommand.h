@@ -49,14 +49,14 @@ class BaseScriptableCommand : public BaseCommand
     ///   CommandArgFlags::OUT_ARG, 
     ///   CommandArgFlags::IO_ARG
     virtual void declareArg(
-      QString key, 
+      QString const&key, 
       int flag, 
-      QString defaultValue
+      QString const&defaultValue
       );
 
     /// Checks if the command has the arg `key`.
     virtual bool hasArg(
-      QString key 
+      QString const&key 
       );
 
     /// Checks if the arg `key` has the input flag(s).
@@ -67,7 +67,7 @@ class BaseScriptableCommand : public BaseCommand
     ///   CommandArgFlags::OUT_ARG, 
     ///   CommandArgFlags::IO_ARG
     virtual bool hasArgFlag(
-      QString key,
+      QString const&key,
       int flag
       );
 
@@ -77,19 +77,19 @@ class BaseScriptableCommand : public BaseCommand
     /// Checks if an arg has been set.
     /// To get safely optional argument.
     virtual bool isArgSet(
-      QString key
+      QString const&key
       );
 
     /// Gets the `key` argument value.
     virtual QString getArg( 
-      QString key 
+      QString const&key 
       );
  
     /// Sets the `key` argument value,
     /// called from the manager.
     virtual void setArg(
-      QString key, 
-      QString value
+      QString const&key, 
+      QString const&value
       );
 
     /// Checks the args are correctly set before  

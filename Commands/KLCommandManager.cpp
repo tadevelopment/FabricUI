@@ -185,17 +185,17 @@ void KLCommandManager::doKLCommand(
     1, 
     &klCmd);
 
-  BaseCommand *cmd = 0;
-  if(klScriptCmd.isValid() && !klScriptCmd.isNullObject())
-    cmd = new KLScriptableCommand(klScriptCmd);
-  else
-    cmd = new KLCommand(klCmd);
-
   RTVal baseCmd = RTVal::Construct(
     klCmd.getContext(),
     "BaseCommand", 
     1, 
     &klCmd);
+
+  BaseCommand *cmd = 0;
+  if(klScriptCmd.isValid() && !klScriptCmd.isNullObject())
+    cmd = new KLScriptableCommand(klScriptCmd);
+  else
+    cmd = new KLCommand(baseCmd);
 
   doCommand(
     cmd,

@@ -671,7 +671,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget.populateMenuBar(self.menuBar(), False, False, False, False, True)
     
     def _initViewportOptionEditor(self, windowMenu):
-
         try:
             FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
             FabricUI.DFG.DFGCommandRegistration.RegisterCommands(self.dfgWidget.getDFGController())

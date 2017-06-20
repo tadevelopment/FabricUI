@@ -36,7 +36,7 @@ class FabricException : public std::exception
 
   public: 
     FabricException(
-      QString message)
+      QString const&message)
       : m_message(message)
     {
     }
@@ -49,9 +49,9 @@ class FabricException : public std::exception
     /// \param childError A child error
     /// \param flag (THROW, PRINT)
     static QString Throw(
-      QString method,
-      QString error = QString(),
-      QString childError = QString(),
+      QString const&method,
+      QString const&error = QString(),
+      QString const&childError = QString(),
       int flag = THROW)
     {
       QString cmdError = method + ", error: " + error + "\n ";

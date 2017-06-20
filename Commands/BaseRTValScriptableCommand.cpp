@@ -24,28 +24,28 @@ BaseRTValScriptableCommand::~BaseRTValScriptableCommand()
 }
  
 bool BaseRTValScriptableCommand::isArgTypeKnown(
-  QString key) 
+  QString const&key) 
 {
   return m_rtvalArgSpecs[key].type != "RTVal";
 }
 
 void BaseRTValScriptableCommand::declareArg(
-  QString key, 
+  QString const&key, 
   int flags, 
-  QString defaultValue)
+  QString const&defaultValue)
 { 
   declareRTValArg(key, "RTVal", flags); 
 }
 
 bool BaseRTValScriptableCommand::hasArg(
-  QString key)
+  QString const&key)
 {
   return m_rtvalArgSpecs.count(key) > 0;
 }
 
 void BaseRTValScriptableCommand::checkHasArg(
-  QString methodName,
-  QString key)
+  QString const&methodName,
+  QString const&key)
 {
   if(!hasArg(key)) 
     FabricException::Throw(
@@ -54,8 +54,8 @@ void BaseRTValScriptableCommand::checkHasArg(
 }
 
 void BaseRTValScriptableCommand::checkEmptyKey(
-  QString methodName,
-  QString key)
+  QString const&methodName,
+  QString const&key)
 {
   if(key.isEmpty()) 
     FabricException::Throw(
@@ -64,9 +64,9 @@ void BaseRTValScriptableCommand::checkEmptyKey(
 }
 
 void BaseRTValScriptableCommand::checkRTValType(
-  QString methodName,
-  QString key,
-  QString type)
+  QString const&methodName,
+  QString const&key,
+  QString const&type)
 {
   if(!FabricApplicationStates::GetAppStates()->getClient().isValidType(type.toUtf8().constData()))
     FabricException::Throw(
@@ -75,7 +75,7 @@ void BaseRTValScriptableCommand::checkRTValType(
 }
 
 bool BaseRTValScriptableCommand::hasArgFlag(
-  QString key,
+  QString const&key,
   int flag)
 {
   checkEmptyKey("BaseRTValScriptableCommand::hasArgFlag", key); 
@@ -89,7 +89,7 @@ QList<QString> BaseRTValScriptableCommand::getArgKeys()
 }
 
 bool BaseRTValScriptableCommand::isArgSet(
-  QString key)
+  QString const&key)
 {
   // The arg can be set as RTVal or as JSON.
   return m_rtvalArgs.count(key) && 
@@ -99,7 +99,7 @@ bool BaseRTValScriptableCommand::isArgSet(
 }
 
 QString BaseRTValScriptableCommand::getArg(
-  QString key)
+  QString const&key)
 {
   checkHasArg("BaseRTValScriptableCommand::getArg", key); 
 
@@ -118,8 +118,8 @@ QString BaseRTValScriptableCommand::getArg(
 }
 
 void BaseRTValScriptableCommand::setArg(
-  QString key, 
-  QString json) 
+  QString const&key, 
+  QString const&json) 
 {
   checkHasArg("BaseRTValScriptableCommand::setArg", key); 
 
@@ -203,8 +203,8 @@ QString BaseRTValScriptableCommand::getArgsDescription()
 }
 
 void BaseRTValScriptableCommand::declareRTValArg(
-  QString key, 
-  QString type,
+  QString const&key, 
+  QString const&type,
   int flags, 
   RTVal defaultValue) 
 {
@@ -250,14 +250,14 @@ void BaseRTValScriptableCommand::declareRTValArg(
 }
 
 QString BaseRTValScriptableCommand::getRTValArgType(
-  QString key)
+  QString const&key)
 {
   checkHasArg("BaseRTValScriptableCommand::getRTValArgType", key); 
   return m_rtvalArgSpecs[key].type;
 }
 
 QString BaseRTValScriptableCommand::getRTValArgPath(
-  QString key)
+  QString const&key)
 {
   checkHasArg("BaseRTValScriptableCommand::getRTValArgPath", key); 
      
@@ -273,7 +273,7 @@ QString BaseRTValScriptableCommand::getRTValArgPath(
 }
 
 RTVal BaseRTValScriptableCommand::getRTValArgValue(
-  QString key)
+  QString const&key)
 {
   checkHasArg("BaseRTValScriptableCommand::getRTValArgValue", key); 
   
@@ -295,8 +295,8 @@ RTVal BaseRTValScriptableCommand::getRTValArgValue(
 }
 
 RTVal BaseRTValScriptableCommand::getRTValArgValue(
-  QString key,
-  QString type)
+  QString const&key,
+  QString const&type)
 {
   checkHasArg("BaseRTValScriptableCommand::getRTValArgValue", key); 
   checkRTValType("BaseRTValScriptableCommand::getRTValArgValue", key, type); 
@@ -325,7 +325,7 @@ RTVal BaseRTValScriptableCommand::getRTValArgValue(
 }
 
 void BaseRTValScriptableCommand::setRTValArg(
-  QString key, 
+  QString const&key, 
   RTVal pathValue) 
 { 
   checkHasArg("BaseRTValScriptableCommand::setRTValArg", key); 
@@ -349,7 +349,7 @@ void BaseRTValScriptableCommand::setRTValArg(
 }
 
 RTVal BaseRTValScriptableCommand::getRTValArg(
-  QString key)
+  QString const&key)
 { 
   checkHasArg("BaseRTValScriptableCommand::getRTValArg", key); 
  
@@ -363,7 +363,7 @@ RTVal BaseRTValScriptableCommand::getRTValArg(
 }
 
 void BaseRTValScriptableCommand::setRTValArgValue(
-  QString key, 
+  QString const&key, 
   RTVal value) 
 { 
   checkHasArg("BaseRTValScriptableCommand::setRTValArgValue", key); 
@@ -378,7 +378,7 @@ void BaseRTValScriptableCommand::setRTValArgValue(
 }
 
 bool BaseRTValScriptableCommand::isJSONPathValueArg(
-  QString json)
+  QString const&json)
 { 
   return json.indexOf("value") > -1 && json.indexOf("path") > -1;
 }

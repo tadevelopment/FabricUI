@@ -60,7 +60,7 @@ class ActionRegistry : public QObject
     /// Registers a QAction 
     /// under 'actionName'.
     void registerAction(
-      QString actionName,
+      QString const&actionName,
       QAction *action
       );
 
@@ -73,60 +73,60 @@ class ActionRegistry : public QObject
     /// Checks if an action is
     /// registered under 'actionName'.
     bool isActionRegistered(
-      QString actionName
+      QString const&actionName
       ) const;
 
     /// Gets the number of time the
     /// action has been registered.
     int getRegistrationCount(
-      QString actionName
+      QString const&actionName
       ) const;
 
     /// Checks if the shortcut is  
     /// already used by an action.
     QList<QAction*> isShortcutUsed(
-      QKeySequence shortcut
+      QKeySequence const&shortcut
       ) const;
 
     /// Checks if the shortcuts is  
     /// already used by an action.
     QList<QAction*> isShortcutUsed(
-      const QList<QKeySequence> &shortcuts
+      QList<QKeySequence> const&shortcuts
       ) const;
 
     /// Sets the shortcut of the actions
     /// registered under `actionName`.
     void setShortcut(
-      QString actionName,
-      QKeySequence shortcut
+      QString const&actionName,
+      QKeySequence const&shortcut
       ) const;
 
     /// Sets the shortcuts of the actions
     /// registered under `actionName`.
     void setShortcuts(
-      QString actionName,
-      const QList<QKeySequence> &shortcuts
+      QString const&actionName,
+      QList<QKeySequence> const&shortcuts
       ) const;
 
     /// Gets the shortcut. Returns an
     /// empty sequence if the action 
     /// has not been registered
     QKeySequence getShortcut(
-      QString actionName
+      QString const&actionName
       ) const;
 
     /// Gets the shortcuts. Returns 
     /// an empty list if the action 
     /// has not been registered
     QList<QKeySequence> getShortcuts(
-      QString actionName
+      QString const&actionName
       ) const;
 
     /// Gets the action registered under
     /// 'actionName'. Returns null if the
     /// action has not been registered.
     QAction* getAction(
-      QString actionName
+      QString const&actionName
       ) const;
 
     /// Gets the action name. Returns 
@@ -146,21 +146,21 @@ class ActionRegistry : public QObject
     /// Checks if the action context is global,
     /// Qt::WindowShortcut or Qt::ApplicationShortcut.
     bool isActionContextGlobal(
-      QString actionName
+      QString const&actionName
       ) const;
     
   signals:
     /// Emitted when an action 
     /// has been registered.
     void actionRegistered(
-      QString actionName,
+      QString const&actionName,
       QAction *action
       );
 
     /// Emitted when an action 
     /// is unregistered.
     void actionUnregistered(
-      QString actionName
+      QString const&actionName
       );
 
   private slots:

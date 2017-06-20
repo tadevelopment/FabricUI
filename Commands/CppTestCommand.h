@@ -193,9 +193,7 @@ class CppToPythonTestCommand
       {
         Application::FabricException::Throw(
           "CppToPythonTestCommand::CreateKLTestCommandsInKL",
-          e.getDesc_cstr(),
-          "",
-          PRINT);
+          e.getDesc_cstr());
       }
     }
 

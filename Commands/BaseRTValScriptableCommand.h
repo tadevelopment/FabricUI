@@ -46,19 +46,19 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
     /// The parameter 'defaultValue' does nothing.
     /// To set the argument as JSON, use `setArg`.
     virtual void declareArg( 
-      QString key, 
+      QString const&key, 
       int flags = FabricUI::Commands::CommandArgFlags::NO_FLAG_ARG, 
-      QString defaultValue = QString()
+      QString const&defaultValue = QString()
       );
 
     /// Implementation of BaseScriptableCommand.
     virtual bool hasArg(
-      QString key 
+      QString const&key 
       );
 
     /// Implementation of BaseScriptableCommand.
     virtual bool hasArgFlag(
-      QString key,
+      QString const&key,
       int flag
       );
  
@@ -67,13 +67,13 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
 
     /// Implementation of BaseScriptableCommand.
     virtual bool isArgSet(
-      QString key
+      QString const&key
       );
     
     /// Implementation of BaseScriptableCommand.
     /// Gets the JSON representation of the arg.
     virtual QString getArg( 
-      QString key 
+      QString const&key 
       );
  
     /// Implementation of BaseScriptableCommand.
@@ -83,8 +83,8 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
     /// Throws an error if the key is empty or 
     /// hasn't been declared.
     virtual void setArg(
-      QString key, 
-      QString value
+      QString const&key, 
+      QString const&value
       );
 
     /// Implementation of BaseScriptableCommand.
@@ -104,75 +104,75 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
     /// \param loggable If true, the arg is logged in the script-editor.
     /// Declares an argument of known RTVal type.
     virtual void declareRTValArg( 
-      QString key, 
-      QString type,
+      QString const&key, 
+      QString const&type,
       int flags = FabricUI::Commands::CommandArgFlags::NO_FLAG_ARG, 
       FabricCore::RTVal defaultValue = FabricCore::RTVal()
       );
 
     /// Gets the argument rtval type.
     virtual QString getRTValArgType(
-      QString key
+      QString const&key
       );
     
     /// Gets an argument.
     virtual QString getRTValArgPath( 
-      QString key 
+      QString const&key 
       );
 
     /// Gets an argument.
     virtual FabricCore::RTVal getRTValArgValue( 
-      QString key 
+      QString const&key 
       );
 
     /// Gets an argument if type not been set.
     /// To use with unknown type argument. The RTVal 
     /// is constructed from the JSON and the type
     virtual FabricCore::RTVal getRTValArgValue( 
-      QString key,
-      QString type
+      QString const&key,
+      QString const&type
       );
 
     /// Sets an argument.
     virtual void setRTValArgValue(
-      QString key, 
+      QString const&key, 
       FabricCore::RTVal value
       );
 
     virtual void setRTValArg(
-      QString key, 
+      QString const&key, 
       FabricCore::RTVal pathValue
       );
 
     virtual FabricCore::RTVal getRTValArg(
-      QString key 
+      QString const&key 
       );
 
   protected:
     void checkHasArg(
-      QString methodName,
-      QString key
+      QString const&methodName,
+      QString const&key
       );
       
     /// Checks if the argument is a PathValue.
     bool isJSONPathValueArg(
-      QString json
+      QString const&json
       );
 
   private:
     bool isArgTypeKnown(
-      QString key
+      QString const&key
       );
 
     void checkEmptyKey(
-      QString methodName,
-      QString key
+      QString const&methodName,
+      QString const&key
       );
 
     void checkRTValType(
-      QString methodName,
-      QString key,
-      QString type
+      QString const&methodName,
+      QString const&key,
+      QString const&type
       );
 
     /// Defines the arguments specs:

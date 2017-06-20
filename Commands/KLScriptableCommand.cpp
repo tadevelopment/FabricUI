@@ -129,15 +129,15 @@ void KLScriptableCommand::merge(
 
 // BaseScriptableCommand
 void KLScriptableCommand::declareArg( 
-  QString key, 
+  QString const&key, 
   int flag, 
-  QString defaultValue)
+  QString const&defaultValue)
 {
   // Do nothing.
 }
 
 bool KLScriptableCommand::hasArg(
-  QString key) 
+  QString const&key) 
 {
   FABRIC_CATCH_BEGIN();
 
@@ -158,7 +158,7 @@ bool KLScriptableCommand::hasArg(
 }
 
 bool KLScriptableCommand::hasArgFlag(
-  QString key,
+  QString const&key,
   int flag) 
 {
   FABRIC_CATCH_BEGIN();
@@ -207,13 +207,13 @@ QList<QString> KLScriptableCommand::getArgKeys()
 }
 
 bool KLScriptableCommand::isArgSet(
-  QString key)
+  QString const&key)
 {
   return true;
 }
 
 QString KLScriptableCommand::getArg(
-  QString key) 
+  QString const&key) 
 {
   FABRIC_CATCH_BEGIN();
 
@@ -225,8 +225,8 @@ QString KLScriptableCommand::getArg(
 }
 
 void KLScriptableCommand::setArg(
-  QString key, 
-  QString json) 
+  QString const&key, 
+  QString const&json) 
 {
   checkHasArg("KLScriptableCommand::setArg", key);
 
@@ -289,8 +289,8 @@ QString KLScriptableCommand::getArgsDescription()
 
 // BaseRTValScriptableCommand
 void KLScriptableCommand::declareRTValArg( 
-  QString key, 
-  QString type,
+  QString const&key, 
+  QString const&type,
   int flag, 
   FabricCore::RTVal defaultValue)
 {
@@ -298,7 +298,7 @@ void KLScriptableCommand::declareRTValArg(
 }
 
 QString KLScriptableCommand::getRTValArgType(
-  QString key)
+  QString const&key)
 {
   FABRIC_CATCH_BEGIN();
 
@@ -319,7 +319,7 @@ QString KLScriptableCommand::getRTValArgType(
 }
 
 QString KLScriptableCommand::getRTValArgPath(
-  QString key)
+  QString const&key)
 {
   checkHasArg("KLScriptableCommand::getRTValArgPath", key);
  
@@ -342,7 +342,7 @@ QString KLScriptableCommand::getRTValArgPath(
 }
 
 RTVal KLScriptableCommand::getRTValArgValue(
-  QString key)
+  QString const&key)
 {
   checkHasArg("KLScriptableCommand::getRTValArgValue", key);
  
@@ -364,14 +364,14 @@ RTVal KLScriptableCommand::getRTValArgValue(
 }
 
 RTVal KLScriptableCommand::getRTValArgValue(
-  QString key,
-  QString type)
+  QString const&key,
+  QString const&type)
 {
   return getRTValArgValue(key);
 }
 
 void KLScriptableCommand::setRTValArgValue( 
-  QString key, 
+  QString const&key, 
   FabricCore::RTVal value)
 {
   FABRIC_CATCH_BEGIN();
@@ -407,7 +407,7 @@ void KLScriptableCommand::setRTValArgValue(
 }
 
 RTVal KLScriptableCommand::getRTValArg(
-  QString key)
+  QString const&key)
 {
   checkHasArg("KLScriptableCommand::getRTValArg", key);
  
@@ -429,7 +429,7 @@ RTVal KLScriptableCommand::getRTValArg(
 }
 
 void KLScriptableCommand::setRTValArg( 
-  QString key, 
+  QString const&key, 
   FabricCore::RTVal pathValue)
 {
   FABRIC_CATCH_BEGIN();

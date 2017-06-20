@@ -58,8 +58,8 @@ bool CommandManager::isInitalized()
 }
 
 BaseCommand* CommandManager::createCommand(
-  QString cmdName,  
-  QMap<QString, QString> args, 
+  QString const&cmdName,  
+  QMap<QString, QString> const&args, 
   bool doCmd,
   int canMergeID)
 {
@@ -353,7 +353,7 @@ QString CommandManager::getContent(
   bool withArgs)
 {
   QString res = QString(
-    "--> BaseCommand Manager-size:"+ QString::number(count()) + 
+    "--> Command Manager - size:"+ QString::number(count()) + 
     ", index:" + QString::number(getStackIndex()) + 
     ", undo:"+  QString::number(m_undoStack.size()) +  
     ", redo:" + QString::number(m_redoStack.size()) + 
@@ -367,7 +367,7 @@ QString CommandManager::getContent(
 
 void CommandManager::checkCommandArgs(
   BaseCommand *cmd,
-  QMap<QString, QString> args)
+  QMap<QString, QString> const&args)
 { 
   BaseScriptableCommand* scriptCommand = qobject_cast<BaseScriptableCommand*>(cmd);
 
@@ -458,8 +458,8 @@ void CommandManager::commandPushed(
 }
 
 QString CommandManager::getStackContent(
-  QString stackName, 
-  QList<StackedCommand> stack,
+  QString const&stackName, 
+  QList<StackedCommand> const& stack,
   bool withArgs)
 {
   int offset = stackName == "Redo" ? m_undoStack.size() : 0;
@@ -499,7 +499,7 @@ QString CommandManager::getStackContent(
 
 void CommandManager::cleanupUnfinishedCommandsAndThrow(
   BaseCommand *cmd,
-  QString error) 
+  QString const&error) 
 {
   QString cmdForErrorLog = (cmd != 0) 
     ? cmd->getName()
@@ -530,7 +530,7 @@ void CommandManager::cleanupUnfinishedCommandsAndThrow(
 void CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow(
   int topLevelCmdIndex, 
   StackedCommand &stackedCmd,
-  QString error) 
+  QString const&error) 
 {
   FABRIC_CATCH_BEGIN();
 
@@ -549,7 +549,7 @@ void CommandManager::cleanupUnfinishedUndoLowCommandsAndThrow(
 void CommandManager::cleanupUnfinishedRedoLowCommandsAndThrow(
   int topLevelCmdIndex, 
   StackedCommand &stackedCmd,
-  QString error) 
+  QString const&error) 
 {
   FABRIC_CATCH_BEGIN();
 

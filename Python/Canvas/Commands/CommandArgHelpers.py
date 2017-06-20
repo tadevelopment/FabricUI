@@ -7,7 +7,6 @@ from FabricEngine.Canvas.Application.FabricApplicationStates import *
 
 class CommandArgHelpers:
 
-    ### Global
     @staticmethod
     def __IsPyStringArg(arg):
         """ \internal """
@@ -75,13 +74,10 @@ class CommandArgHelpers:
                     if CommandArgHelpers.__IsPyRTValArg(arg):
                         pathValue = Util.RTValUtil.toRTVal(arg)
                         val = Util.RTValUtil.toRTVal(pathValue.value)
-
                         if CommandArgHelpers.__IsPyRTValArg(arg) and Util.RTValUtil.getType(val) == 'String':
                             arg = val.getSimpleType()
                     else:
-                        raise Exception(
-                            "CommandManagerQtCallback.__CastCmdArgsToStr, error: \n" + 
-                            "The argument '" + str(key) + "' is not a string, but a " + str(type(arg)))
+                        arg = str(arg)
 
                 strArgs[key] = arg
  
@@ -216,7 +212,7 @@ class CommandArgHelpers:
 
                         # ScriptableCommand, arguments are strings.
                         else:
-                            desc += str(CppCommands.CommandArgHelpers.GetCommandArg(key, cmd))
+                            desc += str(CppCommands.CommandArgHelpers.getCommandArg(key, cmd))
                     count += 1   
                 desc += ')'
  

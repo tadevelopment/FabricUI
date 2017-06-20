@@ -174,8 +174,9 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         if actRegistry.getAction(cmdName) is None:
             # Must construct the command to get the tooltip
             cmd = GetCommandRegistry().createCommand(cmdName)
+
             tooltip = cmdType+ "[" + implType + "]\n\n"
-            tooltip += cmd.getHelp()
+            tooltip += str(cmd.getHelp())
             isScriptable = CppCommands.CommandArgHelpers.isScriptableCommand(cmd)
 
             # Add the action to the canvasWindow so it's available.
