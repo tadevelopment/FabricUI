@@ -402,7 +402,7 @@ void CommandManager::checkCommandArgs(
   if(!scriptCommand) 
     FabricException::Throw(
       "CommandManager::checkCommandArgs",
-        "BaseCommand '" + cmd->getName() +  "' is created with args " + 
+        "BaseCommand '" + cmd->getName() + "' is created with args " + 
         "but is not implementing the BaseScriptableCommand interface"
         );
 
