@@ -54,9 +54,13 @@ class FabricException : public std::exception
       QString const&childError = QString(),
       int flag = THROW)
     {
-      QString cmdError = method + ", error: " + error + "\n ";
+      QString cmdError;
+
+      if(!method.isEmpty())
+        cmdError += "\n" + method + ", error: " + error;
+      
       if(!childError.isEmpty()) 
-        cmdError += childError + "\n ";
+        cmdError += "\n" + childError;
 
       if(flag & PRINT)
         std::cerr << cmdError.toUtf8().constData() << std::endl;
@@ -85,28 +89,28 @@ class FabricException : public std::exception
 
 #define FABRIC_CATCH_END(methodName) \
   } \
-  catch (FabricCore::Exception &e) \
+  catch (FabricCore::Exception e) \
   { \
     FabricUI::Application::FabricException::Throw( \
-      methodName, \
-      "Caught Core Exception", \
-      e.getDesc_cstr() \
+      QString(methodName), \
+      QString("Caught Core Exception"), \
+      QString(e.getDesc_cstr()) \
       ); \
   } \
-  catch (FTL::JSONException &je) \
+  catch (FTL::JSONException je) \
   { \
     FabricUI::Application::FabricException::Throw( \
-      methodName, \
-      "Caught JSON Exception", \
-      je.getDescCStr() \
+      QString(methodName), \
+      QString("Caught JSON Exception"), \
+      QString(je.getDescCStr()) \
       ); \
   } \
-  catch (FabricUI::Application::FabricException &e) \
+  catch (FabricUI::Application::FabricException e) \
   { \
     FabricUI::Application::FabricException::Throw( \
-      methodName, \
-      "Caught App Exception", \
-      e.what() \
+      QString(methodName), \
+      QString("Caught App Exception"), \
+      QString(e.what()) \
       ); \
   } 
 

@@ -50,7 +50,8 @@ void BaseRTValScriptableCommand::checkHasArg(
   if(!hasArg(key)) 
     FabricException::Throw(
       methodName,
-      "No arg named '" + key + "' in command '" + getName() + "'");
+      "No arg named '" + key + "' in command '" + getName() + "'"
+      );
 }
 
 void BaseRTValScriptableCommand::checkEmptyKey(
@@ -60,7 +61,8 @@ void BaseRTValScriptableCommand::checkEmptyKey(
   if(key.isEmpty()) 
     FabricException::Throw(
       methodName,
-      "Command '" + getName() + "', key not specified");
+      "Command '" + getName() + "', key not specified"
+      );
 }
 
 void BaseRTValScriptableCommand::checkRTValType(
@@ -71,7 +73,8 @@ void BaseRTValScriptableCommand::checkRTValType(
   if(!FabricApplicationStates::GetAppStates()->getClient().isValidType(type.toUtf8().constData()))
     FabricException::Throw(
       methodName,
-      "Argument '" + key + "' in command '" + getName() + "' has not a valid kl type '" + type + "'");
+      "Argument '" + key + "' in command '" + getName() + "' has not a valid kl type '" + type + "'"
+      );
 }
 
 bool BaseRTValScriptableCommand::hasArgFlag(
@@ -167,7 +170,8 @@ void BaseRTValScriptableCommand::validateSetArgs()
     if(!hasArgFlag(key, CommandArgFlags::OPTIONAL_ARG) && !isArgSet(key))
       FabricException::Throw(
         "BaseRTValScriptableCommand::validateSetArgs",
-        "Argument '" + key + "' in command '" + getName() + "' has not been set");
+        "Argument '" + key + "' in command '" + getName() + "' has not been set"
+        );
   }
 }
 
@@ -281,7 +285,8 @@ RTVal BaseRTValScriptableCommand::getRTValArgValue(
     FabricException::Throw(
       "BaseRTValScriptableCommand::getRTValArgValue",
         "RTVal argument '" + key + "' of command '" + getName() + 
-        "' has been set in JSON only, \n !!! use getRTValArgValue(key, type) instead !!!");
+        "' has been set in JSON only, \n !!! use getRTValArgValue(key, type) instead !!!"
+        );
 
   FABRIC_CATCH_BEGIN();
  
@@ -333,7 +338,8 @@ void BaseRTValScriptableCommand::setRTValArg(
   if(RTValUtil::getType(pathValue) != "PathValue")
      FabricException::Throw(
       "BaseRTValScriptableCommand::setRTValArg",
-      "Arg '" + key + "' is not a PathValue");
+      "Arg '" + key + "' is not a PathValue"
+      );
 
   FABRIC_CATCH_BEGIN();
 

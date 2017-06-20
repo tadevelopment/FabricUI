@@ -199,23 +199,27 @@ class CommandManager : public QObject
     /// doing a command and throws an exception.
     void cleanupUnfinishedCommandsAndThrow(
       BaseCommand *cmd,
-      QString const&error = QString()
+      QString const&error
       );
 
     /// Cleans the stacks if errors occur when
     /// undoing a command and throws an exception.
     void cleanupUnfinishedUndoLowCommandsAndThrow(
-      int topLevelCmdIndex, 
+      int lowCmdIndex, 
       StackedCommand &stackedCmd,
-      QString const&error = QString()
+      QString const&topCmdName,
+      QString const&LowCmdName,
+      QString const&error
       );
 
     /// Cleans the stacks if errors occur when
     /// redoing a command and throws an exception.
     void cleanupUnfinishedRedoLowCommandsAndThrow(
-      int topLevelCmdIndex, 
+      int lowCmdIndex, 
       StackedCommand &stackedCmd,
-      QString const&error = QString()
+      QString const&topCmdName,
+      QString const&LowCmdName,
+      QString const&error
       );
     
     /// CommandManager singleton, set from Constructor.

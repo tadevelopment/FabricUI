@@ -27,7 +27,8 @@ void BaseScriptableCommand::declareArg(
   if(key.isEmpty())
     FabricException::Throw(
       "BaseScriptableCommand::declareArg",
-      "declaring arg of '" + getName() + "', key not specified");
+      "declaring arg of '" + getName() + "', key not specified"
+      );
 
   ScriptableCommandArgSpec spec;
   spec.flags = flags;
@@ -51,13 +52,15 @@ bool BaseScriptableCommand::hasArgFlag(
   if(key.isEmpty()) 
     FabricException::Throw(
       "BaseScriptableCommand::hasArgFlag",
-      "setting arg of '" + getName() + "', key not specified");
+      "setting arg of '" + getName() + "', key not specified"
+      );
 
   if(!hasArg(key)) 
     // TODO: make this an optional behavior
     FabricException::Throw(
       "BaseScriptableCommand::hasArgFlag",
-      "setting arg: '" + key + + "' not supported by command '" + getName() + "'");
+      "setting arg: '" + key + + "' not supported by command '" + getName() + "'"
+      );
 
   return (m_argSpecs[key].flags & flag);
 }
