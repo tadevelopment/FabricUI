@@ -31,16 +31,6 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
   m_backgroundColor = config.headerBackgroundColor;
   m_pen = config.headerPen;
 
-  QIcon backIcon = LoadPixmap( "DFGBack.png" );
-  m_backButton = new QPushButton( backIcon, "Back" );
-  m_backButton->setObjectName( "DFGBackButton" );
-  m_backButton->setFocusPolicy( Qt::NoFocus );
-  m_backButton->setAutoFillBackground(false);
-  QObject::connect(
-    m_backButton, SIGNAL(clicked()),
-    this, SIGNAL(goUpPressed())
-    );
-
   m_execPathLabel = new QLabel;
   m_execPathLabel->setObjectName( "DFGExecPathLabel" );
 
@@ -82,6 +72,20 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
     this, SLOT(reqExtResizeToContent())
     );
   reqExtResizeToContent();
+
+  QIcon backIcon = LoadPixmap("DFGBack.png");
+  m_backButton = new QPushButton(backIcon, "Back");
+  m_backButton->setObjectName("DFGBackButton");
+  m_backButton->setFocusPolicy(Qt::NoFocus);
+  m_backButton->setAutoFillBackground(false);
+  QObject::connect(
+    m_backButton, SIGNAL(clicked()),
+    m_reqExtLineEdit, SLOT(onGoUpPressed())
+  );
+  QObject::connect(
+    m_backButton, SIGNAL(clicked()),
+    this, SIGNAL(goUpPressed())
+  );
 
   layout->addWidget( m_presetNameLabel );
   layout->addWidget( m_presetPathSep );
@@ -142,6 +146,11 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
 
 DFGExecHeaderWidget::~DFGExecHeaderWidget()
 {
+}
+
+void ReqExtLineEdit::onGoUpPressed()
+{
+  clearFocus();
 }
 
 void DFGExecHeaderWidget::refresh()

@@ -71,6 +71,8 @@ namespace FabricUI
 
     protected slots:
 
+      void onGoUpPressed();
+
     private:
 
       bool m_allowEdits;
