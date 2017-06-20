@@ -61,7 +61,7 @@ void InfoOverlay::setText(QString t)
 void InfoOverlay::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
   painter->setPen(m_config.nodeDefaultPen);
-  painter->setBrush(QColor(255, 233, 0, 100)/*m_config.infoOverlayColor*/);
+  painter->setBrush(m_config.infoOverlayColor);
 
   QRectF rect = windowFrameRect();
   painter->drawRect(rect);
