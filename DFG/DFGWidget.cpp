@@ -2946,13 +2946,17 @@ void DFGWidget::onExecChanged()
     onExecSplitChanged();
 
     // [Julien] FE-5264
-    // Before initializing the graph, sets the dimConnectionLines and portsCentered properties
+    // [Mootz] FE-8556
+    // Before initializing the graph, sets the dimConnectionLines, portsCentered, etc. properties
     if(getSettings()) 
     {
-      m_uiGraph->config().dimConnectionLines = getSettings()->value( "DFGWidget/dimConnectionLines").toBool();
-      m_uiGraph->config().portsCentered = getSettings()->value( "DFGWidget/portsCentered").toBool();
-      m_uiGraph->config().mainPanelDrawGrid = getSettings()->value( "DFGWidget/mainPanelDrawGrid").toBool();
-      m_uiGraph->config().mainPanelGridSnap = getSettings()->value( "DFGWidget/mainPanelGridSnap").toBool();
+      m_uiGraph->config().dimConnectionLines         = getSettings()->value( "DFGWidget/dimConnectionLines")        .toBool();
+      m_uiGraph->config().connectionShowTooltip      = getSettings()->value( "DFGWidget/connectionShowTooltip")     .toBool();
+      m_uiGraph->config().highlightConnectionTargets = getSettings()->value( "DFGWidget/highlightConnectionTargets").toBool();
+      m_uiGraph->config().connectionDrawAsCurves     = getSettings()->value( "DFGWidget/connectionDrawAsCurves")    .toBool();
+      m_uiGraph->config().portsCentered              = getSettings()->value( "DFGWidget/portsCentered")             .toBool();
+      m_uiGraph->config().mainPanelDrawGrid          = getSettings()->value( "DFGWidget/mainPanelDrawGrid")         .toBool();
+      m_uiGraph->config().mainPanelGridSnap          = getSettings()->value( "DFGWidget/mainPanelGridSnap")         .toBool();
     }
     m_uiGraph->initialize();
 
