@@ -26,8 +26,8 @@ class RTValCommandManager : public CommandManager
     
     /// Implementation of CommandManager.
     virtual BaseCommand* createCommand(
-      QString cmdName, 
-      QMap<QString, QString> args, 
+      QString const&cmdName, 
+      QMap<QString, QString> const&args, 
       bool doCmd = true,
       int canMergeID = -1
       );
@@ -36,8 +36,8 @@ class RTValCommandManager : public CommandManager
     /// If executed, the command is added to the manager stack.
     /// Throws an exception if an error occurs.
     virtual BaseCommand* createCommand(
-      QString cmdName, 
-      QMap<QString, FabricCore::RTVal> args, 
+      QString const&cmdName, 
+      QMap<QString, FabricCore::RTVal> const&args, 
       bool doCmd = true,
       int canMergeID = -1
       );
@@ -47,7 +47,7 @@ class RTValCommandManager : public CommandManager
     /// Throws an exception if an error occurs.
     void checkRTValCommandArgs(
       BaseCommand *cmd,
-      QMap<QString, FabricCore::RTVal> args
+      QMap<QString, FabricCore::RTVal> const&args
       );
 
   private:

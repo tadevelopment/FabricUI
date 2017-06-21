@@ -59,8 +59,8 @@ class CommandManager : public QObject
     /// If executed, the command is added to the manager stack.
     /// Throws an exception if an error occurs.
     virtual BaseCommand* createCommand(
-      QString cmdName, 
-      QMap<QString, QString> args = QMapString(), 
+      QString const&cmdName, 
+      QMap<QString, QString> const&args = QMapString(), 
       bool doCmd = true,
       int canMergeID = NoCanMergeID
       );
@@ -129,7 +129,7 @@ class CommandManager : public QObject
     /// Throws an exception if an error occurs.
     void checkCommandArgs(
       BaseCommand *cmd,
-      QMap<QString, QString> args
+      QMap<QString, QString> const&args
       );
 
     /// Informs a command has been pushed. 
@@ -190,8 +190,8 @@ class CommandManager : public QObject
     /// getStackContent a specific stack content 
     /// as a string, used for debugging.
     QString getStackContent(
-      QString stackName, 
-      QList<StackedCommand> stack,
+      QString const&stackName, 
+      QList<StackedCommand> const& stack,
       bool withArgs = true
       );
  
@@ -199,23 +199,27 @@ class CommandManager : public QObject
     /// doing a command and throws an exception.
     void cleanupUnfinishedCommandsAndThrow(
       BaseCommand *cmd,
-      QString error = QString()
+      QString const&error
       );
 
     /// Cleans the stacks if errors occur when
     /// undoing a command and throws an exception.
     void cleanupUnfinishedUndoLowCommandsAndThrow(
-      int topLevelCmdIndex, 
+      int lowCmdIndex, 
       StackedCommand &stackedCmd,
-      QString error = QString()
+      QString const&topCmdName,
+      QString const&LowCmdName,
+      QString const&error
       );
 
     /// Cleans the stacks if errors occur when
     /// redoing a command and throws an exception.
     void cleanupUnfinishedRedoLowCommandsAndThrow(
-      int topLevelCmdIndex, 
+      int lowCmdIndex, 
       StackedCommand &stackedCmd,
-      QString error = QString()
+      QString const&topCmdName,
+      QString const&LowCmdName,
+      QString const&error
       );
     
     /// CommandManager singleton, set from Constructor.

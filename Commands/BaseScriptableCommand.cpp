@@ -20,14 +20,15 @@ BaseScriptableCommand::~BaseScriptableCommand()
 }
 
 void BaseScriptableCommand::declareArg(
-  QString key, 
+  QString const&key, 
   int flags, 
-  QString defaultValue) 
+  QString const&defaultValue) 
 {
   if(key.isEmpty())
     FabricException::Throw(
       "BaseScriptableCommand::declareArg",
-      "declaring arg of '" + getName() + "', key not specified");
+      "declaring arg of '" + getName() + "', key not specified"
+      );
 
   ScriptableCommandArgSpec spec;
   spec.flags = flags;
@@ -39,31 +40,33 @@ void BaseScriptableCommand::declareArg(
 }
 
 bool BaseScriptableCommand::hasArg(
-  QString key)
+  QString const&key)
 {
   return m_argSpecs.count(key) > 0;
 }
 
-bool BaseScriptableCommand::isArg(
-  QString key,
+bool BaseScriptableCommand::hasArgFlag(
+  QString const&key,
   int flag)
 {
   if(key.isEmpty()) 
     FabricException::Throw(
-      "BaseScriptableCommand::isArg",
-      "setting arg of '" + getName() + "', key not specified");
+      "BaseScriptableCommand::hasArgFlag",
+      "setting arg of '" + getName() + "', key not specified"
+      );
 
   if(!hasArg(key)) 
     // TODO: make this an optional behavior
     FabricException::Throw(
-      "BaseScriptableCommand::isArg",
-      "setting arg: '" + key + + "' not supported by command '" + getName() + "'");
+      "BaseScriptableCommand::hasArgFlag",
+      "setting arg: '" + key + + "' not supported by command '" + getName() + "'"
+      );
 
   return (m_argSpecs[key].flags & flag);
 }
 
 QString BaseScriptableCommand::getArg(
-  QString key)
+  QString const&key)
 {
   return m_args.count(key) > 0 
     ? m_args[key]
@@ -76,15 +79,15 @@ QList<QString> BaseScriptableCommand::getArgKeys()
 }
 
 bool BaseScriptableCommand::isArgSet(
-  QString key)
+  QString const&key)
 {
   return m_args.count(key) && 
         !m_args[key].isEmpty();
 }
 
 void BaseScriptableCommand::setArg(
-  QString key, 
-  QString value) 
+  QString const&key, 
+  QString const&value) 
 {
   if(key.isEmpty()) 
     FabricException::Throw(
@@ -111,7 +114,7 @@ void BaseScriptableCommand::validateSetArgs()
     QString key = it.key();
     ScriptableCommandArgSpec spec = it.value();
      
-    if(!isArg(key, CommandArgFlags::OPTIONAL_ARG) && !isArgSet(key)) //is null
+    if(!hasArgFlag(key, CommandArgFlags::OPTIONAL_ARG) && !isArgSet(key)) //is null
       FabricException::Throw(
         "BaseScriptableCommand::validateSetArgs",
         "validating arg: '" + key + "' of command '" + getName() + "' has not been set");

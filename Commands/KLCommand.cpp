@@ -82,9 +82,22 @@ QString KLCommand::getHistoryDesc()
 void KLCommand::setCanMergeID(
   int canMergeID)
 {
+  FABRIC_CATCH_BEGIN();
+
+  RTVal baseCmd = RTVal::Construct(
+    m_klCmd.getContext(),
+    "BaseCommand",
+    1,
+    &m_klCmd);
+
+  if(!baseCmd.isValid())
+    return;
+  
   KLCommandHelpers::setKLCommandCanMergeID(
-    m_klCmd, 
+    baseCmd, 
     canMergeID);
+
+  FABRIC_CATCH_END("KLCommand::setCanMergeID");
 }
 
 int KLCommand::getCanMergeID()

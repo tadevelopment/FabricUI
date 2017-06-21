@@ -32,7 +32,7 @@ KLCommandRegistry::~KLCommandRegistry()
 }
 
 BaseCommand* KLCommandRegistry::createCommand(
-  QString cmdName) 
+  QString const&cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
     FabricException::Throw( 
@@ -118,7 +118,7 @@ void KLCommandRegistry::synchronizeKL()
 }
  
 void KLCommandRegistry::registerKLCommand(
-  QString cmdName) 
+  QString const&cmdName) 
 {
   FABRIC_CATCH_BEGIN();
 
@@ -156,7 +156,7 @@ void KLCommandRegistry::registerKLCommand(
 }
  
 BaseCommand* KLCommandRegistry::createKLCommand(
-  QString cmdName)
+  QString const&cmdName)
 {  
   FABRIC_CATCH_BEGIN();
 
@@ -173,35 +173,31 @@ BaseCommand* KLCommandRegistry::createKLCommand(
   // Creates the KL command from the KL registery. 
   // Check if it's a scriptable command
   RTVal klCmd = KLCommandHelpers::getKLCommandRegistry().callMethod(
-    "BaseScriptableCommand", 
+    "BaseCommand", 
     "createCommand", 
     2, 
     args);
 
-  if(!klCmd.isNullObject())
-    return new KLScriptableCommand(klCmd);
-  
-  // if not, it's a simple command.
+  RTVal sriptKLCmd = RTVal::Construct(
+    klCmd.getContext(),
+    "BaseScriptableCommand", 
+    1, 
+    &klCmd);
+ 
+  if(sriptKLCmd.isValid() && !sriptKLCmd.isNullObject())
+     return new KLScriptableCommand(sriptKLCmd);
   else
-  {
-    klCmd = KLCommandHelpers::getKLCommandRegistry().callMethod(
-      "BaseCommand", 
-      "createCommand", 
-      2, 
-      args);
-
     return new KLCommand(klCmd);
-  }
-
+ 
   FABRIC_CATCH_END("KLCommandRegistry::createKLCommand");
 
   return 0;
 }
 
 void KLCommandRegistry::commandIsRegistered(
-  QString cmdName,
-  QString cmdType,
-  QString implType) 
+  QString const&cmdName,
+  QString const&cmdType,
+  QString const&implType) 
 {
   FABRIC_CATCH_BEGIN();
  

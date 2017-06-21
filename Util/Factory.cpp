@@ -23,7 +23,7 @@ BaseFactoryRegistry::~BaseFactoryRegistry()
 }
 
 Factory* BaseFactoryRegistry::getFactory(
-  QString name) 
+  QString const&name) 
 {
   return hasFactory(name) 
     ? m_factories[name] 
@@ -31,13 +31,13 @@ Factory* BaseFactoryRegistry::getFactory(
 }
 
 bool BaseFactoryRegistry::hasFactory(
-  QString name) 
+  QString const&name) 
 {
   return m_factories.count(name) > 0;
 }
 
 void BaseFactoryRegistry::registerFactory(
-  QString name, 
+  QString const&name, 
   Factory *factory) 
 {
   if(!hasFactory(name))
@@ -50,7 +50,7 @@ void BaseFactoryRegistry::registerFactory(
 }
 
 void BaseFactoryRegistry::unregisterFactory(
-  QString name) 
+  QString const&name) 
 {
   QMapIterator<QString, Factory*> it(m_factories);
   while(it.hasNext()) 

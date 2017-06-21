@@ -440,7 +440,7 @@ class CanvasWindow(QtGui.QMainWindow):
         The DFGWidget is the UI that reflects the binding to the graph that is
         created and changed through the application.
         """
- 
+
         graph = self.mainBinding.getExec()
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
                                        self.mainBinding, '', graph, self.astManager,
@@ -457,6 +457,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         controller = self.dfgWidget.getDFGController()
         controller.topoDirty.connect(GetCommandManager().synchronizeKL)
+        FabricUI.DFG.DFGCommandRegistration.RegisterCommands(self.dfgWidget.getDFGController())
 
     def _initTreeView(self):
         """Initializes the preset TreeView.
@@ -487,6 +488,12 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
+        FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
+        DialogCommandRegistration.RegisterCommands()
+        
+        args = { "editorID":"Rendering Options", "editorTitle":"Rendering Options" }
+        cmd = GetCommandManager().createCommand('openKLOptionsTargetEditor', args)
+     
         # When a klWidget is activated/deactivated from the value-editor.
         self.valueEditor.refreshViewport.connect(self.viewport.redraw)
 
@@ -666,30 +673,19 @@ class CanvasWindow(QtGui.QMainWindow):
         Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.scriptEditorDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
-        self._initViewportOptionEditor(windowMenu)
-
-        self.dfgWidget.populateMenuBar(self.menuBar(), False, False, False, False, True)
-    
-    def _initViewportOptionEditor(self, windowMenu):
-
         try:
-            FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
-            FabricUI.DFG.DFGCommandRegistration.RegisterCommands(self.dfgWidget.getDFGController())
-            DialogCommandRegistration.RegisterCommands()
-            
-            args = { "editorID":"Rendering Options", "editorTitle":"Rendering Options" }
-            cmd = GetCommandManager().createCommand('openKLOptionsTargetEditor', args)
-         
             dockWidget = FabricUI.Util.QtUtil.getDockWidget("Rendering Options")
-            dockWidget.hide()
-            toggleAction = dockWidget.toggleViewAction()
-            toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
-            Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
-            windowMenu.addAction( toggleAction )
-        
+            if dockWidget:
+                dockWidget.hide()
+                toggleAction = dockWidget.toggleViewAction()
+                toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
+                Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
+                windowMenu.addAction( toggleAction )
         except Exception as e:
             print str(e)
 
+        self.dfgWidget.populateMenuBar(self.menuBar(), False, False, False, False, True)
+    
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested by manipulators
         in the viewport.
@@ -1053,24 +1049,24 @@ class CanvasWindow(QtGui.QMainWindow):
         self.scriptEditor.exec_("newGraph(skip_save=%s)" % str(skip_save))
 
     def __clearApp(self):
-            """ Clear the app before loading a new graph.
-            """
-            manipActive = self.viewport.isManipulationActive()
-            if manipActive is True:
-                self.manipAction.onTriggered()
-        
-            binding = self.dfgWidget.getDFGController().getBinding()
-            binding.deallocValues()
+        """ Clear the app before loading a new graph.
+        """
+        manipActive = self.viewport.isManipulationActive()
+        if manipActive is True:
+            self.manipAction.onTriggered()
+    
+        binding = self.dfgWidget.getDFGController().getBinding()
+        binding.deallocValues()
 
-            self.host.flushUndoRedo()
-            self.qUndoStack.clear()
-            GetCommandManager().clear()
-            self.logWidget.clear()
-            self.viewport.clear()
-            self.scriptEditor.clear()
-            QtCore.QCoreApplication.processEvents()
+        self.host.flushUndoRedo()
+        self.qUndoStack.clear()
+        GetCommandManager().clear()
+        self.logWidget.clear()
+        self.viewport.clear()
+        self.scriptEditor.clear()
+        QtCore.QCoreApplication.processEvents()
 
-            return manipActive, binding
+        return manipActive, binding
 
     def onNewGraph(self, skip_save=False):
         """Callback Executed when a call to create a new graph has been made.

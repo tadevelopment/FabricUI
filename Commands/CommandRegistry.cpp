@@ -45,7 +45,7 @@ bool CommandRegistry::isInitalized()
 }
 
 void CommandRegistry::registerFactory(
-  QString name, 
+  QString const&name, 
   Factory *factory) 
 {
   if(!isCommandRegistered(name))
@@ -63,19 +63,19 @@ void CommandRegistry::registerFactory(
 }
 
 void CommandRegistry::unregisterFactory(
-  QString name)
+  QString const&name)
 {
   // Does nothing.
 }
 
 bool CommandRegistry::isCommandRegistered(
-  QString cmdName) 
+  QString const&cmdName) 
 {
   return m_cmdSpecs.count(cmdName) > 0;
 }
 
 QPair<QString, QString> CommandRegistry::getCommandSpecs(
-  QString cmdName) 
+  QString const&cmdName) 
 {
   if(!isCommandRegistered(cmdName))
     FabricException::Throw( 
@@ -91,7 +91,7 @@ QList<QString> CommandRegistry::getCommandNames()
 }
 
 BaseCommand* CommandRegistry::createCommand(
-  QString cmdName) 
+  QString const&cmdName) 
 {  
   if(!isCommandRegistered(cmdName))
     FabricException::Throw( 
@@ -112,12 +112,10 @@ BaseCommand* CommandRegistry::createCommand(
       FabricException::Throw(
         "CommandRegistry::createCommand",
         "resulting command is null");
-
-    void *userData = factory->getUserData();
   
     cmd->registrationCallback(
       cmdName,
-      userData);
+      factory->getUserData());
 
     return cmd;
   }
@@ -137,19 +135,16 @@ QString CommandRegistry::getContent()
     specsIt.next();
     QString name = specsIt.key();
     QPair<QString, QString> spec = specsIt.value();
-
-    res += QString(
-      "["+ name + "] type:" + spec.first + ", implType:" + spec.second + "\n"
-    );
+    res +=  "["+ name + "] type:" + spec.first + ", implType:" + spec.second + "\n";
   }
 
   return res;
 }
 
 void CommandRegistry::commandIsRegistered(
-  QString cmdName,
-  QString cmdType,
-  QString implType) 
+  QString const&cmdName,
+  QString const&cmdType,
+  QString const&implType) 
 {
   std::cout 
     << "CommandRegistry::commandIsRegistered " 

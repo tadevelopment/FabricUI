@@ -23,7 +23,7 @@ class KLOptionsTargetEditor
     /// Constructs a RTValDictModelItem .
     /// \param title Title of the editor.
     KLOptionsTargetEditor(
-      QString title
+      QString const&title
       );
       
     virtual ~KLOptionsTargetEditor();

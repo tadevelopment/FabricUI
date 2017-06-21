@@ -161,7 +161,7 @@ class CppToPythonTestCommand
         registry->synchronizeKL();
       }    
 
-      catch(FabricCore::Exception &e)
+      catch(FabricCore::Exception e)
       {
         Application::FabricException::Throw(
           "CppToPythonTestCommand::RegisterKLTestCommands",
@@ -189,7 +189,7 @@ class CppToPythonTestCommand
           0);  
       }
 
-      catch(FabricCore::Exception &e)
+      catch(FabricCore::Exception e)
       {
         Application::FabricException::Throw(
           "CppToPythonTestCommand::CreateKLTestCommandsInKL",
@@ -230,7 +230,7 @@ class CppToPythonTestCommand
           "klTestScriptableMetaCommand");
       }
 
-      catch(FabricCore::Exception &e)
+      catch(FabricCore::Exception e)
       {
         Application::FabricException::Throw(
           "CppToPythonTestCommand::CreateKLTestCommands",

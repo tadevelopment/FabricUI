@@ -31,7 +31,7 @@ class KLCommandRegistry : public CommandRegistry
 
     /// Implementation of CommandRegistry.
     virtual BaseCommand* createCommand(
-      QString cmdName
+      QString const&cmdName
       );
  
   public slots:
@@ -44,22 +44,22 @@ class KLCommandRegistry : public CommandRegistry
     /// Registers the commands as a KL AppCommand in  
     /// the KL registry so it can be called from KL.
     virtual void commandIsRegistered(
-      QString cmdName,
-      QString cmdType,
-      QString implType
+      QString const&cmdName,
+      QString const&cmdType,
+      QString const&implType
       );
 
   private:
     /// Registers a KL command so it can be created from C++/Python
     /// Automatically called when synchronizing the registries.
     void registerKLCommand(
-      QString cmdName
+      QString const&cmdName
       );
 
     /// Creates a C++ KLCommand or KLSriptableCommand wrapper 
     /// for a KL command registered in the KL KLCommandRegistry.
     BaseCommand* createKLCommand(
-      QString cmdName
+      QString const&cmdName
       );
 
     /// KL command registry.

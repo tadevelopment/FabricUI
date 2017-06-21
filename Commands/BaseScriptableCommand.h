@@ -24,9 +24,10 @@ class BaseScriptableCommand : public BaseCommand
     Another possibility is to use JSON format, see BaseRTValScriptableCommand.
     Arguments are set from within the CommandManager, method 'createCommand'.
 
-    Arguments can be declared:
+    Arguments can be declared with various options:
       - as optional: The arg not need to be set
-      - as loggable: If true, the argument
+      - as loggable: If true, the argument will be logged in the script
+      - as in/out/io: The value is an input, and output, or both/modified (io)
       - with a default argument
 
     C++ interfaces cannot be wrapped in python by shiboken. New commands
@@ -40,21 +41,33 @@ class BaseScriptableCommand : public BaseCommand
     
     virtual ~BaseScriptableCommand();
 
-    /// Declares an argument, called from constructor.
-    virtual void declareArg( 
-      QString key, 
+    /// Declares an argument, at construction time.
+    /// Flags can be a combination of these: 
+    ///   CommandArgFlags::NO_FLAG_ARG, 
+    ///   CommandArgFlags::OPTIONAL_ARG, 
+    ///   CommandArgFlags::IN_ARG, 
+    ///   CommandArgFlags::OUT_ARG, 
+    ///   CommandArgFlags::IO_ARG
+    virtual void declareArg(
+      QString const&key, 
       int flag, 
-      QString defaultValue
+      QString const&defaultValue
       );
 
     /// Checks if the command has the arg `key`.
     virtual bool hasArg(
-      QString key 
+      QString const&key 
       );
 
-    /// Checks if the arg `key` is optional.
-    virtual bool isArg(
-      QString key,
+    /// Checks if the arg `key` has the input flag(s).
+    /// Flags can be a combination of these: 
+    ///   CommandArgFlags::NO_FLAG_ARG, 
+    ///   CommandArgFlags::OPTIONAL_ARG, 
+    ///   CommandArgFlags::IN_ARG, 
+    ///   CommandArgFlags::OUT_ARG, 
+    ///   CommandArgFlags::IO_ARG
+    virtual bool hasArgFlag(
+      QString const&key,
       int flag
       );
 
@@ -64,19 +77,19 @@ class BaseScriptableCommand : public BaseCommand
     /// Checks if an arg has been set.
     /// To get safely optional argument.
     virtual bool isArgSet(
-      QString key
+      QString const&key
       );
 
     /// Gets the `key` argument value.
     virtual QString getArg( 
-      QString key 
+      QString const&key 
       );
  
     /// Sets the `key` argument value,
     /// called from the manager.
     virtual void setArg(
-      QString key, 
-      QString value
+      QString const&key, 
+      QString const&value
       );
 
     /// Checks the args are correctly set before  
