@@ -1,0 +1,5 @@
+file( GLOB Headers "${CMAKE_CURRENT_LIST_DIR}/*.h" )
+file( GLOB Cpps "${CMAKE_CURRENT_LIST_DIR}/*.cpp" )
+add_executable( Main ${Cpps} )
+QtMocProcess( "${Headers}" Main )
+target_link_libraries( Main PRIVATE FCurveEditor )
