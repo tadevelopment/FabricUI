@@ -27,6 +27,32 @@ void DFGPathValueResolver::registrationCallback(
   m_controller = static_cast<DFGController*>(userData);
 }
 
+inline DFGExec getSubExecAndRelativePortPath(
+  DFGExec exec,
+  RTVal pathValue, 
+  QString &relPortPath)  
+{
+  QString path = RTValUtil::toRTVal(pathValue).maybeGetMember(
+    "path").getStringCString();
+  
+  int index = path.lastIndexOf(".");
+  if(index != -1)
+  {
+    QString temp = path.mid(0, index);
+    int index2 = temp.lastIndexOf(".");
+    if(index2 != -1)
+    {
+      relPortPath =  temp.mid(index2+1) + "." + path.mid(index+1);
+      return exec.getSubExec(
+        temp.midRef(0, index2).toUtf8().constData()
+        );
+    }
+  }
+
+  relPortPath = path;
+  return exec;
+}
+
 DFGPathValueResolver::DFGType DFGPathValueResolver::checkDFGType(
   RTVal pathValue) 
 {
@@ -39,19 +65,22 @@ DFGPathValueResolver::DFGType DFGPathValueResolver::checkDFGType(
         path.toUtf8().constData()
       ))
       return DFGVar;
- 
-    int index = path.lastIndexOf(".");
+
+    QString relPortPath;
+    DFGExec subExec = getSubExecAndRelativePortPath(
+      m_controller->getBinding().getExec(),
+      pathValue,
+      relPortPath);
+
+    int index = relPortPath.lastIndexOf(".");
     if(index != -1)
     {
-      DFGExec exec = m_controller->getBinding().getExec().getSubExec(
-        path.midRef(0, index).toUtf8().constData()
-        );
-
-      if(exec.haveExecPort(
-        path.midRef(index+1).toUtf8().constData()
-        ))
-      return DFGPort;
+      subExec = subExec.getSubExec(relPortPath.midRef(0, index).toUtf8().constData());
+      relPortPath = relPortPath.midRef(index+1).toUtf8().constData();
     }
+
+    if(subExec.haveExecPort(relPortPath.toUtf8().constData()))
+      return DFGPort;
   }
 
   catch(Exception &e)
@@ -73,14 +102,26 @@ QString DFGPathValueResolver::getType(
 {
   FABRIC_CATCH_BEGIN();
 
-  QString path = RTValUtil::toRTVal(pathValue).maybeGetMember(
-    "path").getStringCString();
-  
-  DFGExec exec = m_controller->getBinding().getExec();
+  if(checkDFGType(pathValue) == DFGVar)
+  {
+    QString path = RTValUtil::toRTVal(pathValue).maybeGetMember(
+      "path").getStringCString();
 
-  return checkDFGType(pathValue) == DFGVar 
-    ? exec.getVarType(path.toUtf8().constData())
-    : exec.getPortResolvedType(path.toUtf8().constData());
+    return m_controller->getBinding().getExec().getVarType(
+      path.toUtf8().constData());
+  }
+
+  else
+  {
+    QString relPortPath;
+    DFGExec subExec = getSubExecAndRelativePortPath(
+      m_controller->getBinding().getExec(),
+      pathValue,
+      relPortPath);
+
+    return  subExec.getPortResolvedType(
+      relPortPath.toUtf8().constData());
+  }
 
   FABRIC_CATCH_END("DFGPathValueResolver::getType");
  
@@ -91,21 +132,32 @@ void DFGPathValueResolver::getValue(
   RTVal pathValue)
 {
   FABRIC_CATCH_BEGIN();
-
-  pathValue = RTValUtil::toRTVal(pathValue);
-
-  QString path = pathValue.maybeGetMember(
-    "path").getStringCString();
- 
-  DFGExec exec = m_controller->getBinding().getExec();
   
-  RTVal value = checkDFGType(pathValue) == DFGVar 
-    ? exec.getVarValue(path.toUtf8().constData())
-    : exec.getPortResolvedDefaultValue( 
-        path.toUtf8().constData(), 
-        exec.getPortResolvedType(path.toUtf8().constData())
-        );
- 
+  RTVal value;
+
+  if(checkDFGType(pathValue) == DFGVar)
+  {
+    QString path = RTValUtil::toRTVal(pathValue).maybeGetMember(
+      "path").getStringCString();
+
+    value = m_controller->getBinding().getExec().getVarValue(
+      path.toUtf8().constData());
+  }
+
+  else 
+  {
+    QString relPortPath;
+    DFGExec subExec = getSubExecAndRelativePortPath(
+      m_controller->getBinding().getExec(),
+      pathValue,
+      relPortPath);
+
+    value = subExec.getPortResolvedDefaultValue( 
+      relPortPath.toUtf8().constData(), 
+      subExec.getPortResolvedType(relPortPath.toUtf8().constData())
+      );
+  }
+
   if(value.isValid())
     pathValue.setMember("value", value);
 
@@ -118,10 +170,7 @@ void DFGPathValueResolver::setValue(
   FABRIC_CATCH_BEGIN();
 
   pathValue = RTValUtil::toRTVal(pathValue);
-
-  QString path = pathValue.maybeGetMember(
-    "path").getStringCString();
-
+ 
   RTVal value = RTValUtil::toRTVal(
     pathValue.maybeGetMember("value"));
 
@@ -135,18 +184,29 @@ void DFGPathValueResolver::setValue(
       return; // no value specified
   }
 
-  DFGExec exec = m_controller->getBinding().getExec();
-
   if(checkDFGType(pathValue) == DFGVar)
-    exec.setVarValue( 
+  {
+    QString path = pathValue.maybeGetMember(
+      "path").getStringCString();
+
+    m_controller->getBinding().getExec().setVarValue( 
       path.toUtf8().constData(), 
       value);
+  }
 
   else
-    exec.setPortDefaultValue( 
-      path.toUtf8().constData(), 
+  {
+    QString relPortPath;
+    DFGExec subExec = getSubExecAndRelativePortPath(
+      m_controller->getBinding().getExec(),
+      pathValue,
+      relPortPath);
+
+    subExec.setPortDefaultValue( 
+      relPortPath.toUtf8().constData(), 
       value, 
       false);
+  }
 
   FABRIC_CATCH_END("DFGPathValueResolver::setValue");
 }
