@@ -33,7 +33,7 @@ function( QtMocProcess Headers Target )
     )
     set( OutFiles ${OutFiles} ${OutFile} )
   endforeach()
-  target_sources( ${Target} PRIVATE ${OutFiles} )
+  target_sources( ${Target} PRIVATE ${Headers} ${OutFiles} )
   source_group( QtMocOutput FILES ${OutFiles} )
 endfunction( QtMocProcess )
 
@@ -43,7 +43,8 @@ add_library( FCurveEditor ${FCurveEditorCpps} )
 QtMocProcess( "${FCurveEditorHeaders}" FCurveEditor )
 
 target_include_directories( FCurveEditor PUBLIC
-  ${FCurveEditorDir}
+  ${SGDir}
+  ${SGDir}/Native
   ${QtDir}/include
   ${QtDir}/include/QtCore
   ${QtDir}/include/QtGui
