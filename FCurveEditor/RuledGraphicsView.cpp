@@ -48,6 +48,11 @@ protected:
     );
     e->accept();
   }
+  void enterEvent( QEvent *event ) FTL_OVERRIDE
+  {
+    this->setCursor( m_isVertical ? Qt::SizeVerCursor : Qt::SizeHorCursor );
+  }
+  void leaveEvent( QEvent *event ) FTL_OVERRIDE { this->unsetCursor(); }
 };
 
 RuledGraphicsView::RuledGraphicsView()
