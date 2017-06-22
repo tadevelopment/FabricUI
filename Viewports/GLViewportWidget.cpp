@@ -296,21 +296,7 @@ void GLViewportWidget::initializeID(
   }
   m_drawContext = m_drawContext.callMethod("DrawContext", "getInstance", 0, 0);
   m_drawContext.callMethod("", "resetAllViewportParams", 0, 0);
-
-  // [pzion 20150728] Artificially push a meaningless movement
-  // event to force camera manipulation code to compiler, preventing
-  // annoying pauses
-  QMouseEvent nullEvent(
-    QMouseEvent::MouseMove,
-    QCursor::pos(),
-    Qt::NoButton,
-    Qt::NoButton,
-    Qt::AltModifier);
-
-  manipulateCamera(
-    QtToKLEvent(&nullEvent, m_viewport, "Canvas"), 
-    false);
-
+ 
   FABRIC_CATCH_END("GLViewportWidget::initializeID");
 
   setGridVisible(m_gridVisible, shouldUpdateGL);
