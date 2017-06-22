@@ -6,20 +6,56 @@
 
 #include <qevent.h>
 #include <QDebug>
+#include <QTimer>
 
 using namespace FabricUI::FCurveEditor;
 
 RuledGraphicsView::RuledGraphicsView()
+  : m_scrollSpeed( 1 / 800.0f )
+  , m_smoothZoom( true )
+  // HACK : update m_targetScale when methods such as fitInView() are called
+  , m_targetScale( QPointF( 1E2, 1E2 ) )
+  , m_timer( new QTimer( this ) )
 {
   this->setDragMode( QGraphicsView::ScrollHandDrag );
   this->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
   this->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+
+  connect( m_timer, &QTimer::timeout, this, &RuledGraphicsView::tick );
+  m_timer->setInterval( 16 );
+  if( m_smoothZoom )
+    m_timer->start();
 }
 
 void RuledGraphicsView::wheelEvent( QWheelEvent * e )
 {
   float s = ( 1 + e->delta() * m_scrollSpeed );
-  this->scale( s, s );
+  if( m_smoothZoom )
+  {
+    m_targetScale.setX( m_targetScale.x() * s );
+    m_targetScale.setY( m_targetScale.y() * s );
+    m_timer->start();
+  }
+  else
+    this->scale( s, s );
+}
+
+void RuledGraphicsView::tick()
+{
+  QPointF currentScale = QPointF( this->matrix().m11(), this->matrix().m22() );
+  if( abs(
+    std::log( QPointF::dotProduct( currentScale, currentScale ) ) -
+    std::log( QPointF::dotProduct( m_targetScale, m_targetScale ) )
+  ) > 0.1 )
+  {
+    const float ratio = 0.2;
+    currentScale.setX( ( 1 - ratio ) * currentScale.x() + ratio * m_targetScale.x() );
+    currentScale.setY( ( 1 - ratio ) * currentScale.y() + ratio * m_targetScale.y() );
+    this->resetTransform();
+    this->scale( currentScale.x(), currentScale.y() );
+  }
+  else
+    m_timer->stop();
 }
 
 void RuledGraphicsView::drawBackground( QPainter * p, const QRectF & r )

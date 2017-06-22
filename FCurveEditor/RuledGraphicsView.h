@@ -8,6 +8,8 @@
 #include <QGraphicsView>
 #include <FTL/Config.h>
 
+class QTimer;
+
 namespace FabricUI
 {
 namespace FCurveEditor
@@ -24,8 +26,16 @@ protected:
   void wheelEvent( QWheelEvent * ) FTL_OVERRIDE;
   void drawBackground( QPainter *, const QRectF & ) FTL_OVERRIDE;
 
+private slots:
+  void tick();
+
 private:
-  float m_scrollSpeed = 1 / 800.0f;
+  float m_scrollSpeed;
+
+  // Smooth zoom (animated)
+  bool m_smoothZoom;
+  QPointF m_targetScale;
+  QTimer* m_timer;
 };
 
 } // namespace FCurveEditor
