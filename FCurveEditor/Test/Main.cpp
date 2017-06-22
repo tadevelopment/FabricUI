@@ -19,20 +19,16 @@ void main()
     //scene->setSceneRect( QRectF( -1E3, -1E3, 1E3, 1E3 ) );
     for( size_t i = 0; i < 100; i++ )
     {
-      QGraphicsEllipseItem* ellipse = new QGraphicsEllipseItem();
-      float scale = 1E-2 + 0.1 *RandFloat();
-      ellipse->setRect(
-        QRectF(
-          RandFloat(),
-          RandFloat(),
-          scale,
-          scale
-        )
-      );
+      QGraphicsItemGroup* item = new QGraphicsItemGroup();
+      item->moveBy( RandFloat(), RandFloat() );
+      QGraphicsEllipseItem* ellipse = new QGraphicsEllipseItem( item );
+      ellipse->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
+      float scale = 8;
+      ellipse->setRect( QRect( -0.5*scale, -0.5*scale, scale, scale ) );
       ellipse->setBrush( QColor( 255, 128, 0 ) );
       QPen pen; pen.setWidthF( 0.1 * scale );
       ellipse->setPen( pen );
-      scene->addItem( ellipse );
+      scene->addItem( item );
     }
 
     RuledGraphicsView* view = new RuledGraphicsView();
