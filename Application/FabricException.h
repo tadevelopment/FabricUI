@@ -5,6 +5,7 @@
 #ifndef __UI_FABRIC_EXCEPTION__
 #define __UI_FABRIC_EXCEPTION__
 
+#include <string>
 #include <QString>
 #include <iostream>
 #include <exception>
@@ -37,7 +38,7 @@ class FabricException : public std::exception
   public: 
     FabricException(
       QString const&message)
-      : m_message(message)
+      : m_message(message.toUtf8().constData())
     {
     }
  
@@ -74,11 +75,11 @@ class FabricException : public std::exception
     /// Implementation of exception.
     virtual const char* what() const throw()
     {
-      return m_message.toUtf8().constData();
+      return m_message.c_str();
     }
 
   private:
-    QString m_message;
+    std::string m_message;
 };
 
 } // namespace Commands
