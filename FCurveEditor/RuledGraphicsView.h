@@ -37,6 +37,7 @@ private:
   class GraphicsView;
   GraphicsView* m_view;
   class Ruler;
+  void updateRulersRange();
   Ruler* m_hRuler;
   Ruler* m_vRuler;
 

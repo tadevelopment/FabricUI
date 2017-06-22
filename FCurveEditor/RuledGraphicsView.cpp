@@ -3,6 +3,7 @@
 //
 
 #include <FabricUI/FCurveEditor/RuledGraphicsView.h>
+#include <FabricUI/FCurveEditor/Ruler.h>
 #include <QGraphicsView>
 #include <QLayout>
 
@@ -28,8 +29,9 @@ protected:
 
 QGraphicsView* RuledGraphicsView::view() { return m_view; }
 
-class RuledGraphicsView::Ruler : public QFrame
+class RuledGraphicsView::Ruler : public FabricUI::FCurveEditor::Ruler
 {
+  typedef FabricUI::FCurveEditor::Ruler Parent;
   RuledGraphicsView* m_parent;
   bool m_isVertical;
 
@@ -37,6 +39,7 @@ public:
   Ruler( RuledGraphicsView* parent, bool isVertical )
     : m_parent( parent )
     , m_isVertical( isVertical )
+    , Parent( isVertical ? Qt::Vertical : Qt::Horizontal )
   {}
 
 protected:
@@ -104,7 +107,19 @@ void RuledGraphicsView::wheelEvent( int xDelta, int yDelta )
     m_timer->start();
   }
   else
+  {
     m_view->scale( sX, sY );
+    updateRulersRange();
+  }
+}
+
+void RuledGraphicsView::updateRulersRange()
+{
+  QRectF vrect = m_view->mapToScene( m_vRuler->geometry() ).boundingRect();
+  m_vRuler->setRange( vrect.top(), vrect.bottom() );
+
+  QRectF hrect = m_view->mapToScene( m_hRuler->geometry() ).boundingRect();
+  m_hRuler->setRange( hrect.left(), hrect.right() );
 }
 
 void RuledGraphicsView::tick()
@@ -120,6 +135,7 @@ void RuledGraphicsView::tick()
     currentScale.setY( ( 1 - ratio ) * currentScale.y() + ratio * m_targetScale.y() );
     m_view->resetTransform();
     m_view->scale( currentScale.x(), currentScale.y() );
+    updateRulersRange();
   }
   else
     m_timer->stop();
@@ -149,7 +165,7 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
   // Grid Y
   float yRatio = float( wr.height() ) / wr.width();
   {
-    float minFactor = std::pow( 2, std::floor( std::log2f( 8.0f / sr.height() * yRatio ) ) );
+    float minFactor = std::pow( 2, std::floor( std::log2f( 8.0f / sr.height() ) ) );
     float maxFactor = 150.0f / sr.height() * yRatio;
     for( float factor = minFactor; factor < maxFactor; factor *= 2 )
     {
