@@ -15,16 +15,24 @@ using namespace FabricUI::FCurveEditor;
 
 class RuledGraphicsView::GraphicsView : public QGraphicsView
 {
+  RuledGraphicsView* m_parent;
 public:
-  GraphicsView()
+  GraphicsView( RuledGraphicsView* parent )
+    : m_parent( parent )
   {
     this->setDragMode( QGraphicsView::ScrollHandDrag );
     this->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     this->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
   }
 protected:
-  void wheelEvent( QWheelEvent * e ) FTL_OVERRIDE { return e->ignore(); } // HACK ?
+  // HACK ? (move the parent's handler here instead ?)
+  void wheelEvent( QWheelEvent * e ) FTL_OVERRIDE { return e->ignore(); }
   void drawBackground( QPainter *, const QRectF & ) FTL_OVERRIDE;
+  void scrollContentsBy( int dx, int dy ) FTL_OVERRIDE // TODO : is this the right handler ?
+  {
+    QGraphicsView::scrollContentsBy( dx, dy );
+    m_parent->updateRulersRange();
+  }
 };
 
 QGraphicsView* RuledGraphicsView::view() { return m_view; }
@@ -59,7 +67,7 @@ protected:
 };
 
 RuledGraphicsView::RuledGraphicsView()
-  : m_view( new GraphicsView() )
+  : m_view( new GraphicsView( this ) )
   , m_scrollSpeed( 1 / 800.0f )
   , m_smoothZoom( true )
   // HACK : update m_targetScale when methods such as fitInView() are called
@@ -115,10 +123,10 @@ void RuledGraphicsView::wheelEvent( int xDelta, int yDelta )
 
 void RuledGraphicsView::updateRulersRange()
 {
-  QRectF vrect = m_view->mapToScene( m_vRuler->geometry() ).boundingRect();
+  QRectF vrect = m_view->mapToScene( m_view->viewport()->geometry() ).boundingRect();
   m_vRuler->setRange( vrect.top(), vrect.bottom() );
 
-  QRectF hrect = m_view->mapToScene( m_hRuler->geometry() ).boundingRect();
+  QRectF hrect = m_view->mapToScene( m_view->viewport()->geometry() ).boundingRect();
   m_hRuler->setRange( hrect.left(), hrect.right() );
 }
 
