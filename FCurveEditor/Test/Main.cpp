@@ -2,6 +2,8 @@
 #include <FabricUI/FCurveEditor/RuledGraphicsView.h>
 
 #include <QApplication>
+#include <QGraphicsView>
+#include <QGraphicsScene>
 #include <QGraphicsItem>
 
 using namespace FabricUI::FCurveEditor;
@@ -34,9 +36,9 @@ void main()
     }
 
     RuledGraphicsView* view = new RuledGraphicsView();
-    view->setScene( scene );
+    view->view()->setScene( scene );
     view->resize( 800, 600 );
-    view->fitInView( 0, 0, 1, 1, Qt::KeepAspectRatio );
+    view->view()->fitInView( 0, 0, 1, 1, Qt::KeepAspectRatio );
     view->show();
   }
   app.exec();
