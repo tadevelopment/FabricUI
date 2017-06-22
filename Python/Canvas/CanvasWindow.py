@@ -15,6 +15,7 @@ from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
+from FabricEngine.Canvas.LoadFabricPixmap import LoadFabricPixmap
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -203,6 +204,10 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self._init()
         self._initWindow()
+
+        self.splashScreen = QtGui.QSplashScreen(LoadFabricPixmap("canvas-splash.png"))
+        self.splashScreen.show()
+
         self._initKL(unguarded, noopt)
         self._initLog()
         self._initDFG()
@@ -220,6 +225,9 @@ class CanvasWindow(QtGui.QMainWindow):
         self.onGraphSet(self.dfgWidget.getUIGraph())
         self.valueEditor.initConnections()
         self.installEventFilter(CanvasWindowEventFilter(self))
+
+        self.splashScreen.finish(self)
+        self.splashScreen = None
 
     def _init(self):
         """Initializes the settings and config for the application.
@@ -302,6 +310,13 @@ class CanvasWindow(QtGui.QMainWindow):
 
         if self.dfgWidget:
             self.dfgWidget.getDFGController().log(line)
+        elif self.splashScreen:
+            self.splashScreen.showMessage(
+                line,
+                QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom,
+                QtGui.QColor(QtCore.Qt.white)
+                )
+            QtCore.QCoreApplication.processEvents()
         else:
             if source == Core.ReportSource.User or 'Ignoring' in line:
                 sys.stdout.write(line + "\n")
