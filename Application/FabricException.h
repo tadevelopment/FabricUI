@@ -89,7 +89,7 @@ class FabricException : public std::exception
 
 #define FABRIC_CATCH_END(methodName) \
   } \
-  catch (FabricCore::Exception e) \
+  catch (FabricCore::Exception &e) \
   { \
     FabricUI::Application::FabricException::Throw( \
       QString(methodName), \
@@ -97,7 +97,7 @@ class FabricException : public std::exception
       QString(e.getDesc_cstr()) \
       ); \
   } \
-  catch (FTL::JSONException je) \
+  catch (FTL::JSONException &je) \
   { \
     FabricUI::Application::FabricException::Throw( \
       QString(methodName), \
@@ -105,7 +105,7 @@ class FabricException : public std::exception
       QString(je.getDescCStr()) \
       ); \
   } \
-  catch (FabricUI::Application::FabricException e) \
+  catch (FabricUI::Application::FabricException &e) \
   { \
     FabricUI::Application::FabricException::Throw( \
       QString(methodName), \
