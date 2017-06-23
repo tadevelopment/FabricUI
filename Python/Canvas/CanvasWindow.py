@@ -233,8 +233,19 @@ class CanvasWindow(QtGui.QMainWindow):
         self.splashScreen.finish(self)
         self.splashScreen = None
         self.statusBar = QtGui.QStatusBar()
+        self.statusBar.setMinimumHeight(30)
         self.setStatusBar(self.statusBar)
 
+        # Create Log button on the status bar to show log widget
+        logDockWidgetButton = QtGui.QPushButton('Log', self)
+        logDockWidgetButton.setObjectName('outputLog_button')
+        self.statusBar.insertPermanentWidget(0, logDockWidgetButton)
+        logDockWidgetButton.clicked.connect(self.logDockWidget.toggleViewAction().trigger)
+
+
+
+    def showLogWidget(self):
+        self.logDockWidget.setVisible(not self.logDockWidget.isVisible())
 
     def _init(self):
         """Initializes the settings and config for the application.
