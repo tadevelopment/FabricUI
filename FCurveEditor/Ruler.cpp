@@ -1,6 +1,7 @@
 
 #include <FabricUI/FCurveEditor/Ruler.h>
 
+#include <cmath>
 #include <QPainter>
 #include <QDebug>
 
@@ -48,7 +49,7 @@ void Ruler::paintEvent( QPaintEvent * e )
   if( m_min == m_max )
     return;
 
-  float bigFactor = std::powf( 2, std::ceil( -std::log2( m_max - m_min ) ) ) * 4;
+  float bigFactor = std::pow( 2, std::ceil( -std::log( m_max - m_min ) / std::log( 2 ) ) ) * 4;
   float smallFactor = bigFactor * 8;
 
   // TODO : vertical

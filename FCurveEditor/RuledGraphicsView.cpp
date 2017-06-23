@@ -7,6 +7,7 @@
 #include <QGraphicsView>
 #include <QLayout>
 
+#include <cmath>
 #include <qevent.h>
 #include <QDebug>
 #include <QTimer>
@@ -166,7 +167,7 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
 
   // Grid X
   {
-    float minFactor = std::pow( 2, std::floor( std::log2f( 8.0f / sr.width() ) ) );
+    float minFactor = std::pow( 2, std::floor( std::log( 8.0f / sr.width() ) / std::log( 2 ) ) );
     float maxFactor = 150.0f / sr.width();
     for( float factor = minFactor; factor < maxFactor; factor *= 2 )
     {
@@ -180,7 +181,7 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
   // Grid Y
   float yRatio = float( wr.height() ) / wr.width();
   {
-    float minFactor = std::pow( 2, std::floor( std::log2f( 8.0f / sr.height() ) ) );
+    float minFactor = std::pow( 2, std::floor( std::log( 8.0f / sr.height() ) / std::log( 2 ) ) );
     float maxFactor = 150.0f / sr.height() * yRatio;
     for( float factor = minFactor; factor < maxFactor; factor *= 2 )
     {

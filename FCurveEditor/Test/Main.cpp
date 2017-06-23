@@ -10,7 +10,7 @@ using namespace FabricUI::FCurveEditor;
 
 inline float RandFloat() { return float( rand() ) / RAND_MAX; }
 
-void main()
+int main()
 {
   int argc = 0;
   QApplication app( argc, NULL );
@@ -38,4 +38,5 @@ void main()
     view->show();
   }
   app.exec();
+  return 0;
 }
