@@ -119,8 +119,8 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( nodeFontHighlightColor, QColor(195, 195, 195, 255) );
   GET_PARAMETER( nodeDefaultPen, QPen(nodeFontColor, 1.0) );
   GET_PARAMETER( nodeDefaultPenUsesNodeColor, false );
-  GET_PARAMETER( nodeInspectedOutlineColor, QColor(223, 94, 39, 125) );
-  GET_PARAMETER( nodeInspectedSelectedOutlineColor, QColor(223, 94, 39, 255) );
+  GET_PARAMETER( nodeInspectedOutlineColor, QColor(33, 191, 198, 175) );
+  GET_PARAMETER( nodeInspectedSelectedOutlineColor, QColor(33, 191, 198, 255) );
 
   nodeSelectedPen = QPen(Qt::SolidLine);
   nodeSelectedPen.setColor(nodeFontHighlightColor);
