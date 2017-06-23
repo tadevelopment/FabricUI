@@ -70,7 +70,7 @@ protected:
 RuledGraphicsView::RuledGraphicsView()
   : m_view( new GraphicsView( this ) )
   , m_scrollSpeed( 1 / 800.0f )
-  , m_smoothZoom( true )
+  , m_smoothZoom( false )
   // HACK : update m_targetScale when methods such as fitInView() are called
   , m_targetScale( QPointF( 1E2, 1E2 ) )
   , m_timer( new QTimer( this ) )
@@ -166,30 +166,29 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
   QRect wr = this->viewport()->geometry(); // widget viewRect
   QRectF sr = this->mapToScene( wr ).boundingRect(); // scene viewRect
 
-  // Grid X
+  // Grid
+  for( int o = 0; o < 2; o++ ) // 2 orientations
   {
-    float minFactor = std::pow( 2, std::floor( std::log( 8.0f / sr.width() ) / std::log( 2 ) ) );
-    float maxFactor = 150.0f / sr.width();
-    for( float factor = minFactor; factor < maxFactor; factor *= 2 )
+    const Qt::Orientation ori = o == 0 ? Qt::Vertical : Qt::Horizontal;
+
+    float size = ( ori == Qt::Vertical ? sr.height() : sr.width() );
+
+    const float logScale = 2.0f;
+    float minFactor = 8.0f / size;
+    if( ori == Qt::Vertical )
+      minFactor *= float( wr.height() ) / wr.width();
+
+    minFactor = std::pow( logScale, std::floor( std::log( minFactor ) / std::log( logScale ) ) );
+    float maxFactor = 150.0f / size;
+    for( float factor = minFactor; factor < maxFactor; factor *= logScale )
     {
       QPen pen; pen.setWidthF( 1E-2 / factor );
       p->setPen( pen );
       for( float i = std::ceil( factor * sr.left() ); i < factor * sr.right(); i++ )
-        p->drawLine( QPointF( i / factor, sr.top() ), QPointF( i / factor, sr.bottom() ) );
-    }
-  }
-
-  // Grid Y
-  float yRatio = float( wr.height() ) / wr.width();
-  {
-    float minFactor = std::pow( 2, std::floor( std::log( 8.0f / sr.height() ) / std::log( 2 ) ) );
-    float maxFactor = 150.0f / sr.height() * yRatio;
-    for( float factor = minFactor; factor < maxFactor; factor *= 2 )
-    {
-      QPen pen; pen.setWidthF( 1E-2 / factor );
-      p->setPen( pen );
-      for( float i = std::ceil( factor * sr.top() ); i < factor * sr.bottom(); i++ )
-        p->drawLine( QPointF( sr.left(), i / factor ), QPointF( sr.right(), i / factor ) );
+        if( ori == Qt::Vertical )
+          p->drawLine( QPointF( i / factor, sr.top() ), QPointF( i / factor, sr.bottom() ) );
+        else
+          p->drawLine( QPointF( sr.left(), i / factor ), QPointF( sr.right(), i / factor ) );
     }
   }
 }
