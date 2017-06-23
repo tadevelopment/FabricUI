@@ -207,6 +207,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self.splashScreen = QtGui.QSplashScreen(LoadFabricPixmap("canvas-splash.png"))
         self.splashScreen.show()
+        self.splashScreen.repaint()
 
         self._initKL(unguarded, noopt)
         self._initLog()
@@ -228,6 +229,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self.splashScreen.finish(self)
         self.splashScreen = None
+
+        statusBar = QtGui.QStatusBar()
+        self.setStatusBar(statusBar)
 
     def _init(self):
         """Initializes the settings and config for the application.
@@ -308,18 +312,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
         """
 
-        if self.splashScreen:
-            if line.startswith('[FABRIC:'):
-                suffix = line[12:]
-            else:
-                suffix = line
-            self.splashScreen.showMessage(
-                suffix,
-                QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom,
-                QtGui.QColor(QtCore.Qt.white)
-                )
-            QtCore.QCoreApplication.processEvents()
-
         if self.dfgWidget:
             self.dfgWidget.getDFGController().log(line)
         else:
@@ -327,6 +319,39 @@ class CanvasWindow(QtGui.QMainWindow):
                 sys.stdout.write(line + "\n")
             else:
                 sys.stderr.write(line + "\n")
+
+    def _updateSlowOpMsgs(self):
+        if self.splashScreen:
+            if len(self.slowOpStack):
+                slowOpMsg = self.slowOpStack[-1]
+            else:
+                slowOpMsg = ""
+            self.splashScreen.showMessage(
+                slowOpMsg,
+                QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom,
+                QtGui.QColor(QtCore.Qt.white)
+                )
+            self.splashScreen.repaint()
+
+        statusBar = self.statusBar()
+        if len(self.slowOpStack):
+            statusBar.showMessage(self.slowOpStack[-1])
+            statusBar.repaint()
+        else:
+            statusBar.clearMessage()
+        statusBar.repaint()
+
+
+    def _slowOpPush(self, desc):
+        self.slowOpStack.append(desc + "...")
+        self._updateSlowOpMsgs()
+
+
+    def _slowOpPop(self):
+        if len(self.slowOpStack): # should always be true
+            self.slowOpStack.pop()
+            self._updateSlowOpMsgs()
+
 
     def _statusCallback(self, target, data):
         """Status callback used for KL code to communicate status messages back
@@ -343,6 +368,11 @@ class CanvasWindow(QtGui.QMainWindow):
                 FabricUI.HandleLicenseData(self, self.client, data, True)
             except Exception as e:
                 self.dfgWidget.getDFGController().logError(str(e))
+        elif target == 'slowOp.push':
+            self._slowOpPush(data)
+        elif target == 'slowOp.pop':
+            self._slowOpPop()
+
 
     def _initKL(self, unguarded, noopt):
         """Initializes the Fabric client.
@@ -366,6 +396,8 @@ class CanvasWindow(QtGui.QMainWindow):
           'rtValToJSONEncoder': self.rtvalEncoderDecoder.encode,
           'rtValFromJSONDecoder': self.rtvalEncoderDecoder.decode,
           }
+
+        self.slowOpStack = []
 
         client = Core.createClient(clientOpts)
         client.loadExtension('Math')
@@ -693,10 +725,10 @@ class CanvasWindow(QtGui.QMainWindow):
 
     def onDirty(self):
         """Method called when the graph is dirtied."""
-
         self.dfgWidget.getDFGController().execute()
         self.valueEditor.onOutputsChanged()
-        self.viewport.redraw()
+        if self.viewport:
+            self.viewport.redraw()
 
     def onTopoDirty(self):
         self.onDirty()
@@ -756,7 +788,8 @@ class CanvasWindow(QtGui.QMainWindow):
         """
 
         self.timeLine.pause()
-
+        self._slowOpPush("Loading '%s'" % filePath)
+        
         try:
             dfgController = self.dfgWidget.getDFGController()
             binding = dfgController.getBinding()
@@ -836,6 +869,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
         except Exception as e:
             sys.stderr.write("Exception: " + str(e) + "\n")
+
+        finally:
+            self._slowOpPop()
 
         self.lastFileName = filePath
 
