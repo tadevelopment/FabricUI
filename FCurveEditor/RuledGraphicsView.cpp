@@ -115,6 +115,7 @@ void RuledGraphicsView::wheelEvent( int xDelta, int yDelta )
     m_targetScale.setX( m_targetScale.x() * sX );
     m_targetScale.setY( m_targetScale.y() * sY );
     m_timer->start();
+    tick();
   }
   else
   {
