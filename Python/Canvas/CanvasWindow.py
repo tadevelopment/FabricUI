@@ -205,9 +205,11 @@ class CanvasWindow(QtGui.QMainWindow):
         self._init()
         self._initWindow()
 
+        self.statusBar = None
         self.splashScreen = QtGui.QSplashScreen(LoadFabricPixmap("canvas-splash.png"))
         self.splashScreen.show()
-        self.splashScreen.repaint()
+        self.slowOpStack = []
+        self._slowOpPush("Initializing Fabric Canvas")
 
         self._initKL(unguarded, noopt)
         self._initLog()
@@ -227,11 +229,12 @@ class CanvasWindow(QtGui.QMainWindow):
         self.valueEditor.initConnections()
         self.installEventFilter(CanvasWindowEventFilter(self))
 
+        self._slowOpPop()
         self.splashScreen.finish(self)
         self.splashScreen = None
+        self.statusBar = QtGui.QStatusBar()
+        self.setStatusBar(self.statusBar)
 
-        statusBar = QtGui.QStatusBar()
-        self.setStatusBar(statusBar)
 
     def _init(self):
         """Initializes the settings and config for the application.
@@ -331,15 +334,14 @@ class CanvasWindow(QtGui.QMainWindow):
                 QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom,
                 QtGui.QColor(QtCore.Qt.white)
                 )
-            self.splashScreen.repaint()
-
-        statusBar = self.statusBar()
-        if len(self.slowOpStack):
-            statusBar.showMessage(self.slowOpStack[-1])
-            statusBar.repaint()
-        else:
-            statusBar.clearMessage()
-        statusBar.repaint()
+            QtCore.QCoreApplication.processEvents()
+        elif self.statusBar:
+            if len(self.slowOpStack):
+                self.statusBar.showMessage(self.slowOpStack[-1])
+                self.statusBar.repaint()
+            else:
+                self.statusBar.clearMessage()
+            self.statusBar.repaint()
 
 
     def _slowOpPush(self, desc):
@@ -396,8 +398,6 @@ class CanvasWindow(QtGui.QMainWindow):
           'rtValToJSONEncoder': self.rtvalEncoderDecoder.encode,
           'rtValFromJSONDecoder': self.rtvalEncoderDecoder.decode,
           }
-
-        self.slowOpStack = []
 
         client = Core.createClient(clientOpts)
         client.loadExtension('Math')
