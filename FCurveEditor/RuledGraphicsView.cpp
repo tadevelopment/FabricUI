@@ -93,7 +93,8 @@ RuledGraphicsView::RuledGraphicsView()
 
   this->setLayout( lay );
 
-  connect( m_timer, &QTimer::timeout, this, &RuledGraphicsView::tick );
+  connect( m_timer, SIGNAL( timeout() ), this, SLOT( tick() ) );
+  //connect( m_timer, &QTimer::timeout, this, &RuledGraphicsView::tick );
   m_timer->setInterval( 16 );
   if( m_smoothZoom )
     m_timer->start();
@@ -140,8 +141,8 @@ void RuledGraphicsView::tick()
 {
   QPointF currentScale = QPointF( m_view->matrix().m11(), m_view->matrix().m22() );
   if( abs(
-    std::log( QPointF::dotProduct( currentScale, currentScale ) ) -
-    std::log( QPointF::dotProduct( m_targetScale, m_targetScale ) )
+    std::log( currentScale.x() * currentScale.x() + currentScale.y() * currentScale.y() ) -
+    std::log( m_targetScale.x() * m_targetScale.x() + m_targetScale.y() * m_targetScale.y() )
   ) > 0.1 )
   {
     const float ratio = 0.2;
