@@ -78,6 +78,7 @@ RuledGraphicsView::RuledGraphicsView()
   QGridLayout* lay = new QGridLayout();
   lay->setSpacing( 0 ); lay->setMargin( 0 );
 
+  // HACK / TODO : remove
   this->setStyleSheet( "background-color: #222; border: #000;" );
 
   lay->addWidget( m_view, 0, 1 );
@@ -147,7 +148,7 @@ void RuledGraphicsView::tick()
     abs( std::log( currentScale.y() ) - std::log( m_targetScale.y() ) )
   > 0.01 ) // If we are close enough to the target, we stop the animation
   {
-    const float ratio = 0.2;
+    const float ratio = 0.2; // TODO : property
     currentScale.setX( ( 1 - ratio ) * currentScale.x() + ratio * m_targetScale.x() );
     currentScale.setY( ( 1 - ratio ) * currentScale.y() + ratio * m_targetScale.y() );
     m_view->resetTransform();
@@ -160,7 +161,7 @@ void RuledGraphicsView::tick()
 
 void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF & r )
 {
-  // Background
+  // Background (HACK/TODO : remove)
   p->fillRect( r, QColor( 64, 64, 64 ) );
 
   QRect wr = this->viewport()->geometry(); // widget viewRect
@@ -175,13 +176,13 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
     float minU = ( ori == Qt::Vertical ? sr.top() : sr.left() );
     float maxU = ( ori == Qt::Vertical ? sr.bottom() : sr.right() );
 
-    const float logScale = 2.0f;
-    float viewFactor = 8.0f / size;
+    const float logScale = 2.0f; // TODO : property
+    float viewFactor = 8.0f / size; // TODO : property
     if( ori == Qt::Vertical )
       viewFactor *= float( wr.height() ) / wr.width();
 
     float minFactor = std::pow( logScale, std::floor( std::log( viewFactor ) / std::log( logScale ) ) );
-    float maxFactor = 150.0f / size;
+    float maxFactor = 150.0f / size; // TODO : Q_PROPERTY
     int k = 0;
     for( float factor = minFactor; factor < maxFactor; factor *= logScale )
     {
@@ -192,7 +193,7 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
         // pen, precision errors were making thin lines be inconsistently invisible
         // for the same factor
         pen.setCosmetic( true );
-        float pwidth = ( 2 * viewFactor ) / factor;
+        float pwidth = ( 2 * viewFactor ) / factor; // TODO : property
         float palpha = 255;
         if( pwidth < 1 )
         {
@@ -200,7 +201,7 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
           pwidth = 1;
         }
         pen.setWidthF( pwidth );
-        pen.setColor( QColor( 32, 32, 32, palpha ) );
+        pen.setColor( QColor( 32, 32, 32, palpha ) ); // TODO : qss color
       }
       p->setPen( pen );
       for( float i = std::floor( factor * minU ); i < factor * maxU; i++ )

@@ -25,6 +25,12 @@ private:
   Qt::Orientation m_orientation;
 
 public:
+
+  // TODO : properties
+  // - scale : base2, base10, "mixed-grading", etc...
+  // - heuristic for chosing the big/small graduations displayed (average spacing?)
+  // - labels for large/small numbers : [ "0.5", "0.50123" ] or [ "1000000", "2000000" ] 
+
   Ruler( Qt::Orientation );
   void setRange( float min, float max );
 

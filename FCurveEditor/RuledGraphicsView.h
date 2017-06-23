@@ -24,6 +24,10 @@ public:
   RuledGraphicsView();
   QGraphicsView* view();
 
+  // TODO : custom scale (see FCurveEditor::Ruler's properties)
+  // TODO : fixed-point under the cursor when zooming (currently on the middle instead)
+  // TODO : fix the "smoothZoom" on Linux
+
 protected:
   void wheelEvent( QWheelEvent * ) FTL_OVERRIDE;
   void resizeEvent( QResizeEvent * ) FTL_OVERRIDE;
