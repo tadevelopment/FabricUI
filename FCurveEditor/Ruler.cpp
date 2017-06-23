@@ -42,6 +42,22 @@ inline float Map(
   ;
 }
 
+inline void DrawLine( QPainter* p, float pos, Qt::Orientation o, float endRPos, const QRect& r )
+{
+  if( o == Qt::Horizontal )
+    p->drawLine( QPointF( pos, r.top() ), QPointF( pos, ( 1 - endRPos ) * r.top() + endRPos * r.bottom() ) );
+  else
+    p->drawLine( QPointF( endRPos * r.left() + ( 1 - endRPos ) * r.right(), pos ), QPointF( r.right(), pos ) );
+}
+
+inline void DrawText( QPainter* p, float pos, Qt::Orientation o, float endRPos, const QRect& r, const QString& txt )
+{
+  if( o == Qt::Horizontal )
+    p->drawText( QPointF( pos, endRPos * r.bottom() + ( 1 - endRPos ) * r.top() ), txt );
+  else
+    p->drawText( QPointF( endRPos * r.left() + ( 1 - endRPos ) * r.right(), pos - ( 1 - endRPos ) * r.width() ), txt );
+}
+
 void Ruler::paintEvent( QPaintEvent * e )
 {
   Parent::paintEvent( e );
@@ -51,11 +67,7 @@ void Ruler::paintEvent( QPaintEvent * e )
 
   float bigFactor = std::pow( 2, std::ceil( -std::log( m_max - m_min ) / std::log( 2 ) ) ) * 4;
   float smallFactor = bigFactor * 8;
-
-  // TODO : vertical
-  if( m_orientation == Qt::Horizontal )
   {
-
     const QRect r = this->contentsRect();
     QPainter p( this );
     QPen pen;
@@ -67,8 +79,8 @@ void Ruler::paintEvent( QPaintEvent * e )
       float xs = i / bigFactor;
       float xw = Map( xs, m_orientation, m_min, m_max, r );
       float middle = ( r.top() + r.bottom() ) / 2;
-      p.drawLine( QPointF( xw, r.top() ), QPointF( xw, middle ) );
-      p.drawText( QPointF( xw, 0.9 * r.bottom() + 0.1 * r.top() ), QString::number( xs ) );
+      DrawLine( &p, xw, m_orientation, 0.5, r );
+      DrawText( &p, xw, m_orientation, 0.9, r, QString::number( xs ) );
     }
     pen.setWidthF( 1 );
     p.setPen( pen );
@@ -76,9 +88,7 @@ void Ruler::paintEvent( QPaintEvent * e )
     {
       float xs = i / smallFactor;
       float xw = Map( xs, m_orientation, m_min, m_max, r );
-      float smallRatio = 0.3;
-      float end = ( 1 - smallRatio ) * r.top() + smallRatio * r.bottom();
-      p.drawLine( QPointF( xw, r.top() ), QPointF( xw, end ) );
+      DrawLine( &p, xw, m_orientation, 0.3, r );
     }
   }
 }

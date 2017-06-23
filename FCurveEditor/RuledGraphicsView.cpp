@@ -78,7 +78,7 @@ RuledGraphicsView::RuledGraphicsView()
   QGridLayout* lay = new QGridLayout();
   lay->setSpacing( 0 ); lay->setMargin( 0 );
 
-  this->setStyleSheet( "background-color: #333; border: #000;" );
+  this->setStyleSheet( "background-color: #222; border: #000;" );
 
   lay->addWidget( m_view, 0, 1 );
 
