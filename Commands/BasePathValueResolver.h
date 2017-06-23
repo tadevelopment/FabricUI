@@ -24,38 +24,31 @@ class BasePathValueResolver : public QObject
 
     virtual ~BasePathValueResolver();
 
+    /// Registration callback.
     virtual void registrationCallback(
+      QString const&name,
       void *userData
       );
-
+ 
+    /// Checks the resolvers knows the `PathValue` path.
     virtual bool knownPath(
       FabricCore::RTVal pathValue
       );
 
+    /// Gets the `PathValue` value type.
     virtual QString getType(
       FabricCore::RTVal pathValue
       );
 
+    /// Gets the `PathValue` value.
     virtual void getValue(
       FabricCore::RTVal pathValue
       );
 
+    /// Sets the `PathValue` value.
     virtual void setValue(
       FabricCore::RTVal pathValue
       );
-
-  public slots:
-    void onSetEvalContextID(
-      QString evalContextID
-      );
-
-  protected:
-    QString getPathValuePath(
-      FabricCore::RTVal pathValue
-      );
-
-    /// 
-    QString m_evalContextID;
 };
 
 } // namespace Commands

@@ -25,6 +25,7 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
    
     /// Implementation of BasePathValueResolver.
     virtual void registrationCallback(
+      QString const&name,
       void *userData
       );
 
@@ -49,22 +50,43 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
       );
 
   public slots:
-    void onBindingChanged(
+    /// Update the binding.
+    virtual void onBindingChanged(
       FabricCore::DFGBinding const &binding
       );
 
   private:
+    /// Casts the pathValue path.
+    /// 
+    QString getRelativePath(
+      FabricCore::RTVal pathValue
+      );
+
     /// Type of DFG data.
     enum DFGType { DFGUnknow, DFGPort, DFGVar };
-  
+      
     /// Gets the DFG data type (DFGUnknow, DFGPort, DFGVar)
     /// at this pathValue.
     DFGType checkDFGType(
       FabricCore::RTVal pathValue
       );
- 
+    
+    /// In case 
+    FabricCore::DFGExec getSubExecAndPortPath(
+      FabricCore::RTVal pathValue, 
+      QString &relPortPath
+      );
+
+    /// Casts the path the a humain readabble format.
+    void castPathToHRFormat(
+      FabricCore::RTVal pathValue
+      );
+
+    ///
+    QString m_id;
     /// Pointor to the controller.
     FabricCore::DFGBinding m_binding;
+
 };
 
 } // namespace DFG

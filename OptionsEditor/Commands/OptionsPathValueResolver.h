@@ -26,7 +26,7 @@ class OptionsPathValueResolver : public Commands::BasePathValueResolver
     virtual bool knownPath(
       FabricCore::RTVal pathValue
       );
-    
+ 
     /// Implementation of BasePathValueResolver.
     virtual QString getType(
       FabricCore::RTVal pathValue

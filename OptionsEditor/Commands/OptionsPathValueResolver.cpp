@@ -61,9 +61,9 @@ bool OptionsPathValueResolver::hasOptions(
 bool OptionsPathValueResolver::knownPath(
   RTVal pathValue)
 {
-  return !m_evalContextID.isEmpty()
+  return/* !m_evalContextID.isEmpty()
     ? BasePathValueResolver::knownPath(pathValue) && hasOptions(pathValue)
-    : hasOptions(pathValue);
+    :*/ hasOptions(pathValue);
 }
 
 QString OptionsPathValueResolver::getType(

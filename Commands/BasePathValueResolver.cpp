@@ -3,6 +3,7 @@
 //
 
 #include "BasePathValueResolver.h"
+#include "PathValueResolverRegistry.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Application/FabricException.h>
 
@@ -21,6 +22,7 @@ BasePathValueResolver::~BasePathValueResolver()
 }
 
 void BasePathValueResolver::registrationCallback(
+  QString const&name,
   void *userData)
 {
 }
@@ -28,21 +30,7 @@ void BasePathValueResolver::registrationCallback(
 bool BasePathValueResolver::knownPath(
   RTVal pathValue)
 {
-	bool res = false;
-
-  FABRIC_CATCH_BEGIN();
-
-  QString path = RTValUtil::toRTVal(pathValue).maybeGetMember(
-    "path").getStringCString();
-
-  int index = path.indexOf(".");
-  res = index == -1
-    ? false
-    : path.mid(0, index) == m_evalContextID;
-
-  FABRIC_CATCH_END("BasePathValueResolver::knownPath");
-
-  return res;
+  return false;
 }
 
 QString BasePathValueResolver::getType(
@@ -59,31 +47,4 @@ void BasePathValueResolver::getValue(
 void BasePathValueResolver::setValue(
   RTVal pathValue)
 {
-}
-
-void BasePathValueResolver::onSetEvalContextID(
- 	QString evalContextID)
-{
- 	m_evalContextID = evalContextID;
-}
-
-QString BasePathValueResolver::getPathValuePath(
-  RTVal pathValue) 
-{
-	QString path;
-
-  FABRIC_CATCH_BEGIN();
-
-  path = RTValUtil::toRTVal(pathValue).maybeGetMember(
-    "path").getStringCString();
-
-  if(!m_evalContextID.isEmpty())
-  {
-    int index = path.indexOf(".");
-    path = path.mid(index+1);
-  }
-  
-  FABRIC_CATCH_END("BasePathValueResolver::getPathValuePath");
-
-	return path;
 }

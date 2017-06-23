@@ -40,7 +40,8 @@ PathValueResolverRegistry* PathValueResolverRegistry::GetRegistry()
 bool PathValueResolverRegistry::hasResolver(
   QString const&name)
 {
-  return m_registeredResolvers.count(name);
+  return m_registeredResolvers.count(
+    name);
 }
 
 BasePathValueResolver* PathValueResolverRegistry::getOrCreateResolver(
@@ -51,13 +52,18 @@ BasePathValueResolver* PathValueResolverRegistry::getOrCreateResolver(
   
   else
   {
-    Factory *factory = Util::BaseFactoryRegistry::getFactory(name);
+    Factory *factory = Util::BaseFactoryRegistry::getFactory(
+      name);
     
     BasePathValueResolver* resolver = (BasePathValueResolver*)factory->create(); 
     m_registeredResolvers[name] = resolver;
-
+    
     void *userData = factory->getUserData();
-    resolver->registrationCallback(userData);
+    resolver->registrationCallback(
+      name, 
+      userData
+      );
+
     return resolver;
   }
 }
