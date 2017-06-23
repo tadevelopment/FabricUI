@@ -30,12 +30,12 @@ QString RTValUtil::getType(
   RTVal klRTVal)
 {
   FABRIC_CATCH_BEGIN();
-
-  return klRTVal.callMethod(
-    "String", 
-    "type", 
-    0, 
-    0).getStringCString();
+  if( klRTVal.isValid() )
+    return klRTVal.callMethod(
+      "String", 
+      "type", 
+      0, 
+      0).getStringCString();
 
   FABRIC_CATCH_END("RTValUtil::getType");
 
@@ -78,6 +78,10 @@ QString RTValUtil::toJSON(
   FABRIC_CATCH_BEGIN();
 
   RTVal rtVal = toRTVal(rtVal_);
+  if( !rtVal.isValid() ) {
+    printf( "Warning: RTValUtil::toJSON: rtVal is invalid" );
+    return res;
+  }
 
   // If the value is an Object, we have use the RTValToJSONEncoder interface, if any.
   // This is the same logic as in FabricServices::Persistence::RTValToJSONEncoder, which unfortunately is not obvious to reuse.

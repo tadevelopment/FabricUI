@@ -177,13 +177,6 @@ void DFGPathValueResolver::setValue(
   if( !value.isValid() )
     return; // no value specified
 
-  // TODO: properly support empty RTVal values (see comment in PathValue.kl)
-  if( value.isString() ) {
-    std::string str( value.getStringCString() );
-    if( str == "(none)" )
-      return; // no value specified
-  }
-
   if(checkDFGType(pathValue) == DFGVar)
   {
     QString path = pathValue.maybeGetMember(

@@ -96,7 +96,7 @@ bool BaseRTValScriptableCommand::isArgSet(
 {
   // The arg can be set as RTVal or as JSON.
   return m_rtvalArgs.count(key) && 
-    ( RTValUtil::getType(getRTValArgValue(key)) == m_rtvalArgSpecs[key].type ||
+    ( RTValUtil::getType(getRTValArgValue(key)) == m_rtvalArgSpecs[key].type || //TODO: should check "isA"
       !getRTValArgPath(key).isEmpty() || !m_rtvalArgs[key].second.isEmpty() 
     );
 }
@@ -109,8 +109,9 @@ QString BaseRTValScriptableCommand::getArg(
   FABRIC_CATCH_BEGIN();
 
   // Known RTVal of known type, get the json from it.
+printf( "TOJGON 1" );
   return (m_rtvalArgs[key].second.isEmpty() && isArgTypeKnown(key))
-    ? RTValUtil::toJSON(getRTValArgValue(key))
+    ? (isArgSet(key) ? RTValUtil::toJSON(getRTValArgValue(key)) : "")
     // Otherwise, return the Json if it's been set.
     // It happens if the arg's been declared with an unknown type
     : m_rtvalArgs[key].second;
