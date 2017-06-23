@@ -172,6 +172,8 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
     const Qt::Orientation ori = o == 0 ? Qt::Vertical : Qt::Horizontal;
 
     float size = ( ori == Qt::Vertical ? sr.height() : sr.width() );
+    float minU = ( ori == Qt::Vertical ? sr.top() : sr.left() );
+    float maxU = ( ori == Qt::Vertical ? sr.bottom() : sr.right() );
 
     const float logScale = 2.0f;
     float minFactor = 8.0f / size;
@@ -184,8 +186,8 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
     {
       QPen pen; pen.setWidthF( 1E-2 / factor );
       p->setPen( pen );
-      for( float i = std::ceil( factor * sr.left() ); i < factor * sr.right(); i++ )
-        if( ori == Qt::Vertical )
+      for( float i = std::floor( factor * minU ); i < factor * maxU; i++ )
+        if( ori == Qt::Horizontal )
           p->drawLine( QPointF( i / factor, sr.top() ), QPointF( i / factor, sr.bottom() ) );
         else
           p->drawLine( QPointF( sr.left(), i / factor ), QPointF( sr.right(), i / factor ) );
