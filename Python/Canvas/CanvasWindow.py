@@ -308,15 +308,20 @@ class CanvasWindow(QtGui.QMainWindow):
 
         """
 
-        if self.dfgWidget:
-            self.dfgWidget.getDFGController().log(line)
-        elif self.splashScreen:
+        if self.splashScreen:
+            if line.startswith('[FABRIC:'):
+                suffix = line[12:]
+            else:
+                suffix = line
             self.splashScreen.showMessage(
-                line,
+                suffix,
                 QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom,
                 QtGui.QColor(QtCore.Qt.white)
                 )
             QtCore.QCoreApplication.processEvents()
+
+        if self.dfgWidget:
+            self.dfgWidget.getDFGController().log(line)
         else:
             if source == Core.ReportSource.User or 'Ignoring' in line:
                 sys.stdout.write(line + "\n")
