@@ -26,6 +26,7 @@ public:
 
 protected:
   void wheelEvent( QWheelEvent * ) FTL_OVERRIDE;
+  void resizeEvent( QResizeEvent * ) FTL_OVERRIDE;
 
 private slots:
   void tick();

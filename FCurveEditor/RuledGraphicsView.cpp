@@ -130,6 +130,12 @@ void RuledGraphicsView::updateRulersRange()
   m_hRuler->setRange( hrect.left(), hrect.right() );
 }
 
+void RuledGraphicsView::resizeEvent( QResizeEvent * e )
+{
+  QWidget::resizeEvent( e );
+  this->updateRulersRange();
+}
+
 void RuledGraphicsView::tick()
 {
   QPointF currentScale = QPointF( m_view->matrix().m11(), m_view->matrix().m22() );
