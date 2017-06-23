@@ -116,7 +116,7 @@ void CommandManager::doCommand(
     postDoCommand(cmd);
   }
    
-  catch(FabricException e) 
+  catch(FabricException &e) 
   {
     cleanupUnfinishedCommandsAndThrow(cmd, QString(e.what()));
   }
@@ -201,7 +201,7 @@ void CommandManager::undoCommand()
         postDoCommand(low);
       }
        
-      catch(FabricException e) 
+      catch(FabricException &e) 
       {
         cleanupUnfinishedUndoLowCommandsAndThrow(
           i, 
@@ -226,7 +226,7 @@ void CommandManager::undoCommand()
       postDoCommand(top);
     }
 
-    catch(FabricException e) 
+    catch(FabricException &e) 
     {
       FabricException::Throw(
         "CommandManager::undoCommand", 
@@ -283,7 +283,7 @@ void CommandManager::redoCommand()
         postDoCommand(low);
       }
        
-      catch(FabricException e) 
+      catch(FabricException &e) 
       {
         cleanupUnfinishedRedoLowCommandsAndThrow(
           i, 
@@ -308,7 +308,7 @@ void CommandManager::redoCommand()
       postDoCommand(top);
     }
 
-    catch(FabricException e) 
+    catch(FabricException &e) 
     {
       FabricException::Throw(
         "CommandManager::redoCommand", 

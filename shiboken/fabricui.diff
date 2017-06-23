@@ -111,7 +111,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return -1;
 +            }
          }
@@ -138,7 +138,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -165,7 +165,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -192,7 +192,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -220,7 +220,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -248,7 +248,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICUI_QLIST_QSTRING_IDX], &cppResult);
@@ -276,7 +276,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -304,7 +304,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICCORE_RTVAL_IDX], &cppResult);
@@ -332,7 +332,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -360,7 +360,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -388,7 +388,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +                
 +                if(!errorMessage.empty())
 +                {
-+                    PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                    PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                    return 0;
 +                }
                  pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICCORE_RTVAL_IDX], &cppResult);
@@ -416,7 +416,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +                
 +                if(!errorMessage.empty())
 +                {
-+                    PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                    PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                    return 0;
 +                }
                  pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICCORE_RTVAL_IDX], &cppResult);
@@ -444,7 +444,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -472,7 +472,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -500,7 +500,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -528,7 +528,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -555,7 +555,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -582,7 +582,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -609,7 +609,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -636,7 +636,7 @@ diff -purN FabricUI.orig/fabricui_commands_basertvalscriptablecommand_wrapper.cp
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -675,7 +675,7 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return -1;
 +            }
          }
@@ -702,7 +702,7 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -730,7 +730,7 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -758,7 +758,7 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICUI_QLIST_QSTRING_IDX], &cppResult);
@@ -786,7 +786,7 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -814,7 +814,7 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -842,7 +842,7 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -870,7 +870,7 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -897,7 +897,7 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -924,7 +924,7 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -954,7 +954,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return -1;
 +            }
          }
@@ -982,7 +982,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -1010,7 +1010,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -1038,7 +1038,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -1066,7 +1066,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -1094,7 +1094,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -1122,7 +1122,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICUI_QLIST_QSTRING_IDX], &cppResult);
@@ -1150,7 +1150,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICCORE_RTVAL_IDX], &cppResult);
@@ -1178,7 +1178,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -1206,7 +1206,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +                
 +                if(!errorMessage.empty())
 +                {
-+                    PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                    PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                    return 0;
 +                }
                  pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICCORE_RTVAL_IDX], &cppResult);
@@ -1234,7 +1234,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +                
 +                if(!errorMessage.empty())
 +                {
-+                    PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                    PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                    return 0;
 +                }
                  pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICCORE_RTVAL_IDX], &cppResult);
@@ -1262,7 +1262,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -1290,7 +1290,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -1318,7 +1318,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -1346,7 +1346,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -1374,7 +1374,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -1402,7 +1402,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandarghelpers_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -1442,7 +1442,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return -1;
 +            }
          }
@@ -1469,7 +1469,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -1496,7 +1496,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -1523,7 +1523,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -1550,7 +1550,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -1578,7 +1578,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
@@ -1606,7 +1606,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_BASECOMMAND_IDX], cppResult);
@@ -1632,7 +1632,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -1660,7 +1660,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_BASECOMMAND_IDX], cppResult);
@@ -1688,7 +1688,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_COMMANDMANAGER_IDX], cppResult);
@@ -1716,7 +1716,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -1744,7 +1744,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
@@ -1772,7 +1772,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
@@ -1800,7 +1800,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -1827,7 +1827,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -1854,7 +1854,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -1881,7 +1881,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -1908,7 +1908,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -1936,7 +1936,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
@@ -1963,7 +1963,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandmanager_wrapper.cpp FabricUI/f
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -2002,7 +2002,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandregistry_wrapper.cpp FabricUI/
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return -1;
 +            }
          }
@@ -2029,7 +2029,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandregistry_wrapper.cpp FabricUI/
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -2057,7 +2057,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandregistry_wrapper.cpp FabricUI/
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_BASECOMMAND_IDX], cppResult);
@@ -2085,7 +2085,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandregistry_wrapper.cpp FabricUI/
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICUI_QLIST_QSTRING_IDX], &cppResult);
@@ -2113,7 +2113,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandregistry_wrapper.cpp FabricUI/
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_COMMANDREGISTRY_IDX], cppResult);
@@ -2141,7 +2141,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandregistry_wrapper.cpp FabricUI/
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkFabricUITypeConverters[SBK_FABRICUI_QPAIR_QSTRING_QSTRING_IDX], &cppResult);
@@ -2169,7 +2169,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandregistry_wrapper.cpp FabricUI/
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -2197,7 +2197,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandregistry_wrapper.cpp FabricUI/
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -2225,7 +2225,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandregistry_wrapper.cpp FabricUI/
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
@@ -2252,7 +2252,7 @@ diff -purN FabricUI.orig/fabricui_commands_commandregistry_wrapper.cpp FabricUI/
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -2291,7 +2291,7 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandmanager_wrapper.cpp FabricUI
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return -1;
 +            }
          }
@@ -2318,7 +2318,7 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandmanager_wrapper.cpp FabricUI
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -2345,7 +2345,7 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandmanager_wrapper.cpp FabricUI
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -2373,7 +2373,7 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandmanager_wrapper.cpp FabricUI
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
@@ -2401,7 +2401,7 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandmanager_wrapper.cpp FabricUI
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
@@ -2428,7 +2428,7 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandmanager_wrapper.cpp FabricUI
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -2467,7 +2467,7 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandregistry_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return -1;
 +            }
          }
@@ -2494,7 +2494,7 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandregistry_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -2522,7 +2522,7 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandregistry_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
              pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_BASECOMMAND_IDX], cppResult);
@@ -2549,7 +2549,7 @@ diff -purN FabricUI.orig/fabricui_commands_klcommandregistry_wrapper.cpp FabricU
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -2588,7 +2588,7 @@ diff -purN FabricUI.orig/fabricui_commands_rtvalcommandmanager_wrapper.cpp Fabri
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return -1;
 +            }
          }
@@ -2615,7 +2615,7 @@ diff -purN FabricUI.orig/fabricui_commands_rtvalcommandmanager_wrapper.cpp Fabri
 +            
 +            if(!errorMessage.empty())
 +            {
-+                PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                return 0;
 +            }
          }
@@ -2643,7 +2643,7 @@ diff -purN FabricUI.orig/fabricui_commands_rtvalcommandmanager_wrapper.cpp Fabri
 +                
 +                if(!errorMessage.empty())
 +                {
-+                    PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                    PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                    return 0;
 +                }
                  pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_BASECOMMAND_IDX], cppResult);
@@ -2671,7 +2671,7 @@ diff -purN FabricUI.orig/fabricui_commands_rtvalcommandmanager_wrapper.cpp Fabri
 +                
 +                if(!errorMessage.empty())
 +                {
-+                    PyErr_SetString( PyExc_ValueError, errorMessage.c_str() );
++                    PyErr_SetString( PyExc_Exception, errorMessage.c_str() );
 +                    return 0;
 +                }
                  pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkFabricUITypes[SBK_FABRICUI_COMMANDS_BASECOMMAND_IDX], cppResult);
