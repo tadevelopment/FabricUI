@@ -176,15 +176,32 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
     float maxU = ( ori == Qt::Vertical ? sr.bottom() : sr.right() );
 
     const float logScale = 2.0f;
-    float minFactor = 8.0f / size;
+    float viewFactor = 8.0f / size;
     if( ori == Qt::Vertical )
-      minFactor *= float( wr.height() ) / wr.width();
+      viewFactor *= float( wr.height() ) / wr.width();
 
-    minFactor = std::pow( logScale, std::floor( std::log( minFactor ) / std::log( logScale ) ) );
+    float minFactor = std::pow( logScale, std::floor( std::log( viewFactor ) / std::log( logScale ) ) );
     float maxFactor = 150.0f / size;
+    int k = 0;
     for( float factor = minFactor; factor < maxFactor; factor *= logScale )
     {
-      QPen pen; pen.setWidthF( 1E-2 / factor );
+      QPen pen;
+      // Pen width
+      {
+        // We use a cosmetic pen here, because when we tried a "scene-space"
+        // pen, precision errors were making thin lines be inconsistently invisible
+        // for the same factor
+        pen.setCosmetic( true );
+        float pwidth = ( 2 * viewFactor ) / factor;
+        float palpha = 255;
+        if( pwidth < 1 )
+        {
+          palpha = pwidth * 255;
+          pwidth = 1;
+        }
+        pen.setWidthF( pwidth );
+        pen.setColor( QColor( 32, 32, 32, palpha ) );
+      }
       p->setPen( pen );
       for( float i = std::floor( factor * minU ); i < factor * maxU; i++ )
         if( ori == Qt::Horizontal )
