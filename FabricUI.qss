@@ -109,6 +109,14 @@ QMainWindow > QDockWidget::title
   padding: 5px;
 }
 
+QMainWindow QStatusBar {
+  border-top: 1px solid #484848;
+  background: #363636;
+}
+
+QMainWindow QStatusBar::item {
+}
+
 /****************************************************************************
  * Shared
  ***************************************************************************/
