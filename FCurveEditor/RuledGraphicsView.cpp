@@ -70,7 +70,7 @@ protected:
 RuledGraphicsView::RuledGraphicsView()
   : m_view( new GraphicsView( this ) )
   , m_scrollSpeed( 1 / 800.0f )
-  , m_smoothZoom( false )
+  , m_smoothZoom( true )
   // HACK : update m_targetScale when methods such as fitInView() are called
   , m_targetScale( QPointF( 1E2, 1E2 ) )
   , m_timer( new QTimer( this ) )
@@ -142,10 +142,10 @@ void RuledGraphicsView::resizeEvent( QResizeEvent * e )
 void RuledGraphicsView::tick()
 {
   QPointF currentScale = QPointF( m_view->matrix().m11(), m_view->matrix().m22() );
-  if( abs(
-    std::log( currentScale.x() * currentScale.x() + currentScale.y() * currentScale.y() ) -
-    std::log( m_targetScale.x() * m_targetScale.x() + m_targetScale.y() * m_targetScale.y() )
-  ) > 0.1 )
+  if(
+    abs( std::log( currentScale.x() ) - std::log( m_targetScale.x() ) ) +
+    abs( std::log( currentScale.y() ) - std::log( m_targetScale.y() ) )
+  > 0.01 ) // If we are close enough to the target, we stop the animation
   {
     const float ratio = 0.2;
     currentScale.setX( ( 1 - ratio ) * currentScale.x() + ratio * m_targetScale.x() );
