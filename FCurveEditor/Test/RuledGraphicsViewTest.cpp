@@ -16,7 +16,7 @@ int main()
   QApplication app( argc, NULL );
   {
     QGraphicsScene* scene = new QGraphicsScene();
-    //scene->setSceneRect( QRectF( -1E3, -1E3, 1E3, 1E3 ) );
+    scene->setSceneRect( QRectF( -1E3, -1E3, 2 * 1E3, 2 * 1E3 ) );
     for( size_t i = 0; i < 100; i++ )
     {
       QGraphicsItemGroup* item = new QGraphicsItemGroup();

@@ -14,6 +14,19 @@ if( NOT EXISTS ${QtDir}/bin )
   message( SEND_ERROR "Please specify QtDir (didn't find QtDir/bin" )
 endif()
 
+set( AnimXDir
+  "${ThirdPartyDir}/VS2013/Release/animx/1.0.0"
+  CACHE PATH "Directory of Autodesk's AnimX curve library"
+)
+if( NOT EXISTS ${AnimXDir}/include )
+  message(SEND_ERROR "Please specify AnimXDir (where /include/ is)" )
+  set( AnimXLib "" )
+endif()
+
+set( AnimXLib ${AnimXDir}/lib/AnimX.lib
+  CACHE FILEPATH ""
+)
+
 function( QtMocProcess Headers Target )
   set( OutDir ${CMAKE_BINARY_DIR}/Moc/${Target} )
   set( OutFiles "" ) # to be used outside of the function
@@ -51,6 +64,7 @@ target_include_directories( FCurveEditor PUBLIC
   ${QtDir}/include/ActiveQt
   ${QtDir}/include/QtWidgets
   ${QtDir}/include/QtOpenGL
+  ${AnimXDir}/include/
 )
 
 if( WIN32 )
@@ -73,6 +87,7 @@ if( WIN32 )
     ${QtDir}/lib/Qt${QtLibPrfx}Gui${libSfx}.lib
     ${QtDir}/lib/Qt${QtLibPrfx}Core${libSfx}.lib
     ${QtDir}/lib/Qt${QtLibPrfx}OpenGL${libSfx}.lib
+    ${AnimXLib}
     )
   if( UsingQt5Bool )
     target_link_libraries( FCurveEditor PUBLIC

@@ -39,6 +39,6 @@ protected:
 };
 
 } // namespace FCurveEditor
-} // namespace ValueEditor 
+} // namespace FabricUI
 
 #endif // FABRICUI_FCURVEEDITOR_RULER_H

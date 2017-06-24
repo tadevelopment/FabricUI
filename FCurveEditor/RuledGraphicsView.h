@@ -55,6 +55,6 @@ private:
 };
 
 } // namespace FCurveEditor
-} // namespace ValueEditor 
+} // namespace FabricUI
 
 #endif // FABRICUI_FCURVEEDITOR_RULEDGRAPHICSVIEW_H
