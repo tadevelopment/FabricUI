@@ -51,8 +51,8 @@ public:
         Handle h = m_parent->m_curve->getHandle( i );
         topLeft = min( topLeft, h.pos );
         botRight = max( botRight, h.pos );
-        topLeft = min( topLeft, h.pos + h.tanIn );
-        botRight = max( botRight, h.pos + h.tanIn );
+        topLeft = min( topLeft, h.pos - h.tanIn );
+        botRight = max( botRight, h.pos - h.tanIn );
         topLeft = min( topLeft, h.pos + h.tanOut );
         botRight = max( botRight, h.pos + h.tanOut );
         // TODO : tangents correctly used ?
@@ -120,17 +120,80 @@ class FCurveEditor::HandleWidget : public QGraphicsWidget
   };
   Center* m_center;
 
+  class Tangent
+  {
+    bool m_inNotOut;
+    QGraphicsLineItem* m_line;
+
+    class End : public QGraphicsEllipseItem
+    {
+      HandleWidget* m_parent;
+      Tangent* m_tangent;
+    public:
+      QGraphicsWidget* m_posW; // Used for its position
+      End( HandleWidget* parent, Tangent* tangent )
+        : m_parent( parent )
+        , m_tangent( tangent )
+        , m_posW( new QGraphicsWidget( parent ) )
+        , QGraphicsEllipseItem()
+      {
+        this->setParentItem( m_posW );
+        this->setRect( QRectF( -4, -4, 8, 8 ) );
+        this->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
+        this->setBrush( QColor( 255, 255, 255 ) );
+      }
+    protected:
+      void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE {}
+      void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
+      {
+        AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
+        const size_t index = m_parent->m_index;
+        Handle h = curve->getHandle( index );
+        if( m_tangent->m_inNotOut )
+          h.tanIn = -( event->scenePos() - m_parent->scenePos() );
+        else
+          h.tanOut = +( event->scenePos() - m_parent->scenePos() );
+        curve->setHandle( index, h );
+      }
+    };
+    End* m_end;
+
+  public:
+    Tangent( HandleWidget* parent, bool inNotOut )
+      : m_inNotOut( inNotOut )
+      , m_line( new QGraphicsLineItem( parent ) )
+      , m_end( new End( parent, this ) )
+    {
+      QPen linePen; linePen.setCosmetic( true );
+      linePen.setColor( QColor( 255, 255, 255, 128 ) );
+      linePen.setWidthF( 2 );
+      m_line->setPen( linePen );
+    }
+
+    void setValue( const Handle& h )
+    {
+      const QPointF p = m_inNotOut ? -h.tanIn : h.tanOut;
+      m_line->setLine( QLineF( QPointF( 0, 0 ), p ) );
+      m_end->m_posW->setPos( p );
+    }
+  };
+  Tangent m_inT, m_outT;
+
 public:
   HandleWidget( FCurveEditor* parent, size_t index )
     : m_parent( parent )
     , m_index( index )
     , QGraphicsWidget( parent )
+    , m_inT( this, true )
+    , m_outT( this, false )
   {
     m_center = new Center( this );
   }
-  void setValue( const Handle& v )
+  void setValue( const Handle& h )
   {
-    this->setPos( v.pos );
+    this->setPos( h.pos );
+    m_inT.setValue( h );
+    m_outT.setValue( h );
   }
 };
 
