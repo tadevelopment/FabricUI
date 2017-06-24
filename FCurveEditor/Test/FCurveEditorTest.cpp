@@ -23,8 +23,8 @@ int main()
   {
     Handle h;
     h.pos = QPointF( float( i ) / nh, RandFloat() );
-    h.tanIn = QPointF( 1 - 2 * RandFloat(), 1 - 2 * RandFloat() );
-    h.tanOut = QPointF( 1 - 2 * RandFloat(), 1 - 2 * RandFloat() );
+    h.tanIn = QPointF( RandFloat(), 1 - 2 * RandFloat() ) * 0.3;
+    h.tanOut = ( rand() % 2 == 0 ? h.tanIn : QPointF( 1 - 2 * RandFloat(), 1 - 2 * RandFloat() ) * 0.3 );
     curve.addHandle( h );
   }
 
