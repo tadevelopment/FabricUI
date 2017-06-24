@@ -68,7 +68,7 @@ public:
   void paint(
     QPainter * painter,
     const QStyleOptionGraphicsItem * option,
-    QWidget * widget = Q_NULLPTR
+    QWidget * widget
   ) FTL_OVERRIDE
   {
     if( m_parent->m_curve != NULL )
@@ -156,7 +156,7 @@ class FCurveEditor::HandleWidget : public QGraphicsWidget
         if( m_tangent->m_inNotOut )
           h.tanIn = -( event->scenePos() - m_parent->scenePos() );
         else
-          h.tanOut = +( event->scenePos() - m_parent->scenePos() );
+          h.tanOut = ( event->scenePos() - m_parent->scenePos() );
         curve->setHandle( index, h );
       }
     };
@@ -227,7 +227,8 @@ void FCurveEditor::setCurve( AbstractFCurveModel* curve )
 {
   assert( curve != m_curve );
   m_curve = curve;
-  connect( m_curve, &AbstractFCurveModel::handleMoved, this, &FCurveEditor::onHandleMoved );
+  //connect( m_curve, &AbstractFCurveModel::handleMoved, this, &FCurveEditor::onHandleMoved );
+  QObject::connect( m_curve, SIGNAL( handleMoved( size_t ) ), this, SLOT( onHandleMoved( size_t ) ) );
 
   // Clearing previous handles
   for( std::vector<HandleWidget*>::const_iterator it = m_handles.begin(); it < m_handles.end(); it++ )
