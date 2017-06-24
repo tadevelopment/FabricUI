@@ -20,11 +20,17 @@ class FCurveEditor : public QGraphicsWidget
   AbstractFCurveModel* m_curve;
   class FCurveShape;
   FCurveShape* m_curveShape;
+  class HandleWidget;
+  std::vector<HandleWidget*> m_handles;
+
+  void addHandle( size_t );
 
 public:
-
   FCurveEditor();
   void setCurve( AbstractFCurveModel* );
+
+private slots:
+  void onHandleMoved( size_t );
 };
 
 } // namespace FCurveEditor

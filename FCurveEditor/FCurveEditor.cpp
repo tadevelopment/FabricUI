@@ -4,7 +4,10 @@
 
 #include <QStyleOption>
 #include <QPainter>
+#include <QGraphicsSceneEvent>
+
 #include <QDebug>
+#include <assert.h>
 
 using namespace FabricUI::FCurveEditor;
 
@@ -85,7 +88,50 @@ public:
       }
     }
   }
+};
 
+class FCurveEditor::HandleWidget : public QGraphicsWidget
+{
+  FCurveEditor* m_parent;
+  size_t m_index;
+
+  class Center : public QGraphicsRectItem
+  {
+    HandleWidget* m_parent;
+  public:
+    Center( HandleWidget* parent )
+      : m_parent( parent )
+      , QGraphicsRectItem( parent )
+    {
+      this->setRect( QRectF( -4, -4, 8, 8 ) );
+      this->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
+      this->setBrush( QColor( 255, 255, 255 ) );
+    }
+  protected:
+    void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE {}
+    void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
+    {
+      AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
+      const size_t index = m_parent->m_index;
+      Handle h = curve->getHandle( index );
+      h.pos = event->scenePos();
+      curve->setHandle( index, h );
+    }
+  };
+  Center* m_center;
+
+public:
+  HandleWidget( FCurveEditor* parent, size_t index )
+    : m_parent( parent )
+    , m_index( index )
+    , QGraphicsWidget( parent )
+  {
+    m_center = new Center( this );
+  }
+  void setValue( const Handle& v )
+  {
+    this->setPos( v.pos );
+  }
 };
 
 FCurveEditor::FCurveEditor()
@@ -95,7 +141,33 @@ FCurveEditor::FCurveEditor()
   m_curveShape->setParentItem( this );
 }
 
+void FCurveEditor::addHandle( size_t i )
+{
+  HandleWidget* w = new HandleWidget( this, i );
+  w->setValue( m_curve->getHandle( i ) );
+  m_handles.push_back( w );
+}
+
+void FCurveEditor::onHandleMoved( size_t i )
+{
+  assert( i < m_handles.size() );
+  assert( m_handles.size() == m_curve->getHandleCount() );
+  m_handles[i]->setValue( m_curve->getHandle( i ) );
+  m_curveShape->update();
+}
+
 void FCurveEditor::setCurve( AbstractFCurveModel* curve )
 {
+  assert( curve != m_curve );
   m_curve = curve;
+  connect( m_curve, &AbstractFCurveModel::handleMoved, this, &FCurveEditor::onHandleMoved );
+
+  // Clearing previous handles
+  for( std::vector<HandleWidget*>::const_iterator it = m_handles.begin(); it < m_handles.end(); it++ )
+    delete *it;
+  m_handles.clear();
+
+  size_t hc = m_curve->getHandleCount();
+  for( size_t i = 0; i < hc; i++ )
+    this->addHandle( i );
 }

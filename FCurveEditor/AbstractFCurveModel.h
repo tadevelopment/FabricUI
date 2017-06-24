@@ -33,6 +33,7 @@ public:
   // TODO : evaluate arrays, to reduce the overhead
 
 signals:
+  void handleAdded() const;
   void handleMoved( size_t ) const;
 };
 
