@@ -51,11 +51,14 @@ public:
         Handle h = m_parent->m_curve->getHandle( i );
         topLeft = min( topLeft, h.pos );
         botRight = max( botRight, h.pos );
-        topLeft = min( topLeft, h.pos - h.tanIn );
-        botRight = max( botRight, h.pos - h.tanIn );
-        topLeft = min( topLeft, h.pos + h.tanOut );
-        botRight = max( botRight, h.pos + h.tanOut );
-        // TODO : tangents correctly used ?
+        topLeft.setY( std::min( topLeft.y(), h.pos.y() - h.tanIn.y() ) );
+        topLeft.setY( std::min( topLeft.y(), h.pos.y() + h.tanOut.y() ) );
+        botRight.setY( std::max( botRight.y(), h.pos.y() - h.tanIn.y() ) );
+        botRight.setY( std::max( botRight.y(), h.pos.y() + h.tanOut.y() ) );
+        //topLeft = min( topLeft, h.pos - h.tanIn );
+        //botRight = max( botRight, h.pos - h.tanIn );
+        //topLeft = min( topLeft, h.pos + h.tanOut );
+        //botRight = max( botRight, h.pos + h.tanOut );
       }
     }
     QRectF dst( topLeft, botRight );
@@ -86,6 +89,7 @@ public:
           QPointF( x2, m_parent->m_curve->evaluate( x2 ) )
         );
       }
+      //painter->drawRect( this->boundingRect() );
     }
   }
 };
