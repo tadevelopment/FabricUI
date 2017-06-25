@@ -193,35 +193,40 @@ class CommandArgHelpers:
                         argdesc = str(key) + '='
 
                         # RTValScriptableCommand, arguments are RTVal.
-                        pathValue = CppCommands.CommandArgHelpers.getRTValCommandArg(key, cmd)
+                        if CppCommands.CommandArgHelpers.isRTValScriptableCommand(cmd):
+                            pathValue = CppCommands.CommandArgHelpers.getRTValCommandArg(key, cmd)
 
-                        path = pathValue.path.getSimpleType()
-                        if path:                       
-                            argdesc += "\"" + "<" + path + ">" + "\"" 
-                            
-                        else:
-                            rtVal = Util.RTValUtil.toRTVal(pathValue.value)
-                            if rtVal is None:
-                                # Invalid RTVal - no value: don't log the arg'
-                                argdesc = ""
+                            path = pathValue.path.getSimpleType()
+                            if path:                       
+                                argdesc += "\"" + "<" + path + ">" + "\"" 
+                                
                             else:
-                                pythonVal = rtVal.getSimpleType()
-                               
-                                # Can cast the RTVal in simple JSON type
-                                if pythonVal is not None:
-                                    if Util.RTValUtil.getType(rtVal) == 'String':
-                                        argdesc += "\"" + pythonVal + "\"" 
-                                    else:
-                                        argdesc += str(pythonVal)
-                                # JSON
+                                rtVal = Util.RTValUtil.toRTVal(pathValue.value)
+                                if rtVal is None:
+                                    # Invalid RTVal - no value: don't log the arg'
+                                    argdesc = ""
                                 else:
-                                    argdesc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.toJSON(rtVal)))
+                                    pythonVal = rtVal.getSimpleType()
+                                   
+                                    # Can cast the RTVal in simple JSON type
+                                    if pythonVal is not None:
+                                        if Util.RTValUtil.getType(rtVal) == 'String':
+                                            argdesc += "\"" + pythonVal + "\"" 
+                                        else:
+                                            argdesc += str(pythonVal)
+                                    # JSON
+                                    else:
+                                        argdesc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.toJSON(rtVal)))
 
-                    if argdesc:
-                      if not first:
-                        desc += ', '
-                      first = False
-                      desc += argdesc
+                        # ScriptableCommand, arguments are Strings.
+                        else:
+                            argdesc += str(CppCommands.CommandArgHelpers.getCommandArg(key, cmd))
+   
+                        if argdesc:
+                          if not first:
+                            desc += ', '
+                          first = False
+                          desc += argdesc
  
                 desc += ')'
 
