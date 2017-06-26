@@ -36,7 +36,7 @@ BindingModelItem::~BindingModelItem()
 int BindingModelItem::getNumChildren()
 {
   int count = 0;
-  for(int j=0;j<m_rootExec.getExecPortCount();j++)
+  for(unsigned int j=0;j<m_rootExec.getExecPortCount();j++)
   {
     FabricCore::DFGPortType portType = m_rootExec.getExecPortType(j);
     if((portType == FabricCore::DFGPortType_In) && !m_showInputs)
@@ -53,7 +53,7 @@ int BindingModelItem::getNumChildren()
 FTL::CStrRef BindingModelItem::getChildName( int i )
 {
   int index = 0;
-  for(int j=0;j<m_rootExec.getExecPortCount();j++)
+  for(unsigned int j=0;j<m_rootExec.getExecPortCount();j++)
   {
     FabricCore::DFGPortType portType = m_rootExec.getExecPortType(j);
     if((portType == FabricCore::DFGPortType_In) && !m_showInputs)
