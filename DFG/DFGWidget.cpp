@@ -1551,6 +1551,18 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       expandMetadataSection = true;
     }
 
+    FTL::StrRef uiIsOpenFile = exec.getExecPortMetadata(execPortName.c_str(), "uiIsOpenFile");
+    std::string uiIsOpenFileStr;
+    if(uiIsOpenFile.size() > 0)
+      uiIsOpenFileStr = uiIsOpenFile.data();
+    if(uiIsOpenFileStr.size() > 0)
+    {
+      if(uiIsOpenFile == "true")
+        dialog.setIsOpenFile(true);
+      else
+        dialog.setIsOpenFile(false);
+    }
+
     dialog.setSectionCollapsed("Metadata", !expandMetadataSection);
 
     if (!duplicatePort || isCTRL)
@@ -1609,8 +1621,11 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       {
         QString fileTypeFilter = dialog.fileTypeFilter();
         DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", fileTypeFilter.toUtf8().constData() );
-      } else
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiIsOpenFile", dialog.isOpenFile() ? "true" : "false");
+      } else {
         DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", "" );//"" will remove the metadata
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiIsOpenFile", "" );//"" will remove the metadata
+      }
 
       emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
     }
