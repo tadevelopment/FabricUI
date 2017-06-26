@@ -638,6 +638,10 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addSeparator();
 
+    QMenu *exposePortsMenu = result->addMenu(tr("Expose Ports"));
+    exposePortsMenu->setEnabled(dfgWidget->isEditable() && nodes.size() - backdropNodeCount == 1);
+    exposePortsMenu->addAction(new ExposeAllUnconnectedInputPortsAction(dfgWidget, uiNode, exposePortsMenu));
+    exposePortsMenu->addAction(new ExposeAllUnconnectedOutputPortsAction(dfgWidget, uiNode, exposePortsMenu));
     result->addAction(new AutoConnectionsAction  (dfgWidget, result, dfgWidget->isEditable() && nodes.size() - backdropNodeCount > 1));
     result->addAction(new RemoveConnectionsAction(dfgWidget, result, dfgWidget->isEditable() && nodes.size() != backdropNodeCount));
     result->addAction(new SplitFromPresetAction  (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && exec.getSubExec(uiNode->name().c_str()).editWouldSplitFromPreset()));

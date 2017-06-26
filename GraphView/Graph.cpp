@@ -908,6 +908,11 @@ void Graph::setConnectionsCosmetic( bool cosmetic )
   }
 }
 
+void Graph::exposeAllPorts(const char *nodeName, bool exposeUnconnectedInputs, bool exposeUnconnectedOutputs)
+{
+  printf("nodeName = %s, exposeUnconnectedInputs = %ld, exposeUnconnectedOutputs = %ld\n", nodeName, (int)exposeUnconnectedInputs, (int)exposeUnconnectedOutputs);
+}
+
 void Graph::updateOverlays(float width, float height)
 {
   if(m_overlayItem != NULL)
