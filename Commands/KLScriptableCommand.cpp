@@ -315,7 +315,7 @@ QString KLScriptableCommand::getRTValArgType(
 
   FABRIC_CATCH_END("KLScriptableCommand::getRTValArgType");
 
-  return "";
+  return "None";
 }
 
 QString KLScriptableCommand::getRTValArgPath(
