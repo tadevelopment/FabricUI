@@ -175,6 +175,7 @@ namespace FabricUI
       virtual void resetMouseGrabber();
       void setConnectionsCosmetic( bool cosmetic );
       inline bool cosmeticConnections() const { return m_cosmeticConnections; }
+      bool connect(ConnectionTarget * source, ConnectionTarget * target);
       void exposeAllPorts(const char *nodeName, bool exposeUnconnectedInputs, bool exposeUnconnectedOutputs);
 
       void updateOverlays(float width, float height);
