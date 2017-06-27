@@ -1021,6 +1021,26 @@ void Graph::exposeAllPorts(const char *nodeName, bool exposeUnconnectedInputs, b
     }
   }
 
+  if (exposeUnconnectedOutputs)
+  {
+    ConnectionTarget *target = (ConnectionTarget *)m_rightPanel->m_proxyPort;
+    for (unsigned int j = 0; j<node->pinCount(); j++)
+    {
+      Pin *pin = node->pin(j);
+      // skip default exec port.
+      if (j == 0)
+        continue;
+      // skip if already connected.
+      if (pin->isConnectedAsSource())
+        continue;
+      // we have a candiate.
+      if (pin->portType() != PortType_Input)
+      {
+        ConnectionTarget *source = pin;
+        connect(source, target);
+      }
+    }
+  }
 }
 
 void Graph::updateOverlays(float width, float height)
