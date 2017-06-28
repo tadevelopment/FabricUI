@@ -1,12 +1,12 @@
 
-#include <FabricUI/FCurveEditor/RuledGraphicsView.h>
-#include <FabricUI/FCurveEditor/FCurveItem.h>
+#include <FabricUI/FCurveEditor/FCurveEditor.h>
 #include <FabricUI/FCurveEditor/Models/AnimXKL/RTValAnimXFCurveModel.h>
 
+#include <FabricCore.h>
+
 #include <QApplication>
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QGraphicsItem>
+#include <QDebug>
+#include <QFile>
 #include <QTextStream>
 
 #include <iostream>
@@ -47,19 +47,12 @@ int main()
   
   RTValAnimXFCurveModel curve;
   curve.setValue( curveRTVal );
-  {
-    QGraphicsScene* scene = new QGraphicsScene();
-    scene->setSceneRect( QRectF( -1E3, -1E3, 2 * 1E3, 2 * 1E3 ) );
-    FCurveItem* curveEditor = new FCurveItem();
-    curveEditor->setCurve( &curve );
-    scene->addItem( curveEditor );
 
-    RuledGraphicsView* view = new RuledGraphicsView();
-    view->view()->setScene( scene );
-    view->resize( 800, 600 );
-    view->view()->fitInView( 0, 0, 1, 1, Qt::KeepAspectRatio );
-    view->show();
-  }
+  FCurveEditor* editor = new FCurveEditor();
+  editor->setModel( &curve );
+  editor->resize( 800, 600 );
+  editor->show();
+
   app.exec();
 
   curveFile.close();

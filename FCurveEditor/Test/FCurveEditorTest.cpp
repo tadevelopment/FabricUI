@@ -1,12 +1,8 @@
 
-#include <FabricUI/FCurveEditor/RuledGraphicsView.h>
-#include <FabricUI/FCurveEditor/FCurveItem.h>
+#include <FabricUI/FCurveEditor/FCurveEditor.h>
 #include <FabricUI/FCurveEditor/Models/AnimXCpp/AnimXFCurveModel.h>
 
 #include <QApplication>
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QGraphicsItem>
 #include <QDebug>
 
 using namespace FabricUI::FCurveEditor;
@@ -32,19 +28,11 @@ int main()
     curve.addHandle( h );
   }
 
-  {
-    QGraphicsScene* scene = new QGraphicsScene();
-    scene->setSceneRect( QRectF( -1E3, -1E3, 2*1E3, 2*1E3 ) );
-    FCurveItem* curveEditor = new FCurveItem();
-    curveEditor->setCurve( &curve );
-    scene->addItem( curveEditor );
+  FCurveEditor* editor = new FCurveEditor();
+  editor->setModel( &curve );
+  editor->resize( 800, 600 );
+  editor->show();
 
-    RuledGraphicsView* view = new RuledGraphicsView();
-    view->view()->setScene( scene );
-    view->resize( 800, 600 );
-    view->fitInView( scene->itemsBoundingRect() );
-    view->show();
-  }
   app.exec();
   return 0;
 }
