@@ -6,8 +6,8 @@ from PySide import QtGui, QtCore
 from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Commands.CommandArgHelpers import CommandArgHelpers
 
-class CommandManagerQtCallback(QtCore.QObject):
-    """ CommandManagerQtCallback is connected to the CommandManagerCallback 
+class CommandManagerCallback(QtCore.QObject):
+    """ CommandManagerCallback is connected to the CommandManagerCallback 
         and adds the commands into the Qt undo stack when they are created. 
         When a command is added, it also logs its description automatically
         generated from the command name and arguments.
@@ -46,7 +46,7 @@ class CommandManagerQtCallback(QtCore.QObject):
                 print str(e)
 
     def __init__(self, qUndoStack, scriptEditor):
-        super(CommandManagerQtCallback, self).__init__()
+        super(CommandManagerCallback, self).__init__()
         self.qUndoStack = qUndoStack
         self.scriptEditor = scriptEditor
         GetCommandManager().cleared.connect(self.__onCleared)

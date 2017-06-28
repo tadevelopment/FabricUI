@@ -18,7 +18,7 @@ from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Application.FabricApplicationStates import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import HotkeyEditorDialog
-from FabricEngine.Canvas.Commands.CommandManagerQtCallback import CommandManagerQtCallback
+from FabricEngine.Canvas.Commands.CommandManagerCallback import CommandManagerCallback
 from FabricEngine.Canvas.Dialogs.DialogCommandRegistration import DialogCommandRegistration
 
 class CanvasWindowEventFilter(QtCore.QObject):
@@ -432,7 +432,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self.scriptEditor = ScriptEditor(self.client, self.mainBinding, self.qUndoStack, self.logWidget, self.settings, self, self.config)
         self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
-        self.cmdManagerQtCallback = CommandManagerQtCallback(self.qUndoStack, self.scriptEditor)
+        self.cmdManagerCallback = CommandManagerCallback(self.qUndoStack, self.scriptEditor)
 
     def _initDFGWidget(self):
         """Initializes the Data Flow Graph.
