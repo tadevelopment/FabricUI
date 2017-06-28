@@ -7,6 +7,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <QDebug>
 
 using namespace FabricUI::FCurveEditor;
 
@@ -22,9 +23,12 @@ int main()
   for( size_t i = 0; i < nh; i++ )
   {
     Handle h;
-    h.pos = QPointF( float( i ) / nh, RandFloat() );
-    h.tanIn = QPointF( RandFloat(), 1 - 2 * RandFloat() ) * 0.3;
-    h.tanOut = ( rand() % 2 == 0 ? h.tanIn : QPointF( 1 - 2 * RandFloat(), 1 - 2 * RandFloat() ) * 0.3 );
+    const qreal xScale = 85.3;
+    const qreal yScale = 0.01;
+    h.pos = QPointF( 132 + xScale * float( i ) / nh, yScale * RandFloat() - 17.3 );
+    h.tanIn = QPointF( xScale * RandFloat(), yScale * ( 1 - 2 * RandFloat() ) ) * 0.3;
+    h.tanOut = ( rand() % 2 == 0 ? h.tanIn :
+      QPointF( xScale * ( 1 - 2 * RandFloat() ), yScale * ( 1 - 2 * RandFloat() ) ) * 0.3 );
     curve.addHandle( h );
   }
 
@@ -38,7 +42,7 @@ int main()
     RuledGraphicsView* view = new RuledGraphicsView();
     view->view()->setScene( scene );
     view->resize( 800, 600 );
-    view->view()->fitInView( 0, 0, 1, 1, Qt::KeepAspectRatio );
+    view->fitInView( scene->itemsBoundingRect() );
     view->show();
   }
   app.exec();

@@ -42,7 +42,7 @@ public:
   {
     // TODO : cache and update when handles are moved
     QPointF topLeft = QPointF( 1, 1 ) * std::numeric_limits<qreal>::max();
-    QPointF botRight = QPointF( 1, 1 ) * std::numeric_limits<qreal>::min();
+    QPointF botRight = QPointF( 1, 1 ) * (-std::numeric_limits<qreal>::max());
     if( m_parent->m_curve != NULL )
     {
       size_t hc = m_parent->m_curve->getHandleCount();
@@ -55,10 +55,6 @@ public:
         topLeft.setY( std::min( topLeft.y(), h.pos.y() + h.tanOut.y() ) );
         botRight.setY( std::max( botRight.y(), h.pos.y() - h.tanIn.y() ) );
         botRight.setY( std::max( botRight.y(), h.pos.y() + h.tanOut.y() ) );
-        //topLeft = min( topLeft, h.pos - h.tanIn );
-        //botRight = max( botRight, h.pos - h.tanIn );
-        //topLeft = min( topLeft, h.pos + h.tanOut );
-        //botRight = max( botRight, h.pos + h.tanOut );
       }
     }
     QRectF dst( topLeft, botRight );

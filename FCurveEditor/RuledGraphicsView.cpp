@@ -125,6 +125,13 @@ void RuledGraphicsView::wheelEvent( int xDelta, int yDelta )
   }
 }
 
+void RuledGraphicsView::fitInView( const QRectF r )
+{
+  this->view()->fitInView( r );
+  m_targetScale = QPointF( m_view->matrix().m11(), m_view->matrix().m22() );
+  this->updateRulersRange();
+}
+
 void RuledGraphicsView::updateRulersRange()
 {
   QRectF vrect = m_view->mapToScene( m_view->viewport()->geometry() ).boundingRect();

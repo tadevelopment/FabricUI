@@ -28,6 +28,8 @@ public:
   // TODO : fixed-point under the cursor when zooming (currently on the middle instead)
   // TODO : fix the "smoothZoom" on Linux
 
+  void fitInView( const QRectF );
+
 protected:
   void wheelEvent( QWheelEvent * ) FTL_OVERRIDE;
   void resizeEvent( QResizeEvent * ) FTL_OVERRIDE;
