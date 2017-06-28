@@ -40,8 +40,15 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
     // Adding a new Handle
     QPointF scenePos = this->view()->mapToScene(
       this->view()->mapFromGlobal( this->mapToGlobal( e->pos() ) ) );
+    const size_t prevHc = m_model->getHandleCount();
     m_model->addHandle();
     Handle h; h.pos = scenePos;
+    //if( prevHc <= 1 )
+    {
+      // heuristic for tangents, based on the current zoom level
+      h.tanIn.setX( this->view()->transform().m11() / this->width() );
+      h.tanOut.setX( h.tanIn.x() );
+    }
     m_model->setHandle( m_model->getHandleCount() - 1, h );
   }
   else
