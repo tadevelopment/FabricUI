@@ -4,6 +4,8 @@
 
 #include "RTValAnimXFCurveModel.h"
 
+#include <assert.h>
+
 using namespace FabricUI::FCurveEditor;
 
 size_t RTValAnimXFCurveModel::getHandleCount() const
@@ -65,4 +67,13 @@ void RTValAnimXFCurveModel::setValue( FabricCore::RTVal v )
   const size_t hc = this->getHandleCount();
   for( size_t i = 0; i < hc; i++ )
     emit this->handleMoved( i );
+}
+
+void RTValAnimXFCurveModel::addHandle()
+{
+  assert( m_val.isValid() );
+  if( m_val.isNullObject() )
+    m_val = FabricCore::RTVal::Create( m_val.getContext(), "AnimX::AnimCurve", 0, NULL );
+  m_val.callMethod( "", "pushKeyframe", 0, NULL );
+  emit this->handleAdded();
 }

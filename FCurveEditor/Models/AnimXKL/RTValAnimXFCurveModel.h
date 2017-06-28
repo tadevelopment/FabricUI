@@ -27,6 +27,7 @@ public:
   Handle getHandle( size_t ) const FTL_OVERRIDE;
   void setHandle( size_t, Handle ) FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
+  void addHandle() FTL_OVERRIDE;
 
   void setValue( FabricCore::RTVal );
 };
