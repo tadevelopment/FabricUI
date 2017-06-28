@@ -108,7 +108,8 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       this->setRect( QRectF( -4, -4, 8, 8 ) );
       this->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
       this->setBrush( QColor( 255, 255, 255 ) );
-    }
+      this->setAcceptHoverEvents( true );
+    };
   protected:
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE {}
     void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
@@ -119,6 +120,8 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       h.pos = event->scenePos();
       curve->setHandle( index, h );
     }
+    void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::CrossCursor ); }
+    void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->unsetCursor(); }
   };
   Center* m_center;
 
@@ -143,6 +146,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
         this->setRect( QRectF( -4, -4, 8, 8 ) );
         this->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
         this->setBrush( QColor( 255, 255, 255 ) );
+        this->setAcceptHoverEvents( true );
       }
     protected:
       void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE {}
@@ -157,6 +161,8 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
           h.tanOut = ( event->scenePos() - m_parent->scenePos() );
         curve->setHandle( index, h );
       }
+      void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::CrossCursor ); }
+      void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->unsetCursor(); }
     };
     End* m_end;
 
