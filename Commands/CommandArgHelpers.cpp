@@ -362,5 +362,5 @@ QString CommandArgHelpers::encodeJSONs(
     result += "\""
     return result
   */
-    return "";
+  return "";
 }

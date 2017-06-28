@@ -114,7 +114,7 @@ bool GLViewportWidget::onEvent(
           "GLViewportWidget::onEvent",
           "",
           e.what(),
-          PRINT);
+          LOG);
         
         return isAccepted;
       }

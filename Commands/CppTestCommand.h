@@ -167,7 +167,7 @@ class CppToPythonTestCommand
           "CppToPythonTestCommand::RegisterKLTestCommands",
           e.getDesc_cstr(),
           "",
-          PRINT);
+          LOG);
       }
     }
 
@@ -195,7 +195,7 @@ class CppToPythonTestCommand
           "CppToPythonTestCommand::CreateKLTestCommandsInKL",
           e.getDesc_cstr(),
           "",
-          PRINT);
+          LOG);
       }
     }
 
@@ -236,7 +236,7 @@ class CppToPythonTestCommand
           "CppToPythonTestCommand::CreateKLTestCommands",
           e.getDesc_cstr(),
           "",
-          PRINT);
+          LOG);
       }
     }
 };

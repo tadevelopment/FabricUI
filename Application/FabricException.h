@@ -10,7 +10,6 @@
 #include <iostream>
 #include <exception>
 #include <FabricCore.h>
-#include <FTL/StrRef.h>
 #include <FTL/JSONEnc.h>
 #include <FTL/JSONDec.h>
 #include <FTL/JSONValue.h>
@@ -19,7 +18,7 @@ namespace FabricUI {
 namespace Application {
 
 #define NOTHING 0
-#define PRINT 1
+#define LOG 1
 #define THROW 2
 
 class FabricException : public std::exception
@@ -27,58 +26,42 @@ class FabricException : public std::exception
   /**
     FabricException is the exception class for Fabric applications.
     It provides a static method `Throw` that propagates the exceptions
-    in order to provide the complete code-path of the error.
+    in order to provide the complete code-path of the error. 
 
-    It defines a macro FABRIC_CATCH_BEGIN() - FABRIC_CATCH_END() that catchs: 
-    - JSONException
-    - FabricException
-    - FabricCore::Exception
+    It defines a macro FABRIC_CATCH_BEGIN() - FABRIC_CATCH_END() that 
+    catchs and then re-throws: 
+    - JSON Exception
+    - Fabric Exception
+    - FabricCore Exception
   */
-
   public: 
     FabricException(
-      QString const&message)
-      : m_message(message.toUtf8().constData())
-    {
-    }
- 
-    virtual ~FabricException() throw() {}
+      QString const&message
+      );
+    
+    virtual ~FabricException() throw();
 
-    /// Throws and/or prints a FabricException.
+    /// Throws and/or logs a FabricException.
     /// \param method Name of the method that fails.
-    /// \param error The error to throw/print.
+    /// \param error The error to throw/log.
     /// \param childError A child error
-    /// \param flag (THROW, PRINT)
-    static QString Throw(
+    /// \param flag (THROW, LOG)
+    static void Throw(
       QString const&method,
       QString const&error = QString(),
       QString const&childError = QString(),
-      int flag = THROW)
-    {
-      QString cmdError;
+      int flag = THROW
+      );
 
-      if(!method.isEmpty())
-        cmdError += "\n" + method + ", error: " + error;
-      
-      if(!childError.isEmpty()) 
-        cmdError += "\n" + childError;
+    /// Logs the errors, to overide.
+    /// The default implementation logs
+    /// the error using std::cerr.
+    virtual void log() const throw();
 
-      if(flag & PRINT)
-        std::cerr << cmdError.toUtf8().constData() << std::endl;
+    /// Implementation of std::exception.
+    virtual const char* what() const throw();
 
-      if(flag & THROW)
-        throw FabricException(cmdError);
-
-      return cmdError;
-    }
-
-    /// Implementation of exception.
-    virtual const char* what() const throw()
-    {
-      return m_message.c_str();
-    }
-
-  private:
+  protected:
     std::string m_message;
 };
 
@@ -93,25 +76,25 @@ class FabricException : public std::exception
   catch (FabricCore::Exception &e) \
   { \
     FabricUI::Application::FabricException::Throw( \
-      QString(methodName), \
-      QString("Caught Core Exception"), \
-      QString(e.getDesc_cstr()) \
+      methodName, \
+      "Caught Core Exception", \
+      e.getDesc_cstr() \
       ); \
   } \
   catch (FTL::JSONException &je) \
   { \
     FabricUI::Application::FabricException::Throw( \
-      QString(methodName), \
-      QString("Caught JSON Exception"), \
-      QString(je.getDescCStr()) \
+      methodName, \
+      "Caught JSON Exception", \
+      je.getDescCStr() \
       ); \
   } \
   catch (FabricUI::Application::FabricException &e) \
   { \
     FabricUI::Application::FabricException::Throw( \
-      QString(methodName), \
-      QString("Caught App Exception"), \
-      QString(e.what()) \
+      methodName, \
+      "Caught App Exception", \
+      e.what() \
       ); \
   } 
 

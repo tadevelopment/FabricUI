@@ -99,12 +99,7 @@ class CommandManager : public QObject
     virtual QString getContent(
       bool withArgs = true
       );
-
-    /// Gets the command at index 'index'.
-    BaseCommand* getCommandAtIndex(
-      int index
-      );
-
+ 
     /// Gets a new interaction ID.
     virtual int getNewCanMergeID();
 
@@ -115,6 +110,9 @@ class CommandManager : public QObject
 
   signals:
     /// Emitted when a top command has been succefully executed.
+    /// \param cmd The command that has been pushed.
+    /// \param addToStack If true, the command has been pushed in the manager stack.
+    /// \param replaceLog If true, the log of the last pushed command must be udpated.
     void commandDone(
       FabricUI::Commands::BaseCommand *cmd,
       bool addToStack,

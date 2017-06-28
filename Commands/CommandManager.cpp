@@ -171,7 +171,7 @@ void CommandManager::undoCommand()
       "CommandManager::undoCommand",
       "Nothing to undo",
       "",
-      PRINT);
+      LOG);
 
     return;
   }
@@ -254,7 +254,7 @@ void CommandManager::redoCommand()
       "CommandManager::redoCommand", 
       "Nothing to redo",
       "",
-      PRINT);
+      LOG);
 
     return;
   }
@@ -354,18 +354,6 @@ int CommandManager::totalUndoCount()
 int CommandManager::getStackIndex()
 {
   return unsigned(m_undoStack.size()-1);
-}
-
-BaseCommand* CommandManager::getCommandAtIndex(
-  int index)
-{
-  if(index >= 0 && index < m_undoStack.size())
-    return m_undoStack[index].topLevelCmd.data();
-
-  else if (index >= m_undoStack.size() && index < count())
-    return m_redoStack[index-m_undoStack.size()].topLevelCmd.data();
-
-  return 0;
 }
 
 int CommandManager::getNewCanMergeID()
