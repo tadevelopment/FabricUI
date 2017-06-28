@@ -7,8 +7,23 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <QTextStream>
+
+#include <iostream>
+#include <assert.h>
 
 using namespace FabricUI::FCurveEditor;
+
+void ReportCallBack(
+  void *userdata,
+  FEC_ReportSource source,
+  FEC_ReportLevel level,
+  char const *data,
+  uint32_t size
+)
+{
+  std::cout << std::string( data, size ).c_str() << std::endl;
+}
 
 inline float RandFloat() { return float( rand() ) / RAND_MAX; }
 
@@ -16,8 +31,22 @@ int main()
 {
   int argc = 0;
   QApplication app( argc, NULL );
-  RTValAnimXFCurveModel curve;
 
+  FabricCore::Client::CreateOptions createOptions = {};
+  createOptions.guarded = true;
+  FabricCore::Client client( &ReportCallBack, 0, &createOptions );
+  client.loadExtension( "AnimX", "", false );
+
+  FabricCore::RTVal curveRTVal = FabricCore::RTVal::Create( client, "AnimX::AnimCurve", 0, NULL );
+  QFile curveFile( "curve.json" );
+  if( curveFile.open( QIODevice::ReadOnly ) )
+  {
+    QString curveJSON = QTextStream( &curveFile ).readAll();
+    curveRTVal.setJSON( curveJSON.toUtf8().data() );
+  }
+  
+  RTValAnimXFCurveModel curve;
+  curve.setValue( curveRTVal );
   {
     QGraphicsScene* scene = new QGraphicsScene();
     scene->setSceneRect( QRectF( -1E3, -1E3, 2 * 1E3, 2 * 1E3 ) );
@@ -32,5 +61,10 @@ int main()
     view->show();
   }
   app.exec();
+
+  curveFile.close();
+  curveFile.open( QIODevice::WriteOnly );
+  assert( curveFile.isOpen() );
+  QTextStream( &curveFile ) << curveRTVal.getJSON().getStringCString();
   return 0;
 }
