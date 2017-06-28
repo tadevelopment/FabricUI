@@ -345,7 +345,7 @@ QString KLScriptableCommand::getRTValArgPath(
 
   return m_klCmd.callMethod(
     "String", 
-    "getArgValue", 
+    "getArgPath", 
     1, 
     &keyVal
     ).getStringCString();

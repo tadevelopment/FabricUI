@@ -149,16 +149,13 @@ class BaseRTValScriptableCommand : public BaseScriptableCommand
       );
 
   protected:
+    /// Checks that the command knows the argument.
+    /// T
     void checkHasArg(
       QString const&methodName,
       QString const&key
       );
-      
-    /// Checks if the argument is a PathValue.
-    bool isJSONPathValueArg(
-      QString const&json
-      );
-
+  
   private:
     bool isArgTypeKnown(
       QString const&key

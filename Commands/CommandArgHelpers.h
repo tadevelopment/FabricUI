@@ -41,7 +41,7 @@ class CommandArgHelpers
   public:
     /// Helper to create the command's desc
     /// from a subsets of arguments.
-    /// \param argsHelp Map of [arg, arg desc]
+    /// \param argsDesc Map of [arg, arg desc]
     static QString createHistoryDescFromArgs(
       QMap<QString, QString> const&argsDesc,
       BaseCommand *cmd
@@ -132,10 +132,17 @@ class CommandArgHelpers
       BaseCommand *cmd
       );
 
-    // static QMap<QString, FabricCore::RTVal> castRTValArgs(
-    //   BaseCommand *cmd,
-    //   QMap<QString, QString> const&args
-    //   );
+    static QString encodeJSONChars(
+      QString const&string
+      );
+
+    static QString encodeJSON(
+      QString const&string
+      );
+
+    static QString encodeJSONs(
+      QString const&string
+      );
 };
 
 } // namespace Commands

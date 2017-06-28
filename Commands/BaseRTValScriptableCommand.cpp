@@ -392,9 +392,3 @@ void BaseRTValScriptableCommand::setRTValArgValue(
   
   FABRIC_CATCH_END("BaseRTValScriptableCommand::setRTValArgValue")
 }
-
-bool BaseRTValScriptableCommand::isJSONPathValueArg(
-  QString const&json)
-{ 
-  return json.indexOf("value") > -1 && json.indexOf("path") > -1;
-}

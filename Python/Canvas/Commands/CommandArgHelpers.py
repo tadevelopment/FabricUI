@@ -146,33 +146,12 @@ class CommandArgHelpers:
 
     ### CommandManagerQtCallback
     @staticmethod
-    def __EncodeJSONChars(string):
-        """ \internal """
-        result = string.replace("\"", "'").replace("\\", "\\\\").replace(" ", "")
-        return result.replace("\r", "").replace("\n", "").replace("\t", "")
- 
-    @staticmethod
-    def __EncodeJSON(string):
-        """ \internal """
-        return "\"" + CommandArgHelpers.__EncodeJSONChars(string) + "\""
-
-    @staticmethod
-    def __EncodeJSONs(strings):
-        """ \internal """
-        result = "\""
-        for i in range(0, len(strings)):
-            if i > 0:
-                result += "|"
-            result += CommandArgHelpers.__EncodeJSONChars(strings[i])
-        result += "\""
-        return result
-
-    @staticmethod
     def ParseCmdArgs(cmd):
         """ \internal, parses the command arguments to construct
             a description of the command logged in the script-editor. 
         """
         desc = 'Commands.' + cmd.getName()
+        
         if CppCommands.CommandArgHelpers.isScriptableCommand(cmd):
             try:
                 keys = CppCommands.CommandArgHelpers.getCommandArgKeys(cmd)
@@ -210,7 +189,7 @@ class CommandArgHelpers:
                                             argdesc += str(pythonVal)
                                     # JSON
                                     else:
-                                        argdesc += CommandArgHelpers.__EncodeJSON(str(Util.RTValUtil.toJSON(rtVal)))
+                                        argdesc += CppCommands.CommandArgHelpers.encodeJSON(str(Util.RTValUtil.toJSON(rtVal)))
 
                         # ScriptableCommand, arguments are Strings.
                         else:

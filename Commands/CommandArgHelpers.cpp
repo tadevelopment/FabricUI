@@ -336,9 +336,31 @@ QString CommandArgHelpers::getRTValCommandArgType(
   return "";
 }
 
-// QMap<QString, RTVal> CommandArgHelpers::castRTValArgs(
-//   BaseCommand *cmd,
-//   QMap<QString, QString> const&args)
-// {
+QString CommandArgHelpers::encodeJSONChars(
+  QString const&string)
+{
+  QString result = string;
+  result = result.replace("\"", "'").replace("\\", "\\\\").replace(" ", "");
+  return result.replace("\r", "").replace("\n", "").replace("\t", "");
+}
 
-// }
+QString CommandArgHelpers::encodeJSON(
+  QString const&string)
+{
+  return "\"" + encodeJSONChars(string) + "\"";
+}
+
+QString CommandArgHelpers::encodeJSONs(
+  QString const&string)
+{
+  /*
+  result = "\""
+    for i in range(0, len(strings)):
+        if i > 0:
+            result += "|"
+        result += CommandArgHelpers.__EncodeJSONChars(strings[i])
+    result += "\""
+    return result
+  */
+    return "";
+}
