@@ -22,12 +22,20 @@ AnimCurveViewItem::AnimCurveViewItem(
   this->onModelValueChanged( value );
 
   m_editor->setFixedSize( 300, 300 ); // HACK
+
+  connect( m_model, SIGNAL( handleAdded() ), this, SLOT( onViewValueChanged() ) );
+  connect( m_model, SIGNAL( handleMoved( size_t ) ), this, SLOT( onViewValueChanged() ) );
 }
 
 AnimCurveViewItem::~AnimCurveViewItem()
 {
   delete m_editor;
   delete m_model;
+}
+
+void AnimCurveViewItem::onViewValueChanged()
+{
+  emit this->viewValueChanged( QVariant::fromValue<FabricCore::RTVal>( m_model->value() ) );
 }
 
 QWidget* AnimCurveViewItem::getWidget()

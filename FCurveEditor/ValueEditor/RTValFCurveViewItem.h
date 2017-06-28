@@ -45,6 +45,9 @@ public:
   virtual QWidget* getWidget() FTL_OVERRIDE;
   void onModelValueChanged( QVariant const & ) FTL_OVERRIDE;
   void deleteMe() FTL_OVERRIDE { delete this; }
+
+private slots:
+  void onViewValueChanged();
 };
 
 } // namespace FabricUI 

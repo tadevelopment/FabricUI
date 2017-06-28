@@ -30,6 +30,7 @@ public:
   void addHandle() FTL_OVERRIDE;
 
   void setValue( FabricCore::RTVal );
+  inline FabricCore::RTVal value() { return m_val; }
 };
 
 } // namespace FCurveEditor
