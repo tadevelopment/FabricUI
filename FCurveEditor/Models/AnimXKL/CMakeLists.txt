@@ -8,4 +8,5 @@ target_include_directories( RTValAnimXFCurveModel PUBLIC
 )
 target_link_libraries( RTValAnimXFCurveModel PUBLIC
   FCurveEditor
+  ${SGDir}/stage/Windows/x86_64/Release/lib/FabricCore-2.6.lib
 )
