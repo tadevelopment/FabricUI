@@ -46,7 +46,7 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
     //if( prevHc <= 1 )
     {
       // heuristic for tangents, based on the current zoom level
-      h.tanIn.setX( this->view()->transform().m11() / this->width() );
+      h.tanIn.setX( 20 / this->view()->transform().m11() );
       h.tanOut.setX( h.tanIn.x() );
     }
     m_model->setHandle( m_model->getHandleCount() - 1, h );
