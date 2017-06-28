@@ -35,7 +35,7 @@ int main()
   {
     QGraphicsScene* scene = new QGraphicsScene();
     scene->setSceneRect( QRectF( -1E3, -1E3, 2*1E3, 2*1E3 ) );
-    FCurveEditor* curveEditor = new FCurveEditor();
+    FCurveItem* curveEditor = new FCurveItem();
     curveEditor->setCurve( &curve );
     scene->addItem( curveEditor );
 

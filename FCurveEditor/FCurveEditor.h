@@ -13,7 +13,7 @@ namespace FabricUI
 namespace FCurveEditor
 {
 
-class FCurveEditor : public QGraphicsWidget
+class FCurveItem : public QGraphicsWidget
 {
   Q_OBJECT
 
@@ -26,7 +26,7 @@ class FCurveEditor : public QGraphicsWidget
   void addHandle( size_t );
 
 public:
-  FCurveEditor();
+  FCurveItem();
   void setCurve( AbstractFCurveModel* );
 
 private slots:

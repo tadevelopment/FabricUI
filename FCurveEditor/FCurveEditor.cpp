@@ -27,13 +27,13 @@ inline QPointF max( const QPointF& a, const QPointF& b )
   );
 }
 
-class FCurveEditor::FCurveShape : public QGraphicsItem
+class FCurveItem::FCurveShape : public QGraphicsItem
 {
-  const FCurveEditor* m_parent;
+  const FCurveItem* m_parent;
   typedef QGraphicsItem Parent;
 
 public:
-  FCurveShape( const FCurveEditor* parent )
+  FCurveShape( const FCurveItem* parent )
     : m_parent( parent )
   {
   }
@@ -90,9 +90,9 @@ public:
   }
 };
 
-class FCurveEditor::HandleWidget : public QGraphicsWidget
+class FCurveItem::HandleWidget : public QGraphicsWidget
 {
-  FCurveEditor* m_parent;
+  FCurveItem* m_parent;
   size_t m_index;
 
   class Center : public QGraphicsRectItem
@@ -180,7 +180,7 @@ class FCurveEditor::HandleWidget : public QGraphicsWidget
   Tangent m_inT, m_outT;
 
 public:
-  HandleWidget( FCurveEditor* parent, size_t index )
+  HandleWidget( FCurveItem* parent, size_t index )
     : m_parent( parent )
     , m_index( index )
     , QGraphicsWidget( parent )
@@ -197,21 +197,21 @@ public:
   }
 };
 
-FCurveEditor::FCurveEditor()
+FCurveItem::FCurveItem()
   : m_curve( NULL )
   , m_curveShape( new FCurveShape( this ) )
 {
   m_curveShape->setParentItem( this );
 }
 
-void FCurveEditor::addHandle( size_t i )
+void FCurveItem::addHandle( size_t i )
 {
   HandleWidget* w = new HandleWidget( this, i );
   w->setValue( m_curve->getHandle( i ) );
   m_handles.push_back( w );
 }
 
-void FCurveEditor::onHandleMoved( size_t i )
+void FCurveItem::onHandleMoved( size_t i )
 {
   assert( i < m_handles.size() );
   assert( m_handles.size() == m_curve->getHandleCount() );
@@ -219,7 +219,7 @@ void FCurveEditor::onHandleMoved( size_t i )
   m_curveShape->update();
 }
 
-void FCurveEditor::setCurve( AbstractFCurveModel* curve )
+void FCurveItem::setCurve( AbstractFCurveModel* curve )
 {
   assert( curve != m_curve );
   m_curve = curve;
