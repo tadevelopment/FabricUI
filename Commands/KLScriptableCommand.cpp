@@ -232,11 +232,25 @@ void KLScriptableCommand::setArg(
 
   FABRIC_CATCH_BEGIN();
 
-  if(isJSONPathValueArg(json))
-    setRTValArg(
-      key, 
-      RTValUtil::fromJSON(m_klCmd.getContext(), json, "PathValue")
+  if( json.startsWith("<") && json.endsWith(">") )
+  {
+    QString path = json;
+    path.remove(0, 1);
+    path = path.remove(path.size()-1, 1);
+
+    RTVal pathVal = RTVal::ConstructString(
+      FabricApplicationStates::GetAppStates()->getContext(),
+      path.toUtf8().constData()
       );
+
+    RTVal pathValue = RTVal::Construct(
+      FabricApplicationStates::GetAppStates()->getContext(),
+      "PathValue",
+      1,
+      &pathVal);
+
+    setRTValArg(key, pathValue);
+  }
  
   else
     setRTValArgValue(

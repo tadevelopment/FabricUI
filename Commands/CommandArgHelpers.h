@@ -131,6 +131,11 @@ class CommandArgHelpers
       QString const&key,
       BaseCommand *cmd
       );
+
+    // static QMap<QString, FabricCore::RTVal> castRTValArgs(
+    //   BaseCommand *cmd,
+    //   QMap<QString, QString> const&args
+    //   );
 };
 
 } // namespace Commands

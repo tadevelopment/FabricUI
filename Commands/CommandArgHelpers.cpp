@@ -335,3 +335,10 @@ QString CommandArgHelpers::getRTValCommandArgType(
   FABRIC_CATCH_END("CommandArgHelpers::getRTValCommandArgType");
   return "";
 }
+
+// QMap<QString, RTVal> CommandArgHelpers::castRTValArgs(
+//   BaseCommand *cmd,
+//   QMap<QString, QString> const&args)
+// {
+
+// }

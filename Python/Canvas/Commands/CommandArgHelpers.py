@@ -44,17 +44,11 @@ class CommandArgHelpers:
                         else:
                             isArgStr = rtValType == "String"
                             isArgRTVal = rtValType == "RTVal"
-
-                            if CommandArgHelpers.__IsPyStringArg(arg) and ("<" in arg):
-                                arg = arg.replace("<", "")
-                                arg = arg.replace(">", "")
-                                rtVal = client.RT.types.PathValue(client.RT.types.String(arg))
-                                arg = Util.RTValUtil.toJSON(rtVal)   
-
+ 
                             # If the input arg is a string and the cmd arg is not, 
                             # assume the input arg is already the JSON. Otherwise 
                             # we create the JSON from the pyton arg.
-                            elif not isArgRTVal and not (CommandArgHelpers.__IsPyStringArg(arg) and not isArgStr):
+                            if not isArgRTVal and not (CommandArgHelpers.__IsPyStringArg(arg) and not isArgStr):
                                 castArg = True
                                 # Check if the string has quotes.
                                 # If so, we assume that it's already a JSON

@@ -109,7 +109,6 @@ QString BaseRTValScriptableCommand::getArg(
   FABRIC_CATCH_BEGIN();
 
   // Known RTVal of known type, get the json from it.
-printf( "TOJGON 1" );
   return (m_rtvalArgs[key].second.isEmpty() && isArgTypeKnown(key))
     ? (isArgSet(key) ? RTValUtil::toJSON(getRTValArgValue(key)) : "")
     // Otherwise, return the Json if it's been set.
@@ -128,24 +127,34 @@ void BaseRTValScriptableCommand::setArg(
   checkHasArg("BaseRTValScriptableCommand::setArg", key); 
 
   FABRIC_CATCH_BEGIN();
-  
-  if( isJSONPathValueArg(json) )
+
+  if( json.startsWith("<") && json.endsWith(">") )
   {
-    RTVal pathValue = RTValUtil::fromJSON(
+    QString path = json;
+    path.remove(0, 1);
+    path = path.remove(path.size()-1, 1);
+
+    RTVal pathVal = RTVal::ConstructString(
       FabricApplicationStates::GetAppStates()->getContext(),
-      json,
-      "PathValue");
-    
+      path.toUtf8().constData()
+      );
+
+    RTVal pathValue = RTVal::Construct(
+      FabricApplicationStates::GetAppStates()->getContext(),
+      "PathValue",
+      1,
+      &pathVal);
+
     setRTValArg(key, pathValue);
   }
-
+ 
   // Known type, cast the JSON to a RTVal.
   else if(isArgTypeKnown(key))
   {      
     RTVal rtVal = RTValUtil::fromJSON(
       FabricApplicationStates::GetAppStates()->getContext(),
       json,
-      m_rtvalArgSpecs[key].type);
+      getRTValArgType(key));
 
     setRTValArgValue(key, rtVal);
   }
