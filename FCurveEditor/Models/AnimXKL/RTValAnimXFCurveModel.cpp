@@ -63,8 +63,12 @@ qreal RTValAnimXFCurveModel::evaluate( qreal v ) const
 
 void RTValAnimXFCurveModel::setValue( FabricCore::RTVal v )
 {
+  const size_t previousHc = this->getHandleCount();
+  // TODO : remove extra handles
   m_val = v;
   const size_t hc = this->getHandleCount();
+  for( size_t i = previousHc; i < hc; i++ )
+    emit this->handleAdded();
   for( size_t i = 0; i < hc; i++ )
     emit this->handleMoved( i );
 }
