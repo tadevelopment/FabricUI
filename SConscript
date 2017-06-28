@@ -140,6 +140,9 @@ dirs = [
   'DFG/Dialogs',
   'DFG/PortEditor',
   'DFG/TabSearch',
+  'FCurveEditor',
+  'FCurveEditor/Models/AnimXKL',
+  'FCurveEditor/ValueEditor',
  
   'SceneHub',
   'SceneHub/TreeView',
