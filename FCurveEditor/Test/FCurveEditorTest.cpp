@@ -1,7 +1,7 @@
 
 #include <FabricUI/FCurveEditor/RuledGraphicsView.h>
 #include <FabricUI/FCurveEditor/FCurveEditor.h>
-#include <FabricUI/FCurveEditor/AnimXFCurveModel.h>
+#include <FabricUI/FCurveEditor/Models/AnimXCpp/AnimXFCurveModel.h>
 
 #include <QApplication>
 #include <QGraphicsView>

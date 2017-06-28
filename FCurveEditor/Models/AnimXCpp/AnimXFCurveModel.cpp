@@ -1,4 +1,4 @@
-#include <FabricUI/FCurveEditor/AnimXFCurveModel.h>
+#include "AnimXFCurveModel.h"
 
 #include <assert.h>
 
