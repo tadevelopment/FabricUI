@@ -78,7 +78,6 @@ void Ruler::paintEvent( QPaintEvent * e )
     {
       float xs = i / bigFactor;
       float xw = Map( xs, m_orientation, m_min, m_max, r );
-      float middle = ( r.top() + r.bottom() ) / 2;
       DrawLine( &p, xw, m_orientation, 0.5, r );
       DrawText( &p, xw, m_orientation, 0.9, r, QString::number( xs ) );
     }

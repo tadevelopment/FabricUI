@@ -46,9 +46,9 @@ class RuledGraphicsView::Ruler : public FabricUI::FCurveEditor::Ruler
 
 public:
   Ruler( RuledGraphicsView* parent, bool isVertical )
-    : m_parent( parent )
+    : Parent( isVertical ? Qt::Vertical : Qt::Horizontal )
+    , m_parent( parent )
     , m_isVertical( isVertical )
-    , Parent( isVertical ? Qt::Vertical : Qt::Horizontal )
   {}
 
 protected:
@@ -151,8 +151,8 @@ void RuledGraphicsView::tick()
 {
   QPointF currentScale = QPointF( m_view->matrix().m11(), m_view->matrix().m22() );
   if(
-    abs( std::log( currentScale.x() ) - std::log( m_targetScale.x() ) ) +
-    abs( std::log( currentScale.y() ) - std::log( m_targetScale.y() ) )
+    std::abs( std::log( currentScale.x() ) - std::log( m_targetScale.x() ) ) +
+    std::abs( std::log( currentScale.y() ) - std::log( m_targetScale.y() ) )
   > 0.01 ) // If we are close enough to the target, we stop the animation
   {
     const float ratio = 0.2; // TODO : property
@@ -190,7 +190,6 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
 
     float minFactor = std::pow( logScale, std::floor( std::log( viewFactor ) / std::log( logScale ) ) );
     float maxFactor = 150.0f / size; // TODO : Q_PROPERTY
-    int k = 0;
     for( float factor = minFactor; factor < maxFactor; factor *= logScale )
     {
       QPen pen;
@@ -208,7 +207,7 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
           pwidth = 1;
         }
         pen.setWidthF( pwidth );
-        pen.setColor( QColor( 32, 32, 32, palpha ) ); // TODO : qss color
+        pen.setColor( QColor( 32, 32, 32, int(palpha) ) ); // TODO : qss color
       }
       p->setPen( pen );
       for( float i = std::floor( factor * minU ); i < factor * maxU; i++ )
