@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef FABRICUI_FCURVEEDITOR_FCURVEDITOR_H
-#define FABRICUI_FCURVEEDITOR_FCURVEDITOR_H
+#ifndef FABRICUI_FCURVEEDITOR_FCURVEITEM_H
+#define FABRICUI_FCURVEEDITOR_FCURVEITEM_H
 
 #include <FabricUI/FCurveEditor/AbstractFCurveModel.h>
 #include <QGraphicsWidget>
@@ -36,4 +36,4 @@ private slots:
 } // namespace FCurveEditor
 } // namespace FabricUI
 
-#endif // FABRICUI_FCURVEEDITOR_FCURVEDITOR_H
+#endif // FABRICUI_FCURVEEDITOR_FCURVEITEM_H
