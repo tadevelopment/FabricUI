@@ -219,6 +219,11 @@ void FCurveItem::addHandle( size_t i )
   m_handles.push_back( w );
 }
 
+void FCurveItem::onHandleAdded()
+{
+  this->addHandle( m_curve->getHandleCount() - 1 );
+}
+
 void FCurveItem::onHandleMoved( size_t i )
 {
   assert( i < m_handles.size() );
@@ -233,6 +238,7 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
   m_curve = curve;
   //connect( m_curve, &AbstractFCurveModel::handleMoved, this, &FCurveEditor::onHandleMoved );
   QObject::connect( m_curve, SIGNAL( handleMoved( size_t ) ), this, SLOT( onHandleMoved( size_t ) ) );
+  QObject::connect( m_curve, SIGNAL( handleAdded() ), this, SLOT( onHandleAdded() ) );
 
   // Clearing previous handles
   for( std::vector<HandleWidget*>::const_iterator it = m_handles.begin(); it < m_handles.end(); it++ )

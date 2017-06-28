@@ -30,6 +30,7 @@ public:
   void setCurve( AbstractFCurveModel* );
 
 private slots:
+  void onHandleAdded();
   void onHandleMoved( size_t );
 };
 

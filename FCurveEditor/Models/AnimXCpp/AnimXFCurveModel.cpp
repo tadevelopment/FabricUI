@@ -34,11 +34,16 @@ void AnimxFCurveModel::setHandle( size_t i, Handle h )
   emit this->handleMoved( i );
 }
 
-void AnimxFCurveModel::addHandle( const Handle& h )
+void AnimxFCurveModel::addHandle()
 {
   m_keys.push_back( adsk::Keyframe() );
-  this->setHandle( m_keys.size() - 1, h );
   emit this->handleAdded();
+}
+
+void AnimxFCurveModel::addHandle( const Handle& h )
+{
+  this->addHandle();
+  this->setHandle( m_keys.size() - 1, h );
 }
 
 qreal AnimxFCurveModel::evaluate( qreal v ) const

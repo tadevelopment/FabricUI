@@ -30,6 +30,7 @@ public:
   size_t getHandleCount() const FTL_OVERRIDE { return m_keys.size(); }
   Handle getHandle( size_t ) const FTL_OVERRIDE;
   void setHandle( size_t, Handle ) FTL_OVERRIDE;
+  void addHandle() FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
 
   // adsk::ICurve

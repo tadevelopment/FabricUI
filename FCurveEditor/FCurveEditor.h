@@ -21,6 +21,8 @@ class FCurveEditor : public RuledGraphicsView
 {
   Q_OBJECT
 
+  typedef RuledGraphicsView Parent;
+
   AbstractFCurveModel* m_model;
   QGraphicsScene* m_scene;
   FCurveItem* m_curveItem;
@@ -29,6 +31,9 @@ public:
   FCurveEditor();
   ~FCurveEditor();
   void setModel( AbstractFCurveModel* );
+
+protected:
+  void mousePressEvent( QMouseEvent * ) FTL_OVERRIDE;
 };
 
 } // namespace FCurveEditor
