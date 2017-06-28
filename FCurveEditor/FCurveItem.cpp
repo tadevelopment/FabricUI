@@ -46,6 +46,8 @@ public:
     if( m_parent->m_curve != NULL )
     {
       size_t hc = m_parent->m_curve->getHandleCount();
+      if( hc == 0 )
+        return QRectF( -1, -1, 2, 2 );
       for( size_t i = 0; i < hc; i++ )
       {
         Handle h = m_parent->m_curve->getHandle( i );
