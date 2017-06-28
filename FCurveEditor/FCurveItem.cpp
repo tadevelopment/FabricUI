@@ -102,8 +102,8 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     HandleWidget* m_parent;
   public:
     Center( HandleWidget* parent )
-      : m_parent( parent )
-      , QGraphicsRectItem( parent )
+      : QGraphicsRectItem( parent )
+      , m_parent( parent )
     {
       this->setRect( QRectF( -4, -4, 8, 8 ) );
       this->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
@@ -137,10 +137,10 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     public:
       QGraphicsWidget* m_posW; // Used for its position
       End( HandleWidget* parent, Tangent* tangent )
-        : m_parent( parent )
+        : QGraphicsEllipseItem()
+        , m_parent( parent )
         , m_tangent( tangent )
         , m_posW( new QGraphicsWidget( parent ) )
-        , QGraphicsEllipseItem()
       {
         this->setParentItem( m_posW );
         this->setRect( QRectF( -4, -4, 8, 8 ) );
@@ -189,13 +189,13 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
 
 public:
   HandleWidget( FCurveItem* parent, size_t index )
-    : m_parent( parent )
+    : QGraphicsWidget( parent )
+    , m_parent( parent )
     , m_index( index )
-    , QGraphicsWidget( parent )
+    , m_center( new Center( this ) )
     , m_inT( this, true )
     , m_outT( this, false )
   {
-    m_center = new Center( this );
   }
   void setValue( const Handle& h )
   {
