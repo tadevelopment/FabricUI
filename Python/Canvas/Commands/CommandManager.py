@@ -59,7 +59,6 @@ class KLCommandManager(CppCommands.KLCommandManager):
         # There is no "new" in python, we need to own the commands created
         # in Python. They are referenced in the C++ KLCommandManager stacks. 
         self.__flatCommandsStack = []
-        self.NoCanMergeID = -1
         # Connect our-self.
         GetCommandRegistry().registrationDone.connect(self._onCommandRegistered)
     

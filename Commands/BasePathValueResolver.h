@@ -17,6 +17,7 @@ class BasePathValueResolver : public QObject
   /**
     PathValueResolver are used to resolve the value of the KL PathValue from
     its path. BasePathValueResolver is the base implementation of any resolver.
+
     When desctructed, the resolver automatically unregisters it-self from the 
     resolver registry.
   */  

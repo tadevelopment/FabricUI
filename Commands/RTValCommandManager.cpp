@@ -105,9 +105,9 @@ void RTValCommandManager::preDoCommand(
         scriptCmd->hasArgFlag(key, CommandArgFlags::IO_ARG) )
     {
       RTVal pathValue = scriptCmd->getRTValArg(key);
-      if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
+      if(PathValueResolverRegistry::getRegistry()->knownPath(pathValue))
       {
-        PathValueResolverRegistry::GetRegistry()->getValue(pathValue);
+        PathValueResolverRegistry::getRegistry()->getValue(pathValue);
         scriptCmd->setRTValArg(key, pathValue);
       }
     }
@@ -131,8 +131,8 @@ void RTValCommandManager::postDoCommand(
         scriptCmd->hasArgFlag(key, CommandArgFlags::IO_ARG) )
     {
       RTVal pathValue = scriptCmd->getRTValArg(key);
-      if(PathValueResolverRegistry::GetRegistry()->knownPath(pathValue))
-        PathValueResolverRegistry::GetRegistry()->setValue(
+      if(PathValueResolverRegistry::getRegistry()->knownPath(pathValue))
+        PathValueResolverRegistry::getRegistry()->setValue(
           pathValue);
     }
   }

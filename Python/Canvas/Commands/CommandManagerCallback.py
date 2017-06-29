@@ -6,6 +6,7 @@ from PySide import QtGui, QtCore
 from FabricEngine.FabricUI import Commands as CppCommands
 from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Commands.CommandHelpers import CommandHelpers
+from FabricEngine.Canvas.Commands.PathValueResolverRegistry import *
 
 class CommandManagerCallback(QtCore.QObject):
     """ CommandManagerCallback is connected to the CommandManagerCallback 
@@ -50,6 +51,8 @@ class CommandManagerCallback(QtCore.QObject):
         super(CommandManagerCallback, self).__init__()
         self.qUndoStack = qUndoStack
         self.scriptEditor = scriptEditor
+
+        #GetPathValueResolverRegistry()
         GetCommandManager().cleared.connect(self.__onCleared)
         GetCommandManager().commandDone.connect(self.__onCommandDone)
 

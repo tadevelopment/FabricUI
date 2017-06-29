@@ -24,13 +24,16 @@ PathValueResolverRegistry::~PathValueResolverRegistry()
   s_instanceFlag = false;
   foreach(BasePathValueResolver* resolver, m_registeredResolvers)
   {
-    delete resolver;
-    resolver = 0;
+    if(resolver != 0)
+    {
+      delete resolver;
+      resolver = 0;
+    }
   }
   m_registeredResolvers.clear();
 }
 
-PathValueResolverRegistry* PathValueResolverRegistry::GetRegistry()
+PathValueResolverRegistry* PathValueResolverRegistry::getRegistry()
 {
   if(s_instanceFlag == false)
     s_registry = new PathValueResolverRegistry();
@@ -40,8 +43,7 @@ PathValueResolverRegistry* PathValueResolverRegistry::GetRegistry()
 bool PathValueResolverRegistry::hasResolver(
   QString const&name)
 {
-  return m_registeredResolvers.count(
-    name);
+  return m_registeredResolvers.count(name);
 }
 
 QString PathValueResolverRegistry::getResolverName(
@@ -57,29 +59,10 @@ QString PathValueResolverRegistry::getResolverName(
   return "";
 }
 
-BasePathValueResolver* PathValueResolverRegistry::getOrCreateResolver(
+BasePathValueResolver* PathValueResolverRegistry::getResolver(
   QString const&name)
 {
-  if(hasResolver(name))
-    return m_registeredResolvers[name];
-  
-  else if(Util::BaseFactoryRegistry::hasFactory(name))
-  {
-    Factory *factory = Util::BaseFactoryRegistry::getFactory(
-      name);
-    
-    BasePathValueResolver* resolver = (BasePathValueResolver*)factory->create(); 
-    m_registeredResolvers[name] = resolver;
-    
-    resolver->registrationCallback(
-      name, 
-      factory->getUserData()
-      );
-
-    return resolver;
-  }
-
-  return 0;
+  return hasResolver(name) ? m_registeredResolvers[name] : 0;
 }
  
 bool PathValueResolverRegistry::knownPath(
@@ -134,8 +117,18 @@ void PathValueResolverRegistry::unregisterFactory(
   if(hasResolver(name))
   {
     BasePathValueResolver* resolver = m_registeredResolvers[name];
-    delete resolver;
-    resolver = 0;
+    if(resolver != 0)
+    {
+      delete resolver;
+      resolver = 0;
+    }
     m_registeredResolvers.remove(name);
   }
+}
+
+void PathValueResolverRegistry::registerResolver(
+  BasePathValueResolver *resolver,
+  QString const&name)
+{
+  m_registeredResolvers[name] = resolver;
 }
