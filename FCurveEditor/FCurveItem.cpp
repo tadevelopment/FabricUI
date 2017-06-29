@@ -239,7 +239,7 @@ void FCurveItem::addHandle( size_t i )
 
 void FCurveItem::onHandleAdded()
 {
-  this->addHandle( m_curve->getHandleCount() - 1 );
+  this->addHandle( m_handles.size() );
 }
 
 void FCurveItem::onHandleMoved( size_t i )
