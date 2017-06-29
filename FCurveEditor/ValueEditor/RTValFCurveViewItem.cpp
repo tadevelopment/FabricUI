@@ -10,7 +10,7 @@
 using namespace FabricUI::ValueEditor;
 using namespace FabricUI::FCurveEditor;
 
-AnimCurveViewItem::AnimCurveViewItem(
+RTValFCurveViewItem::RTValFCurveViewItem(
   QString const &name,
   QVariant const &value,
   ItemMetadata* metadata
@@ -29,28 +29,28 @@ AnimCurveViewItem::AnimCurveViewItem(
   connect( m_editor, SIGNAL( interactionEnd() ), this, SLOT( emitInteractionEnd() ) );
 }
 
-AnimCurveViewItem::~AnimCurveViewItem()
+RTValFCurveViewItem::~RTValFCurveViewItem()
 {
   delete m_editor;
   delete m_model;
 }
 
-void AnimCurveViewItem::onViewValueChanged()
+void RTValFCurveViewItem::onViewValueChanged()
 {
   emit this->viewValueChanged( QVariant::fromValue<FabricCore::RTVal>( m_model->value() ) );
 }
 
-QWidget* AnimCurveViewItem::getWidget()
+QWidget* RTValFCurveViewItem::getWidget()
 {
   return m_editor;
 }
 
-void AnimCurveViewItem::onModelValueChanged( QVariant const & v )
+void RTValFCurveViewItem::onModelValueChanged( QVariant const & v )
 {
   m_model->setValue( v.value<FabricCore::RTVal>() );
 }
 
-BaseViewItem * AnimCurveViewItem::CreateItem(
+BaseViewItem * RTValFCurveViewItem::CreateItem(
   QString const& name,
   QVariant const& value,
   ItemMetadata* metaData
@@ -63,10 +63,10 @@ BaseViewItem * AnimCurveViewItem::CreateItem(
     {
       const char* rtype = val.getTypeNameCStr();
       if( strcmp( rtype, "AnimX::AnimCurve" ) == 0 )
-        return new AnimCurveViewItem( name, value, metaData );
+        return new RTValFCurveViewItem( name, value, metaData );
     }
   }
   return NULL;
 }
 
-const int AnimCurveViewItem::Priority = 3;
+const int RTValFCurveViewItem::Priority = 3;

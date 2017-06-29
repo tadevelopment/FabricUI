@@ -20,7 +20,7 @@ namespace ValueEditor {
 
 class ItemMetaData;
 
-class AnimCurveViewItem : public BaseViewItem
+class RTValFCurveViewItem : public BaseViewItem
 {
   Q_OBJECT
 
@@ -35,12 +35,12 @@ public:
   );
   static const int Priority;
 
-  AnimCurveViewItem(
+  RTValFCurveViewItem(
     QString const &name,
     QVariant const &value,
     ItemMetadata* metadata
   );
-  ~AnimCurveViewItem();
+  ~RTValFCurveViewItem();
 
   virtual QWidget* getWidget() FTL_OVERRIDE;
   void onModelValueChanged( QVariant const & ) FTL_OVERRIDE;

@@ -102,7 +102,7 @@ BaseViewItem *ViewItemFactory::createViewItem(
     registerCreator( ComboBoxViewItem::CreateItem, ComboBoxViewItem::Priority );
     registerCreator( ArrayViewItem::CreateItem, ArrayViewItem::Priority );
     registerCreator( DictionaryViewItem::CreateItem, DictionaryViewItem::Priority );
-    registerCreator( AnimCurveViewItem::CreateItem, AnimCurveViewItem::Priority );
+    registerCreator( RTValFCurveViewItem::CreateItem, RTValFCurveViewItem::Priority );
 
     // We put the QVariantRTVal bridge injection
     // code here, as before we build a view it won't
