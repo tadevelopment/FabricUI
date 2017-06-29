@@ -152,7 +152,8 @@ QString CommandHelpers::createHelpFromArgs(
   
   FABRIC_CATCH_BEGIN();
 
-  BaseScriptableCommand *scriptCmd = CastToBaseScriptableCommand(cmd);
+  // Be sure it's a scriptable command.
+  CastToBaseScriptableCommand(cmd);
 
   help = commandHelp + "\n";
 
