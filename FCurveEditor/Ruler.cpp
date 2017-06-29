@@ -55,7 +55,7 @@ inline void DrawText( QPainter* p, float pos, Qt::Orientation o, float endRPos, 
   if( o == Qt::Horizontal )
     p->drawText( QPointF( pos, endRPos * r.bottom() + ( 1 - endRPos ) * r.top() ), txt );
   else
-    p->drawText( QPointF( endRPos * r.left() + ( 1 - endRPos ) * r.right(), pos - ( 1 - endRPos ) * r.width() ), txt );
+    p->drawText( QPointF( endRPos * r.left() + ( 1 - endRPos ) * r.right(), pos - 0.5 * r.width() ), txt );
 }
 
 void Ruler::paintEvent( QPaintEvent * e )
@@ -72,14 +72,15 @@ void Ruler::paintEvent( QPaintEvent * e )
     QPainter p( this );
     QPen pen;
     pen.setColor( QColor( 128, 128, 128 ) );
-    pen.setWidthF( 4 );
+    pen.setWidthF( 2 );
     p.setPen( pen );
+    size_t smallSide = ( m_orientation == Qt::Vertical ? r.width() : r.height() );
     for( float i = std::floor( m_min * bigFactor ); i < bigFactor * m_max; i++ )
     {
       float xs = i / bigFactor;
       float xw = Map( xs, m_orientation, m_min, m_max, r );
       DrawLine( &p, xw, m_orientation, 0.5, r );
-      DrawText( &p, xw, m_orientation, 0.9, r, QString::number( xs ) );
+      DrawText( &p, xw + smallSide / 4, m_orientation, 0.9f, r, QString::number( xs ) );
     }
     pen.setWidthF( 1 );
     p.setPen( pen );
@@ -87,7 +88,7 @@ void Ruler::paintEvent( QPaintEvent * e )
     {
       float xs = i / smallFactor;
       float xw = Map( xs, m_orientation, m_min, m_max, r );
-      DrawLine( &p, xw, m_orientation, 0.3, r );
+      DrawLine( &p, xw, m_orientation, 0.3f, r );
     }
   }
 }

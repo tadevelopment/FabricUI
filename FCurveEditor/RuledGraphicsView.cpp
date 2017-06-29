@@ -90,7 +90,7 @@ RuledGraphicsView::RuledGraphicsView()
   m_hRuler = new Ruler( this, false );
   m_hRuler->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   lay->addWidget( m_hRuler, 1, 1 );
-  this->setRulersSize( 32 );
+  this->setRulersSize( 24 );
 
   this->setLayout( lay );
 
