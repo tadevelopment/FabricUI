@@ -46,7 +46,7 @@ void DFGPathValueResolver::onBindingChanged(
   DFGBinding const &binding)
 {
   m_binding = binding;
-  m_id = binding.getMetadata("maya_id");
+  m_id = binding.getMetadata("resolver_id");
 }
 
 bool DFGPathValueResolver::knownPath(

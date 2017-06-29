@@ -61,9 +61,6 @@ class KLCommandManager : public RTValCommandManager
     void doKLCommand(
       FabricCore::RTVal klCmd
       );
-
-    /// KL command manager.
-    FabricCore::RTVal m_klCmdManager;
 };
  
 } // namespace Commands

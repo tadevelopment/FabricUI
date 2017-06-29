@@ -61,9 +61,6 @@ class KLCommandRegistry : public CommandRegistry
     BaseCommand* createKLCommand(
       QString const&cmdName
       );
-
-    /// KL command registry.
-    FabricCore::RTVal m_klCmdRegistry;
 };
 
 } // namespace Commands
