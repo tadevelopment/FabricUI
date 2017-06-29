@@ -176,7 +176,7 @@ namespace FabricUI
       void setConnectionsCosmetic( bool cosmetic );
       inline bool cosmeticConnections() const { return m_cosmeticConnections; }
       bool connect(ConnectionTarget * source, ConnectionTarget * target);
-      void exposeAllPorts(const char *nodeName, bool exposeUnconnectedInputs, bool exposeUnconnectedOutputs);
+      void exposeAllPorts(bool exposeUnconnectedInputs, bool exposeUnconnectedOutputs);
 
       void updateOverlays(float width, float height);
       void setupBackgroundOverlay(QPointF pos, QString filePath);

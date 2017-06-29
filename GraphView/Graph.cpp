@@ -991,53 +991,68 @@ void Graph::setConnectionsCosmetic( bool cosmetic )
   }
 }
 
-void Graph::exposeAllPorts(const char *nodeName, bool exposeUnconnectedInputs, bool exposeUnconnectedOutputs)
+void Graph::exposeAllPorts(bool exposeUnconnectedInputs, bool exposeUnconnectedOutputs)
 {
   if (!exposeUnconnectedInputs && !exposeUnconnectedOutputs)
     return;
-  Node *node = this->node(QString(nodeName));
 
-  if (node == NULL)
-    return;
+  std::vector<Node *> nodes = selectedNodes();
 
-  if (exposeUnconnectedInputs)
+  // sort the nodes from top
+  // to bottom via bubble sort.
+  for (unsigned int i = 0; i<nodes.size(); i++)
+    for (unsigned int j = i + 1; j<nodes.size(); j++)
+      if (nodes[i]->sceneBoundingRect().center().y() > nodes[j]->sceneBoundingRect().center().y())
+        std::swap(nodes[i], nodes[j]);
+
+
+  // do it.
+  for (size_t i=0;i<nodes.size();i++)
   {
-    ConnectionTarget *source = (ConnectionTarget *)m_leftPanel->m_proxyPort;
-    for (unsigned int j = 0; j<node->pinCount(); j++)
+    Node *node = nodes[i];
+
+    if (node == NULL)
+      return;
+
+    if (exposeUnconnectedInputs)
     {
-      Pin *pin = node->pin(j);
-      // skip default exec port.
-      if (j == 0)
-        continue;
-      // skip if already connected.
-      if (pin->isConnectedAsTarget())
-        continue;
-      // we have a candiate.
-      if (pin->portType() != PortType_Output)
+      ConnectionTarget *source = (ConnectionTarget *)m_leftPanel->m_proxyPort;
+      for (unsigned int j = 0; j<node->pinCount(); j++)
       {
-        ConnectionTarget *target = pin;
-        connect(source, target);
+        Pin *pin = node->pin(j);
+        // skip default exec port.
+        if (j == 0)
+          continue;
+        // skip if already connected.
+        if (pin->isConnectedAsTarget())
+          continue;
+        // we have a candiate.
+        if (pin->portType() != PortType_Output)
+        {
+          ConnectionTarget *target = pin;
+          connect(source, target);
+        }
       }
     }
-  }
 
-  if (exposeUnconnectedOutputs)
-  {
-    ConnectionTarget *target = (ConnectionTarget *)m_rightPanel->m_proxyPort;
-    for (unsigned int j = 0; j<node->pinCount(); j++)
+    if (exposeUnconnectedOutputs)
     {
-      Pin *pin = node->pin(j);
-      // skip default exec port.
-      if (j == 0)
-        continue;
-      // skip if already connected.
-      if (pin->isConnectedAsSource())
-        continue;
-      // we have a candiate.
-      if (pin->portType() != PortType_Input)
+      ConnectionTarget *target = (ConnectionTarget *)m_rightPanel->m_proxyPort;
+      for (unsigned int j = 0; j<node->pinCount(); j++)
       {
-        ConnectionTarget *source = pin;
-        connect(source, target);
+        Pin *pin = node->pin(j);
+        // skip default exec port.
+        if (j == 0)
+          continue;
+        // skip if already connected.
+        if (pin->isConnectedAsSource())
+          continue;
+        // we have a candiate.
+        if (pin->portType() != PortType_Input)
+        {
+          ConnectionTarget *source = pin;
+          connect(source, target);
+        }
       }
     }
   }

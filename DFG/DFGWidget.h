@@ -1486,7 +1486,6 @@ namespace DFG {
 
       ExposeAllUnconnectedInputPortsAction(
         DFGWidget *dfgWidget,
-        GraphView::Node *node,
         QObject *parent,
         bool enable = true)
         : BaseDFGWidgetAction(
@@ -1497,7 +1496,6 @@ namespace DFG {
           , QKeySequence()
           , Qt::WidgetWithChildrenShortcut
           , enable)
-        , m_node(node)
       {
       }
 
@@ -1509,12 +1507,8 @@ namespace DFG {
 
       virtual void onTriggered()
       {
-        m_dfgWidget->getUIGraph()->exposeAllPorts(m_node->name().c_str(), true /* exposeUnconnectedInputs */, false /* exposeUnconnectedOutputs */);
+        m_dfgWidget->getUIGraph()->exposeAllPorts(true /* exposeUnconnectedInputs */, false /* exposeUnconnectedOutputs */);
       }
-
-    private:
-
-      GraphView::Node *m_node;
     };
 
     class ExposeAllUnconnectedOutputPortsAction : public BaseDFGWidgetAction
@@ -1525,7 +1519,6 @@ namespace DFG {
 
       ExposeAllUnconnectedOutputPortsAction(
         DFGWidget *dfgWidget,
-        GraphView::Node *node,
         QObject *parent,
         bool enable = true)
         : BaseDFGWidgetAction(
@@ -1536,7 +1529,6 @@ namespace DFG {
           , QKeySequence()
           , Qt::WidgetWithChildrenShortcut
           , enable)
-        , m_node(node)
       {
       }
 
@@ -1548,12 +1540,8 @@ namespace DFG {
 
       virtual void onTriggered()
       {
-        m_dfgWidget->getUIGraph()->exposeAllPorts(m_node->name().c_str(), false /* exposeUnconnectedInputs */, true /* exposeUnconnectedOutputs */);
+        m_dfgWidget->getUIGraph()->exposeAllPorts(false /* exposeUnconnectedInputs */, true /* exposeUnconnectedOutputs */);
       }
-
-    private:
-
-      GraphView::Node *m_node;
     };
 
     class CopyNodesAction : public BaseDFGWidgetAction
