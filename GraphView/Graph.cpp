@@ -1047,7 +1047,7 @@ void Graph::exposeAllPorts(bool exposeUnconnectedInputs, bool exposeUnconnectedO
         // skip if already connected.
         if (pin->isConnectedAsSource())
           continue;
-        // we have a candiate.
+        // we have a candidate.
         if (pin->portType() != PortType_Input)
         {
           ConnectionTarget *source = pin;
