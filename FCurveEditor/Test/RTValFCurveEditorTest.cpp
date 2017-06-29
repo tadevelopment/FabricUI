@@ -42,7 +42,8 @@ int main()
   if( curveFile.open( QIODevice::ReadOnly ) )
   {
     QString curveJSON = QTextStream( &curveFile ).readAll();
-    curveRTVal.setJSON( curveJSON.toUtf8().data() );
+    FabricCore::RTVal rtJson = FabricCore::RTVal::ConstructString( client, curveJSON.toUtf8().data() );
+    curveRTVal.callMethod( "Boolean", "convertFromString", 1, &rtJson );
   }
   
   RTValAnimXFCurveModel curve;
@@ -58,6 +59,6 @@ int main()
   curveFile.close();
   curveFile.open( QIODevice::WriteOnly );
   assert( curveFile.isOpen() );
-  QTextStream( &curveFile ) << curveRTVal.getJSON().getStringCString();
+  QTextStream( &curveFile ) << curveRTVal.callMethod( "String", "convertToString", 0, NULL ).getStringCString();
   return 0;
 }
