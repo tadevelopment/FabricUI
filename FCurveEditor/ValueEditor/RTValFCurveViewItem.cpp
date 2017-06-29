@@ -47,7 +47,8 @@ QWidget* RTValFCurveViewItem::getWidget()
 
 void RTValFCurveViewItem::onModelValueChanged( QVariant const & v )
 {
-  m_model->setValue( v.value<FabricCore::RTVal>() );
+  // TODO : don't clone the value each time, but use incremental commands
+  m_model->setValue( v.value<FabricCore::RTVal>().clone() );
 }
 
 BaseViewItem * RTValFCurveViewItem::CreateItem(
