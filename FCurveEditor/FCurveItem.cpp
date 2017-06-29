@@ -100,6 +100,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
   class Center : public QGraphicsRectItem
   {
     HandleWidget* m_parent;
+    typedef QGraphicsRectItem Parent;
   public:
     Center( HandleWidget* parent )
       : QGraphicsRectItem( parent )
@@ -111,7 +112,10 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       this->setAcceptHoverEvents( true );
     };
   protected:
-    void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE {}
+    void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
+    {
+      emit m_parent->m_parent->interactionBegin();
+    }
     void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
       AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
@@ -122,6 +126,11 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     }
     void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::CrossCursor ); }
     void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->unsetCursor(); }
+    void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
+    {
+      Parent::mouseReleaseEvent( event );
+      emit m_parent->m_parent->interactionEnd();
+    }
   };
   Center* m_center;
 
@@ -134,6 +143,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     {
       HandleWidget* m_parent;
       Tangent* m_tangent;
+      typedef QGraphicsEllipseItem Parent;
     public:
       QGraphicsWidget* m_posW; // Used for its position
       End( HandleWidget* parent, Tangent* tangent )
@@ -149,7 +159,10 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
         this->setAcceptHoverEvents( true );
       }
     protected:
-      void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE {}
+      void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
+      {
+        emit m_parent->m_parent->interactionBegin();
+      }
       void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
       {
         AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
@@ -163,6 +176,11 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       }
       void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::CrossCursor ); }
       void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->unsetCursor(); }
+      void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
+      {
+        Parent::mouseReleaseEvent( event );
+        emit m_parent->m_parent->interactionEnd();
+      }
     };
     End* m_end;
 

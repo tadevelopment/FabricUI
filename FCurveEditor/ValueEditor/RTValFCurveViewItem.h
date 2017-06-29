@@ -48,6 +48,7 @@ public:
 
 private slots:
   void onViewValueChanged();
+  inline void emitInteractionEnd() { emit this->interactionEnd( true ); }
 };
 
 } // namespace FabricUI 

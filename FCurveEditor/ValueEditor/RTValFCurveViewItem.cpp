@@ -25,6 +25,8 @@ AnimCurveViewItem::AnimCurveViewItem(
 
   connect( m_model, SIGNAL( handleAdded() ), this, SLOT( onViewValueChanged() ) );
   connect( m_model, SIGNAL( handleMoved( size_t ) ), this, SLOT( onViewValueChanged() ) );
+  connect( m_editor, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
+  connect( m_editor, SIGNAL( interactionEnd() ), this, SLOT( emitInteractionEnd() ) );
 }
 
 AnimCurveViewItem::~AnimCurveViewItem()

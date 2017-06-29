@@ -29,6 +29,10 @@ public:
   FCurveItem();
   void setCurve( AbstractFCurveModel* );
 
+signals:
+  void interactionBegin();
+  void interactionEnd();
+
 private slots:
   void onHandleAdded();
   void onHandleMoved( size_t );

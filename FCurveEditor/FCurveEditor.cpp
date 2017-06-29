@@ -19,6 +19,9 @@ FCurveEditor::FCurveEditor()
   m_scene->setSceneRect( QRectF( -1E8, -1E8, 2 * 1E8, 2 * 1E8 ) );
   this->view()->setScene( m_scene );
   m_scene->addItem( m_curveItem );
+
+  connect( m_curveItem, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
+  connect( m_curveItem, SIGNAL( interactionEnd() ), this, SIGNAL( interactionEnd() ) );
 }
 
 FCurveEditor::~FCurveEditor()

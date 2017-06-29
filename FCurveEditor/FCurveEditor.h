@@ -34,6 +34,10 @@ public:
 
 protected:
   void mousePressEvent( QMouseEvent * ) FTL_OVERRIDE;
+
+signals:
+  void interactionBegin();
+  void interactionEnd();
 };
 
 } // namespace FCurveEditor
