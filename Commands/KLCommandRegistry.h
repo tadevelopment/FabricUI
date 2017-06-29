@@ -22,7 +22,7 @@ class KLCommandRegistry : public CommandRegistry
   Q_OBJECT
 
   public:
-    // BaseCommand type
+    // Command type
     QString COMMAND_KL; 
  
     KLCommandRegistry();

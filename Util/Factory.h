@@ -74,7 +74,6 @@ class BaseFactoryRegistry : public QObject
       QString const&name
       );
 
-  public slots:
     /// Registers a factory once.
     /// \param name Name of the factory.
     /// \param factory Pointer to the factory.
@@ -90,8 +89,8 @@ class BaseFactoryRegistry : public QObject
       );
 
     /// Unregisters a factory.
-    /// \param factory A pointer to the dactory.
-    virtual void unregisterFactory(
+    /// \param factory A pointer to the factory.
+    void unregisterFactory(
       Factory *factory
       );
 
@@ -111,11 +110,6 @@ class BaseFactoryRegistry : public QObject
       );
 
   private:
-    /// \internal
-    void removeFactory(
-      QMapIterator<QString, Factory*> &it
-      );
-    
     /// Dictionaries of registered factories. 
     QMap<QString, Factory*> m_factories;
 };

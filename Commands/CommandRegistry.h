@@ -27,7 +27,7 @@ class CommandRegistry : public Util::BaseFactoryRegistry
   Q_OBJECT
 
   public:
-    // BaseCommand type
+    // Command type
     QString COMMAND_CPP; 
  
     CommandRegistry();

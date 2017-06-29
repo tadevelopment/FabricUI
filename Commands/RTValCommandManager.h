@@ -29,7 +29,7 @@ class RTValCommandManager : public CommandManager
       QString const&cmdName, 
       QMap<QString, QString> const&args, 
       bool doCmd = true,
-      int canMergeID = -1
+      int canMergeID = NoCanMergeID
       );
 
     /// Creates and executes a command (if doCmd == true).
@@ -39,7 +39,7 @@ class RTValCommandManager : public CommandManager
       QString const&cmdName, 
       QMap<QString, FabricCore::RTVal> const&args, 
       bool doCmd = true,
-      int canMergeID = -1
+      int canMergeID = NoCanMergeID
       );
 
   protected:

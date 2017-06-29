@@ -40,17 +40,17 @@ class GLViewportWidget : public ViewportWidget
     
     /// Gets tge camera.
     FabricCore::RTVal getCamera();
-    
-    /// Sets the grid visibility.
-    void setGridVisible( 
-      bool gridVisible, 
-      bool update = true 
-      );
 
     /// Checks if the grid is visible.
     bool isGridVisible();
 
   public slots:
+    /// Sets the grid visibility.
+    void setGridVisible( 
+      bool gridVisible, 
+      bool update = true 
+      );
+    
     /// Implementation of ViewportWidget.
     virtual void clear();
 

@@ -37,7 +37,7 @@ class CommandManager : public QObject
 
   public:
     /// Command merging
-    static int NoCanMergeID;
+    static int NoCanMergeID; 
     static int NoCanMerge;
     static int CanMerge;
     static int MergeDone;
@@ -113,8 +113,9 @@ class CommandManager : public QObject
 
   signals:
     /// Emitted when a top command has been succefully executed.
-    /// \param cmd The command that has been pushed.
+    /// \param cmd The command that has been done (executed).
     /// \param addedToStack If true, the command has been pushed in the manager stack.
+    /// \param canMergeID ID of the merge (NoCanMergeID if no merge).
     /// \param merge (NoCanMerge, CanMerge or MergeDone).
     void commandDone(
       FabricUI::Commands::BaseCommand *cmd,

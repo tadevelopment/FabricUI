@@ -21,6 +21,7 @@ int CommandManager::MergeDone = 2;
 int CommandManager::NoDebug = -1;
 int CommandManager::Debug = 0;
 int CommandManager::VerboseDebug = 1;
+
 bool CommandManager::s_instanceFlag = false;
 CommandManager* CommandManager::s_cmdManager = 0;
 

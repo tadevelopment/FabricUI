@@ -54,7 +54,12 @@ class CommandManagerCallback(QtCore.QObject):
         GetCommandManager().commandDone.connect(self.__onCommandDone)
 
     def __onCommandDone(self, cmd, pushedToStack, canMergeID, merge):
-        """ \internal, when a command's been pushed to the manager. 
+        """ \internal, when a command's been pushed to the manager.
+            Arguments:
+            - cmd : The command that has been done (executed).
+            - addedToStack : If true, the command has been pushed in the manager stack.
+            - canMergeID : ID of the merge (NoCanMergeID if no merge).
+            - merge : (NoCanMerge, CanMerge or MergeDone).
         """ 
         try:
             # Create a new CommandQtWrapper and  
@@ -69,8 +74,7 @@ class CommandManagerCallback(QtCore.QObject):
             if cmd.canLog():
                 self.scriptEditor.logCommand(
                     CommandHelpers.ParseCmdArgs(cmd), 
-                    CppCommands.CommandManager.NoCanMerge != merge
-                    )
+                    CppCommands.CommandManager.NoCanMerge != merge)
             
         except Exception as e:    
                 print str(e)

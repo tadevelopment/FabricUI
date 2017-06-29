@@ -34,19 +34,20 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
       );
 
     /// Gets the resoler name. Returns an empty 
-    /// string if the resolver  doesn't exist.
+    /// string if the resolver doesn't exist.
     QString getResolverName(
       BasePathValueResolver* resolver
       );
 
     /// Gets/creates the resolver named 'name'.  
-    /// The resolver must have been registered.
-    BasePathValueResolver* getOrCreateResolver(
+    /// The resolver must have been registered, 
+    /// returns a null object otherwise.
+    virtual BasePathValueResolver* getOrCreateResolver(
       QString const&name
       );
           
     /// Checks if one of the registered   
-    /// resolvers knows the `PathValue` path.
+    /// resolvers knows the `PathValue`.
     bool knownPath(
       FabricCore::RTVal pathValue
       );
@@ -64,6 +65,11 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
     /// Sets the `PathValue` value.
     void setValue(
       FabricCore::RTVal pathValue
+      );
+
+    /// Implementation of BaseFactoryRegistry.
+    virtual void unregisterFactory(
+      QString const&name 
       );
 
   private:

@@ -12,3 +12,6 @@
 #include <FabricUI/Commands/RTValCommandManager.h>
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/CppTestCommand.h>
+#include <FabricUI/Commands/BasePathValueResolver.h>
+#include <FabricUI/Commands/PathValueResolverRegistry.h>
+
