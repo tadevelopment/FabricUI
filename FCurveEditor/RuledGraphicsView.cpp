@@ -84,14 +84,13 @@ RuledGraphicsView::RuledGraphicsView()
   lay->addWidget( m_view, 0, 1 );
 
   m_vRuler = new Ruler( this, true );
-  m_vRuler->setFixedWidth( 50 );
   m_vRuler->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding ) );
   lay->addWidget( m_vRuler, 0, 0 );
 
   m_hRuler = new Ruler( this, false );
-  m_hRuler->setFixedHeight( 50 );
   m_hRuler->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   lay->addWidget( m_hRuler, 1, 1 );
+  this->setRulersSize( 32 );
 
   this->setLayout( lay );
 
@@ -100,6 +99,13 @@ RuledGraphicsView::RuledGraphicsView()
   m_timer->setInterval( 16 );
   if( m_smoothZoom )
     m_timer->start();
+}
+
+void RuledGraphicsView::setRulersSize( const size_t s )
+{
+  m_rulersSize = s;
+  m_vRuler->setFixedWidth( s );
+  m_hRuler->setFixedHeight( s );
 }
 
 void RuledGraphicsView::wheelEvent( QWheelEvent * e )

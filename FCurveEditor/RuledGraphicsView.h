@@ -20,6 +20,9 @@ class RuledGraphicsView : public QWidget
 {
   Q_OBJECT
 
+  Q_PROPERTY( size_t rulersSize READ rulersSize WRITE setRulersSize )
+  size_t m_rulersSize;
+
 public:
   RuledGraphicsView();
   QGraphicsView* view();
@@ -29,6 +32,8 @@ public:
   // TODO : fix the "smoothZoom" on Linux
 
   void fitInView( const QRectF );
+  inline size_t rulersSize() const { return m_rulersSize; }
+  void setRulersSize( const size_t );
 
 protected:
   void wheelEvent( QWheelEvent * ) FTL_OVERRIDE;
