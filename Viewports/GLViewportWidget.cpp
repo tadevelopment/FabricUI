@@ -114,7 +114,7 @@ bool GLViewportWidget::onEvent(
           "GLViewportWidget::onEvent",
           "",
           e.what(),
-          LOG);
+          FabricException::LOG);
         
         return isAccepted;
       }

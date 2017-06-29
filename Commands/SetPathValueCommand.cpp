@@ -2,8 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandArgHelpers.h"
-#include "CommandArgHelpers.h"
+#include "CommandHelpers.h"
 #include "SetPathValueCommand.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Application/FabricException.h>
@@ -90,10 +89,10 @@ QString SetPathValueCommand::getHelp()
   argsHelp["target"] = "Path of the target";
   argsHelp["newValue"] = "New value";
 
-  return CommandArgHelpers::createHelpFromRTValArgs(
+  return CommandHelpers::createHelpFromRTValArgs(
+    this,
     "Sets the value of a PathValue arg",
-    argsHelp,
-    this);
+    argsHelp);
 
   FABRIC_CATCH_END("SetPathValueCommand::redoIt");
 
@@ -107,9 +106,9 @@ QString SetPathValueCommand::getHistoryDesc()
   QMap<QString, QString> argsDesc;
   argsDesc["target"] = getRTValArgPath("target");
   
-  return CommandArgHelpers::createHistoryDescFromArgs(
-    argsDesc,
-    this);
+  return CommandHelpers::createHistoryDescFromArgs(
+    this,
+    argsDesc);
   
   FABRIC_CATCH_END("SetPathValueCommand::getHistoryDesc");
 

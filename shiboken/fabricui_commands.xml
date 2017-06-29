@@ -6,7 +6,7 @@
       <object-type name="CommandArgFlags" />
       <object-type name="BaseScriptableCommand" />
       <object-type name="BaseRTValScriptableCommand" />
-      <object-type name="CommandArgHelpers" />
+      <object-type name="CommandHelpers" />
       <object-type name="CommandManager" />
       <object-type name="RTValCommandManager" />
       <object-type name="KLCommandManager" />

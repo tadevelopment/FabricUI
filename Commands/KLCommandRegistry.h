@@ -43,7 +43,7 @@ class KLCommandRegistry : public CommandRegistry
     /// Implementation of CommandRegistry.
     /// Registers the commands as a KL AppCommand in  
     /// the KL registry so it can be called from KL.
-    virtual void commandIsRegistered(
+    virtual void commandRegistered(
       QString const&cmdName,
       QString const&cmdType,
       QString const&implType

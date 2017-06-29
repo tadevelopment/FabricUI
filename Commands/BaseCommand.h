@@ -113,7 +113,6 @@ class BaseCommand : public QObject
     C++ interfaces cannot be wrapped in python by shiboken. New commands
     must specialize this class to be accessible from python.
   */
-
   Q_OBJECT
   
   public:
@@ -168,7 +167,7 @@ class BaseCommand : public QObject
 
     /// Checks if `this` and `prevCmd`  
     /// commands `this` can be merged.
-    virtual bool canMerge(
+    virtual int canMerge(
       BaseCommand *prevCmd
       );
 

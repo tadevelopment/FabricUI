@@ -5,7 +5,7 @@
 #include <FabricUI/Util/QtUtil.h>
 #include "../OptionsEditorHelpers.h"
 #include "CloseKLOptionsTargetEditorCommand.h"
-#include <FabricUI/Commands/CommandArgHelpers.h>
+#include <FabricUI/Commands/CommandHelpers.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
@@ -83,10 +83,10 @@ QString CloseKLOptionsTargetEditorCommand::getHelp()
   argsHelp["editorID"] = "Qt objectName of the option editor / ID of the KL option in the OptionsTargetRegistry";
   argsHelp["failSilently"] = "If false, throws an error if the widget has not been closed";
 
-  return CommandArgHelpers::createHelpFromRTValArgs(
+  return CommandHelpers::createHelpFromRTValArgs(
+    this, 
     "Close a Qt editor that edits a KL OptionsTarget",
-    argsHelp,
-    this);
+    argsHelp);
 }
 
 QString CloseKLOptionsTargetEditorCommand::getHistoryDesc()
@@ -100,7 +100,7 @@ QString CloseKLOptionsTargetEditorCommand::getHistoryDesc()
     getRTValArgValue("failSilently").getBoolean()
     );
  
-  return CommandArgHelpers::createHistoryDescFromArgs(
-    argsDesc,
-    this);
+  return CommandHelpers::createHistoryDescFromArgs(
+    this,
+    argsDesc);
 }

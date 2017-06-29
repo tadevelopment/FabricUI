@@ -76,11 +76,19 @@ int BaseCommand::getCanMergeID()
   return m_canMergeID;
 }
 
-bool BaseCommand::canMerge(
-  BaseCommand *cmd) 
+int BaseCommand::canMerge(
+  BaseCommand *prevCmd) 
 {
-  return getCanMergeID() > CommandManager::NoCanMergeID && 
-    getCanMergeID() == cmd->getCanMergeID();
+  if(prevCmd) 
+  {
+    if(getCanMergeID() > CommandManager::NoCanMergeID && 
+      getCanMergeID() == prevCmd->getCanMergeID())
+      return CommandManager::CanMerge;
+
+    if( (getCanMergeID() + prevCmd->getCanMergeID() ) == 0)
+      return CommandManager::MergeDone;
+  }
+  return CommandManager::NoCanMerge;
 }
 
 void BaseCommand::merge(

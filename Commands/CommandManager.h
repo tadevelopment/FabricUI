@@ -38,6 +38,9 @@ class CommandManager : public QObject
   public:
     /// Command merging
     static int NoCanMergeID;
+    static int NoCanMerge;
+    static int CanMerge;
+    static int MergeDone;
 
     /// Debug modes
     static int NoDebug;
@@ -111,12 +114,13 @@ class CommandManager : public QObject
   signals:
     /// Emitted when a top command has been succefully executed.
     /// \param cmd The command that has been pushed.
-    /// \param addToStack If true, the command has been pushed in the manager stack.
-    /// \param replaceLog If true, the log of the last pushed command must be udpated.
+    /// \param addedToStack If true, the command has been pushed in the manager stack.
+    /// \param merge (NoCanMerge, CanMerge or MergeDone).
     void commandDone(
       FabricUI::Commands::BaseCommand *cmd,
-      bool addToStack,
-      bool replaceLog
+      bool addedToStack,
+      int canMergeID,
+      int merge
       );
 
     /// Emitted when the manager is cleared.
@@ -185,7 +189,7 @@ class CommandManager : public QObject
       bool succeeded = false
       );
 
-    /// getStackContent a specific stack content 
+    /// Gets a specific stack content 
     /// as a string, used for debugging.
     QString getStackContent(
       QString const&stackName, 

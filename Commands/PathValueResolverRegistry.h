@@ -15,7 +15,7 @@ namespace Commands {
 class PathValueResolverRegistry : public Util::BaseFactoryRegistry
 {  
   /**
-    PathValueResolverRegistry  
+    PathValueResolverRegistry    
   */  
   
   Q_OBJECT
@@ -28,28 +28,40 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
     /// Gets the resolver singleton.
     static PathValueResolverRegistry* GetRegistry();
     
-    /// Registers a resolver.
+    /// Checks if the registry has a resolver.
     bool hasResolver(
       QString const&name
       );
 
-    /// Registers a resolver.
+    /// Gets the resoler name. Returns an empty 
+    /// string if the resolver  doesn't exist.
+    QString getResolverName(
+      BasePathValueResolver* resolver
+      );
+
+    /// Gets/creates the resolver named 'name'.  
+    /// The resolver must have been registered.
     BasePathValueResolver* getOrCreateResolver(
       QString const&name
       );
-      
+          
+    /// Checks if one of the registered   
+    /// resolvers knows the `PathValue` path.
     bool knownPath(
       FabricCore::RTVal pathValue
       );
 
+    /// Gets the `PathValue` value type.
     QString getType(
       FabricCore::RTVal pathValue
       );
 
+    /// Gets the `PathValue` value.
     void getValue(
       FabricCore::RTVal pathValue
       );
 
+    /// Sets the `PathValue` value.
     void setValue(
       FabricCore::RTVal pathValue
       );
@@ -68,7 +80,7 @@ class PathValueResolverFactory : public Util::TemplateFactory<T>
 {
   /**
     PathValueResolverFactory is used to register PathValueResolvers in the PathValueResolverRegistry.
-    - Register a command: PathValueResolverFactory<cmdType>::Register(name, userData);
+    - Register a resolver: PathValueResolverFactory<cmdType>::Register(name, userData);
   */
   public:
     PathValueResolverFactory(
@@ -77,7 +89,7 @@ class PathValueResolverFactory : public Util::TemplateFactory<T>
     {
     }
 
-    /// Registers the command <T> under "name".
+    /// Registers the resolver <T> under the name "name".
     static void Register(
       QString name,
       void *userData=0) 

@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandArgHelpers.h"
+#include "CommandHelpers.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "BaseRTValScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
@@ -128,15 +128,13 @@ void BaseRTValScriptableCommand::setArg(
 
   FABRIC_CATCH_BEGIN();
 
-  if( json.startsWith("<") && json.endsWith(">") )
-  {
-    QString path = json;
-    path.remove(0, 1);
-    path = path.remove(path.size()-1, 1);
+  QString pathValuePath = CommandHelpers::castFromPathValuePath(json);
 
+  if( !pathValuePath.isEmpty() )
+  {
     RTVal pathVal = RTVal::ConstructString(
       FabricApplicationStates::GetAppStates()->getContext(),
-      path.toUtf8().constData()
+      pathValuePath.toUtf8().constData()
       );
 
     RTVal pathValue = RTVal::Construct(
@@ -200,7 +198,7 @@ QString BaseRTValScriptableCommand::getArgsDescription()
     ScriptableCommandRTValArgSpec spec = it.value();
 
     res += "    ["  + key + "]";
-    res += ", opt: " + CommandArgHelpers::getArgsTypeSpecs(this, key);
+    res += ", opt: " + CommandHelpers::getArgsTypeSpecs(this, key);
     res += ", path: <" + getRTValArgPath(key) + ">";
     res += ", val: " + getArg(key);
 

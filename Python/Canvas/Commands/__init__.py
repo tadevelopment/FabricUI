@@ -1,5 +1,5 @@
 __all__ = [
-	'CommandArgHelpers',
+	'CommandHelpers',
 	'CommandManager',
     'CommandRegistry',
     'CommandManagerCallback'

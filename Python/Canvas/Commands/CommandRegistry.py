@@ -65,7 +65,7 @@ class KLCommandRegistry(CppCommands.KLCommandRegistry):
         if super(KLCommandRegistry, self).isCommandRegistered(cmdName) is False:
             self.__cmdUserDataDict[cmdName] = userData
             self.__cmdObjectTypeDict[cmdName] = cmdType
-            self.commandIsRegistered(cmdName, str(cmdType), self.COMMAND_PYTHON)
+            self.commandRegistered(cmdName, str(cmdType), self.COMMAND_PYTHON)
 
         elif cmdType != self.__cmdObjectTypeDict[cmdName]:
             raise Exception(

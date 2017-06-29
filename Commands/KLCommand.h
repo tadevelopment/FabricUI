@@ -15,7 +15,8 @@ class KLCommand : public BaseCommand
 {
   /**
     KLCommand wraps the KL commands so they are accessible from C++/Python.
-    They are created on-demand by the C++/Python registry.
+    They are created on-demand by the C++/Python registry when a KL command 
+    is created from KL (after manager synchronisation).
     
     Usage:
     - KL:
@@ -108,7 +109,7 @@ class KLCommand : public BaseCommand
     virtual int getCanMergeID();
 
     /// Implementation of BaseCommand.
-    virtual bool canMerge(
+    virtual int canMerge(
       BaseCommand *prevCmd
       );
 

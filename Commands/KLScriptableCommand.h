@@ -14,8 +14,9 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
 {
   /**
     KLScriptableCommand wraps the KL scriptable commands so they  
-    are accessible from C++/Python. They are created on-demand 
-    by the  C++/Python command registry.
+    are accessible from C++/Python. They are created on-demand by 
+    the  C++/Python command registry when a KL command is created
+    from KL (after manager synchronisation).
 
     In KL, the commands arguments are RTVal, and JSON format is 
     used to cast them into/from QString.
@@ -134,7 +135,7 @@ class KLScriptableCommand : public BaseRTValScriptableCommand
     virtual int getCanMergeID();
 
     /// Implementation of BaseCommand.
-    virtual bool canMerge(
+    virtual int canMerge(
       BaseCommand *prevCmd
       );
 

@@ -7,6 +7,10 @@
 using namespace FabricUI;
 using namespace Application;
 
+int FabricException::NOTHING = 0;
+int FabricException::THROW = 1;
+int FabricException::LOG = 2;
+
 FabricException::FabricException(
   QString const&message)
   : m_message(message.toUtf8().constData())

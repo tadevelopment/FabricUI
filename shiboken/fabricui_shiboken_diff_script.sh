@@ -1,6 +1,6 @@
 #!/bin/sh
 
-Target=('fabricui_commands_commandarghelpers_wrapper' 'fabricui_commands_commandmanager_wrapper' 'fabricui_commands_rtvalcommandmanager_wrapper' 'fabricui_commands_klcommandmanager_wrapper' 'fabricui_commands_commandregistry_wrapper' 'fabricui_commands_klcommandregistry_wrapper' 'fabricui_commands_basescriptablecommand_wrapper' 	'fabricui_commands_basertvalscriptablecommand_wrapper')
+Target=('fabricui_commands_CommandHelpers_wrapper' 'fabricui_commands_commandmanager_wrapper' 'fabricui_commands_rtvalcommandmanager_wrapper' 'fabricui_commands_klcommandmanager_wrapper' 'fabricui_commands_commandregistry_wrapper' 'fabricui_commands_klcommandregistry_wrapper' 'fabricui_commands_basescriptablecommand_wrapper' 	'fabricui_commands_basertvalscriptablecommand_wrapper')
 
 for ((i=0; i<${#Target[*]}; i++));
 do

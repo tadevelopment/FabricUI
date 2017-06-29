@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include "CommandManager.h"
 #include "KLCommandHelpers.h"
 #include "KLScriptableCommand.h"
 #include <FabricUI/Util/RTValUtil.h>
@@ -97,12 +98,12 @@ int KLScriptableCommand::getCanMergeID()
     m_klCmd);
 }
 
-bool KLScriptableCommand::canMerge(
+int KLScriptableCommand::canMerge(
   BaseCommand *prevCmd) 
 {
   KLScriptableCommand* scriptCmd = qobject_cast<KLScriptableCommand*>(prevCmd);
   if(scriptCmd == 0)
-    return false;
+    return CommandManager::NoCanMerge;
   
   return KLCommandHelpers::canMergeKLCommand(
     m_klCmd, 
@@ -232,15 +233,13 @@ void KLScriptableCommand::setArg(
 
   FABRIC_CATCH_BEGIN();
 
-  if( json.startsWith("<") && json.endsWith(">") )
-  {
-    QString path = json;
-    path.remove(0, 1);
-    path = path.remove(path.size()-1, 1);
+  QString pathValuePath = CommandHelpers::castFromPathValuePath(json);
 
+  if(  !pathValuePath.isEmpty() )
+  {
     RTVal pathVal = RTVal::ConstructString(
       FabricApplicationStates::GetAppStates()->getContext(),
-      path.toUtf8().constData()
+      pathValuePath.toUtf8().constData()
       );
 
     RTVal pathValue = RTVal::Construct(
@@ -398,9 +397,7 @@ void KLScriptableCommand::setRTValArgValue(
     keyVal, 
     RTValUtil::toKLRTVal(value), 
     // error
-    RTVal::ConstructString(
-      m_klCmd.getContext(), 
-      "") 
+    RTVal::ConstructString(m_klCmd.getContext(), "") 
   };
 
   m_klCmd.callMethod(

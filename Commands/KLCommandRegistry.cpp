@@ -142,9 +142,9 @@ void KLCommandRegistry::registerKLCommand(
     args).getBoolean();
 
   // The command is already registered in KL.
-  // Don't call KLCommandRegistry::commandIsRegistered.
+  // Don't call KLCommandRegistry::commandRegistered.
   if(isCmdRegistered)
-    CommandRegistry::commandIsRegistered(
+    CommandRegistry::commandRegistered(
       cmdName,
       RTVal::Construct(
         KLCommandHelpers::getKLCommandRegistry().getContext(), 
@@ -195,7 +195,7 @@ BaseCommand* KLCommandRegistry::createKLCommand(
   return 0;
 }
 
-void KLCommandRegistry::commandIsRegistered(
+void KLCommandRegistry::commandRegistered(
   QString const&cmdName,
   QString const&cmdType,
   QString const&implType) 
@@ -212,10 +212,10 @@ void KLCommandRegistry::commandIsRegistered(
     1,
     &nameVal);
  
-  FABRIC_CATCH_END("KLCommandRegistry::commandIsRegistered");
-
-  CommandRegistry::commandIsRegistered(
+  CommandRegistry::commandRegistered(
     cmdName,
     cmdType,
     implType);
+
+  FABRIC_CATCH_END("KLCommandRegistry::commandRegistered");
 }

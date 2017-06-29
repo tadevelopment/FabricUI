@@ -3,8 +3,9 @@
 #
 
 from PySide import QtGui, QtCore
+from FabricEngine.FabricUI import Commands as CppCommands
 from FabricEngine.Canvas.Commands.CommandManager import *
-from FabricEngine.Canvas.Commands.CommandArgHelpers import CommandArgHelpers
+from FabricEngine.Canvas.Commands.CommandHelpers import CommandHelpers
 
 class CommandManagerCallback(QtCore.QObject):
     """ CommandManagerCallback is connected to the CommandManagerCallback 
@@ -52,7 +53,7 @@ class CommandManagerCallback(QtCore.QObject):
         GetCommandManager().cleared.connect(self.__onCleared)
         GetCommandManager().commandDone.connect(self.__onCommandDone)
 
-    def __onCommandDone(self, cmd, pushedToStack, replace):
+    def __onCommandDone(self, cmd, pushedToStack, canMergeID, merge):
         """ \internal, when a command's been pushed to the manager. 
         """ 
         try:
@@ -66,7 +67,10 @@ class CommandManagerCallback(QtCore.QObject):
 
             #Log the commands.
             if cmd.canLog():
-                self.scriptEditor.logCommand(CommandArgHelpers.ParseCmdArgs(cmd),replace)
+                self.scriptEditor.logCommand(
+                    CommandHelpers.ParseCmdArgs(cmd), 
+                    CppCommands.CommandManager.NoCanMerge != merge
+                    )
             
         except Exception as e:    
                 print str(e)

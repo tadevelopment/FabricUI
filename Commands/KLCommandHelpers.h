@@ -83,7 +83,7 @@ class KLCommandHelpers
 
     /// Merges a KL command with another.
     /// Throws an exception if an error occurs.
-    static bool canMergeKLCommand(
+    static int canMergeKLCommand(
       FabricCore::RTVal klCmd,
       FabricCore::RTVal prevKlCmd
       );

@@ -44,6 +44,19 @@ bool PathValueResolverRegistry::hasResolver(
     name);
 }
 
+QString PathValueResolverRegistry::getResolverName(
+  BasePathValueResolver* resolver)
+{
+  QMapIterator<QString, BasePathValueResolver*> it(m_registeredResolvers);
+  while(it.hasNext()) 
+  {
+    it.next();
+    if(resolver == it.value())
+      return it.key();
+  }
+  return "";
+}
+
 BasePathValueResolver* PathValueResolverRegistry::getOrCreateResolver(
   QString const&name)
 {

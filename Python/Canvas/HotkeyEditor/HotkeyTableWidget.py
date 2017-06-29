@@ -54,7 +54,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
         actRegistry.actionUnregistered.connect(self.__onActionUnregistered)
 
         # Notify when an command is registered.
-        GetCommandRegistry().commandRegistered.connect(self.__onCommandRegistered)
+        GetCommandRegistry().registrationDone.connect(self.__onCommandRegistered)
         
         # Construct the item-delegate
         itemDelegate = HotkeyStyledItemDelegate(self)
@@ -177,7 +177,7 @@ class HotkeyTableWidget(QtGui.QTableWidget):
 
             tooltip = cmdType+ "[" + implType + "]\n\n"
             tooltip += str(cmd.getHelp())
-            isScriptable = CppCommands.CommandArgHelpers.isScriptableCommand(cmd)
+            isScriptable = CppCommands.CommandHelpers.isScriptableCommand(cmd)
 
             # Add the action to the canvasWindow so it's available.
             # Actions of hidden widgets are not triggered.

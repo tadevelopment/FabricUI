@@ -52,11 +52,13 @@ class RTValCommandManager : public CommandManager
 
   private:
     /// Implementation of CommandManager.
+    /// Used to resolve the command PathValue args.
     virtual void preDoCommand(
       BaseCommand* cmd
       );
 
     /// Implementation of CommandManager.
+    /// Used to resolve the command PathValue args.
     virtual void postDoCommand(
       BaseCommand* cmd
       );

@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "CommandArgHelpers.h"
+#include "CommandHelpers.h"
 #include "BaseScriptableCommand.h"
 #include <FabricUI/Application/FabricException.h>
 
@@ -136,7 +136,7 @@ QString BaseScriptableCommand::getArgsDescription()
     ScriptableCommandArgSpec spec = it.value();
 
     res += "    ["  + key + "]";
-    res += ", opt: " + CommandArgHelpers::getArgsTypeSpecs(this, key);
+    res += ", opt: " + CommandHelpers::getArgsTypeSpecs(this, key);
     res +=  ", val: " + getArg(key);
 
     if(!spec.defaultValue.isEmpty())

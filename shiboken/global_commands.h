@@ -5,7 +5,7 @@
 #include <FabricUI/Commands/BaseCommand.h>
 #include <FabricUI/Commands/BaseScriptableCommand.h>
 #include <FabricUI/Commands/BaseRTValScriptableCommand.h>
-#include <FabricUI/Commands/CommandArgHelpers.h>
+#include <FabricUI/Commands/CommandHelpers.h>
 #include <FabricUI/Commands/CommandRegistry.h>
 #include <FabricUI/Commands/KLCommandRegistry.h>
 #include <FabricUI/Commands/CommandManager.h>

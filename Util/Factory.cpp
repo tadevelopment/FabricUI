@@ -18,7 +18,7 @@ BaseFactoryRegistry::~BaseFactoryRegistry()
   while(it.hasNext()) 
   {
     it.next();
-    deleteFactory(it);
+    removeFactory(it);
   }
 }
 
@@ -58,14 +58,30 @@ void BaseFactoryRegistry::unregisterFactory(
     it.next();
     if(it.key() == name)
     {
-    	deleteFactory(it);
-      emit factoryUnregistered(name);
+    	removeFactory(it);
+      emit factoryUnregistered(it.key());
       break;
     }
   }
 }
 
-void BaseFactoryRegistry::deleteFactory(
+void BaseFactoryRegistry::unregisterFactory(
+  Factory *factory) 
+{
+  QMapIterator<QString, Factory*> it(m_factories);
+  while(it.hasNext()) 
+  {
+    it.next();
+    if(it.value() == factory)
+    {
+      removeFactory(it);
+      emit factoryUnregistered(it.key());
+      break;
+    }
+  }
+}
+
+void BaseFactoryRegistry::removeFactory(
 	QMapIterator<QString, Factory*> &it) 
 {
   Factory* factory = (Factory*)it.value();

@@ -66,7 +66,6 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
     enum DFGType { DFGUnknow, DFGPort, DFGVar };
       
     /// Gets the DFG data type (DFGUnknow, DFGPort, DFGVar)
-    /// at this pathValue.
     DFGType checkDFGType(
       FabricCore::RTVal pathValue
       );
@@ -77,16 +76,15 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
       QString &relPortPath
       );
 
-    /// Casts the path the a humain readabble format.
+    /// Casts the path the a humain readable format.
     void castPathToHRFormat(
       FabricCore::RTVal pathValue
       );
 
     ///
     QString m_id;
-    /// Pointor to the controller.
+    /// 
     FabricCore::DFGBinding m_binding;
-
 };
 
 } // namespace DFG

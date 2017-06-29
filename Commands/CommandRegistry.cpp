@@ -54,7 +54,7 @@ void CommandRegistry::registerFactory(
       name, 
       factory);
     
-    commandIsRegistered(
+    commandRegistered(
       name,
       // Get the name of the cmd class.
       factory->getType(),
@@ -141,13 +141,13 @@ QString CommandRegistry::getContent()
   return res;
 }
 
-void CommandRegistry::commandIsRegistered(
+void CommandRegistry::commandRegistered(
   QString const&cmdName,
   QString const&cmdType,
   QString const&implType) 
 {
   std::cout 
-    << "CommandRegistry::commandIsRegistered " 
+    << "CommandRegistry::commandRegistered " 
     << cmdName.toUtf8().constData() 
     << std::endl;
     
@@ -158,7 +158,7 @@ void CommandRegistry::commandIsRegistered(
   m_cmdSpecs[cmdName] = spec;
     
   // inform a command has been registered.
-  emit commandRegistered(
+  emit registrationDone(
     cmdName,
     cmdType,
     implType);

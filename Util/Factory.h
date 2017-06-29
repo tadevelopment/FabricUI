@@ -89,6 +89,12 @@ class BaseFactoryRegistry : public QObject
       QString const&name 
       );
 
+    /// Unregisters a factory.
+    /// \param factory A pointer to the dactory.
+    virtual void unregisterFactory(
+      Factory *factory
+      );
+
   signals:
     /// Emitted when a factory is registered.
     /// \param name Name of the factory.
@@ -106,10 +112,10 @@ class BaseFactoryRegistry : public QObject
 
   private:
     /// \internal
-    void deleteFactory(
+    void removeFactory(
       QMapIterator<QString, Factory*> &it
       );
-
+    
     /// Dictionaries of registered factories. 
     QMap<QString, Factory*> m_factories;
 };

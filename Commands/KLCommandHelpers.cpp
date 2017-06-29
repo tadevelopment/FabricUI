@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include "CommandManager.h"
 #include "KLCommandHelpers.h"
 #include "KLCommandManager.h"
 #include <FabricUI/Application/FabricException.h>
@@ -249,22 +250,22 @@ int KLCommandHelpers::getKLCommandCanMergeID(
   return -1;
 }
 
-bool KLCommandHelpers::canMergeKLCommand(
+int KLCommandHelpers::canMergeKLCommand(
   FabricCore::RTVal klCmd,
   FabricCore::RTVal prevKlCmd)
 {
   FABRIC_CATCH_BEGIN();
 
   return klCmd.callMethod(
-    "Boolean", 
+    "SInt32", 
     "canMerge", 
     1, 
     &prevKlCmd
-    ).getBoolean();
+    ).getSInt32();
 
   FABRIC_CATCH_END("KLCommandHelpers::canMergeKLCommand");
 
-  return false;
+  return CommandManager::NoCanMerge;
 }
 
 void KLCommandHelpers::mergeKLCommand(

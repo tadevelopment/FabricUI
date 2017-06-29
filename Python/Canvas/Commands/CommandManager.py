@@ -5,7 +5,7 @@
 from FabricEngine.Canvas.Utils import *
 from FabricEngine.FabricUI import Commands as CppCommands
 from FabricEngine.Canvas.Commands.CommandRegistry import *
-from FabricEngine.Canvas.Commands.CommandArgHelpers import CommandArgHelpers
+from FabricEngine.Canvas.Commands.CommandHelpers import CommandHelpers
 
 class KLCommandManager(CppCommands.KLCommandManager):
     
@@ -61,7 +61,7 @@ class KLCommandManager(CppCommands.KLCommandManager):
         self.__flatCommandsStack = []
         self.NoCanMergeID = -1
         # Connect our-self.
-        GetCommandRegistry().commandRegistered.connect(self._onCommandRegistered)
+        GetCommandRegistry().registrationDone.connect(self._onCommandRegistered)
     
     def createCommand(self, cmdName, args={}, doCmd=True, canMergeID=-1):
         """ Creates and executes a command (if doCmd == true).
@@ -72,7 +72,7 @@ class KLCommandManager(CppCommands.KLCommandManager):
             cmd = GetCommandRegistry().createCommand(cmdName)
             if len(args) > 0:
  
-                isRTValCommand, args = CommandArgHelpers.CastAndCheckCmdArgs(cmd, args)
+                isRTValCommand, args = CommandHelpers.CastAndCheckCmdArgs(cmd, args)
             
                 if isRTValCommand:
                    super(KLCommandManager, self).checkRTValCommandArgs(cmd, args)

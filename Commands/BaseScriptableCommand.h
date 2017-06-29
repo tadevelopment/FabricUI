@@ -7,7 +7,7 @@
 
 #include <QMap>
 #include "BaseCommand.h"
-#include "CommandArgHelpers.h"
+#include "CommandHelpers.h"
 
 namespace FabricUI {
 namespace Commands {
@@ -43,11 +43,11 @@ class BaseScriptableCommand : public BaseCommand
 
     /// Declares an argument, at construction time.
     /// Flags can be a combination of these: 
-    ///   CommandArgFlags::NO_FLAG_ARG, 
-    ///   CommandArgFlags::OPTIONAL_ARG, 
-    ///   CommandArgFlags::IN_ARG, 
-    ///   CommandArgFlags::OUT_ARG, 
-    ///   CommandArgFlags::IO_ARG
+    /// - CommandArgFlags::NO_FLAG_ARG 
+    /// - CommandArgFlags::OPTIONAL_ARG 
+    /// - CommandArgFlags::IN_ARG 
+    /// - CommandArgFlags::OUT_ARG 
+    /// - CommandArgFlags::IO_ARG
     virtual void declareArg(
       QString const&key, 
       int flag, 
@@ -61,11 +61,11 @@ class BaseScriptableCommand : public BaseCommand
 
     /// Checks if the arg `key` has the input flag(s).
     /// Flags can be a combination of these: 
-    ///   CommandArgFlags::NO_FLAG_ARG, 
-    ///   CommandArgFlags::OPTIONAL_ARG, 
-    ///   CommandArgFlags::IN_ARG, 
-    ///   CommandArgFlags::OUT_ARG, 
-    ///   CommandArgFlags::IO_ARG
+    /// - CommandArgFlags::NO_FLAG_ARG 
+    /// - CommandArgFlags::OPTIONAL_ARG 
+    /// - CommandArgFlags::IN_ARG 
+    /// - CommandArgFlags::OUT_ARG 
+    /// - CommandArgFlags::IO_ARG
     virtual bool hasArgFlag(
       QString const&key,
       int flag

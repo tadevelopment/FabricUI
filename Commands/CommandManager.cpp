@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include "KLCommand.h"
 #include "CommandManager.h"
 #include "CommandRegistry.h"
@@ -13,6 +14,10 @@ using namespace Commands;
 using namespace Application;
 
 int CommandManager::NoCanMergeID = -1;
+int CommandManager::NoCanMerge = 0;
+int CommandManager::CanMerge = 1;
+int CommandManager::MergeDone = 2;
+
 int CommandManager::NoDebug = -1;
 int CommandManager::Debug = 0;
 int CommandManager::VerboseDebug = 1;
@@ -21,7 +26,7 @@ CommandManager* CommandManager::s_cmdManager = 0;
 
 CommandManager::CommandManager() 
   : QObject()
-  , m_canMergeIDCounter(0)
+  , m_canMergeIDCounter(2)
   , m_debugMode(NoDebug)
 {
   if(s_instanceFlag)
@@ -93,13 +98,14 @@ void CommandManager::doCommand(
   
   cmd->setCanMergeID(canMergeID);
 
-  bool canMerge = m_undoStack.size() > 0 && 
-    cmd->canMerge(m_undoStack[m_undoStack.size()-1].topLevelCmd.data());
+  int canMerge = m_undoStack.size() == 0 
+    ? NoCanMerge
+    : cmd->canMerge(m_undoStack[m_undoStack.size()-1].topLevelCmd.data());
 
   bool subCmd = m_undoStack.size() != 0 && 
     !m_undoStack[m_undoStack.size()-1].succeeded;
     
-  if(!subCmd && cmd->canUndo() && !canMerge)
+  if(!subCmd && cmd->canUndo() && canMerge == NoCanMerge)
   {
     clearRedoStack();
     pushTopCommand(cmd, false);
@@ -111,8 +117,10 @@ void CommandManager::doCommand(
   try
   {
     preDoCommand(cmd);
+
     if(!cmd->doIt())
       FabricException::Throw("");
+
     postDoCommand(cmd);
   }
    
@@ -121,38 +129,30 @@ void CommandManager::doCommand(
     cleanupUnfinishedCommandsAndThrow(cmd, QString(e.what()));
   }
 
-
-
   // If subCmd, push it.
   if(cmd->canUndo())
   {
     if(subCmd)
       pushLowCommand(cmd);
    
-    else if(!subCmd && !canMerge)
+    else if(!subCmd && canMerge == NoCanMerge)
       m_undoStack[m_undoStack.size()-1].succeeded = true;
   }
 
-  if(canMerge)
+  if(canMergeID != NoCanMergeID && canMerge != NoCanMerge)
   {
     cmd->merge(m_undoStack[m_undoStack.size()-1].topLevelCmd.data());
     QSharedPointer< BaseCommand > prt(cmd);
     m_undoStack[m_undoStack.size()-1].topLevelCmd = prt;
- 
-    emit commandDone(
-      cmd, 
-      false, // Don't add the command to the app stack, 
-      true // replace the previous logged text
-      );
   }
 
-  else if(!subCmd)
-  {
+  if(!subCmd)
     emit commandDone(
       cmd, 
-      cmd->canUndo(), 
-      false);
-  }
+      canMerge != NoCanMerge ? false : cmd->canUndo(), 
+      canMergeID,
+      canMerge
+      );
 
   if(m_debugMode != NoDebug)
     std::cout 
@@ -171,7 +171,7 @@ void CommandManager::undoCommand()
       "CommandManager::undoCommand",
       "Nothing to undo",
       "",
-      LOG);
+      FabricException::LOG);
 
     return;
   }
@@ -254,7 +254,7 @@ void CommandManager::redoCommand()
       "CommandManager::redoCommand", 
       "Nothing to redo",
       "",
-      LOG);
+      FabricException::LOG);
 
     return;
   }

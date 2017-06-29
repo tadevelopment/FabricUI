@@ -9,7 +9,7 @@
 #include "OpenKLOptionsTargetEditorCommand.h"
 #include <FabricUI/Viewports/ViewportWidget.h>
 #include <FabricUI/Commands/KLCommandManager.h>
-#include <FabricUI/Commands/CommandArgHelpers.h>
+#include <FabricUI/Commands/CommandHelpers.h>
 #include <FabricUI/Application/FabricException.h>
 
 using namespace FabricUI;
@@ -150,10 +150,10 @@ QString OpenKLOptionsTargetEditorCommand::getHelp()
   argsHelp["editorTitle"] = "Title of the widget";
   argsHelp["groupName"] = "Name of the options' group";
   
-  return CommandArgHelpers::createHelpFromRTValArgs(
+  return CommandHelpers::createHelpFromRTValArgs(
+    this,
     "Open a Qt editor to edit a KL OptionsTarget",
-    argsHelp,
-    this);
+    argsHelp);
 }
 
 QString OpenKLOptionsTargetEditorCommand::getHistoryDesc()
@@ -166,7 +166,7 @@ QString OpenKLOptionsTargetEditorCommand::getHistoryDesc()
   argsDesc["editorTitle"] = getRTValArgValue(
     "editorTitle").getStringCString();
 
-  return CommandArgHelpers::createHistoryDescFromArgs(
-    argsDesc,
-    this);
+  return CommandHelpers::createHistoryDescFromArgs(
+    this,
+    argsDesc);
 }

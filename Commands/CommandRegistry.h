@@ -16,7 +16,7 @@ class CommandRegistry : public Util::BaseFactoryRegistry
 {
   /**
     CommandRegistry registers C++ command-factories and creates commands from them. 
-    When a command is registered, the signal `commandRegistered` is emitted. When 
+    When a command is registered, the signal `registrationDone` is emitted. When 
     specialized in Python , the same registry is shared between C++ and Python,
     so commands implemented in Python can be created from C++ and vice versa.
     
@@ -71,7 +71,7 @@ class CommandRegistry : public Util::BaseFactoryRegistry
     /// \param cmdName The name of the command
     /// \param cmdType Object type
     /// \param implType Implementation : C++ or Python
-    void commandRegistered(
+    void registrationDone(
       QString const&cmdName,
       QString const&cmdType,
       QString const&implType
@@ -91,11 +91,11 @@ class CommandRegistry : public Util::BaseFactoryRegistry
       );
     
   protected:
-    /// Informs a command has been registered. 
+    /// Informs that a command has been registered. 
     /// \param cmdName The name of the command
     /// \param cmdType Object type
     /// \param implType Implementation : C++ or Python
-    virtual void commandIsRegistered(
+    virtual void commandRegistered(
       QString const&cmdName,
       QString const&cmdType,
       QString const&implType

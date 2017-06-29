@@ -3,6 +3,7 @@
 //
 
 #include "KLCommand.h"
+#include "CommandManager.h"
 #include "KLCommandHelpers.h"
 #include <FabricUI/Application/FabricException.h>
 
@@ -105,12 +106,12 @@ int KLCommand::getCanMergeID()
   return KLCommandHelpers::getKLCommandCanMergeID(m_klCmd);
 }
 
-bool KLCommand::canMerge(
+int KLCommand::canMerge(
   BaseCommand *prevCmd) 
 {
   KLCommand* scriptCmd = qobject_cast<KLCommand*>(prevCmd);
   if(scriptCmd == 0)
-    return false;
+    return CommandManager::NoCanMerge;
   return KLCommandHelpers::canMergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
 }
 

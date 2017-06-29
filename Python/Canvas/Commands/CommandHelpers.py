@@ -5,7 +5,7 @@
 from FabricEngine.FabricUI import Util, Commands as CppCommands 
 from FabricEngine.Canvas.Application.FabricApplicationStates import *
 
-class CommandArgHelpers:
+class CommandHelpers:
 
     @staticmethod
     def __IsPyStringArg(arg):
@@ -31,14 +31,14 @@ class CommandArgHelpers:
             for key, arg in args.iteritems():
 
                 # CppCommands.BaseRTValScriptableCommand
-                if CppCommands.CommandArgHelpers.isRTValScriptableCommand(cmd):
+                if CppCommands.CommandHelpers.isRTValScriptableCommand(cmd):
 
                     # The input arg is a RTVal, cast it to JSON.
-                    if CommandArgHelpers.__IsPyRTValArg(arg):
+                    if CommandHelpers.__IsPyRTValArg(arg):
                         arg = arg.getJSONStr()
 
                     else:
-                        rtValType = CppCommands.CommandArgHelpers.getRTValCommandArgType(key, cmd)
+                        rtValType = CppCommands.CommandHelpers.getRTValCommandArgType(cmd, key)
                         if rtValType == "None":
                             arg = None
                         else:
@@ -48,11 +48,11 @@ class CommandArgHelpers:
                             # If the input arg is a string and the cmd arg is not, 
                             # assume the input arg is already the JSON. Otherwise 
                             # we create the JSON from the pyton arg.
-                            if not isArgRTVal and not (CommandArgHelpers.__IsPyStringArg(arg) and not isArgStr):
+                            if not isArgRTVal and not (CommandHelpers.__IsPyStringArg(arg) and not isArgStr):
                                 castArg = True
                                 # Check if the string has quotes.
                                 # If so, we assume that it's already a JSON
-                                if CommandArgHelpers.__IsPyStringArg(arg) and isArgStr and len(arg) > 0:
+                                if CommandHelpers.__IsPyStringArg(arg) and isArgStr and len(arg) > 0:
                                     first = arg[0] == "'" or arg[0] == "\"" 
                                     last = arg[len(arg)-1] == "'" or arg[len(arg)-1] == "\"" 
                                     castArg = not first and not last
@@ -70,11 +70,11 @@ class CommandArgHelpers:
                                         arg = None
         
                 # CppCommands.BaseScriptableCommand, all in strings
-                elif CppCommands.CommandArgHelpers.isScriptableCommand(cmd):
-                    if CommandArgHelpers.__IsPyRTValArg(arg):
+                elif CppCommands.CommandHelpers.isScriptableCommand(cmd):
+                    if CommandHelpers.__IsPyRTValArg(arg):
                         pathValue = Util.RTValUtil.toRTVal(arg)
                         val = Util.RTValUtil.toRTVal(pathValue.value)
-                        if CommandArgHelpers.__IsPyRTValArg(arg) and Util.RTValUtil.getType(val) == 'String':
+                        if CommandHelpers.__IsPyRTValArg(arg) and Util.RTValUtil.getType(val) == 'String':
                             arg = val.getSimpleType()
                     else:
                         arg = str(arg)
@@ -97,11 +97,11 @@ class CommandArgHelpers:
 
             for key, arg in args.iteritems():
             
-                if not CommandArgHelpers.__IsPyRTValArg(arg):
-                    rtValType = CppCommands.CommandArgHelpers.getRTValCommandArgType(key, cmd)
+                if not CommandHelpers.__IsPyRTValArg(arg):
+                    rtValType = CppCommands.CommandHelpers.getRTValCommandArgType(cmd, key)
                     pyRTValType = getattr(client.RT.types, rtValType)
                 
-                    if CommandArgHelpers.__IsPyStringArg(arg) and rtValType != "String":
+                    if CommandHelpers.__IsPyStringArg(arg) and rtValType != "String":
                         rtVal = pyRTValType()   
                         rtVal.setJSON(arg)  
                         arg = client.RT.types.RTVal(rtVal)                 
@@ -120,29 +120,29 @@ class CommandArgHelpers:
     def CastAndCheckCmdArgs(cmd, args):
         """ \internal, casts the commands's args depending of their types.
         """
-        if not CppCommands.CommandArgHelpers.isScriptableCommand(cmd):
+        if not CppCommands.CommandHelpers.isScriptableCommand(cmd):
             raise Exception(
-                "CommandManager.CommandArgHelpers.CastAndCheckCmdArgs, error: Command '" +
+                "CommandManager.CommandHelpers.CastAndCheckCmdArgs, error: Command '" +
                 str(cmd.getName()) + "' is not scriptable" )
 
         # If the command is a RTValScriptable and its RTVal args type have
         # been set, call checkRTValCommandArgs, checkCommandArgs otherwise.
         isRTValCommand = False
         for key, arg in args.iteritems():
-            if CppCommands.CommandArgHelpers.hasCommandArg(key, cmd) is False:
+            if CppCommands.CommandHelpers.hasCommandArg(cmd, key) is False:
                 raise Exception(
-                    "CommandManager.CommandArgHelpers.CastAndCheckCmdArgs, error: arg '" + 
+                    "CommandManager.CommandHelpers.CastAndCheckCmdArgs, error: arg '" + 
                     str(key) + "' doesn't exist" )
 
-            if CppCommands.CommandArgHelpers.isRTValScriptableCommand(cmd):
-                if CommandArgHelpers.__IsPyRTValArg(arg):
+            if CppCommands.CommandHelpers.isRTValScriptableCommand(cmd):
+                if CommandHelpers.__IsPyRTValArg(arg):
                     isRTValCommand = True
                     break
 
         if isRTValCommand:
-            return True, CommandArgHelpers.CastCmdArgsToRTVal(cmd, args)
+            return True, CommandHelpers.CastCmdArgsToRTVal(cmd, args)
         else:
-            return False, CommandArgHelpers.__CastCmdArgsToStr(cmd, args)
+            return False, CommandHelpers.__CastCmdArgsToStr(cmd, args)
 
     ### CommandManagerQtCallback
     @staticmethod
@@ -152,26 +152,26 @@ class CommandArgHelpers:
         """
         desc = 'Commands.' + cmd.getName()
         
-        if CppCommands.CommandArgHelpers.isScriptableCommand(cmd):
+        if CppCommands.CommandHelpers.isScriptableCommand(cmd):
             try:
-                keys = CppCommands.CommandArgHelpers.getCommandArgKeys(cmd)
+                keys = CppCommands.CommandHelpers.getCommandArgKeys(cmd)
                 desc += '('
                 first = True
                 
                 for key in keys:
                     # Log only loggable commands.
-                    if (CppCommands.CommandArgHelpers.isCommandArgSet(key, cmd) and 
-                        not CppCommands.CommandArgHelpers.isCommandArg(key, CppCommands.CommandArgFlags.DONT_LOG_ARG, cmd)):
+                    if (CppCommands.CommandHelpers.isCommandArgSet(cmd, key) and 
+                        not CppCommands.CommandHelpers.hasCommandFlag(cmd, key, CppCommands.CommandArgFlags.DONT_LOG_ARG)):
 
                         argdesc = str(key) + '='
 
                         # RTValScriptableCommand, arguments are RTVal.
-                        if CppCommands.CommandArgHelpers.isRTValScriptableCommand(cmd):
-                            pathValue = CppCommands.CommandArgHelpers.getRTValCommandArg(key, cmd)
+                        if CppCommands.CommandHelpers.isRTValScriptableCommand(cmd):
+                            pathValue = CppCommands.CommandHelpers.getRTValCommandArg(cmd, key)
 
                             path = pathValue.path.getSimpleType()
                             if path:                       
-                                argdesc += "\"" + "<" + path + ">" + "\"" 
+                                argdesc += "\"" + CppCommands.CommandHelpers.castToPathValuePath(path) + "\"" 
                                 
                             else:
                                 rtVal = Util.RTValUtil.toRTVal(pathValue.value)
@@ -189,11 +189,11 @@ class CommandArgHelpers:
                                             argdesc += str(pythonVal)
                                     # JSON
                                     else:
-                                        argdesc += CppCommands.CommandArgHelpers.encodeJSON(str(Util.RTValUtil.toJSON(rtVal)))
+                                        argdesc += CppCommands.CommandHelpers.encodeJSON(str(Util.RTValUtil.toJSON(rtVal)))
 
                         # ScriptableCommand, arguments are Strings.
                         else:
-                            argdesc += str(CppCommands.CommandArgHelpers.getCommandArg(key, cmd))
+                            argdesc += str(CppCommands.CommandHelpers.getCommandArg(cmd, key))
    
                         if argdesc:
                           if not first:

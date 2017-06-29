@@ -17,10 +17,6 @@
 namespace FabricUI {
 namespace Application {
 
-#define NOTHING 0
-#define LOG 1
-#define THROW 2
-
 class FabricException : public std::exception
 {
   /**
@@ -35,6 +31,10 @@ class FabricException : public std::exception
     - FabricCore Exception
   */
   public: 
+    static int NOTHING;
+    static int THROW;
+    static int LOG;
+
     FabricException(
       QString const&message
       );
