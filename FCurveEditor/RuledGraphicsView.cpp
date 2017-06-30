@@ -20,8 +20,8 @@ class RuledGraphicsView::GraphicsView : public QGraphicsView
   typedef QGraphicsView Parent;
   RuledGraphicsView* m_parent;
   enum State { PANNING, SELECTING, NOTHING } m_state;
-  QRectF m_selectionRect;
-  QPoint m_lastMousePos;
+  QRectF m_selectionRect; // in scene space
+  QPoint m_lastMousePos; // in widget space
 public:
   GraphicsView( RuledGraphicsView* parent )
     : m_parent( parent )
@@ -48,7 +48,8 @@ protected:
     if( event->isAccepted() )
       return;
 
-    if( event->button() == Qt::LeftButton )
+    if( m_parent->m_rectangleSelectionEnabled &&
+      event->button() == Qt::LeftButton )
     {
       m_state = SELECTING;
       m_selectionRect.setTopLeft( this->mapToScene( event->pos() ) );
@@ -80,7 +81,10 @@ protected:
   void mouseReleaseEvent( QMouseEvent *event ) FTL_OVERRIDE
   {
     if( m_state == SELECTING )
+    {
       this->update();
+      emit m_parent->rectangleSelectReleased( m_selectionRect );
+    }
     m_state = NOTHING;
     Parent::mouseReleaseEvent( event );
   }
@@ -139,6 +143,8 @@ RuledGraphicsView::RuledGraphicsView()
 {
   QGridLayout* lay = new QGridLayout();
   lay->setSpacing( 0 ); lay->setMargin( 0 );
+
+  this->enableRectangleSelection( true );
 
   // HACK / TODO : remove
   this->setStyleSheet( "background-color: #222; border: #000;" );

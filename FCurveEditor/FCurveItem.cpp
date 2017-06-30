@@ -132,6 +132,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     {
       m_parent->m_parent->clearHandleSelection();
       m_parent->m_parent->addHandleToSelection( m_parent->m_index );
+      m_parent->setTangentsVisible( true );
       emit m_parent->m_parent->interactionBegin();
     }
     void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
@@ -289,7 +290,14 @@ void FCurveItem::addHandleToSelection( size_t i )
 {
   m_selectedHandles.insert( i );
   m_handles[i]->setHandleSelected( true );
-  m_handles[i]->setTangentsVisible( m_selectedHandles.size() == 1 );
+}
+
+void FCurveItem::rectangleSelect( const QRectF& r )
+{
+  this->clearHandleSelection();
+  for( size_t i = 0; i < m_handles.size(); i++ )
+    if( r.contains( m_handles[i]->scenePos() ) )
+      this->addHandleToSelection( i );
 }
 
 void FCurveItem::addHandle( size_t i )

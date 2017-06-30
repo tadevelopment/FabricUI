@@ -35,6 +35,9 @@ public:
 protected:
   void mousePressEvent( QMouseEvent * ) FTL_OVERRIDE;
 
+private slots:
+  void onRectangleSelectReleased( const QRectF& );
+
 signals:
   void interactionBegin();
   void interactionEnd();

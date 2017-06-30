@@ -32,6 +32,7 @@ class FCurveItem : public QGraphicsWidget
 public:
   FCurveItem();
   void setCurve( AbstractFCurveModel* );
+  void rectangleSelect( const QRectF& );
 
 signals:
   void interactionBegin();

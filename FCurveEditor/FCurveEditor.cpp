@@ -22,6 +22,15 @@ FCurveEditor::FCurveEditor()
 
   connect( m_curveItem, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
   connect( m_curveItem, SIGNAL( interactionEnd() ), this, SIGNAL( interactionEnd() ) );
+  connect(
+    this, SIGNAL( rectangleSelectReleased( const QRectF& ) ),
+    this, SLOT( onRectangleSelectReleased( const QRectF& ) )
+  );
+}
+
+void FCurveEditor::onRectangleSelectReleased( const QRectF& r )
+{
+  m_curveItem->rectangleSelect( r );
 }
 
 FCurveEditor::~FCurveEditor()

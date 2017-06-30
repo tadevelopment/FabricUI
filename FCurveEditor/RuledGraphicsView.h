@@ -22,6 +22,7 @@ class RuledGraphicsView : public QWidget
 
   Q_PROPERTY( size_t rulersSize READ rulersSize WRITE setRulersSize )
   size_t m_rulersSize;
+  bool m_rectangleSelectionEnabled;
 
 public:
   RuledGraphicsView();
@@ -34,6 +35,10 @@ public:
   void fitInView( const QRectF );
   inline size_t rulersSize() const { return m_rulersSize; }
   void setRulersSize( const size_t );
+  inline void enableRectangleSelection( bool e ) { m_rectangleSelectionEnabled = e; }
+
+signals:
+  void rectangleSelectReleased( const QRectF& ) const;
 
 protected:
   void wheelEvent( QWheelEvent * ) FTL_OVERRIDE;
