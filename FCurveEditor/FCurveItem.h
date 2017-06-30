@@ -28,6 +28,7 @@ class FCurveItem : public QGraphicsWidget
   void addHandle( size_t );
   void clearHandleSelection();
   void addHandleToSelection( size_t );
+  void moveSelectedHandles( QPointF delta );
 
 public:
   FCurveItem();

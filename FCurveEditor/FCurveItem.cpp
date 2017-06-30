@@ -103,6 +103,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     typedef QGraphicsRectItem Parent;
     bool m_selected;
     bool m_hovered;
+    bool m_hasMovedBeforeRelease;
     void updateColor()
     {
       this->setBrush( m_hovered ? QColor( 255, 255, 255 ) :
@@ -130,18 +131,30 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
   protected:
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
-      m_parent->m_parent->clearHandleSelection();
+      m_hasMovedBeforeRelease = false;
+      if( !m_selected )
+        m_parent->m_parent->clearHandleSelection();
       m_parent->m_parent->addHandleToSelection( m_parent->m_index );
-      m_parent->setTangentsVisible( true );
       emit m_parent->m_parent->interactionBegin();
     }
     void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
       AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
       const size_t index = m_parent->m_index;
-      Handle h = curve->getHandle( index );
-      h.pos = event->scenePos();
-      curve->setHandle( index, h );
+      const Handle h = curve->getHandle( index );
+      m_hasMovedBeforeRelease = true;
+      m_parent->m_parent->moveSelectedHandles( event->scenePos() - h.pos );
+    }
+    void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
+    {
+      Parent::mouseReleaseEvent( event );
+      if( !m_hasMovedBeforeRelease )
+      {
+        m_parent->m_parent->clearHandleSelection();
+        m_parent->m_parent->addHandleToSelection( m_parent->m_index );
+        m_parent->setTangentsVisible( true );
+      }
+      emit m_parent->m_parent->interactionEnd();
     }
     void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE
     {
@@ -154,11 +167,6 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       m_hovered = false;
       this->updateColor();
       this->unsetCursor();
-    }
-    void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
-    {
-      Parent::mouseReleaseEvent( event );
-      emit m_parent->m_parent->interactionEnd();
     }
   };
   Center* m_center;
@@ -298,6 +306,16 @@ void FCurveItem::rectangleSelect( const QRectF& r )
   for( size_t i = 0; i < m_handles.size(); i++ )
     if( r.contains( m_handles[i]->scenePos() ) )
       this->addHandleToSelection( i );
+}
+
+void FCurveItem::moveSelectedHandles( QPointF delta )
+{
+  for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
+  {
+    Handle h = m_curve->getHandle( *it );
+    h.pos += delta;
+    m_curve->setHandle( *it, h );
+  }
 }
 
 void FCurveItem::addHandle( size_t i )
