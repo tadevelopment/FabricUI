@@ -29,7 +29,6 @@ public:
   QGraphicsView* view();
 
   // TODO : custom scale (see FCurveEditor::Ruler's properties)
-  // TODO : fixed-point under the cursor when zooming (currently on the middle instead)
   // TODO : fix the "smoothZoom" on Linux
 
   void fitInView( const QRectF );
@@ -49,7 +48,14 @@ private slots:
 
 private:
 
-  void wheelEvent( int xDelta, int yDelta );
+  void wheelEvent(
+    int xDelta,
+    int yDelta,
+    // center (in scene-space) of the scaling
+    // it will be a fixed-point in the view coordinates
+    QPointF scalingCenter
+  );
+  void centeredScale( qreal x, qreal y );
 
   class GraphicsView;
   GraphicsView* m_view;
@@ -59,9 +65,11 @@ private:
   Ruler* m_vRuler;
 
   float m_scrollSpeed;
+  bool m_zoomOnCursor;
 
   // Smooth zoom (animated)
   bool m_smoothZoom;
+  QPointF m_scalingCenter;
   QPointF m_targetScale;
   QTimer* m_timer;
 };

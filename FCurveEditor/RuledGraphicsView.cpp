@@ -122,7 +122,8 @@ protected:
   {
     m_parent->wheelEvent(
       m_isVertical ? 0 : e->delta(),
-      m_isVertical ? e->delta() : 0
+      m_isVertical ? e->delta() : 0,
+      m_parent->m_view->mapToScene( m_parent->m_view->mapFromGlobal( e->globalPos() ) )
     );
     e->accept();
   }
@@ -136,6 +137,7 @@ protected:
 RuledGraphicsView::RuledGraphicsView()
   : m_view( new GraphicsView( this ) )
   , m_scrollSpeed( 1 / 800.0f )
+  , m_zoomOnCursor( true )
   , m_smoothZoom( true )
   // HACK : update m_targetScale when methods such as fitInView() are called
   , m_targetScale( QPointF( 1E2, 1E2 ) )
@@ -178,11 +180,31 @@ void RuledGraphicsView::setRulersSize( const size_t s )
 
 void RuledGraphicsView::wheelEvent( QWheelEvent * e )
 {
-  this->wheelEvent( e->delta(), e->delta() );
+  this->wheelEvent( e->delta(), e->delta(), m_view->mapToScene( m_view->mapFromGlobal( e->globalPos() ) ) );
 }
 
-void RuledGraphicsView::wheelEvent( int xDelta, int yDelta )
+void RuledGraphicsView::centeredScale( qreal x, qreal y )
 {
+  if( m_zoomOnCursor )
+  {
+    // The rule is that the scaling center must have the same pixel
+    // coordinates before and after the scaling
+    QPoint viewCenter = QPoint( m_view->width(), m_view->height() ) / 2;
+    QPoint scalingCenterPxOffset = m_view->mapFromScene( m_scalingCenter ) - viewCenter;
+    m_view->centerOn( m_scalingCenter );
+    m_view->scale( x, y );
+    QPoint newScalingCenterPxOffset = m_view->mapFromScene( m_scalingCenter ) - viewCenter;
+    m_view->centerOn( m_view->mapToScene( viewCenter + ( newScalingCenterPxOffset - scalingCenterPxOffset ) ) );
+  }
+  else
+    m_view->scale( x, y );
+
+  updateRulersRange();
+}
+
+void RuledGraphicsView::wheelEvent( int xDelta, int yDelta, QPointF scalingCenter )
+{
+  m_scalingCenter = scalingCenter;
   float sX = ( 1 + xDelta * m_scrollSpeed );
   float sY = ( 1 + yDelta * m_scrollSpeed );
   if( m_smoothZoom )
@@ -193,10 +215,7 @@ void RuledGraphicsView::wheelEvent( int xDelta, int yDelta )
     tick();
   }
   else
-  {
-    m_view->scale( sX, sY );
-    updateRulersRange();
-  }
+    centeredScale( sX, sY );
 }
 
 void RuledGraphicsView::fitInView( const QRectF r )
@@ -230,11 +249,14 @@ void RuledGraphicsView::tick()
   > 0.01 ) // If we are close enough to the target, we stop the animation
   {
     const float ratio = 0.2; // TODO : property
-    currentScale.setX( ( 1 - ratio ) * currentScale.x() + ratio * m_targetScale.x() );
-    currentScale.setY( ( 1 - ratio ) * currentScale.y() + ratio * m_targetScale.y() );
-    m_view->resetTransform();
-    m_view->scale( currentScale.x(), currentScale.y() );
-    updateRulersRange();
+    QPointF newScale(
+      ( 1 - ratio ) * currentScale.x() + ratio * m_targetScale.x(),
+      ( 1 - ratio ) * currentScale.y() + ratio * m_targetScale.y()
+    );
+    this->centeredScale(
+      newScale.x() / currentScale.x(),
+      newScale.y() / currentScale.y()
+    );
   }
   else
     m_timer->stop();
