@@ -15,7 +15,7 @@ PathValueResolverRegistry* PathValueResolverRegistry::s_registry = 0;
 PathValueResolverRegistry::PathValueResolverRegistry()
  : BaseFactoryRegistry()
 {
-  if(!s_instanceFlag == false)
+  if(s_instanceFlag == false)
     s_instanceFlag = true;
 }
 
