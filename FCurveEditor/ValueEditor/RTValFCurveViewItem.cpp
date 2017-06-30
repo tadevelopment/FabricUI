@@ -31,7 +31,7 @@ RTValFCurveViewItem::RTValFCurveViewItem(
 
 RTValFCurveViewItem::~RTValFCurveViewItem()
 {
-  delete m_editor;
+  //delete m_editor; // HACK;TODO : delete and fix crash when closing Canvas
   delete m_model;
 }
 
