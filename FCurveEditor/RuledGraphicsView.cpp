@@ -6,6 +6,7 @@
 #include <FabricUI/FCurveEditor/Ruler.h>
 #include <QGraphicsView>
 #include <QLayout>
+#include <QScrollBar>
 
 #include <cmath>
 #include <qevent.h>
@@ -16,12 +17,16 @@ using namespace FabricUI::FCurveEditor;
 
 class RuledGraphicsView::GraphicsView : public QGraphicsView
 {
+  typedef QGraphicsView Parent;
   RuledGraphicsView* m_parent;
+  enum State { PANNING, SELECTING, NOTHING } m_state;
+  QRectF m_selectionRect;
+  QPoint m_lastMousePos;
 public:
   GraphicsView( RuledGraphicsView* parent )
     : m_parent( parent )
   {
-    this->setDragMode( QGraphicsView::ScrollHandDrag );
+    this->setDragMode( QGraphicsView::NoDrag ); // Reimplementing it ourself to support both panning and selection
     this->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     this->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
   }
@@ -29,10 +34,67 @@ protected:
   // HACK ? (move the parent's handler here instead ?)
   void wheelEvent( QWheelEvent * e ) FTL_OVERRIDE { return e->ignore(); }
   void drawBackground( QPainter *, const QRectF & ) FTL_OVERRIDE;
-  void scrollContentsBy( int dx, int dy ) FTL_OVERRIDE // TODO : is this the right handler ?
+  void mousePressEvent( QMouseEvent *event ) FTL_OVERRIDE
   {
-    QGraphicsView::scrollContentsBy( dx, dy );
-    m_parent->updateRulersRange();
+    m_state = NOTHING;
+    if( event->button() == Qt::MiddleButton || event->modifiers().testFlag( Qt::AltModifier ) )
+    {
+      m_lastMousePos = event->pos();
+      m_state = PANNING;
+      return event->accept();
+    }
+
+    Parent::mousePressEvent( event ); // passing the event to the scene
+    if( event->isAccepted() )
+      return;
+
+    if( event->button() == Qt::LeftButton )
+    {
+      m_state = SELECTING;
+      m_selectionRect.setTopLeft( this->mapToScene( event->pos() ) );
+      m_selectionRect.setSize( QSizeF( 0, 0 ) );
+    }
+  }
+  void mouseMoveEvent( QMouseEvent *event ) FTL_OVERRIDE
+  {
+    switch( m_state )
+    {
+    case PANNING:
+    {
+      QScrollBar *hBar = horizontalScrollBar();
+      QScrollBar *vBar = verticalScrollBar();
+      QPoint delta = event->pos() - m_lastMousePos;
+      m_lastMousePos = event->pos();
+      hBar->setValue( hBar->value() + ( isRightToLeft() ? delta.x() : -delta.x() ) );
+      vBar->setValue( vBar->value() - delta.y() );
+      m_parent->updateRulersRange();
+    } break;
+    case SELECTING:
+    {
+      m_selectionRect.setBottomRight( this->mapToScene( event->pos() ) );
+      this->update();
+    } break;
+    }
+    Parent::mouseMoveEvent( event );
+  }
+  void mouseReleaseEvent( QMouseEvent *event ) FTL_OVERRIDE
+  {
+    if( m_state == SELECTING )
+      this->update();
+    m_state = NOTHING;
+    Parent::mouseReleaseEvent( event );
+  }
+  void drawForeground( QPainter * p, const QRectF & r ) FTL_OVERRIDE
+  {
+    if( m_state == SELECTING )
+    {
+      QColor col( 0, 128, 255 );
+      col.setAlpha( 128 );
+      p->setPen( col );
+      p->drawRect( m_selectionRect );
+      col.setAlpha( 32 );
+      p->fillRect( m_selectionRect, col );
+    }
   }
 };
 
