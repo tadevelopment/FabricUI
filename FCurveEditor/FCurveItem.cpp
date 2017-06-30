@@ -75,7 +75,7 @@ public:
         .mapRect( QRectF( widget->geometry() ) ).intersected( this->boundingRect() );
       QPen pen; pen.setCosmetic( true );
       pen.setWidthF( 2 );
-      pen.setColor( QColor( 0, 255, 255 ) );
+      pen.setColor( QColor( 128, 128, 128 ) );
       painter->setPen( pen );
       const size_t n = widget->width() / 8;
       for( size_t i = 0; i < n; i++ )
@@ -101,19 +101,37 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
   {
     HandleWidget* m_parent;
     typedef QGraphicsRectItem Parent;
+    bool m_selected;
+    bool m_hovered;
+    void updateColor()
+    {
+      this->setBrush( m_hovered ? QColor( 255, 255, 255 ) :
+        m_selected ? QColor( 0, 128, 255 )
+        : QColor( 128, 128, 128 )
+      );
+    }
   public:
     Center( HandleWidget* parent )
       : QGraphicsRectItem( parent )
       , m_parent( parent )
+      , m_selected( false )
+      , m_hovered( false )
     {
       this->setRect( QRectF( -4, -4, 8, 8 ) );
       this->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
-      this->setBrush( QColor( 255, 255, 255 ) );
       this->setAcceptHoverEvents( true );
+      this->updateColor();
     };
+    void setHandleSelected( bool selected )
+    {
+      m_selected = selected;
+      this->updateColor();
+    }
   protected:
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
+      m_parent->m_parent->clearHandleSelection();
+      m_parent->m_parent->addHandleToSelection( m_parent->m_index );
       emit m_parent->m_parent->interactionBegin();
     }
     void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
@@ -124,8 +142,18 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       h.pos = event->scenePos();
       curve->setHandle( index, h );
     }
-    void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::CrossCursor ); }
-    void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->unsetCursor(); }
+    void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE
+    {
+      m_hovered = true;
+      this->updateColor();
+      this->setCursor( Qt::CrossCursor );
+    }
+    void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE
+    {
+      m_hovered = false;
+      this->updateColor();
+      this->unsetCursor();
+    }
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
       Parent::mouseReleaseEvent( event );
@@ -202,6 +230,12 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       m_line->setLine( QLineF( QPointF( 0, 0 ), p ) );
       m_end->m_posW->setPos( p );
     }
+
+    inline void setVisible( bool visible )
+    {
+      m_line->setVisible( visible );
+      m_end->setVisible( visible );
+    }
   };
   Tangent m_inT, m_outT;
 
@@ -214,12 +248,26 @@ public:
     , m_inT( this, true )
     , m_outT( this, false )
   {
+    this->setTangentsVisible( false );
   }
   void setValue( const Handle& h )
   {
     this->setPos( h.pos );
     m_inT.setValue( h );
     m_outT.setValue( h );
+  }
+
+  inline void setTangentsVisible( bool visible )
+  {
+    m_inT.setVisible( visible );
+    m_outT.setVisible( visible );
+  }
+
+  inline void setHandleSelected( bool selected )
+  {
+    m_center->setHandleSelected( selected );
+    if( !selected )
+      this->setTangentsVisible( false );
   }
 };
 
@@ -228,6 +276,20 @@ FCurveItem::FCurveItem()
   , m_curveShape( new FCurveShape( this ) )
 {
   m_curveShape->setParentItem( this );
+}
+
+void FCurveItem::clearHandleSelection()
+{
+  for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
+    m_handles[*it]->setHandleSelected( false );
+  m_selectedHandles.clear();
+}
+
+void FCurveItem::addHandleToSelection( size_t i )
+{
+  m_selectedHandles.insert( i );
+  m_handles[i]->setHandleSelected( true );
+  m_handles[i]->setTangentsVisible( m_selectedHandles.size() == 1 );
 }
 
 void FCurveItem::addHandle( size_t i )

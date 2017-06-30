@@ -7,6 +7,7 @@
 
 #include <FabricUI/FCurveEditor/AbstractFCurveModel.h>
 #include <QGraphicsWidget>
+#include <set>
 
 namespace FabricUI
 {
@@ -22,8 +23,11 @@ class FCurveItem : public QGraphicsWidget
   FCurveShape* m_curveShape;
   class HandleWidget;
   std::vector<HandleWidget*> m_handles;
+  std::set<size_t> m_selectedHandles;
 
   void addHandle( size_t );
+  void clearHandleSelection();
+  void addHandleToSelection( size_t );
 
 public:
   FCurveItem();
