@@ -20,7 +20,24 @@ class AnimxFCurveModel : public AbstractFCurveModel, public adsk::ICurve
 {
   Q_OBJECT
 
-  std::vector<adsk::Keyframe> m_keys;
+  struct UIKey
+  {
+    adsk::Keyframe key;
+    size_t uiId;
+  };
+  std::vector<UIKey> m_keys;
+  std::vector<size_t> m_uiIdToIndex;
+
+  inline void swap( const size_t a, const size_t b )
+  {
+    UIKey tmp = m_keys[a];
+    m_keys[a] = m_keys[b];
+    m_keys[b] = tmp;
+    m_keys[a].key.index = a;
+    m_keys[b].key.index = b;
+    m_uiIdToIndex[m_keys[a].uiId] = a;
+    m_uiIdToIndex[m_keys[b].uiId] = b;
+  }
 
 public:
 
@@ -28,8 +45,8 @@ public:
 
   // AbstractFCurveModel
   size_t getHandleCount() const FTL_OVERRIDE { return m_keys.size(); }
-  Handle getHandle( size_t ) const FTL_OVERRIDE;
-  void setHandle( size_t, Handle ) FTL_OVERRIDE;
+  Handle getHandle( size_t uiId ) const FTL_OVERRIDE;
+  void setHandle( size_t uiId, Handle ) FTL_OVERRIDE;
   void addHandle() FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
 
