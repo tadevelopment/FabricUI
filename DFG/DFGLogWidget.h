@@ -25,7 +25,7 @@ namespace FabricUI
       : QPlainTextEdit(parent)
       {}
 
-      void resetFontPointSize()
+      void initFontPointSizeMembers()
       {
         m_fontPointSizeOriginal = this->font().pointSizeF();
         m_fontPointSizeCurrent = m_fontPointSizeOriginal;
@@ -62,7 +62,7 @@ namespace FabricUI
       {
         if (event->modifiers().testFlag(Qt::ControlModifier))
         {
-          m_fontPointSizeCurrent += 0.025 * event->delta();
+          m_fontPointSizeCurrent += 0.0125 * event->delta();
           applyFontPointSize();
           event->accept();
         }

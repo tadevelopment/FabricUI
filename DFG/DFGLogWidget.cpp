@@ -29,7 +29,7 @@ DFGLogWidget::DFGLogWidget( const DFGConfig & config )
 
   m_text = new DFGLogWidgetPlainTextEdit(this);
   m_text->setFont( m_config.fixedFont );
-  m_text->resetFontPointSize();
+  m_text->initFontPointSizeMembers();
   m_text->setReadOnly(true);
   m_text->setContextMenuPolicy( Qt::CustomContextMenu );
   connect(

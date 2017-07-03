@@ -56,7 +56,7 @@ namespace FabricUI
       virtual void highlightLocation(const FabricServices::ASTWrapper::KLLocation * location);
       virtual void clearHighlightedLocations();
 
-      void resetFontPointSize();
+      void initFontPointSizeMembers();
       void applyFontPointSize();
 
     protected:
@@ -77,6 +77,7 @@ namespace FabricUI
     signals:
 
       void documentScrolled(unsigned int);
+      void fontPointSizeChanged(qreal newfontPointSize);
       void openKLFileRequested(KLDeclPtr);
       void newUnsavedChanged();
       void fileSaved();

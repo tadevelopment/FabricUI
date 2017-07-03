@@ -45,7 +45,7 @@ KLSourceCodeWidget::KLSourceCodeWidget(QWidget * parent, FabricServices::ASTWrap
   setWordWrapMode(QTextOption::NoWrap);
   QFontMetrics metrics(config.codeFont);
   setTabStopWidth(metrics.width(QString().fill(' ', config.codeTabWidth)));
-  resetFontPointSize();
+  initFontPointSizeMembers();
 
   QPalette p = palette();
   p.setColor(QPalette::Base, config.codeBackgroundColor);
@@ -534,7 +534,7 @@ void KLSourceCodeWidget::wheelEvent(QWheelEvent *event)
 {
   if (event->modifiers().testFlag(Qt::ControlModifier))
   {
-    m_fontPointSizeCurrent += 0.025 * event->delta();
+    m_fontPointSizeCurrent += 0.0125 * event->delta();
     applyFontPointSize();
     event->accept();
   }
@@ -800,7 +800,7 @@ void KLSourceCodeWidget::clearHighlightedLocations()
   m_isHighlighting = false;
 }
 
-void KLSourceCodeWidget::resetFontPointSize()
+void KLSourceCodeWidget::initFontPointSizeMembers()
 {
   m_fontPointSizeOriginal = this->font().pointSizeF();
   m_fontPointSizeCurrent = m_fontPointSizeOriginal;
@@ -812,6 +812,7 @@ void KLSourceCodeWidget::applyFontPointSize()
   char styleSheet[128];
   sprintf(styleSheet, "font-size: %gpt;", m_fontPointSizeCurrent);
   setStyleSheet(styleSheet);
+  emit fontPointSizeChanged(m_fontPointSizeCurrent);
 }
 
 bool KLSourceCodeWidget::showPopup(bool forParen)
