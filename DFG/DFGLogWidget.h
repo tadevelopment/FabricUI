@@ -43,11 +43,11 @@ namespace FabricUI
       {
         if (event->modifiers().testFlag(Qt::ControlModifier))
         {
-          if (event->key() == Qt::Key_Plus
-            || event->key() == Qt::Key_Minus
-            || event->key() == Qt::Key_0)
+          if (   event->key() == Qt::Key_Plus
+              || event->key() == Qt::Key_Minus
+              || event->key() == Qt::Key_0)
           {
-            if (event->key() == Qt::Key_Plus)  m_fontPointSizeCurrent++;
+            if      (event->key() == Qt::Key_Plus)  m_fontPointSizeCurrent++;
             else if (event->key() == Qt::Key_Minus) m_fontPointSizeCurrent--;
             else                                    m_fontPointSizeCurrent = m_fontPointSizeOriginal;
             applyFontPointSize();
@@ -58,7 +58,7 @@ namespace FabricUI
           QPlainTextEdit::keyPressEvent(event);
       }
 
-      void wheelEvent(QWheelEvent *event)
+      virtual void wheelEvent(QWheelEvent *event)
       {
         if (event->modifiers().testFlag(Qt::ControlModifier))
         {
