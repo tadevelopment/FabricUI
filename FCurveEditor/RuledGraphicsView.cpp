@@ -96,7 +96,9 @@ protected:
     {
       QColor col( 0, 128, 255 );
       col.setAlpha( 128 );
-      p->setPen( col );
+      QPen pen( col );
+      pen.setCosmetic( true );
+      p->setPen( pen );
       p->drawRect( m_selectionRect );
       col.setAlpha( 32 );
       p->fillRect( m_selectionRect, col );
