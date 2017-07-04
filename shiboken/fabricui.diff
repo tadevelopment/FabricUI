@@ -902,9 +902,9 @@ diff -purN FabricUI.orig/fabricui_commands_basescriptablecommand_wrapper.cpp Fab
          }
      }
  
-diff -purN FabricUI.orig/fabricui_commands_CommandHelpers_wrapper.cpp FabricUI/fabricui_commands_CommandHelpers_wrapper.cpp
---- FabricUI.ori/fabricui_commands_CommandHelpers_wrapper.cpp   Thu Jun 29 13:17:03 2017
-+++ FabricUI/fabricui_commands_CommandHelpers_wrapper.cpp   Thu Jun 29 13:01:57 2017
+diff -purN FabricUI.orig/fabricui_commands_commandhelpers_wrapper.cpp FabricUI/fabricui_commands_commandhelpers_wrapper.cpp
+--- FabricUI.ori/fabricui_commands_commandhelpers_wrapper.cpp   Thu Jun 29 13:17:03 2017
++++ FabricUI/fabricui_commands_commandhelpers_wrapper.cpp   Thu Jun 29 13:01:57 2017
 @@ -36,9 +36,25 @@
  
          if (!PyErr_Occurred()) {
