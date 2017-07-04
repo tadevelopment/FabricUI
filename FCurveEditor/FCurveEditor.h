@@ -26,6 +26,8 @@ class FCurveEditor : public RuledGraphicsView
   AbstractFCurveModel* m_model;
   QGraphicsScene* m_scene;
   FCurveItem* m_curveItem;
+  class ValueEditor;
+  ValueEditor* m_valueEditor;
 
 public:
   FCurveEditor();
@@ -34,6 +36,7 @@ public:
 
 protected:
   void mousePressEvent( QMouseEvent * ) FTL_OVERRIDE;
+  void resizeEvent( QResizeEvent * ) FTL_OVERRIDE;
 
 private slots:
   void onRectangleSelectReleased( const QRectF& );

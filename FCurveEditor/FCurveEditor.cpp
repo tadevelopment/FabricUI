@@ -11,10 +11,24 @@
 
 using namespace FabricUI::FCurveEditor;
 
+class FCurveEditor::ValueEditor : public QFrame
+{
+  FCurveEditor* m_parent;
+public:
+  ValueEditor( FCurveEditor* parent )
+    : QFrame( parent )
+    , m_parent( parent )
+  {
+    this->setStyleSheet( "background-color: rgba(32,32,32,128);" );
+    this->resize( 200, 80 );
+  }
+};
+
 FCurveEditor::FCurveEditor()
   : m_model( NULL )
   , m_scene( new QGraphicsScene() )
   , m_curveItem( new FCurveItem() )
+  , m_valueEditor( new ValueEditor( this ) )
 {
   m_scene->setSceneRect( QRectF( -1E8, -1E8, 2 * 1E8, 2 * 1E8 ) );
   this->view()->setScene( m_scene );
@@ -26,6 +40,17 @@ FCurveEditor::FCurveEditor()
     this, SIGNAL( rectangleSelectReleased( const QRectF& ) ),
     this, SLOT( onRectangleSelectReleased( const QRectF& ) )
   );
+}
+
+void FCurveEditor::resizeEvent( QResizeEvent * e )
+{
+  Parent::resizeEvent( e );
+  m_valueEditor->setGeometry( QRect(
+    this->rect().right() - 20 - m_valueEditor->width(),
+    this->rect().top() + 20,
+    m_valueEditor->width(),
+    m_valueEditor->height()
+  ) );
 }
 
 void FCurveEditor::onRectangleSelectReleased( const QRectF& r )
