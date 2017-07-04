@@ -24,21 +24,27 @@ class FCurveItem : public QGraphicsWidget
   class HandleWidget;
   std::vector<HandleWidget*> m_handles;
   std::set<size_t> m_selectedHandles;
+  size_t m_editedHandle;
 
   void addHandle( size_t );
   void clearHandleSelection();
   void addHandleToSelection( size_t );
   void moveSelectedHandles( QPointF delta );
+  void editHandle( size_t );
 
 public:
   FCurveItem();
   void setCurve( AbstractFCurveModel* );
   void rectangleSelect( const QRectF& );
   void deleteSelectedHandles();
+  inline size_t editedHandle() const { return m_editedHandle; }
 
 signals:
   void interactionBegin();
   void interactionEnd();
+  void startEditingHandle() const;
+  void editedHandleValueChanged() const;
+  void stopEditingHandle() const;
 
 private slots:
   void onHandleAdded();

@@ -162,7 +162,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       {
         m_parent->m_parent->clearHandleSelection();
         m_parent->m_parent->addHandleToSelection( m_parent->m_index );
-        m_parent->setTangentsVisible( true );
+        m_parent->m_parent->editHandle( m_parent->m_index );
       }
       emit m_parent->m_parent->interactionEnd();
     }
@@ -303,6 +303,7 @@ void FCurveItem::clearHandleSelection()
   for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
     m_handles[*it]->setHandleSelected( false );
   m_selectedHandles.clear();
+  emit this->stopEditingHandle();
 }
 
 void FCurveItem::addHandleToSelection( size_t i )
@@ -317,6 +318,15 @@ void FCurveItem::rectangleSelect( const QRectF& r )
   for( size_t i = 0; i < m_handles.size(); i++ )
     if( r.contains( m_handles[i]->scenePos() ) )
       this->addHandleToSelection( i );
+  if( m_selectedHandles.size() == 1 )
+    this->editHandle( *m_selectedHandles.begin() );
+}
+
+void FCurveItem::editHandle( size_t i )
+{
+  m_handles[i]->setTangentsVisible( true );
+  m_editedHandle = i;
+  emit this->startEditingHandle();
 }
 
 void FCurveItem::deleteSelectedHandles()
@@ -368,6 +378,8 @@ void FCurveItem::onHandleDeleted( size_t i )
       shiftedSldHdls.insert( *it < i ? *it : ( *it - 1 ) );
   m_selectedHandles = shiftedSldHdls;
   m_curveShape->updateBoundingRect();
+  if( i == m_editedHandle )
+    emit this->stopEditingHandle();
 }
 
 void FCurveItem::onHandleMoved( size_t i )
@@ -376,6 +388,8 @@ void FCurveItem::onHandleMoved( size_t i )
   assert( m_handles.size() == m_curve->getHandleCount() );
   m_handles[i]->setValue( m_curve->getHandle( i ) );
   m_curveShape->updateBoundingRect();
+  if( i == m_editedHandle )
+    emit this->editedHandleValueChanged();
 }
 
 void FCurveItem::setCurve( AbstractFCurveModel* curve )
@@ -390,6 +404,8 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
   for( std::vector<HandleWidget*>::const_iterator it = m_handles.begin(); it < m_handles.end(); it++ )
     delete *it;
   m_handles.clear();
+
+  emit this->stopEditingHandle();
 
   size_t hc = m_curve->getHandleCount();
   for( size_t i = 0; i < hc; i++ )

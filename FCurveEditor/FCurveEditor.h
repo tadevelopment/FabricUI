@@ -41,6 +41,9 @@ protected:
 private slots:
   void onRectangleSelectReleased( const QRectF& );
   void onDeleteSelectedHandles();
+  void onStartEditingHandle();
+  void onEditedHandleValueChanged();
+  void onStopEditingHandle();
 
 signals:
   void interactionBegin();

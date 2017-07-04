@@ -38,18 +38,18 @@ class FCurveEditor::ValueEditor : public QFrame
       m_layout->addWidget( m_label );
       m_layout->addWidget( m_edit );
       this->setLayout( m_layout );
-      m_edit->setText( "0.0" );
-      m_edit->setReadOnly( true ); // TODO : change
+      this->set( 0 );
 
       // HACK : use QSS instead
       this->setStyleSheet( "background-color: none;" );
       m_edit->setStyleSheet( "background-color: rgba(0,0,0,200);" );
     }
+    inline void set( qreal v ) { m_edit->setText( QString::number( v ) ); }
   };
+public:
   FloatEditor* m_x;
   FloatEditor* m_y;
 
-public:
   ValueEditor( FCurveEditor* parent )
     : QFrame( parent )
     , m_parent( parent )
@@ -63,7 +63,7 @@ public:
     m_layout->addWidget( m_x );
     m_layout->addWidget( m_y );
     this->setLayout( m_layout );
-    this->resize( 200, 80 );
+    this->resize( 300, 80 );
   }
 };
 
@@ -83,6 +83,12 @@ FCurveEditor::FCurveEditor()
     this, SIGNAL, FCurveEditor, rectangleSelectReleased, ( const QRectF& ),
     this, SLOT, FCurveEditor, onRectangleSelectReleased, ( const QRectF& )
   );
+  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, startEditingHandle, ( ), this, SLOT, FCurveEditor, onStartEditingHandle, ( ) );
+  QOBJECT_CONNECT(
+    m_curveItem, SIGNAL, FCurveItem, editedHandleValueChanged, ( ),
+    this, SLOT, FCurveEditor, onEditedHandleValueChanged, ( )
+  );
+  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, stopEditingHandle, ( ), this, SLOT, FCurveEditor, onStopEditingHandle, ( ) );
 
   QAction* deleteAction = new QAction( "Delete selected Handles", this );
   deleteAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
@@ -100,6 +106,24 @@ void FCurveEditor::resizeEvent( QResizeEvent * e )
     m_valueEditor->width(),
     m_valueEditor->height()
   ) );
+}
+
+void FCurveEditor::onEditedHandleValueChanged()
+{
+  Handle h = m_model->getHandle( m_curveItem->editedHandle() );
+  m_valueEditor->m_x->set( h.pos.x() );
+  m_valueEditor->m_y->set( h.pos.y() );
+}
+
+void FCurveEditor::onStartEditingHandle()
+{
+  m_valueEditor->setVisible( true );
+  this->onEditedHandleValueChanged();
+}
+
+void FCurveEditor::onStopEditingHandle()
+{
+  m_valueEditor->setVisible( false );
 }
 
 void FCurveEditor::onRectangleSelectReleased( const QRectF& r )
