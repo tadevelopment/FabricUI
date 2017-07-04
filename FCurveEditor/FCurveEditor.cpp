@@ -8,6 +8,9 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QAction>
+#include <QLabel>
+#include <QLineEdit>
+#include <QLayout>
 #include <QDebug>
 
 #include <FabricUI/Util/QtSignalsSlots.h>
@@ -17,15 +20,50 @@ using namespace FabricUI::FCurveEditor;
 class FCurveEditor::ValueEditor : public QFrame
 {
   FCurveEditor* m_parent;
+
+  class FloatEditor : public QWidget
+  {
+    ValueEditor* m_parent;
+    QLabel* m_label;
+    QLineEdit* m_edit;
+  public:
+    FloatEditor( ValueEditor* parent, QString label )
+      : QWidget( parent )
+      , m_parent( parent )
+      , m_label( new QLabel( label ) )
+      , m_edit( new QLineEdit() )
+    {
+      QHBoxLayout* m_layout = new QHBoxLayout();
+      m_layout->setMargin( 0 );
+      m_layout->addWidget( m_label );
+      m_layout->addWidget( m_edit );
+      this->setLayout( m_layout );
+      m_edit->setText( "0.0" );
+      m_edit->setReadOnly( true ); // TODO : change
+
+      // HACK : use QSS instead
+      this->setStyleSheet( "background-color: none;" );
+      m_edit->setStyleSheet( "background-color: rgba(0,0,0,200);" );
+    }
+  };
+  FloatEditor* m_x;
+  FloatEditor* m_y;
+
 public:
   ValueEditor( FCurveEditor* parent )
     : QFrame( parent )
     , m_parent( parent )
+    , m_x( new FloatEditor( this, "X:" ) )
+    , m_y( new FloatEditor( this, "Y:" ) )
   {
-    this->setStyleSheet( "background-color: rgba(32,32,32,128);" );
-    this->resize( 200, 80 );
+    // HACK : use QSS instead
+    this->setStyleSheet( "background-color: rgba(32,32,32,128); border-radius: 16px; color: #FFF;" );
 
-    this->setVisible( false ); // HACK/TODO : implement the ValueEditor
+    QHBoxLayout* m_layout = new QHBoxLayout();
+    m_layout->addWidget( m_x );
+    m_layout->addWidget( m_y );
+    this->setLayout( m_layout );
+    this->resize( 200, 80 );
   }
 };
 
