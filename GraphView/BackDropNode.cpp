@@ -117,6 +117,8 @@ void BackDropNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
   QPointF delta = event->scenePos() - event->lastScenePos();
   delta *= 1.0f / graph()->mainPanel()->canvasZoom();
 
+  float gridSnapSize = (graph()->config().mainPanelGridSnap ? graph()->config().mainPanelGridSnapSize : 0);
+
   QPointF pos;
   QSizeF size;
 
@@ -162,6 +164,7 @@ void BackDropNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       this,
       pos,
       size,
+      gridSnapSize,
       false
       );
     event->accept();
@@ -177,6 +180,8 @@ void BackDropNode::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
   QPointF delta =
     event->scenePos() - event->buttonDownScenePos( m_dragButton );
 
+  float gridSnapSize = (graph()->config().mainPanelGridSnap ? graph()->config().mainPanelGridSnapSize : 0);
+
   if(m_dragging == 3) // topleft
   {
     m_dragging = 0;
@@ -184,12 +189,14 @@ void BackDropNode::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
       this,
       topLeftGraphPos() + preDelta,
       m_mainWidget->minimumSize() + QSizeF( -preDelta.x(), -preDelta.y() ),
+      gridSnapSize,
       false
       );
     graph()->controller()->gvcDoResizeBackDropNode(
       this,
       topLeftGraphPos() + delta,
       m_mainWidget->minimumSize() + QSizeF( -delta.x(), -delta.y() ),
+      gridSnapSize,
       true
       );
     event->accept();
@@ -203,12 +210,14 @@ void BackDropNode::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
       this,
       topLeftGraphPos() + QPointF( 0, preDelta.y() ),
       m_mainWidget->minimumSize() + QSizeF( +preDelta.x(), -preDelta.y() ),
+      gridSnapSize,
       false
       );
     graph()->controller()->gvcDoResizeBackDropNode(
       this,
       topLeftGraphPos() + QPointF( 0, delta.y() ),
       m_mainWidget->minimumSize() + QSizeF( +delta.x(), -delta.y() ),
+      gridSnapSize,
       true
       );
     event->accept();
@@ -222,12 +231,14 @@ void BackDropNode::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
       this,
       topLeftGraphPos() + QPointF( preDelta.x(), 0 ),
       m_mainWidget->minimumSize() + QSizeF( -preDelta.x(), +preDelta.y() ),
+      gridSnapSize,
       false
       );
     graph()->controller()->gvcDoResizeBackDropNode(
       this,
       topLeftGraphPos() + QPointF( delta.x(), 0 ),
       m_mainWidget->minimumSize() + QSizeF( -delta.x(), +delta.y() ),
+      gridSnapSize,
       true
       );
     event->accept();
@@ -241,12 +252,14 @@ void BackDropNode::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
       this,
       topLeftGraphPos() + QPointF( 0, 0 ),
       m_mainWidget->minimumSize() + QSizeF( +preDelta.x(), +preDelta.y() ),
+      gridSnapSize,
       false
       );
     graph()->controller()->gvcDoResizeBackDropNode(
       this,
       topLeftGraphPos() + QPointF( 0, 0 ),
       m_mainWidget->minimumSize() + QSizeF( +delta.x(), +delta.y() ),
+      gridSnapSize,
       true
       );
     event->accept();

@@ -121,8 +121,9 @@ namespace FabricUI
 
       virtual void gvcDoResizeBackDropNode(
         GraphView::BackDropNode *backDropNode,
-        QPointF posDelta,
-        QSizeF sizeDelta,
+        QPointF newTopLeftPos,
+        QSizeF newSize,
+        float gridSnapSize,
         bool allowUndo
         ) = 0;
 

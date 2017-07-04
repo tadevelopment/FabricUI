@@ -175,6 +175,7 @@ namespace FabricUI
         GraphView::BackDropNode *backDropNode,
         QPointF newTopLeftPos,
         QSizeF newSize,
+        float gridSnapSize,
         bool allowUndo
         );
 

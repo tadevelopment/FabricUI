@@ -2106,9 +2106,22 @@ void DFGController::gvcDoResizeBackDropNode(
   GraphView::BackDropNode *backDropNode,
   QPointF newTopLeftPos,
   QSizeF newSize,
+  float gridSnapSize,
   bool allowUndo
   )
 {
+  gridSnapSize = 1;
+  if (gridSnapSize > 0)
+  {
+    QPointF newBottomRightPos = newTopLeftPos + QPointF(newSize.width(), newSize.height());
+    newTopLeftPos.setX(gridSnapSize * qRound(newTopLeftPos.rx() / gridSnapSize));
+    newTopLeftPos.setY(gridSnapSize * qRound(newTopLeftPos.ry() / gridSnapSize));
+    newBottomRightPos.setX(gridSnapSize * qRound(newBottomRightPos.rx() / gridSnapSize));
+    newBottomRightPos.setY(gridSnapSize * qRound(newBottomRightPos.ry() / gridSnapSize));
+    newSize.setWidth(newBottomRightPos.x() - newTopLeftPos.x());
+    newSize.setHeight(newBottomRightPos.y() - newTopLeftPos.y());
+  }
+
   if ( allowUndo )
   {
     cmdResizeBackDropNode(
