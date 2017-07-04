@@ -75,6 +75,7 @@ protected:
       m_selectionRect.setBottomRight( this->mapToScene( event->pos() ) );
       this->update();
     } break;
+    case NOTHING: break;
     }
     Parent::mouseMoveEvent( event );
   }
