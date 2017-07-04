@@ -122,7 +122,7 @@ class PathValueResolverFactory : public Util::TemplateFactory<T>
         PathValueResolverRegistry::getRegistry(),
         name);
 
-      Factory *factory = PathValueResolverRegistry::getRegistry()->getFactory(name);
+      FabricUI::Util::Factory *factory = PathValueResolverRegistry::getRegistry()->getFactory(name);
       BasePathValueResolver* resolver = (BasePathValueResolver*)factory->create(); 
       resolver->registrationCallback(name, userData);
       PathValueResolverRegistry::getRegistry()->registerResolver(resolver, name);
