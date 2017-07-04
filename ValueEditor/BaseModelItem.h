@@ -165,13 +165,6 @@ public:
     return "";
   }
 
-  // Return the command arguments.
-  virtual FabricCore::RTVal getCommandArgs() 
-  {
-    FabricCore::RTVal res;
-    return res;
-  }
-
   // Returns true if a ModelItem has a default
   // value - in other words, if resetToDefault
   // will have an effect

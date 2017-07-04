@@ -126,6 +126,7 @@ dirs = [
   'Dialog',
   'Style',
   'Commands',
+  'Tools',
   'Viewports',
   'KLEditor',
   'Menus',

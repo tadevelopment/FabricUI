@@ -9,10 +9,8 @@
 #include <FabricCore.h>
  
 namespace FabricUI {
-namespace ValueEditor {
+namespace Tools {
  
-class BaseViewItem;
-
 class AppTool : public QObject
 {
   /**
@@ -24,7 +22,7 @@ class AppTool : public QObject
 
   public:
     AppTool(
-      BaseViewItem *viewItem
+      //BaseViewItem *viewItem
       );
 
     ~AppTool();
@@ -61,13 +59,13 @@ class AppTool : public QObject
     /// Get the KL app registry.
     FabricCore::RTVal getAppToolRegistry();
     /// Reference to the view item.
-    BaseViewItem *m_viewItem;
+    //BaseViewItem *m_viewItem;
     /// The KL tool.
     FabricCore::RTVal m_klTool;
     QCheckBox* m_checkbox;
 };
 
+} // namespace Tools 
 } // namespace FabricUI 
-} // namespace ValueEditor 
 
 #endif // FABRICUI_KL_TOOL_VIEWITEM_H

@@ -3,8 +3,6 @@
 //
 
 #include "AppTool.h"
-#include "BaseViewItem.h"
-#include "BaseModelItem.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Commands/KLCommandRegistry.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
@@ -13,19 +11,19 @@ using namespace FabricUI;
 using namespace Commands;
 using namespace FabricCore;
 using namespace Application;
-using namespace ValueEditor;
+using namespace Tools;
 
-AppTool::AppTool(
-  BaseViewItem *viewItem)
-  : m_viewItem(viewItem)
-  , m_checkbox(0)
+AppTool::AppTool()
+  //BaseViewItem *viewItem)
+  //: m_viewItem(viewItem)
+  : m_checkbox(0)
 {
-  connect(
-    viewItem,
-    SIGNAL(toggleManipulation(bool)),
-    this,
-    SLOT(onToggleManipulation(bool))
-    );
+  // connect(
+  //   viewItem,
+  //   SIGNAL(toggleManipulation(bool)),
+  //   this,
+  //   SLOT(onToggleManipulation(bool))
+  //   );
 }
 
 AppTool::~AppTool()
@@ -111,15 +109,10 @@ RTVal AppTool::getAppToolRegistry()
 QCheckBox* AppTool::createKLTool(
   FabricCore::RTVal drivenDataType)
 {
-  BaseModelItem *modelItem = m_viewItem->getModelItem();
-
-  if(modelItem == NULL)
-    return 0;
-
   try
   {    
-    QString cmdName = modelItem->getCommandName();
-    RTVal cmdArgs = modelItem->getCommandArgs();
+    QString cmdName;// = modelItem->getCommandName();
+    RTVal cmdArgs;// = modelItem->getCommandArgs();
 
     if(cmdArgs.isValid())
     {
@@ -195,7 +188,7 @@ void AppTool::setVisible(
       &visibilityVal
       );
 
-    m_viewItem->emitRefreshViewport();
+    //m_viewItem->emitRefreshViewport();
   }
 
   catch(Exception &e)
@@ -223,8 +216,6 @@ void AppTool::valueChanged(
         1,
         &rtVal
         );
-
-      m_viewItem->emitRefreshViewport();
     }
   }
 

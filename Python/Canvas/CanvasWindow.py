@@ -19,7 +19,6 @@ from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Application.FabricApplicationStates import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import HotkeyEditorDialog
 from FabricEngine.Canvas.Commands.CommandManagerCallback import CommandManagerCallback
-from FabricEngine.Canvas.Dialogs.DialogCommandRegistration import DialogCommandRegistration
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -489,7 +488,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
         FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
-        DialogCommandRegistration.RegisterCommands()
+        FabricUI.Dialog.DialogCommandRegistration.RegisterCommands()
         
         args = { "editorID":"Rendering Options", "editorTitle":"Rendering Options" }
         cmd = GetCommandManager().createCommand('openKLOptionsTargetEditor', args)

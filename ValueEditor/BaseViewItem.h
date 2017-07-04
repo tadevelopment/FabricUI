@@ -6,12 +6,12 @@
 #define FABRICUI_VALUEEDITOR_BASEVIEWITEM_H
 
 #include "ItemMetadata.h"
-#include "AppTool.h"
 #include <vector>
 #include <QObject>
 #include <QVariant>
 #include <FabricCore.h>
 #include <QCheckBox>
+#include <FabricUI/Tools/AppTool.h>
 
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -54,7 +54,7 @@ class BaseViewItem : public QObject
 protected:
 
   // 
-  AppTool *m_appTool;
+  Tools::AppTool *m_appTool;
 
   // We cache our metadata for passing on to our children
   ViewItemMetadata m_metadata;
@@ -128,7 +128,7 @@ public:
   // the memory is released in the same Dll as it was allocated in
   virtual void deleteMe() {}
 
-  AppTool * getAppTool() { return m_appTool; }
+  Tools::AppTool *getAppTool() { return m_appTool; }
 
 public slots:
 

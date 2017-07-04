@@ -12,7 +12,9 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 
-using namespace FabricUI::ValueEditor;
+using namespace FabricUI;
+using namespace ValueEditor;
+using namespace Tools;
 
 static int s_nInstances = 0;
 
@@ -20,7 +22,15 @@ BaseViewItem::BaseViewItem( QString const &name, ItemMetadata* metadata )
   : m_name( name )
   , m_metadata(metadata)
 {
-  m_appTool = new AppTool(this);
+  m_appTool = new AppTool();
+
+  connect(
+    this,
+    SIGNAL(toggleManipulation(bool)),
+    m_appTool,
+    SLOT(onToggleManipulation(bool))
+    );
+
   s_nInstances++;
 }
 
