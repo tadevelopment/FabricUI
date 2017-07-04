@@ -10,6 +10,8 @@
 #include <QAction>
 #include <QDebug>
 
+#include <FabricUI/Util/QtSignalsSlots.h>
+
 using namespace FabricUI::FCurveEditor;
 
 class FCurveEditor::ValueEditor : public QFrame
@@ -37,17 +39,17 @@ FCurveEditor::FCurveEditor()
   this->view()->setScene( m_scene );
   m_scene->addItem( m_curveItem );
 
-  connect( m_curveItem, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
-  connect( m_curveItem, SIGNAL( interactionEnd() ), this, SIGNAL( interactionEnd() ) );
-  connect(
-    this, SIGNAL( rectangleSelectReleased( const QRectF& ) ),
-    this, SLOT( onRectangleSelectReleased( const QRectF& ) )
+  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionBegin, (), this, SIGNAL, FCurveEditor, interactionBegin, () );
+  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionEnd, (), this, SIGNAL, FCurveEditor, interactionEnd, () );
+  QOBJECT_CONNECT(
+    this, SIGNAL, FCurveEditor, rectangleSelectReleased, ( const QRectF& ),
+    this, SLOT, FCurveEditor, onRectangleSelectReleased, ( const QRectF& )
   );
 
   QAction* deleteAction = new QAction( "Delete selected Handles", this );
   deleteAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   deleteAction->setShortcut( Qt::Key_Delete );
-  connect( deleteAction, SIGNAL( triggered() ), this, SLOT( onDeleteSelectedHandles() ) );
+  QOBJECT_CONNECT( deleteAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeleteSelectedHandles, () );
   this->addAction( deleteAction );
 }
 

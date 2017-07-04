@@ -7,6 +7,7 @@
 #include <QGraphicsView>
 #include <QLayout>
 #include <QScrollBar>
+#include <FabricUI/Util/QtSignalsSlots.h>
 
 #include <cmath>
 #include <qevent.h>
@@ -165,8 +166,7 @@ RuledGraphicsView::RuledGraphicsView()
 
   this->setLayout( lay );
 
-  connect( m_timer, SIGNAL( timeout() ), this, SLOT( tick() ) );
-  //connect( m_timer, &QTimer::timeout, this, &RuledGraphicsView::tick );
+  QOBJECT_CONNECT( m_timer, SIGNAL, QTimer, timeout, ( ), this, SLOT, RuledGraphicsView, tick, ( ) );
   m_timer->setInterval( 16 );
   if( m_smoothZoom )
     m_timer->start();

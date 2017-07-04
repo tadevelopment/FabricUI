@@ -1,6 +1,7 @@
 
 #include <FabricUI/FCurveEditor/FCurveItem.h>
 #include <FTL/Config.h>
+#include <FabricUI/Util/QtSignalsSlots.h>
 
 #include <QStyleOption>
 #include <QPainter>
@@ -372,10 +373,9 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
 {
   assert( curve != m_curve );
   m_curve = curve;
-  //connect( m_curve, &AbstractFCurveModel::handleMoved, this, &FCurveEditor::onHandleMoved );
-  QObject::connect( m_curve, SIGNAL( handleMoved( size_t ) ), this, SLOT( onHandleMoved( size_t ) ) );
-  QObject::connect( m_curve, SIGNAL( handleAdded() ), this, SLOT( onHandleAdded() ) );
-  QObject::connect( m_curve, SIGNAL( handleDeleted( size_t ) ), this, SLOT( onHandleDeleted( size_t ) ) );
+  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, handleMoved, ( size_t ), this, SLOT, FCurveItem, onHandleMoved, ( size_t ) );
+  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, handleAdded, (), this, SLOT, FCurveItem, onHandleAdded, () );
+  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, handleDeleted, ( size_t ), this, SLOT, FCurveItem, onHandleDeleted, ( size_t ) );
 
   // Clearing previous handles
   for( std::vector<HandleWidget*>::const_iterator it = m_handles.begin(); it < m_handles.end(); it++ )
