@@ -22,6 +22,8 @@ public:
   {
     this->setStyleSheet( "background-color: rgba(32,32,32,128);" );
     this->resize( 200, 80 );
+
+    this->setVisible( false ); // HACK/TODO : implement the ValueEditor
   }
 };
 
