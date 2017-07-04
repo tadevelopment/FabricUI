@@ -18,6 +18,10 @@ class FCurveItem : public QGraphicsWidget
 {
   Q_OBJECT
 
+public:
+  enum HandleProp { CENTER, TAN_IN, TAN_OUT, NOTHING };
+
+private:
   AbstractFCurveModel* m_curve;
   class FCurveShape;
   FCurveShape* m_curveShape;
@@ -25,12 +29,13 @@ class FCurveItem : public QGraphicsWidget
   std::vector<HandleWidget*> m_handles;
   std::set<size_t> m_selectedHandles;
   size_t m_editedHandle;
+  HandleProp m_editedHandleProp;
 
   void addHandle( size_t );
   void clearHandleSelection();
   void addHandleToSelection( size_t );
   void moveSelectedHandles( QPointF delta );
-  void editHandle( size_t );
+  void editHandle( size_t, HandleProp p = CENTER );
 
 public:
   FCurveItem();
@@ -38,6 +43,7 @@ public:
   void rectangleSelect( const QRectF& );
   void deleteSelectedHandles();
   inline size_t editedHandle() const { return m_editedHandle; }
+  inline HandleProp editedHandleProp() const { return m_editedHandleProp; }
 
 signals:
   void interactionBegin();

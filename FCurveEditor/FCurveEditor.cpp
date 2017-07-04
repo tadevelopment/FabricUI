@@ -11,7 +11,9 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QLayout>
+
 #include <QDebug>
+#include <assert.h>
 
 #include <FabricUI/Util/QtSignalsSlots.h>
 
@@ -83,10 +85,18 @@ void FCurveEditor::veEditFinished( bool isXNotY )
   else
   {
     Handle h = m_model->getHandle( m_curveItem->editedHandle() );
+    QPointF* p = NULL;
+    switch( m_curveItem->editedHandleProp() )
+    {
+    case FCurveItem::CENTER: p = &h.pos; break;
+    case FCurveItem::TAN_IN: p = &h.tanIn; break;
+    case FCurveItem::TAN_OUT: p = &h.tanOut; break;
+    case FCurveItem::NOTHING: assert( false ); break;
+    }
     if( isXNotY )
-      h.pos.setX( v );
+      p->setX( v );
     else
-      h.pos.setY( v );
+      p->setY( v );
     m_model->setHandle( m_curveItem->editedHandle(), h );
   }
 }
@@ -135,8 +145,16 @@ void FCurveEditor::resizeEvent( QResizeEvent * e )
 void FCurveEditor::onEditedHandleValueChanged()
 {
   Handle h = m_model->getHandle( m_curveItem->editedHandle() );
-  m_valueEditor->m_x->set( h.pos.x() );
-  m_valueEditor->m_y->set( h.pos.y() );
+  QPointF p;
+  switch( m_curveItem->editedHandleProp() )
+  {
+  case FCurveItem::CENTER: p = h.pos; break;
+  case FCurveItem::TAN_IN: p = h.tanIn; break;
+  case FCurveItem::TAN_OUT: p = h.tanOut; break;
+  case FCurveItem::NOTHING: assert( false ); break;
+  }
+  m_valueEditor->m_x->set( p.x() );
+  m_valueEditor->m_y->set( p.y() );
 }
 
 void FCurveEditor::onStartEditingHandle()

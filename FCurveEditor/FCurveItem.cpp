@@ -190,7 +190,12 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     {
       HandleWidget* m_parent;
       Tangent* m_tangent;
+      bool m_selected;
       typedef QGraphicsEllipseItem Parent;
+      inline void updateColor()
+      {
+        this->setBrush( m_selected ? QColor( 0, 128, 255 ) : QColor( 255, 255, 255 ) );
+      }
     public:
       QGraphicsWidget* m_posW; // Used for its position
       End( HandleWidget* parent, Tangent* tangent )
@@ -202,13 +207,15 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
         this->setParentItem( m_posW );
         this->setRect( QRectF( -4, -4, 8, 8 ) );
         this->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
-        this->setBrush( QColor( 255, 255, 255 ) );
+        this->setSelected( false );
         this->setAcceptHoverEvents( true );
       }
+      inline void setEndSelected( bool s ) { m_selected = s; this->updateColor(); }
     protected:
       void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
       {
         emit m_parent->m_parent->interactionBegin();
+        m_parent->m_parent->editHandle( m_parent->m_index, m_tangent->m_inNotOut ? TAN_IN : TAN_OUT );
       }
       void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
       {
@@ -255,6 +262,8 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       m_line->setVisible( visible );
       m_end->setVisible( visible );
     }
+
+    inline void setSelected( bool s ) { m_end->setEndSelected( s ); }
   };
   Tangent m_inT, m_outT;
 
@@ -267,7 +276,7 @@ public:
     , m_inT( this, true )
     , m_outT( this, false )
   {
-    this->setTangentsVisible( false );
+    this->setEditState( NOTHING );
   }
   void setValue( const Handle& h )
   {
@@ -277,17 +286,21 @@ public:
   }
   inline void setIndex( size_t i ) { this->m_index = i; }
 
-  inline void setTangentsVisible( bool visible )
+  inline void setEditState( HandleProp p )
   {
+    const bool visible = ( p != NOTHING );
     m_inT.setVisible( visible );
     m_outT.setVisible( visible );
+    m_center->setHandleSelected( p == CENTER );
+    m_inT.setSelected( p == TAN_IN );
+    m_outT.setSelected( p == TAN_OUT );
   }
 
   inline void setHandleSelected( bool selected )
   {
     m_center->setHandleSelected( selected );
     if( !selected )
-      this->setTangentsVisible( false );
+      this->setEditState( NOTHING );
   }
 };
 
@@ -310,6 +323,15 @@ void FCurveItem::addHandleToSelection( size_t i )
 {
   m_selectedHandles.insert( i );
   m_handles[i]->setHandleSelected( true );
+  if( m_selectedHandles.size() == 1 )
+    this->editHandle( *m_selectedHandles.begin() );
+  else
+  if( m_selectedHandles.size() == 2 )
+  {
+    m_handles[*m_selectedHandles.begin()]->setEditState( NOTHING );
+    emit this->stopEditingHandle();
+    m_handles[*m_selectedHandles.begin()]->setHandleSelected( true );
+  }
 }
 
 void FCurveItem::rectangleSelect( const QRectF& r )
@@ -318,14 +340,13 @@ void FCurveItem::rectangleSelect( const QRectF& r )
   for( size_t i = 0; i < m_handles.size(); i++ )
     if( r.contains( m_handles[i]->scenePos() ) )
       this->addHandleToSelection( i );
-  if( m_selectedHandles.size() == 1 )
-    this->editHandle( *m_selectedHandles.begin() );
 }
 
-void FCurveItem::editHandle( size_t i )
+void FCurveItem::editHandle( size_t i, HandleProp p )
 {
-  m_handles[i]->setTangentsVisible( true );
+  m_handles[i]->setEditState( p );
   m_editedHandle = i;
+  m_editedHandleProp = p;
   emit this->startEditingHandle();
 }
 
