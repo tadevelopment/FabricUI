@@ -78,12 +78,26 @@ void AnimxFCurveModel::addHandle( const Handle& h )
 void AnimxFCurveModel::deleteHandle( size_t uiId )
 {
   size_t index = m_uiIdToIndex[uiId];
+
+  // TODO : more efficient way to delete handles ?
+
+  // Shifting the local indices
   for( size_t i = index; i < m_keys.size()-1; i++ )
   {
     m_keys[i] = m_keys[i + 1];
+    m_keys[i].key.index--;
     m_uiIdToIndex[m_keys[i].uiId] = i;
   }
   m_keys.resize( m_keys.size() - 1 );
+
+  // Shifting the UI indices
+  for( size_t i = uiId; i < m_uiIdToIndex.size() - 1; i++ )
+  {
+    m_uiIdToIndex[i] = m_uiIdToIndex[i + 1];
+    m_keys[m_uiIdToIndex[i]].uiId = i;
+  }
+  m_uiIdToIndex.resize( m_uiIdToIndex.size() - 1 );
+
   emit this->handleDeleted( uiId );
 }
 

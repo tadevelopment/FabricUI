@@ -266,6 +266,7 @@ public:
     m_inT.setValue( h );
     m_outT.setValue( h );
   }
+  inline void setIndex( size_t i ) { this->m_index = i; }
 
   inline void setTangentsVisible( bool visible )
   {
@@ -311,6 +312,12 @@ void FCurveItem::rectangleSelect( const QRectF& r )
 
 void FCurveItem::deleteSelectedHandles()
 {
+  while( !m_selectedHandles.empty() )
+  {
+    const size_t index = *m_selectedHandles.begin();
+    m_selectedHandles.erase( index );
+    m_curve->deleteHandle( index );
+  }
 }
 
 void FCurveItem::moveSelectedHandles( QPointF delta )
@@ -337,6 +344,20 @@ void FCurveItem::onHandleAdded()
 
 void FCurveItem::onHandleDeleted( size_t i )
 {
+  delete m_handles[i];
+  for( size_t j = i; j < m_handles.size() - 1; j++ )
+  {
+    m_handles[j] = m_handles[j + 1];
+    m_handles[j]->setIndex( j );
+  }
+  m_handles.resize( m_handles.size() - 1 );
+
+  std::set<size_t> shiftedSldHdls; // HACK/TODO: unefficient
+  for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
+    if( *it != i )
+      shiftedSldHdls.insert( *it < i ? *it : ( *it - 1 ) );
+  m_selectedHandles = shiftedSldHdls;
+  m_curveShape->update();
 }
 
 void FCurveItem::onHandleMoved( size_t i )
