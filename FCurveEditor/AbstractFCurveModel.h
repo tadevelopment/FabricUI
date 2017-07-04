@@ -31,6 +31,8 @@ public:
   virtual void addHandle() = 0;
   // Deleting an handle will shift the indices of all the handles after it
   virtual void deleteHandle( size_t ) = 0;
+  // TODO : delete array of handles
+
   virtual void autoTangents( size_t ) {}
 
   virtual qreal evaluate( qreal v ) const = 0;
