@@ -28,6 +28,7 @@ class FCurveEditor : public RuledGraphicsView
   FCurveItem* m_curveItem;
   class ValueEditor;
   ValueEditor* m_valueEditor;
+  void veEditFinished( bool isXNotY );
 
 public:
   FCurveEditor();
@@ -44,6 +45,8 @@ private slots:
   void onStartEditingHandle();
   void onEditedHandleValueChanged();
   void onStopEditingHandle();
+  inline void veXEditFinished() { this->veEditFinished( true ); }
+  inline void veYEditFinished() { this->veEditFinished( false ); }
 
 signals:
   void interactionBegin();

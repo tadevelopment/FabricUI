@@ -27,10 +27,10 @@ class FCurveEditor::ValueEditor : public QFrame
     QLabel* m_label;
     QLineEdit* m_edit;
   public:
-    FloatEditor( ValueEditor* parent, QString label )
+    FloatEditor( ValueEditor* parent, bool isXNotY )
       : QWidget( parent )
       , m_parent( parent )
-      , m_label( new QLabel( label ) )
+      , m_label( new QLabel( isXNotY ? "X:" : "Y:" ) )
       , m_edit( new QLineEdit() )
     {
       QHBoxLayout* m_layout = new QHBoxLayout();
@@ -40,11 +40,17 @@ class FCurveEditor::ValueEditor : public QFrame
       this->setLayout( m_layout );
       this->set( 0 );
 
+      if( isXNotY )
+        QOBJECT_CONNECT( m_edit, SIGNAL, QLineEdit, editingFinished, ( ), m_parent->m_parent, SLOT, FCurveEditor, veXEditFinished, ( ) );
+      else
+        QOBJECT_CONNECT( m_edit, SIGNAL, QLineEdit, editingFinished, ( ), m_parent->m_parent, SLOT, FCurveEditor, veYEditFinished, ( ) );
+
       // HACK : use QSS instead
       this->setStyleSheet( "background-color: none;" );
       m_edit->setStyleSheet( "background-color: rgba(0,0,0,200);" );
     }
     inline void set( qreal v ) { m_edit->setText( QString::number( v ) ); }
+    inline QString get() const { return m_edit->text(); }
   };
 public:
   FloatEditor* m_x;
@@ -53,8 +59,8 @@ public:
   ValueEditor( FCurveEditor* parent )
     : QFrame( parent )
     , m_parent( parent )
-    , m_x( new FloatEditor( this, "X:" ) )
-    , m_y( new FloatEditor( this, "Y:" ) )
+    , m_x( new FloatEditor( this, true ) )
+    , m_y( new FloatEditor( this, false ) )
   {
     // HACK : use QSS instead
     this->setStyleSheet( "background-color: rgba(32,32,32,128); border-radius: 16px; color: #FFF;" );
@@ -66,6 +72,24 @@ public:
     this->resize( 300, 80 );
   }
 };
+
+void FCurveEditor::veEditFinished( bool isXNotY )
+{
+  const QString text = ( isXNotY ? m_valueEditor->m_x->get() : m_valueEditor->m_y->get() );
+  bool ok;
+  const qreal v = text.toDouble( &ok );
+  if( !ok )
+    this->onEditedHandleValueChanged();
+  else
+  {
+    Handle h = m_model->getHandle( m_curveItem->editedHandle() );
+    if( isXNotY )
+      h.pos.setX( v );
+    else
+      h.pos.setY( v );
+    m_model->setHandle( m_curveItem->editedHandle(), h );
+  }
+}
 
 FCurveEditor::FCurveEditor()
   : m_model( NULL )
