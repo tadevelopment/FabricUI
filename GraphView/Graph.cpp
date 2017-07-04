@@ -19,6 +19,8 @@
 #include <FabricUI/GraphView/InfoOverlay.h>
 #include <FabricUI/GraphView/FixedPort.h>
 
+#include <FabricUI/Util/QtSignalsSlots.h>
+
 #include <float.h>
 
 using namespace FabricUI::GraphView;
@@ -82,23 +84,22 @@ void Graph::requestMainPanelAction(
 void Graph::initialize()
 {
   m_mainPanel = new MainPanel(this);
-  QObject::connect(
-    m_mainPanel, SIGNAL(doubleClicked(Qt::KeyboardModifiers)), 
-    this, SLOT(requestMainPanelAction(Qt::KeyboardModifiers))
-    );
+  QOBJECT_CONNECT(
+    m_mainPanel, SIGNAL, MainPanel, doubleClicked, (Qt::KeyboardModifiers),
+    this, SLOT, Graph, requestMainPanelAction, (Qt::KeyboardModifiers)
+  );
 
   m_leftPanel = new SidePanel(this, PortType_Output);
-  QObject::connect(
-    m_leftPanel, SIGNAL(doubleClicked(FabricUI::GraphView::SidePanel*)), 
-    this, SLOT(requestSidePanelInspect(FabricUI::GraphView::SidePanel*))
-    );
+  QOBJECT_CONNECT(
+    m_leftPanel, SIGNAL, SidePanel, doubleClicked, (FabricUI::GraphView::SidePanel*),
+    this, SLOT, Graph, requestSidePanelInspect, (FabricUI::GraphView::SidePanel*)
+  );
 
   m_rightPanel = new SidePanel(this, PortType_Input);
-  QObject::connect(
-    m_rightPanel, SIGNAL(doubleClicked(FabricUI::GraphView::SidePanel*)), 
-    this, SLOT(requestSidePanelInspect(FabricUI::GraphView::SidePanel*))
-    );
-
+  QOBJECT_CONNECT(
+    m_rightPanel, SIGNAL, SidePanel, doubleClicked, (FabricUI::GraphView::SidePanel*),
+    this, SLOT, Graph, requestSidePanelInspect, (FabricUI::GraphView::SidePanel*)
+  );
 
   QGraphicsLinearLayout * layout = new QGraphicsLinearLayout();
   layout->setSpacing(0);
@@ -178,12 +179,12 @@ Node * Graph::addNode(Node * node, bool quiet)
     (*zValue) += 0.0001;
   }
 
-  QObject::connect(
-    node, 
-    SIGNAL(doubleClicked(FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers)), 
-    this, 
-    SLOT(onNodeDoubleClicked(FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers))
-    );
+  QOBJECT_CONNECT(
+    node,
+    SIGNAL, Node, doubleClicked, ( FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers ),
+    this,
+    SLOT, Graph, onNodeDoubleClicked, ( FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers )
+  );
   QObject::connect(node, SIGNAL(bubbleEditRequested(FabricUI::GraphView::Node*)), this, SLOT(onBubbleEditRequested(FabricUI::GraphView::Node*)));
 
   if(!quiet)
