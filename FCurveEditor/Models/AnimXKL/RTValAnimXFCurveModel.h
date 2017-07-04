@@ -28,6 +28,7 @@ public:
   void setHandle( size_t, Handle ) FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
   void addHandle() FTL_OVERRIDE;
+  void deleteHandle( size_t ) FTL_OVERRIDE {} // TODO
 
   void setValue( FabricCore::RTVal );
   inline FabricCore::RTVal value() { return m_val; }

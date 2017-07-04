@@ -7,6 +7,7 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QAction>
 #include <QDebug>
 
 using namespace FabricUI::FCurveEditor;
@@ -40,6 +41,12 @@ FCurveEditor::FCurveEditor()
     this, SIGNAL( rectangleSelectReleased( const QRectF& ) ),
     this, SLOT( onRectangleSelectReleased( const QRectF& ) )
   );
+
+  QAction* deleteAction = new QAction( "Delete selected Handles", this );
+  deleteAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+  deleteAction->setShortcut( Qt::Key_Delete );
+  connect( deleteAction, SIGNAL( triggered() ), this, SLOT( onDeleteSelectedHandles() ) );
+  this->addAction( deleteAction );
 }
 
 void FCurveEditor::resizeEvent( QResizeEvent * e )
@@ -56,6 +63,11 @@ void FCurveEditor::resizeEvent( QResizeEvent * e )
 void FCurveEditor::onRectangleSelectReleased( const QRectF& r )
 {
   m_curveItem->rectangleSelect( r );
+}
+
+void FCurveEditor::onDeleteSelectedHandles()
+{
+  m_curveItem->deleteSelectedHandles();
 }
 
 FCurveEditor::~FCurveEditor()

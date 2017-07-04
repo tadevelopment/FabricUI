@@ -34,6 +34,7 @@ public:
   FCurveItem();
   void setCurve( AbstractFCurveModel* );
   void rectangleSelect( const QRectF& );
+  void deleteSelectedHandles();
 
 signals:
   void interactionBegin();
@@ -41,6 +42,7 @@ signals:
 
 private slots:
   void onHandleAdded();
+  void onHandleDeleted( size_t );
   void onHandleMoved( size_t );
 };
 

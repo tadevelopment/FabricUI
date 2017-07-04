@@ -75,6 +75,18 @@ void AnimxFCurveModel::addHandle( const Handle& h )
   this->setHandle( m_keys.size() - 1, h );
 }
 
+void AnimxFCurveModel::deleteHandle( size_t uiId )
+{
+  size_t index = m_uiIdToIndex[uiId];
+  for( size_t i = index; i < m_keys.size()-1; i++ )
+  {
+    m_keys[i] = m_keys[i + 1];
+    m_uiIdToIndex[m_keys[i].uiId] = i;
+  }
+  m_keys.resize( m_keys.size() - 1 );
+  emit this->handleDeleted( uiId );
+}
+
 qreal AnimxFCurveModel::evaluate( qreal v ) const
 {
   return evaluateCurve( v, *this );

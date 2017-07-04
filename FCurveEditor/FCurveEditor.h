@@ -40,6 +40,7 @@ protected:
 
 private slots:
   void onRectangleSelectReleased( const QRectF& );
+  void onDeleteSelectedHandles();
 
 signals:
   void interactionBegin();

@@ -10,7 +10,6 @@
 
 #include <animx.h>
 #include <vector>
-
 namespace FabricUI
 {
 namespace FCurveEditor
@@ -48,6 +47,7 @@ public:
   Handle getHandle( size_t uiId ) const FTL_OVERRIDE;
   void setHandle( size_t uiId, Handle ) FTL_OVERRIDE;
   void addHandle() FTL_OVERRIDE;
+  void deleteHandle( size_t uiId ) FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
 
   // adsk::ICurve
