@@ -1478,6 +1478,72 @@ namespace DFG {
 
     };
 
+    class ExposeAllUnconnectedInputPortsAction : public BaseDFGWidgetAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ExposeAllUnconnectedInputPortsAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true)
+        : BaseDFGWidgetAction(
+          dfgWidget
+          , parent
+          , "DFGWidget::exposeAllPorts( /*inputs*/ )"
+          , "Expose all unconnected input Ports"
+          , QKeySequence()
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
+      {
+      }
+
+      virtual ~ExposeAllUnconnectedInputPortsAction()
+      {
+      }
+
+      private slots:
+
+      virtual void onTriggered()
+      {
+        m_dfgWidget->getUIGraph()->exposeAllPorts(true /* exposeUnconnectedInputs */, false /* exposeUnconnectedOutputs */);
+      }
+    };
+
+    class ExposeAllUnconnectedOutputPortsAction : public BaseDFGWidgetAction
+    {
+      Q_OBJECT
+
+    public:
+
+      ExposeAllUnconnectedOutputPortsAction(
+        DFGWidget *dfgWidget,
+        QObject *parent,
+        bool enable = true)
+        : BaseDFGWidgetAction(
+          dfgWidget
+          , parent
+          , "DFGWidget::exposeAllPorts( /*outputs*/ )"
+          , "Expose all unconnected output Ports"
+          , QKeySequence()
+          , Qt::WidgetWithChildrenShortcut
+          , enable)
+      {
+      }
+
+      virtual ~ExposeAllUnconnectedOutputPortsAction()
+      {
+      }
+
+      private slots:
+
+      virtual void onTriggered()
+      {
+        m_dfgWidget->getUIGraph()->exposeAllPorts(false /* exposeUnconnectedInputs */, true /* exposeUnconnectedOutputs */);
+      }
+    };
+
     class CopyNodesAction : public BaseDFGWidgetAction
     {
       Q_OBJECT

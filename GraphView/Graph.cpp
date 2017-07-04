@@ -19,6 +19,8 @@
 #include <FabricUI/GraphView/InfoOverlay.h>
 #include <FabricUI/GraphView/FixedPort.h>
 
+#include <FabricUI/Util/QtSignalsSlots.h>
+
 #include <float.h>
 
 using namespace FabricUI::GraphView;
@@ -82,23 +84,22 @@ void Graph::requestMainPanelAction(
 void Graph::initialize()
 {
   m_mainPanel = new MainPanel(this);
-  QObject::connect(
-    m_mainPanel, SIGNAL(doubleClicked(Qt::KeyboardModifiers)), 
-    this, SLOT(requestMainPanelAction(Qt::KeyboardModifiers))
-    );
+  QOBJECT_CONNECT(
+    m_mainPanel, SIGNAL, MainPanel, doubleClicked, (Qt::KeyboardModifiers),
+    this, SLOT, Graph, requestMainPanelAction, (Qt::KeyboardModifiers)
+  );
 
   m_leftPanel = new SidePanel(this, PortType_Output);
-  QObject::connect(
-    m_leftPanel, SIGNAL(doubleClicked(FabricUI::GraphView::SidePanel*)), 
-    this, SLOT(requestSidePanelInspect(FabricUI::GraphView::SidePanel*))
-    );
+  QOBJECT_CONNECT(
+    m_leftPanel, SIGNAL, SidePanel, doubleClicked, (FabricUI::GraphView::SidePanel*),
+    this, SLOT, Graph, requestSidePanelInspect, (FabricUI::GraphView::SidePanel*)
+  );
 
   m_rightPanel = new SidePanel(this, PortType_Input);
-  QObject::connect(
-    m_rightPanel, SIGNAL(doubleClicked(FabricUI::GraphView::SidePanel*)), 
-    this, SLOT(requestSidePanelInspect(FabricUI::GraphView::SidePanel*))
-    );
-
+  QOBJECT_CONNECT(
+    m_rightPanel, SIGNAL, SidePanel, doubleClicked, (FabricUI::GraphView::SidePanel*),
+    this, SLOT, Graph, requestSidePanelInspect, (FabricUI::GraphView::SidePanel*)
+  );
 
   QGraphicsLinearLayout * layout = new QGraphicsLinearLayout();
   layout->setSpacing(0);
@@ -178,12 +179,12 @@ Node * Graph::addNode(Node * node, bool quiet)
     (*zValue) += 0.0001;
   }
 
-  QObject::connect(
-    node, 
-    SIGNAL(doubleClicked(FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers)), 
-    this, 
-    SLOT(onNodeDoubleClicked(FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers))
-    );
+  QOBJECT_CONNECT(
+    node,
+    SIGNAL, Node, doubleClicked, ( FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers ),
+    this,
+    SLOT, Graph, onNodeDoubleClicked, ( FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers )
+  );
   QObject::connect(node, SIGNAL(bubbleEditRequested(FabricUI::GraphView::Node*)), this, SLOT(onBubbleEditRequested(FabricUI::GraphView::Node*)));
 
   if(!quiet)
@@ -580,6 +581,89 @@ void Graph::updateColorForConnections(const ConnectionTarget * target) const
   }
 }
 
+bool Graph::connect(ConnectionTarget * source, ConnectionTarget * target)
+{
+  if (source->targetType() == TargetType_ProxyPort && target->targetType() == TargetType_Pin)
+  {
+    Pin *pinToConnectWith = static_cast<Pin *>(target);
+    FTL::CStrRef pinName = pinToConnectWith->name();
+    FTL::CStrRef dataType = pinToConnectWith->dataType();
+    std::string metaData = controller()->gvcEncodeMetadaToPersistValue();
+    controller()->gvcDoAddPort(
+      QString::fromUtf8(pinName.data(), pinName.size()),
+      PortType_Output,
+      QString::fromUtf8(dataType.data(), dataType.size()),
+      pinToConnectWith,
+      QString(),
+      QString::fromUtf8(metaData.data(), metaData.size())
+    );
+  }
+  else if (target->targetType() == TargetType_ProxyPort && source->targetType() == TargetType_Pin)
+  {
+    Pin *pinToConnectWith = static_cast<Pin *>(source);
+    FTL::CStrRef pinName = pinToConnectWith->name();
+    FTL::CStrRef dataType = pinToConnectWith->dataType();
+    controller()->gvcDoAddPort(
+      QString::fromUtf8(pinName.data(), pinName.size()),
+      PortType_Input,
+      QString::fromUtf8(dataType.data(), dataType.size()),
+      pinToConnectWith
+    );
+  }
+  else if (source->targetType() == TargetType_ProxyPort && target->targetType() == TargetType_InstBlockPort)
+  {
+    InstBlockPort *instBlockPortToConnectWith = static_cast<InstBlockPort *>(target);
+    FTL::CStrRef instBlockPortName = instBlockPortToConnectWith->name();
+    FTL::CStrRef dataType = instBlockPortToConnectWith->dataType();
+    std::string metaData = controller()->gvcEncodeMetadaToPersistValue();
+    controller()->gvcDoAddPort(
+      QString::fromUtf8(instBlockPortName.data(), instBlockPortName.size()),
+      PortType_Output,
+      QString::fromUtf8(dataType.data(), dataType.size()),
+      instBlockPortToConnectWith,
+      QString(),
+      QString::fromUtf8(metaData.data(), metaData.size())
+    );
+  }
+  else if (target->targetType() == TargetType_ProxyPort && source->targetType() == TargetType_InstBlockPort)
+  {
+    InstBlockPort *instBlockPortToConnectWith = static_cast<InstBlockPort *>(source);
+    FTL::CStrRef instBlockPortName = instBlockPortToConnectWith->name();
+    FTL::CStrRef dataType = instBlockPortToConnectWith->dataType();
+    controller()->gvcDoAddPort(
+      QString::fromUtf8(instBlockPortName.data(), instBlockPortName.size()),
+      PortType_Input,
+      QString::fromUtf8(dataType.data(), dataType.size()),
+      instBlockPortToConnectWith
+    );
+  }
+  else if (source->targetType() == TargetType_NodeHeader)
+  {
+    return false;
+  }
+  else if (target->targetType() == TargetType_NodeHeader)
+  {
+    return false;
+  }
+  else if (source->targetType() == TargetType_InstBlockHeader)
+  {
+    return false;
+  }
+  else if (target->targetType() == TargetType_InstBlockHeader)
+  {
+    return false;
+  }
+  else
+  {
+    std::vector<ConnectionTarget  *> sources;
+    std::vector<ConnectionTarget  *> targets;
+    sources.push_back(source);
+    targets.push_back(target);
+    controller()->gvcDoAddConnections(sources, targets);
+  }
+  return true;
+}
+
 Connection * Graph::addConnection(ConnectionTarget * src, ConnectionTarget * dst, bool quiet)
 {
   if(src == dst)
@@ -905,6 +989,73 @@ void Graph::setConnectionsCosmetic( bool cosmetic )
     Connection* connection = getMouseGrabber()->connection();
     if( connection )
       connection->setCosmetic( m_cosmeticConnections );
+  }
+}
+
+void Graph::exposeAllPorts(bool exposeUnconnectedInputs, bool exposeUnconnectedOutputs)
+{
+  if (!exposeUnconnectedInputs && !exposeUnconnectedOutputs)
+    return;
+
+  std::vector<Node *> nodes = selectedNodes();
+
+  // sort the nodes from top
+  // to bottom via bubble sort.
+  for (unsigned int i = 0; i<nodes.size(); i++)
+    for (unsigned int j = i + 1; j<nodes.size(); j++)
+      if (nodes[i]->sceneBoundingRect().center().y() > nodes[j]->sceneBoundingRect().center().y())
+        std::swap(nodes[i], nodes[j]);
+
+
+  // do it.
+  for (size_t i=0;i<nodes.size();i++)
+  {
+    Node *node = nodes[i];
+
+    if (node == NULL)
+      return;
+
+    if (exposeUnconnectedInputs)
+    {
+      ConnectionTarget *source = (ConnectionTarget *)m_leftPanel->m_proxyPort;
+      for (unsigned int j = 0; j<node->pinCount(); j++)
+      {
+        Pin *pin = node->pin(j);
+        // skip default exec port.
+        if (j == 0)
+          continue;
+        // skip if already connected.
+        if (pin->isConnectedAsTarget())
+          continue;
+        // we have a candiate.
+        if (pin->portType() != PortType_Output)
+        {
+          ConnectionTarget *target = pin;
+          connect(source, target);
+        }
+      }
+    }
+
+    if (exposeUnconnectedOutputs)
+    {
+      ConnectionTarget *target = (ConnectionTarget *)m_rightPanel->m_proxyPort;
+      for (unsigned int j = 0; j<node->pinCount(); j++)
+      {
+        Pin *pin = node->pin(j);
+        // skip default exec port.
+        if (j == 0)
+          continue;
+        // skip if already connected.
+        if (pin->isConnectedAsSource())
+          continue;
+        // we have a candidate.
+        if (pin->portType() != PortType_Input)
+        {
+          ConnectionTarget *source = pin;
+          connect(source, target);
+        }
+      }
+    }
   }
 }
 
