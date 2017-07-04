@@ -31,6 +31,7 @@ public:
   virtual void addHandle() = 0;
   // Deleting an handle will shift the indices of all the handles after it
   virtual void deleteHandle( size_t ) = 0;
+  virtual void autoTangents( size_t ) {}
 
   virtual qreal evaluate( qreal v ) const = 0;
   // TODO : evaluate arrays, to reduce the overhead

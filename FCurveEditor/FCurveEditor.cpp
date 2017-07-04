@@ -101,6 +101,7 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
       h.tanOut.setX( h.tanIn.x() );
     }
     m_model->setHandle( m_model->getHandleCount() - 1, h );
+    m_model->autoTangents( m_model->getHandleCount() - 1 );
   }
   else
     Parent::mousePressEvent( e );

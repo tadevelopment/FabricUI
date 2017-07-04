@@ -101,6 +101,25 @@ void AnimxFCurveModel::deleteHandle( size_t uiId )
   emit this->handleDeleted( uiId );
 }
 
+
+void AnimxFCurveModel::autoTangents( size_t uiId )
+{
+  if( m_keys.size() == 1 )
+    return;
+  const size_t index = m_uiIdToIndex[uiId];
+  for( size_t dir = 0; dir <= 1; dir++ )
+    adsk::autoTangent(
+      dir == 0,
+      m_keys[index].key,
+      ( index > 0 ? &m_keys[index - 1].key : NULL ),
+      ( index < m_keys.size()-1 ? &m_keys[index + 1].key : NULL ),
+      adsk::CurveInterpolatorMethod::Bezier, // TODO expose as parameter
+      ( dir == 0 ? m_keys[index].key.tanIn.x : m_keys[index].key.tanOut.x ),
+      ( dir == 0 ? m_keys[index].key.tanIn.y : m_keys[index].key.tanOut.y )
+    );
+  emit this->handleMoved( uiId );
+}
+
 qreal AnimxFCurveModel::evaluate( qreal v ) const
 {
   return evaluateCurve( v, *this );

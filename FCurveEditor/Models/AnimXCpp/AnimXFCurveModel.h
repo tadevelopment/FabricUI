@@ -48,6 +48,7 @@ public:
   void setHandle( size_t uiId, Handle ) FTL_OVERRIDE;
   void addHandle() FTL_OVERRIDE;
   void deleteHandle( size_t uiId ) FTL_OVERRIDE;
+  void autoTangents( size_t ) FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
 
   // adsk::ICurve
