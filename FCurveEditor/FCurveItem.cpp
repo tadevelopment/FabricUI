@@ -27,6 +27,7 @@ inline QPointF max( const QPointF& a, const QPointF& b )
   );
 }
 
+// TODO: fix the "trails" drawing artefacts (by calling QGraphicsItem::prepareGeometryChanges())
 class FCurveItem::FCurveShape : public QGraphicsItem
 {
   const FCurveItem* m_parent;
