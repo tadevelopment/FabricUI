@@ -33,15 +33,21 @@ class FCurveItem::FCurveShape : public QGraphicsItem
 {
   const FCurveItem* m_parent;
   typedef QGraphicsItem Parent;
+  QRectF m_boundingRect;
 
 public:
   FCurveShape( const FCurveItem* parent )
     : m_parent( parent )
   {
+    this->updateBoundingRect();
   }
 
-  QRectF boundingRect() const FTL_OVERRIDE
+  QRectF boundingRect() const FTL_OVERRIDE { return m_boundingRect; }
+
+  void updateBoundingRect()
   {
+    this->prepareGeometryChange();
+
     // TODO : cache and update when handles are moved
     QPointF topLeft = QPointF( 1, 1 ) * std::numeric_limits<qreal>::max();
     QPointF botRight = QPointF( 1, 1 ) * (-std::numeric_limits<qreal>::max());
@@ -49,7 +55,10 @@ public:
     {
       size_t hc = m_parent->m_curve->getHandleCount();
       if( hc == 0 )
-        return QRectF( -1, -1, 2, 2 );
+      {
+        m_boundingRect = QRectF( -1, -1, 2, 2 );
+        return;
+      }
       for( size_t i = 0; i < hc; i++ )
       {
         Handle h = m_parent->m_curve->getHandle( i );
@@ -61,8 +70,7 @@ public:
         botRight.setY( std::max( botRight.y(), h.pos.y() + h.tanOut.y() ) );
       }
     }
-    QRectF dst( topLeft, botRight );
-    return dst;
+    m_boundingRect = QRectF( topLeft, botRight );
   }
 
   void paint(
@@ -341,6 +349,7 @@ void FCurveItem::addHandle( size_t i )
 void FCurveItem::onHandleAdded()
 {
   this->addHandle( m_handles.size() );
+  m_curveShape->updateBoundingRect();
 }
 
 void FCurveItem::onHandleDeleted( size_t i )
@@ -358,7 +367,7 @@ void FCurveItem::onHandleDeleted( size_t i )
     if( *it != i )
       shiftedSldHdls.insert( *it < i ? *it : ( *it - 1 ) );
   m_selectedHandles = shiftedSldHdls;
-  m_curveShape->update();
+  m_curveShape->updateBoundingRect();
 }
 
 void FCurveItem::onHandleMoved( size_t i )
@@ -366,7 +375,7 @@ void FCurveItem::onHandleMoved( size_t i )
   assert( i < m_handles.size() );
   assert( m_handles.size() == m_curve->getHandleCount() );
   m_handles[i]->setValue( m_curve->getHandle( i ) );
-  m_curveShape->update();
+  m_curveShape->updateBoundingRect();
 }
 
 void FCurveItem::setCurve( AbstractFCurveModel* curve )
