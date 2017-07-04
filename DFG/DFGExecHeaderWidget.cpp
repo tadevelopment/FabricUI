@@ -79,7 +79,7 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
   m_backButton->setObjectName("DFGBackButton");
   m_backButton->setFocusPolicy(Qt::NoFocus);
   m_backButton->setAutoFillBackground(false);
-  m_saveButton->setToolTip("Leaves the function editor and goes back to the graph view.");
+  m_backButton->setToolTip("Leaves the function editor and goes back to the graph view.");
   QObject::connect(
     m_backButton, SIGNAL(clicked()),
     m_reqExtLineEdit, SLOT(onGoUpPressed())
