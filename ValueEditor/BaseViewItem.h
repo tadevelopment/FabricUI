@@ -6,8 +6,12 @@
 #define FABRICUI_VALUEEDITOR_BASEVIEWITEM_H
 
 #include "ItemMetadata.h"
+#include "AppTool.h"
+#include <vector>
 #include <QObject>
 #include <QVariant>
+#include <FabricCore.h>
+#include <QCheckBox>
 
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -49,13 +53,16 @@ class BaseViewItem : public QObject
 
 protected:
 
+  // 
+  AppTool *m_appTool;
+
   // We cache our metadata for passing on to our children
   ViewItemMetadata m_metadata;
 
-private:
+protected:
 
   // This value is only setable by ViewitemFactory
-  void setBaseModelItem( BaseModelItem* item );
+  virtual void setBaseModelItem( BaseModelItem* item );
 
 protected:
   // It is not legal to directly delete this
@@ -121,13 +128,19 @@ public:
   // the memory is released in the same Dll as it was allocated in
   virtual void deleteMe() {}
 
+  AppTool * getAppTool() { return m_appTool; }
+
 public slots:
 
   // Implement this slot to update the UI to the
   // passed variant.  If necessary, pass the update
   // down to this items children as well.
   virtual void onModelValueChanged( QVariant const &value ) {}
+    
+  void emitRefreshViewport() { emit refreshViewport(); }
   
+  void emitToggleManipulation(bool toggle);
+
 signals:
 
   // Triggered before a user interaction begins
@@ -142,6 +155,12 @@ signals:
   // its children be rebuilt.  The item being passed
   // should be the item who requires children rebuilt
   void rebuildChildren(FabricUI::ValueEditor::BaseViewItem* item);
+
+  // Refreshes the viewport, if a klTool
+  // has been activated-deactivated.
+  void refreshViewport();
+
+  void toggleManipulation(bool);
 };
 
 } // namespace FabricUI 

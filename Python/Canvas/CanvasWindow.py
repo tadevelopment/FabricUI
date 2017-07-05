@@ -15,6 +15,11 @@ from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
+from FabricEngine.Canvas.Commands.CommandManager import *
+from FabricEngine.Canvas.Application.FabricApplicationStates import *
+from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import HotkeyEditorDialog
+from FabricEngine.Canvas.Commands.CommandManagerCallback import CommandManagerCallback
+from FabricEngine.Canvas.Dialogs.DialogCommandRegistration import DialogCommandRegistration
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -114,18 +119,18 @@ class QuitApplicationAction(BaseCanvasWindowAction):
             canvasWindow, 
             "CanvasWindow.QuitApplicationAction", 
             "Quit", 
-            QtGui.QKeySequence.Quit)
+            QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Q))
     
     def onTriggered(self):
         self.canvasWindow.close()
 
 class ToggleManipulationAction(BaseCanvasWindowAction):
 
-    def __init__(self, parent, viewport):
+    def __init__(self, canvasWindow, viewport):
         super(ToggleManipulationAction, self).__init__(
-            parent,     
+            viewport,     
             None, 
-            "CanvasWindow.ToggleManipulationAction", 
+            "Viewport.ToggleManipulationAction", 
             "Toggle manipulation", 
             QtGui.QKeySequence(QtCore.Qt.Key_Q),
             QtCore.Qt.WidgetWithChildrenShortcut)
@@ -134,7 +139,8 @@ class ToggleManipulationAction(BaseCanvasWindowAction):
         self.viewport = viewport
         self.setCheckable(True)
         self.setChecked(self.viewport.isManipulationActive())
-
+        self.toggled.connect( canvasWindow.valueEditor.toggleManipulation)
+    
     def onTriggered(self):
         self.viewport.toggleManipulation()
 
@@ -144,7 +150,7 @@ class GridVisibilityAction(BaseCanvasWindowAction):
         super(GridVisibilityAction, self).__init__(
             parent,     
             None, 
-            "CanvasWindow.GridVisibilityAction", 
+            "Viewport.GridVisibilityAction", 
             "&Display Grid", 
             QtGui.QKeySequence(QtCore.Qt.Key_G),
             QtCore.Qt.WidgetWithChildrenShortcut)
@@ -160,7 +166,7 @@ class ResetCameraAction(BaseCanvasWindowAction):
         super(ResetCameraAction, self).__init__(
             parent,     
             None, 
-            "CanvasWindow.ResetCameraAction", 
+            "Viewport.ResetCameraAction", 
             "&Reset Camera", 
             QtGui.QKeySequence(QtCore.Qt.Key_R),
             QtCore.Qt.WidgetWithChildrenShortcut)
@@ -168,6 +174,28 @@ class ResetCameraAction(BaseCanvasWindowAction):
         viewport.addAction(self)
         self.triggered.connect(viewport.resetCamera)
        
+
+class ShowHotkeyEditorDialogAction(BaseCanvasWindowAction):
+
+    def __init__(self, parent, canvasWindow):
+        super(ShowHotkeyEditorDialogAction, self).__init__(
+            parent,     
+            canvasWindow, 
+            "CanvasWindow.ShowHotkeyEditorDialogAction", 
+            "Hotkey editor", 
+            QtGui.QKeySequence(QtCore.Qt.Key_K))
+        
+        self.setToolTip(
+            "Edit all the registered actions \n" +
+            "to associate a shortcut."
+            )
+
+    def onTriggered(self):
+        if not self.canvasWindow.hotkeyEditorDialog.isVisible():
+            pos = QtGui.QCursor.pos()
+            self.canvasWindow.hotkeyEditorDialog.move(pos.x(), pos.y())
+            self.canvasWindow.hotkeyEditorDialog.exec_()
+
 class CanvasWindow(QtGui.QMainWindow):
     """This window encompasses the entire Canvas application.
 
@@ -191,6 +219,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
     def __init__(self, settings, unguarded, noopt):
         self.settings = settings
+        self.isInitialized = False
 
         super(CanvasWindow, self).__init__()
 
@@ -206,6 +235,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self._initKL(unguarded, noopt)
         self._initLog()
         self._initDFG()
+        self._initCommand()
+        self._initDFGWidget()
         self._initTreeView()
         self._initValueEditor()
         self._initGL()
@@ -220,6 +251,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.onGraphSet(self.dfgWidget.getUIGraph())
         self.valueEditor.initConnections()
         self.installEventFilter(CanvasWindowEventFilter(self))
+
 
     def _init(self):
         """Initializes the settings and config for the application.
@@ -264,6 +296,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setGridVisibleAction = None
         self.resetCameraAction = None
         self.clearLogAction = None
+        self.showHotkeyEditorDialogAction = None
+
 
         self.windowTitle = 'Fabric Engine - Canvas'
         self.lastFileName = ''
@@ -351,10 +385,12 @@ class CanvasWindow(QtGui.QMainWindow):
         client.loadExtension('Math')
         client.loadExtension('Parameters')
         client.loadExtension('Util')
+        client.loadExtension('FabricInterfaces')
+        client.loadExtension('Manipulation')
         client.setStatusCallback(self._statusCallback)
         self.client = client
-        self.qUndoStack = QtGui.QUndoStack()
         self.rtvalEncoderDecoder.client = self.client
+        CreateAppStates(self.client, self.settings)
 
     def _initDFG(self):
         """Initializes the Data Flow Graph.
@@ -367,10 +403,6 @@ class CanvasWindow(QtGui.QMainWindow):
         interact with it via the DFGWidget and through other scripted methods
         within the application.
 
-        The UICmdHandler handles the interaction between the UI and the client.
-
-        The DFGWidget is the UI that reflects the binding to the graph that is
-        created and changed through the application.
         """
 
         self.evalContext = self.client.RT.types.EvalContext.create()
@@ -384,13 +416,30 @@ class CanvasWindow(QtGui.QMainWindow):
         self.lastSavedBindingVersion = self.mainBinding.getVersion()
         self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
 
-        graph = self.mainBinding.getExec()
+    def _initCommand(self):
+        """Initializes the commands framework.
+ 
+        The UICmdHandler handles the interaction between the UI and the client.
+
+        """
+        self.qUndoStack = QtGui.QUndoStack()
+   
+        self.qUndoView = QtGui.QUndoView(self.qUndoStack)
+        self.qUndoView.setObjectName('DFGHistoryWidget')
+        self.qUndoView.setEmptyLabel("New Graph")
+
         self.scriptEditor = ScriptEditor(self.client, self.mainBinding, self.qUndoStack, self.logWidget, self.settings, self, self.config)
         self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
+        
+        self.cmdManagerCallback = CommandManagerCallback(self.qUndoStack, self.scriptEditor)
+        self.hotkeyEditorDialog = HotkeyEditorDialog(self)
 
-        astManager = KLASTManager(self.client)
-        self.lastSavedBindingVersion = self.mainBinding.getVersion()
-        self.lastAutosaveBindingVersion = self.lastSavedBindingVersion
+    def _initDFGWidget(self):
+        """Initializes the Data Flow Graph.
+
+        The DFGWidget is the UI that reflects the binding to the graph that is
+        created and changed through the application.
+        """
 
         graph = self.mainBinding.getExec()
         self.dfgWidget = DFG.DFGWidget(None, self.client, self.host,
@@ -405,6 +454,10 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget.onGraphSet.connect(self.onGraphSet)
         self.dfgWidget.additionalMenuActionsRequested.connect(self.onAdditionalMenuActionsRequested)
         self.dfgWidget.urlDropped.connect(self.onUrlDropped)
+
+        controller = self.dfgWidget.getDFGController()
+        controller.topoDirty.connect(GetCommandManager().synchronizeKL)
+        FabricUI.DFG.DFGCommandRegistration.RegisterCommands(self.dfgWidget.getDFGController())
 
     def _initTreeView(self):
         """Initializes the preset TreeView.
@@ -431,22 +484,18 @@ class CanvasWindow(QtGui.QMainWindow):
         glFormat.setSampleBuffers(True)
         glFormat.setSamples(4)
 
-        self.viewport = Viewports.GLViewportWidget(self.client, self.config.defaultWindowColor, glFormat, self, self.settings)
+        self.viewport = Viewports.GLViewportWidget(self.config.defaultWindowColor, glFormat, self)
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
-        self.renderingOptionsWidget = FabricUI.Viewports.ViewportOptionsEditor( self.client, self.qUndoStack, self.settings )
-        # When the rendering options of the viewport have changed, redraw
-        self.renderingOptionsWidget.valueChanged.connect(self.viewport.redraw)
-        # Once the Viewport has been setup (and filled its option values), update the options menu
-        self.viewport.initComplete.connect(self.renderingOptionsWidget.updateOptions)
-
-        self.renderingOptionsDockWidget = QtGui.QDockWidget("Rendering Options", self)
-        self.renderingOptionsDockWidget.setObjectName("Rendering Options")
-        self.renderingOptionsDockWidget.setWidget( self.renderingOptionsWidget )
-        self.renderingOptionsDockWidget.setFeatures(self.dockFeatures)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.renderingOptionsDockWidget, QtCore.Qt.Vertical)
-        self.renderingOptionsDockWidget.hide()
+        FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
+        DialogCommandRegistration.RegisterCommands()
+        
+        args = { "editorID":"Rendering Options", "editorTitle":"Rendering Options" }
+        cmd = GetCommandManager().createCommand('openKLOptionsTargetEditor', args)
+     
+        # When a klWidget is activated/deactivated from the value-editor.
+        self.valueEditor.refreshViewport.connect(self.viewport.redraw)
 
     def _initValueEditor(self):
         """Initializes the value editor."""
@@ -455,11 +504,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfgWidget.stylesReloaded.connect(self.valueEditor.reloadStyles)
 
     def _initLog(self):
-        """Initializes the DFGLogWidget and Undo view."""
+        """Initializes the DFGLogWidget."""
         self.logWidget = DFG.DFGLogWidget(self.config)
-        self.qUndoView = QtGui.QUndoView(self.qUndoStack)
-        self.qUndoView.setObjectName('DFGHistoryWidget')
-        self.qUndoView.setEmptyLabel("New Graph")
 
     def _initTimeLine(self):
         """Initializes the TimeLineWidget.
@@ -627,15 +673,19 @@ class CanvasWindow(QtGui.QMainWindow):
         Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.scriptEditorDock.toggleViewAction", toggleAction)
         windowMenu.addAction(toggleAction)
 
-        # Toggle Rendering Options Widget Action
-        toggleAction = self.renderingOptionsDockWidget.toggleViewAction()
-        toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
-        Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
-        windowMenu.addAction( toggleAction )
+        try:
+            dockWidget = FabricUI.Util.QtUtil.getDockWidget("Rendering Options")
+            if dockWidget:
+                dockWidget.hide()
+                toggleAction = dockWidget.toggleViewAction()
+                toggleAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_8)
+                Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.renderingOptionsDockWidget.toggleViewAction", toggleAction)
+                windowMenu.addAction( toggleAction )
+        except Exception as e:
+            print str(e)
 
-        # add the "Help" menu.
         self.dfgWidget.populateMenuBar(self.menuBar(), False, False, False, False, True)
-
+    
     def onPortManipulationRequested(self, portName):
         """Method to trigger value changes that are requested by manipulators
         in the viewport.
@@ -647,27 +697,31 @@ class CanvasWindow(QtGui.QMainWindow):
 
         try:
             controller = self.dfgWidget.getDFGController()
-            binding = controller.getBinding()
-            dfgExec = binding.getExec()
-            portResolvedType = dfgExec.getExecPortResolvedType(str(portName))
-            value = self.viewport.getManipTool().getLastManipVal()
-            if portResolvedType == 'Xfo':
-                pass
-            elif portResolvedType == 'Mat44':
-                value = value.toMat44('Mat44')
-            elif portResolvedType == 'Vec3':
-                value = value.tr
-            elif portResolvedType == 'Quat':
-                value = value.ori
-            else:
-                message = "Port '" + portName
-                message += "'to be driven has unsupported type '"
-                message += portResolvedType.data()
-                message += "'."
-                self.dfgWidget.getDFGController().logError(message)
-                return
-            controller.cmdSetArgValue(portName, value)
+            if len(portName) > 0:
+                binding = controller.getBinding()
+                dfgExec = binding.getExec()
+                portResolvedType = dfgExec.getExecPortResolvedType(str(portName))
+                value = self.viewport.getManipTool().getLastManipVal()
+                if portResolvedType == 'Xfo':
+                    pass
+                elif portResolvedType == 'Mat44':
+                    value = value.toMat44('Mat44')
+                elif portResolvedType == 'Vec3':
+                    value = value.tr
+                elif portResolvedType == 'Quat':
+                    value = value.ori
+                else:
+                    message = "Port '" + portName
+                    message += "'to be driven has unsupported type '"
+                    message += portResolvedType.data()
+                    message += "'."
+                    self.dfgWidget.getDFGController().logError(message)
+                    return
+                controller.cmdSetArgValue(portName, value)
+            
+            # Force the graph execution
             controller.processDelayedEvents() # [FE-6568]
+
         except Exception as e:
             self.dfgWidget.getDFGController().logError(str(e))
 
@@ -724,7 +778,6 @@ class CanvasWindow(QtGui.QMainWindow):
                 self.recentFilesAction[i].setData(filepath)
                 self.recentFilesAction[i].setVisible(True)
             
-
     def loadGraph(self, filePath):
         """Method to load a graph from disk.
 
@@ -738,16 +791,9 @@ class CanvasWindow(QtGui.QMainWindow):
         self.timeLine.pause()
 
         try:
-            dfgController = self.dfgWidget.getDFGController()
-            binding = dfgController.getBinding()
-            binding.deallocValues()
+            manipActive, binding = self.__clearApp()
 
-            self.host.flushUndoRedo()
-            self.qUndoStack.clear()
             self.qUndoView.setEmptyLabel("Load Graph")
-            self.viewport.clearInlineDrawing()
-
-            QtCore.QCoreApplication.processEvents()
 
             jsonVal = open(filePath, 'rb').read()
             binding = self.host.createBindingFromJSON(jsonVal)
@@ -797,7 +843,7 @@ class CanvasWindow(QtGui.QMainWindow):
                 except Exception as e:
                     sys.stderr.write("Exception: " + str(e) + "\n")
 
-            dfgController.emitDirty()
+            self.dfgWidget.getDFGController().emitDirty()
             self.onFileNameChanged(filePath)
 
             QtCore.QCoreApplication.processEvents()
@@ -813,6 +859,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
             if self.dfgWidget:
                 self.dfgWidget.getDFGController().log("graph loaded \"" + str(filePath) + "\"")
+
+            if manipActive is True:
+                self.manipAction.onTriggered()
 
         except Exception as e:
             sys.stderr.write("Exception: " + str(e) + "\n")
@@ -987,7 +1036,6 @@ class CanvasWindow(QtGui.QMainWindow):
 
         dfgController.savePrefs()
 
-
     def execNewGraph(self, skip_save=False):
         """Callback Executed when a key or menu command has requested a new graph.
 
@@ -999,6 +1047,26 @@ class CanvasWindow(QtGui.QMainWindow):
         """
 
         self.scriptEditor.exec_("newGraph(skip_save=%s)" % str(skip_save))
+
+    def __clearApp(self):
+        """ Clear the app before loading a new graph.
+        """
+        manipActive = self.viewport.isManipulationActive()
+        if manipActive is True:
+            self.manipAction.onTriggered()
+    
+        binding = self.dfgWidget.getDFGController().getBinding()
+        binding.deallocValues()
+
+        self.host.flushUndoRedo()
+        self.qUndoStack.clear()
+        GetCommandManager().clear()
+        self.logWidget.clear()
+        self.viewport.clear()
+        self.scriptEditor.clear()
+        QtCore.QCoreApplication.processEvents()
+
+        return manipActive, binding
 
     def onNewGraph(self, skip_save=False):
         """Callback Executed when a call to create a new graph has been made.
@@ -1021,15 +1089,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.lastFileName = ""
 
         try:
-            dfgController = self.dfgWidget.getDFGController()
-
-            binding = dfgController.getBinding()
-            binding.deallocValues()
-
-            self.host.flushUndoRedo()
-            self.qUndoStack.clear()
-            self.viewport.clearInlineDrawing()
-            QtCore.QCoreApplication.processEvents()
+            manipActive, binding = self.__clearApp()
 
             # Note: the previous binding is no longer functional
             #             create the new one before resetting the timeline options
@@ -1049,8 +1109,11 @@ class CanvasWindow(QtGui.QMainWindow):
 
             self.qUndoView.setEmptyLabel("New Graph")
 
-            dfgController.emitDirty()
+            self.dfgWidget.getDFGController().emitDirty()
             self.onFileNameChanged('')
+
+            if manipActive is True:
+                self.manipAction.onTriggered()
 
         except Exception as e:
             print 'Exception: ' + str(e)
@@ -1246,6 +1309,8 @@ class CanvasWindow(QtGui.QMainWindow):
             self.resetCameraAction.blockSignals(enabled)
         if self.clearLogAction:
             self.clearLogAction.blockSignals(enabled)
+        if self.showHotkeyEditorDialogAction:
+            self.showHotkeyEditorDialogAction.blockSignals(enabled)
 
     def openRecentFile(self):
         action = self.sender()
@@ -1308,8 +1373,14 @@ class CanvasWindow(QtGui.QMainWindow):
             else:
                 if self.isCanvas:
                     menu.addSeparator()
-                    self.manipAction = ToggleManipulationAction(self.viewport, self.viewport)
+                    self.manipAction = ToggleManipulationAction(self, self.viewport)
                     menu.addAction(self.manipAction)
+
+                    menu.addSeparator()
+
+                    editorMenu = menu.addMenu("Editors")
+                    self.showHotkeyEditorDialogAction = ShowHotkeyEditorDialogAction(editorMenu, self)
+                    editorMenu.addAction(self.showHotkeyEditorDialogAction)
 
         elif name == 'View':
             if prefix:

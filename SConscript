@@ -125,6 +125,7 @@ dirs = [
   'Actions',
   'Dialog',
   'Style',
+  'Commands',
   'Viewports',
   'KLEditor',
   'Menus',
@@ -133,9 +134,11 @@ dirs = [
   'ValueEditor_Legacy',
   'ValueEditor',
   'OptionsEditor',
+  'OptionsEditor/Commands',
   'GraphView',
   'GraphView/Commands',
   'DFG',
+  'DFG/Commands',
   'DFG/DFGUICmd',
   'DFG/Dialogs',
   'DFG/PortEditor',
@@ -327,8 +330,11 @@ if uiLibPrefix == 'ui':
         diffFile,
         shibokenDir.File('fabricui.xml'),
         shibokenDir.File('fabricui_core.xml'),
+        shibokenDir.File('fabricui_application.xml'),
         shibokenDir.File('fabricui_actions.xml'),
+        shibokenDir.File('fabricui_commands.xml'),
         shibokenDir.File('fabricui_optionseditor.xml'),
+        shibokenDir.File('fabricui_dialog.xml'),
         shibokenDir.File('fabricui_dfg.xml'),
         shibokenDir.File('fabricui_viewports.xml'),
         shibokenDir.File('fabricui_util.xml'),
@@ -368,10 +374,14 @@ if uiLibPrefix == 'ui':
 
     pysideEnv.Append(CPPPATH = [
         pysideEnv.Dir('Util').srcnode(),
+        pysideEnv.Dir('Commands').srcnode(),
         pysideEnv.Dir('Menus').srcnode(),
+        pysideEnv.Dir('Dialog').srcnode(),
         pysideEnv.Dir('Actions').srcnode(),
         pysideEnv.Dir('OptionsEditor').srcnode(),
+        pysideEnv.Dir('OptionsEditor/Commands').srcnode(),
         pysideEnv.Dir('DFG').srcnode(),
+        pysideEnv.Dir('DFG/Commands').srcnode(),
         pysideEnv.Dir('DFG/DFGUICmd').srcnode(),
         pysideEnv.Dir('GraphView').srcnode(),
         pysideEnv.Dir('Licensing').srcnode(),
@@ -530,12 +540,23 @@ if uiLibPrefix == 'ui':
         Glob(os.path.join(pysideModuleSrcDir.abspath, '*'))
         )
       )
-    installedPySideLibs.append(
-      pysideEnv.Install(
-        pysideEnv['STAGE_DIR'].Dir('Python').Dir(pythonVersion).Dir('FabricEngine').Dir('Canvas'),
-        Glob(os.path.join(pysideEnv.Dir('Python').Dir('Canvas').abspath, '*'))
+
+    pythonDir = [
+      'Canvas',
+      'Canvas/Application',
+      'Canvas/HotkeyEditor',
+      'Canvas/Commands',
+      'Canvas/Dialogs'
+    ]
+
+    for dir_ in pythonDir:
+      installedPySideLibs.append(
+        pysideEnv.Install(
+          pysideEnv['STAGE_DIR'].Dir('Python').Dir(pythonVersion).Dir('FabricEngine').Dir(dir_),
+          Glob(os.path.join(pysideEnv.Dir('Python').Dir(dir_).abspath, '*.py'))
+          )
         )
-      )
+
     installedPySideLibs.append(
       pysideEnv.Install(
         pysideEnv['STAGE_DIR'].Dir('bin'),

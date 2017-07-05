@@ -6,9 +6,12 @@
 #define FABRICUI_VALUEEDITOR_BASEMODELITEM_H
 
 #include <FTL/CStrRef.h>
+#include <QList>
 #include <QObject>
 #include <QString>
 #include <QVariant>
+#include <FabricCore.h>
+#include <vector>
 
 
 namespace FabricUI {
@@ -155,6 +158,19 @@ public:
 
 	// Return a copy of this classes value
 	virtual QVariant getValue() { return QVariant(); }
+
+  // Return the name of the command.
+  virtual QString getCommandName() 
+  {
+    return "";
+  }
+
+  // Return the command arguments.
+  virtual FabricCore::RTVal getCommandArgs() 
+  {
+    FabricCore::RTVal res;
+    return res;
+  }
 
   // Returns true if a ModelItem has a default
   // value - in other words, if resetToDefault

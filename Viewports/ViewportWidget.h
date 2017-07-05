@@ -2,108 +2,87 @@
  *  Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
  */
 
-#ifndef __FABRICUI_VIEWPORT_H__
-#define __FABRICUI_VIEWPORT_H__
+#ifndef __UI_VIEWPORT__
+#define __UI_VIEWPORT__
 
-#include <FabricUI/Viewports/QtToKLEvent.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include <iterator>
-#include <cmath>
-#include <ostream>
-#include <fstream>
-#include <streambuf>
-#include <memory>
-
-#include <QtCore>
 #include <QTime>
-#include <QSettings>
-#include <QMouseEvent>
-#include <QImage>
 #include <QGLWidget>
+#include "ViewportEventFilter.h"
 
-#include <FabricCore.h>
+namespace FabricUI {
+namespace Viewports {
 
-namespace FabricUI
-{
-  namespace Viewports
-  {
-    /// Defines in Canvas, not SceneHub
-    class ManipulationTool;
+class ViewportWidget : public QGLWidget
+{ 
+  Q_OBJECT
+  
+  public:
+    /// Constructor for RTRGLViewportWidget.
+    ViewportWidget( 
+      QGLContext *qglContext, 
+      QWidget *parent = 0, 
+      QGLWidget *share = 0
+      );
 
-    class ViewportWidget : public QGLWidget
-    { 
-      private:
-        void init(
-          FabricCore::Client &client, 
-          QColor bgColor, 
-          QSettings *settings = 0);
+    /// Constructor for GLViewportWidget.
+  	ViewportWidget( 
+      QGLFormat format, 
+      QWidget *parent = 0
+      );
 
-      public:
-        /// Constructor for RTRGLViewportWidget.
-        ViewportWidget(
-          FabricCore::Client &client, 
-          QColor bgColor, 
-          QGLContext *qglContext, 
-          QWidget *parent = 0, 
-          QGLWidget *share = 0,
-          QSettings *settings = 0);
+  	virtual ~ViewportWidget();
 
-        /// Constructor for GLViewportWidget.
-      	ViewportWidget(
-          FabricCore::Client &client, 
-          QColor bgColor, 
-          QGLFormat format, 
-          QWidget *parent = 0, 
-          QSettings *settings = 0);
+    /// Check if the manipulation is activated.
+    /// To override
+    virtual bool isManipulationActive();
 
-      	virtual ~ViewportWidget() {};
+    /// Activate/deactivaye the manips.
+    /// To override
+    virtual void setManipulationActive(
+      bool state
+      );
 
-        virtual double fps() { return m_fps; }
-        QColor backgroundColor() { return m_bgColor; }
+    /// Gets the FPS.
+    double fps();
+  
+  signals:
+    /// Emitted when OpenGL has been initialized.
+    void initComplete();
       
-        FabricCore::Client getClient() { return m_client; }
-        FabricCore::RTVal getViewport() { return m_viewport; }
-        virtual FabricCore::RTVal getCamera() { FabricCore::RTVal val; return val; }
-        virtual void setBackgroundColor(QColor color) {}
-      
-        // Canvas (InlineDrawing) specific
-        virtual void clearInlineDrawing() {}
-        virtual bool isManipulationActive() { return false; }
-        virtual void setManipulationActive(bool state) {}
-        virtual ManipulationTool *getManipTool() { return 0; }
-        virtual bool isUsingStage() { return false; }
-        virtual bool isStageVisible() { return false; }
+    /// Emitted after the vewport redraw.
+    void redrawn();
 
+  public slots:
+    /// Clear the widget.
+    /// To override
+    virtual void clear();
 
-      public slots:
-        virtual void redraw() { update(); }
-        virtual void onContextMenu(QPoint &point) {}
+    /// Implementation of QGLWidget
+    virtual bool onEvent(
+      QEvent *event
+      );
+
+    /// Refreshs opengl.
+    void redraw();
         
+    /// Toggles the manipulation
+    void toggleManipulation();
 
-      protected:
-        virtual void keyPressEvent(QKeyEvent * event);
-        virtual void mousePressEvent(QMouseEvent *event);
-        virtual void mouseMoveEvent(QMouseEvent *event);
-        virtual void mouseReleaseEvent(QMouseEvent *event);
-        virtual void wheelEvent(QWheelEvent *event);
-        void computeFPS();
-       
+  protected:
+    /// Initializes the viewport.
+    /// Callded from constructors.
+    void init();
 
-        double m_fps;
-        bool m_hasCommercialLicense;
-        double m_fpsStack[16];
-        FabricCore::Client m_client;
-     
-        QColor m_bgColor;
-        QTime m_fpsTimer;
-        QSettings *m_settings;
-        FabricCore::RTVal m_viewport;
-    };
-  }
-}
+    /// Compute the frame-rate.
+    void computeFPS();
+   
+    double m_fps;
+    QTime m_fpsTimer;
+    double m_fpsStack[16];
+    ViewportEventFilter *m_eventFilter;
+};
+  
+} // namespace Viewports
+} // namespace FabricUI
 
-#endif // __FABRICUI_VIEWPORT_H__
+#endif // __UI_VIEWPORT__

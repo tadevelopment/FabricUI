@@ -6,7 +6,7 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include "DFGEditPortDialog.h"
-#include <FabricUI/Util/StringUtils.h>
+#include <FabricUI/Util/StringUtil.h>
 
 using namespace FabricUI;
 using namespace FabricUI::DFG;

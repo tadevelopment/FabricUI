@@ -9,6 +9,8 @@
 #include <QMessageBox>
 #include <QTimer>
 
+#include <iostream>
+
 #include <FTL/JSONEnc.h>
 #include <FTL/JSONDec.h>
 #include <FTL/Str.h>
@@ -34,6 +36,7 @@
 #include <FabricUI/DFG/DFGUIUtil.h>
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGBindingUtils.h>
+
 #include <FabricServices/Persistence/RTValToJSONEncoder.hpp>
 #include <FabricUI/DFG/DFGMetaDataHelpers.h>
 #include <FabricUI/DFG/Dialogs/DFGEditPortDialog.h>
@@ -125,7 +128,7 @@ void DFGController::setBindingExec(
     m_bindingNotifier.clear();
 
   m_binding = binding;
-
+  
   if ( m_binding.isValid() )
   {
     m_bindingNotifier = DFGBindingNotifier::Create( m_binding );
@@ -208,7 +211,7 @@ void DFGController::setExec(
   m_execPath = execPath;
   m_exec = exec;
   m_execBlockName = execBlockName;
-
+ 
   m_presetDictsUpToDate = false;
 
   if ( m_binding.isValid()

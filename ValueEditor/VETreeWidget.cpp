@@ -32,6 +32,7 @@ const QString s_outNodeName = " - Out - ";
 //////////////////////////////////////////////////////////////////////////
 
 VETreeWidget::VETreeWidget( )
+ : m_manipulationToggled(false)
 {
   setColumnCount( 2 );
   setContextMenuPolicy( Qt::CustomContextMenu );
@@ -456,6 +457,25 @@ VETreeWidgetItem * VETreeWidget::findTreeWidget( BaseViewItem * pItem, VETreeWid
   return NULL;
 }
 
+void VETreeWidget::setViewItemConnections(BaseViewItem* item) {
+  connect(
+    item,
+    SIGNAL(refreshViewport()),
+    this,
+    SLOT(emitRefreshViewport())
+  );
+
+  connect(
+    this,
+    SIGNAL(toggleManipulation(bool)),
+    item,
+    SLOT(emitToggleManipulation(bool))
+  );
+
+  item->getAppTool()->onToggleManipulation(
+    m_manipulationToggled
+    );
+}
 
 void VETreeWidget::onModelItemChildInserted(
   BaseModelItem* parent,
@@ -475,6 +495,7 @@ void VETreeWidget::onModelItemChildInserted(
       {
         BaseViewItem* newView =
           ViewItemFactory::GetInstance()->createViewItem( newItem );
+        setViewItemConnections(newView);
         createTreeWidgetItem( newView, parentItem, index );
         sortTree();
       }
@@ -522,6 +543,8 @@ void VETreeWidget::onModelItemTypeChanged( BaseModelItem* item, const char* /*ne
       int index = parentItem->indexOfChild( oldWidget );
       BaseViewItem* newView =
         ViewItemFactory::GetInstance()->createViewItem( item );
+
+      setViewItemConnections(newView);
       createTreeWidgetItem( newView, parentItem, index );
 
       sortTree();
@@ -574,6 +597,7 @@ void VETreeWidget::onSetModelItem( BaseModelItem* pItem )
   {
     ViewItemFactory* pFactory = ViewItemFactory::GetInstance();
     pViewLayer = pFactory->createViewItem( pItem );
+    setViewItemConnections(pViewLayer);
   }
   else
     pViewLayer = 0;
@@ -602,7 +626,10 @@ void VETreeWidget::onTreeWidgetItemExpanded( QTreeWidgetItem *_treeWidgetItem )
     BaseViewItem* lastViewItem = viewItem;
     for (int i = 0; i < childViewItems.size(); ++i)
     {
-      BaseViewItem *childViewItem = childViewItems.at( i );
+      BaseViewItem *childViewItem = childViewItems.at( i ); 
+
+      setViewItemConnections(childViewItem);
+
       createTreeWidgetItem( childViewItem, treeWidgetItem );
       setTabOrder( lastViewItem->getWidget(), childViewItem->getWidget() );
       lastViewItem = childViewItem;
@@ -676,6 +703,15 @@ void VETreeWidget::keyPressEvent(QKeyEvent *event)
     event->ignore();  // [FE-7365]
   else
     QTreeWidget::keyPressEvent(event);
+}
+
+void VETreeWidget::emitToggleManipulation(bool toggled) {
+  m_manipulationToggled = toggled;
+  emit toggleManipulation(toggled);
+}
+
+void VETreeWidget::emitRefreshViewport() {
+  emit refreshViewport();
 }
 
 //////////////////////////////////////////////////////////////////////////

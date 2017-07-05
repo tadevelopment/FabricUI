@@ -20,6 +20,7 @@ BaseViewItem::BaseViewItem( QString const &name, ItemMetadata* metadata )
   : m_name( name )
   , m_metadata(metadata)
 {
+  m_appTool = new AppTool(this);
   s_nInstances++;
 }
 
@@ -56,11 +57,14 @@ void BaseViewItem::setBaseModelItem( BaseModelItem* item )
         m_metadata.setSInt32( "uiReadOnly", 1 );
       }
     }
+
   }
 }
 
 BaseViewItem::~BaseViewItem()
 {
+  delete m_appTool;
+  m_appTool = 0;
   s_nInstances--;
 }
 
@@ -109,7 +113,6 @@ void BaseViewItem::renameItem( QString newName )
     m_modelItem->rename( newName.toUtf8().constData() );
 }
 
-
 void BaseViewItem::onRenamed( QTreeWidgetItem* item )
 {
   if (m_modelItem != NULL) 
@@ -146,6 +149,11 @@ void BaseViewItem::setWidgetsOnTreeItem(
   treeWidget->setItemWidget( treeWidgetItem, 1, myWidget );
 }
 
+void BaseViewItem::emitToggleManipulation(bool toggled) {
+  emit toggleManipulation(toggled);
+}
+
 void BaseViewItem::metadataChanged()
 {
 }
+

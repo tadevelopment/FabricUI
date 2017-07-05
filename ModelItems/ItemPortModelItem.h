@@ -54,6 +54,8 @@ class DFGUICmdHandler;
         { return m_exec; }
       FTL::CStrRef getItemPath()
         { return m_itemPath; }
+      FTL::CStrRef getExecPath()
+        { return m_execPath; }
       FTL::CStrRef getPortName()
         { return m_portName; }
       FTL::CStrRef getPortPath()
@@ -65,7 +67,7 @@ class DFGUICmdHandler;
         );
 
       /////////////////////////////////////////////////////////////////////////
-      // Metadata
+      // MetadatagetWidgetCommandArgs
       /////////////////////////////////////////////////////////////////////////
 
       virtual FabricUI::ValueEditor::ItemMetadata* getMetadata();
@@ -80,6 +82,10 @@ class DFGUICmdHandler;
 
       virtual QVariant getValue();
 
+      virtual QString getCommandName();
+      
+      virtual FabricCore::RTVal getCommandArgs();
+            
     protected:
 
       void updatePortPath();

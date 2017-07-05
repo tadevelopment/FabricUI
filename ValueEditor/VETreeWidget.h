@@ -56,6 +56,8 @@ public slots:
 
   virtual void keyPressEvent(QKeyEvent *event) /*override*/;
 
+  void emitToggleManipulation(bool toggle);
+
 protected slots:
 
   void onTreeWidgetItemExpanded( QTreeWidgetItem *_treeWidgetItem );
@@ -65,6 +67,20 @@ protected slots:
   void prepareMenu( const QPoint& pt );
 
   void resetItem();
+  
+  void emitRefreshViewport();
+
+signals:
+  // Refreshes the viewport, if a klWidget
+  // has been activated-deactivated.
+  void refreshViewport();
+
+  void toggleManipulation(bool);
+
+protected:
+  void setViewItemConnections(BaseViewItem* item);
+  
+  bool m_manipulationToggled;
 };
 
 } // namespace FabricUI 

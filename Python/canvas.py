@@ -88,3 +88,4 @@ if __name__ == "__main__":
         mainWin.scriptEditor.loadScript(args.script)
 
     app.exec_()
+ 

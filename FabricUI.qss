@@ -1999,10 +1999,6 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 }
 
 #ToggleDetailsPanelButton[toggled="true"] #Handle
-{
-  background-color: #50626E;
-}
-
 #ToggleDetailsPanelButton[toggled="true"][hovered="true"] #Handle
 {
   background-color: #637987;
@@ -2136,4 +2132,79 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #50626e;
   border: 2px solid #333333;
   border-bottom: 0px;
+}
+
+/****************************************************************************
+ * HotkeyEditorDialog
+ ***************************************************************************/
+
+#HotkeyEditorDialog QToolBar {
+  border: 0;
+}
+
+#HotkeyEditorDialog QLabel
+{
+  padding-left: 4px;
+  color: #FFFFFF;
+}
+
+#HotkeyEditorDialog QToolButton
+{
+  color: #FFFFFF;
+  border: 0;
+  border-radius: 3px;
+  padding: 4px;
+  margin: 4px;
+  background-color: #2F2F2F;
+}
+
+#HotkeyEditorDialog QToolButton::disabled
+{
+  background-color: #444;
+  color: #6D6D6D;
+}
+
+#HotkeyEditorDialog QToolButton::checked
+{
+  background-color: #176580;
+}
+
+#HotkeyEditorDialog QToolButton::checked:hover
+{
+  background-color: #1C7A99;
+}
+
+#HotkeyEditorDialog QToolButton:hover
+{
+  background-color: #50626E;
+}
+
+#HotkeyEditorDialog QToolButton::pressed
+{
+  border-style: inset;
+  margin-top: 6px;
+  margin-left: 6px;
+
+  background-color: #50626E;
+}
+
+#HotkeyEditorDialog QTableWidget
+{
+  border: 0;
+  border-radius: 3px;
+  background: #333333;
+  color: white;
+  font: 10pt "Roboto";
+  font-weight: normal;  
+}
+
+#HotkeyEditorDialog QTableWidget::item
+{
+  padding: 2px;
+}
+
+#HotkeyEditorDialog QTableWidget::item:hover
+{
+  padding: 0;
+  background-color: #596D7A;
 }
