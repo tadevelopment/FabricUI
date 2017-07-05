@@ -96,7 +96,11 @@ void RTValAnimXFCurveDFGController::setHandle( size_t i, Handle h )
 {
   FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
   static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
-  manager->createCommand( "SetHandle" );
+  QMap<QString, QString> args;
+  args["index"] = QString::number( i );
+  args["x"] = QString::number( h.pos.x() );
+  args["y"] = QString::number( h.pos.y() );
+  manager->createCommand( "SetHandle", args );
 }
 
 void RTValAnimXFCurveDFGController::addHandle()
