@@ -62,6 +62,7 @@ Graph::Graph(
   m_backdropZValue = 1.0;
   m_connectionZValue = 2.0;
   m_centralOverlay = NULL;
+  m_compsBlockedOverlay = NULL;
 }
 
 void Graph::requestSidePanelInspect(
@@ -1100,6 +1101,14 @@ void Graph::updateOverlays(float width, float height)
     pos.setY(-m_centralOverlay->minimumHeight() * 0.5 + m_mainPanel->size().height() * 0.5);
     m_centralOverlay->setPos(pos);
   }
+
+  if (m_compsBlockedOverlay)
+  {
+    QPointF pos;
+    pos.setX(-m_compsBlockedOverlay->minimumWidth()  + m_mainPanel->size().width()  - 10);
+    pos.setY(-m_compsBlockedOverlay->minimumHeight() + m_mainPanel->size().height() - 10);
+    m_compsBlockedOverlay->setPos(pos);
+  }
 }
 
 void Graph::setupBackgroundOverlay(QPointF pos, QString filePath)
@@ -1132,6 +1141,14 @@ void Graph::setCentralOverlayText(QString text)
   }
  
   updateOverlays(rect().width(), height);
+}
+
+void Graph::setCompsBlockedOverlayVisibility(bool state)
+{
+  if (!m_compsBlockedOverlay)
+    m_compsBlockedOverlay = new InfoOverlay(this, "Graph Compilations Disabled", m_config);
+  m_compsBlockedOverlay->setVisible(state);
+  updateOverlays(rect().width(), rect().height());
 }
 
 void Graph::onNodeDoubleClicked(FabricUI::GraphView::Node * node, Qt::MouseButton button, Qt::KeyboardModifiers modifiers)
