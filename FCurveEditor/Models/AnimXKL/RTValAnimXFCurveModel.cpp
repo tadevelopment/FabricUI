@@ -83,11 +83,10 @@ void RTValAnimXFCurveModel::addHandle()
   emit this->handleAdded();
 }
 
-void RTValAnimXFCurveDFGController::setValue( const char* bindingId, const char* dfgPortPath )
+void RTValAnimXFCurveDFGController::setPath( const char* bindingId, const char* dfgPortPath )
 {
   m_bindingId = bindingId;
   m_dfgPortPath = dfgPortPath;
-  // TODO
 }
 
 void RTValAnimXFCurveDFGController::setHandle( size_t i, Handle h )

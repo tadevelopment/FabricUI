@@ -32,7 +32,7 @@ RTValFCurveViewItem::RTValFCurveViewItem(
 
   const char* bindingId = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGBindingIdKey.data() );
   const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );
-  m_model->setValue( bindingId, portPath );
+  m_model->setPath( bindingId, portPath );
 }
 
 RTValFCurveViewItem::~RTValFCurveViewItem()
@@ -43,7 +43,7 @@ RTValFCurveViewItem::~RTValFCurveViewItem()
 
 void RTValFCurveViewItem::onViewValueChanged()
 {
-  emit this->viewValueChanged( QVariant::fromValue<FabricCore::RTVal>( m_model->value() ) );
+  //emit this->viewValueChanged( QVariant::fromValue<FabricCore::RTVal>( m_model->value() ) );
 }
 
 QWidget* RTValFCurveViewItem::getWidget()
@@ -53,8 +53,8 @@ QWidget* RTValFCurveViewItem::getWidget()
 
 void RTValFCurveViewItem::onModelValueChanged( QVariant const & v )
 {
-  // TODO : don't clone the value each time, but use incremental commands
-  //m_model->setValue( v.value<FabricCore::RTVal>().clone() );
+  FabricCore::RTVal rtval = v.value<FabricCore::RTVal>();
+  m_model->setValue( rtval );
 }
 
 BaseViewItem * RTValFCurveViewItem::CreateItem(

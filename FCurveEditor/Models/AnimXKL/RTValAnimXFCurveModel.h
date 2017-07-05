@@ -47,7 +47,7 @@ class RTValAnimXFCurveDFGController : public RTValAnimXFCurveConstModel
   std::string m_bindingId, m_dfgPortPath;
 
 public:
-  void setValue( const char* bindingId, const char* dfgPortPath );
+  void setPath( const char* bindingId, const char* dfgPortPath );
 
   void setHandle( size_t, Handle ) FTL_OVERRIDE;
   void addHandle() FTL_OVERRIDE;
