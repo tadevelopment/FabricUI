@@ -20,10 +20,10 @@ BasePathValueResolver::BasePathValueResolver()
 
 BasePathValueResolver::~BasePathValueResolver()
 {
-	QString name = PathValueResolverRegistry::GetRegistry()->getResolverName(
+	QString name = PathValueResolverRegistry::getRegistry()->getResolverName(
 		this);
 
-	PathValueResolverRegistry::GetRegistry()->unregisterFactory(
+	PathValueResolverRegistry::getRegistry()->unregisterFactory(
 		name);
 }
 

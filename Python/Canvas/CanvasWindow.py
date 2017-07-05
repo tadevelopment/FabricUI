@@ -422,16 +422,16 @@ class CanvasWindow(QtGui.QMainWindow):
 
         """
         self.qUndoStack = QtGui.QUndoStack()
-        GetCommandManager()
-        self.hotkeyEditorDialog = HotkeyEditorDialog(self)
-
+   
         self.qUndoView = QtGui.QUndoView(self.qUndoStack)
         self.qUndoView.setObjectName('DFGHistoryWidget')
         self.qUndoView.setEmptyLabel("New Graph")
 
         self.scriptEditor = ScriptEditor(self.client, self.mainBinding, self.qUndoStack, self.logWidget, self.settings, self, self.config)
         self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
+        
         self.cmdManagerCallback = CommandManagerCallback(self.qUndoStack, self.scriptEditor)
+        self.hotkeyEditorDialog = HotkeyEditorDialog(self)
 
         FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
         FabricUI.Dialog.DialogCommandRegistration.RegisterCommands()

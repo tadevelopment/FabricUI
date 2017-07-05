@@ -15,7 +15,12 @@ namespace Commands {
 class PathValueResolverRegistry : public Util::BaseFactoryRegistry
 {  
   /**
-    PathValueResolverRegistry    
+    PathValueResolverRegistry registers C++ resolver-factories and creates resolver
+    from them. When specialized in Python, the same registry is shared between C++- 
+    Python so resolvers implemented in Python can be created from C++ and vice versa.
+      
+    The registry is singleton:
+    - Get the singleton: PathValueResolverRegistry *registry = PathValueResolverRegistry::getRegistry();
   */  
   
   Q_OBJECT
@@ -26,9 +31,10 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
     virtual ~PathValueResolverRegistry();
 
     /// Gets the resolver singleton.
-    static PathValueResolverRegistry* GetRegistry();
+    static PathValueResolverRegistry* getRegistry();
     
-    /// Checks if the registry has a resolver.
+    /// Checks if the registry has
+    /// a resolver named 'name'
     bool hasResolver(
       QString const&name
       );
@@ -42,7 +48,7 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
     /// Gets/creates the resolver named 'name'.  
     /// The resolver must have been registered, 
     /// returns a null object otherwise.
-    virtual BasePathValueResolver* getOrCreateResolver(
+    virtual BasePathValueResolver* getResolver(
       QString const&name
       );
           
@@ -72,6 +78,16 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
       QString const&name 
       );
 
+    /// \internal
+    /// Registers a resolver, done when
+    /// the factory is it-self registered
+    /// \param cmdName The name of the command
+    /// \param type Object type
+    virtual void registerResolver(
+      BasePathValueResolver *resolver,
+      QString const&type
+      );
+
   private:
     /// Check if the singleton has been set.
     static bool s_instanceFlag;
@@ -86,6 +102,8 @@ class PathValueResolverFactory : public Util::TemplateFactory<T>
 {
   /**
     PathValueResolverFactory is used to register PathValueResolvers in the PathValueResolverRegistry.
+    The resolver is automatically created when registered.
+
     - Register a resolver: PathValueResolverFactory<cmdType>::Register(name, userData);
   */
   public:
@@ -101,13 +119,13 @@ class PathValueResolverFactory : public Util::TemplateFactory<T>
       void *userData=0) 
     {
       Util::TemplateFactory<T>::Register(
-        PathValueResolverRegistry::GetRegistry(),
-        name,
-        userData);
-
-      // Creates the resolver when it's registered.
-      PathValueResolverRegistry::GetRegistry()->getOrCreateResolver(
+        PathValueResolverRegistry::getRegistry(),
         name);
+
+      FabricUI::Util::Factory *factory = PathValueResolverRegistry::getRegistry()->getFactory(name);
+      BasePathValueResolver* resolver = (BasePathValueResolver*)factory->create(); 
+      resolver->registrationCallback(name, userData);
+      PathValueResolverRegistry::getRegistry()->registerResolver(resolver, name);
     }
 };
 

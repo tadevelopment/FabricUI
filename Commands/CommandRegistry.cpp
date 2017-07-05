@@ -145,12 +145,7 @@ void CommandRegistry::commandRegistered(
   QString const&cmdName,
   QString const&cmdType,
   QString const&implType) 
-{
-  std::cout 
-    << "CommandRegistry::commandRegistered " 
-    << cmdName.toUtf8().constData() 
-    << std::endl;
-    
+{  
   // sets the command specs
   QPair<QString, QString> spec;
   spec.first = cmdType;
