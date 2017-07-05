@@ -28,7 +28,8 @@ class AppTool : public QObject
     /// Creates the KL tool and returns
     /// a checbox to set its visibily.
     QCheckBox* createKLTool(
-      FabricCore::RTVal drivenDataType
+      FabricCore::RTVal drivenDataType,
+      FabricCore::RTVal cmdArgs
       );
 
     /// Updates the tool from

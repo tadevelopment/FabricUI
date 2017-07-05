@@ -62,67 +62,40 @@ RTVal AppTool::getAppToolRegistry()
     0,
     0);
 
-  toolRegistry.callMethod(
-    "",
-    "registerAppTools",
-    0,
-    0);
-
-  toolRegistry.callMethod(
-    "",
-    "registerAppTargets",
-    0,
-    0);
-
   FABRIC_CATCH_END("AppTool::getAppToolRegistry");
 
   return toolRegistry;
 }
 
 QCheckBox* AppTool::createKLTool(
-  FabricCore::RTVal drivenDataType)
+  RTVal drivenDataType,
+  RTVal cmdArgs)
 {
   FABRIC_CATCH_BEGIN();
- 
-  QString cmdName;// = modelItem->getCommandName();
-  RTVal cmdArgs;// = modelItem->getCommandArgs();
-
-  if(cmdArgs.isValid())
+  
+  if(getAppToolRegistry().callMethod("Boolean", "isRegistered", 1, &drivenDataType) && cmdArgs.isValid())
   {
-    RTVal toolArgs[2] =
-    {
-      drivenDataType,  
-      cmdArgs
-    };
+    RTVal toolArgs[2] = { drivenDataType, cmdArgs };
 
     m_klTool = getAppToolRegistry().callMethod(
       "Tool::AppTool",
       "createTool",
       2,
-      toolArgs
-      );
+      toolArgs);
 
-    QString toolName = m_klTool.callMethod(
-      "String",
-      "type",
-      0,
-      0
-      ).getStringCString();
+    // QString toolName = m_klTool.callMethod(
+    //   "String",
+    //   "type",
+    //   0,
+    //   0).getStringCString();
 
-    setVisible(false);
+    //setVisible(false);
     
-    m_checkbox = new QCheckBox(
-      toolName
-      );
-
-    // QObject::connect(
-    //   m_checkbox,
-    //   SIGNAL(toggled(bool)),
-    //   this,
-    //   SLOT(setVisible(bool))
+    // m_checkbox = new QCheckBox(
+    //   toolName
     //   );
-
-    return m_checkbox;
+ 
+    // return m_checkbox;
   }
 
   FABRIC_CATCH_END("AppTool::createKLTool");
