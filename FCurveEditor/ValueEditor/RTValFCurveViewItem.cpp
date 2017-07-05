@@ -15,7 +15,7 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   QVariant const &value,
   ItemMetadata* metadata
 ) : BaseViewItem( name, metadata )
-  , m_model( new RTValAnimXFCurveModel() )
+  , m_model( new RTValAnimXFCurveDFGController() )
   , m_editor( new FabricUI::FCurveEditor::FCurveEditor() )
 {
   m_editor->setModel( m_model );
@@ -48,7 +48,7 @@ QWidget* RTValFCurveViewItem::getWidget()
 void RTValFCurveViewItem::onModelValueChanged( QVariant const & v )
 {
   // TODO : don't clone the value each time, but use incremental commands
-  m_model->setValue( v.value<FabricCore::RTVal>().clone() );
+  //m_model->setValue( v.value<FabricCore::RTVal>().clone() );
 }
 
 BaseViewItem * RTValFCurveViewItem::CreateItem(

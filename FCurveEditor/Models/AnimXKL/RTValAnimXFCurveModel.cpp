@@ -5,6 +5,7 @@
 #include "RTValAnimXFCurveModel.h"
 
 #include <assert.h>
+#include <QDebug>
 
 using namespace FabricUI::FCurveEditor;
 
@@ -80,4 +81,30 @@ void RTValAnimXFCurveModel::addHandle()
     m_val = FabricCore::RTVal::Create( m_val.getContext(), "AnimX::AnimCurve", 0, NULL );
   m_val.callMethod( "", "pushKeyframe", 0, NULL );
   emit this->handleAdded();
+}
+
+void RTValAnimXFCurveDFGController::setValue( const char* bindingId, const char* dfgPortPath )
+{
+  m_bindingId = bindingId;
+  m_dfgPortPath = dfgPortPath;
+  // TODO
+}
+
+void RTValAnimXFCurveDFGController::setHandle( size_t i, Handle h )
+{
+  qDebug() << "RTValAnimXFCurveDFGController::setHandle " << m_bindingId.data()
+    << "; " << m_dfgPortPath.data() << " : " << i << " -> " << h.pos;
+  // TODO
+}
+
+void RTValAnimXFCurveDFGController::addHandle()
+{
+  qDebug() << "RTValAnimXFCurveDFGController::addHandle " << m_bindingId.data() << "; " << m_dfgPortPath.data();
+  // TODO
+}
+
+void RTValAnimXFCurveDFGController::deleteHandle( size_t i )
+{
+  qDebug() << "RTValAnimXFCurveDFGController::deleteHandle " << m_bindingId.data() << "; " << m_dfgPortPath.data() << " : " << i;
+  // TODO
 }
