@@ -14,24 +14,30 @@ namespace FabricUI
 namespace FCurveEditor
 {
 
-class RTValAnimXFCurveModel : public AbstractFCurveModel
+class RTValAnimXFCurveConstModel : public AbstractFCurveModel
 {
   Q_OBJECT
 
-  // mutable because calls to RTVal methods are non-const
-  // TODO : change if there are const RTVals
-  mutable FabricCore::RTVal m_val;
+protected:
+  FabricCore::RTVal m_val;
 
 public:
   size_t getHandleCount() const FTL_OVERRIDE;
   Handle getHandle( size_t ) const FTL_OVERRIDE;
-  void setHandle( size_t, Handle ) FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
-  void addHandle() FTL_OVERRIDE;
-  void deleteHandle( size_t ) FTL_OVERRIDE {} // TODO
 
   void setValue( FabricCore::RTVal );
   inline FabricCore::RTVal value() { return m_val; }
+};
+
+class RTValAnimXFCurveModel : public RTValAnimXFCurveConstModel
+{
+  Q_OBJECT
+
+public:
+  void setHandle( size_t, Handle ) FTL_OVERRIDE;
+  void addHandle() FTL_OVERRIDE;
+  void deleteHandle( size_t ) FTL_OVERRIDE {} // TODO
 };
 
 } // namespace FCurveEditor

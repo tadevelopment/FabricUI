@@ -8,21 +8,21 @@
 
 using namespace FabricUI::FCurveEditor;
 
-size_t RTValAnimXFCurveModel::getHandleCount() const
+size_t RTValAnimXFCurveConstModel::getHandleCount() const
 {
   if( !m_val.isValid() || m_val.isNullObject() )
     return 0;
-  return m_val.callMethod( "UInt32", "keyframeCount", 0, NULL ).getUInt32();
+  return const_cast<FabricCore::RTVal*>(&m_val)->callMethod( "UInt32", "keyframeCount", 0, NULL ).getUInt32();
 }
 
-Handle RTValAnimXFCurveModel::getHandle( size_t i ) const
+Handle RTValAnimXFCurveConstModel::getHandle( size_t i ) const
 {
   const size_t argc = 2;
   FabricCore::RTVal args[argc] = {
     FabricCore::RTVal::ConstructSInt32( m_val.getContext(), i ),
     FabricCore::RTVal::Construct( m_val.getContext(), "AnimX::Keyframe", 0, NULL )
   };
-  m_val.callMethod( "Boolean", "keyframeAtIndex", argc, args );
+  const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "Boolean", "keyframeAtIndex", argc, args );
   FabricCore::RTVal key = args[1];
   Handle dst;
   dst.pos.setX( key.maybeGetMember( "time" ).getFloat64() );
@@ -53,15 +53,15 @@ void RTValAnimXFCurveModel::setHandle( size_t i, Handle h )
   emit this->handleMoved( i );
 }
 
-qreal RTValAnimXFCurveModel::evaluate( qreal v ) const
+qreal RTValAnimXFCurveConstModel::evaluate( qreal v ) const
 {
   if( !m_val.isValid() || m_val.isNullObject() )
     return 0;
   FabricCore::RTVal time = FabricCore::RTVal::ConstructFloat64( m_val.getContext(), v );
-  return m_val.callMethod( "Float64", "evaluate", 1, &time ).getFloat64();
+  return const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "Float64", "evaluate", 1, &time ).getFloat64();
 }
 
-void RTValAnimXFCurveModel::setValue( FabricCore::RTVal v )
+void RTValAnimXFCurveConstModel::setValue( FabricCore::RTVal v )
 {
   const size_t previousHc = this->getHandleCount();
   // TODO : remove extra handles
