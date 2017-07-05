@@ -72,28 +72,28 @@ const char* VerKey_CSt = "ConfigStamp";
 
 struct ConfigVersion
 {
-  uint8_t major, minor, revision, configStamp;
+  uint8_t m_major, m_minor, m_revision, m_configStamp;
 public:
   ConfigVersion()
-    : major( FabricCore::GetVersionMaj() )
-    , minor( FabricCore::GetVersionMin() )
-    , revision( FabricCore::GetVersionRev() )
-    , configStamp( 0 ) // Hardcoded value : modify if necessary
+    : m_major( FabricCore::GetVersionMaj() )
+    , m_minor( FabricCore::GetVersionMin() )
+    , m_revision( FabricCore::GetVersionRev() )
+    , m_configStamp( 0 ) // Hardcoded value : modify if necessary
   {}
   ConfigVersion( const FTL::JSONObject* o )
-    : major( o->getSInt32OrDefault( VerKey_Maj, 0 ) )
-    , minor( o->getSInt32OrDefault( VerKey_Min, 0 ) )
-    , revision( o->getSInt32OrDefault( VerKey_Rev, 0 ) )
-    , configStamp( o->getSInt32OrDefault( VerKey_CSt, 0 ) )
+    : m_major( o->getSInt32OrDefault( VerKey_Maj, 0 ) )
+    , m_minor( o->getSInt32OrDefault( VerKey_Min, 0 ) )
+    , m_revision( o->getSInt32OrDefault( VerKey_Rev, 0 ) )
+    , m_configStamp( o->getSInt32OrDefault( VerKey_CSt, 0 ) )
   {
   }
   inline bool operator<( const ConfigVersion& o ) const
   {
     return 
-      ( this->major < o.major ) || ( ( this->major == o.major )  &&
-        ( this->minor < o.minor ) || ( ( this->minor == o.minor ) &&
-          ( this->revision < o.revision ) || ( ( this->revision < o.revision ) &&
-            ( this->configStamp < o.configStamp ) 
+      ( this->m_major < o.m_major ) || ( ( this->m_major == o.m_major )  &&
+        ( this->m_minor < o.m_minor ) || ( ( this->m_minor == o.m_minor ) &&
+          ( this->m_revision < o.m_revision ) || ( ( this->m_revision < o.m_revision ) &&
+            ( this->m_configStamp < o.m_configStamp ) 
           )
         )
       )
@@ -102,10 +102,10 @@ public:
   FTL::JSONObject* write() const
   {
     FTL::JSONObject* o = new FTL::JSONObject();
-    o->insert( VerKey_Maj, new FTL::JSONSInt32( this->major ) );
-    o->insert( VerKey_Min, new FTL::JSONSInt32( this->minor ) );
-    o->insert( VerKey_Rev, new FTL::JSONSInt32( this->revision ) );
-    o->insert( VerKey_CSt, new FTL::JSONSInt32( this->configStamp ) );
+    o->insert( VerKey_Maj, new FTL::JSONSInt32( this->m_major ) );
+    o->insert( VerKey_Min, new FTL::JSONSInt32( this->m_minor ) );
+    o->insert( VerKey_Rev, new FTL::JSONSInt32( this->m_revision ) );
+    o->insert( VerKey_CSt, new FTL::JSONSInt32( this->m_configStamp ) );
     return o;
   }
 };
