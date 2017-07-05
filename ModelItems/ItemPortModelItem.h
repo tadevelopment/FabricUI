@@ -52,6 +52,8 @@ class DFGUICmdHandler;
 
       FabricCore::DFGExec getExec()
         { return m_exec; }
+      inline const FabricCore::DFGBinding& getBinding() const
+        { return m_binding; }
       FTL::CStrRef getItemPath()
         { return m_itemPath; }
       FTL::CStrRef getExecPath()
