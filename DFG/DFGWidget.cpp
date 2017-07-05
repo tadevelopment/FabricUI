@@ -467,8 +467,12 @@ QMenu* DFGWidget::graphContextMenuCallback(FabricUI::GraphView::Graph* graph, vo
 
   result->addSeparator();
 
-  result->addAction(new AutoConnectionsAction  (graphWidget, result, graphWidget->isEditable() && nodes.size() > 1));
-  result->addAction(new RemoveConnectionsAction(graphWidget, result, graphWidget->isEditable() && nodes.size() > 0));
+  QMenu *exposePortsMenu = result->addMenu(tr("Expose Ports"));
+  exposePortsMenu->setEnabled(graphWidget->isEditable() && nodes.size() - backdropNodeCount > 0);
+  exposePortsMenu->addAction(new ExposeAllUnconnectedInputPortsAction(graphWidget, exposePortsMenu));
+  exposePortsMenu->addAction(new ExposeAllUnconnectedOutputPortsAction(graphWidget, exposePortsMenu));
+  result->addAction(new AutoConnectionsAction  (graphWidget, result, graphWidget->isEditable() && nodes.size() - backdropNodeCount > 1));
+  result->addAction(new RemoveConnectionsAction(graphWidget, result, graphWidget->isEditable() && nodes.size() - backdropNodeCount > 0));
 
   result->addSeparator();
 
@@ -638,6 +642,10 @@ QMenu *DFGWidget::nodeContextMenuCallback(
 
     result->addSeparator();
 
+    QMenu *exposePortsMenu = result->addMenu(tr("Expose Ports"));
+    exposePortsMenu->setEnabled(dfgWidget->isEditable() && nodes.size() - backdropNodeCount > 0);
+    exposePortsMenu->addAction(new ExposeAllUnconnectedInputPortsAction(dfgWidget, exposePortsMenu));
+    exposePortsMenu->addAction(new ExposeAllUnconnectedOutputPortsAction(dfgWidget, exposePortsMenu));
     result->addAction(new AutoConnectionsAction  (dfgWidget, result, dfgWidget->isEditable() && nodes.size() - backdropNodeCount > 1));
     result->addAction(new RemoveConnectionsAction(dfgWidget, result, dfgWidget->isEditable() && nodes.size() != backdropNodeCount));
     result->addAction(new SplitFromPresetAction  (dfgWidget, uiNode, result, onlyInstNodes && instNodeCount == 1 && exec.getSubExec(uiNode->name().c_str()).editWouldSplitFromPreset()));
@@ -1551,6 +1559,18 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       expandMetadataSection = true;
     }
 
+    FTL::StrRef uiIsOpenFile = exec.getExecPortMetadata(execPortName.c_str(), "uiIsOpenFile");
+    std::string uiIsOpenFileStr;
+    if(uiIsOpenFile.size() > 0)
+      uiIsOpenFileStr = uiIsOpenFile.data();
+    if(uiIsOpenFileStr.size() > 0)
+    {
+      if(uiIsOpenFile == "true")
+        dialog.setIsOpenFile(true);
+      else
+        dialog.setIsOpenFile(false);
+    }
+
     dialog.setSectionCollapsed("Metadata", !expandMetadataSection);
 
     if (!duplicatePort || isCTRL)
@@ -1609,8 +1629,11 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
       {
         QString fileTypeFilter = dialog.fileTypeFilter();
         DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", fileTypeFilter.toUtf8().constData() );
-      } else
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiIsOpenFile", dialog.isOpenFile() ? "true" : "false");
+      } else {
         DFGAddMetaDataPair( metaDataObjectEnc, "uiFileTypeFilter", "" );//"" will remove the metadata
+        DFGAddMetaDataPair( metaDataObjectEnc, "uiIsOpenFile", "" );//"" will remove the metadata
+      }
 
       emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
     }
@@ -2946,13 +2969,17 @@ void DFGWidget::onExecChanged()
     onExecSplitChanged();
 
     // [Julien] FE-5264
-    // Before initializing the graph, sets the dimConnectionLines and portsCentered properties
+    // [Mootz] FE-8556
+    // Before initializing the graph, sets the dimConnectionLines, portsCentered, etc. properties
     if(getSettings()) 
     {
-      m_uiGraph->config().dimConnectionLines = getSettings()->value( "DFGWidget/dimConnectionLines").toBool();
-      m_uiGraph->config().portsCentered = getSettings()->value( "DFGWidget/portsCentered").toBool();
-      m_uiGraph->config().mainPanelDrawGrid = getSettings()->value( "DFGWidget/mainPanelDrawGrid").toBool();
-      m_uiGraph->config().mainPanelGridSnap = getSettings()->value( "DFGWidget/mainPanelGridSnap").toBool();
+      m_uiGraph->config().dimConnectionLines         = getSettings()->value( "DFGWidget/dimConnectionLines")        .toBool();
+      m_uiGraph->config().connectionShowTooltip      = getSettings()->value( "DFGWidget/connectionShowTooltip")     .toBool();
+      m_uiGraph->config().highlightConnectionTargets = getSettings()->value( "DFGWidget/highlightConnectionTargets").toBool();
+      m_uiGraph->config().connectionDrawAsCurves     = getSettings()->value( "DFGWidget/connectionDrawAsCurves")    .toBool();
+      m_uiGraph->config().portsCentered              = getSettings()->value( "DFGWidget/portsCentered")             .toBool();
+      m_uiGraph->config().mainPanelDrawGrid          = getSettings()->value( "DFGWidget/mainPanelDrawGrid")         .toBool();
+      m_uiGraph->config().mainPanelGridSnap          = getSettings()->value( "DFGWidget/mainPanelGridSnap")         .toBool();
     }
     m_uiGraph->initialize();
 

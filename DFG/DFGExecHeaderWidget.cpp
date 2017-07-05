@@ -31,16 +31,6 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
   m_backgroundColor = config.headerBackgroundColor;
   m_pen = config.headerPen;
 
-  QIcon backIcon = LoadPixmap( "DFGBack.png" );
-  m_backButton = new QPushButton( backIcon, "Back" );
-  m_backButton->setObjectName( "DFGBackButton" );
-  m_backButton->setFocusPolicy( Qt::NoFocus );
-  m_backButton->setAutoFillBackground(false);
-  QObject::connect(
-    m_backButton, SIGNAL(clicked()),
-    this, SIGNAL(goUpPressed())
-    );
-
   m_execPathLabel = new QLabel;
   m_execPathLabel->setObjectName( "DFGExecPathLabel" );
 
@@ -59,10 +49,11 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
     this, SIGNAL(reloadPressed())
     );
 
-  m_saveButton = new QPushButton( "Save" );
+  m_saveButton = new QPushButton( "Apply Code Changes" );
   m_saveButton->setObjectName( "DFGSaveButton" );
   m_saveButton->setFocusPolicy( Qt::NoFocus );
   m_saveButton->setAutoFillBackground(false);
+  m_saveButton->setToolTip("Applies the changes made to the code\nand then re-compiles and executes the graph.");
   connect(
     m_saveButton, SIGNAL(clicked()),
     this, SIGNAL(savePressed())
@@ -82,6 +73,21 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
     this, SLOT(reqExtResizeToContent())
     );
   reqExtResizeToContent();
+
+  QIcon backIcon = LoadPixmap("DFGBack.png");
+  m_backButton = new QPushButton(backIcon, "Back");
+  m_backButton->setObjectName("DFGBackButton");
+  m_backButton->setFocusPolicy(Qt::NoFocus);
+  m_backButton->setAutoFillBackground(false);
+  m_backButton->setToolTip("Leaves the function editor and goes back to the graph view.");
+  QObject::connect(
+    m_backButton, SIGNAL(clicked()),
+    m_reqExtLineEdit, SLOT(onGoUpPressed())
+  );
+  QObject::connect(
+    m_backButton, SIGNAL(clicked()),
+    this, SIGNAL(goUpPressed())
+  );
 
   layout->addWidget( m_presetNameLabel );
   layout->addWidget( m_presetPathSep );
@@ -142,6 +148,11 @@ DFGExecHeaderWidget::DFGExecHeaderWidget(
 
 DFGExecHeaderWidget::~DFGExecHeaderWidget()
 {
+}
+
+void ReqExtLineEdit::onGoUpPressed()
+{
+  clearFocus();
 }
 
 void DFGExecHeaderWidget::refresh()
