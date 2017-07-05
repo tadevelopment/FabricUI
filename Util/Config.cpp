@@ -159,14 +159,19 @@ Config::Config()
   // is the only thing we change; aside from the malformed entries
   // that will be removed)
   {
+    const char* highestVerKey = "latest";
     ConfigVersion highestVersion;
     ConfigVersion currentVersion;
     if( m_json->has( VersionKeyStr ) && m_json->get( VersionKeyStr )->isObject() )
-      highestVersion = ConfigVersion( m_json->getObject( VersionKeyStr ) );
+    {
+      const FTL::JSONObject* versions = m_json->getObject( VersionKeyStr );
+      if( versions->has( highestVerKey ) && versions->get( highestVerKey )->isObject() )
+        highestVersion = ConfigVersion( versions->getObject( highestVerKey ) );
+    }
     highestVersion = std::max( highestVersion, currentVersion );
 
     FTL::JSONObject* versions = new FTL::JSONObject();
-    versions->insert( "latest", highestVersion.write() );
+    versions->insert( highestVerKey, highestVersion.write() );
     versions->insert( "lastEdit", currentVersion.write() );
     m_json->replace( VersionKeyStr, versions );
 
