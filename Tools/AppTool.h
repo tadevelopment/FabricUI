@@ -21,9 +21,7 @@ class AppTool : public QObject
   Q_OBJECT
 
   public:
-    AppTool(
-      //BaseViewItem *viewItem
-      );
+    AppTool();
 
     ~AppTool();
 
@@ -58,8 +56,6 @@ class AppTool : public QObject
   protected:
     /// Get the KL app registry.
     FabricCore::RTVal getAppToolRegistry();
-    /// Reference to the view item.
-    //BaseViewItem *m_viewItem;
     /// The KL tool.
     FabricCore::RTVal m_klTool;
     QCheckBox* m_checkbox;

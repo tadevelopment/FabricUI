@@ -2,22 +2,22 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_OPEN_SIMPLE_DIALOG_COMMAND__
-#define __UI_OPEN_SIMPLE_DIALOG_COMMAND__
+#ifndef __UI_CREATE_TOOLS_COMMAND__
+#define __UI_CREATE_TOOLS_COMMAND__
 
-#include <FabricUI/Commands/BaseScriptableCommand.h>
+#include <FabricUI/Commands/BaseRTValScriptableCommand.h>
 
 namespace FabricUI {
-namespace Dialog {
+namespace Tools {
 
-class OpenSimpleDialogCommand : public Commands::BaseScriptableCommand
+class CreateToolCommand : public FabricUI::Commands::BaseRTValScriptableCommand
 {
   Q_OBJECT
   
   public:
-    OpenSimpleDialogCommand();
+    CreateToolCommand();
 
-    virtual ~OpenSimpleDialogCommand();
+    virtual ~CreateToolCommand();
 
     /// Implementation of BaseCommand.
     virtual bool canUndo();
@@ -32,7 +32,7 @@ class OpenSimpleDialogCommand : public Commands::BaseScriptableCommand
     virtual QString getHelp();
 };
 
-} // namespace Dialog
+} // namespace Tools
 } // namespace FabricUI
 
-#endif // __UI_OPEN_SIMPLE_DIALOG_COMMAND__
+#endif // __UI_CREATE_TOOLS_COMMAND__

@@ -328,6 +328,7 @@ if uiLibPrefix == 'ui':
         shibokenDir.File('fabricui.xml'),
         shibokenDir.File('fabricui_core.xml'),
         shibokenDir.File('fabricui_application.xml'),
+        shibokenDir.File('fabricui_tools.xml'),
         shibokenDir.File('fabricui_actions.xml'),
         shibokenDir.File('fabricui_commands.xml'),
         shibokenDir.File('fabricui_optionseditor.xml'),
@@ -374,6 +375,7 @@ if uiLibPrefix == 'ui':
         pysideEnv.Dir('Commands').srcnode(),
         pysideEnv.Dir('Menus').srcnode(),
         pysideEnv.Dir('Dialog').srcnode(),
+        pysideEnv.Dir('Tools').srcnode(),
         pysideEnv.Dir('Actions').srcnode(),
         pysideEnv.Dir('OptionsEditor').srcnode(),
         pysideEnv.Dir('OptionsEditor/Commands').srcnode(),
@@ -542,8 +544,7 @@ if uiLibPrefix == 'ui':
       'Canvas',
       'Canvas/Application',
       'Canvas/HotkeyEditor',
-      'Canvas/Commands',
-      'Canvas/Dialogs'
+      'Canvas/Commands'
     ]
 
     for dir_ in pythonDir:

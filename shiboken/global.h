@@ -11,7 +11,7 @@
 #include "global_commands.h"
 #include "global_actions.h"
 #include "global_dialog.h"
-
+#include "global_tools.h"
 
 #include <FabricUI/Menus/BaseMenu.h>
 #include <FabricUI/GraphView/Graph.h>

@@ -433,6 +433,10 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
         self.cmdManagerCallback = CommandManagerCallback(self.qUndoStack, self.scriptEditor)
 
+        FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
+        FabricUI.Dialog.DialogCommandRegistration.RegisterCommands()
+        FabricUI.Tools.ToolsCommandRegistration.RegisterCommands()
+
     def _initDFGWidget(self):
         """Initializes the Data Flow Graph.
 
@@ -487,9 +491,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
-        FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
-        FabricUI.Dialog.DialogCommandRegistration.RegisterCommands()
-        
         args = { "editorID":"Rendering Options", "editorTitle":"Rendering Options" }
         cmd = GetCommandManager().createCommand('openKLOptionsTargetEditor', args)
      
