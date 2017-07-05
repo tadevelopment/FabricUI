@@ -43,6 +43,7 @@ class DFGUICmdHandler;
 
       FabricCore::DFGExec getRootExec()
         { return m_rootExec; }
+      inline const FabricCore::DFGBinding& getBinding() const { return m_binding; }
       FTL::CStrRef getArgName()
         { return m_argName; }
 

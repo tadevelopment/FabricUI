@@ -7,6 +7,8 @@
 #include <FabricUI/FCurveEditor/FCurveEditor.h>
 #include <FabricUI/FCurveEditor/Models/AnimXKL/RTValAnimXFCurveModel.h>
 
+#include <FabricUI/ModelItems/DFGModelItemMetadata.h>
+
 using namespace FabricUI::ValueEditor;
 using namespace FabricUI::FCurveEditor;
 
@@ -27,6 +29,10 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   connect( m_model, SIGNAL( handleMoved( size_t ) ), this, SLOT( onViewValueChanged() ) );
   connect( m_editor, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
   connect( m_editor, SIGNAL( interactionEnd() ), this, SLOT( emitInteractionEnd() ) );
+
+  const char* bindingId = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGBindingIdKey.data() );
+  const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );
+  m_model->setValue( bindingId, portPath );
 }
 
 RTValFCurveViewItem::~RTValFCurveViewItem()
