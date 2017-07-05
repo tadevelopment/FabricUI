@@ -43,29 +43,6 @@ bool CreateToolCommand::canLog()
   return false;
 }
 
-inline RTVal getAppToolRegistry()
-{
-  RTVal toolRegistry;
-
-  FABRIC_CATCH_BEGIN();
-
-  toolRegistry = RTVal::Create(
-    Application::FabricApplicationStates::GetAppStates()->getContext(),
-    "Tool::AppToolRegistry",
-    0,
-    0);
-
-  toolRegistry = toolRegistry.callMethod(
-    "Tool::AppToolRegistry",
-    "getAppToolRegistry",
-    0,
-    0);
-
-  FABRIC_CATCH_END("CreateToolCommand::getAppToolRegistry");
-
-  return toolRegistry;
-}
-
 bool CreateToolCommand::doIt()
 {
   FABRIC_CATCH_BEGIN();
@@ -73,19 +50,15 @@ bool CreateToolCommand::doIt()
   RTVal type = getRTValArgValue("type");//.getStringCString();
   RTVal args = RTValUtil::toKLRTVal(getRTValArgValue("args"));
 
-  RTVal appToolRegistry = getAppToolRegistry();
-
-  RTVal temp = RTVal::Construct(appToolRegistry.getContext(), type.getStringCString(), 0, 0);
-  RTVal tempType = temp.callMethod("Type", "type", 0, 0);
+  RTVal temp = RTVal::Construct(
+    Application::FabricApplicationStates::GetAppStates()->getContext(), 
+    type.getStringCString(), 
+    0, 
+    0);
 
   AppTool *tool = new AppTool();
-  tool->createKLTool(tempType, args);
-  // if(appToolRegistry.callMethod("Boolean", "isRegistered", 1, &tempType))
-  // { 
-  //   RTVal temp[2] = { tempType, args };
-  //   appToolRegistry.callMethod("", "createTool", 2, temp);
-  // }
-
+  tool->createKLTool(temp.callMethod("Type", "type", 0, 0), args);
+ 
   return true;
 
   FABRIC_CATCH_END("CreateToolCommand::doIt");
