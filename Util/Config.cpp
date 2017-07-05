@@ -9,6 +9,7 @@
 using namespace FTL;
 
 #include <fstream>
+#include <ctime>
 
 #include <QColor>
 #include <QFont>
@@ -69,22 +70,26 @@ const char* VerKey_Maj = "Major";
 const char* VerKey_Min = "Minor";
 const char* VerKey_Rev = "Revision";
 const char* VerKey_CSt = "ConfigStamp";
+const char* VerKey_RtSt = "RunTimeStamp";
 
 struct ConfigVersion
 {
   uint8_t m_major, m_minor, m_revision, m_configStamp;
+  int32_t m_runTimeStamp;
 public:
   ConfigVersion()
     : m_major( FabricCore::GetVersionMaj() )
     , m_minor( FabricCore::GetVersionMin() )
     , m_revision( FabricCore::GetVersionRev() )
     , m_configStamp( 0 ) // Hardcoded value : modify if necessary
+    , m_runTimeStamp( std::min<time_t>( std::time( NULL ), std::numeric_limits<int32_t>::max() ) )
   {}
   ConfigVersion( const FTL::JSONObject* o )
     : m_major( o->getSInt32OrDefault( VerKey_Maj, 0 ) )
     , m_minor( o->getSInt32OrDefault( VerKey_Min, 0 ) )
     , m_revision( o->getSInt32OrDefault( VerKey_Rev, 0 ) )
     , m_configStamp( o->getSInt32OrDefault( VerKey_CSt, 0 ) )
+    , m_runTimeStamp( o->getSInt32OrDefault( VerKey_RtSt, 0 ) )
   {
   }
   inline bool operator<( const ConfigVersion& o ) const
@@ -93,7 +98,9 @@ public:
       ( this->m_major < o.m_major ) || ( ( this->m_major == o.m_major )  &&
         ( this->m_minor < o.m_minor ) || ( ( this->m_minor == o.m_minor ) &&
           ( this->m_revision < o.m_revision ) || ( ( this->m_revision < o.m_revision ) &&
-            ( this->m_configStamp < o.m_configStamp ) 
+            ( this->m_configStamp < o.m_configStamp ) || ( ( this->m_configStamp == o.m_configStamp ) &&
+              ( this->m_runTimeStamp < o.m_runTimeStamp )
+            )
           )
         )
       )
@@ -106,6 +113,7 @@ public:
     o->insert( VerKey_Min, new FTL::JSONSInt32( this->m_minor ) );
     o->insert( VerKey_Rev, new FTL::JSONSInt32( this->m_revision ) );
     o->insert( VerKey_CSt, new FTL::JSONSInt32( this->m_configStamp ) );
+    o->insert( VerKey_RtSt, new FTL::JSONSInt32( this->m_runTimeStamp ) );
     return o;
   }
 };
