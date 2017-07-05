@@ -25,10 +25,10 @@ RTValFCurveViewItem::RTValFCurveViewItem(
 
   m_editor->setFixedSize( 300, 300 ); // HACK
 
-  connect( m_model, SIGNAL( handleAdded() ), this, SLOT( onViewValueChanged() ) );
-  connect( m_model, SIGNAL( handleMoved( size_t ) ), this, SLOT( onViewValueChanged() ) );
-  connect( m_editor, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
-  connect( m_editor, SIGNAL( interactionEnd() ), this, SLOT( emitInteractionEnd() ) );
+  //connect( m_model, SIGNAL( handleAdded() ), this, SLOT( onViewValueChanged() ) );
+  //connect( m_model, SIGNAL( handleMoved( size_t ) ), this, SLOT( onViewValueChanged() ) );
+  //connect( m_editor, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
+  //connect( m_editor, SIGNAL( interactionEnd() ), this, SLOT( emitInteractionEnd() ) );
 
   const char* bindingId = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGBindingIdKey.data() );
   const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );

@@ -4,6 +4,9 @@
 
 #include "RTValAnimXFCurveModel.h"
 
+#include <FabricUI/Commands/CommandManager.h>
+#include <FabricUI/Commands/KLCommandRegistry.h> // HACK: remove
+
 #include <assert.h>
 #include <QDebug>
 
@@ -91,9 +94,9 @@ void RTValAnimXFCurveDFGController::setPath( const char* bindingId, const char* 
 
 void RTValAnimXFCurveDFGController::setHandle( size_t i, Handle h )
 {
-  qDebug() << "RTValAnimXFCurveDFGController::setHandle " << m_bindingId.data()
-    << "; " << m_dfgPortPath.data() << " : " << i << " -> " << h.pos;
-  // TODO
+  FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
+  static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+  manager->createCommand( "SetHandle" );
 }
 
 void RTValAnimXFCurveDFGController::addHandle()
