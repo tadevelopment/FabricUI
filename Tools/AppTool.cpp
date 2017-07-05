@@ -52,13 +52,13 @@ RTVal AppTool::getAppToolRegistry()
 
   toolRegistry = RTVal::Create(
     Application::FabricApplicationStates::GetAppStates()->getContext(),
-    "Tool::AppToolRegistry",
+    "Tool::ToolsManager",
     0,
     0);
 
   toolRegistry = toolRegistry.callMethod(
-    "Tool::AppToolRegistry",
-    "getAppToolRegistry",
+    "Tool::ToolsManager",
+    "getToolsManager",
     0,
     0);
 
