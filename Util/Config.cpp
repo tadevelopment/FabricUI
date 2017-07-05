@@ -10,6 +10,7 @@ using namespace FTL;
 
 #include <fstream>
 #include <ctime>
+#include <limits>
 
 #include <QColor>
 #include <QFont>
