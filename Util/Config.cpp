@@ -95,14 +95,14 @@ public:
   inline bool operator<( const ConfigVersion& o ) const
   {
     return 
-      ( this->m_major < o.m_major ) || ( ( this->m_major == o.m_major )  &&
-        ( this->m_minor < o.m_minor ) || ( ( this->m_minor == o.m_minor ) &&
-          ( this->m_revision < o.m_revision ) || ( ( this->m_revision < o.m_revision ) &&
-            ( this->m_configStamp < o.m_configStamp ) || ( ( this->m_configStamp == o.m_configStamp ) &&
+      ( this->m_major < o.m_major ) || ( ( this->m_major == o.m_major ) &&
+        ( ( this->m_minor < o.m_minor ) || ( ( this->m_minor == o.m_minor ) &&
+          ( ( this->m_revision < o.m_revision ) || ( ( this->m_revision < o.m_revision ) &&
+            ( ( this->m_configStamp < o.m_configStamp ) || ( ( this->m_configStamp == o.m_configStamp ) &&
               ( this->m_runTimeStamp < o.m_runTimeStamp )
-            )
-          )
-        )
+            ) )
+          ) )
+        ) )
       )
     ;
   }
