@@ -9,8 +9,50 @@
 
 #include <FabricUI/ModelItems/DFGModelItemMetadata.h>
 
+#include <FabricUI/Commands/CommandManager.h>
+#include <FabricUI/Commands/KLCommandRegistry.h> // HACK: remove
+
+#include <assert.h>
+#include <QDebug>
+
 using namespace FabricUI::ValueEditor;
 using namespace FabricUI::FCurveEditor;
+
+class RTValFCurveViewItem::RTValAnimXFCurveDFGController : public RTValAnimXFCurveConstModel
+{
+  std::string m_bindingId, m_dfgPortPath;
+
+public:
+  void setPath( const char* bindingId, const char* dfgPortPath )
+  {
+    m_bindingId = bindingId;
+    m_dfgPortPath = dfgPortPath;
+  }
+
+  void setHandle( size_t i, Handle h ) FTL_OVERRIDE
+  {
+    FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
+    static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+    QMap<QString, QString> args;
+    args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+    args["index"] = QString::number( i );
+    args["x"] = QString::number( h.pos.x() );
+    args["y"] = QString::number( h.pos.y() );
+    manager->createCommand( "SetHandle", args );
+  }
+
+  void addHandle() FTL_OVERRIDE
+  {
+    qDebug() << "RTValAnimXFCurveDFGController::addHandle " << m_bindingId.data() << "; " << m_dfgPortPath.data();
+    // TODO
+  }
+
+  void deleteHandle( size_t i ) FTL_OVERRIDE
+  {
+    qDebug() << "RTValAnimXFCurveDFGController::deleteHandle " << m_bindingId.data() << "; " << m_dfgPortPath.data() << " : " << i;
+    // TODO
+  }
+};
 
 RTValFCurveViewItem::RTValFCurveViewItem(
   QString const &name,

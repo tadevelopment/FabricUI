@@ -12,7 +12,6 @@ namespace FabricUI {
 
 namespace FCurveEditor
 {
-  class RTValAnimXFCurveDFGController;
   class FCurveEditor;
 }
 
@@ -24,7 +23,8 @@ class RTValFCurveViewItem : public BaseViewItem
 {
   Q_OBJECT
 
-  FabricUI::FCurveEditor::RTValAnimXFCurveDFGController* m_model;
+  class RTValAnimXFCurveDFGController;
+  RTValAnimXFCurveDFGController* m_model;
   FabricUI::FCurveEditor::FCurveEditor* m_editor;
 
 public:

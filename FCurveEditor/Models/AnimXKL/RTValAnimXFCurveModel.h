@@ -40,20 +40,6 @@ public:
   void deleteHandle( size_t ) FTL_OVERRIDE {} // TODO
 };
 
-class RTValAnimXFCurveDFGController : public RTValAnimXFCurveConstModel
-{
-  Q_OBJECT
-
-  std::string m_bindingId, m_dfgPortPath;
-
-public:
-  void setPath( const char* bindingId, const char* dfgPortPath );
-
-  void setHandle( size_t, Handle ) FTL_OVERRIDE;
-  void addHandle() FTL_OVERRIDE;
-  void deleteHandle( size_t ) FTL_OVERRIDE;
-};
-
 } // namespace FCurveEditor
 } // namespace FabricUI
 
