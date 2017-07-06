@@ -42,7 +42,7 @@ public:
     args["tanInY"] = QString::number( h.tanIn.y() );
     args["tanOutX"] = QString::number( h.tanOut.x() );
     args["tanOutY"] = QString::number( h.tanOut.y() );
-    manager->createCommand( "SetHandle", args );
+    manager->createCommand( "AnimX::SetKeyframe", args );
   }
 
   void addHandle() FTL_OVERRIDE
