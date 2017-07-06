@@ -176,6 +176,10 @@ namespace FabricUI
         QPointF newTopLeftPos,
         QSizeF newSize,
         float gridSnapSize,
+        bool gridSnapTop,
+        bool gridSnapBottom,
+        bool gridSnapLeft,
+        bool gridSnapRight,
         bool allowUndo
         );
 
