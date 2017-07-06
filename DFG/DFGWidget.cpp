@@ -2322,9 +2322,8 @@ void DFGWidget::onRevealPresetInExplorer(char const *nodeName)
 
 void DFGWidget::onToggleBlockCompilations()
 {
-  static bool blockCompilations = false;
-  blockCompilations = !blockCompilations;
-  getDFGController()->setBlockCompilations( blockCompilations );
+  getDFGController()->setBlockCompilations(!this->getUIController()->getHost().areCompsBlocked());
+  getUIGraph()->setCompsBlockedOverlayVisibility(this->getUIController()->getHost().areCompsBlocked());
 }
 
 void DFGWidget::onToggleDimConnections()
@@ -2993,6 +2992,7 @@ void DFGWidget::onExecChanged()
     m_uiGraph->setFixedPortContextMenuCallback( &fixedPortContextMenuCallback, this );
     m_uiGraph->setConnectionContextMenuCallback( &connectionContextMenuCallback, this );
     m_uiGraph->setSidePanelContextMenuCallback( &sidePanelContextMenuCallback, this );
+    m_uiGraph->setCompsBlockedOverlayVisibility(m_uiController->getHost().areCompsBlocked());
 
     if ( !m_uiController->getExecBlockName().empty() )
     {
