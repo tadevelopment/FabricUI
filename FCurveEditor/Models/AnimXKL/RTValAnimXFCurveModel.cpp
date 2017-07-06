@@ -97,8 +97,6 @@ void RTValAnimXFCurveDFGController::setHandle( size_t i, Handle h )
   FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
   static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
   QMap<QString, QString> args;
-  args["dfgBindingId"] = QString::fromUtf8( m_bindingId.data() );
-  args["dfgPortPath"] = QString::fromUtf8( m_dfgPortPath.data() );
   args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
   args["index"] = QString::number( i );
   args["x"] = QString::number( h.pos.x() );
