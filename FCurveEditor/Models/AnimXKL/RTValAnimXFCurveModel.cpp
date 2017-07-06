@@ -81,3 +81,11 @@ void RTValAnimXFCurveModel::addHandle()
   m_val.callMethod( "", "pushKeyframe", 0, NULL );
   emit this->handleAdded();
 }
+
+void RTValAnimXFCurveModel::deleteHandle( size_t i )
+{
+  assert( m_val.isValid() );
+  FabricCore::RTVal index = FabricCore::RTVal::ConstructSInt32( m_val.getContext(), i );
+  m_val.callMethod( "", "removeKeyframe", 1, &index );
+  emit this->handleDeleted( i );
+}
