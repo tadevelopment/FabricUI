@@ -52,7 +52,6 @@ class CommandManagerCallback(QtCore.QObject):
         self.qUndoStack = qUndoStack
         self.scriptEditor = scriptEditor
 
-        #GetPathValueResolverRegistry()
         GetCommandManager().cleared.connect(self.__onCleared)
         GetCommandManager().commandDone.connect(self.__onCommandDone)
 

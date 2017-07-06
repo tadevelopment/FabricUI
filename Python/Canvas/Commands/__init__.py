@@ -1,6 +1,6 @@
 __all__ = [
 	'CommandHelpers',
 	'CommandManager',
-    'CommandRegistry',
-    'CommandManagerCallback'
+  'CommandRegistry',
+  'CommandManagerCallback'
 ]
