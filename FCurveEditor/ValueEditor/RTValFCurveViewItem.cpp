@@ -42,19 +42,26 @@ public:
     args["tanInY"] = QString::number( h.tanIn.y() );
     args["tanOutX"] = QString::number( h.tanOut.x() );
     args["tanOutY"] = QString::number( h.tanOut.y() );
-    manager->createCommand( "AnimX::SetKeyframe", args );
+    manager->createCommand( "AnimX_SetKeyframe", args );
   }
 
   void addHandle() FTL_OVERRIDE
   {
-    qDebug() << "RTValAnimXFCurveDFGController::addHandle " << m_bindingId.data() << "; " << m_dfgPortPath.data();
-    // TODO
+    FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
+    static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+    QMap<QString, QString> args;
+    args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+    manager->createCommand( "AnimX_PushKeyframe", args );
   }
 
   void deleteHandle( size_t i ) FTL_OVERRIDE
   {
-    qDebug() << "RTValAnimXFCurveDFGController::deleteHandle " << m_bindingId.data() << "; " << m_dfgPortPath.data() << " : " << i;
-    // TODO
+    FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
+    static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+    QMap<QString, QString> args;
+    args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+    args["index"] = QString::number( i );
+    manager->createCommand( "AnimX_RemoveKeyframe", args );
   }
 };
 
