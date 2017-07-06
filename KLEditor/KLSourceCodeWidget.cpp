@@ -255,9 +255,9 @@ void KLSourceCodeWidget::keyPressEvent(QKeyEvent * event)
       else if (event->key() == Qt::Key_Minus) m_fontPointSizeCurrent--;
       else                                    m_fontPointSizeCurrent = m_fontPointSizeOriginal;
       applyFontPointSize();
+      event->accept();
+      return;
     }
-    event->accept();
-    return;
   }
 
   // [FE-6839]
