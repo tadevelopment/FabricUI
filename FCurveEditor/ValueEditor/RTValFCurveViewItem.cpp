@@ -36,8 +36,12 @@ public:
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     args["index"] = QString::number( i );
-    args["x"] = QString::number( h.pos.x() );
-    args["y"] = QString::number( h.pos.y() );
+    args["time"] = QString::number( h.pos.x() );
+    args["value"] = QString::number( h.pos.y() );
+    args["tanInX"] = QString::number( h.tanIn.x() );
+    args["tanInY"] = QString::number( h.tanIn.y() );
+    args["tanOutX"] = QString::number( h.tanOut.x() );
+    args["tanOutY"] = QString::number( h.tanOut.y() );
     manager->createCommand( "SetHandle", args );
   }
 
