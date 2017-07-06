@@ -77,7 +77,7 @@ BaseCommand* CommandManager::createCommand(
     checkCommandArgs(cmd, args);
 
   if(doCmd) 
-    doCommand(cmd);
+    doCommand(cmd, canMergeID);
 
   return cmd;
 

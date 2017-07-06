@@ -433,9 +433,6 @@ class CanvasWindow(QtGui.QMainWindow):
         self.cmdManagerCallback = CommandManagerCallback(self.qUndoStack, self.scriptEditor)
         self.hotkeyEditorDialog = HotkeyEditorDialog(self)
 
-        FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
-        FabricUI.Dialog.DialogCommandRegistration.RegisterCommands()
-        FabricUI.Tools.ToolsCommandRegistration.RegisterCommands()
 
     def _initDFGWidget(self):
         """Initializes the Data Flow Graph.

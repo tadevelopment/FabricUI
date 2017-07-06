@@ -2,14 +2,18 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include "KLCommand.h"
+#include "CommandRegistry.h"
 #include "KLCommandManager.h"
 #include "KLCommandHelpers.h"
 #include "KLScriptableCommand.h"
+#include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
+using namespace Util;
 using namespace Commands;
 using namespace FabricCore;
 using namespace Application;
@@ -149,28 +153,62 @@ void KLCommandManager::createAppCommand(
 {
   FABRIC_CATCH_BEGIN();
 
+  QString cmdName = appCmd.callMethod("String", "getName", 0, 0).getStringCString();
+  int canMergeID = appCmd.callMethod("SInt32", "getCanMergeID", 0, 0).getSInt32();
+
+  // Creates the command without executing it since it can  
+  // be BaseScriptableCommand or a BaseRTValScriptableCommand
+  BaseCommand *cmd = CommandRegistry::getCommandRegistry()->createCommand(
+    cmdName);
+    
   RTVal keys = appCmd.callMethod(
     "String[]", 
     "getArgKeys", 
     0, 0);
 
-  QMap<QString, RTVal> args;
-  for(unsigned i=0; i<keys.getArraySize(); ++i)
+  // BaseRTValScriptableCommand
+  BaseRTValScriptableCommand *rtValScriptCmd = qobject_cast<BaseRTValScriptableCommand *>(cmd);
+  if(rtValScriptCmd)
   {
-    RTVal argNameVal = keys.getArrayElement(i);
-    args[argNameVal.getStringCString()] = appCmd.callMethod(
-      "RTVal", 
-      "getArg", 
-      1, 
-      &argNameVal);
+    QMap<QString, RTVal> rtValArgs;
+
+    for(unsigned i=0; i<keys.getArraySize(); ++i)
+    {
+      RTVal argName = keys.getArrayElement(i);
+      rtValArgs[argName.getStringCString()] = appCmd.callMethod(
+        "RTVal", 
+        "getArg", 
+        1, 
+        &argName);
+    }
+
+    if(rtValArgs.size() > 0) 
+      checkRTValCommandArgs(cmd, rtValArgs);
   }
 
-  createCommand(
-    appCmd.callMethod("String", "getName", 0, 0).getStringCString(), 
-    args, 
-    true, 
-    appCmd.callMethod("SInt32", "getCanMergeID", 0, 0).getSInt32()
-    ); 
+  // BaseScriptableCommand
+  else
+  {
+    QMap<QString, QString> args;
+
+    for(unsigned i=0; i<keys.getArraySize(); ++i)
+    {
+      RTVal argName = keys.getArrayElement(i);
+      RTVal pathValueArg = RTValUtil::toRTVal(appCmd.callMethod(
+        "RTVal", 
+        "getArg", 
+        1, 
+        &argName));
+
+      args[argName.getStringCString()] = 
+        RTValUtil::toRTVal(pathValueArg.maybeGetMember("value")).getStringCString();
+    }
+
+    if(args.size() > 0) 
+      checkCommandArgs(cmd, args);
+  }
+
+  doCommand(cmd, canMergeID);
 
   FABRIC_CATCH_END("KLCommandManager::createAppCommand");
 }
@@ -180,15 +218,15 @@ void KLCommandManager::doKLCommand(
 {
   FABRIC_CATCH_BEGIN();
 
-  RTVal klScriptCmd = RTVal::Construct(
-    klCmd.getContext(),
-    "BaseScriptableCommand", 
-    1, 
-    &klCmd);
-
   RTVal baseCmd = RTVal::Construct(
     klCmd.getContext(),
     "BaseCommand", 
+    1, 
+    &klCmd);
+
+  RTVal klScriptCmd = RTVal::Construct(
+    klCmd.getContext(),
+    "BaseScriptableCommand", 
     1, 
     &klCmd);
 
