@@ -153,14 +153,14 @@ void BackDropNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       size = m_resizeOriginalSize + QSizeF( +delta.x(), +delta.y() );
     }
 
-    // handle small sizes
-    if(size.width() < m_minSize.width())
+    // handle case when size smaller than allowed
+    if (size.width() < m_minSize.width())
     {
       if (m_dragging == 3 || m_dragging == 5)
         pos.setX(pos.x() - (m_minSize.width() - size.width()));
       size.setWidth(m_minSize.width());
     }
-    if(size.height() < m_minSize.height())
+    if (size.height() < m_minSize.height())
     {
       if (m_dragging == 3 || m_dragging == 4)
         pos.setY(pos.y() - (m_minSize.height() - size.height()));
@@ -234,18 +234,19 @@ void BackDropNode::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
       pos = m_resizeOriginalPos + QPointF( 0, 0 );
       size = m_resizeOriginalSize + QSizeF( +delta.x(), +delta.y() );
     }
-
-//// clamp to avoid negative scaling
-//if(size.width() < m_minSize.width())
-//{
-//  pos.setX(m_resizeOriginalPos.x());
-//  size.setWidth(m_minSize.width());
-//}
-//if(size.height() < m_minSize.height())
-//{
-//  pos.setY(m_resizeOriginalPos.y());
-//  size.setHeight(m_minSize.height());
-//}
+    // handle case when size smaller than allowed
+    if (size.width() < m_minSize.width())
+    {
+      if (m_dragging == 3 || m_dragging == 5)
+        pos.setX(pos.x() - (m_minSize.width() - size.width()));
+      size.setWidth(m_minSize.width());
+    }
+    if (size.height() < m_minSize.height())
+    {
+      if (m_dragging == 3 || m_dragging == 4)
+        pos.setY(pos.y() - (m_minSize.height() - size.height()));
+      size.setHeight(m_minSize.height());
+    }
 
     // resize
     graph()->controller()->gvcDoResizeBackDropNode(
