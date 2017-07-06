@@ -23,9 +23,7 @@ class SimpleDialog : public QDialog
       QWidget* parent = 0
       );
 
-    virtual ~SimpleDialog();  
-
-    int truc;    
+    virtual ~SimpleDialog();   
 };
 
 } // namespace Dialog
