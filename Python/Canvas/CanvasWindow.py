@@ -249,6 +249,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.onFrameChanged(self.timeLine.getTime())
         self.onGraphSet(self.dfgWidget.getUIGraph())
         self.valueEditor.initConnections()
+        self.toolsManager.initConnections()
         self.installEventFilter(CanvasWindowEventFilter(self))
 
 
@@ -458,6 +459,7 @@ class CanvasWindow(QtGui.QMainWindow):
         controller = self.dfgWidget.getDFGController()
         controller.topoDirty.connect(GetCommandManager().synchronizeKL)
         FabricUI.DFG.DFGCommandRegistration.RegisterCommands(self.dfgWidget.getDFGController())
+        self.toolsManager = FabricUI.Tools.ToolsManager(self.dfgWidget)
 
     def _initTreeView(self):
         """Initializes the preset TreeView.

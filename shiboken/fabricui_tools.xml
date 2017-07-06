@@ -3,6 +3,7 @@
   <namespace-type name="FabricUI" generate="no">
     <namespace-type name="Tools" generate="yes">
       <object-type name="ToolsCommandRegistration" copyable="false"/>
+      <object-type name="ToolsManager" copyable="false"/>
     </namespace-type>
   </namespace-type>
-</typesystem>
+</typesystem> 
