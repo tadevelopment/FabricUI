@@ -30,6 +30,8 @@ class CreateToolCommand : public FabricUI::Commands::BaseRTValScriptableCommand
 
     /// Implementation of BaseCommand.
     virtual QString getHelp();
+
+    FabricCore::RTVal m_uid;
 };
 
 } // namespace Tools

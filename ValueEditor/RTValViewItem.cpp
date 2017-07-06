@@ -51,7 +51,7 @@ void RTValViewItem::setBaseModelItem( BaseModelItem* item )
   QHBoxLayout *layout = new QHBoxLayout();
   layout->addWidget(m_label);
 
-  if( m_isEditableType && 
+/*  if( m_isEditableType && 
       ( 
         strcmp( m_val.getTypeNameCStr(), "Xfo" ) == 0 //||
         //strcmp( m_val.getTypeNameCStr(), "Vec3" ) == 0 
@@ -59,7 +59,7 @@ void RTValViewItem::setBaseModelItem( BaseModelItem* item )
     )
   {
     //TODO: uncomment this when the widget is not created right away
-    /*
+    
     QCheckBox *checkbox = m_appTool->createKLWidget( 
       m_val.callMethod("Type", "type", 0, 0)
       );
@@ -70,9 +70,9 @@ void RTValViewItem::setBaseModelItem( BaseModelItem* item )
       layout->addStretch(2);
 
       m_appTool->valueChanged(m_val);
-    }*/
+    }
   }
-
+*/
   m_widget->setLayout(layout);
 
   UpdateWidget();
@@ -109,8 +109,6 @@ void RTValViewItem::onModelValueChanged( QVariant const &value )
       }
     }
   }
-
-  m_appTool->valueChanged(m_val);
 
   UpdateWidget();
 }

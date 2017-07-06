@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "AppTool.h"
 #include "CreateToolCommand.h"
 #include <FabricUI/Util/QtUtil.h>
 #include <FabricUI/Util/RTValUtil.h>
@@ -24,7 +23,7 @@ CreateToolCommand::CreateToolCommand()
 
   declareRTValArg("type", "String");
 
-  declareRTValArg("args", "String");
+  declareRTValArg("path", "String");
 
   FABRIC_CATCH_END("CreateToolCommand::CreateToolCommand");
 }
@@ -40,24 +39,59 @@ bool CreateToolCommand::canUndo()
 
 bool CreateToolCommand::canLog()
 {
-  return false;
+  return true;
+}
+
+inline RTVal getAppToolRegistry()
+{
+  RTVal toolRegistry;
+
+  FABRIC_CATCH_BEGIN();
+
+  toolRegistry = RTVal::Create(
+    Application::FabricApplicationStates::GetAppStates()->getContext(),
+    "Tool::AppToolsManager",
+    0,
+    0);
+
+  toolRegistry = toolRegistry.callMethod(
+    "Tool::ToolsManager",
+    "getToolsManager",
+    0,
+    0);
+
+  FABRIC_CATCH_END("CreateToolCommand::getAppToolRegistry");
+
+  return toolRegistry;
 }
 
 bool CreateToolCommand::doIt()
 {
   FABRIC_CATCH_BEGIN();
 
-  RTVal type = getRTValArgValue("type");//.getStringCString();
-  RTVal args = RTValUtil::toKLRTVal(getRTValArgValue("args"));
+  RTVal typeAsStr = getRTValArgValue("type");
+  RTVal path = RTValUtil::toKLRTVal(getRTValArgValue("path"));
 
-  RTVal temp = RTVal::Construct(
+  RTVal obj = RTVal::Construct(
     Application::FabricApplicationStates::GetAppStates()->getContext(), 
-    type.getStringCString(), 
-    0, 
-    0);
+    typeAsStr.getStringCString(), 
+    0, 0);
 
-  AppTool *tool = new AppTool();
-  tool->createKLTool(temp.callMethod("Type", "type", 0, 0), args);
+  RTVal objType = obj.callMethod("Type", "type", 0, 0);
+
+  RTVal args[3] = { 
+    objType, 
+    path,
+    RTVal::ConstructBoolean(Application::FabricApplicationStates::GetAppStates()->getContext(), true)
+  };
+
+  RTVal tool = getAppToolRegistry().callMethod(
+    "Tool::BaseTool",
+    "createPathValueTool",
+    3,
+    args);
+
+  m_uid = tool.callMethod("UInt64", "uid", 0, 0);
  
   return true;
 
@@ -72,7 +106,7 @@ QString CreateToolCommand::getHelp()
 
   QMap<QString, QString> argsHelp;
   argsHelp["type"] = "Type of the tool (KL)";
-  argsHelp["args"] = "Tool arguments";
+  argsHelp["path"] = "Tool arguments";
 
   return CommandHelpers::createHelpFromRTValArgs(
     this,

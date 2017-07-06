@@ -471,10 +471,6 @@ void VETreeWidget::setViewItemConnections(BaseViewItem* item) {
     item,
     SLOT(emitToggleManipulation(bool))
   );
-
-  item->getAppTool()->onToggleManipulation(
-    m_manipulationToggled
-    );
 }
 
 void VETreeWidget::onModelItemChildInserted(
