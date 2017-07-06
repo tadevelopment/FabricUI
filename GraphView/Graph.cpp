@@ -19,6 +19,8 @@
 #include <FabricUI/GraphView/InfoOverlay.h>
 #include <FabricUI/GraphView/FixedPort.h>
 
+#include <FabricUI/Util/QtSignalsSlots.h>
+
 #include <float.h>
 
 using namespace FabricUI::GraphView;
@@ -60,6 +62,7 @@ Graph::Graph(
   m_backdropZValue = 1.0;
   m_connectionZValue = 2.0;
   m_centralOverlay = NULL;
+  m_compsBlockedOverlay = NULL;
 }
 
 void Graph::requestSidePanelInspect(
@@ -82,23 +85,22 @@ void Graph::requestMainPanelAction(
 void Graph::initialize()
 {
   m_mainPanel = new MainPanel(this);
-  QObject::connect(
-    m_mainPanel, SIGNAL(doubleClicked(Qt::KeyboardModifiers)), 
-    this, SLOT(requestMainPanelAction(Qt::KeyboardModifiers))
-    );
+  QOBJECT_CONNECT(
+    m_mainPanel, SIGNAL, MainPanel, doubleClicked, (Qt::KeyboardModifiers),
+    this, SLOT, Graph, requestMainPanelAction, (Qt::KeyboardModifiers)
+  );
 
   m_leftPanel = new SidePanel(this, PortType_Output);
-  QObject::connect(
-    m_leftPanel, SIGNAL(doubleClicked(FabricUI::GraphView::SidePanel*)), 
-    this, SLOT(requestSidePanelInspect(FabricUI::GraphView::SidePanel*))
-    );
+  QOBJECT_CONNECT(
+    m_leftPanel, SIGNAL, SidePanel, doubleClicked, (FabricUI::GraphView::SidePanel*),
+    this, SLOT, Graph, requestSidePanelInspect, (FabricUI::GraphView::SidePanel*)
+  );
 
   m_rightPanel = new SidePanel(this, PortType_Input);
-  QObject::connect(
-    m_rightPanel, SIGNAL(doubleClicked(FabricUI::GraphView::SidePanel*)), 
-    this, SLOT(requestSidePanelInspect(FabricUI::GraphView::SidePanel*))
-    );
-
+  QOBJECT_CONNECT(
+    m_rightPanel, SIGNAL, SidePanel, doubleClicked, (FabricUI::GraphView::SidePanel*),
+    this, SLOT, Graph, requestSidePanelInspect, (FabricUI::GraphView::SidePanel*)
+  );
 
   QGraphicsLinearLayout * layout = new QGraphicsLinearLayout();
   layout->setSpacing(0);
@@ -178,12 +180,12 @@ Node * Graph::addNode(Node * node, bool quiet)
     (*zValue) += 0.0001;
   }
 
-  QObject::connect(
-    node, 
-    SIGNAL(doubleClicked(FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers)), 
-    this, 
-    SLOT(onNodeDoubleClicked(FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers))
-    );
+  QOBJECT_CONNECT(
+    node,
+    SIGNAL, Node, doubleClicked, ( FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers ),
+    this,
+    SLOT, Graph, onNodeDoubleClicked, ( FabricUI::GraphView::Node*, Qt::MouseButton, Qt::KeyboardModifiers )
+  );
   QObject::connect(node, SIGNAL(bubbleEditRequested(FabricUI::GraphView::Node*)), this, SLOT(onBubbleEditRequested(FabricUI::GraphView::Node*)));
 
   if(!quiet)
@@ -1099,6 +1101,14 @@ void Graph::updateOverlays(float width, float height)
     pos.setY(-m_centralOverlay->minimumHeight() * 0.5 + m_mainPanel->size().height() * 0.5);
     m_centralOverlay->setPos(pos);
   }
+
+  if (m_compsBlockedOverlay)
+  {
+    QPointF pos;
+    pos.setX(-m_compsBlockedOverlay->minimumWidth()  + m_mainPanel->size().width()  - 10);
+    pos.setY(-m_compsBlockedOverlay->minimumHeight() + m_mainPanel->size().height() - 10);
+    m_compsBlockedOverlay->setPos(pos);
+  }
 }
 
 void Graph::setupBackgroundOverlay(QPointF pos, QString filePath)
@@ -1131,6 +1141,14 @@ void Graph::setCentralOverlayText(QString text)
   }
  
   updateOverlays(rect().width(), height);
+}
+
+void Graph::setCompsBlockedOverlayVisibility(bool state)
+{
+  if (!m_compsBlockedOverlay)
+    m_compsBlockedOverlay = new InfoOverlay(this, "Graph Compilations Disabled", m_config);
+  m_compsBlockedOverlay->setVisible(state);
+  updateOverlays(rect().width(), rect().height());
 }
 
 void Graph::onNodeDoubleClicked(FabricUI::GraphView::Node * node, Qt::MouseButton button, Qt::KeyboardModifiers modifiers)
