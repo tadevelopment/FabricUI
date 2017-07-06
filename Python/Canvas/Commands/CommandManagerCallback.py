@@ -6,7 +6,6 @@ from PySide import QtGui, QtCore
 from FabricEngine import FabricUI
 from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Commands.CommandHelpers import CommandHelpers
-from FabricEngine.Canvas.Commands.PathValueResolverRegistry import *
 
 class CommandManagerCallback(QtCore.QObject):
     """ CommandManagerCallback is connected to the CommandManagerCallback 
