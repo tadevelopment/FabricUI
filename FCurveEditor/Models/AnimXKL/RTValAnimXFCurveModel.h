@@ -21,6 +21,8 @@ class RTValAnimXFCurveConstModel : public AbstractFCurveModel
 protected:
   FabricCore::RTVal m_val;
 
+  FabricCore::RTVal idToIndex( size_t ) const;
+
 public:
   size_t getHandleCount() const FTL_OVERRIDE;
   Handle getHandle( size_t ) const FTL_OVERRIDE;

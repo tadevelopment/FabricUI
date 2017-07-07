@@ -15,11 +15,17 @@ size_t RTValAnimXFCurveConstModel::getHandleCount() const
   return const_cast<FabricCore::RTVal*>(&m_val)->callMethod( "UInt32", "keyframeCount", 0, NULL ).getUInt32();
 }
 
+FabricCore::RTVal RTValAnimXFCurveConstModel::idToIndex( size_t i ) const
+{
+  FabricCore::RTVal iRV = FabricCore::RTVal::ConstructUInt32( m_val.getContext(), i );
+  return const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "UInt32", "getKeyIndex", 1, &iRV );
+}
+
 Handle RTValAnimXFCurveConstModel::getHandle( size_t i ) const
 {
   const size_t argc = 2;
   FabricCore::RTVal args[argc] = {
-    FabricCore::RTVal::ConstructSInt32( m_val.getContext(), i ),
+    this->idToIndex( i ),
     FabricCore::RTVal::Construct( m_val.getContext(), "AnimX::Keyframe", 0, NULL )
   };
   const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "Boolean", "keyframeAtIndex", argc, args );
@@ -39,7 +45,7 @@ void RTValAnimXFCurveModel::setHandle( size_t i, Handle h )
   const size_t argc = 9;
   FabricCore::RTVal args[argc] =
   {
-    FabricCore::RTVal::ConstructUInt32( m_val.getContext(), i ),
+    this->idToIndex( i ),
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.pos.x() ),
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.pos.y() ),
     FabricCore::RTVal::ConstructSInt32( m_val.getContext(), 9 ), // HACK : TODO
@@ -85,7 +91,7 @@ void RTValAnimXFCurveModel::addHandle()
 void RTValAnimXFCurveModel::deleteHandle( size_t i )
 {
   assert( m_val.isValid() );
-  FabricCore::RTVal index = FabricCore::RTVal::ConstructSInt32( m_val.getContext(), i );
+  FabricCore::RTVal index = this->idToIndex( i );
   m_val.callMethod( "", "removeKeyframe", 1, &index );
   emit this->handleDeleted( i );
 }
