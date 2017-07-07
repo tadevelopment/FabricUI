@@ -40,7 +40,51 @@ Handle RTValAnimXFCurveConstModel::getHandle( size_t i ) const
   return dst;
 }
 
-void RTValAnimXFCurveModel::setHandle( size_t i, Handle h )
+qreal RTValAnimXFCurveConstModel::evaluate( qreal v ) const
+{
+  if( !m_val.isValid() || m_val.isNullObject() )
+    return 0;
+  FabricCore::RTVal time = FabricCore::RTVal::ConstructFloat64( m_val.getContext(), v );
+  return const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "Float64", "evaluate", 1, &time ).getFloat64();
+}
+
+void RTValAnimXFCurveVersionedConstModel::update( bool emitChanges ) const
+{
+  size_t sVersion = const_cast<FabricCore::RTVal*>( &m_val )
+    ->callMethod( "UInt32", "getStructureVersion", 0, NULL ).getUInt32();
+  size_t vVersion = const_cast<FabricCore::RTVal*>( &m_val )
+    ->callMethod( "UInt32", "getValueVersion", 0, NULL ).getUInt32();
+
+  const bool structureChanged = ( m_lastStructureVersion != sVersion );
+  const bool valueChanged = ( m_lastValueVersion != vVersion );
+  const size_t lastHandleCount = m_lastHandleCount;
+
+  m_lastStructureVersion = sVersion;
+  m_lastValueVersion = vVersion;
+  m_lastHandleCount = Parent::getHandleCount();
+
+  if( !emitChanges )
+    return;
+
+  const size_t hc = Parent::getHandleCount();
+  if( structureChanged )
+  {
+    for( size_t i = lastHandleCount; i > hc; i-- )
+      emit this->handleDeleted( i-1 );
+    for( size_t i = lastHandleCount; i < hc; i++ )
+      emit this->handleAdded();
+  }
+  else
+    assert( lastHandleCount == hc );
+    
+  if( valueChanged )
+  {
+    for( size_t i = 0; i < hc; i++ )
+      emit this->handleMoved( i );
+  }
+}
+
+void RTValAnimXFCurveVersionedModel::setHandle( size_t i, Handle h )
 {
   const size_t argc = 9;
   FabricCore::RTVal args[argc] =
@@ -56,42 +100,22 @@ void RTValAnimXFCurveModel::setHandle( size_t i, Handle h )
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.tanOut.y() )
   };
   m_val.callMethod( "", "setKeyframe", argc, args );
-  emit this->handleMoved( i );
+  this->update();
 }
 
-qreal RTValAnimXFCurveConstModel::evaluate( qreal v ) const
-{
-  if( !m_val.isValid() || m_val.isNullObject() )
-    return 0;
-  FabricCore::RTVal time = FabricCore::RTVal::ConstructFloat64( m_val.getContext(), v );
-  return const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "Float64", "evaluate", 1, &time ).getFloat64();
-}
-
-void RTValAnimXFCurveConstModel::setValue( FabricCore::RTVal v )
-{
-  const size_t previousHc = this->getHandleCount();
-  // TODO : remove extra handles
-  m_val = v;
-  const size_t hc = this->getHandleCount();
-  for( size_t i = previousHc; i < hc; i++ )
-    emit this->handleAdded();
-  for( size_t i = 0; i < hc; i++ )
-    emit this->handleMoved( i );
-}
-
-void RTValAnimXFCurveModel::addHandle()
+void RTValAnimXFCurveVersionedModel::addHandle()
 {
   assert( m_val.isValid() );
   if( m_val.isNullObject() )
     m_val = FabricCore::RTVal::Create( m_val.getContext(), "AnimX::AnimCurve", 0, NULL );
   m_val.callMethod( "", "pushKeyframe", 0, NULL );
-  emit this->handleAdded();
+  this->update();
 }
 
-void RTValAnimXFCurveModel::deleteHandle( size_t i )
+void RTValAnimXFCurveVersionedModel::deleteHandle( size_t i )
 {
   assert( m_val.isValid() );
   FabricCore::RTVal index = this->idToIndex( i );
   m_val.callMethod( "", "removeKeyframe", 1, &index );
-  emit this->handleDeleted( i );
+  this->update();
 }

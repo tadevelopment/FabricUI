@@ -46,7 +46,7 @@ int main()
     curveRTVal.callMethod( "Boolean", "convertFromString", 1, &rtJson );
   }
   
-  RTValAnimXFCurveModel curve;
+  RTValAnimXFCurveVersionedModel curve;
   curve.setValue( curveRTVal );
 
   FCurveEditor* editor = new FCurveEditor();

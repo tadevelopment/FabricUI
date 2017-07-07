@@ -28,11 +28,37 @@ public:
   Handle getHandle( size_t ) const FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
 
-  void setValue( FabricCore::RTVal );
+  inline void setValue( FabricCore::RTVal v ) { m_val = v; }
   inline FabricCore::RTVal value() { return m_val; }
 };
 
-class RTValAnimXFCurveModel : public RTValAnimXFCurveConstModel
+class RTValAnimXFCurveVersionedConstModel : public RTValAnimXFCurveConstModel
+{
+  Q_OBJECT
+
+  typedef RTValAnimXFCurveConstModel Parent;
+
+protected:
+  mutable size_t m_lastHandleCount;
+  mutable size_t m_lastStructureVersion;
+  mutable size_t m_lastValueVersion;
+
+  void update( bool emitChanges = true ) const;
+
+public:
+
+  size_t getHandleCount() const FTL_OVERRIDE { this->update( false ); return Parent::getHandleCount(); }
+  Handle getHandle( size_t i ) const FTL_OVERRIDE { this->update(); return Parent::getHandle( i ); }
+  qreal evaluate( qreal v ) const FTL_OVERRIDE { this->update(); return Parent::evaluate( v ); }
+
+  RTValAnimXFCurveVersionedConstModel()
+    : m_lastHandleCount( 0 )
+    , m_lastStructureVersion( 0 )
+    , m_lastValueVersion( 0 )
+  {}
+};
+
+class RTValAnimXFCurveVersionedModel : public RTValAnimXFCurveVersionedConstModel
 {
   Q_OBJECT
 
