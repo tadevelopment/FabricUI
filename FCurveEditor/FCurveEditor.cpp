@@ -65,13 +65,14 @@ public:
     , m_y( new FloatEditor( this, false ) )
   {
     // HACK : use QSS instead
-    this->setStyleSheet( "background-color: rgba(32,32,32,128); border-radius: 16px; color: #FFF;" );
+    this->setStyleSheet( "background-color: rgba(32,32,32,128); border-radius: 4px; color: #FFF; font-size: 16px;" );
 
     QHBoxLayout* m_layout = new QHBoxLayout();
+    m_layout->setMargin( 4 ); m_layout->setSpacing( 4 );
     m_layout->addWidget( m_x );
     m_layout->addWidget( m_y );
     this->setLayout( m_layout );
-    this->resize( 300, 80 );
+    this->resize( 128, 32 );
   }
 };
 
