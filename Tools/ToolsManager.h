@@ -86,7 +86,6 @@ class ToolsManager : public QObject
   Q_OBJECT
 
   public:
-
     ToolsManager( 
       DFG::DFGWidget * dfgWidget 
       );
@@ -127,8 +126,14 @@ class ToolsManager : public QObject
       FTL::ArrayRef<unsigned> newOrder
       );
 
-  public slots :
-    virtual void onOutputsChanged(); // Call after each evaluation
+    /// Gets the KL tools manager.
+    FabricCore::RTVal getKLToolsManager();
+
+    /// Update the value of the tool 
+    /// associated to the path `portPath`
+    void updateTool(
+      QString portPath
+      );
 
   protected slots:
     void onControllerBindingChanged(
@@ -271,21 +276,17 @@ class ToolsManager : public QObject
 
   private:
     void setupConnections(
-      FabricUI::DFG::DFGController *dfgController//,
-      //FabricUI::ModelItems::BindingModelItem *bindingModelItem
+      FabricUI::DFG::DFGController *dfgController
       );
 
     void setupConnections(
-      FabricCore::DFGExec exec//,
-      //FTL::CStrRef nodeName//,
-      //FabricUI::ModelItems::ItemModelItem *nodeModelItem
+      FabricCore::DFGExec exec
       );
 
     DFG::DFGWidget * m_dfgWidget;
-    FabricUI::GraphView::Graph * m_setGraph;
+    ToolsManager_NotifProxy *m_notifProxy;
     QSharedPointer<DFG::DFGNotifier> m_notifier;
     QSharedPointer<DFG::DFGNotifier> m_subNotifier;
-    ToolsManager_NotifProxy *m_notifProxy;
 };
 
 } // namespace Tools

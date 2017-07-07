@@ -13,8 +13,8 @@ using namespace FabricUI;
 using namespace Util;
 using namespace Tools;
 using namespace Commands;
-using namespace Application;
 using namespace FabricCore;
+using namespace Application;
 
 CreateToolCommand::CreateToolCommand() 
   : BaseRTValScriptableCommand()
@@ -32,6 +32,14 @@ CreateToolCommand::~CreateToolCommand()
 {
 }
 
+void CreateToolCommand::registrationCallback(
+  QString const&name, 
+  void *userData)
+{
+  if(userData != 0)
+    m_manager = static_cast<ToolsManager*>(userData);
+}
+
 bool CreateToolCommand::canUndo()
 {
   return false;
@@ -42,38 +50,18 @@ bool CreateToolCommand::canLog()
   return true;
 }
 
-inline RTVal getAppToolRegistry()
-{
-  RTVal toolRegistry;
-
-  FABRIC_CATCH_BEGIN();
-
-  toolRegistry = RTVal::Create(
-    Application::FabricApplicationStates::GetAppStates()->getContext(),
-    "Tool::AppToolsManager",
-    0,
-    0);
-
-  toolRegistry = toolRegistry.callMethod(
-    "Tool::ToolsManager",
-    "getToolsManager",
-    0,
-    0);
-
-  FABRIC_CATCH_END("CreateToolCommand::getAppToolRegistry");
-
-  return toolRegistry;
-}
-
 bool CreateToolCommand::doIt()
 {
   FABRIC_CATCH_BEGIN();
 
   RTVal typeAsStr = getRTValArgValue("type");
-  RTVal path = RTValUtil::toKLRTVal(getRTValArgValue("path"));
+  RTVal path = getRTValArgValue("path");
 
+  // Get the type not as a string, but as a KL Type.
+  // Need to construct the strict/object from the 
+  // string to then get the type.
   RTVal obj = RTVal::Construct(
-    Application::FabricApplicationStates::GetAppStates()->getContext(), 
+    FabricApplicationStates::GetAppStates()->getContext(), 
     typeAsStr.getStringCString(), 
     0, 0);
 
@@ -82,16 +70,20 @@ bool CreateToolCommand::doIt()
   RTVal args[3] = { 
     objType, 
     path,
-    RTVal::ConstructBoolean(Application::FabricApplicationStates::GetAppStates()->getContext(), true)
+    RTVal::ConstructBoolean(FabricApplicationStates::GetAppStates()->getContext(), true)
   };
 
-  RTVal tool = getAppToolRegistry().callMethod(
+  // Create the tool
+  m_manager->getKLToolsManager().callMethod(
     "Tool::BaseTool",
     "createPathValueTool",
     3,
     args);
 
-  m_uid = tool.callMethod("UInt64", "uid", 0, 0);
+  // Update the tool'value from its target.
+  m_manager->updateTool(
+    path.getStringCString()
+    );
  
   return true;
 

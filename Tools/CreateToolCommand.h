@@ -5,6 +5,7 @@
 #ifndef __UI_CREATE_TOOLS_COMMAND__
 #define __UI_CREATE_TOOLS_COMMAND__
 
+#include "ToolsManager.h"
 #include <FabricUI/Commands/BaseRTValScriptableCommand.h>
 
 namespace FabricUI {
@@ -16,6 +17,12 @@ class CreateToolCommand : public FabricUI::Commands::BaseRTValScriptableCommand
   
   public:
     CreateToolCommand();
+
+    /// Implementation of BaseCommand.
+    virtual void registrationCallback(
+      QString const&name, 
+      void *userData
+      );
 
     virtual ~CreateToolCommand();
 
@@ -31,7 +38,8 @@ class CreateToolCommand : public FabricUI::Commands::BaseRTValScriptableCommand
     /// Implementation of BaseCommand.
     virtual QString getHelp();
 
-    FabricCore::RTVal m_uid;
+  private:
+    ToolsManager* m_manager;
 };
 
 } // namespace Tools

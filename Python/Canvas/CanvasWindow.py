@@ -236,6 +236,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self._initDFG()
         self._initCommand()
         self._initDFGWidget()
+        self._initTools()
         self._initTreeView()
         self._initValueEditor()
         self._initGL()
@@ -459,7 +460,12 @@ class CanvasWindow(QtGui.QMainWindow):
         controller = self.dfgWidget.getDFGController()
         controller.topoDirty.connect(GetCommandManager().synchronizeKL)
         FabricUI.DFG.DFGCommandRegistration.RegisterCommands(self.dfgWidget.getDFGController())
+        
+    def _initTools(self):
+        """Initializes the Tools.
+        """
         self.toolsManager = FabricUI.Tools.ToolsManager(self.dfgWidget)
+        FabricUI.Tools.ToolsCommandRegistration.RegisterCommands(self.toolsManager)
 
     def _initTreeView(self):
         """Initializes the preset TreeView.

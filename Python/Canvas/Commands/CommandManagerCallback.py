@@ -56,7 +56,6 @@ class CommandManagerCallback(QtCore.QObject):
 
         FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
         FabricUI.Dialog.DialogCommandRegistration.RegisterCommands()
-        FabricUI.Tools.ToolsCommandRegistration.RegisterCommands()
 
     def __onCommandDone(self, cmd, pushedToStack, canMergeID, merge):
         """ \internal, when a command's been pushed to the manager.
