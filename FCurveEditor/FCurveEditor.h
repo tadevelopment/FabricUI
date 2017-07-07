@@ -34,6 +34,7 @@ public:
   FCurveEditor();
   ~FCurveEditor();
   void setModel( AbstractFCurveModel* );
+  void fitInView();
 
 protected:
   void mousePressEvent( QMouseEvent * ) FTL_OVERRIDE;

@@ -77,6 +77,7 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   this->onModelValueChanged( value );
 
   m_editor->setFixedSize( 300, 300 ); // HACK
+  m_editor->fitInView();
 
   //connect( m_model, SIGNAL( handleAdded() ), this, SLOT( onViewValueChanged() ) );
   //connect( m_model, SIGNAL( handleMoved( size_t ) ), this, SLOT( onViewValueChanged() ) );
