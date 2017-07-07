@@ -354,12 +354,13 @@ void FCurveItem::editHandle( size_t i, HandleProp p )
 
 void FCurveItem::deleteSelectedHandles()
 {
-  while( !m_selectedHandles.empty() )
-  {
-    const size_t index = *m_selectedHandles.begin();
-    m_selectedHandles.erase( index );
-    m_curve->deleteHandle( index );
-  }
+  std::vector<size_t> orderedIndices;
+  for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
+    orderedIndices.push_back( *it );
+  this->clearHandleSelection();
+  std::sort( orderedIndices.begin(), orderedIndices.end() );
+  for( std::vector<size_t>::const_reverse_iterator it = orderedIndices.rbegin(); it != orderedIndices.rend(); it++ )
+    m_curve->deleteHandle( *it );
 }
 
 void FCurveItem::moveSelectedHandles( QPointF delta )
@@ -395,11 +396,8 @@ void FCurveItem::onHandleDeleted( size_t i )
   }
   m_handles.resize( m_handles.size() - 1 );
 
-  std::set<size_t> shiftedSldHdls; // HACK/TODO: unefficient
-  for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
-    if( *it != i )
-      shiftedSldHdls.insert( *it < i ? *it : ( *it - 1 ) );
-  m_selectedHandles = shiftedSldHdls;
+  this->clearHandleSelection();
+
   m_curveShape->updateBoundingRect();
   if( i == m_editedHandle )
     emit this->stopEditingHandle();
