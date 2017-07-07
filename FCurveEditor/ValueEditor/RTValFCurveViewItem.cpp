@@ -35,7 +35,7 @@ public:
     static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
-    args["index"] = QString::number( i );
+    args["index"] = QString::number( this->idToIndex( i ).getUInt32() );
     args["time"] = QString::number( h.pos.x() );
     args["value"] = QString::number( h.pos.y() );
     args["tanInX"] = QString::number( h.tanIn.x() );
@@ -60,7 +60,7 @@ public:
     static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
-    args["index"] = QString::number( i );
+    args["index"] = QString::number( this->idToIndex( i ).getUInt32() );
     manager->createCommand( "AnimX_RemoveKeyframe", args );
   }
 };
