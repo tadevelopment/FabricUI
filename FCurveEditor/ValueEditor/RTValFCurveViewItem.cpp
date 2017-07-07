@@ -18,7 +18,7 @@
 using namespace FabricUI::ValueEditor;
 using namespace FabricUI::FCurveEditor;
 
-class RTValFCurveViewItem::RTValAnimXFCurveDFGController : public RTValAnimXFCurveConstModel
+class RTValFCurveViewItem::RTValAnimXFCurveDFGController : public RTValAnimXFCurveVersionedConstModel
 {
   std::string m_bindingId, m_dfgPortPath;
 
@@ -108,6 +108,7 @@ void RTValFCurveViewItem::onModelValueChanged( QVariant const & v )
 {
   FabricCore::RTVal rtval = v.value<FabricCore::RTVal>();
   m_model->setValue( rtval );
+  m_model->update();
 }
 
 BaseViewItem * RTValFCurveViewItem::CreateItem(

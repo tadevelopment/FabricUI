@@ -50,9 +50,10 @@ qreal RTValAnimXFCurveConstModel::evaluate( qreal v ) const
 
 void RTValAnimXFCurveVersionedConstModel::update( bool emitChanges ) const
 {
-  size_t sVersion = const_cast<FabricCore::RTVal*>( &m_val )
+  const bool invalidVal = ( !m_val.isValid() || m_val.isNullObject() );
+  size_t sVersion = invalidVal ? 0 : const_cast<FabricCore::RTVal*>( &m_val )
     ->callMethod( "UInt32", "getStructureVersion", 0, NULL ).getUInt32();
-  size_t vVersion = const_cast<FabricCore::RTVal*>( &m_val )
+  size_t vVersion = invalidVal ? 0 : const_cast<FabricCore::RTVal*>( &m_val )
     ->callMethod( "UInt32", "getValueVersion", 0, NULL ).getUInt32();
 
   const bool structureChanged = ( m_lastStructureVersion != sVersion );

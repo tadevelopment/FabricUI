@@ -43,10 +43,11 @@ protected:
   mutable size_t m_lastStructureVersion;
   mutable size_t m_lastValueVersion;
 
-  void update( bool emitChanges = true ) const;
+  void update( bool emitChanges ) const;
 
 public:
 
+  inline void update() const { this->update( true ); }
   size_t getHandleCount() const FTL_OVERRIDE { this->update( false ); return Parent::getHandleCount(); }
   Handle getHandle( size_t i ) const FTL_OVERRIDE { this->update(); return Parent::getHandle( i ); }
   qreal evaluate( qreal v ) const FTL_OVERRIDE { this->update(); return Parent::evaluate( v ); }
