@@ -341,7 +341,7 @@ class CanvasWindow(QtGui.QMainWindow):
             else:
                 slowOpMsg = ""
             self.splashScreen.showMessage(
-                slowOpMsg,
+                Core.CAPI.GetCopyrightStr() + "\n" + slowOpMsg,
                 QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom,
                 QtGui.QColor(QtCore.Qt.white)
                 )
