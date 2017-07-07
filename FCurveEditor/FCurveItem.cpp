@@ -431,4 +431,6 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
   size_t hc = m_curve->getHandleCount();
   for( size_t i = 0; i < hc; i++ )
     this->addHandle( i );
+
+  m_curveShape->updateBoundingRect();
 }
