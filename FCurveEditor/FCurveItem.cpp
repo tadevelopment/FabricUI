@@ -7,6 +7,8 @@
 #include <QPainter>
 #include <QGraphicsSceneEvent>
 
+#include <limits>
+
 #include <QDebug>
 #include <assert.h>
 
