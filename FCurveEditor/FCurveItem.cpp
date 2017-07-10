@@ -356,27 +356,29 @@ void FCurveItem::deleteSelectedHandles()
 {
   if( m_selectedHandles.empty() )
     return;
-
+  else
   if( m_selectedHandles.size() == 1 )
   {
     size_t index = *m_selectedHandles.begin();
     this->clearHandleSelection();
     m_curve->deleteHandle( index );
   }
-
-  std::vector<size_t> orderedIndices;
-  for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
-    orderedIndices.push_back( *it );
-  this->clearHandleSelection();
-  std::sort( orderedIndices.begin(), orderedIndices.end() );
-  m_curve->deleteHandles( orderedIndices.data(), orderedIndices.size() );
+  else
+  {
+    std::vector<size_t> orderedIndices;
+    for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
+      orderedIndices.push_back( *it );
+    this->clearHandleSelection();
+    std::sort( orderedIndices.begin(), orderedIndices.end() );
+    m_curve->deleteHandles( orderedIndices.data(), orderedIndices.size() );
+  }
 }
 
 void FCurveItem::moveSelectedHandles( QPointF delta )
 {
   if( m_selectedHandles.empty() )
     return;
-
+  else
   if( m_selectedHandles.size() == 1 )
   {
     const size_t index = *m_selectedHandles.begin();
@@ -385,12 +387,14 @@ void FCurveItem::moveSelectedHandles( QPointF delta )
     m_curve->setHandle( index, h );
     return;
   }
-
-  // TODO (optimisation) : cache that vector<size_t> to avoid reallocation
-  std::vector<size_t> indices;
-  for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
-    indices.push_back( *it );
-  m_curve->moveHandles( indices.data(), indices.size(), delta );
+  else
+  {
+    // TODO (optimisation) : cache that vector<size_t> to avoid reallocation
+    std::vector<size_t> indices;
+    for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
+      indices.push_back( *it );
+    m_curve->moveHandles( indices.data(), indices.size(), delta );
+  }
 }
 
 void FCurveItem::addHandle( size_t i )
