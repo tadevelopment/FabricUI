@@ -17,6 +17,8 @@ size_t RTValAnimXFCurveConstModel::getHandleCount() const
 
 FabricCore::RTVal RTValAnimXFCurveConstModel::idToIndex( size_t i ) const
 {
+  FabricCore::RTVal bRV = FabricCore::RTVal::ConstructBoolean( m_val.getContext(), true );
+  const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "", "useIds", 1, &bRV );
   FabricCore::RTVal iRV = FabricCore::RTVal::ConstructUInt32( m_val.getContext(), i );
   return const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "UInt32", "getKeyIndex", 1, &iRV );
 }
