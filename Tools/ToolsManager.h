@@ -132,7 +132,7 @@ class ToolsManager : public QObject
     /// Update the value of the tool 
     /// associated to the path `portPath`
     void updateTool(
-      QString portPath
+      FabricCore::RTVal pathValue
       );
 
   protected slots:

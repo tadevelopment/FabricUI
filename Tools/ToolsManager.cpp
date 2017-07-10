@@ -10,11 +10,13 @@
 #include <FabricUI/GraphView/InstBlock.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
+#include <FabricUI/Commands/PathValueResolverRegistry.h>
 
 using namespace FabricUI;
 using namespace DFG;
 using namespace Util;
 using namespace Tools;
+using namespace Commands;
 using namespace FabricCore;
 using namespace Application;
 
@@ -77,7 +79,6 @@ void ToolsManager::setupConnections(
     m_notifProxy = NULL;
   }
 
-  m_subNotifier.clear();
   m_notifier.clear();
  
   {
@@ -123,18 +124,6 @@ void ToolsManager::setupConnections(
       notifProxy,
       SLOT( onBindingArgsReordered( FTL::ArrayRef<unsigned> ) )
       );
-
-    FabricCore::DFGBinding binding = dfgController->getBinding();
-    FabricCore::DFGExec rootExec = binding.getExec();
-
-    m_subNotifier = DFG::DFGExecNotifier::Create( rootExec );
-
-    connect(
-      m_subNotifier.data(),
-      SIGNAL(execPortMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
-      this,
-      SLOT(onExecPortMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
-      );
   }
 }
 
@@ -143,153 +132,139 @@ void ToolsManager::setupConnections(
 {
   std::cout << "ToolsManager::setupConnections 2" << std::endl;
 
-  if ( m_notifProxy )
-  {
-    m_notifProxy->setParent( NULL );
-    delete m_notifProxy;
-    m_notifProxy = NULL;
-  }
-
-  m_notifier.clear();
+  // FabricCore::DFGBinding binding = getDFGController()->getBinding();
+  // FabricCore::DFGExec rootExec = binding.getExec();
   m_subNotifier.clear();
- 
-  m_notifier = DFG::DFGExecNotifier::Create( exec );
+
+  m_subNotifier = DFG::DFGExecNotifier::Create( exec );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(nodeRenamed(FTL::CStrRef, FTL::CStrRef)),
     this,
     SLOT(onExecNodeRenamed(FTL::CStrRef, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(nodeRemoved(FTL::CStrRef)),
     this,
     SLOT(onExecNodeRemoved(FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(nodePortInserted(FTL::CStrRef, unsigned, FTL::CStrRef)),
     this,
     SLOT(onExecNodePortInserted(FTL::CStrRef, unsigned, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(nodePortRenamed(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef)),
     this,
     SLOT(onExecNodePortRenamed(FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(nodePortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef)),
     this,
     SLOT(onExecNodePortRemoved(FTL::CStrRef, unsigned, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(nodePortsReordered(FTL::CStrRef, FTL::ArrayRef<unsigned>)),
     this,
     SLOT(onExecNodePortsReordered(FTL::CStrRef, FTL::ArrayRef<unsigned>))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(nodePortDefaultValuesChanged(FTL::CStrRef, FTL::CStrRef)),
     this,
     SLOT(onExecNodePortDefaultValuesChanged(FTL::CStrRef, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(nodePortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
     this,
     SLOT(onExecNodePortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(instBlockRenamed(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
     this,
     SLOT(onInstBlockRenamed(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(instBlockRemoved(FTL::CStrRef, FTL::CStrRef)),
     this,
     SLOT(onInstBlockRemoved(FTL::CStrRef, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(instBlockPortInserted(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef)),
     this,
     SLOT(onInstBlockPortInserted(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(instBlockPortRenamed(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef)),
     this,
     SLOT(onInstBlockPortRenamed(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(instBlockPortRemoved(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef)),
     this,
     SLOT(onInstBlockPortRemoved(FTL::CStrRef, FTL::CStrRef, unsigned, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(instBlockPortsReordered(FTL::CStrRef, FTL::CStrRef, FTL::ArrayRef<unsigned>)),
     this,
     SLOT(onInstBlockPortsReordered(FTL::CStrRef, FTL::CStrRef, FTL::ArrayRef<unsigned>))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(instBlockPortDefaultValuesChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
     this,
     SLOT(onInstBlockPortDefaultValuesChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL(instBlockPortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
     this,
     SLOT(onInstBlockPortResolvedTypeChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL( portsConnected( FTL::CStrRef, FTL::CStrRef ) ),
     this,
     SLOT( onExecPortsConnectedOrDisconnected( FTL::CStrRef, FTL::CStrRef ) )
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL( portsDisconnected( FTL::CStrRef, FTL::CStrRef ) ),
     this,
     SLOT( onExecPortsConnectedOrDisconnected( FTL::CStrRef, FTL::CStrRef ) )
     );
   connect(
-    m_notifier.data(),
+    m_subNotifier.data(),
     SIGNAL( refVarPathChanged( FTL::CStrRef, FTL::CStrRef ) ),
     this,
     SLOT( onExecRefVarPathChanged( FTL::CStrRef, FTL::CStrRef ) )
     );
 
-  /*  if ( !exec.isExecBlock( itemPath.c_str() )
-    && ( exec.isInstBlock( itemPath.c_str() )
-      || exec.getNodeType( itemPath.c_str() ) == FabricCore::DFGNodeType_Inst ) )
-    {
-      FabricCore::DFGExec subExec = exec.getSubExec( itemPath.c_str() );
+  connect(
+    m_subNotifier.data(),
+    SIGNAL(execPortMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
+    this,
+    SLOT(onExecPortMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
+    );
 
-      m_subNotifier = DFG::DFGExecNotifier::Create( subExec );
-
-      connect(
-        m_subNotifier.data(),
-        SIGNAL(execPortMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef)),
-        this,
-        SLOT(onExecPortMetadataChanged(FTL::CStrRef, FTL::CStrRef, FTL::CStrRef))
-        );
-      connect(
-        m_subNotifier.data(),
-        SIGNAL(execPortDefaultValuesChanged(FTL::CStrRef)),
-        this,
-        SLOT(onExecPortDefaultValuesChanged(FTL::CStrRef))
-        );
-  }*/
+  connect(
+    m_subNotifier.data(),
+    SIGNAL(execPortDefaultValuesChanged(FTL::CStrRef)),
+    this,
+    SLOT(onExecPortDefaultValuesChanged(FTL::CStrRef))
+    );
 }
 
 void ToolsManager::onControllerBindingChanged(
@@ -326,37 +301,21 @@ void ToolsManager::onSidePanelInspectRequested()
     setupConnections(dfgController);
   
   FabricCore::DFGExec rootExec = binding.getExec();
-  //std::string instName = SplitLast( path );
 
   FabricCore::DFGExec exec;
   if ( !path.empty() )
     exec = rootExec.getSubExec( path.c_str() );
   else
     exec = rootExec;
-
-  // We always show the instantiated values (ie, what
-  // we would see if we were outside this node and clicked on it)
-  // DFGUICmdHandler *dfgUICmdHandler =
-  //   dfgController->getCmdHandler();
-
+ 
   setupConnections(exec);
 }
 
 void ToolsManager::onNodeInspectRequested(
   FabricUI::GraphView::Node *node)
 {
-  // if (node->isBackDropNode())
-  //   return;
-
-  //DFGController *dfgController = getDFGController();
-
-  //DFGUICmdHandler *dfgUICmdHandler = dfgController->getCmdHandler();
-  //FabricCore::DFGBinding &binding = dfgController->getBinding();
-  //FTL::CStrRef execPath = dfgController->getExecPath();
-  FabricCore::DFGExec &exec = getDFGController()->getExec();
-  //FTL::CStrRef nodeName = node->name();
-
-  setupConnections( exec/*, nodeName/*, nodeModelItem*/ );
+  FabricCore::DFGExec exec = getDFGController()->getExec();
+  setupConnections( exec );
 }
 
 void ToolsManager::onBindingArgValueChanged(
@@ -364,12 +323,14 @@ void ToolsManager::onBindingArgValueChanged(
   FTL::CStrRef name)
 {
   std::cout << "ToolsManager::onBindingArgValueChanged" << std::endl;
+  onExecNodePortDefaultValuesChanged("", name);
 }
 
 void ToolsManager::onExecPortDefaultValuesChanged(
   FTL::CStrRef portName)
 {
   std::cout << "ToolsManager::onExecPortDefaultValuesChanged" << std::endl;
+  onExecNodePortDefaultValuesChanged("", portName);
 }
 
 RTVal ToolsManager::getKLToolsManager()
@@ -396,31 +357,15 @@ RTVal ToolsManager::getKLToolsManager()
 }
 
 void ToolsManager::updateTool(
-  QString portPath)
+  RTVal pathValue)
 {
   FABRIC_CATCH_BEGIN();
 
-  std::cout 
-    << "ToolsManager::updateTool " 
-    << portPath.toUtf8().constData()
-    << std::endl;
-
-  RTVal value = getDFGController()->getExec().getPortResolvedDefaultValue( 
-    portPath.toUtf8().constData(), 
-    getDFGController()->getExec().getPortResolvedType(portPath.toUtf8().constData())
-    );
-
-  RTVal args[2] = {
-    RTVal::ConstructString(FabricApplicationStates::GetAppStates()->getContext(), portPath.toUtf8().constData()),
-    RTValUtil::toKLRTVal(value)
-  };
-
-  // Get the RTVal for the port
   getKLToolsManager().callMethod(
     "",
     "toolValueChanged",
-    2,
-    args);
+    1,
+    &pathValue);
 
   FABRIC_CATCH_END("ToolsManager::updateTool");
 }
@@ -431,9 +376,24 @@ void ToolsManager::onExecNodePortDefaultValuesChanged(
 {
   FABRIC_CATCH_BEGIN();
 
-  updateTool(
-    QString(nodeName.data()) + "." + QString(portName.data())
-    );
+  // QString portPath = execPath != ""
+  //   ? QString(execPath.c_str()) + "."
+  //   : "";
+
+  QString portPath = nodeName != ""
+    ? QString(nodeName.c_str()) + "." + QString(portName.c_str())
+    : portName.c_str();
+
+  Client client = getDFGController()->getClient();
+  RTVal portPathVal = RTVal::ConstructString(client, portPath.toUtf8().constData());
+  RTVal pathValue = RTVal::Construct(client, "PathValue", 1, &portPathVal);
+
+  PathValueResolverRegistry *resolverRegistry = PathValueResolverRegistry::getRegistry();
+  if(resolverRegistry->knownPath(pathValue))
+  {
+    resolverRegistry->getValue(pathValue);
+    updateTool(pathValue);
+  }
 
   FABRIC_CATCH_END("ToolsManager::onExecNodePortDefaultValuesChanged");
 }
@@ -623,14 +583,14 @@ void ToolsManager::onGraphSet(
 {
   std::cout << "ToolsManager::onGraphSet" << std::endl;
 
-  connect( 
-    graph, SIGNAL( sidePanelInspectRequested() ),
-    this, SLOT( onSidePanelInspectRequested() )
-    );
-  connect(
-    graph, SIGNAL( nodeInspectRequested( FabricUI::GraphView::Node* ) ),
-    this, SLOT( onNodeInspectRequested( FabricUI::GraphView::Node* ) )
-    );
+  // connect( 
+  //   graph, SIGNAL( sidePanelInspectRequested() ),
+  //   this, SLOT( onSidePanelInspectRequested() )
+  //   );
+  // connect(
+  //   graph, SIGNAL( nodeInspectRequested( FabricUI::GraphView::Node* ) ),
+  //   this, SLOT( onNodeInspectRequested( FabricUI::GraphView::Node* ) )
+  //   );
 
   onSidePanelInspectRequested();
 }

@@ -63,10 +63,10 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
       );
 
     /// Type of DFG data.
-    enum DFGType { DFGUnknow, DFGPort, DFGVar };
+    enum DFGType { DFGUnknow, DFGPort, DFGArg, DFGVar };
       
     /// Gets the DFG data type (DFGUnknow, DFGPort, DFGVar)
-    DFGType checkDFGType(
+    DFGType getDFGType(
       FabricCore::RTVal pathValue
       );
     

@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <iostream>
 #include "DFGPathValueResolver.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/DFG/DFGController.h>
@@ -67,7 +68,7 @@ bool DFGPathValueResolver::knownPath(
   knownBinding = !knownBinding ? m_id.isEmpty() : true;
 
   return knownBinding && 
-    checkDFGType(pathValue) != DFGUnknow;
+    getDFGType(pathValue) != DFGUnknow;
 }
 
 QString DFGPathValueResolver::getType(
@@ -75,7 +76,7 @@ QString DFGPathValueResolver::getType(
 {
   FABRIC_CATCH_BEGIN();
 
-  if(checkDFGType(pathValue) == DFGVar)
+  if(getDFGType(pathValue) == DFGVar)
     return m_binding.getExec().getVarType(
       getRelativePath(pathValue).toUtf8().constData());
 
@@ -86,7 +87,7 @@ QString DFGPathValueResolver::getType(
       pathValue, 
       portPath);
 
-    return  subExec.getPortResolvedType(
+    return subExec.getPortResolvedType(
       portPath.toUtf8().constData()
       );
   }
@@ -103,7 +104,10 @@ void DFGPathValueResolver::getValue(
     
   RTVal value;
   QString path = getRelativePath(pathValue);
-  if(checkDFGType(pathValue) == DFGVar)
+
+  DFGType dfgType = getDFGType(pathValue);
+
+  if(dfgType == DFGVar)
     value = m_binding.getExec().getVarValue(
       getRelativePath(pathValue).toUtf8().constData());
 
@@ -114,16 +118,26 @@ void DFGPathValueResolver::getValue(
       pathValue, 
       portPath);
 
-    value = subExec.getPortResolvedDefaultValue( 
-      portPath.toUtf8().constData(), 
-      subExec.getPortResolvedType(portPath.toUtf8().constData())
-      );
+    if(dfgType == DFGPort)
+      value = subExec.getPortResolvedDefaultValue( 
+        portPath.toUtf8().constData(), 
+        subExec.getPortResolvedType(portPath.toUtf8().constData())
+        );
+
+    else if(dfgType == DFGArg)
+      value = m_binding.getArgValue(
+        portPath.toUtf8().constData());
   }
 
   if(value.isValid())
     pathValue.setMember("value", value);
 
   castPathToHRFormat( pathValue);
+
+  std::cout 
+    << "\n DFGPathValueResolver::getValue "
+    << path.toUtf8().constData()
+    << std::endl;
 
   FABRIC_CATCH_END("DFGPathValueResolver::getValue");
 }
@@ -132,14 +146,17 @@ void DFGPathValueResolver::setValue(
   RTVal pathValue)
 {
   FABRIC_CATCH_BEGIN();
- 
+  
   RTVal value = RTValUtil::toRTVal(
     RTValUtil::toRTVal(pathValue).maybeGetMember("value"));
 
+ 
   if( !value.isValid() )
     return; // no value specified
 
-  if(checkDFGType(pathValue) == DFGVar)
+  DFGType dfgType = getDFGType(pathValue);
+
+  if(dfgType == DFGVar)
     m_binding.getExec().setVarValue( 
       getRelativePath(pathValue).toUtf8().constData(), 
       value);
@@ -151,10 +168,24 @@ void DFGPathValueResolver::setValue(
       pathValue,
       portPath);
 
-    subExec.setPortDefaultValue( 
-      portPath.toUtf8().constData(), 
-      value, 
-      false);
+    std::cout 
+      << "DFGPathValueResolver::setValue "
+      << value.isValid()
+      << " "
+      << portPath.toUtf8().constData()
+      << std::endl;
+
+    if(dfgType == DFGPort)
+      subExec.setPortDefaultValue( 
+        portPath.toUtf8().constData(), 
+        value, 
+        false);
+
+    else if(dfgType == DFGArg)
+      m_binding.setArgValue( 
+        portPath.toUtf8().constData(), 
+        value, 
+        false);
   }
 
   FABRIC_CATCH_END("DFGPathValueResolver::setValue");
@@ -183,7 +214,7 @@ QString DFGPathValueResolver::getRelativePath(
   return path;
 }
 
-DFGPathValueResolver::DFGType DFGPathValueResolver::checkDFGType(
+DFGPathValueResolver::DFGType DFGPathValueResolver::getDFGType(
   RTVal pathValue) 
 {
   try 
@@ -208,7 +239,7 @@ DFGPathValueResolver::DFGType DFGPathValueResolver::checkDFGType(
     }
 
     if(subExec.haveExecPort(portPath.toUtf8().constData()))
-      return DFGPort;
+      return index != -1 ? DFGPort : DFGArg;
   }
 
   catch(Exception &e)

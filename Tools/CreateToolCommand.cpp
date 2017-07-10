@@ -3,14 +3,15 @@
 //
 
 #include "CreateToolCommand.h"
-#include <FabricUI/Util/QtUtil.h>
-#include <FabricUI/Util/RTValUtil.h>
+// #include <FabricUI/Util/QtUtil.h>
+// #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Commands/CommandHelpers.h>
 #include <FabricUI/Application/FabricException.h>
-#include <FabricUI/Application/FabricApplicationStates.h>
+//#include <FabricUI/Application/FabricApplicationStates.h>
+//#include <FabricUI/Commands/PathValueResolverRegistry.h>
 
 using namespace FabricUI;
-using namespace Util;
+//using namespace Util;
 using namespace Tools;
 using namespace Commands;
 using namespace FabricCore;
@@ -21,9 +22,8 @@ CreateToolCommand::CreateToolCommand()
 {
   FABRIC_CATCH_BEGIN();
 
-  declareRTValArg("type", "String");
-
-  declareRTValArg("path", "String");
+  declareRTValArg("target", "RTVal",
+    CommandArgFlags::IO_ARG);
 
   FABRIC_CATCH_END("CreateToolCommand::CreateToolCommand");
 }
@@ -54,36 +54,16 @@ bool CreateToolCommand::doIt()
 {
   FABRIC_CATCH_BEGIN();
 
-  RTVal typeAsStr = getRTValArgValue("type");
-  RTVal path = getRTValArgValue("path");
+  RTVal target = getRTValArg("target");
 
-  // Get the type not as a string, but as a KL Type.
-  // Need to construct the strict/object from the 
-  // string to then get the type.
-  RTVal obj = RTVal::Construct(
-    FabricApplicationStates::GetAppStates()->getContext(), 
-    typeAsStr.getStringCString(), 
-    0, 0);
-
-  RTVal objType = obj.callMethod("Type", "type", 0, 0);
-
-  RTVal args[3] = { 
-    objType, 
-    path,
-    RTVal::ConstructBoolean(FabricApplicationStates::GetAppStates()->getContext(), true)
-  };
-
-  // Create the tool
   m_manager->getKLToolsManager().callMethod(
     "Tool::BaseTool",
     "createPathValueTool",
-    3,
-    args);
+    1,
+    &target);
 
   // Update the tool'value from its target.
-  m_manager->updateTool(
-    path.getStringCString()
-    );
+  m_manager->updateTool(target);
  
   return true;
 
@@ -97,8 +77,7 @@ QString CreateToolCommand::getHelp()
   FABRIC_CATCH_BEGIN();
 
   QMap<QString, QString> argsHelp;
-  argsHelp["type"] = "Type of the tool (KL)";
-  argsHelp["path"] = "Tool arguments";
+  argsHelp["target"] = "Tool arguments";
 
   return CommandHelpers::createHelpFromRTValArgs(
     this,

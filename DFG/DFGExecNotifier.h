@@ -369,6 +369,12 @@ signals:
     FTL::CStrRef portName
     );
 
+  void nodePortDefaultValuesChanged(
+    FTL::CStrRef execPath,
+    FTL::CStrRef nodeName,
+    FTL::CStrRef portName
+    );
+
   void nodePortsReordered(
     FTL::CStrRef nodeName,
     FTL::ArrayRef<unsigned> newOrder
