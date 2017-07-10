@@ -5,6 +5,8 @@
 #ifndef FABRICUI_DFG_DFGEXECNOTIFIER_H
 #define FABRICUI_DFG_DFGEXECNOTIFIER_H
 
+#include <string>
+#include <iostream>
 #include <FabricCore.h>
 #include <FabricUI/DFG/DFGNotifier.h>
 #include <FTL/ArrayRef.h>
@@ -395,7 +397,12 @@ signals:
 private:
 
   DFGExecNotifier( FabricCore::DFGExec exec )
-    : m_view( exec.createView( &Callback, this ) ) {}
+    : m_view( exec.createView( &Callback, this ) ) 
+    {
+      FabricCore::String execPath = exec.getExecPath();
+      m_execPath = std::string( execPath.getCStr(), execPath.getSize() );
+      std::cout << "DFGExecNotifier " << m_execPath.c_str() << std::endl;
+    }
 
   virtual void handle( FTL::CStrRef jsonStr ) /*override*/;
 
@@ -466,6 +473,7 @@ private:
   void handler_refVarPathChanged( FTL::JSONObject const *jsonObject );
   void handler_removedFromOwner( FTL::JSONObject const *jsonObject );
 
+  std::string m_execPath;
   FabricCore::DFGView m_view;
 
 #if defined(FTL_PLATFORM_WINDOWS)

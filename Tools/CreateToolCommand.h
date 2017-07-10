@@ -5,7 +5,7 @@
 #ifndef __UI_CREATE_TOOLS_COMMAND__
 #define __UI_CREATE_TOOLS_COMMAND__
 
-#include "ToolsManager.h"
+#include "ToolsNotifier.h"
 #include <FabricUI/Commands/BaseRTValScriptableCommand.h>
 
 namespace FabricUI {
@@ -39,7 +39,7 @@ class CreateToolCommand : public FabricUI::Commands::BaseRTValScriptableCommand
     virtual QString getHelp();
 
   private:
-    ToolsManager* m_manager;
+    ToolsNotifierRegistry* m_registry;
 };
 
 } // namespace Tools

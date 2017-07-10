@@ -3,15 +3,10 @@
 //
 
 #include "CreateToolCommand.h"
-// #include <FabricUI/Util/QtUtil.h>
-// #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/Commands/CommandHelpers.h>
 #include <FabricUI/Application/FabricException.h>
-//#include <FabricUI/Application/FabricApplicationStates.h>
-//#include <FabricUI/Commands/PathValueResolverRegistry.h>
 
 using namespace FabricUI;
-//using namespace Util;
 using namespace Tools;
 using namespace Commands;
 using namespace FabricCore;
@@ -37,7 +32,7 @@ void CreateToolCommand::registrationCallback(
   void *userData)
 {
   if(userData != 0)
-    m_manager = static_cast<ToolsManager*>(userData);
+    m_registry = static_cast<ToolsNotifierRegistry*>(userData);
 }
 
 bool CreateToolCommand::canUndo()
@@ -54,16 +49,9 @@ bool CreateToolCommand::doIt()
 {
   FABRIC_CATCH_BEGIN();
 
-  RTVal target = getRTValArg("target");
-
-  m_manager->getKLToolsManager().callMethod(
-    "Tool::BaseTool",
-    "createPathValueTool",
-    1,
-    &target);
-
   // Update the tool'value from its target.
-  m_manager->updateTool(target);
+  m_registry->createPathValueTool(
+    getRTValArg("target"));
  
   return true;
 

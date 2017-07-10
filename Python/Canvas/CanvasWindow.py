@@ -250,7 +250,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.onFrameChanged(self.timeLine.getTime())
         self.onGraphSet(self.dfgWidget.getUIGraph())
         self.valueEditor.initConnections()
-        self.toolsManager.initConnections()
+        self.toolsNotifierRegistry.initConnections()
         self.installEventFilter(CanvasWindowEventFilter(self))
 
 
@@ -464,8 +464,8 @@ class CanvasWindow(QtGui.QMainWindow):
     def _initTools(self):
         """Initializes the Tools.
         """
-        self.toolsManager = FabricUI.Tools.ToolsManager(self.dfgWidget)
-        FabricUI.Tools.ToolsCommandRegistration.RegisterCommands(self.toolsManager)
+        self.toolsNotifierRegistry = FabricUI.Tools.ToolsNotifierRegistry(self.dfgWidget)
+        FabricUI.Tools.ToolsCommandRegistration.RegisterCommands(self.toolsNotifierRegistry)
 
     def _initTreeView(self):
         """Initializes the preset TreeView.

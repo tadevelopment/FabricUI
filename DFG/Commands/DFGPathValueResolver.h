@@ -13,7 +13,7 @@ namespace DFG {
 class DFGPathValueResolver : public Commands::BasePathValueResolver
 {
   /**
-    DFGPathValueResolver  
+    DFGPathValueResolver specialize for DFG graphs. 
   */  
   
   Q_OBJECT
@@ -49,6 +49,13 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
       FabricCore::RTVal pathValue
       );
 
+    /// Gets the executable and the relative
+    /// port path from `pathValue`
+    FabricCore::DFGExec getSubExecAndPortPath(
+      FabricCore::RTVal pathValue, 
+      QString &relPortPath
+      );
+
   public slots:
     /// Update the binding.
     virtual void onBindingChanged(
@@ -56,8 +63,7 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
       );
 
   private:
-    /// Casts the pathValue path.
-    /// 
+    /// Gets a port/var relative path.
     QString getRelativePath(
       FabricCore::RTVal pathValue
       );
@@ -68,22 +74,14 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
     /// Gets the DFG data type (DFGUnknow, DFGPort, DFGVar)
     DFGType getDFGType(
       FabricCore::RTVal pathValue
-      );
-    
-    /// In case 
-    FabricCore::DFGExec getSubExecAndPortPath(
-      FabricCore::RTVal pathValue, 
-      QString &relPortPath
-      );
+      );  
 
     /// Casts the path the a humain readable format.
     void castPathToHRFormat(
       FabricCore::RTVal pathValue
       );
 
-    ///
     QString m_id;
-    /// 
     FabricCore::DFGBinding m_binding;
 };
 

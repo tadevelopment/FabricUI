@@ -39,17 +39,22 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
       QString const&name
       );
 
-    /// Gets the resoler name. Returns an empty 
+    /// Gets the resolver name. Returns an empty 
     /// string if the resolver doesn't exist.
     QString getResolverName(
       BasePathValueResolver* resolver
       );
 
-    /// Gets/creates the resolver named 'name'.  
-    /// The resolver must have been registered, 
-    /// returns a null object otherwise.
+    /// Gets the resolver named 'name'. it must be
+    /// registered, returns a null object otherwise.
     virtual BasePathValueResolver* getResolver(
       QString const&name
+      );
+
+    /// Gets the resolver that can 
+    /// resolves `pathValue`.  
+    virtual BasePathValueResolver* getResolver(
+      FabricCore::RTVal pathValue
       );
           
     /// Checks if one of the registered   

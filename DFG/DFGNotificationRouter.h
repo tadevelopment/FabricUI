@@ -3,6 +3,7 @@
 #ifndef __UI_DFG_DFGNotificationRouter__
 #define __UI_DFG_DFGNotificationRouter__
 
+#include <string>
 #include <FabricCore.h>
 #include <FTL/CStrRef.h>
 #include <FTL/JSONValue.h>
@@ -352,6 +353,7 @@ namespace FabricUI
       FabricCore::DFGView m_coreDFGView;
       DFGConfig m_config;
       bool m_performChecks;
+      std::string m_execPath;
     };
 
   };

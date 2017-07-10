@@ -5,7 +5,7 @@
 #ifndef __UI_TOOLS_COMMAND_REGISTRATION__
 #define __UI_TOOLS_COMMAND_REGISTRATION__
 
-#include "ToolsManager.h"
+#include "ToolsNotifier.h"
 #include "CreateToolCommand.h"
 #include <FabricUI/Commands/CommandRegistry.h>
  
@@ -20,11 +20,11 @@ class ToolsCommandRegistration
 
   public:
    	static void RegisterCommands(
-   		ToolsManager *manager)
+   		ToolsNotifierRegistry *registry)
     {
       Commands::CommandFactory<CreateToolCommand>::Register(
         "createTool",
-        (void*)manager
+        (void*)registry
         );
     }
 };

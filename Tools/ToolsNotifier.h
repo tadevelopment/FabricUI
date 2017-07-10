@@ -2,9 +2,11 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_TOOLS_MANAGER__
-#define __UI_TOOLS_MANAGER__
+#ifndef __UI_TOOLS_NOTIFIER__
+#define __UI_TOOLS_NOTIFIER__
 
+#include <QList>
+#include <string>
 #include <QObject>
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGNotifier.h>
@@ -13,37 +15,37 @@
 namespace FabricUI {
 namespace Tools {
 
-class ToolsManager;
+class ToolsNotifierRegistry;
 
-class ToolsManager_NotifProxy : public QObject
+class ToolsNotifierRegistry_NotifProxy : public QObject
 {
   public:
-    ToolsManager_NotifProxy(
-      ToolsManager *dst,
+    ToolsNotifierRegistry_NotifProxy(
+      ToolsNotifierRegistry *dst,
       QObject *parent
       )
       : QObject( parent )
       , m_dst( dst )
       {}
 
-    virtual ~ToolsManager_NotifProxy() 
+    virtual ~ToolsNotifierRegistry_NotifProxy() 
     {}
 
   protected:
-    ToolsManager *m_dst;
+    ToolsNotifierRegistry *m_dst;
 };
 
-class ToolsManager_BindingNotifProxy :
-  public ToolsManager_NotifProxy
+class ToolsNotifierRegistry_BindingNotifProxy :
+  public ToolsNotifierRegistry_NotifProxy
 {
   Q_OBJECT
 
   public:
-    ToolsManager_BindingNotifProxy(
-      ToolsManager *dst,
+    ToolsNotifierRegistry_BindingNotifProxy(
+      ToolsNotifierRegistry *dst,
       QObject *parent
       )
-      : ToolsManager_NotifProxy( dst, parent )
+      : ToolsNotifierRegistry_NotifProxy( dst, parent )
       {}
 
   public slots:
@@ -81,19 +83,20 @@ class ToolsManager_BindingNotifProxy :
       );
 };
 
-class ToolsManager : public QObject
+class ToolsNotifier;
+
+class ToolsNotifierRegistry : public QObject
 {
   Q_OBJECT
 
   public:
-    ToolsManager( 
+    ToolsNotifierRegistry( 
       DFG::DFGWidget * dfgWidget 
       );
 
-    ~ToolsManager();
+    ~ToolsNotifierRegistry();
 
-    virtual void initConnections();
-
+  public slots:
     void onBindingArgValueChanged( 
       unsigned index, 
       FTL::CStrRef name 
@@ -126,26 +129,65 @@ class ToolsManager : public QObject
       FTL::ArrayRef<unsigned> newOrder
       );
 
-    /// Gets the KL tools manager.
-    FabricCore::RTVal getKLToolsManager();
+    void initConnections();
 
-    /// Update the value of the tool 
-    /// associated to the path `portPath`
-    void updateTool(
+    void createPathValueTool(
       FabricCore::RTVal pathValue
       );
 
-  protected slots:
+    void deletePathValueTool(
+      FabricCore::RTVal pathValue
+      );
+
+    void toolValueChanged(
+      QString portPath
+      );
+
+  private slots:
     void onControllerBindingChanged(
       FabricCore::DFGBinding const &binding
       );
 
-    virtual void onSidePanelInspectRequested();
+    void onSidePanelInspectRequested();
 
-    void onNodeInspectRequested(
-      FabricUI::GraphView::Node *node
+    void onGraphSet(
+      FabricUI::GraphView::Graph *graph
       );
 
+  private:
+    /// Update the value of the tool 
+    /// associated to the path `portPath`
+    void toolValueChanged(
+      FabricCore::RTVal pathValue
+      );
+
+    /// Gets the KL tools manager.
+    FabricCore::RTVal getKLToolManager();
+
+    void setupConnections(
+      FabricUI::DFG::DFGController *dfgController
+      );
+
+    QList<ToolsNotifier *> m_registeredNotifiers;
+
+    DFG::DFGWidget *m_dfgWidget;
+    ToolsNotifierRegistry_NotifProxy *m_notifProxy;
+    QSharedPointer<DFG::DFGNotifier> m_notifier;
+};
+
+class ToolsNotifier : public QObject
+{
+  Q_OBJECT
+
+  public:
+    ToolsNotifier( 
+      ToolsNotifierRegistry *registry,
+      FabricCore::RTVal pathValue
+      );
+
+    ~ToolsNotifier();
+
+  protected slots:
     void onExecNodePortInserted(
       FTL::CStrRef nodeName,
       unsigned portIndex,
@@ -188,10 +230,6 @@ class ToolsManager : public QObject
     void onExecPortsConnectedOrDisconnected(
       FTL::CStrRef srcPortPath,
       FTL::CStrRef dstPortPath
-      );
-
-    void onExecPortDefaultValuesChanged(
-      FTL::CStrRef portName
       );
 
     void onExecNodePortDefaultValuesChanged(
@@ -264,32 +302,17 @@ class ToolsManager : public QObject
       FTL::ArrayRef<unsigned> newOrder
       );
 
-    virtual void onStructureChanged() {};
-
-    virtual void onGraphSet(
-      FabricUI::GraphView::Graph *graph
-      );
-
-    FabricUI::DFG::DFGWidget *getDfgWidget();
-
-    FabricUI::DFG::DFGController *getDFGController();
-
   private:
-    void setupConnections(
-      FabricUI::DFG::DFGController *dfgController
-      );
-
     void setupConnections(
       FabricCore::DFGExec exec
       );
 
-    DFG::DFGWidget * m_dfgWidget;
-    ToolsManager_NotifProxy *m_notifProxy;
+    std::string m_execPath;
+    ToolsNotifierRegistry *m_registry;
     QSharedPointer<DFG::DFGNotifier> m_notifier;
-    QSharedPointer<DFG::DFGNotifier> m_subNotifier;
 };
 
 } // namespace Tools
 } // namespace FabricUI
 
-#endif // __UI_TOOLS_MANAGER__
+#endif // __UI_TOOLS_NOTIFIER__

@@ -494,7 +494,7 @@ void DFGExecNotifier::handler_nodePortResolvedTypeChanged( FTL::JSONObject const
 
 void DFGExecNotifier::handler_nodePortDefaultValuesChanged( FTL::JSONObject const *jsonObject )
 {
-  std::cout << "\nDFGExecNotifier::handler_nodePortDefaultValuesChanged" << std::endl;
+  std::cout << "\nDFGExecNotifier::handler_nodePortDefaultValuesChanged " << m_execPath.c_str() << std::endl;
 
   for ( FTL::JSONObject::const_iterator it = jsonObject->begin(); it != jsonObject->end(); ++it )
   {

@@ -64,16 +64,22 @@ BasePathValueResolver* PathValueResolverRegistry::getResolver(
 {
   return hasResolver(name) ? m_registeredResolvers[name] : 0;
 }
- 
-bool PathValueResolverRegistry::knownPath(
+
+BasePathValueResolver* PathValueResolverRegistry::getResolver(
   RTVal pathValue)
 {
   foreach(BasePathValueResolver* resolver, m_registeredResolvers)
   {
     if(resolver->knownPath(pathValue))
-      return true;
+      return resolver;
   }
-  return false;
+  return 0;
+}
+ 
+bool PathValueResolverRegistry::knownPath(
+  RTVal pathValue)
+{
+  return getResolver(pathValue) != 0;
 }
 
 QString PathValueResolverRegistry::getType(
