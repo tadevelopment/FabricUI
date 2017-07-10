@@ -94,8 +94,12 @@ GraphConfig::GraphConfig()
 
   GET_PARAMETER( mainPanelDrawGrid, true );
   GET_PARAMETER( mainPanelGridSpan, 30 );
-  GET_PARAMETER( mainPanelGridSnap, false );
+  GET_PARAMETER( mainPanelGridSnap, true);
   GET_PARAMETER( mainPanelGridSnapSize, 10 );
+  GET_PARAMETER( mainPanelNodeSnap, true );
+  GET_PARAMETER( mainPanelNodeSnapDistance, 20 );
+  GET_PARAMETER( mainPanelPortSnap, true );
+  GET_PARAMETER( mainPanelPortSnapDistance, 20 );
   GET_PARAMETER( mainPanelGridPen, QPen(QColor(44, 44, 44, 255), 1.0) );
 
   GET_PARAMETER( mainPanelBackGroundPanFixed, true );
