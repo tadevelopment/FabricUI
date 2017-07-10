@@ -48,6 +48,7 @@ public:
 
 private slots:
   void onViewValueChanged();
+  void onEditorInteractionBegin();
   inline void emitInteractionEnd() { emit this->interactionEnd( true ); }
 };
 

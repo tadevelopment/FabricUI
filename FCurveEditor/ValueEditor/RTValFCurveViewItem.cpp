@@ -8,6 +8,7 @@
 #include <FabricUI/FCurveEditor/Models/AnimXKL/RTValAnimXFCurveModel.h>
 
 #include <FabricUI/ModelItems/DFGModelItemMetadata.h>
+#include <FabricUI/Util/QtSignalsSlots.h>
 
 #include <FabricUI/Commands/CommandManager.h>
 #include <FabricUI/Commands/KLCommandRegistry.h> // HACK: remove
@@ -21,7 +22,7 @@ using namespace FabricUI::FCurveEditor;
 class RTValFCurveViewItem::RTValAnimXFCurveDFGController : public RTValAnimXFCurveVersionedConstModel
 {
   std::string m_bindingId, m_dfgPortPath;
-
+  size_t m_interactionId;
 public:
   void setPath( const char* bindingId, const char* dfgPortPath )
   {
@@ -42,7 +43,7 @@ public:
     args["tanInY"] = QString::number( h.tanIn.y() );
     args["tanOutX"] = QString::number( h.tanOut.x() );
     args["tanOutY"] = QString::number( h.tanOut.y() );
-    manager->createCommand( "AnimX_SetKeyframe", args );
+    manager->createCommand( "AnimX_SetKeyframe", args, true, m_interactionId );
   }
 
   inline QString serializeQS( const size_t* indices, const size_t nbIndices )
@@ -67,7 +68,7 @@ public:
     args["ids"] = serializeQS( indices, nbIndices );
     args["dx"] = QString::number( delta.x() );
     args["dy"] = QString::number( delta.y() );
-    manager->createCommand( "AnimX_MoveKeyframes", args );
+    manager->createCommand( "AnimX_MoveKeyframes", args, true, m_interactionId );
   }
 
   void addHandle() FTL_OVERRIDE
@@ -98,6 +99,11 @@ public:
     args["ids"] = serializeQS( indices, nbIndices );
     manager->createCommand( "AnimX_RemoveKeyframes", args );
   }
+
+  inline void incrementInteractionId()
+  {
+    m_interactionId = FabricUI::Commands::CommandManager::getCommandManager()->getNewCanMergeID();
+  }
 };
 
 RTValFCurveViewItem::RTValFCurveViewItem(
@@ -119,9 +125,16 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   //connect( m_editor, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
   //connect( m_editor, SIGNAL( interactionEnd() ), this, SLOT( emitInteractionEnd() ) );
 
+  QOBJECT_CONNECT( m_editor, SIGNAL, FCurveEditor, interactionBegin, ( ), this, SLOT, RTValFCurveViewItem, onEditorInteractionBegin, ( ) );
+
   const char* bindingId = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGBindingIdKey.data() );
   const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );
   m_model->setPath( bindingId, portPath );
+}
+
+void RTValFCurveViewItem::onEditorInteractionBegin()
+{
+  m_model->incrementInteractionId();
 }
 
 RTValFCurveViewItem::~RTValFCurveViewItem()
