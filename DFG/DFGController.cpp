@@ -2140,7 +2140,6 @@ void DFGController::gvcDoMoveNode(
       }
       if (closestDstYindex >= 0)
       {
-        printf("wtf?\n");
         finalPos.setY(nodeOriginalPos.y() + (portSnapPositionsDstY[closestDstYindex] - portSnapPositionsSrcY[closestSrcYindex]));
       }
     }
