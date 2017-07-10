@@ -374,12 +374,23 @@ void FCurveItem::deleteSelectedHandles()
 
 void FCurveItem::moveSelectedHandles( QPointF delta )
 {
-  for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
+  if( m_selectedHandles.empty() )
+    return;
+
+  if( m_selectedHandles.size() == 1 )
   {
-    Handle h = m_curve->getHandle( *it );
+    const size_t index = *m_selectedHandles.begin();
+    Handle h = m_curve->getHandle( index );
     h.pos += delta;
-    m_curve->setHandle( *it, h );
+    m_curve->setHandle( index, h );
+    return;
   }
+
+  // TODO (optimisation) : cache that vector<size_t> to avoid reallocation
+  std::vector<size_t> indices;
+  for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
+    indices.push_back( *it );
+  m_curve->moveHandles( indices.data(), indices.size(), delta );
 }
 
 void FCurveItem::addHandle( size_t i )

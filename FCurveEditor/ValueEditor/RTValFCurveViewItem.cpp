@@ -45,6 +45,31 @@ public:
     manager->createCommand( "AnimX_SetKeyframe", args );
   }
 
+  inline QString serializeQS( const size_t* indices, const size_t nbIndices )
+  {
+    QString indicesStr = "[";
+    for( size_t i = 0; i < nbIndices; i++ )
+    {
+      if( i > 0 )
+        indicesStr += ",";
+      indicesStr += QString::number( indices[i] );
+    }
+    indicesStr += "]";
+    return indicesStr;
+  }
+
+  void moveHandles( const size_t* indices, const size_t nbIndices, QPointF delta ) FTL_OVERRIDE
+  {
+    FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
+    static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+    QMap<QString, QString> args;
+    args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+    args["ids"] = serializeQS( indices, nbIndices );
+    args["dx"] = QString::number( delta.x() );
+    args["dy"] = QString::number( delta.y() );
+    manager->createCommand( "AnimX_MoveKeyframes", args );
+  }
+
   void addHandle() FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
@@ -70,15 +95,7 @@ public:
     static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
-    QString indicesStr = "[";
-    for( size_t i = 0; i < nbIndices; i++ )
-    {
-      if( i > 0 )
-        indicesStr += ",";
-      indicesStr += QString::number( indices[i] );
-    }
-    indicesStr += "]";
-    args["ids"] = indicesStr;
+    args["ids"] = serializeQS( indices, nbIndices );
     manager->createCommand( "AnimX_RemoveKeyframes", args );
   }
 };
