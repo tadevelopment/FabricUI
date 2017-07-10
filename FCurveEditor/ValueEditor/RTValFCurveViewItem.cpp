@@ -125,7 +125,7 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   //connect( m_editor, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
   //connect( m_editor, SIGNAL( interactionEnd() ), this, SLOT( emitInteractionEnd() ) );
 
-  QOBJECT_CONNECT( m_editor, SIGNAL, FCurveEditor, interactionBegin, ( ), this, SLOT, RTValFCurveViewItem, onEditorInteractionBegin, ( ) );
+  QOBJECT_CONNECT( m_editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionBegin, ( ), this, SLOT, RTValFCurveViewItem, onEditorInteractionBegin, ( ) );
 
   const char* bindingId = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGBindingIdKey.data() );
   const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );
