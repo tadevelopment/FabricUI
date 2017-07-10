@@ -16,6 +16,7 @@ from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.LoadFabricPixmap import LoadFabricPixmap
+from FabricEngine.Canvas.FabricSplash import FabricSplash
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -237,15 +238,10 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setStatusBar(self.statusBar)
 
         # Create Log button on the status bar to show log widget
-        logDockWidgetButton = QtGui.QPushButton('Log', self)
-        logDockWidgetButton.setObjectName('outputLog_button')
+        logDockWidgetButton = QtGui.QPushButton('', self)
+        logDockWidgetButton.setObjectName('logWidget_button')
         self.statusBar.insertPermanentWidget(0, logDockWidgetButton)
         logDockWidgetButton.clicked.connect(self.logDockWidget.toggleViewAction().trigger)
-
-
-
-    def showLogWidget(self):
-        self.logDockWidget.setVisible(not self.logDockWidget.isVisible())
 
     def _init(self):
         """Initializes the settings and config for the application.
