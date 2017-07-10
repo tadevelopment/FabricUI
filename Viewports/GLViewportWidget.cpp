@@ -248,6 +248,10 @@ void GLViewportWidget::initializeID(
 
   Context context = FabricApplicationStates::GetAppStates()->getContext();
 
+  // Call onNewScene (Singletons interface)
+  RTVal singletonHandle = RTVal::Create( context, "SingletonHandle", 0, 0 );
+  singletonHandle.callMethod( "", "onNewScene", 0, NULL );
+
   m_drawing = RTVal::Create(context, "OGLInlineDrawing", 0, 0);
   if(!m_drawing.isValid())
   {
