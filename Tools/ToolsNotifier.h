@@ -6,7 +6,7 @@
 #define __UI_TOOLS_NOTIFIER__
 
 #include <QList>
-#include <string>
+#include <QString>
 #include <QObject>
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGNotifier.h>
@@ -23,13 +23,9 @@ class ToolsNotifierRegistry_NotifProxy : public QObject
     ToolsNotifierRegistry_NotifProxy(
       ToolsNotifierRegistry *dst,
       QObject *parent
-      )
-      : QObject( parent )
-      , m_dst( dst )
-      {}
+      );
 
-    virtual ~ToolsNotifierRegistry_NotifProxy() 
-    {}
+    virtual ~ToolsNotifierRegistry_NotifProxy();
 
   protected:
     ToolsNotifierRegistry *m_dst;
@@ -44,23 +40,14 @@ class ToolsNotifierRegistry_BindingNotifProxy :
     ToolsNotifierRegistry_BindingNotifProxy(
       ToolsNotifierRegistry *dst,
       QObject *parent
-      )
-      : ToolsNotifierRegistry_NotifProxy( dst, parent )
-      {}
-
+      );
+    
   public slots:
-
     void onBindingArgValueChanged(
       unsigned index,
       FTL::CStrRef name
       );
-
-    void onBindingArgInserted(
-      unsigned index,
-      FTL::CStrRef name,
-      FTL::CStrRef type
-      );
-
+ 
     void onBindingArgRenamed(
       unsigned argIndex,
       FTL::CStrRef oldArgName,
@@ -76,10 +63,6 @@ class ToolsNotifierRegistry_BindingNotifProxy :
       unsigned index,
       FTL::CStrRef name,
       FTL::CStrRef newType
-      );
-
-    void onBindingArgsReordered(
-      FTL::ArrayRef<unsigned> newOrder
       );
 };
 
@@ -91,7 +74,7 @@ class ToolsNotifierRegistry : public QObject
 
   public:
     ToolsNotifierRegistry( 
-      DFG::DFGWidget * dfgWidget 
+      DFG::DFGWidget *dfgWidget 
       );
 
     ~ToolsNotifierRegistry();
@@ -100,12 +83,6 @@ class ToolsNotifierRegistry : public QObject
     void onBindingArgValueChanged( 
       unsigned index, 
       FTL::CStrRef name 
-      );
-
-    void onBindingArgInserted(
-      unsigned index,
-      FTL::CStrRef name,
-      FTL::CStrRef type
       );
 
     void onBindingArgRenamed(
@@ -123,10 +100,6 @@ class ToolsNotifierRegistry : public QObject
       unsigned index,
       FTL::CStrRef name,
       FTL::CStrRef newType
-      );
-
-    void onBindingArgsReordered(
-      FTL::ArrayRef<unsigned> newOrder
       );
 
     void initConnections();
@@ -187,13 +160,9 @@ class ToolsNotifier : public QObject
 
     ~ToolsNotifier();
 
-  protected slots:
-    void onExecNodePortInserted(
-      FTL::CStrRef nodeName,
-      unsigned portIndex,
-      FTL::CStrRef portName
-      );
+    QString getToolTargetPath();
 
+  protected slots:
     void onExecNodePortRenamed(
       FTL::CStrRef nodeName,
       unsigned portIndex,
@@ -207,17 +176,6 @@ class ToolsNotifier : public QObject
       FTL::CStrRef portName
       );
 
-    void onExecNodePortsReordered(
-      FTL::CStrRef nodeName,
-      FTL::ArrayRef<unsigned> newOrder
-      );
-
-    void onExecPortMetadataChanged(
-      FTL::CStrRef portName,
-      FTL::CStrRef key,
-      FTL::CStrRef value
-      );
-
     void onExecNodeRemoved(
       FTL::CStrRef nodeName
       );
@@ -225,11 +183,6 @@ class ToolsNotifier : public QObject
     void onExecNodeRenamed(
       FTL::CStrRef oldNodeName,
       FTL::CStrRef newNodeName
-      );
-
-    void onExecPortsConnectedOrDisconnected(
-      FTL::CStrRef srcPortPath,
-      FTL::CStrRef dstPortPath
       );
 
     void onExecNodePortDefaultValuesChanged(
@@ -242,72 +195,14 @@ class ToolsNotifier : public QObject
       FTL::CStrRef portName,
       FTL::CStrRef newResolvedTypeName
       );
-
-    void onExecRefVarPathChanged(
-      FTL::CStrRef refName,
-      FTL::CStrRef newVarPath
-      );
-
-    // InstBlocks
-    void onInstBlockRenamed(
-      FTL::CStrRef instName,
-      FTL::CStrRef oldBlockName,
-      FTL::CStrRef newBlockName
-      );
-
-    void onInstBlockRemoved(
-      FTL::CStrRef instName,
-      FTL::CStrRef blockName
-      );
-
-    // InstBlockPorts
-    void onInstBlockPortInserted(
-      FTL::CStrRef instName,
-      FTL::CStrRef blockName,
-      unsigned portIndex,
-      FTL::CStrRef portName
-      );
-
-    void onInstBlockPortRenamed(
-      FTL::CStrRef instName,
-      FTL::CStrRef blockName,
-      unsigned portIndex,
-      FTL::CStrRef oldPortName,
-      FTL::CStrRef newPortName
-      );
-
-    void onInstBlockPortRemoved(
-      FTL::CStrRef instName,
-      FTL::CStrRef blockName,
-      unsigned portIndex,
-      FTL::CStrRef portName
-      );
-
-    void onInstBlockPortDefaultValuesChanged(
-      FTL::CStrRef instName,
-      FTL::CStrRef blockName,
-      FTL::CStrRef portName
-      );
-
-    void onInstBlockPortResolvedTypeChanged(
-      FTL::CStrRef instName,
-      FTL::CStrRef blockName,
-      FTL::CStrRef portName,
-      FTL::CStrRef newResolveTypeName
-      );
-
-    void onInstBlockPortsReordered(
-      FTL::CStrRef instName,
-      FTL::CStrRef blockName,
-      FTL::ArrayRef<unsigned> newOrder
-      );
-
+ 
   private:
     void setupConnections(
       FabricCore::DFGExec exec
       );
 
-    std::string m_execPath;
+    QString m_execPath;
+    QString m_toolTargetPath;
     ToolsNotifierRegistry *m_registry;
     QSharedPointer<DFG::DFGNotifier> m_notifier;
 };
