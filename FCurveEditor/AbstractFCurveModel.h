@@ -28,10 +28,12 @@ public:
   virtual size_t getHandleCount() const = 0;
   virtual Handle getHandle( size_t ) const = 0;
   virtual void setHandle( size_t, Handle ) {}
+  virtual void moveHandles( const size_t* indices, const size_t nbIndices, QPointF delta );
   virtual void addHandle() = 0;
   // Deleting an handle will shift the indices of all the handles after it
   virtual void deleteHandle( size_t ) = 0;
-  // TODO : delete array of handles
+  // the indices will be sorted in increasing order
+  virtual void deleteHandles( const size_t* indices, const size_t nbIndices );
 
   virtual void autoTangents( size_t ) {}
 

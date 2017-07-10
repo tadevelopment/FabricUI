@@ -354,13 +354,22 @@ void FCurveItem::editHandle( size_t i, HandleProp p )
 
 void FCurveItem::deleteSelectedHandles()
 {
+  if( m_selectedHandles.empty() )
+    return;
+
+  if( m_selectedHandles.size() == 1 )
+  {
+    size_t index = *m_selectedHandles.begin();
+    this->clearHandleSelection();
+    m_curve->deleteHandle( index );
+  }
+
   std::vector<size_t> orderedIndices;
   for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
     orderedIndices.push_back( *it );
   this->clearHandleSelection();
   std::sort( orderedIndices.begin(), orderedIndices.end() );
-  for( std::vector<size_t>::const_reverse_iterator it = orderedIndices.rbegin(); it != orderedIndices.rend(); it++ )
-    m_curve->deleteHandle( *it );
+  m_curve->deleteHandles( orderedIndices.data(), orderedIndices.size() );
 }
 
 void FCurveItem::moveSelectedHandles( QPointF delta )
