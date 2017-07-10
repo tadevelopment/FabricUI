@@ -340,8 +340,13 @@ class CanvasWindow(QtGui.QMainWindow):
                 slowOpMsg = self.slowOpStack[-1]
             else:
                 slowOpMsg = ""
-            self.splashScreen.showMessage(
-                Core.CAPI.GetCopyrightStr() + "\n" + slowOpMsg,
+
+            message = "{} {}\n{}\n{}".format(Core.CAPI.GetProductNameStr(),
+                                             Core.CAPI.GetVersionWithBuildInfoStr(),
+                                             Core.CAPI.GetCopyrightStr(),
+                                             slowOpMsg)
+
+            self.splashScreen.showMessage(message,
                 QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom,
                 QtGui.QColor(QtCore.Qt.white)
                 )
