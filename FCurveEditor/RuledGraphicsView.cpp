@@ -26,6 +26,7 @@ class RuledGraphicsView::GraphicsView : public QGraphicsView
 public:
   GraphicsView( RuledGraphicsView* parent )
     : m_parent( parent )
+    , m_state( NOTHING )
   {
     this->setDragMode( QGraphicsView::NoDrag ); // Reimplementing it ourself to support both panning and selection
     this->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
