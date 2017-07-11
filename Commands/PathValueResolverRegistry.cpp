@@ -117,12 +117,13 @@ void PathValueResolverRegistry::unregisterFactory(
   if(hasResolver(name))
   {
     BasePathValueResolver* resolver = m_registeredResolvers[name];
+    // Remove first, else it will unregister again in its destructor
+    m_registeredResolvers.remove( name );
     if(resolver != 0)
     {
       delete resolver;
       resolver = 0;
     }
-    m_registeredResolvers.remove(name);
   }
 }
 

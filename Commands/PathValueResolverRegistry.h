@@ -127,6 +127,16 @@ class PathValueResolverFactory : public Util::TemplateFactory<T>
       resolver->registrationCallback(name, userData);
       PathValueResolverRegistry::getRegistry()->registerResolver(resolver, name);
     }
+
+    /// Registers the resolver <T> under the name "name".
+    static void Unregister(
+      QString name,
+      void *userData = 0 ) {
+      // The following will also unregister the resolver
+      Util::TemplateFactory<T>::Unregister(
+        PathValueResolverRegistry::getRegistry(),
+        name );
+    }
 };
 
 } // namespace PathResolvers
