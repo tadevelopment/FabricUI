@@ -55,7 +55,11 @@ inline void DrawText( QPainter* p, float pos, Qt::Orientation o, float endRPos, 
   if( o == Qt::Horizontal )
     p->drawText( QPointF( pos, endRPos * r.bottom() + ( 1 - endRPos ) * r.top() ), txt );
   else
-    p->drawText( QPointF( endRPos * r.left() + ( 1 - endRPos ) * r.right(), pos - 0.5 * r.width() ), txt );
+  {
+    p->rotate( 90 );
+    p->drawText( QPointF( pos, -( endRPos * r.left() + ( 1 - endRPos ) * r.right() ) ), txt );
+    p->rotate( -90 );
+  }
 }
 
 void Ruler::paintEvent( QPaintEvent * e )
