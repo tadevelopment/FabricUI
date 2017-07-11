@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
 #include "DFGExecNotifier.h"
 #include <FTL/JSONValue.h>
 #include <stdio.h>
@@ -494,18 +493,9 @@ void DFGExecNotifier::handler_nodePortResolvedTypeChanged( FTL::JSONObject const
 
 void DFGExecNotifier::handler_nodePortDefaultValuesChanged( FTL::JSONObject const *jsonObject )
 {
-  std::cout << "\nDFGExecNotifier::handler_nodePortDefaultValuesChanged " << m_execPath.c_str() << std::endl;
-
-  for ( FTL::JSONObject::const_iterator it = jsonObject->begin(); it != jsonObject->end(); ++it )
-  {
-    FTL::CStrRef key = it->key();
-    std::cout << key.data() << std::endl;
-  }
-  //FTL::CStrRef execPath = jsonObject->getString( FTL_STR("execPath") );
   FTL::CStrRef nodeName = jsonObject->getString( FTL_STR("nodeName") );
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
 
-  emit nodePortDefaultValuesChanged( "", nodeName, portName );
   emit nodePortDefaultValuesChanged( nodeName, portName );
 }
 

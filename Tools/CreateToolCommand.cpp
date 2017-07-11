@@ -65,11 +65,11 @@ QString CreateToolCommand::getHelp()
   FABRIC_CATCH_BEGIN();
 
   QMap<QString, QString> argsHelp;
-  argsHelp["target"] = "Tool arguments";
+  argsHelp["target"] = "Path of the DFG port that the tool targets";
 
   return CommandHelpers::createHelpFromRTValArgs(
     this,
-    "Create a new tool",
+    "Create a new PathValue tool",
     argsHelp);
 
   FABRIC_CATCH_END("CreateToolCommand::getHelp");

@@ -39,10 +39,6 @@ void DFGNotificationRouter::onExecChanged()
     m_coreDFGView = exec.createView( &Callback, this );
   else
     m_coreDFGView = FabricCore::DFGView();
-
-  FabricCore::String execPath = exec.getExecPath();
-  m_execPath = std::string( execPath.getCStr(), execPath.getSize() );
-  std::cout << "DFGNotificationRouter " << m_execPath.c_str() << std::endl;
 }
 
 void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
@@ -366,14 +362,6 @@ void DFGNotificationRouter::callback( FTL::CStrRef jsonStr )
     }
     else if( descStr == FTL_STR("nodePortDefaultValuesChanged") )
     {
-      std::cout << "\nDFGExecNotifier::handler_nodePortDefaultValuesChanged " << m_execPath.c_str() << std::endl;
-
-      for ( FTL::JSONObject::const_iterator it = jsonObject->begin(); it != jsonObject->end(); ++it )
-      {
-        FTL::CStrRef key = it->key();
-        std::cout << key.data() << std::endl;
-      }
-  
       onNodePortDefaultValuesChanged(
         jsonObject->getString( FTL_STR("nodeName") ),
         jsonObject->getString( FTL_STR("portName") )

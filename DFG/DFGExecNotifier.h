@@ -371,12 +371,6 @@ signals:
     FTL::CStrRef portName
     );
 
-  void nodePortDefaultValuesChanged(
-    FTL::CStrRef execPath,
-    FTL::CStrRef nodeName,
-    FTL::CStrRef portName
-    );
-
   void nodePortsReordered(
     FTL::CStrRef nodeName,
     FTL::ArrayRef<unsigned> newOrder
@@ -400,8 +394,6 @@ private:
     : m_view( exec.createView( &Callback, this ) ) 
     {
       FabricCore::String execPath = exec.getExecPath();
-      m_execPath = std::string( execPath.getCStr(), execPath.getSize() );
-      std::cout << "DFGExecNotifier " << m_execPath.c_str() << std::endl;
     }
 
   virtual void handle( FTL::CStrRef jsonStr ) /*override*/;
@@ -473,7 +465,6 @@ private:
   void handler_refVarPathChanged( FTL::JSONObject const *jsonObject );
   void handler_removedFromOwner( FTL::JSONObject const *jsonObject );
 
-  std::string m_execPath;
   FabricCore::DFGView m_view;
 
 #if defined(FTL_PLATFORM_WINDOWS)

@@ -353,7 +353,6 @@ namespace FabricUI
       FabricCore::DFGView m_coreDFGView;
       DFGConfig m_config;
       bool m_performChecks;
-      std::string m_execPath;
     };
 
   };

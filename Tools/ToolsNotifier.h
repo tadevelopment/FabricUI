@@ -41,7 +41,7 @@ class ToolsNotifierRegistry_BindingNotifProxy :
       ToolsNotifierRegistry *dst,
       QObject *parent
       );
-    
+
   public slots:
     void onBindingArgValueChanged(
       unsigned index,
@@ -79,6 +79,8 @@ class ToolsNotifierRegistry : public QObject
 
     ~ToolsNotifierRegistry();
 
+    DFG::DFGWidget *getDFGWidget();
+
   public slots:
     void onBindingArgValueChanged( 
       unsigned index, 
@@ -105,6 +107,30 @@ class ToolsNotifierRegistry : public QObject
     void initConnections();
 
     void createPathValueTool(
+      QString const&targetPath
+      );
+
+    void createPathValueTool(
+      FabricCore::RTVal pathValue
+      );
+
+    void deletePathValueTool(
+      QString const&targetPath
+      );
+
+    void toolValueChanged(
+      QString const&targetPath
+      );
+
+  private slots:
+    void onControllerBindingChanged(
+      FabricCore::DFGBinding const&binding
+      );
+
+  private:
+    /// Update the value of the tool 
+    /// associated to the `pathValue`.
+    void toolValueChanged(
       FabricCore::RTVal pathValue
       );
 
@@ -112,40 +138,21 @@ class ToolsNotifierRegistry : public QObject
       FabricCore::RTVal pathValue
       );
 
-    void toolValueChanged(
-      QString portPath
-      );
-
-  private slots:
-    void onControllerBindingChanged(
-      FabricCore::DFGBinding const &binding
-      );
-
-    void onSidePanelInspectRequested();
-
-    void onGraphSet(
-      FabricUI::GraphView::Graph *graph
-      );
-
-  private:
-    /// Update the value of the tool 
-    /// associated to the path `portPath`
-    void toolValueChanged(
-      FabricCore::RTVal pathValue
-      );
-
     /// Gets the KL tools manager.
     FabricCore::RTVal getKLToolManager();
+
+    FabricCore::RTVal pathToPathValue(
+      QString const&targetPath
+      );
 
     void setupConnections(
       FabricUI::DFG::DFGController *dfgController
       );
 
-    QList<ToolsNotifier *> m_registeredNotifiers;
-
     DFG::DFGWidget *m_dfgWidget;
-    ToolsNotifierRegistry_NotifProxy *m_notifProxy;
     QSharedPointer<DFG::DFGNotifier> m_notifier;
+    QList<ToolsNotifier *> m_registeredNotifiers;
+    ToolsNotifierRegistry_NotifProxy *m_notifProxy;
 };
 
 class ToolsNotifier : public QObject
