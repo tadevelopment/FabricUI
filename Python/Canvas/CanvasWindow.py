@@ -16,7 +16,6 @@ from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.LoadFabricPixmap import LoadFabricPixmap
-from FabricEngine.Canvas.FabricSplash import FabricSplash
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
