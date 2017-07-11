@@ -78,13 +78,12 @@ void Ruler::paintEvent( QPaintEvent * e )
     pen.setColor( QColor( 128, 128, 128 ) );
     pen.setWidthF( 2 );
     p.setPen( pen );
-    size_t smallSide = ( m_orientation == Qt::Vertical ? r.width() : r.height() );
     for( float i = std::floor( m_min * bigFactor ); i < bigFactor * m_max; i++ )
     {
       float xs = i / bigFactor;
       float xw = Map( xs, m_orientation, m_min, m_max, r );
       DrawLine( &p, xw, m_orientation, 0.5, r );
-      DrawText( &p, xw + smallSide / 4, m_orientation, 0.9f, r, QString::number( xs ) );
+      DrawText( &p, xw + 5, m_orientation, 0.9f, r, QString::number( xs ) );
     }
     pen.setWidthF( 1 );
     p.setPen( pen );
