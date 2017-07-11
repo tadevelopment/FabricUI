@@ -207,6 +207,7 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self.statusBar = None
         self.splashScreen = QtGui.QSplashScreen(LoadFabricPixmap("canvas-splash.png"))
+        self.splashScreen.setFont(QtGui.QFont("Roboto", 8, QtGui.QFont.Normal))
         self.splashScreen.show()
         self.slowOpStack = []
         self._slowOpPush("Initializing Fabric Canvas")
