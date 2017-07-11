@@ -19,6 +19,7 @@ from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Application.FabricApplicationStates import *
 from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import HotkeyEditorDialog
 from FabricEngine.Canvas.Commands.CommandManagerCallback import CommandManagerCallback
+from FabricEngine.Canvas.LoadFabricPixmap import LoadFabricPixmap
 
 class CanvasWindowEventFilter(QtCore.QObject):
 
@@ -231,6 +232,14 @@ class CanvasWindow(QtGui.QMainWindow):
 
         self._init()
         self._initWindow()
+
+        self.statusBar = None
+        self.splashScreen = QtGui.QSplashScreen(LoadFabricPixmap("canvas-splash.png"))
+        self.splashScreen.setFont(QtGui.QFont("Roboto", 8, QtGui.QFont.Normal))
+        self.splashScreen.show()
+        self.slowOpStack = []
+        self._slowOpPush("Initializing Fabric Canvas")
+
         self._initKL(unguarded, noopt)
         self._initLog()
         self._initDFG()
@@ -253,6 +262,18 @@ class CanvasWindow(QtGui.QMainWindow):
         self.toolsNotifierRegistry.initConnections()
         self.installEventFilter(CanvasWindowEventFilter(self))
 
+        self._slowOpPop()
+        self.splashScreen.finish(self)
+        self.splashScreen = None
+        self.statusBar = QtGui.QStatusBar()
+        self.statusBar.setMinimumHeight(30)
+        self.setStatusBar(self.statusBar)
+
+        # Create Log button on the status bar to show log widget
+        logDockWidgetButton = QtGui.QPushButton('', self)
+        logDockWidgetButton.setObjectName('logWidget_button')
+        self.statusBar.insertPermanentWidget(0, logDockWidgetButton)
+        logDockWidgetButton.clicked.connect(self.logDockWidget.toggleViewAction().trigger)
 
     def _init(self):
         """Initializes the settings and config for the application.
@@ -343,6 +364,43 @@ class CanvasWindow(QtGui.QMainWindow):
             else:
                 sys.stderr.write(line + "\n")
 
+    def _updateSlowOpMsgs(self):
+        if self.splashScreen:
+            if len(self.slowOpStack):
+                slowOpMsg = self.slowOpStack[-1]
+            else:
+                slowOpMsg = ""
+
+            message = "{} {}\n{}\n{}".format(Core.CAPI.GetProductNameStr(),
+                                             Core.CAPI.GetVersionWithBuildInfoStr(),
+                                             Core.CAPI.GetCopyrightStr(),
+                                             slowOpMsg)
+
+            self.splashScreen.showMessage(message,
+                QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom,
+                QtGui.QColor(QtCore.Qt.white)
+                )
+            QtCore.QCoreApplication.processEvents()
+        elif self.statusBar:
+            if len(self.slowOpStack):
+                self.statusBar.showMessage(self.slowOpStack[-1])
+                self.statusBar.repaint()
+            else:
+                self.statusBar.clearMessage()
+            self.statusBar.repaint()
+
+
+    def _slowOpPush(self, desc):
+        self.slowOpStack.append(desc + "...")
+        self._updateSlowOpMsgs()
+
+
+    def _slowOpPop(self):
+        if len(self.slowOpStack): # should always be true
+            self.slowOpStack.pop()
+            self._updateSlowOpMsgs()
+
+
     def _statusCallback(self, target, data):
         """Status callback used for KL code to communicate status messages back
         to the client.
@@ -358,6 +416,11 @@ class CanvasWindow(QtGui.QMainWindow):
                 FabricUI.HandleLicenseData(self, self.client, data, True)
             except Exception as e:
                 self.dfgWidget.getDFGController().logError(str(e))
+        elif target == 'slowOp.push':
+            self._slowOpPush(data)
+        elif target == 'slowOp.pop':
+            self._slowOpPop()
+
 
     def _initKL(self, unguarded, noopt):
         """Initializes the Fabric client.
@@ -732,10 +795,10 @@ class CanvasWindow(QtGui.QMainWindow):
 
     def onDirty(self):
         """Method called when the graph is dirtied."""
-
         self.dfgWidget.getDFGController().execute()
         self.valueEditor.onOutputsChanged()
-        self.viewport.redraw()
+        if self.viewport:
+            self.viewport.redraw()
 
     def onTopoDirty(self):
         self.onDirty()
@@ -794,7 +857,8 @@ class CanvasWindow(QtGui.QMainWindow):
         """
 
         self.timeLine.pause()
-
+        self._slowOpPush("Loading '%s'" % filePath)
+        
         try:
             manipActive, binding = self.__clearApp()
 
@@ -870,6 +934,9 @@ class CanvasWindow(QtGui.QMainWindow):
 
         except Exception as e:
             sys.stderr.write("Exception: " + str(e) + "\n")
+
+        finally:
+            self._slowOpPop()
 
         self.lastFileName = filePath
 
