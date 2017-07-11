@@ -15,6 +15,6 @@ ArgItemMetadata::ArgItemMetadata( ArgModelItem *argModelItem )
   m_bindingId = bdid.str();
 
   std::stringstream pp;
-  pp << m_argModelItem->getRootExec().getExecPath().getCStr() << "." << m_argModelItem->getArgName();
+  pp << m_argModelItem->getArgName();
   m_portPath = pp.str();
 }
