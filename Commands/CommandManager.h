@@ -111,10 +111,10 @@ class CommandManager : public QObject
   signals:
     /// Emitted when a top command has been succefully executed.
     /// \param cmd The command that has been done (executed).
-    /// \param addedToStack If true, the command has been pushed in the manager stack.
+    /// \param canUndo If true, the command can undo and is on the top of the command stack.
     void commandDone(
       FabricUI::Commands::BaseCommand *cmd,
-      bool addedToStack
+      bool canUndo
       );
 
     /// Emitted when the manager is cleared.

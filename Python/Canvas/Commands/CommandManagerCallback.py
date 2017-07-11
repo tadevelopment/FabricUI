@@ -57,26 +57,26 @@ class CommandManagerCallback(QtCore.QObject):
         FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
         FabricUI.Dialog.DialogCommandRegistration.RegisterCommands()
 
-    def __onCommandDone(self, cmd, pushedToStack):
+    def __onCommandDone(self, cmd, canUndo):
         """ \internal, when a command's been pushed to the manager.
             Arguments:
             - cmd : The command that has been done (executed).
-            - addedToStack : If true, the command has been pushed in the manager stack.
+            - addedToStack : If true, the command can undo and is at the top of the manager stack.
         """ 
         try:
             # Create a new CommandQtWrapper and  
             # pushs it to the qt undo stack.
-            if pushedToStack:
+            if canUndo:
                 oldEchoStackIndexChanges = self.scriptEditor._echoStackIndexChanges
                 self.scriptEditor._echoStackIndexChanges = False
                 self.qUndoStack.push( self.CommandQtWrapper( cmd.getHistoryDesc() ) )
                 self.scriptEditor._echoStackIndexChanges = oldEchoStackIndexChanges
 
-            #Log the commands.
-            if cmd.canLog():
-                self.scriptEditor.logCommand(
-                    CommandHelpers.ParseCmdArgs(cmd), 
-                    False)
+                #Log the commands.
+                if cmd.canLog():
+                    self.scriptEditor.logCommand(
+                        CommandHelpers.ParseCmdArgs(cmd), 
+                        False)
             
         except Exception as e:    
                 print str(e)
