@@ -5,6 +5,8 @@
 #ifndef FABRICUI_DFG_DFGEXECNOTIFIER_H
 #define FABRICUI_DFG_DFGEXECNOTIFIER_H
 
+#include <string>
+#include <iostream>
 #include <FabricCore.h>
 #include <FabricUI/DFG/DFGNotifier.h>
 #include <FTL/ArrayRef.h>
@@ -389,7 +391,10 @@ signals:
 private:
 
   DFGExecNotifier( FabricCore::DFGExec exec )
-    : m_view( exec.createView( &Callback, this ) ) {}
+    : m_view( exec.createView( &Callback, this ) ) 
+    {
+      FabricCore::String execPath = exec.getExecPath();
+    }
 
   virtual void handle( FTL::CStrRef jsonStr ) /*override*/;
 

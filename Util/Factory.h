@@ -209,6 +209,23 @@ class TemplateFactory : public Factory
         );
     }
 
+    /// Removes the factory from the registry.
+    /// \param registry BaseFactoryRegistry owning the factory.
+    /// \param name Name of the factory, should be unique.
+    static void Unregister(
+      BaseFactoryRegistry *registry,
+      QString const&name ) {
+      TemplateFactory* factory = (TemplateFactory*)registry->getFactory(
+        name
+      );
+      if( factory ) {
+        // Note: the following also deletes the factory
+        registry->unregisterFactory(
+          name
+        );
+      }
+    }
+
     /// Implementation of Factory.
     virtual void* create(
       void* args = 0) 

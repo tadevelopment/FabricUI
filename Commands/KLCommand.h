@@ -109,7 +109,7 @@ class KLCommand : public BaseCommand
     virtual int getCanMergeID();
 
     /// Implementation of BaseCommand.
-    virtual int canMerge(
+    virtual bool canMerge(
       BaseCommand *prevCmd
       );
 

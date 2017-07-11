@@ -169,28 +169,31 @@ class HotkeyTableWidget(QtGui.QTableWidget):
             Called when an command has been registered in CommandRegistry.
             Create an action associated to the command. 
         """
-        actRegistry = CppActions.ActionRegistry.GetActionRegistry()
+        try:
+            actRegistry = CppActions.ActionRegistry.GetActionRegistry()
 
-        if actRegistry.getAction(cmdName) is None:
-            # Must construct the command to get the tooltip
-            cmd = GetCommandRegistry().createCommand(cmdName)
+            if actRegistry.getAction(cmdName) is None:
+                # Must construct the command to get the tooltip
+                cmd = GetCommandRegistry().createCommand(cmdName)
 
-            tooltip = cmdType+ "[" + implType + "]\n\n"
-            tooltip += str(cmd.getHelp())
-            isScriptable = CppCommands.CommandHelpers.isScriptableCommand(cmd)
+                tooltip = cmdType+ "[" + implType + "]\n\n"
+                tooltip += str(cmd.getHelp())
+                isScriptable = CppCommands.CommandHelpers.isScriptableCommand(cmd)
 
-            # Add the action to the canvasWindow so it's available.
-            # Actions of hidden widgets are not triggered.
-            action = CommandAction(
-                self, 
-                cmdName, 
-                implType,
-                QtGui.QKeySequence(), 
-                tooltip, 
-                isScriptable)
+                # Add the action to the canvasWindow so it's available.
+                # Actions of hidden widgets are not triggered.
+                action = CommandAction(
+                    self, 
+                    cmdName, 
+                    implType,
+                    QtGui.QKeySequence(), 
+                    tooltip, 
+                    isScriptable)
 
-            self.canvasWindow.addAction(action)
- 
+                self.canvasWindow.addAction(action)
+        except Exception as e:    
+            print str(e)
+            
     def __onActionRegistered(self, actName, action):
         """ \internal.
             Called when an action has been registered in CppActions.ActionRegistry.

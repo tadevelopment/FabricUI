@@ -64,14 +64,19 @@ void KLOptionsTargetModelItem::setValue(
   RTVariant::toRTVal(value, optionsCopy);
   args["newValue"] = optionsCopy;
 
-  manager->createCommand(
+  BaseCommand* cmd = manager->createCommand(
     "setPathValue",
     args, 
-    true, 
+    false, 
     m_canMergeID);
 
-  if(commit)
+  if( !commit )
+    cmd->blockLog();
+
+  manager->doCommand( cmd, m_canMergeID );
+
+  if( commit )
     m_canMergeID = CommandManager::NoCanMergeID;
- 
+
   FABRIC_CATCH_END("KLOptionsTargetModelItem::getRTValOptions");
 }

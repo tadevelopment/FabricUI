@@ -3,10 +3,9 @@
 #
 
 from PySide import QtGui, QtCore
-from FabricEngine.FabricUI import Commands as CppCommands
+from FabricEngine import FabricUI
 from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Commands.CommandHelpers import CommandHelpers
-from FabricEngine.Canvas.Commands.PathValueResolverRegistry import *
 
 class CommandManagerCallback(QtCore.QObject):
     """ CommandManagerCallback is connected to the CommandManagerCallback 
@@ -52,17 +51,17 @@ class CommandManagerCallback(QtCore.QObject):
         self.qUndoStack = qUndoStack
         self.scriptEditor = scriptEditor
 
-        #GetPathValueResolverRegistry()
         GetCommandManager().cleared.connect(self.__onCleared)
         GetCommandManager().commandDone.connect(self.__onCommandDone)
 
-    def __onCommandDone(self, cmd, pushedToStack, canMergeID, merge):
+        FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
+        FabricUI.Dialog.DialogCommandRegistration.RegisterCommands()
+
+    def __onCommandDone(self, cmd, pushedToStack):
         """ \internal, when a command's been pushed to the manager.
             Arguments:
             - cmd : The command that has been done (executed).
             - addedToStack : If true, the command has been pushed in the manager stack.
-            - canMergeID : ID of the merge (NoCanMergeID if no merge).
-            - merge : (NoCanMerge, CanMerge or MergeDone).
         """ 
         try:
             # Create a new CommandQtWrapper and  
@@ -77,7 +76,7 @@ class CommandManagerCallback(QtCore.QObject):
             if cmd.canLog():
                 self.scriptEditor.logCommand(
                     CommandHelpers.ParseCmdArgs(cmd), 
-                    CppCommands.CommandManager.NoCanMerge != merge)
+                    False)
             
         except Exception as e:    
                 print str(e)

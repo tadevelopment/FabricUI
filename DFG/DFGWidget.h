@@ -187,6 +187,8 @@ namespace DFG {
       void onTogglePortsCentered();
       void onToggleDrawGrid();
       void onToggleSnapToGrid();
+      void onToggleSnapToNode();
+      void onToggleSnapToPort();
       void onEditSelectedNode();
       void onEditSelectedNodeProperties();
       void onRevealPresetInExplorer(const char* nodeName);

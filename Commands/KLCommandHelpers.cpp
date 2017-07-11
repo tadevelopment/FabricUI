@@ -87,7 +87,6 @@ bool KLCommandHelpers::canKLCommandLog(
   RTVal klCmd) 
 {
   FABRIC_CATCH_BEGIN();
-
   return klCmd.callMethod(
     "Boolean", 
     "canLog", 
@@ -250,22 +249,22 @@ int KLCommandHelpers::getKLCommandCanMergeID(
   return -1;
 }
 
-int KLCommandHelpers::canMergeKLCommand(
+bool KLCommandHelpers::canMergeKLCommand(
   FabricCore::RTVal klCmd,
   FabricCore::RTVal prevKlCmd)
 {
   FABRIC_CATCH_BEGIN();
 
   return klCmd.callMethod(
-    "SInt32", 
+    "Boolean", 
     "canMerge", 
     1, 
     &prevKlCmd
-    ).getSInt32();
+    ).getBoolean();
 
   FABRIC_CATCH_END("KLCommandHelpers::canMergeKLCommand");
 
-  return CommandManager::NoCanMerge;
+  return false;
 }
 
 void KLCommandHelpers::mergeKLCommand(

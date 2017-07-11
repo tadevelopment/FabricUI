@@ -106,12 +106,12 @@ int KLCommand::getCanMergeID()
   return KLCommandHelpers::getKLCommandCanMergeID(m_klCmd);
 }
 
-int KLCommand::canMerge(
+bool KLCommand::canMerge(
   BaseCommand *prevCmd) 
 {
   KLCommand* scriptCmd = qobject_cast<KLCommand*>(prevCmd);
   if(scriptCmd == 0)
-    return CommandManager::NoCanMerge;
+    return false;
   return KLCommandHelpers::canMergeKLCommand(m_klCmd, scriptCmd->m_klCmd);
 }
 

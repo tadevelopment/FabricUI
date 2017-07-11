@@ -2,8 +2,8 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#ifndef __UI_BASE_RTVAL_PATH_VALUE_COMMAND__
-#define __UI_BASE_RTVAL_PATH_VALUE_COMMAND__
+#ifndef __UI_SET_PATH_VALUE_COMMAND__
+#define __UI_SET_PATH_VALUE_COMMAND__
 
 #include "BaseRTValScriptableCommand.h"
 
@@ -49,4 +49,4 @@ class SetPathValueCommand : public BaseRTValScriptableCommand
 } // namespace Commands
 } // namespace FabricUI
 
-#endif // __UI_BASE_RTVAL_PATH_VALUE_COMMAND__
+#endif // __UI_SET_PATH_VALUE_COMMAND__

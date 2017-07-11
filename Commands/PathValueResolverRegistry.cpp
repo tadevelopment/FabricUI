@@ -64,16 +64,22 @@ BasePathValueResolver* PathValueResolverRegistry::getResolver(
 {
   return hasResolver(name) ? m_registeredResolvers[name] : 0;
 }
- 
-bool PathValueResolverRegistry::knownPath(
+
+BasePathValueResolver* PathValueResolverRegistry::getResolver(
   RTVal pathValue)
 {
   foreach(BasePathValueResolver* resolver, m_registeredResolvers)
   {
     if(resolver->knownPath(pathValue))
-      return true;
+      return resolver;
   }
-  return false;
+  return 0;
+}
+ 
+bool PathValueResolverRegistry::knownPath(
+  RTVal pathValue)
+{
+  return getResolver(pathValue) != 0;
 }
 
 QString PathValueResolverRegistry::getType(
@@ -117,12 +123,13 @@ void PathValueResolverRegistry::unregisterFactory(
   if(hasResolver(name))
   {
     BasePathValueResolver* resolver = m_registeredResolvers[name];
+    // Remove first, else it will unregister again in its destructor
+    m_registeredResolvers.remove( name );
     if(resolver != 0)
     {
       delete resolver;
       resolver = 0;
     }
-    m_registeredResolvers.remove(name);
   }
 }
 

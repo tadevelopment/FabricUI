@@ -3,3 +3,4 @@
 //
 
 #include <FabricUI/Dialog/BaseDialog.h>
+#include <FabricUI/Dialog/DialogCommandRegistration.h>

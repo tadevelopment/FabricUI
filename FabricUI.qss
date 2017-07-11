@@ -110,6 +110,40 @@ QMainWindow > QDockWidget::title
 }
 
 /****************************************************************************
+ * Status Bar
+ ***************************************************************************/
+QMainWindow QStatusBar {
+  border-top: 1px solid #484848;
+  background: #363636;
+}
+
+QMainWindow QStatusBar::item {
+  border: 0;
+}
+
+QPushButton#logWidget_button
+{
+  border: 0;
+  border-style: none;
+  padding: 0px;
+  width: 26px;
+  height: 26px;
+  background-image: url(${FABRIC_DIR}/Resources/Icons/log-widget-button.png);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+QPushButton#logWidget_button:hover
+{
+  background-image: url(${FABRIC_DIR}/Resources/Icons/log-widget-button-hover.png);
+}
+
+QPushButton#logWidget_button:pressed
+{
+  background-image: url(${FABRIC_DIR}/Resources/Icons/log-widget-button-pressed.png);
+}
+
+/****************************************************************************
  * Shared
  ***************************************************************************/
 
@@ -2207,4 +2241,5 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   padding: 0;
   background-color: #596D7A;
+}
 }
