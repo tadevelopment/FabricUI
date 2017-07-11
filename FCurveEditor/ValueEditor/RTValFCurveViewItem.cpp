@@ -23,6 +23,10 @@ class RTValFCurveViewItem::RTValAnimXFCurveDFGController : public RTValAnimXFCur
 {
   std::string m_bindingId, m_dfgPortPath;
   size_t m_interactionId;
+
+  QString m_lastCommand;
+  QMap<QString, QString> m_lastArgs;
+
 public:
   void setPath( const char* bindingId, const char* dfgPortPath )
   {
@@ -43,7 +47,10 @@ public:
     args["tanInY"] = QString::number( h.tanIn.y() );
     args["tanOutX"] = QString::number( h.tanOut.x() );
     args["tanOutY"] = QString::number( h.tanOut.y() );
-    manager->createCommand( "AnimX_SetKeyframe", args, true, m_interactionId );
+    QString cmdName = "AnimX_SetKeyframe";
+    manager->createCommand( cmdName, args, true, m_interactionId );
+    m_lastCommand = cmdName;
+    m_lastArgs = args;
   }
 
   inline QString serializeQS( const size_t* indices, const size_t nbIndices )
@@ -68,7 +75,10 @@ public:
     args["ids"] = serializeQS( indices, nbIndices );
     args["dx"] = QString::number( delta.x() );
     args["dy"] = QString::number( delta.y() );
-    manager->createCommand( "AnimX_MoveKeyframes", args, true, m_interactionId );
+    QString cmdName = "AnimX_MoveKeyframes";
+    manager->createCommand( cmdName, args, true, m_interactionId );
+    m_lastCommand = cmdName;
+    m_lastArgs = args;
   }
 
   void addHandle() FTL_OVERRIDE
@@ -104,6 +114,19 @@ public:
   {
     m_interactionId = FabricUI::Commands::CommandManager::getCommandManager()->getNewCanMergeID();
   }
+
+  void onInteractionEnd()
+  {
+    if( !m_lastCommand.isEmpty() )
+    {
+      FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
+      static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+      QMap<QString, QString> args = m_lastArgs;
+      args["interactionEnd"] = "true";
+      manager->createCommand( m_lastCommand, args, true, m_interactionId );
+      m_lastCommand = "";
+    }
+  }
 };
 
 RTValFCurveViewItem::RTValFCurveViewItem(
@@ -125,7 +148,14 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   //connect( m_editor, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
   //connect( m_editor, SIGNAL( interactionEnd() ), this, SLOT( emitInteractionEnd() ) );
 
-  QOBJECT_CONNECT( m_editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionBegin, ( ), this, SLOT, RTValFCurveViewItem, onEditorInteractionBegin, ( ) );
+  QOBJECT_CONNECT(
+    m_editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionBegin, ( ),
+    this, SLOT, RTValFCurveViewItem, onEditorInteractionBegin, ( )
+  );
+  QOBJECT_CONNECT(
+    m_editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionEnd, ( ),
+    this, SLOT, RTValFCurveViewItem, onEditorInteractionEnd, ( )
+  );
 
   const char* bindingId = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGBindingIdKey.data() );
   const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );
@@ -135,6 +165,11 @@ RTValFCurveViewItem::RTValFCurveViewItem(
 void RTValFCurveViewItem::onEditorInteractionBegin()
 {
   m_model->incrementInteractionId();
+}
+
+void RTValFCurveViewItem::onEditorInteractionEnd()
+{
+  m_model->onInteractionEnd();
 }
 
 RTValFCurveViewItem::~RTValFCurveViewItem()
