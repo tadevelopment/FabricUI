@@ -27,6 +27,12 @@ class RTValFCurveViewItem::RTValAnimXFCurveDFGController : public RTValAnimXFCur
   QString m_lastCommand;
   QMap<QString, QString> m_lastArgs;
 
+  inline void synchronizeKLReg()
+  {
+    static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )
+      ->synchronizeKL(); // HACK : remove
+  }
+
 public:
   void setPath( const char* bindingId, const char* dfgPortPath )
   {
@@ -37,7 +43,7 @@ public:
   void setHandle( size_t i, Handle h ) FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
-    static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+    this->synchronizeKLReg();
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     args["id"] = QString::number( i );
@@ -69,7 +75,7 @@ public:
   void moveHandles( const size_t* indices, const size_t nbIndices, QPointF delta ) FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
-    static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+    this->synchronizeKLReg();
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     args["ids"] = serializeQS( indices, nbIndices );
@@ -84,7 +90,7 @@ public:
   void addHandle() FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
-    static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+    this->synchronizeKLReg();
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     manager->createCommand( "AnimX_PushKeyframe", args );
@@ -93,7 +99,7 @@ public:
   void deleteHandle( size_t i ) FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
-    static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+    this->synchronizeKLReg();
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     args["id"] = QString::number( i );
@@ -103,7 +109,7 @@ public:
   void deleteHandles( const size_t* indices, const size_t nbIndices ) FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
-    static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+    this->synchronizeKLReg();
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     args["ids"] = serializeQS( indices, nbIndices );
@@ -120,7 +126,7 @@ public:
     if( !m_lastCommand.isEmpty() )
     {
       FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
-      static_cast<FabricUI::Commands::KLCommandRegistry*>( FabricUI::Commands::KLCommandRegistry::getCommandRegistry() )->synchronizeKL(); // HACK : remove
+      this->synchronizeKLReg();
       QMap<QString, QString> args = m_lastArgs;
       args["interactionEnd"] = "true";
       manager->createCommand( m_lastCommand, args, true, m_interactionId );
