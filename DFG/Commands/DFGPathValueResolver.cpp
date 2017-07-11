@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
 #include "DFGPathValueResolver.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/DFG/DFGController.h>
@@ -134,11 +133,6 @@ void DFGPathValueResolver::getValue(
 
   castPathToHRFormat( pathValue);
 
-  std::cout 
-    << "\n DFGPathValueResolver::getValue "
-    << path.toUtf8().constData()
-    << std::endl;
-
   FABRIC_CATCH_END("DFGPathValueResolver::getValue");
 }
 
@@ -167,13 +161,6 @@ void DFGPathValueResolver::setValue(
     DFGExec subExec = getSubExecAndPortPath(
       pathValue,
       portPath);
-
-    std::cout 
-      << "DFGPathValueResolver::setValue "
-      << value.isValid()
-      << " "
-      << portPath.toUtf8().constData()
-      << std::endl;
 
     if(dfgType == DFGPort)
       subExec.setPortDefaultValue( 
