@@ -69,10 +69,11 @@ void Ruler::paintEvent( QPaintEvent * e )
   if( m_min == m_max )
     return;
 
-  float bigFactor = std::pow( 2, std::ceil( -std::log( m_max - m_min ) / std::log( 2 ) ) ) * 4;
+  const QRect r = this->contentsRect();
+  const size_t bigSide = ( m_orientation == Qt::Vertical ? r.height() : r.width() );
+  float bigFactor = std::pow( 2, std::ceil( -std::log( ( m_max - m_min ) * 500.0f / bigSide ) / std::log( 2 ) ) ) * 4;
   float smallFactor = bigFactor * 8;
   {
-    const QRect r = this->contentsRect();
     QPainter p( this );
     QPen pen;
     pen.setColor( QColor( 128, 128, 128 ) );
