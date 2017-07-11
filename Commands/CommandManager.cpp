@@ -14,9 +14,6 @@ using namespace Commands;
 using namespace Application;
 
 int CommandManager::NoCanMergeID = -1;
-int CommandManager::NoCanMerge = 0;
-int CommandManager::CanMerge = 1;
-int CommandManager::MergeDone = 2;
 
 int CommandManager::NoDebug = -1;
 int CommandManager::Debug = 0;
@@ -27,7 +24,7 @@ CommandManager* CommandManager::s_cmdManager = 0;
 
 CommandManager::CommandManager() 
   : QObject()
-  , m_canMergeIDCounter(2)
+  , m_canMergeIDCounter(0)
   , m_debugMode(NoDebug)
 {
   if(s_instanceFlag)
@@ -99,14 +96,14 @@ void CommandManager::doCommand(
   
   cmd->setCanMergeID(canMergeID);
 
-  int canMerge = m_undoStack.size() == 0 
-    ? NoCanMerge
+  bool canMerge = m_undoStack.size() == 0 
+    ? false
     : cmd->canMerge(m_undoStack[m_undoStack.size()-1].topLevelCmd.data());
 
   bool subCmd = m_undoStack.size() != 0 && 
     !m_undoStack[m_undoStack.size()-1].succeeded;
     
-  if(!subCmd && cmd->canUndo() && canMerge == NoCanMerge)
+  if(!subCmd && cmd->canUndo() && !canMerge)
   {
     clearRedoStack();
     pushTopCommand(cmd, false);
@@ -136,11 +133,11 @@ void CommandManager::doCommand(
     if(subCmd)
       pushLowCommand(cmd);
    
-    else if(!subCmd && canMerge == NoCanMerge)
+    else if(!subCmd && !canMerge)
       m_undoStack[m_undoStack.size()-1].succeeded = true;
   }
 
-  if(canMergeID != NoCanMergeID && canMerge != NoCanMerge)
+  if(canMerge)
   {
     cmd->merge(m_undoStack[m_undoStack.size()-1].topLevelCmd.data());
     QSharedPointer< BaseCommand > prt(cmd);
@@ -150,9 +147,7 @@ void CommandManager::doCommand(
   if(!subCmd)
     emit commandDone(
       cmd, 
-      canMerge != NoCanMerge ? false : cmd->canUndo(), 
-      canMergeID,
-      canMerge
+      canMerge ? false : cmd->canUndo()
       );
 
   if(m_debugMode != NoDebug)

@@ -11,6 +11,7 @@ using namespace Commands;
 BaseCommand::BaseCommand() 
   : QObject()
   , m_canMergeID(CommandManager::NoCanMergeID)
+  , m_blockLogEnabled(false)
 {
 }
 
@@ -37,7 +38,7 @@ bool BaseCommand::canUndo()
 
 bool BaseCommand::canLog() 
 {
-  return canUndo();
+  return canUndo() && !m_blockLogEnabled;
 }
 
 bool BaseCommand::doIt() 
@@ -76,19 +77,21 @@ int BaseCommand::getCanMergeID()
   return m_canMergeID;
 }
 
-int BaseCommand::canMerge(
+void BaseCommand::blockLog() {
+  m_blockLogEnabled = true;
+}
+
+
+bool BaseCommand::canMerge(
   BaseCommand *prevCmd) 
 {
   if(prevCmd) 
   {
     if(getCanMergeID() > CommandManager::NoCanMergeID && 
       getCanMergeID() == prevCmd->getCanMergeID())
-      return CommandManager::CanMerge;
-
-    if( (getCanMergeID() + prevCmd->getCanMergeID() ) == 0)
-      return CommandManager::MergeDone;
+      return true;
   }
-  return CommandManager::NoCanMerge;
+  return false;
 }
 
 void BaseCommand::merge(

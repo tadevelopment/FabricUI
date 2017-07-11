@@ -57,13 +57,11 @@ class CommandManagerCallback(QtCore.QObject):
         FabricUI.OptionsEditor.OptionEditorCommandRegistration.RegisterCommands()
         FabricUI.Dialog.DialogCommandRegistration.RegisterCommands()
 
-    def __onCommandDone(self, cmd, pushedToStack, canMergeID, merge):
+    def __onCommandDone(self, cmd, pushedToStack):
         """ \internal, when a command's been pushed to the manager.
             Arguments:
             - cmd : The command that has been done (executed).
             - addedToStack : If true, the command has been pushed in the manager stack.
-            - canMergeID : ID of the merge (NoCanMergeID if no merge).
-            - merge : (NoCanMerge, CanMerge or MergeDone).
         """ 
         try:
             # Create a new CommandQtWrapper and  
@@ -78,7 +76,7 @@ class CommandManagerCallback(QtCore.QObject):
             if cmd.canLog():
                 self.scriptEditor.logCommand(
                     CommandHelpers.ParseCmdArgs(cmd), 
-                    FabricUI.Commands.CommandManager.NoCanMerge != merge)
+                    False)
             
         except Exception as e:    
                 print str(e)

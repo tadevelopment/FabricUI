@@ -161,6 +161,10 @@ void KLCommandManager::createAppCommand(
   BaseCommand *cmd = CommandRegistry::getCommandRegistry()->createCommand(
     cmdName);
     
+  bool logBlocked = appCmd.callMethod( "Boolean", "isLogBlocked", 0, 0 ).getBoolean();
+  if( logBlocked )
+    cmd->blockLog();
+
   RTVal keys = appCmd.callMethod(
     "String[]", 
     "getArgKeys", 

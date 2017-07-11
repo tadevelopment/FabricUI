@@ -167,7 +167,7 @@ class BaseCommand : public QObject
 
     /// Checks if `this` and `prevCmd`  
     /// commands `this` can be merged.
-    virtual int canMerge(
+    virtual bool canMerge(
       BaseCommand *prevCmd
       );
 
@@ -176,9 +176,13 @@ class BaseCommand : public QObject
       BaseCommand *prevCmd
       );
 
+    /// Explicitly block logging of the command, to be used for interaction loops
+    void blockLog();
+
   private:
     QString m_name;
     int m_canMergeID;
+    bool m_blockLogEnabled;
 };
 
 } // namespace Commands
