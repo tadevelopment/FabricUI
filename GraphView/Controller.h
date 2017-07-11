@@ -111,6 +111,20 @@ namespace FabricUI
         bool expanded
         ) = 0;
 
+      virtual void gvcDoMoveNode(
+        Node const *node,
+        QPointF const &nodeOriginalPos,
+        QSizeF const &nodeOriginalSize,
+        QPointF delta,
+        float gridSnapSize,
+        std::vector<QPointF> const &nodeSnapPositions,
+        qreal nodeSnapDistance,
+        std::vector<qreal> const &portSnapPositionsSrcY,
+        std::vector<qreal> const &portSnapPositionsDstY,
+        qreal portSnapDistance,
+        bool allowUndo
+        ) = 0;
+
       virtual void gvcDoMoveNodes(
         std::vector<Node *> const &nodes,
         std::vector<QPointF> const &nodesOriginalPos,

@@ -2322,9 +2322,8 @@ void DFGWidget::onRevealPresetInExplorer(char const *nodeName)
 
 void DFGWidget::onToggleBlockCompilations()
 {
-  static bool blockCompilations = false;
-  blockCompilations = !blockCompilations;
-  getDFGController()->setBlockCompilations( blockCompilations );
+  getDFGController()->setBlockCompilations(!this->getUIController()->getHost().areCompsBlocked());
+  getUIGraph()->setCompsBlockedOverlayVisibility(this->getUIController()->getHost().areCompsBlocked());
 }
 
 void DFGWidget::onToggleDimConnections()
@@ -2379,6 +2378,18 @@ void DFGWidget::onToggleSnapToGrid()
 {
   m_uiGraph->config().mainPanelGridSnap = !m_uiGraph->config().mainPanelGridSnap;
   if(getSettings()) getSettings()->setValue( "DFGWidget/mainPanelGridSnap", m_uiGraph->config().mainPanelGridSnap );
+}
+
+void DFGWidget::onToggleSnapToNode()
+{
+  m_uiGraph->config().mainPanelNodeSnap = !m_uiGraph->config().mainPanelNodeSnap;
+  if(getSettings()) getSettings()->setValue( "DFGWidget/mainPanelNodeSnap", m_uiGraph->config().mainPanelNodeSnap );
+}
+
+void DFGWidget::onToggleSnapToPort()
+{
+  m_uiGraph->config().mainPanelPortSnap = !m_uiGraph->config().mainPanelPortSnap;
+  if(getSettings()) getSettings()->setValue( "DFGWidget/mainPanelPortSnap", m_uiGraph->config().mainPanelPortSnap );
 }
 
 bool DFGWidget::maybeEditNode(
@@ -2889,10 +2900,22 @@ void DFGWidget::populateMenuBar(QMenuBar *menuBar, bool addFileMenu, bool addEdi
     displayGrid->setChecked(m_uiGraph->config().mainPanelDrawGrid);
     QObject::connect(displayGrid, SIGNAL(triggered()), this, SLOT(onToggleDrawGrid()));
 
+    graphViewMenu->addSeparator();
+
     QAction * snapToGrid = graphViewMenu->addAction("Snap to Grid");
     snapToGrid->setCheckable(true);
     snapToGrid->setChecked(m_uiGraph->config().mainPanelGridSnap);
     QObject::connect(snapToGrid, SIGNAL(triggered()), this, SLOT(onToggleSnapToGrid()));
+
+    QAction * snapToNode = graphViewMenu->addAction("Snap to Node Borders and Centers");
+    snapToNode->setCheckable(true);
+    snapToNode->setChecked(m_uiGraph->config().mainPanelNodeSnap);
+    QObject::connect(snapToNode, SIGNAL(triggered()), this, SLOT(onToggleSnapToNode()));
+
+    QAction * snapToPort = graphViewMenu->addAction("Snap to Ports");
+    snapToPort->setCheckable(true);
+    snapToPort->setChecked(m_uiGraph->config().mainPanelPortSnap);
+    QObject::connect(snapToPort, SIGNAL(triggered()), this, SLOT(onToggleSnapToPort()));
 
     graphViewMenu->addSeparator();
     
@@ -2980,6 +3003,8 @@ void DFGWidget::onExecChanged()
       m_uiGraph->config().portsCentered              = getSettings()->value( "DFGWidget/portsCentered")             .toBool();
       m_uiGraph->config().mainPanelDrawGrid          = getSettings()->value( "DFGWidget/mainPanelDrawGrid")         .toBool();
       m_uiGraph->config().mainPanelGridSnap          = getSettings()->value( "DFGWidget/mainPanelGridSnap")         .toBool();
+      m_uiGraph->config().mainPanelNodeSnap          = getSettings()->value( "DFGWidget/mainPanelNodeSnap")         .toBool();
+      m_uiGraph->config().mainPanelPortSnap          = getSettings()->value( "DFGWidget/mainPanelPortSnap")         .toBool();
     }
     m_uiGraph->initialize();
 
@@ -2993,6 +3018,7 @@ void DFGWidget::onExecChanged()
     m_uiGraph->setFixedPortContextMenuCallback( &fixedPortContextMenuCallback, this );
     m_uiGraph->setConnectionContextMenuCallback( &connectionContextMenuCallback, this );
     m_uiGraph->setSidePanelContextMenuCallback( &sidePanelContextMenuCallback, this );
+    m_uiGraph->setCompsBlockedOverlayVisibility(m_uiController->getHost().areCompsBlocked());
 
     if ( !m_uiController->getExecBlockName().empty() )
     {

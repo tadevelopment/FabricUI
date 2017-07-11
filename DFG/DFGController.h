@@ -110,6 +110,10 @@ namespace FabricUI
       // returns true if the user allows a preset edit
       bool validPresetSplit() const;
 
+      static QPointF snapToGrid(QPointF &pos, float gridSnapSize)
+      { return(QPointF(gridSnapSize * qRound(pos.rx() / gridSnapSize),
+                       gridSnapSize * qRound(pos.ry() / gridSnapSize))); }
+
       // Parent virtual functions
 
       virtual std::string gvcDoCopy(
@@ -161,6 +165,20 @@ namespace FabricUI
       virtual void gvcDoSetNodeCommentExpanded(
         GraphView::Node *node,
         bool expanded
+        );
+
+      virtual void gvcDoMoveNode(
+        GraphView::Node const *node,
+        QPointF const &nodeOriginalPos,
+        QSizeF const &nodeOriginalSize,
+        QPointF delta,
+        float gridSnapSize,
+        std::vector<QPointF> const &nodeSnapPositions,
+        qreal nodeSnapDistance,
+        std::vector<qreal> const &portSnapPositionsSrcY,
+        std::vector<qreal> const &portSnapPositionsDstY,
+        qreal portSnapDistance,
+        bool allowUndo
         );
 
       virtual void gvcDoMoveNodes(
