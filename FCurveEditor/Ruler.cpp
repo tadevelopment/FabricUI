@@ -9,6 +9,12 @@ using namespace FabricUI::FCurveEditor;
 
 Ruler::Ruler( Qt::Orientation o )
   : m_orientation( o )
+  , m_majorGradsPixelSpacing( 800.0f )
+  , m_majToMinGradsRatio( 8 )
+  , m_logScale( 2 )
+  , m_penColor( QColor( 128, 128, 128 ) )
+  , m_majorPenWidth( 2 )
+  , m_minorPenWidth( 1 )
 {
 
 }
@@ -71,13 +77,14 @@ void Ruler::paintEvent( QPaintEvent * e )
 
   const QRect r = this->contentsRect();
   const size_t bigSide = ( m_orientation == Qt::Vertical ? r.height() : r.width() );
-  qreal bigFactor = std::pow( 2, std::ceil( -std::log( std::abs( m_end - m_start ) * 500.0f / bigSide ) / std::log( 2 ) ) ) * 4;
-  qreal smallFactor = bigFactor * 8;
+  qreal bigFactor = std::pow( m_logScale,
+    std::ceil( -std::log( std::abs( m_end - m_start ) * m_majorGradsPixelSpacing / bigSide ) / std::log( m_logScale ) ) ) * 4;
+  qreal smallFactor = bigFactor * m_majToMinGradsRatio;
   {
     QPainter p( this );
     QPen pen;
-    pen.setColor( QColor( 128, 128, 128 ) );
-    pen.setWidthF( 2 );
+    pen.setColor( m_penColor );
+    pen.setWidthF( m_majorPenWidth );
     p.setPen( pen );
     qreal minV = std::min( m_start, m_end );
     qreal maxV = std::max( m_start, m_end );
@@ -88,7 +95,7 @@ void Ruler::paintEvent( QPaintEvent * e )
       DrawLine( &p, xw, m_orientation, 0.5, r );
       DrawText( &p, xw + 5, m_orientation, 0.9f, r, QString::number( xs ) );
     }
-    pen.setWidthF( 1 );
+    pen.setWidthF( m_minorPenWidth );
     p.setPen( pen );
     for( qreal i = std::floor( minV * smallFactor ); i < smallFactor * maxV; i++ )
     {

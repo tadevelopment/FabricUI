@@ -22,7 +22,9 @@ class RuledGraphicsView : public QWidget
 
   Q_PROPERTY( size_t rulersSize READ rulersSize WRITE setRulersSize )
   size_t m_rulersSize;
-  Q_PROPERTY( bool topToBottomY READ topToBottomY() WRITE setTopToBottomY() )
+
+  // Do the Y coordinates go from top-to-bottom (default) or from bottom-to-top ?
+  Q_PROPERTY( bool topToBottomY READ topToBottomY WRITE setTopToBottomY )
 
   bool m_rectangleSelectionEnabled;
 
