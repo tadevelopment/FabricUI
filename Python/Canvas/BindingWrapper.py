@@ -793,3 +793,45 @@ class BindingWrapper:
             )
         InvokeCmd(cmd, self.qUndoStack)
         return cmd.getActualPortName()
+
+    def addNLSPort(
+        self,
+        execPath,
+        desiredPortName,
+        typeSpec,
+        pathToConnect,
+        extDep,
+        metaData,
+        ):
+        rootExec = self.binding.getExec()
+        exec_ = rootExec.getSubExec(execPath)
+        cmd = DFG.DFGUICmd_AddNLSPort(
+            self.binding,
+            execPath,
+            exec_,
+            desiredPortName,
+            typeSpec,
+            pathToConnect,
+            extDep,
+            metaData,
+            )
+        InvokeCmd(cmd, self.qUndoStack)
+        return cmd.getActualPortName()
+
+    def reorderNLSPorts(
+        self,
+        execPath,
+        itemPath,
+        packedIndices,
+        ):
+        rootExec = self.binding.getExec()
+        exec_ = rootExec.getSubExec(execPath)
+        indices = BindingWrapper.splitInts(packedIndices)
+        cmd = DFG.DFGUICmd_ReorderNLSPorts(
+            self.binding,
+            execPath,
+            exec_,
+            itemPath,
+            indices,
+            )
+        InvokeCmd(cmd, self.qUndoStack)

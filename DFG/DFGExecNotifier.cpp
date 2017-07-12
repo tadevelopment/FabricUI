@@ -797,6 +797,14 @@ void DFGExecNotifier::handler_nlsPortsReordered( FTL::JSONObject const *jsonObje
     );
 }
 
+void DFGExecNotifier::handler_nlsPortResolvedTypeChanged( FTL::JSONObject const *jsonObject )
+{
+  FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );
+  FTL::CStrRef newResolvedTypeName = jsonObject->getStringOrEmpty( FTL_STR("newResolvedType") );
+
+  emit nlsPortResolvedTypeChanged( portName, newResolvedTypeName );
+}
+
 void DFGExecNotifier::handler_nlsPortMetadataChanged( FTL::JSONObject const *jsonObject )
 {
   FTL::CStrRef portName = jsonObject->getString( FTL_STR("portName") );

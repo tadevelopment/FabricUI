@@ -17,7 +17,7 @@ DFGPEModel_NLSPorts::DFGPEModel_NLSPorts(
   FabricCore::DFGExec exec,
   QSharedPointer<DFG::DFGExecNotifier> execNotifier
   )
-  : DFGPEModel( "nlsPort", "NLSPort" )
+  : DFGPEModel( "local", "Local" )
   , m_cmdHandler( cmdHandler )
   , m_binding( binding )
   , m_execPathQS( QString::fromUtf8( execPath.data(), execPath.size() ) )
@@ -70,7 +70,6 @@ QString DFGPEModel_NLSPorts::getElementName( int index )
 
 FabricCore::DFGPortType DFGPEModel_NLSPorts::getElementPortType( int index )
 {
-  assert( false );
   return FabricCore::DFGPortType_IO;
 }
 
