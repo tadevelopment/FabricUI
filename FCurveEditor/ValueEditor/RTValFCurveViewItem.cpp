@@ -9,9 +9,12 @@
 
 #include <FabricUI/ModelItems/DFGModelItemMetadata.h>
 #include <FabricUI/Util/QtSignalsSlots.h>
+#include <FabricUI/Util/LoadPixmap.h>
 
 #include <FabricUI/Commands/CommandManager.h>
 #include <FabricUI/Commands/KLCommandRegistry.h> // HACK: remove
+
+#include <QPushButton>
 
 #include <assert.h>
 #include <QDebug>
@@ -135,18 +138,51 @@ public:
   }
 };
 
+class RTValFCurveViewItem::Editor : public FabricUI::FCurveEditor::FCurveEditor
+{
+  typedef FabricUI::FCurveEditor::FCurveEditor Parent;
+  RTValFCurveViewItem* m_parent;
+  QPushButton* m_expandButton;
+  void updateExpandButtonSize()
+  {
+    QRect cr = this->contentsRect();
+    m_expandButton->setGeometry( QRect(
+      cr.left() + 32,
+      cr.top(),
+      m_expandButton->width(),
+      m_expandButton->height()
+    ) );
+  }
+public:
+  Editor( RTValFCurveViewItem* parent )
+    : m_parent( parent )
+    , m_expandButton( new QPushButton( this ) )
+  {
+    m_expandButton->setIcon( QIcon( LoadPixmap( "expand.png" ) ) );
+    m_expandButton->setStyleSheet( "background-color: rgba(0,0,0,0);" );
+    m_expandButton->resize( 32, 32 );
+    QOBJECT_CONNECT( m_expandButton, SIGNAL, QPushButton, pressed, ( ), m_parent, SLOT, RTValFCurveViewItem, expand, ( ) );
+    this->updateExpandButtonSize();
+  }
+  void resizeEvent( QResizeEvent * e ) FTL_OVERRIDE
+  {
+    Parent::resizeEvent( e );
+    this->updateExpandButtonSize();
+  }
+};
+
 RTValFCurveViewItem::RTValFCurveViewItem(
   QString const &name,
   QVariant const &value,
   ItemMetadata* metadata
 ) : BaseViewItem( name, metadata )
   , m_model( new RTValAnimXFCurveDFGController() )
-  , m_editor( new FabricUI::FCurveEditor::FCurveEditor() )
+  , m_editor( new Editor( this ) )
 {
   m_editor->setModel( m_model );
   this->onModelValueChanged( value );
 
-  m_editor->setFixedSize( 300, 300 ); // HACK
+  m_editor->setFixedSize( 500, 150 ); // HACK
   m_editor->fitInView();
 
   //connect( m_model, SIGNAL( handleAdded() ), this, SLOT( onViewValueChanged() ) );
@@ -176,6 +212,11 @@ void RTValFCurveViewItem::onEditorInteractionBegin()
 void RTValFCurveViewItem::onEditorInteractionEnd()
 {
   m_model->onInteractionEnd();
+}
+
+void RTValFCurveViewItem::expand()
+{
+  qDebug() << "expand";
 }
 
 RTValFCurveViewItem::~RTValFCurveViewItem()

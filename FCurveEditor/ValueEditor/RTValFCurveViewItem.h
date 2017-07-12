@@ -25,7 +25,8 @@ class RTValFCurveViewItem : public BaseViewItem
 
   class RTValAnimXFCurveDFGController;
   RTValAnimXFCurveDFGController* m_model;
-  FabricUI::FCurveEditor::FCurveEditor* m_editor;
+  class Editor;
+  Editor* m_editor;
 
 public:
   static BaseViewItem *CreateItem(
@@ -50,6 +51,7 @@ private slots:
   void onViewValueChanged();
   void onEditorInteractionBegin();
   void onEditorInteractionEnd();
+  void expand();
   inline void emitInteractionEnd() { emit this->interactionEnd( true ); }
 };
 
