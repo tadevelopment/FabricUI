@@ -235,6 +235,7 @@ void RTValFCurveViewItem::expand()
 RTValFCurveViewItem::~RTValFCurveViewItem()
 {
   //delete m_editor; // HACK;TODO : delete and fix crash when closing Canvas
+  delete m_expandedEditor;
   delete m_model;
 }
 
