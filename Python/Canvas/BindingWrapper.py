@@ -794,7 +794,7 @@ class BindingWrapper:
         InvokeCmd(cmd, self.qUndoStack)
         return cmd.getActualPortName()
 
-    def addNLSPort(
+    def addLocal(
         self,
         execPath,
         desiredPortName,
@@ -818,7 +818,7 @@ class BindingWrapper:
         InvokeCmd(cmd, self.qUndoStack)
         return cmd.getActualPortName()
 
-    def reorderNLSPorts(
+    def reorderLocals(
         self,
         execPath,
         itemPath,

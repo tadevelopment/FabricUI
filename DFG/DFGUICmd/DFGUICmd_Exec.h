@@ -129,7 +129,7 @@ protected:
     QString &desc
     )
   {
-    desc += "nlsPort ";
+    desc += "local ";
     appendDesc_Path( refName, desc );
   }
 

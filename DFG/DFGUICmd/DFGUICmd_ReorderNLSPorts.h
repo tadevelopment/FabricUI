@@ -25,7 +25,7 @@ public:
     {}
 
   static FTL::CStrRef CmdName()
-    { return DFG_CMD_NAME("ReorderNLSPorts"); }
+    { return DFG_CMD_NAME("ReorderLocals"); }
 
 protected:
   

@@ -35,7 +35,7 @@ public:
     {}
 
   static FTL::CStrRef CmdName()
-    { return DFG_CMD_NAME("AddNLSPort"); }
+    { return DFG_CMD_NAME("AddLocal"); }
 
   QString getActualPortName()
   {

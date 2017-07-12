@@ -8,7 +8,7 @@ FABRIC_UI_DFG_NAMESPACE_BEGIN
 
 void DFGUICmd_ReorderNLSPorts::appendDesc( QString &desc )
 {
-  desc += "Reordered nlsPorts [";
+  desc += "Reordered locals [";
 
   for ( int i = 0; i < m_indices.size(); ++i )
   {
@@ -40,7 +40,7 @@ void DFGUICmd_ReorderNLSPorts::invoke(
   unsigned &coreUndoCount
   )
 {
-  getExec().reorderPorts( itemPath.c_str(), indices.size(), &indices[0] );
+  getExec().reorderNLSPorts( itemPath.c_str(), indices.size(), &indices[0] );
   ++coreUndoCount;
 }
 

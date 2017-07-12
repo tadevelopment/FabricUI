@@ -786,7 +786,7 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         metaData,
         ):
         return self.evalCmdWithArgs(
-            "addNLSPort",
+            "addLocal",
             [
                 UICmdHandler.encodeString(execPath),
                 UICmdHandler.encodeString(desiredPortName),
@@ -806,7 +806,7 @@ class UICmdHandler(DFG.DFGUICmdHandler_Python):
         indices,
         ):
         return self.evalCmdWithArgs(
-            "reorderNLSPorts",
+            "reorderLocals",
             [
                 UICmdHandler.encodeString(execPath),
                 UICmdHandler.encodeString(itemPath),
