@@ -66,17 +66,16 @@ class CommandManagerCallback(QtCore.QObject):
         try:
             # Create a new CommandQtWrapper and  
             # pushs it to the qt undo stack.
-            if canUndo:
+            if canUndo and cmd.canLog():
                 oldEchoStackIndexChanges = self.scriptEditor._echoStackIndexChanges
                 self.scriptEditor._echoStackIndexChanges = False
                 self.qUndoStack.push( self.CommandQtWrapper( cmd.getHistoryDesc() ) )
                 self.scriptEditor._echoStackIndexChanges = oldEchoStackIndexChanges
 
                 #Log the commands.
-                if cmd.canLog():
-                    self.scriptEditor.logCommand(
-                        CommandHelpers.ParseCmdArgs(cmd), 
-                        False)
+                self.scriptEditor.logCommand(
+                    CommandHelpers.ParseCmdArgs(cmd), 
+                    False)
             
         except Exception as e:    
                 print str(e)
