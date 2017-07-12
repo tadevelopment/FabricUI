@@ -22,7 +22,10 @@ class RuledGraphicsView : public QWidget
 
   Q_PROPERTY( size_t rulersSize READ rulersSize WRITE setRulersSize )
   size_t m_rulersSize;
+  Q_PROPERTY( bool topToBottomY READ topToBottomY() WRITE setTopToBottomY() )
+
   bool m_rectangleSelectionEnabled;
+
 
 public:
   RuledGraphicsView();
@@ -34,6 +37,8 @@ public:
   void fitInView( const QRectF );
   inline size_t rulersSize() const { return m_rulersSize; }
   void setRulersSize( const size_t );
+  bool topToBottomY() const;
+  void setTopToBottomY( bool );
   inline void enableRectangleSelection( bool e ) { m_rectangleSelectionEnabled = e; }
 
 signals:

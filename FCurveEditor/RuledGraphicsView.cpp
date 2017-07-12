@@ -144,7 +144,6 @@ RuledGraphicsView::RuledGraphicsView()
   , m_scrollSpeed( 1 / 800.0f )
   , m_zoomOnCursor( true )
   , m_smoothZoom( true )
-  // HACK : update m_targetScale when methods such as fitInView() are called
   , m_targetScale( QPointF( 1E2, 1E2 ) )
   , m_timer( new QTimer( this ) )
 {
@@ -173,6 +172,8 @@ RuledGraphicsView::RuledGraphicsView()
   m_timer->setInterval( 16 );
   if( m_smoothZoom )
     m_timer->start();
+
+  this->setTopToBottomY( false );
 }
 
 void RuledGraphicsView::setRulersSize( const size_t s )
@@ -180,6 +181,20 @@ void RuledGraphicsView::setRulersSize( const size_t s )
   m_rulersSize = s;
   m_vRuler->setFixedWidth( s );
   m_hRuler->setFixedHeight( s );
+}
+
+bool RuledGraphicsView::topToBottomY() const
+{
+  return ( m_view->matrix().m22() >= 0 );
+}
+
+void RuledGraphicsView::setTopToBottomY( bool topToBottom )
+{
+  if( this->topToBottomY() != topToBottom )
+  {
+    this->view()->scale( 1, -1 );
+    this->updateRulersRange();
+  }
 }
 
 void RuledGraphicsView::wheelEvent( QWheelEvent * e )
@@ -232,7 +247,10 @@ void RuledGraphicsView::fitInView( const QRectF r )
 void RuledGraphicsView::updateRulersRange()
 {
   QRectF vrect = m_view->mapToScene( m_view->viewport()->geometry() ).boundingRect();
-  m_vRuler->setRange( vrect.top(), vrect.bottom() );
+  if( m_view->matrix().m22() < 0 )
+    m_vRuler->setRange( vrect.bottom(), vrect.top() );
+  else
+    m_vRuler->setRange( vrect.top(), vrect.bottom() );
 
   QRectF hrect = m_view->mapToScene( m_view->viewport()->geometry() ).boundingRect();
   m_hRuler->setRange( hrect.left(), hrect.right() );
@@ -249,7 +267,7 @@ void RuledGraphicsView::tick()
   QPointF currentScale = QPointF( m_view->matrix().m11(), m_view->matrix().m22() );
   if(
     std::abs( std::log( currentScale.x() ) - std::log( m_targetScale.x() ) ) +
-    std::abs( std::log( currentScale.y() ) - std::log( m_targetScale.y() ) )
+    std::abs( std::log( std::abs(currentScale.y()) ) - std::log( std::abs(m_targetScale.y()) ) )
   > 0.01 ) // If we are close enough to the target, we stop the animation
   {
     const float ratio = 0.2; // TODO : property
