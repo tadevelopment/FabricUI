@@ -2242,4 +2242,3 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 0;
   background-color: #596D7A;
 }
-}
