@@ -193,7 +193,7 @@ void FCurveEditor::setModel( AbstractFCurveModel* model )
 
 void FCurveEditor::fitInView()
 {
-  this->Parent::fitInView( m_scene->itemsBoundingRect() );
+  this->Parent::fitInView( m_curveItem->keysBoundingRect() );
 }
 
 void FCurveEditor::mousePressEvent( QMouseEvent * e )

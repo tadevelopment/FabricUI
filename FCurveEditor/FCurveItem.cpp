@@ -46,7 +46,16 @@ public:
     this->updateBoundingRect();
   }
 
-  QRectF boundingRect() const FTL_OVERRIDE { return m_boundingRect; }
+  QRectF boundingRect() const FTL_OVERRIDE
+  {
+    QRectF r = m_boundingRect;
+    const qreal w = r.width();
+    r.setLeft( r.left() - 100 * w );
+    r.setRight( r.right() + 100 * w );
+    return r;
+  }
+
+  inline QRectF keysBoundingRect() const { return m_boundingRect; }
 
   void updateBoundingRect()
   {
@@ -58,9 +67,12 @@ public:
     if( m_parent->m_curve != NULL )
     {
       size_t hc = m_parent->m_curve->getHandleCount();
-      if( hc == 0 )
+      if( hc <= 1 )
       {
-        m_boundingRect = QRectF( -1, -1, 2, 2 );
+        QPointF pos;
+        if( hc == 1 )
+          pos = m_parent->m_curve->getHandle( 0 ).pos;
+        m_boundingRect = QRectF( -1 + pos.x(), -1 + pos.y(), 2, 2 );
         return;
       }
       for( size_t i = 0; i < hc; i++ )
@@ -105,6 +117,8 @@ public:
     }
   }
 };
+
+QRectF FCurveItem::keysBoundingRect() const { return m_curveShape->keysBoundingRect(); }
 
 class FCurveItem::HandleWidget : public QGraphicsWidget
 {
