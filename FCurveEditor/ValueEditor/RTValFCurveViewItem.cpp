@@ -171,6 +171,11 @@ public:
   }
 };
 
+class RTValFCurveViewItem::ExpandedEditor : public FabricUI::FCurveEditor::FCurveEditor
+{
+
+};
+
 RTValFCurveViewItem::RTValFCurveViewItem(
   QString const &name,
   QVariant const &value,
@@ -178,8 +183,10 @@ RTValFCurveViewItem::RTValFCurveViewItem(
 ) : BaseViewItem( name, metadata )
   , m_model( new RTValAnimXFCurveDFGController() )
   , m_editor( new Editor( this ) )
+  , m_expandedEditor( new ExpandedEditor() )
 {
   m_editor->setModel( m_model );
+  m_expandedEditor->setModel( m_model );
   this->onModelValueChanged( value );
 
   m_editor->setFixedSize( 500, 150 ); // HACK
@@ -190,14 +197,19 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   //connect( m_editor, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
   //connect( m_editor, SIGNAL( interactionEnd() ), this, SLOT( emitInteractionEnd() ) );
 
-  QOBJECT_CONNECT(
-    m_editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionBegin, ( ),
-    this, SLOT, RTValFCurveViewItem, onEditorInteractionBegin, ( )
-  );
-  QOBJECT_CONNECT(
-    m_editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionEnd, ( ),
-    this, SLOT, RTValFCurveViewItem, onEditorInteractionEnd, ( )
-  );
+  for( size_t i = 0; i < 2; i++ )
+  {
+    FabricUI::FCurveEditor::FCurveEditor* editor =
+      ( i == 0 ? m_editor : ( FabricUI::FCurveEditor::FCurveEditor* )m_expandedEditor );
+    QOBJECT_CONNECT(
+      editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionBegin, ( ),
+      this, SLOT, RTValFCurveViewItem, onEditorInteractionBegin, ( )
+    );
+    QOBJECT_CONNECT(
+      editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionEnd, ( ),
+      this, SLOT, RTValFCurveViewItem, onEditorInteractionEnd, ( )
+    );
+  }
 
   const char* bindingId = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGBindingIdKey.data() );
   const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );
@@ -216,7 +228,8 @@ void RTValFCurveViewItem::onEditorInteractionEnd()
 
 void RTValFCurveViewItem::expand()
 {
-  qDebug() << "expand";
+  m_expandedEditor->show();
+  m_expandedEditor->fitInView();
 }
 
 RTValFCurveViewItem::~RTValFCurveViewItem()
