@@ -13,26 +13,26 @@ Ruler::Ruler( Qt::Orientation o )
 
 }
 
-void Ruler::setRange( float start, float end )
+void Ruler::setRange( qreal start, qreal end )
 {
   m_start = start;
   m_end = end;
   this->update();
 }
 
-inline float Map(
-  float v, // value to be mapped
-  float minB, float maxB, // original range
-  float minA, float maxA // new range
+inline qreal Map(
+  qreal v, // value to be mapped
+  qreal minB, qreal maxB, // original range
+  qreal minA, qreal maxA // new range
 )
 {
   return minA + ( v - minB ) * ( maxA - minA ) / ( maxB - minB );
 }
 
-inline float Map(
-  float v, // value to be mapped
+inline qreal Map(
+  qreal v, // value to be mapped
   Qt::Orientation o,
-  float min, float max,
+  qreal min, qreal max,
   QRect r
 )
 {
@@ -42,7 +42,7 @@ inline float Map(
   ;
 }
 
-inline void DrawLine( QPainter* p, float pos, Qt::Orientation o, float endRPos, const QRect& r )
+inline void DrawLine( QPainter* p, qreal pos, Qt::Orientation o, qreal endRPos, const QRect& r )
 {
   if( o == Qt::Horizontal )
     p->drawLine( QPointF( pos, r.top() ), QPointF( pos, ( 1 - endRPos ) * r.top() + endRPos * r.bottom() ) );
@@ -50,7 +50,7 @@ inline void DrawLine( QPainter* p, float pos, Qt::Orientation o, float endRPos, 
     p->drawLine( QPointF( endRPos * r.left() + ( 1 - endRPos ) * r.right(), pos ), QPointF( r.right(), pos ) );
 }
 
-inline void DrawText( QPainter* p, float pos, Qt::Orientation o, float endRPos, const QRect& r, const QString& txt )
+inline void DrawText( QPainter* p, qreal pos, Qt::Orientation o, qreal endRPos, const QRect& r, const QString& txt )
 {
   if( o == Qt::Horizontal )
     p->drawText( QPointF( pos, endRPos * r.bottom() + ( 1 - endRPos ) * r.top() ), txt );
@@ -71,29 +71,29 @@ void Ruler::paintEvent( QPaintEvent * e )
 
   const QRect r = this->contentsRect();
   const size_t bigSide = ( m_orientation == Qt::Vertical ? r.height() : r.width() );
-  float bigFactor = std::pow( 2, std::ceil( -std::log( std::abs( m_end - m_start ) * 500.0f / bigSide ) / std::log( 2 ) ) ) * 4;
-  float smallFactor = bigFactor * 8;
+  qreal bigFactor = std::pow( 2, std::ceil( -std::log( std::abs( m_end - m_start ) * 500.0f / bigSide ) / std::log( 2 ) ) ) * 4;
+  qreal smallFactor = bigFactor * 8;
   {
     QPainter p( this );
     QPen pen;
     pen.setColor( QColor( 128, 128, 128 ) );
     pen.setWidthF( 2 );
     p.setPen( pen );
-    float minV = std::min( m_start, m_end );
-    float maxV = std::max( m_start, m_end );
-    for( float i = std::floor( minV * bigFactor ); i < bigFactor * maxV; i++ )
+    qreal minV = std::min( m_start, m_end );
+    qreal maxV = std::max( m_start, m_end );
+    for( qreal i = std::floor( minV * bigFactor ); i < bigFactor * maxV; i++ )
     {
-      float xs = i / bigFactor;
-      float xw = Map( xs, m_orientation, m_start, m_end, r );
+      qreal xs = i / bigFactor;
+      qreal xw = Map( xs, m_orientation, m_start, m_end, r );
       DrawLine( &p, xw, m_orientation, 0.5, r );
       DrawText( &p, xw + 5, m_orientation, 0.9f, r, QString::number( xs ) );
     }
     pen.setWidthF( 1 );
     p.setPen( pen );
-    for( float i = std::floor( minV * smallFactor ); i < smallFactor * maxV; i++ )
+    for( qreal i = std::floor( minV * smallFactor ); i < smallFactor * maxV; i++ )
     {
-      float xs = i / smallFactor;
-      float xw = Map( xs, m_orientation, m_start, m_end, r );
+      qreal xs = i / smallFactor;
+      qreal xw = Map( xs, m_orientation, m_start, m_end, r );
       DrawLine( &p, xw, m_orientation, 0.3f, r );
     }
   }

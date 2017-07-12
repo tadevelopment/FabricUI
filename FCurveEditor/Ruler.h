@@ -21,7 +21,7 @@ class Ruler : public QFrame
 
 private:
 
-  float m_start, m_end;
+  qreal m_start, m_end;
   Qt::Orientation m_orientation;
 
 public:
@@ -32,7 +32,7 @@ public:
   // - labels for large/small numbers : [ "0.5", "0.50123" ] or [ "1000000", "2000000" ] 
 
   Ruler( Qt::Orientation );
-  void setRange( float start, float end );
+  void setRange( qreal start, qreal end );
 
 protected:
   void paintEvent( QPaintEvent * ) FTL_OVERRIDE;
