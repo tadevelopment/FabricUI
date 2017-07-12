@@ -69,7 +69,7 @@ private:
   Ruler* m_hRuler;
   Ruler* m_vRuler;
 
-  float m_scrollSpeed;
+  qreal m_scrollSpeed;
   bool m_zoomOnCursor;
 
   // Smooth zoom (animated)

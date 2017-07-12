@@ -224,8 +224,8 @@ void RuledGraphicsView::centeredScale( qreal x, qreal y )
 void RuledGraphicsView::wheelEvent( int xDelta, int yDelta, QPointF scalingCenter )
 {
   m_scalingCenter = scalingCenter;
-  float sX = ( 1 + xDelta * m_scrollSpeed );
-  float sY = ( 1 + yDelta * m_scrollSpeed );
+  qreal sX = ( 1 + xDelta * m_scrollSpeed );
+  qreal sY = ( 1 + yDelta * m_scrollSpeed );
   if( m_smoothZoom )
   {
     m_targetScale.setX( m_targetScale.x() * sX );
@@ -270,7 +270,7 @@ void RuledGraphicsView::tick()
     std::abs( std::log( std::abs(currentScale.y()) ) - std::log( std::abs(m_targetScale.y()) ) )
   > 0.01 ) // If we are close enough to the target, we stop the animation
   {
-    const float ratio = 0.2; // TODO : property
+    const qreal ratio = 0.2; // TODO : property
     QPointF newScale(
       ( 1 - ratio ) * currentScale.x() + ratio * m_targetScale.x(),
       ( 1 - ratio ) * currentScale.y() + ratio * m_targetScale.y()
@@ -297,18 +297,18 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
   {
     const Qt::Orientation ori = o == 0 ? Qt::Vertical : Qt::Horizontal;
 
-    float size = ( ori == Qt::Vertical ? sr.height() : sr.width() );
-    float minU = ( ori == Qt::Vertical ? sr.top() : sr.left() );
-    float maxU = ( ori == Qt::Vertical ? sr.bottom() : sr.right() );
+    qreal size = ( ori == Qt::Vertical ? sr.height() : sr.width() );
+    qreal minU = ( ori == Qt::Vertical ? sr.top() : sr.left() );
+    qreal maxU = ( ori == Qt::Vertical ? sr.bottom() : sr.right() );
 
-    const float logScale = 2.0f; // TODO : property
-    float viewFactor = 8.0f / size; // TODO : property
+    const qreal logScale = 2.0f; // TODO : property
+    qreal viewFactor = 8.0f / size; // TODO : property
     if( ori == Qt::Vertical )
-      viewFactor *= float( wr.height() ) / wr.width();
+      viewFactor *= qreal( wr.height() ) / wr.width();
 
-    float minFactor = std::pow( logScale, std::floor( std::log( viewFactor ) / std::log( logScale ) ) );
-    float maxFactor = 150.0f / size; // TODO : Q_PROPERTY
-    for( float factor = minFactor; factor < maxFactor; factor *= logScale )
+    qreal minFactor = std::pow( logScale, std::floor( std::log( viewFactor ) / std::log( logScale ) ) );
+    qreal maxFactor = 150.0f / size; // TODO : Q_PROPERTY
+    for( qreal factor = minFactor; factor < maxFactor; factor *= logScale )
     {
       QPen pen;
       // Pen width
@@ -317,8 +317,8 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
         // pen, precision errors were making thin lines be inconsistently invisible
         // for the same factor
         pen.setCosmetic( true );
-        float pwidth = ( 2 * viewFactor ) / factor; // TODO : property
-        float palpha = 255;
+        qreal pwidth = ( 2 * viewFactor ) / factor; // TODO : property
+        qreal palpha = 255;
         if( pwidth < 1 )
         {
           palpha = pwidth * 255;
@@ -328,7 +328,7 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
         pen.setColor( QColor( 32, 32, 32, int(palpha) ) ); // TODO : qss color
       }
       p->setPen( pen );
-      for( float i = std::floor( factor * minU ); i < factor * maxU; i++ )
+      for( qreal i = std::floor( factor * minU ); i < factor * maxU; i++ )
         if( ori == Qt::Horizontal )
           p->drawLine( QPointF( i / factor, sr.top() ), QPointF( i / factor, sr.bottom() ) );
         else
