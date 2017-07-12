@@ -63,12 +63,12 @@ if buildOS == 'Darwin':
   frameworkPath = os.path.join(
     os.path.split(
       subprocess.Popen(
-        'xcodebuild -version -sdk macosx10.8 Path',
+        'xcodebuild -version -sdk macosx10.9 Path',
         shell=True,
         stdout=subprocess.PIPE
         ).stdout.read()
       )[0],
-    'MacOSX10.7.sdk',
+    'MacOSX10.9.sdk',
     )
   env.Append(CCFLAGS = ["-isysroot", frameworkPath])
   env.Append(FRAMEWORKS = ['OpenGL', 'Cocoa', 'Foundation'])

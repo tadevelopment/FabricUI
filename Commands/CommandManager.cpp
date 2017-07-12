@@ -25,7 +25,7 @@ CommandManager* CommandManager::s_cmdManager = 0;
 CommandManager::CommandManager() 
   : QObject()
   , m_canMergeIDCounter(0)
-  , m_debugMode(NoDebug)
+  , m_debugMode( NoDebug )
 {
   if(s_instanceFlag)
     FabricException::Throw(
@@ -147,7 +147,7 @@ void CommandManager::doCommand(
   if(!subCmd)
     emit commandDone(
       cmd, 
-      canMerge ? false : cmd->canUndo()
+      cmd->canUndo()
       );
 
   if(m_debugMode != NoDebug)
