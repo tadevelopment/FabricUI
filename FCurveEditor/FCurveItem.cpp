@@ -30,6 +30,8 @@ inline QPointF max( const QPointF& a, const QPointF& b )
   );
 }
 
+inline qreal len2( const QPointF& v ) { return v.x() * v.x() + v.y() * v.y(); }
+
 // TODO: fix the "trails" drawing artefacts (by calling QGraphicsItem::prepareGeometryChanges())
 class FCurveItem::FCurveShape : public QGraphicsItem
 {
@@ -224,10 +226,29 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
         AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
         const size_t index = m_parent->m_index;
         Handle h = curve->getHandle( index );
+
+        const qreal crossProd = std::abs( h.tanIn.x() * h.tanOut.y() - h.tanIn.y() * h.tanOut.x() );
+        const qreal l2In = len2( h.tanIn );
+        const qreal l2Out = len2( h.tanOut );
+        const qreal normProd2 = ( h.tanIn.x() * h.tanIn.x() + h.tanIn.y() * h.tanIn.y() )
+          * ( h.tanOut.x() * h.tanIn.x() + h.tanIn.y() * h.tanIn.y() );
+        const bool splitTangents = // moving tagents independently ?
+          event->modifiers().testFlag( Qt::ShiftModifier ) ||
+          ( crossProd * crossProd > 0.001 * l2In * l2Out ) ||
+          l2In == 0 || l2Out == 0
+        ;
         if( m_tangent->m_inNotOut )
+        {
           h.tanIn = -( event->scenePos() - m_parent->scenePos() );
+          if( !splitTangents )
+            h.tanOut = h.tanIn * sqrt( l2Out / l2In );
+        }
         else
+        {
           h.tanOut = ( event->scenePos() - m_parent->scenePos() );
+          if( !splitTangents )
+            h.tanIn = h.tanOut * sqrt( l2In / l2Out );
+        }
         curve->setHandle( index, h );
       }
       void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::CrossCursor ); }
