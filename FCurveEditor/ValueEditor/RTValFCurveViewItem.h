@@ -27,8 +27,8 @@ class RTValFCurveViewItem : public BaseViewItem
   RTValAnimXFCurveDFGController* m_model;
   class Editor;
   Editor* m_editor;
-  class ExpandedEditor;
-  ExpandedEditor* m_expandedEditor;
+  class ExpandedDialog;
+  ExpandedDialog* m_expandedDialog;
 
 public:
   static BaseViewItem *CreateItem(

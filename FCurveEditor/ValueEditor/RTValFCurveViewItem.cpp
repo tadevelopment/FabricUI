@@ -15,6 +15,8 @@
 #include <FabricUI/Commands/KLCommandRegistry.h> // HACK: remove
 
 #include <QPushButton>
+#include <QDialog>
+#include <QLayout>
 
 #include <assert.h>
 #include <QDebug>
@@ -172,9 +174,20 @@ public:
   }
 };
 
-class RTValFCurveViewItem::ExpandedEditor : public FabricUI::FCurveEditor::FCurveEditor
+class RTValFCurveViewItem::ExpandedDialog : public QDialog
 {
-
+  FabricUI::FCurveEditor::FCurveEditor* m_editor;
+public:
+  ExpandedDialog( Editor* parent )
+    : QDialog( parent )
+    , m_editor( new FabricUI::FCurveEditor::FCurveEditor() )
+  {
+    QHBoxLayout* m_lay = new QHBoxLayout();
+    m_lay->setMargin( 0 ); m_lay->setSpacing( 0 );
+    m_lay->addWidget( m_editor );
+    this->setLayout( m_lay );
+  }
+  inline FabricUI::FCurveEditor::FCurveEditor* editor() { return m_editor; }
 };
 
 RTValFCurveViewItem::RTValFCurveViewItem(
@@ -184,10 +197,10 @@ RTValFCurveViewItem::RTValFCurveViewItem(
 ) : BaseViewItem( name, metadata )
   , m_model( new RTValAnimXFCurveDFGController() )
   , m_editor( new Editor( this ) )
-  , m_expandedEditor( new ExpandedEditor() )
+  , m_expandedDialog( new ExpandedDialog( m_editor ) )
 {
   m_editor->setModel( m_model );
-  m_expandedEditor->setModel( m_model );
+  m_expandedDialog->editor()->setModel( m_model );
   this->onModelValueChanged( value );
 
   m_editor->setFixedSize( 500, 150 ); // HACK
@@ -201,7 +214,7 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   for( size_t i = 0; i < 2; i++ )
   {
     FabricUI::FCurveEditor::FCurveEditor* editor =
-      ( i == 0 ? m_editor : ( FabricUI::FCurveEditor::FCurveEditor* )m_expandedEditor );
+      ( i == 0 ? m_editor : m_expandedDialog->editor() );
     QOBJECT_CONNECT(
       editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionBegin, ( ),
       this, SLOT, RTValFCurveViewItem, onEditorInteractionBegin, ( )
@@ -216,7 +229,7 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );
   m_model->setPath( bindingId, portPath );
 
-  m_expandedEditor->setWindowTitle( "AnimX::AnimCurve <" + QString::fromUtf8( portPath ) + ">" );
+  m_expandedDialog->setWindowTitle( "AnimX::AnimCurve <" + QString::fromUtf8( portPath ) + ">" );
 }
 
 void RTValFCurveViewItem::onEditorInteractionBegin()
@@ -231,14 +244,13 @@ void RTValFCurveViewItem::onEditorInteractionEnd()
 
 void RTValFCurveViewItem::expand()
 {
-  m_expandedEditor->show();
-  m_expandedEditor->fitInView();
+  m_expandedDialog->show();
+  m_expandedDialog->editor()->fitInView();
 }
 
 RTValFCurveViewItem::~RTValFCurveViewItem()
 {
   //delete m_editor; // HACK;TODO : delete and fix crash when closing Canvas
-  delete m_expandedEditor;
   delete m_model;
 }
 
