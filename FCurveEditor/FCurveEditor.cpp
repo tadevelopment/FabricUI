@@ -130,14 +130,27 @@ FCurveEditor::FCurveEditor()
   deleteAction->setShortcut( Qt::Key_Delete );
   QOBJECT_CONNECT( deleteAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeleteSelectedHandles, () );
   this->addAction( deleteAction );
+
+  this->setVEPos( QPointF( -20, 20 ) );
 }
 
 void FCurveEditor::resizeEvent( QResizeEvent * e )
 {
   Parent::resizeEvent( e );
+  this->updateVEPos();
+}
+
+void FCurveEditor::updateVEPos()
+{
   m_valueEditor->setGeometry( QRect(
-    this->rect().right() - 20 - m_valueEditor->width(),
-    this->rect().top() + 20,
+    ( m_vePos.x() < 0 ?
+      this->rect().right() + m_vePos.x() - m_valueEditor->width() :
+      this->rect().left() + m_vePos.x()
+    ),
+    ( m_vePos.y() < 0 ?
+      this->rect().bottom() + m_vePos.y() - m_valueEditor->height() :
+      this->rect().top() + m_vePos.y()
+    ),
     m_valueEditor->width(),
     m_valueEditor->height()
   ) );

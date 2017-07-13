@@ -23,18 +23,26 @@ class FCurveEditor : public RuledGraphicsView
 
   typedef RuledGraphicsView Parent;
 
+  // relative position of the value editor (negative values will be from the right/bottom)
+  Q_PROPERTY( QPointF vePos READ vePos WRITE setVEPos )
+  QPointF m_vePos;
+
   AbstractFCurveModel* m_model;
   QGraphicsScene* m_scene;
   FCurveItem* m_curveItem;
   class ValueEditor;
   ValueEditor* m_valueEditor;
   void veEditFinished( bool isXNotY );
+  void updateVEPos();
 
 public:
   FCurveEditor();
   ~FCurveEditor();
   void setModel( AbstractFCurveModel* );
   void fitInView();
+
+  inline QPointF vePos() const { return m_vePos; }
+  inline void setVEPos( const QPointF& p ) { m_vePos = p; this->updateVEPos(); }
 
 protected:
   void mousePressEvent( QMouseEvent * ) FTL_OVERRIDE;

@@ -147,11 +147,12 @@ class RTValFCurveViewItem::Editor : public FabricUI::FCurveEditor::FCurveEditor
   {
     QRect cr = this->contentsRect();
     m_expandButton->setGeometry( QRect(
-      cr.left() + 32,
-      cr.top(),
+      cr.right() - 8 - m_expandButton->width(),
+      cr.top() + 8,
       m_expandButton->width(),
       m_expandButton->height()
     ) );
+    this->setVEPos( QPointF( -8 - m_expandButton->width() - 8, 8 ) );
   }
 public:
   Editor( RTValFCurveViewItem* parent )
