@@ -253,12 +253,16 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
         if( m_tangent->m_inNotOut )
         {
           h.tanIn = -( event->scenePos() - m_parent->scenePos() );
+          if( h.tanIn.x() < 0 )
+            h.tanIn.setX( 0 );
           if( !splitTangents )
             h.tanOut = h.tanIn * sqrt( l2Out / l2In );
         }
         else
         {
           h.tanOut = ( event->scenePos() - m_parent->scenePos() );
+          if( h.tanOut.x() < 0 )
+            h.tanOut.setX( 0 );
           if( !splitTangents )
             h.tanIn = h.tanOut * sqrt( l2In / l2Out );
         }
