@@ -9,8 +9,8 @@ using namespace FabricUI::FCurveEditor;
 
 Ruler::Ruler( Orientation o )
   : m_orientation( o )
-  , m_majorGradsPixelSpacing( 800.0f )
-  , m_majToMinGradsRatio( 8 )
+  , m_majorGradsPixelSpacing( 800 )
+  , m_majToMinGradsRatio( 8.0 )
   , m_logScale( 2 )
   , m_penColor( QColor( 128, 128, 128 ) )
   , m_majorPenWidth( 2 )

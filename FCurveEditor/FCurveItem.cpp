@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QGraphicsSceneEvent>
 
+#include <cmath>
 #include <limits>
 
 #include <QDebug>
@@ -244,8 +245,6 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
         const qreal crossProd = std::abs( h.tanIn.x() * h.tanOut.y() - h.tanIn.y() * h.tanOut.x() );
         const qreal l2In = len2( h.tanIn );
         const qreal l2Out = len2( h.tanOut );
-        const qreal normProd2 = ( h.tanIn.x() * h.tanIn.x() + h.tanIn.y() * h.tanIn.y() )
-          * ( h.tanOut.x() * h.tanIn.x() + h.tanIn.y() * h.tanIn.y() );
         const bool splitTangents = // moving tagents independently ?
           event->modifiers().testFlag( Qt::ShiftModifier ) ||
           ( crossProd * crossProd > 0.001 * l2In * l2Out ) ||
