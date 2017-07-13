@@ -130,7 +130,7 @@ FCurveEditor::FCurveEditor()
   QOBJECT_CONNECT( deleteAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeleteSelectedHandles, () );
   this->addAction( deleteAction );
 
-  this->setVEPos( QPointF( -20, 20 ) );
+  this->setVEPos( QPoint( -20, 20 ) );
 }
 
 void FCurveEditor::resizeEvent( QResizeEvent * e )
