@@ -6,3 +6,8 @@ foreach( Test ${Tests} )
 endforeach()
 target_link_libraries( FCurveEditorTest PRIVATE AnimXFCurveModel )
 target_link_libraries( RTValFCurveEditorTest PRIVATE RTValAnimXFCurveModel )
+
+if( NOT DEFINED FABRIC_DIR )
+  set( FABRIC_DIR "${SGDir}/stage/${CMAKE_SYSTEM_NAME}/Release" )
+endif()
+configure_file( ${SGDir}/Native/FabricUI/FabricUI.qss ${CMAKE_BINARY_DIR} )

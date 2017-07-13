@@ -143,7 +143,7 @@ RuledGraphicsView::RuledGraphicsView()
   : m_view( new GraphicsView( this ) )
   , m_scrollSpeed( 1 / 800.0f )
   , m_zoomOnCursor( true )
-  , m_smoothZoom( true )
+  , m_smoothZoom( false )
   , m_targetScale( QPointF( 1E2, 1E2 ) )
   , m_timer( new QTimer( this ) )
 {
@@ -151,9 +151,6 @@ RuledGraphicsView::RuledGraphicsView()
   lay->setSpacing( 0 ); lay->setMargin( 0 );
 
   this->enableRectangleSelection( true );
-
-  // HACK / TODO : remove
-  this->setStyleSheet( "background-color: #222; border: #000;" );
 
   lay->addWidget( m_view, 0, 1 );
 
@@ -286,9 +283,6 @@ void RuledGraphicsView::tick()
 
 void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF & r )
 {
-  // Background (HACK/TODO : remove)
-  p->fillRect( r, QColor( 64, 64, 64 ) );
-
   QRect wr = this->viewport()->geometry(); // widget viewRect
   QRectF sr = this->mapToScene( wr ).boundingRect(); // scene viewRect
 

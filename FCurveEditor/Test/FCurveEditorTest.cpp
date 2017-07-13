@@ -3,6 +3,8 @@
 #include <FabricUI/FCurveEditor/Models/AnimXCpp/AnimXFCurveModel.h>
 
 #include <QApplication>
+#include <QFile>
+#include <QTextStream>
 #include <QDebug>
 
 using namespace FabricUI::FCurveEditor;
@@ -28,10 +30,15 @@ int main()
     curve.addHandle( h );
   }
 
+
   FCurveEditor* editor = new FCurveEditor();
   editor->setModel( &curve );
   editor->resize( 800, 600 );
   editor->show();
+
+  QFile qss( "FabricUI.qss" );
+  if( qss.open( QIODevice::ReadOnly ) )
+    editor->setStyleSheet( QTextStream( &qss ).readAll() );
 
   app.exec();
   return 0;

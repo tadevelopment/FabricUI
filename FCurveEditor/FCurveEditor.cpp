@@ -35,6 +35,8 @@ class FCurveEditor::ValueEditor : public QFrame
       , m_label( new QLabel( isXNotY ? "X:" : "Y:" ) )
       , m_edit( new QLineEdit() )
     {
+      this->setObjectName( "FloatEditor" );
+
       QHBoxLayout* m_layout = new QHBoxLayout();
       m_layout->setMargin( 0 );
       m_layout->addWidget( m_label );
@@ -46,10 +48,6 @@ class FCurveEditor::ValueEditor : public QFrame
         QOBJECT_CONNECT( m_edit, SIGNAL, QLineEdit, editingFinished, ( ), m_parent->m_parent, SLOT, FCurveEditor, veXEditFinished, ( ) );
       else
         QOBJECT_CONNECT( m_edit, SIGNAL, QLineEdit, editingFinished, ( ), m_parent->m_parent, SLOT, FCurveEditor, veYEditFinished, ( ) );
-
-      // HACK : use QSS instead
-      this->setStyleSheet( "background-color: none;" );
-      m_edit->setStyleSheet( "background-color: rgba(0,0,0,200);" );
     }
     inline void set( qreal v ) { m_edit->setText( QString::number( v ) ); }
     inline QString get() const { return m_edit->text(); }
@@ -64,11 +62,10 @@ public:
     , m_x( new FloatEditor( this, true ) )
     , m_y( new FloatEditor( this, false ) )
   {
-    // HACK : use QSS instead
-    this->setStyleSheet( "background-color: rgba(32,32,32,128); border-radius: 4px; color: #FFF; font-size: 16px;" );
+    this->setObjectName( "ValueEditor" );
 
     QHBoxLayout* m_layout = new QHBoxLayout();
-    m_layout->setMargin( 4 ); m_layout->setSpacing( 4 );
+    m_layout->setMargin( 2 ); m_layout->setSpacing( 2 );
     m_layout->addWidget( m_x );
     m_layout->addWidget( m_y );
     this->setLayout( m_layout );
@@ -108,6 +105,8 @@ FCurveEditor::FCurveEditor()
   , m_curveItem( new FCurveItem() )
   , m_valueEditor( new ValueEditor( this ) )
 {
+  this->setObjectName( "FCurveEditor" );
+
   m_scene->setSceneRect( QRectF( -1E8, -1E8, 2 * 1E8, 2 * 1E8 ) );
   this->view()->setScene( m_scene );
   m_scene->addItem( m_curveItem );

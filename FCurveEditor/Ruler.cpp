@@ -16,7 +16,7 @@ Ruler::Ruler( Qt::Orientation o )
   , m_majorPenWidth( 2 )
   , m_minorPenWidth( 1 )
 {
-
+  this->setObjectName( "Ruler" );
 }
 
 void Ruler::setRange( qreal start, qreal end )
