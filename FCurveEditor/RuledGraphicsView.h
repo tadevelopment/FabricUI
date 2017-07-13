@@ -5,7 +5,7 @@
 #ifndef FABRICUI_FCURVEEDITOR_RULEDGRAPHICSVIEW_H
 #define FABRICUI_FCURVEEDITOR_RULEDGRAPHICSVIEW_H
 
-#include <QWidget>
+#include <QFrame>
 #include <FTL/Config.h>
 
 class QTimer;
@@ -16,7 +16,7 @@ namespace FabricUI
 namespace FCurveEditor
 {
 
-class RuledGraphicsView : public QWidget
+class RuledGraphicsView : public QFrame
 {
   Q_OBJECT
 

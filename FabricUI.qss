@@ -2250,13 +2250,14 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #FCurveEditor
 {
   background-color: #222222;
-  border: 8px solid #333333;
+  border: 4px solid #333333;
   border-radius: 8px;
 }
 
 #FCurveEditor QGraphicsView
 {
   background-color: #444444;
+  border: none;
 }
 
 #FCurveEditor #Ruler
