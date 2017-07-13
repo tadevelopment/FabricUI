@@ -2263,6 +2263,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #FCurveEditor #Ruler
 {
   qproperty-penColor: #5e686e;
+  qproperty-majGradToBreadthRatio: 1.0;
+  qproperty-minGradToBreadthRatio: 0.3;
 }
 
 #FCurveEditor #ValueEditor

@@ -117,7 +117,7 @@ class RuledGraphicsView::Ruler : public FabricUI::FCurveEditor::Ruler
 
 public:
   Ruler( RuledGraphicsView* parent, bool isVertical )
-    : Parent( isVertical ? Qt::Vertical : Qt::Horizontal )
+    : Parent( isVertical ? Ruler::Left : Ruler::Bottom )
     , m_parent( parent )
     , m_isVertical( isVertical )
   {}

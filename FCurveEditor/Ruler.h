@@ -32,16 +32,34 @@ class Ruler : public QFrame
   Q_PROPERTY( qreal majorPenWidth READ majorPenWidth WRITE setMajorPenWidth )
   Q_PROPERTY( qreal minorPenWidth READ minorPenWidth WRITE setMinorPenWidth )
 
+  // ratio between the size of the graduation, and the breadth (smaller side) of the ruler (in [0;1])
+  Q_PROPERTY( qreal majGradToBreadthRatio READ majGradToBreadthRatio WRITE setMajGradToBreadthRatio )
+  Q_PROPERTY( qreal minGradToBreadthRatio READ minGradToBreadthRatio WRITE setMinGradToBreadthRatio )
+  Q_PROPERTY( qreal textBreadthPos READ textBreadthPos WRITE setTextBreadthPos )
+
+public:
+
+  enum Orientation
+  {
+    Top,
+    Bottom,
+    Left,
+    Right
+  };
+
 private:
 
   qreal m_start, m_end;
-  Qt::Orientation m_orientation;
+  Orientation m_orientation;
   size_t m_majorGradsPixelSpacing;
   qreal m_majToMinGradsRatio;
   qreal m_logScale;
   QColor m_penColor;
   qreal m_majorPenWidth;
   qreal m_minorPenWidth;
+  qreal m_majGradToBreadthRatio;
+  qreal m_minGradToBreadthRatio;
+  qreal m_textBreadthPos;
 
 public:
 
@@ -49,7 +67,7 @@ public:
   // - scale : base2, base10, "mixed-grading", etc...
   // - labels for large/small numbers : [ "0.5", "0.50123" ] or [ "1000000", "2000000" ] 
 
-  Ruler( Qt::Orientation );
+  Ruler( Orientation );
   void setRange( qreal start, qreal end );
 
   inline size_t majorGradsPixelsSpacing() const { return m_majorGradsPixelSpacing; }
@@ -65,6 +83,16 @@ public:
   inline void setMajorPenWidth( qreal w ) { m_majorPenWidth = w; this->update(); }
   inline qreal minorPenWidth() const { return m_minorPenWidth; }
   inline void setMinorPenWidth( qreal w ) { m_minorPenWidth = w; this->update(); }
+
+  inline qreal majGradToBreadthRatio() const { return m_majGradToBreadthRatio; }
+  inline void setMajGradToBreadthRatio( qreal r )
+    { m_majGradToBreadthRatio = std::max<qreal>( 0, std::min<qreal>( 1, r ) ); this->update(); }
+  inline qreal minGradToBreadthRatio() const { return m_minGradToBreadthRatio; }
+  inline void setMinGradToBreadthRatio( qreal r )
+  { m_minGradToBreadthRatio = std::max<qreal>( 0, std::min<qreal>( 1, r ) ); this->update(); }
+  inline qreal textBreadthPos() const { return m_textBreadthPos; }
+  inline void setTextBreadthPos( qreal p )
+    { m_textBreadthPos = std::max<qreal>( 0, std::min<qreal>( 1, p ) ); this->update(); }
 
 protected:
   void paintEvent( QPaintEvent * ) FTL_OVERRIDE;
