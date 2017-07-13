@@ -2242,3 +2242,42 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   padding: 0;
   background-color: #596D7A;
 }
+
+/****************************************************************************
+ * FCurveEditor
+ ***************************************************************************/
+
+#FCurveEditor
+{
+  background-color: #222222;
+  border: 8px solid #333333;
+  border-radius: 8px;
+}
+
+#FCurveEditor QGraphicsView
+{
+  background-color: #444444;
+}
+
+#FCurveEditor #Ruler
+{
+  qproperty-penColor: #5e686e;
+}
+
+#FCurveEditor #ValueEditor
+{
+  background-color: rgba(32,32,32,128);
+  border-radius: 4px;
+}
+
+#FCurveEditor #ValueEditor *
+{
+  color: #FFF;
+  font-size: 16px;
+}
+
+#FCurveEditor #ValueEditor #FloatEditor QLineEdit
+{
+  background-color: rgba(32,32,32);
+}
+
