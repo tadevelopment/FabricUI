@@ -116,6 +116,12 @@ signals:
     FTL::CStrRef newResolvedTypeName
     );
 
+  void execPortsReordered(
+    FTL::ArrayRef<unsigned> newOrder
+    );
+
+  // the executable's fixedPorts
+
   void execFixedPortInserted(
     unsigned portIndex,
     FTL::CStrRef portName,
@@ -142,11 +148,47 @@ signals:
     FTL::CStrRef portName
     );
 
-  void execPortsReordered(
+  void execFixedPortsReordered(
     FTL::ArrayRef<unsigned> newOrder
     );
 
-  void execFixedPortsReordered(
+  // The executable's nlsPorts
+
+  void nlsPortInserted(
+    unsigned portIndex,
+    FTL::CStrRef portName,
+    FTL::JSONObject const *portDesc
+    );
+
+  void nlsPortRenamed(
+    unsigned portIndex,
+    FTL::CStrRef oldPortName,
+    FTL::CStrRef newPortName
+    );
+
+  void nlsPortRemoved(
+    unsigned portIndex,
+    FTL::CStrRef portName
+    );
+
+  void nlsPortMetadataChanged(
+    FTL::CStrRef portName,
+    FTL::CStrRef key,
+    FTL::CStrRef value
+    );
+
+  void nlsPortTypeSpecChanged(
+    unsigned portIndex,
+    FTL::CStrRef portName,
+    FTL::CStrRef newTypeSpec
+    );
+
+  void nlsPortResolvedTypeChanged(
+    FTL::CStrRef portName,
+    FTL::CStrRef newResolvedTypeName
+    );
+
+  void nlsPortsReordered(
     FTL::ArrayRef<unsigned> newOrder
     );
 
@@ -464,6 +506,13 @@ private:
   void handler_portsDisconnected( FTL::JSONObject const *jsonObject );
   void handler_refVarPathChanged( FTL::JSONObject const *jsonObject );
   void handler_removedFromOwner( FTL::JSONObject const *jsonObject );
+  void handler_nlsPortInserted( FTL::JSONObject const *jsonObject );
+  void handler_nlsPortMetadataChanged( FTL::JSONObject const *jsonObject );
+  void handler_nlsPortRemoved( FTL::JSONObject const *jsonObject );
+  void handler_nlsPortRenamed( FTL::JSONObject const *jsonObject );
+  void handler_nlsPortResolvedTypeChanged( FTL::JSONObject const *jsonObject );
+  void handler_nlsPortTypeSpecChanged( FTL::JSONObject const *jsonObject );
+  void handler_nlsPortsReordered( FTL::JSONObject const *jsonObject );
 
   FabricCore::DFGView m_view;
 

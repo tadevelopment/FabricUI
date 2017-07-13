@@ -113,6 +113,8 @@ QMainWindow > QDockWidget::title
  * Status Bar
  ***************************************************************************/
 QMainWindow QStatusBar {
+  font-family: "Roboto";
+  font-size: 8pt;
   border-top: 1px solid #484848;
   background: #363636;
 }
@@ -133,12 +135,12 @@ QPushButton#logWidget_button
   background-repeat: no-repeat;
 }
 
-QPushButton#logWidget_button:hover
+QMainWindow QStatusBar QPushButton#logWidget_button:hover
 {
   background-image: url(${FABRIC_DIR}/Resources/Icons/log-widget-button-hover.png);
 }
 
-QPushButton#logWidget_button:pressed
+QMainWindow QStatusBar QPushButton#logWidget_button:pressed
 {
   background-image: url(${FABRIC_DIR}/Resources/Icons/log-widget-button-pressed.png);
 }
