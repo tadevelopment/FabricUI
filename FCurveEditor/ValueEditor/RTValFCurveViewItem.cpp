@@ -214,6 +214,8 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   const char* bindingId = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGBindingIdKey.data() );
   const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );
   m_model->setPath( bindingId, portPath );
+
+  m_expandedEditor->setWindowTitle( "AnimX::AnimCurve <" + QString::fromUtf8( portPath ) + ">" );
 }
 
 void RTValFCurveViewItem::onEditorInteractionBegin()
