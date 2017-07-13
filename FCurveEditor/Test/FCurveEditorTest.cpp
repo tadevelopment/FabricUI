@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QTextStream>
+#include <assert.h>
 #include <QDebug>
 
 using namespace FabricUI::FCurveEditor;
@@ -38,7 +39,13 @@ int main()
 
   QFile qss( "FabricUI.qss" );
   if( qss.open( QIODevice::ReadOnly ) )
-    editor->setStyleSheet( QTextStream( &qss ).readAll() );
+  {
+    QString qssTxt = QTextStream( &qss ).readAll();
+    char* fde = getenv( "FABRIC_DIR" );
+    assert( fde != NULL );
+    qssTxt = qssTxt.replace( "${FABRIC_DIR}", fde );
+    editor->setStyleSheet( qssTxt );
+  }
 
   app.exec();
   return 0;

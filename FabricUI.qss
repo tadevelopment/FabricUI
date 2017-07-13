@@ -2280,4 +2280,3 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 {
   background-color: rgba(32,32,32);
 }
-
