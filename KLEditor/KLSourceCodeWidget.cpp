@@ -56,6 +56,9 @@ KLSourceCodeWidget::KLSourceCodeWidget(QWidget * parent, FabricServices::ASTWrap
   m_highlighter = new KLSyntaxHighlighter(document(), manager);
   m_codeAssistant = new CodeCompletion::KLCodeAssistant(m_highlighter);
 
+  // disable code completaion
+  m_codeAssistant->setEnabled(false);
+
   setContentsMargins(0, 0, 0, 0);
 
   m_hasUnsavedChanges = false;
@@ -95,6 +98,7 @@ void KLSourceCodeWidget::setCodeAndExec(QString text, FabricCore::DFGExec *dfgEx
   m_highlighter->setEnabled(false);
   setPlainText(text);
   m_highlighter->setEnabled(true);
+  m_highlighter->initializeBasicTypes(true /* force */);
   updateSourceCode();
   m_isHighlighting = true;
   m_highlighter->rehighlight();
