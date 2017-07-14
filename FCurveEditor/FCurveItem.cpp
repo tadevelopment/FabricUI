@@ -164,8 +164,8 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     void updateColor()
     {
       this->setPen( Qt::NoPen );
-      this->setBrush( m_hovered ? QColor( 255, 255, 255 ) :
-        m_selected ? QColor( 0, 128, 255 )
+      this->setBrush( m_hovered ? QColor( 191, 191, 191 ) :
+        m_selected ? QColor( 39, 168, 223 )
         : QColor( 128, 128, 128 )
       );
     }
@@ -194,6 +194,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
         m_parent->m_parent->clearHandleSelection();
       m_parent->m_parent->addHandleToSelection( m_parent->m_index );
       emit m_parent->m_parent->interactionBegin();
+      this->setCursor( Qt::SizeAllCursor );
     }
     void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
@@ -213,18 +214,17 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
         m_parent->m_parent->editHandle( m_parent->m_index );
       }
       emit m_parent->m_parent->interactionEnd();
+      this->unsetCursor();
     }
     void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE
     {
       m_hovered = true;
       this->updateColor();
-      this->setCursor( Qt::CrossCursor );
     }
     void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE
     {
       m_hovered = false;
       this->updateColor();
-      this->unsetCursor();
     }
   };
   Center* m_center;
@@ -243,7 +243,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       inline void updateColor()
       {
         this->setPen( Qt::NoPen );
-        this->setBrush( m_selected ? QColor( 0, 128, 255 ) : QColor( 255, 255, 255 ) );
+        this->setBrush( m_selected ? QColor( 39, 168, 223 ) : QColor( 255, 255, 255 ) );
       }
     public:
       QGraphicsWidget* m_posW; // Used for its position
@@ -298,7 +298,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
         }
         curve->setHandle( index, h );
       }
-      void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::CrossCursor ); }
+      void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::SizeAllCursor ); }
       void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->unsetCursor(); }
       void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
       {
