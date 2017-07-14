@@ -120,7 +120,17 @@ public:
         .mapRect( QRectF( widget->geometry() ) ).intersected( this->boundingRect() );
       QPen pen; pen.setCosmetic( true );
       pen.setWidthF( 2 );
-      pen.setColor( QColor( 128, 128, 128 ) );
+
+      QColor inactiveColor( 80, 98, 110 );
+      QColor activeColor( 102, 125, 140 );
+
+      if( !this->m_parent->m_selectedHandles.empty() ) {
+        pen.setColor( activeColor );        
+      }
+      else {
+        pen.setColor( inactiveColor );        
+      }
+
       painter->setPen( pen );
       const size_t n = widget->width() / 8;
       for( size_t i = 0; i < n; i++ )
@@ -153,6 +163,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     bool m_hasMovedBeforeRelease;
     void updateColor()
     {
+      this->setPen( Qt::NoPen );
       this->setBrush( m_hovered ? QColor( 255, 255, 255 ) :
         m_selected ? QColor( 0, 128, 255 )
         : QColor( 128, 128, 128 )
@@ -231,6 +242,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       typedef QGraphicsEllipseItem Parent;
       inline void updateColor()
       {
+        this->setPen( Qt::NoPen );
         this->setBrush( m_selected ? QColor( 0, 128, 255 ) : QColor( 255, 255, 255 ) );
       }
     public:
