@@ -292,6 +292,7 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
   QRectF sr = this->mapToScene( wr ).boundingRect(); // scene viewRect
 
   // Grid
+  // TODO : render the grid in a raster, and then tile it on the background (for better performance)
   for( int o = 0; o < 2; o++ ) // 2 orientations
   {
     const Qt::Orientation ori = o == 0 ? Qt::Vertical : Qt::Horizontal;
