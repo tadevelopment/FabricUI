@@ -1,11 +1,9 @@
 
+#include <FabricUI/FCurveEditor/Test/Test.h>
 #include <FabricUI/FCurveEditor/FCurveEditor.h>
 #include <FabricUI/FCurveEditor/Models/AnimXCpp/AnimXFCurveModel.h>
 
 #include <QApplication>
-#include <QFile>
-#include <QTextStream>
-#include <assert.h>
 #include <QDebug>
 
 using namespace FabricUI::FCurveEditor;
@@ -36,16 +34,7 @@ int main()
   editor->setModel( &curve );
   editor->resize( 800, 600 );
   editor->show();
-
-  QFile qss( "FabricUI.qss" );
-  if( qss.open( QIODevice::ReadOnly ) )
-  {
-    QString qssTxt = QTextStream( &qss ).readAll();
-    char* fde = getenv( "FABRIC_DIR" );
-    assert( fde != NULL );
-    qssTxt = qssTxt.replace( "${FABRIC_DIR}", fde );
-    editor->setStyleSheet( qssTxt );
-  }
+  editor->setStyleSheet( LoadQSS() );
 
   app.exec();
   return 0;

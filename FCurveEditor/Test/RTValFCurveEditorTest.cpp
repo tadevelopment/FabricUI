@@ -1,4 +1,5 @@
 
+#include <FabricUI/FCurveEditor/Test/Test.h>
 #include <FabricUI/FCurveEditor/FCurveEditor.h>
 #include <FabricUI/FCurveEditor/Models/AnimXKL/RTValAnimXFCurveModel.h>
 
@@ -53,6 +54,7 @@ int main()
   editor->setModel( &curve );
   editor->resize( 800, 600 );
   editor->show();
+  editor->setStyleSheet( LoadQSS() );
 
   app.exec();
 
