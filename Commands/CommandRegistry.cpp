@@ -32,6 +32,8 @@ CommandRegistry::CommandRegistry()
 CommandRegistry::~CommandRegistry() 
 {
   s_instanceFlag = false;
+  if( s_cmdRegistry == this )
+    s_cmdRegistry = 0;
 }
 
 CommandRegistry* CommandRegistry::getCommandRegistry()

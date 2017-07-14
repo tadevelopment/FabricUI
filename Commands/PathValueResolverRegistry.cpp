@@ -38,6 +38,8 @@ PathValueResolverRegistry::~PathValueResolverRegistry()
 {
   s_instanceFlag = false;
   clear();
+  if( s_registry == this )
+    s_registry = 0;
 }
 
 PathValueResolverRegistry* PathValueResolverRegistry::getRegistry()
