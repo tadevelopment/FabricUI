@@ -33,38 +33,18 @@ inline QPointF max( const QPointF& a, const QPointF& b )
 
 inline qreal len2( const QPointF& v ) { return v.x() * v.x() + v.y() * v.y(); }
 
-// TODO: fix the "trails" drawing artefacts (by calling QGraphicsItem::prepareGeometryChanges())
 class FCurveItem::FCurveShape : public QGraphicsItem
 {
   const FCurveItem* m_parent;
   typedef QGraphicsItem Parent;
-  QRectF m_boundingRect;
+  mutable QRectF m_boundingRect;
+  mutable bool m_boundingRectDirty;
 
-public:
-  FCurveShape( const FCurveItem* parent )
-    : m_parent( parent )
+  void updateBoundingRect() const
   {
-    this->updateBoundingRect();
-  }
-
-  QRectF boundingRect() const FTL_OVERRIDE
-  {
-    QRectF r = m_boundingRect;
-    const qreal w = r.width();
-    r.setLeft( r.left() - 100 * w );
-    r.setRight( r.right() + 100 * w );
-    return r;
-  }
-
-  inline QRectF keysBoundingRect() const { return m_boundingRect; }
-
-  void updateBoundingRect()
-  {
-    this->prepareGeometryChange();
-
     // TODO : cache and update when handles are moved
     QPointF topLeft = QPointF( 1, 1 ) * std::numeric_limits<qreal>::max();
-    QPointF botRight = QPointF( 1, 1 ) * (-std::numeric_limits<qreal>::max());
+    QPointF botRight = QPointF( 1, 1 ) * ( -std::numeric_limits<qreal>::max() );
     if( m_parent->m_curve != NULL )
     {
       size_t hc = m_parent->m_curve->getHandleCount();
@@ -88,6 +68,44 @@ public:
       }
     }
     m_boundingRect = QRectF( topLeft, botRight );
+    m_boundingRectDirty = false;
+  }
+
+  inline void updateBoundingRectIfDirty() const
+  {
+    if( m_boundingRectDirty )
+      this->updateBoundingRect();
+  }
+
+public:
+  FCurveShape( const FCurveItem* parent )
+    : m_parent( parent )
+    , m_boundingRectDirty( true )
+  {
+    this->updateBoundingRect();
+  }
+
+  QRectF boundingRect() const FTL_OVERRIDE
+  {
+    this->updateBoundingRectIfDirty();
+    QRectF r = m_boundingRect;
+    const qreal w = r.width();
+    r.setLeft( r.left() - 100 * w );
+    r.setRight( r.right() + 100 * w );
+    return r;
+  }
+
+  inline QRectF keysBoundingRect() const
+  {
+    this->updateBoundingRectIfDirty();
+    return m_boundingRect;
+  }
+
+  inline void setBoundingRectDirty()
+  {
+    this->prepareGeometryChange();
+    m_boundingRectDirty = true;
+    this->update();
   }
 
   void paint(
@@ -445,7 +463,7 @@ void FCurveItem::addHandle( size_t i )
 void FCurveItem::onHandleAdded()
 {
   this->addHandle( m_handles.size() );
-  m_curveShape->updateBoundingRect();
+  m_curveShape->setBoundingRectDirty();
 }
 
 void FCurveItem::onHandleDeleted( size_t i )
@@ -460,7 +478,7 @@ void FCurveItem::onHandleDeleted( size_t i )
 
   this->clearHandleSelection();
 
-  m_curveShape->updateBoundingRect();
+  m_curveShape->setBoundingRectDirty();
   if( i == m_editedHandle )
     emit this->stopEditingHandle();
 }
@@ -470,7 +488,7 @@ void FCurveItem::onHandleMoved( size_t i )
   assert( i < m_handles.size() );
   assert( m_handles.size() == m_curve->getHandleCount() );
   m_handles[i]->setValue( m_curve->getHandle( i ) );
-  m_curveShape->updateBoundingRect();
+  m_curveShape->setBoundingRectDirty();
   if( i == m_editedHandle )
     emit this->editedHandleValueChanged();
 }
@@ -494,5 +512,5 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
   for( size_t i = 0; i < hc; i++ )
     this->addHandle( i );
 
-  m_curveShape->updateBoundingRect();
+  m_curveShape->setBoundingRectDirty();
 }
