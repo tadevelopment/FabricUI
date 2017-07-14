@@ -171,9 +171,14 @@ RuledGraphicsView::RuledGraphicsView()
     m_timer->start();
 
   this->setTopToBottomY( false );
+  this->setGridMaxSpacing( 200 );
+  this->setGridMinSpacing( 20 );
+  this->setGridThickness( 2 );
+  this->setGridThicknessSquarred( true );
+  this->setLogScale( 2 );
 }
 
-void RuledGraphicsView::setRulersSize( const size_t s )
+void RuledGraphicsView::setRulersSize( const int s )
 {
   m_rulersSize = s;
   m_vRuler->setFixedWidth( s );
@@ -292,16 +297,16 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
     const Qt::Orientation ori = o == 0 ? Qt::Vertical : Qt::Horizontal;
 
     qreal size = ( ori == Qt::Vertical ? sr.height() : sr.width() );
+    qreal sizePx = ( ori == Qt::Vertical ? wr.height() : wr.width() );
     qreal minU = ( ori == Qt::Vertical ? sr.top() : sr.left() );
     qreal maxU = ( ori == Qt::Vertical ? sr.bottom() : sr.right() );
 
-    const qreal logScale = 2.0f; // TODO : property
-    qreal viewFactor = 8.0f / size; // TODO : property
-    if( ori == Qt::Vertical )
-      viewFactor *= qreal( wr.height() ) / wr.width();
+    const qreal logScale = m_parent->m_logScale;
 
-    qreal minFactor = std::pow( logScale, std::floor( std::log( viewFactor ) / std::log( logScale ) ) );
-    qreal maxFactor = 150.0f / size; // TODO : Q_PROPERTY
+    qreal minFactorFull = ( qreal( sizePx ) / m_parent->m_gridMaxSpacing ) / size;
+    // getting the nearest integer (in logarithmic scale)
+    qreal minFactor = std::pow( logScale, std::ceil( std::log( minFactorFull ) / std::log( logScale ) ) );
+    qreal maxFactor = ( qreal( sizePx ) / m_parent->m_gridMinSpacing ) / size;
     for( qreal factor = minFactor; factor < maxFactor; factor *= logScale )
     {
       QPen pen;
@@ -311,7 +316,9 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
         // pen, precision errors were making thin lines be inconsistently invisible
         // for the same factor
         pen.setCosmetic( true );
-        qreal pwidth = ( 2 * viewFactor ) / factor; // TODO : property
+        qreal pwidth = ( m_parent->m_gridThickness * minFactorFull ) / factor; // TODO : property
+        if( m_parent->m_gridThicknessSquarred )
+          pwidth *= ( minFactorFull / factor );
         qreal palpha = m_parent->m_gridColor.alphaF();
         if( pwidth < 1 )
         {

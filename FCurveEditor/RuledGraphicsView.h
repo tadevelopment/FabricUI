@@ -20,8 +20,8 @@ class RuledGraphicsView : public QFrame
 {
   Q_OBJECT
 
-  Q_PROPERTY( size_t rulersSize READ rulersSize WRITE setRulersSize )
-  size_t m_rulersSize;
+  Q_PROPERTY( int rulersSize READ rulersSize WRITE setRulersSize )
+  int m_rulersSize;
 
   // Do the Y coordinates go from top-to-bottom (default) or from bottom-to-top ?
   Q_PROPERTY( bool topToBottomY READ topToBottomY WRITE setTopToBottomY )
@@ -29,6 +29,26 @@ class RuledGraphicsView : public QFrame
   // Color of the grid in the background (alpha also works)
   Q_PROPERTY( QColor gridColor READ gridColor WRITE setGridColor )
   QColor m_gridColor;
+
+  // the average space (in px) between 2 of the grid's thickest lines
+  Q_PROPERTY( int gridMaxSpacing READ gridMaxSpacing WRITE setGridMaxSpacing )
+  int m_gridMaxSpacing;
+
+  // same as gridMaxSpacing, but for the thinest lines (must be smaller than gridMaxSpacing)
+  Q_PROPERTY( int gridMinSpacing READ gridMinSpacing WRITE setGridMinSpacing )
+  int m_gridMinSpacing;
+
+  // thickness of the thickest grid lines (in pixels)
+  Q_PROPERTY( int gridThickness READ gridThickness WRITE setGridThickness )
+  int m_gridThickness;
+
+  // if true, the thickness will be squarred and thus decrease faster with scales
+  Q_PROPERTY( bool gridThicknessSquarred READ gridThicknessSquarred WRITE setGridThicknessSquarred )
+  bool m_gridThicknessSquarred;
+
+  // the grid lines will be logarithmic multiples of that scale
+  Q_PROPERTY( qreal logScale READ logScale WRITE setLogScale )
+  qreal m_logScale;
 
   bool m_rectangleSelectionEnabled;
 
@@ -40,14 +60,25 @@ public:
   // TODO : fix the "smoothZoom" on Linux
 
   void fitInView( const QRectF );
-  inline size_t rulersSize() const { return m_rulersSize; }
-  void setRulersSize( const size_t );
+  inline int rulersSize() const { return m_rulersSize; }
+  void setRulersSize( const int );
   bool topToBottomY() const;
   void setTopToBottomY( bool );
   inline void enableRectangleSelection( bool e ) { m_rectangleSelectionEnabled = e; }
 
   inline QColor gridColor() const { return m_gridColor; }
   inline void setGridColor( const QColor& c ) { m_gridColor = c; this->update(); }
+
+  inline int gridMaxSpacing() const { return m_gridMaxSpacing; }
+  inline void setGridMaxSpacing( int s ) { m_gridMaxSpacing = std::max<int>( 1, s ); this->update(); }
+  inline int gridMinSpacing() const { return m_gridMinSpacing; }
+  inline void setGridMinSpacing( int s ) { m_gridMinSpacing = std::max<int>( 1, s ); this->update(); }
+  inline qreal gridThickness() const { return m_gridThickness; }
+  inline void setGridThickness( qreal t ) { m_gridThickness = t; this->update(); }
+  inline bool gridThicknessSquarred() const { return m_gridThicknessSquarred; }
+  inline void setGridThicknessSquarred( bool s ) { m_gridThicknessSquarred = s; this->update(); }
+  inline qreal logScale() const { return m_logScale; }
+  inline void setLogScale( qreal s ) { if( s > 0 ) { m_logScale = s; this->update(); } }
 
 signals:
   void rectangleSelectReleased( const QRectF& ) const;
