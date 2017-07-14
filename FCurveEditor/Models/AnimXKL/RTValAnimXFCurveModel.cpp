@@ -87,12 +87,12 @@ void RTValAnimXFCurveVersionedConstModel::update( bool emitChanges ) const
   }
 }
 
-void RTValAnimXFCurveVersionedModel::setHandle( size_t i, Handle h )
+inline void SetHandle( FabricCore::RTVal& m_val, FabricCore::RTVal& index, Handle h )
 {
   const size_t argc = 9;
   FabricCore::RTVal args[argc] =
   {
-    this->idToIndex( i ),
+    index,
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.pos.x() ),
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.pos.y() ),
     FabricCore::RTVal::ConstructSInt32( m_val.getContext(), 9 ), // HACK : TODO
@@ -103,22 +103,54 @@ void RTValAnimXFCurveVersionedModel::setHandle( size_t i, Handle h )
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.tanOut.y() )
   };
   m_val.callMethod( "", "setKeyframe", argc, args );
+}
+
+void RTValAnimXFCurveVersionedModel::setHandle( size_t i, Handle h )
+{
+  SetHandle( m_val, this->idToIndex( i ), h );
   this->update();
 }
 
-void RTValAnimXFCurveVersionedModel::addHandle()
+void RTValAnimXFCurveModel::setHandle( size_t i, Handle h )
+{
+  SetHandle( m_val, this->idToIndex( i ), h );
+  emit this->handleMoved( i );
+}
+
+inline void AddHandle( FabricCore::RTVal& m_val )
 {
   assert( m_val.isValid() );
   if( m_val.isNullObject() )
     m_val = FabricCore::RTVal::Create( m_val.getContext(), "AnimX::AnimCurve", 0, NULL );
   m_val.callMethod( "", "pushKeyframe", 0, NULL );
+}
+
+void RTValAnimXFCurveVersionedModel::addHandle()
+{
+  AddHandle( m_val );
   this->update();
+}
+
+void RTValAnimXFCurveModel::addHandle()
+{
+  AddHandle( m_val );
+  emit this->handleAdded();
+}
+
+inline void DeleteHandle( FabricCore::RTVal& m_val, FabricCore::RTVal& index )
+{
+  assert( m_val.isValid() );
+  m_val.callMethod( "", "removeKeyframe", 1, &index );
 }
 
 void RTValAnimXFCurveVersionedModel::deleteHandle( size_t i )
 {
-  assert( m_val.isValid() );
-  FabricCore::RTVal index = this->idToIndex( i );
-  m_val.callMethod( "", "removeKeyframe", 1, &index );
+  DeleteHandle( m_val, this->idToIndex( i ) );
   this->update();
+}
+
+void RTValAnimXFCurveModel::deleteHandle( size_t i )
+{
+  DeleteHandle( m_val, this->idToIndex( i ) );
+  emit this->handleDeleted( i );
 }

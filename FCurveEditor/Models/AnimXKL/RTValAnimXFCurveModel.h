@@ -69,6 +69,16 @@ public:
   void deleteHandle( size_t ) FTL_OVERRIDE;
 };
 
+class RTValAnimXFCurveModel : public RTValAnimXFCurveConstModel
+{
+  Q_OBJECT
+
+public:
+  void setHandle( size_t, Handle ) FTL_OVERRIDE;
+  void addHandle() FTL_OVERRIDE;
+  void deleteHandle( size_t ) FTL_OVERRIDE;
+};
+
 } // namespace FCurveEditor
 } // namespace FabricUI
 
