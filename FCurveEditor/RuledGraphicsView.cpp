@@ -95,14 +95,17 @@ protected:
   {
     if( m_state == SELECTING )
     {
-      QColor col( 0, 128, 255 );
-      col.setAlpha( 128 );
-      QPen pen( col );
+      QPen pen( QColor(35, 35, 35), 2.0, Qt::CustomDashLine );
       pen.setCosmetic( true );
+      
+      QVector<qreal> dashes;
+      dashes << 1 << 2;
+      pen.setDashPattern(dashes);
+
       p->setPen( pen );
+      p->setBrush( QColor(100, 100, 100, 50) );
+
       p->drawRect( m_selectionRect );
-      col.setAlpha( 32 );
-      p->fillRect( m_selectionRect, col );
     }
   }
 };
