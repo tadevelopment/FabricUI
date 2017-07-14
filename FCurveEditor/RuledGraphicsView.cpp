@@ -312,14 +312,16 @@ void RuledGraphicsView::GraphicsView::drawBackground( QPainter * p, const QRectF
         // for the same factor
         pen.setCosmetic( true );
         qreal pwidth = ( 2 * viewFactor ) / factor; // TODO : property
-        qreal palpha = 255;
+        qreal palpha = m_parent->m_gridColor.alphaF();
         if( pwidth < 1 )
         {
-          palpha = pwidth * 255;
+          palpha *= pwidth;
           pwidth = 1;
         }
         pen.setWidthF( pwidth );
-        pen.setColor( QColor( 32, 32, 32, int(palpha) ) ); // TODO : qss color
+        QColor c = m_parent->m_gridColor;
+        c.setAlphaF( palpha );
+        pen.setColor( c );
       }
       p->setPen( pen );
       for( qreal i = std::floor( factor * minU ); i < factor * maxU; i++ )

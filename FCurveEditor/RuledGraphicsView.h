@@ -26,8 +26,11 @@ class RuledGraphicsView : public QFrame
   // Do the Y coordinates go from top-to-bottom (default) or from bottom-to-top ?
   Q_PROPERTY( bool topToBottomY READ topToBottomY WRITE setTopToBottomY )
 
-  bool m_rectangleSelectionEnabled;
+  // Color of the grid in the background (alpha also works)
+  Q_PROPERTY( QColor gridColor READ gridColor WRITE setGridColor )
+  QColor m_gridColor;
 
+  bool m_rectangleSelectionEnabled;
 
 public:
   RuledGraphicsView();
@@ -42,6 +45,9 @@ public:
   bool topToBottomY() const;
   void setTopToBottomY( bool );
   inline void enableRectangleSelection( bool e ) { m_rectangleSelectionEnabled = e; }
+
+  inline QColor gridColor() const { return m_gridColor; }
+  inline void setGridColor( const QColor& c ) { m_gridColor = c; this->update(); }
 
 signals:
   void rectangleSelectReleased( const QRectF& ) const;
