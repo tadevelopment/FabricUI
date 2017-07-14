@@ -42,7 +42,6 @@ class FCurveItem::FCurveShape : public QGraphicsItem
 
   void updateBoundingRect() const
   {
-    // TODO : cache and update when handles are moved
     QPointF topLeft = QPointF( 1, 1 ) * std::numeric_limits<qreal>::max();
     QPointF botRight = QPointF( 1, 1 ) * ( -std::numeric_limits<qreal>::max() );
     if( m_parent->m_curve != NULL )
