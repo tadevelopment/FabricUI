@@ -164,7 +164,7 @@ DFGWidget::DFGWidget(
   m_uiGraphViewWidget->addAction(new EditSelectedNodePropertiesAction(this, m_uiGraphViewWidget));
   m_uiGraphViewWidget->addAction(new ConnectionInsertPresetAction    (this, m_uiGraphViewWidget,
                                                                       NULL,
-                                                                      "Fabric.Compounds.Debug.LabeledReport",
+                                                                      "Fabric.Compounds.Debug.Log.LabeledReport",
                                                                       "value",
                                                                       "value",
                                                                       QCursor::pos(),
@@ -776,7 +776,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
 
   QMenu *insertPresetMenu = result->addMenu(tr("Insert Preset"));
   insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, insertPresetMenu, connection, 
-                                                               "Fabric.Core.Func.Report",
+                                                               "Fabric.Compounds.Debug.Log.Report",
                                                                "value",
                                                                "value",
                                                                QCursor::pos(),
@@ -784,7 +784,7 @@ QMenu *DFGWidget::connectionContextMenuCallback(
                                                                "",
                                                                dfgWidget->isEditable()));
   insertPresetMenu->addAction(new ConnectionInsertPresetAction(dfgWidget, result, connection,
-                                                               "Fabric.Compounds.Debug.LabeledReport",
+                                                               "Fabric.Compounds.Debug.Log.LabeledReport",
                                                                "value",
                                                                "value",
                                                                QCursor::pos(),
