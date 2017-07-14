@@ -178,7 +178,7 @@ GraphConfig::GraphConfig()
   GET_PARAMETER( pinDisplayAsFullCircle, false );
   GET_PARAMETER( pinClickableDistance, 30.0f );
 
-  GET_PARAMETER( dimConnectionLines, true );
+  GET_PARAMETER( dimConnectionLines, false );
   GET_PARAMETER( connectionUsePinColor, true );
   GET_PARAMETER( connectionShowTooltip, true );
   GET_PARAMETER( highlightConnectionTargets, true );
