@@ -65,6 +65,10 @@ class CommandRegistry : public Util::BaseFactoryRegistry
     /// Gets all the registred commands (C++/Python) 
     /// and the specs as a string, used for debugging.
     QString getContent();
+
+    /// \internal
+    /// Clears the registered content
+    virtual void clear();
   
   signals:
     /// Emitted when a command has been registered.

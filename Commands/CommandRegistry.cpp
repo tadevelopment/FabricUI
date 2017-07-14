@@ -74,6 +74,11 @@ bool CommandRegistry::isCommandRegistered(
   return m_cmdSpecs.count(cmdName) > 0;
 }
 
+void CommandRegistry::clear() {
+  m_cmdSpecs.clear();
+}
+
+
 QPair<QString, QString> CommandRegistry::getCommandSpecs(
   QString const&cmdName) 
 {

@@ -3,7 +3,8 @@
 //
 
 #include "PathValueResolverRegistry.h"
- 
+#include <vector>
+
 using namespace FabricUI;
 using namespace Util;
 using namespace Commands;
@@ -19,18 +20,24 @@ PathValueResolverRegistry::PathValueResolverRegistry()
     s_instanceFlag = true;
 }
 
+void PathValueResolverRegistry::clear() {
+  // Copy resolvers first; their destructor might unregister so iterating is not safe
+  std::vector<BasePathValueResolver*> resolvers;
+  foreach( BasePathValueResolver* resolver, m_registeredResolvers )
+    resolvers.push_back( resolver );
+
+  // clearing first, else the resolvers will delete themselve twice
+  m_registeredResolvers.clear();
+
+  foreach( BasePathValueResolver* resolver, resolvers )
+    delete resolver;
+}
+
+
 PathValueResolverRegistry::~PathValueResolverRegistry()
 {
   s_instanceFlag = false;
-  foreach(BasePathValueResolver* resolver, m_registeredResolvers)
-  {
-    if(resolver != 0)
-    {
-      delete resolver;
-      resolver = 0;
-    }
-  }
-  m_registeredResolvers.clear();
+  clear();
 }
 
 PathValueResolverRegistry* PathValueResolverRegistry::getRegistry()
