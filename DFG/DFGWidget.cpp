@@ -2996,15 +2996,17 @@ void DFGWidget::onExecChanged()
     // Before initializing the graph, sets the dimConnectionLines, portsCentered, etc. properties
     if(getSettings()) 
     {
-      m_uiGraph->config().dimConnectionLines         = getSettings()->value( "DFGWidget/dimConnectionLines")        .toBool();
-      m_uiGraph->config().connectionShowTooltip      = getSettings()->value( "DFGWidget/connectionShowTooltip")     .toBool();
-      m_uiGraph->config().highlightConnectionTargets = getSettings()->value( "DFGWidget/highlightConnectionTargets").toBool();
-      m_uiGraph->config().connectionDrawAsCurves     = getSettings()->value( "DFGWidget/connectionDrawAsCurves")    .toBool();
-      m_uiGraph->config().portsCentered              = getSettings()->value( "DFGWidget/portsCentered")             .toBool();
-      m_uiGraph->config().mainPanelDrawGrid          = getSettings()->value( "DFGWidget/mainPanelDrawGrid")         .toBool();
-      m_uiGraph->config().mainPanelGridSnap          = getSettings()->value( "DFGWidget/mainPanelGridSnap")         .toBool();
-      m_uiGraph->config().mainPanelNodeSnap          = getSettings()->value( "DFGWidget/mainPanelNodeSnap")         .toBool();
-      m_uiGraph->config().mainPanelPortSnap          = getSettings()->value( "DFGWidget/mainPanelPortSnap")         .toBool();
+#define MAYBE_READ_CONFIG_VALUE( name ) m_uiGraph->config().name = getSettings()->value( "DFGWidget/" #name, m_uiGraph->config().name ).toBool();
+
+      MAYBE_READ_CONFIG_VALUE( dimConnectionLines )
+      MAYBE_READ_CONFIG_VALUE( connectionShowTooltip )
+      MAYBE_READ_CONFIG_VALUE( highlightConnectionTargets )
+      MAYBE_READ_CONFIG_VALUE( connectionDrawAsCurves )
+      MAYBE_READ_CONFIG_VALUE( portsCentered )
+      MAYBE_READ_CONFIG_VALUE( mainPanelDrawGrid )
+      MAYBE_READ_CONFIG_VALUE( mainPanelGridSnap )
+      MAYBE_READ_CONFIG_VALUE( mainPanelNodeSnap )
+      MAYBE_READ_CONFIG_VALUE( mainPanelPortSnap )
     }
     m_uiGraph->initialize();
 
