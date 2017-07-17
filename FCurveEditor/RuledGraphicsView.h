@@ -39,8 +39,8 @@ class RuledGraphicsView : public QFrame
   int m_gridMinSpacing;
 
   // thickness of the thickest grid lines (in pixels)
-  Q_PROPERTY( int gridThickness READ gridThickness WRITE setGridThickness )
-  int m_gridThickness;
+  Q_PROPERTY( qreal gridThickness READ gridThickness WRITE setGridThickness )
+  qreal m_gridThickness;
 
   // if true, the thickness will be squarred and thus decrease faster with scales
   Q_PROPERTY( bool gridThicknessSquarred READ gridThicknessSquarred WRITE setGridThicknessSquarred )
