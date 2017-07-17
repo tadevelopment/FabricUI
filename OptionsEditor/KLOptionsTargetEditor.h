@@ -5,6 +5,8 @@
 #ifndef __UI_RTVAL_OPTIONS_EDITOR__
 #define __UI_RTVAL_OPTIONS_EDITOR__
 
+#include <QDockWidget>
+#include <QMainWindow>
 #include "BaseRTValOptionsEditor.h"
  
 namespace FabricUI {
@@ -23,13 +25,20 @@ class KLOptionsTargetEditor
     /// Constructs a RTValDictModelItem .
     /// \param title Title of the editor.
     KLOptionsTargetEditor(
-      QString const&title
+      QString title = QString()
       );
       
     virtual ~KLOptionsTargetEditor();
 
-    /// Gets the KL registry id.
-    QString geteditorID();
+
+    static QDockWidget* create( QString editorID,
+                                QString title,
+                                QString groupeName,
+                                QMainWindow* mainWindow );
+
+    static QDockWidget* create( QString editorID,
+                                QString title,
+                                QString groupeName );
 
     /// \implmentation of BaseRTValOptionsEditor
     virtual BaseRTValModelItem* constructModel(
