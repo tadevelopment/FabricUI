@@ -46,11 +46,8 @@ protected:
   void update( bool emitChanges ) const;
 
 public:
-
-  inline void update() const { this->update( true ); }
-  size_t getHandleCount() const FTL_OVERRIDE { this->update( false ); return Parent::getHandleCount(); }
-  Handle getHandle( size_t i ) const FTL_OVERRIDE { this->update(); return Parent::getHandle( i ); }
-  qreal evaluate( qreal v ) const FTL_OVERRIDE { this->update(); return Parent::evaluate( v ); }
+  void init() FTL_OVERRIDE { this->update( false ); }
+  void update() FTL_OVERRIDE { this->update( true ); }
 
   RTValAnimXFCurveVersionedConstModel()
     : m_lastHandleCount( 0 )

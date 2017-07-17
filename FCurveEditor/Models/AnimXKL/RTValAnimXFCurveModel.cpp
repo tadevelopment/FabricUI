@@ -108,7 +108,7 @@ inline void SetHandle( FabricCore::RTVal& m_val, FabricCore::RTVal& index, Handl
 void RTValAnimXFCurveVersionedModel::setHandle( size_t i, Handle h )
 {
   SetHandle( m_val, this->idToIndex( i ), h );
-  this->update();
+  emit this->dirty();
 }
 
 void RTValAnimXFCurveModel::setHandle( size_t i, Handle h )
@@ -128,7 +128,7 @@ inline void AddHandle( FabricCore::RTVal& m_val )
 void RTValAnimXFCurveVersionedModel::addHandle()
 {
   AddHandle( m_val );
-  this->update();
+  emit this->dirty();
 }
 
 void RTValAnimXFCurveModel::addHandle()
@@ -146,7 +146,7 @@ inline void DeleteHandle( FabricCore::RTVal& m_val, FabricCore::RTVal& index )
 void RTValAnimXFCurveVersionedModel::deleteHandle( size_t i )
 {
   DeleteHandle( m_val, this->idToIndex( i ) );
-  this->update();
+  emit this->dirty();
 }
 
 void RTValAnimXFCurveModel::deleteHandle( size_t i )

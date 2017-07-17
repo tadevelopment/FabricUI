@@ -499,6 +499,7 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, handleMoved, ( size_t ), this, SLOT, FCurveItem, onHandleMoved, ( size_t ) );
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, handleAdded, (), this, SLOT, FCurveItem, onHandleAdded, () );
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, handleDeleted, ( size_t ), this, SLOT, FCurveItem, onHandleDeleted, ( size_t ) );
+  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, dirty, ( ), this, SLOT, FCurveItem, onDirty, ( ) );
 
   // Clearing previous handles
   for( std::vector<HandleWidget*>::const_iterator it = m_handles.begin(); it < m_handles.end(); it++ )
@@ -506,10 +507,16 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
   m_handles.clear();
 
   emit this->stopEditingHandle();
+  m_curve->init();
 
   size_t hc = m_curve->getHandleCount();
   for( size_t i = 0; i < hc; i++ )
     this->addHandle( i );
 
   m_curveShape->setBoundingRectDirty();
+}
+
+void FCurveItem::paint( QPainter * p, const QStyleOptionGraphicsItem * s, QWidget * w )
+{
+  m_curve->update();
 }

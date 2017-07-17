@@ -7,6 +7,7 @@
 
 #include <FabricUI/FCurveEditor/AbstractFCurveModel.h>
 #include <QGraphicsWidget>
+#include <FTL/Config.h>
 #include <set>
 
 namespace FabricUI
@@ -45,6 +46,7 @@ public:
   inline size_t editedHandle() const { return m_editedHandle; }
   inline HandleProp editedHandleProp() const { return m_editedHandleProp; }
   QRectF keysBoundingRect() const;
+  void paint( QPainter *, const QStyleOptionGraphicsItem *, QWidget * ) FTL_OVERRIDE;
 
 signals:
   void interactionBegin();
@@ -57,6 +59,7 @@ private slots:
   void onHandleAdded();
   void onHandleDeleted( size_t );
   void onHandleMoved( size_t );
+  inline void onDirty() { this->update(); }
 };
 
 } // namespace FCurveEditor

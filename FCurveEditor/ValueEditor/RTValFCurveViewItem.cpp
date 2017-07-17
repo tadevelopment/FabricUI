@@ -49,6 +49,8 @@ public:
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
     this->synchronizeKLReg();
+    FabricCore::RTVal bRV = FabricCore::RTVal::ConstructBoolean( m_val.getContext(), true );
+    const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "", "useIds", 1, &bRV );
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     args["id"] = QString::number( i );
@@ -62,6 +64,7 @@ public:
     manager->createCommand( cmdName, args, true, m_interactionId );
     m_lastCommand = cmdName;
     m_lastArgs = args;
+    emit this->dirty();
   }
 
   inline QString serializeQS( const size_t* indices, const size_t nbIndices )
@@ -81,6 +84,8 @@ public:
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
     this->synchronizeKLReg();
+    FabricCore::RTVal bRV = FabricCore::RTVal::ConstructBoolean( m_val.getContext(), true );
+    const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "", "useIds", 1, &bRV );
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     args["ids"] = serializeQS( indices, nbIndices );
@@ -90,6 +95,7 @@ public:
     manager->createCommand( cmdName, args, true, m_interactionId );
     m_lastCommand = cmdName;
     m_lastArgs = args;
+    emit this->dirty();
   }
 
   void addHandle() FTL_OVERRIDE
@@ -99,6 +105,7 @@ public:
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     manager->createCommand( "AnimX_PushKeyframe", args );
+    emit this->dirty();
   }
 
   void deleteHandle( size_t i ) FTL_OVERRIDE
@@ -109,6 +116,7 @@ public:
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     args["id"] = QString::number( i );
     manager->createCommand( "AnimX_RemoveKeyframe", args );
+    emit this->dirty();
   }
 
   void deleteHandles( const size_t* indices, const size_t nbIndices ) FTL_OVERRIDE
@@ -119,6 +127,7 @@ public:
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     args["ids"] = serializeQS( indices, nbIndices );
     manager->createCommand( "AnimX_RemoveKeyframes", args );
+    emit this->dirty();
   }
 
   inline void incrementInteractionId()
@@ -136,8 +145,11 @@ public:
       args["interactionEnd"] = "true";
       manager->createCommand( m_lastCommand, args, true, m_interactionId );
       m_lastCommand = "";
+      emit this->dirty();
     }
   }
+
+  inline void emitDirty() { emit this->dirty(); }
 };
 
 class RTValFCurveViewItem::Editor : public FabricUI::FCurveEditor::FCurveEditor
@@ -268,7 +280,7 @@ void RTValFCurveViewItem::onModelValueChanged( QVariant const & v )
 {
   FabricCore::RTVal rtval = v.value<FabricCore::RTVal>();
   m_model->setValue( rtval );
-  m_model->update();
+  m_model->emitDirty();
 }
 
 BaseViewItem * RTValFCurveViewItem::CreateItem(

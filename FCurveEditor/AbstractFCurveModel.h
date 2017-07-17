@@ -40,10 +40,16 @@ public:
   virtual qreal evaluate( qreal v ) const = 0;
   // TODO : evaluate arrays, to reduce the overhead
 
+  virtual void init() {}
+  virtual void update() {}
+
 signals:
   void handleAdded() const;
   void handleDeleted( size_t ) const;
   void handleMoved( size_t ) const;
+
+  // when emitted, UI items should schedule an update
+  void dirty() const;
 };
 
 } // namespace FCurveEditor
