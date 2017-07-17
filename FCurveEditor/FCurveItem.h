@@ -45,6 +45,7 @@ public:
   inline size_t editedHandle() const { return m_editedHandle; }
   inline HandleProp editedHandleProp() const { return m_editedHandleProp; }
   QRectF keysBoundingRect() const;
+  QRectF selectedKeysBoundingRect() const;
 
 signals:
   void interactionBegin();

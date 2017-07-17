@@ -39,6 +39,8 @@ class FCurveItem::FCurveShape : public QGraphicsItem
   typedef QGraphicsItem Parent;
   mutable QRectF m_boundingRect;
   mutable bool m_boundingRectDirty;
+  mutable QRectF m_selectedBoundingRect;
+  mutable bool m_selectedBoundingRectDirty;
 
   void updateBoundingRect() const
   {
@@ -77,12 +79,50 @@ class FCurveItem::FCurveShape : public QGraphicsItem
       this->updateBoundingRect();
   }
 
+  void updateSelectedBoundingRect() const
+  {
+    if( m_parent->m_curve != NULL )
+    {
+      if( this->m_parent->m_selectedHandles.empty() )
+      {
+        m_boundingRect = QRectF();
+        m_selectedBoundingRectDirty = false;
+      }
+      else
+      {
+        QPointF topLeft = QPointF( 1, 1 ) * std::numeric_limits<qreal>::max();
+        QPointF botRight = QPointF( 1, 1 ) * ( -std::numeric_limits<qreal>::max() );
+        for( std::set<size_t>::const_iterator it = this->m_parent->m_selectedHandles.begin(); it != this->m_parent->m_selectedHandles.end(); it++ )
+        {
+          Handle h = m_parent->m_curve->getHandle( *it );
+          topLeft = min( topLeft, h.pos );
+          botRight = max( botRight, h.pos );
+          topLeft.setY( std::min( topLeft.y(), h.pos.y() - h.tanIn.y() ) );
+          topLeft.setY( std::min( topLeft.y(), h.pos.y() + h.tanOut.y() ) );
+          botRight.setY( std::max( botRight.y(), h.pos.y() - h.tanIn.y() ) );
+          botRight.setY( std::max( botRight.y(), h.pos.y() + h.tanOut.y() ) );
+        }
+
+        m_selectedBoundingRect = QRectF( topLeft, botRight );
+        m_selectedBoundingRectDirty = false;
+      }
+    }
+  }
+
+  inline void updateSelectedBoundingRectIfDirty() const
+  {
+    if( m_selectedBoundingRectDirty )
+      this->updateSelectedBoundingRect();
+  }
+
 public:
   FCurveShape( const FCurveItem* parent )
     : m_parent( parent )
     , m_boundingRectDirty( true )
+    , m_selectedBoundingRectDirty( true )
   {
     this->updateBoundingRect();
+    this->updateSelectedBoundingRect();
   }
 
   QRectF boundingRect() const FTL_OVERRIDE
@@ -106,6 +146,12 @@ public:
     this->prepareGeometryChange();
     m_boundingRectDirty = true;
     this->update();
+  }
+
+  inline QRectF selectedKeysBoundingRect() const
+  {
+    this->updateSelectedBoundingRectIfDirty();
+    return m_selectedBoundingRect;
   }
 
   void paint(
@@ -148,6 +194,10 @@ public:
 };
 
 QRectF FCurveItem::keysBoundingRect() const { return m_curveShape->keysBoundingRect(); }
+
+QRectF FCurveItem::selectedKeysBoundingRect() const { 
+  return m_curveShape->selectedKeysBoundingRect(); 
+}
 
 class FCurveItem::HandleWidget : public QGraphicsWidget
 {
