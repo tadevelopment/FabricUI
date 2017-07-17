@@ -1404,6 +1404,18 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   margin-right: 0px;
 }
 
+#ValueEditor #FCurveEditor QPushButton#expand
+{
+  border: 0;
+  border-style: none;
+  padding: 0px;
+  width: 32px;
+  height: 32px;
+  background-image: url(${FABRIC_DIR}/Resources/Icons/expand.png);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 #ValueEditor QComboBox::drop-down
 {
   subcontrol-origin: margin;  

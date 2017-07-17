@@ -161,10 +161,9 @@ public:
     : m_parent( parent )
     , m_expandButton( new QPushButton( this ) )
   {
-    m_expandButton->setIcon( QIcon( LoadPixmap( "expand.png" ) ) );
-    m_expandButton->setStyleSheet( "background-color: rgba(0,0,0,0);" );
+    m_expandButton->setObjectName( "expand" );
     m_expandButton->resize( 32, 32 );
-    QOBJECT_CONNECT( m_expandButton, SIGNAL, QPushButton, pressed, ( ), m_parent, SLOT, RTValFCurveViewItem, expand, ( ) );
+    QOBJECT_CONNECT( m_expandButton, SIGNAL, QPushButton, released, ( ), m_parent, SLOT, RTValFCurveViewItem, expand, ( ) );
     this->updateExpandButtonSize();
   }
   void resizeEvent( QResizeEvent * e ) FTL_OVERRIDE
