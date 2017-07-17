@@ -123,6 +123,7 @@ FCurveEditor::FCurveEditor()
     this, SLOT, FCurveEditor, onEditedHandleValueChanged, ( )
   );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, stopEditingHandle, ( ), this, SLOT, FCurveEditor, onStopEditingHandle, ( ) );
+  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, repaintViews, ( ), this, SLOT, FCurveEditor, onRepaintViews, ( ) );
 
   QAction* frameAllAction = new QAction( "Frame All Keys", this );
   frameAllAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
@@ -254,4 +255,9 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
   }
   else
     Parent::mousePressEvent( e );
+}
+
+void FCurveEditor::onRepaintViews()
+{
+  this->repaint();
 }

@@ -57,6 +57,7 @@ private slots:
   void onStartEditingHandle();
   void onEditedHandleValueChanged();
   void onStopEditingHandle();
+  void onRepaintViews();
   inline void veXEditFinished() { this->veEditFinished( true ); }
   inline void veYEditFinished() { this->veEditFinished( false ); }
 

@@ -346,6 +346,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
             h.tanIn = h.tanOut * sqrt( l2In / l2Out );
         }
         curve->setHandle( index, h );
+        emit m_parent->m_parent->repaintViews();
       }
       void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::SizeAllCursor ); }
       void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->unsetCursor(); }
@@ -502,6 +503,7 @@ void FCurveItem::moveSelectedHandles( QPointF delta )
     Handle h = m_curve->getHandle( index );
     h.pos += delta;
     m_curve->setHandle( index, h );
+    emit this->repaintViews();
     return;
   }
   else
@@ -511,6 +513,7 @@ void FCurveItem::moveSelectedHandles( QPointF delta )
     for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
       indices.push_back( *it );
     m_curve->moveHandles( indices.data(), indices.size(), delta );
+    emit this->repaintViews();
   }
 }
 

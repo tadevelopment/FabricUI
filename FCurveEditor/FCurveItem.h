@@ -56,6 +56,13 @@ signals:
   void editedHandleValueChanged() const;
   void stopEditingHandle() const;
 
+  // this signal is used to force a repaint after a mouse event (in order to
+  // get proper feedback from it). Because if the eventHandler takes more than ~40ms to compute
+  // then the widget won't be repainted until the event stream stops.
+  // HACK/TODO: use a native QGraphics method to achieve the same (and only repaint the
+  // view where the mouse events come from, not the other views)
+  void repaintViews() const;
+
 private slots:
   void onHandleAdded();
   void onHandleDeleted( size_t );
