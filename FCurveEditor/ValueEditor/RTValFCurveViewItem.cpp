@@ -202,8 +202,8 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   m_expandedDialog->editor()->setModel( m_model );
   this->onModelValueChanged( value );
 
-  m_editor->setFixedSize( 500, 150 ); // HACK
-  m_editor->fitInView();
+  m_editor->setFixedSize( 300, 175 ); // HACK
+  m_editor->frameAllKeys( );
 
   //connect( m_model, SIGNAL( handleAdded() ), this, SLOT( onViewValueChanged() ) );
   //connect( m_model, SIGNAL( handleMoved( size_t ) ), this, SLOT( onViewValueChanged() ) );
@@ -244,7 +244,7 @@ void RTValFCurveViewItem::onEditorInteractionEnd()
 void RTValFCurveViewItem::expand()
 {
   m_expandedDialog->show();
-  m_expandedDialog->editor()->fitInView();
+  m_expandedDialog->editor()->frameAllKeys( );
 }
 
 RTValFCurveViewItem::~RTValFCurveViewItem()

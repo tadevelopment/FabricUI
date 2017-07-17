@@ -124,6 +124,11 @@ FCurveEditor::FCurveEditor()
   );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, stopEditingHandle, ( ), this, SLOT, FCurveEditor, onStopEditingHandle, ( ) );
 
+  QAction* frameAllAction = new QAction( "Frame All Keys", this );
+  frameAllAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+  frameAllAction->setShortcut( Qt::Key_A );
+  QOBJECT_CONNECT( frameAllAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onFrameAllKeys, () );
+  this->addAction( frameAllAction );
   QAction* deleteAction = new QAction( "Delete selected Handles", this );
   deleteAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   deleteAction->setShortcut( Qt::Key_Delete );
@@ -186,6 +191,10 @@ void FCurveEditor::onRectangleSelectReleased( const QRectF& r )
   m_curveItem->rectangleSelect( r );
 }
 
+void FCurveEditor::onFrameAllKeys()
+{
+  this->frameAllKeys();
+}
 void FCurveEditor::onDeleteSelectedHandles()
 {
   m_curveItem->deleteSelectedHandles();
@@ -200,10 +209,10 @@ void FCurveEditor::setModel( AbstractFCurveModel* model )
 {
   m_model = model;
   m_curveItem->setCurve( model );
-  this->fitInView();
+  this->fitInView( m_curveItem->keysBoundingRect() );
 }
 
-void FCurveEditor::fitInView()
+void FCurveEditor::frameAllKeys()
 {
   this->Parent::fitInView( m_curveItem->keysBoundingRect() );
 }

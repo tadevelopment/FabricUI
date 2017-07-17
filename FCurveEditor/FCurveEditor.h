@@ -39,7 +39,7 @@ public:
   FCurveEditor();
   ~FCurveEditor();
   void setModel( AbstractFCurveModel* );
-  void fitInView();
+  void frameAllKeys();
 
   inline QPoint vePos() const { return m_vePos; }
   inline void setVEPos( const QPoint& p ) { m_vePos = p; this->updateVEPos(); }
@@ -50,6 +50,7 @@ protected:
 
 private slots:
   void onRectangleSelectReleased( const QRectF& );
+  void onFrameAllKeys();
   void onDeleteSelectedHandles();
   void onStartEditingHandle();
   void onEditedHandleValueChanged();
