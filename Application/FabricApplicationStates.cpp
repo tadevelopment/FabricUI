@@ -23,10 +23,10 @@ FabricApplicationStates::FabricApplicationStates(
   QSettings *settings)
 {
   // We accept a new FabricApplicationStates only if the client changes (which can happen with our unit tests)
-  //if(s_appStates != 0 && s_appStates->m_client.getContext() == client.getContext() )
-  //  FabricException::Throw(
-  //    "FabricApplicationStates::FabricApplicationStates",
-  //    "the singleton has been set already");
+  if(s_appStates != 0 && s_appStates->m_client.getContext() == client.getContext() )
+    FabricException::Throw(
+      "FabricApplicationStates::FabricApplicationStates",
+      "the singleton has been set already");
 
   m_client = client;
   m_settings = settings;
