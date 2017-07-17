@@ -1404,6 +1404,11 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   margin-right: 0px;
 }
 
+#ValueEditor #FCurveEditor
+{
+  margin-bottom: 10px;
+}
+
 #ValueEditor #FCurveEditor QPushButton#expand
 {
   border: 0;
