@@ -173,10 +173,9 @@ public:
     : m_parent( parent )
     , m_expandButton( new QPushButton( this ) )
   {
-    m_expandButton->setIcon( QIcon( LoadPixmap( "expand.png" ) ) );
-    m_expandButton->setStyleSheet( "background-color: rgba(0,0,0,0);" );
+    m_expandButton->setObjectName( "expand" );
     m_expandButton->resize( 32, 32 );
-    QOBJECT_CONNECT( m_expandButton, SIGNAL, QPushButton, pressed, ( ), m_parent, SLOT, RTValFCurveViewItem, expand, ( ) );
+    QOBJECT_CONNECT( m_expandButton, SIGNAL, QPushButton, released, ( ), m_parent, SLOT, RTValFCurveViewItem, expand, ( ) );
     this->updateExpandButtonSize();
   }
   void resizeEvent( QResizeEvent * e ) FTL_OVERRIDE
@@ -215,8 +214,8 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   m_expandedDialog->editor()->setModel( m_model );
   this->onModelValueChanged( value );
 
-  m_editor->setFixedSize( 500, 150 ); // HACK
-  m_editor->fitInView();
+  m_editor->setFixedSize( 300, 175 ); // HACK
+  m_editor->frameAllKeys( );
 
   //connect( m_model, SIGNAL( handleAdded() ), this, SLOT( onViewValueChanged() ) );
   //connect( m_model, SIGNAL( handleMoved( size_t ) ), this, SLOT( onViewValueChanged() ) );
@@ -257,7 +256,7 @@ void RTValFCurveViewItem::onEditorInteractionEnd()
 void RTValFCurveViewItem::expand()
 {
   m_expandedDialog->show();
-  m_expandedDialog->editor()->fitInView();
+  m_expandedDialog->editor()->frameAllKeys( );
 }
 
 RTValFCurveViewItem::~RTValFCurveViewItem()

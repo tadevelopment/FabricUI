@@ -87,7 +87,7 @@ void RTValAnimXFCurveVersionedConstModel::update( bool emitChanges ) const
   }
 }
 
-inline void SetHandle( FabricCore::RTVal& m_val, FabricCore::RTVal& index, Handle h )
+inline void SetHandle( FabricCore::RTVal& m_val, const FabricCore::RTVal& index, Handle h )
 {
   const size_t argc = 9;
   FabricCore::RTVal args[argc] =
@@ -137,20 +137,21 @@ void RTValAnimXFCurveModel::addHandle()
   emit this->handleAdded();
 }
 
-inline void DeleteHandle( FabricCore::RTVal& m_val, FabricCore::RTVal& index )
+inline void DeleteHandle( FabricCore::RTVal& m_val, FabricCore::RTVal* index )
 {
   assert( m_val.isValid() );
-  m_val.callMethod( "", "removeKeyframe", 1, &index );
+  m_val.callMethod( "", "removeKeyframe", 1, index );
 }
 
 void RTValAnimXFCurveVersionedModel::deleteHandle( size_t i )
 {
-  DeleteHandle( m_val, this->idToIndex( i ) );
-  emit this->dirty();
+  FabricCore::RTVal index = this->idToIndex( i );
+  DeleteHandle( m_val, &index );
 }
 
 void RTValAnimXFCurveModel::deleteHandle( size_t i )
 {
-  DeleteHandle( m_val, this->idToIndex( i ) );
+  FabricCore::RTVal index = this->idToIndex( i );
+  DeleteHandle( m_val, &index );
   emit this->handleDeleted( i );
 }

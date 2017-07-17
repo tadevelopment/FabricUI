@@ -47,6 +47,7 @@ public:
   inline HandleProp editedHandleProp() const { return m_editedHandleProp; }
   QRectF keysBoundingRect() const;
   void paint( QPainter *, const QStyleOptionGraphicsItem *, QWidget * ) FTL_OVERRIDE;
+  QRectF selectedKeysBoundingRect() const;
 
 signals:
   void interactionBegin();
