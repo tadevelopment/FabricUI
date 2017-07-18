@@ -12,6 +12,7 @@
 #include <cmath>
 #include <qevent.h>
 #include <QDebug>
+#include <assert.h>
 #include <QTimer>
 
 using namespace FabricUI::FCurveEditor;
@@ -242,8 +243,16 @@ void RuledGraphicsView::wheelEvent( int xDelta, int yDelta, QPointF scalingCente
     centeredScale( sX, sY );
 }
 
-void RuledGraphicsView::fitInView( const QRectF r )
+void RuledGraphicsView::fitInView( const QRectF r0, qreal margin )
 {
+  // dilate
+  QPointF diag = r0.bottomRight() - r0.topLeft();
+  assert( margin > 0 && margin < 1 );
+  QRectF r = QRectF(
+    r0.topLeft() - margin * diag,
+    r0.bottomRight() + margin * diag
+  );
+
   this->view()->fitInView( r );
   m_targetScale = QPointF( m_view->matrix().m11(), m_view->matrix().m22() );
   this->updateRulersRange();

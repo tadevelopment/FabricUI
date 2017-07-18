@@ -59,7 +59,7 @@ public:
   // TODO : custom scale (see FCurveEditor::Ruler's properties)
   // TODO : fix the "smoothZoom" on Linux
 
-  void fitInView( const QRectF );
+  void fitInView( const QRectF, qreal margin = 0.15 );
   inline int rulersSize() const { return m_rulersSize; }
   void setRulersSize( const int );
   bool topToBottomY() const;
