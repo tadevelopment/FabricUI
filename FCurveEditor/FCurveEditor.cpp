@@ -228,12 +228,16 @@ void FCurveEditor::setModel( AbstractFCurveModel* model )
 
 void FCurveEditor::frameAllKeys()
 {
-  this->Parent::fitInView( m_curveItem->keysBoundingRect() );
+  QRectF rect = m_curveItem->keysBoundingRect();
+  if( rect.isValid() )
+    this->Parent::fitInView( rect );
 }
 
 void FCurveEditor::frameSelectedKeys()
 {
-  this->Parent::fitInView( m_curveItem->selectedKeysBoundingRect() );
+  QRectF rect = m_curveItem->selectedKeysBoundingRect();
+  if( rect.isValid() )
+    this->Parent::fitInView( rect );
 }
 
 void FCurveEditor::mousePressEvent( QMouseEvent * e )
