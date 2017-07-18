@@ -1,10 +1,15 @@
-# Returns the output of the test
-def main() :
-  from PySide import QtCore
-  from FabricEngine import Core
-  from FabricEngine.Canvas.CanvasWindow import CanvasWindow
-  from FabricEngine.FabricUI import Application
+import pytest
 
+@pytest.fixture(scope="module")
+def canvas_app():
+  from FabricEngine.FabricUI import Application
+  app = Application.FabricApplication()
+  yield app
+
+@pytest.fixture(scope="module")
+def canvas_win(canvas_app):
+  from PySide import QtCore
+  from FabricEngine.Canvas.CanvasWindow import CanvasWindow
   class CanvasTestWindow( CanvasWindow ) :
     storedOutput = ""
     def _reportCallback(self, source, level, line):
@@ -12,9 +17,13 @@ def main() :
       if len(line) >= len(prefix) and line[:len(prefix)] == prefix :
         line = line[len(prefix):]
       self.storedOutput += line + '\n'
-
-  app = Application.FabricApplication()
   canvas = CanvasTestWindow( QtCore.QSettings(), False, False )
+  yield canvas
+
+# Returns the output of the test
+def main(canvas) :
+  from PySide import QtCore
+  from FabricEngine import Core
   binding = canvas.dfgWidget.getDFGController().getBinding()
   ex = binding.getExec()
 
@@ -68,7 +77,7 @@ def main() :
   #print("TEST_END");
   return canvas.storedOutput
 
-def test_timeline_ports():
+def test_timeline_ports(canvas_win):
 
   import os
 
@@ -81,7 +90,7 @@ def test_timeline_ports():
     pytest.skip("Skip")
 
   # TODO: some of the output from the DFGController is not caught
-  testOutput = main()
+  testOutput = main(canvas_win)
 
   if testOutput != refOutput :
     import difflib
