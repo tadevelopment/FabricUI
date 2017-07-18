@@ -19,6 +19,7 @@ class RTValAnimXFCurveConstModel : public AbstractFCurveModel
   Q_OBJECT
 
 protected:
+  // TODO : also use a pointer directly to the KL data, for better performance ?
   FabricCore::RTVal m_val;
 
   FabricCore::RTVal idToIndex( size_t ) const;
@@ -26,6 +27,8 @@ protected:
 public:
   size_t getHandleCount() const FTL_OVERRIDE;
   Handle getHandle( size_t ) const FTL_OVERRIDE;
+  Handle getOrderedHandle( size_t ) const FTL_OVERRIDE;
+  size_t getIndexAfterTime( qreal ) const FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
 
   inline void setValue( FabricCore::RTVal v ) { m_val = v; }

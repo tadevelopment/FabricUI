@@ -5,15 +5,21 @@
 using namespace FabricUI::FCurveEditor;
 using namespace adsk;
 
-Handle AnimxFCurveModel::getHandle( size_t uiId ) const
+Handle AnimxFCurveModel::getOrderedHandle( size_t index ) const
 {
-  assert( uiId < m_keys.size() );
-  const Keyframe& key = m_keys[m_uiIdToIndex[uiId]].key;
+  assert( index < m_keys.size() );
+  const Keyframe& key = m_keys[index].key;
   Handle dst;
   dst.pos = QPointF( key.time, key.value );
   dst.tanIn = QPointF( key.tanIn.x, key.tanIn.y );
   dst.tanOut = QPointF( key.tanOut.x, key.tanOut.y );
   return dst;
+}
+
+Handle AnimxFCurveModel::getHandle( size_t uiId ) const
+{
+  assert( uiId < m_keys.size() );
+  return this->getOrderedHandle( m_uiIdToIndex[uiId] );
 }
 
 void AnimxFCurveModel::setHandle( size_t uiId, Handle h )
@@ -153,6 +159,14 @@ bool AnimxFCurveModel::keyframe( double time, adsk::Keyframe& key ) const
   }
   key = m_keys[closestI].key;
   return true;
+}
+
+size_t AnimxFCurveModel::getIndexAfterTime( qreal time ) const
+{
+  adsk::Keyframe key;
+  bool valid = this->keyframe( time, key );
+  assert( valid );
+  return key.index;
 }
 
 bool AnimxFCurveModel::first( adsk::Keyframe& k ) const

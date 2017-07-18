@@ -178,16 +178,64 @@ public:
 
       painter->setPen( pen );
       const size_t n = widget->width() / 8;
-      for( size_t i = 0; i < n; i++ )
-      {
-        qreal x1 = er.left() + ( i * er.width() ) / n;
-        qreal x2 = er.left() + ( ( i + 1 ) * er.width() ) / n;
+      qreal step = er.width() / n;
+      if( step == 0 )
+        return;
+
+      // drawing the FCurve as line segments
+      if( m_parent->m_curve->getHandleCount() <= 1 )
         painter->drawLine(
-          QPointF( x1, m_parent->m_curve->evaluate( x1 ) ),
-          QPointF( x2, m_parent->m_curve->evaluate( x2 ) )
+          QPointF( er.left(), m_parent->m_curve->evaluate( er.left() ) ),
+          QPointF( er.right(), m_parent->m_curve->evaluate( er.right() ) )
         );
+      else
+      {
+        // from the left of the screen, to the first key
+        size_t firstKey = m_parent->m_curve->getIndexAfterTime( er.left() );
+        qreal firstKeyTime = m_parent->m_curve->getOrderedHandle( firstKey ).pos.x();
+        for( size_t i = 0; true; i++ )
+        {
+          qreal x1 = er.left() + ( i * er.width() ) / n;
+          if( x1 > firstKeyTime )
+            break;
+          qreal x2 = std::min( er.left() + ( ( i + 1 ) * er.width() ) / n, firstKeyTime );
+          painter->drawLine(
+            QPointF( x1, m_parent->m_curve->evaluate( x1 ) ),
+            QPointF( x2, m_parent->m_curve->evaluate( x2 ) )
+          );
+        }
+
+        size_t lastKey = m_parent->m_curve->getIndexAfterTime( er.right() );
+        qreal lastKeyTime = m_parent->m_curve->getOrderedHandle( lastKey ).pos.x();
+
+        // drawing all the middle keys
+        if( lastKey > 0 )
+        {
+          for( size_t i = firstKey; i < lastKey; i++ )
+          {
+            qreal leftTime = m_parent->m_curve->getOrderedHandle( i ).pos.x();
+            qreal rightTime = m_parent->m_curve->getOrderedHandle( i + 1 ).pos.x();
+            for( qreal x = leftTime; x < rightTime; x += step )
+            {
+              qreal x2 = std::min( rightTime, x + step );
+              painter->drawLine(
+                QPointF( x, m_parent->m_curve->evaluate( x ) ),
+                QPointF( x2, m_parent->m_curve->evaluate( x2 ) )
+              );
+            }
+          }
+        }
+
+        // from the last key to the right of the screen
+        for( qreal x = lastKeyTime; x < er.right(); x += step )
+        {
+          qreal x2 = std::min( er.right(), x + step );
+          painter->drawLine(
+            QPointF( x, m_parent->m_curve->evaluate( x ) ),
+            QPointF( x2, m_parent->m_curve->evaluate( x2 ) )
+          );
+        }
       }
-      //painter->drawRect( this->boundingRect() );
     }
   }
 };

@@ -22,12 +22,11 @@ FabricCore::RTVal RTValAnimXFCurveConstModel::idToIndex( size_t i ) const
   FabricCore::RTVal iRV = FabricCore::RTVal::ConstructUInt32( m_val.getContext(), i );
   return const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "UInt32", "getKeyIndex", 1, &iRV );
 }
-
-Handle RTValAnimXFCurveConstModel::getHandle( size_t i ) const
+Handle RTValAnimXFCurveConstModel::getOrderedHandle( size_t index ) const
 {
   const size_t argc = 2;
   FabricCore::RTVal args[argc] = {
-    this->idToIndex( i ),
+    FabricCore::RTVal::ConstructUInt32( m_val.getContext(), index ),
     FabricCore::RTVal::Construct( m_val.getContext(), "AnimX::Keyframe", 0, NULL )
   };
   const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "Boolean", "keyframeAtIndex", argc, args );
@@ -40,6 +39,24 @@ Handle RTValAnimXFCurveConstModel::getHandle( size_t i ) const
   dst.tanOut.setX( key.maybeGetMember( "tanOut" ).maybeGetMember( "x" ).getFloat64() );
   dst.tanOut.setY( key.maybeGetMember( "tanOut" ).maybeGetMember( "y" ).getFloat64() );
   return dst;
+}
+
+Handle RTValAnimXFCurveConstModel::getHandle( size_t id ) const
+{
+  return this->getOrderedHandle( this->idToIndex( id ).getUInt32() );
+}
+
+size_t RTValAnimXFCurveConstModel::getIndexAfterTime( qreal time ) const
+{
+  const size_t argc = 2;
+  FabricCore::RTVal args[argc] = {
+    FabricCore::RTVal::ConstructFloat64( m_val.getContext(), time ),
+    FabricCore::RTVal::ConstructUInt32( m_val.getContext(), 0 )
+  };
+  FabricCore::RTVal b = const_cast<FabricCore::RTVal*>( &m_val )
+    ->callMethod( "Boolean", "keyframeIndex", argc, args );
+  assert( b.getBoolean() );
+  return args[1].getUInt32();
 }
 
 qreal RTValAnimXFCurveConstModel::evaluate( qreal v ) const

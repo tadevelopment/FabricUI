@@ -27,6 +27,8 @@ public:
 
   virtual size_t getHandleCount() const = 0;
   virtual Handle getHandle( size_t ) const = 0;
+  virtual Handle getOrderedHandle( size_t ) const = 0;
+  virtual size_t getIndexAfterTime( qreal ) const = 0;
   virtual void setHandle( size_t, Handle ) {}
   virtual void moveHandles( const size_t* indices, const size_t nbIndices, QPointF delta );
   virtual void addHandle() = 0;

@@ -45,6 +45,8 @@ public:
   // AbstractFCurveModel
   size_t getHandleCount() const FTL_OVERRIDE { return m_keys.size(); }
   Handle getHandle( size_t uiId ) const FTL_OVERRIDE;
+  Handle getOrderedHandle( size_t ) const FTL_OVERRIDE;
+  size_t getIndexAfterTime( qreal ) const FTL_OVERRIDE;
   void setHandle( size_t uiId, Handle ) FTL_OVERRIDE;
   void addHandle() FTL_OVERRIDE;
   void deleteHandle( size_t uiId ) FTL_OVERRIDE;
