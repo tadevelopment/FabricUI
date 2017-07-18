@@ -214,7 +214,8 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   m_expandedDialog->editor()->setModel( m_model );
   this->onModelValueChanged( value );
 
-  m_editor->setFixedSize( 300, 175 ); // HACK
+  m_editor->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Fixed ) );
+  m_editor->setFixedHeight( 175 );
   m_editor->frameAllKeys( );
 
   //connect( m_model, SIGNAL( handleAdded() ), this, SLOT( onViewValueChanged() ) );
