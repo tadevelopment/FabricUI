@@ -185,12 +185,12 @@ public:
   }
 };
 
-class RTValFCurveViewItem::ExpandedDialog : public QDialog
+class RTValFCurveViewItem::ExpandedDialog : public QWidget
 {
   FabricUI::FCurveEditor::FCurveEditor* m_editor;
 public:
   ExpandedDialog( Editor* parent )
-    : QDialog( parent )
+    : QWidget( parent, Qt::Window )
     , m_editor( new FabricUI::FCurveEditor::FCurveEditor() )
   {
     QHBoxLayout* m_lay = new QHBoxLayout();
