@@ -20,7 +20,7 @@ class Ruler : public QFrame
   typedef QFrame Parent;
 
   // maximum space (in pixels) between 2 major graduations
-  Q_PROPERTY( size_t majorGradsPixelSpacing READ majorGradsPixelsSpacing WRITE setMajorGradsPixelSpacing )
+  Q_PROPERTY( int majorGradsPixelSpacing READ majorGradsPixelsSpacing WRITE setMajorGradsPixelSpacing )
 
   // number of minor graduations between two major graduations
   Q_PROPERTY( qreal majToMinGradsRatio READ majToMinGradsRatio WRITE setMajToMinGradsRatio )
@@ -51,7 +51,7 @@ private:
 
   qreal m_start, m_end;
   Orientation m_orientation;
-  size_t m_majorGradsPixelSpacing;
+  int m_majorGradsPixelSpacing;
   qreal m_majToMinGradsRatio;
   qreal m_logScale;
   QColor m_penColor;
@@ -70,8 +70,8 @@ public:
   Ruler( Orientation );
   void setRange( qreal start, qreal end );
 
-  inline size_t majorGradsPixelsSpacing() const { return m_majorGradsPixelSpacing; }
-  inline void setMajorGradsPixelSpacing( size_t s ) { m_majorGradsPixelSpacing = s; this->update(); }
+  inline int majorGradsPixelsSpacing() const { return m_majorGradsPixelSpacing; }
+  inline void setMajorGradsPixelSpacing( int s ) { m_majorGradsPixelSpacing = s; this->update(); }
   inline qreal majToMinGradsRatio() const { return m_majToMinGradsRatio; }
   inline void setMajToMinGradsRatio( qreal r ) { m_majToMinGradsRatio = r; this->update(); }
   inline qreal logScale() const { return m_logScale; }

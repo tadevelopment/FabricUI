@@ -2269,6 +2269,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-color: #222222;
   border: 4px solid #333333;
   border-radius: 8px;
+  qproperty-rulersSize: 12;
   qproperty-topToBottomY: false;
   qproperty-gridColor: rgba(44, 44, 44, 255);
   qproperty-gridMaxSpacing: 200;
@@ -2288,6 +2289,8 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   qproperty-penColor: #5e686e;
   qproperty-majGradToBreadthRatio: 1.0;
   qproperty-minGradToBreadthRatio: 0.3;
+  qproperty-majorGradsPixelSpacing: 600;
+  font-size: 10px;
 }
 
 #FCurveEditor #ValueEditor
