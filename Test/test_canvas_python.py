@@ -1,6 +1,11 @@
 import platform
 import pytest
 import os
+from PySide import QtCore, QtGui
+from PySide.QtTest import QTest
+from FabricEngine import Core
+from FabricEngine.FabricUI import Application
+from FabricEngine.Canvas.CanvasWindow import CanvasWindow
 
 # [andrew 20160330] FE-6364
 pytestmark = pytest.mark.skipif(
@@ -8,19 +13,15 @@ pytestmark = pytest.mark.skipif(
             platform.system() == 'Darwin',
         reason = "missing display")
 
-@pytest.fixture(scope="module")
+@pytest.yield_fixture(scope="module")
 def canvas_app():
-    from FabricEngine.FabricUI import Application
     app = Application.FabricApplication()
     app.setOrganizationName('Fabric Software Inc')
     app.setApplicationName('Fabric Canvas Standalone')
     yield app
 
-@pytest.fixture(scope="module")
+@pytest.yield_fixture(scope="module")
 def canvas_win(canvas_app):
-    from FabricEngine.Canvas.CanvasWindow import CanvasWindow
-    from PySide import QtCore, QtGui
-    from PySide.QtTest import QTest
 
     settings = QtCore.QSettings()
     unguarded = False

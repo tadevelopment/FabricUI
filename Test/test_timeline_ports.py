@@ -1,15 +1,16 @@
 import pytest
+from PySide import QtCore
+from FabricEngine import Core
+from FabricEngine.FabricUI import Application
+from FabricEngine.Canvas.CanvasWindow import CanvasWindow
 
-@pytest.fixture(scope="module")
+@pytest.yield_fixture(scope="module")
 def canvas_app():
-  from FabricEngine.FabricUI import Application
   app = Application.FabricApplication()
   yield app
 
-@pytest.fixture(scope="module")
+@pytest.yield_fixture(scope="module")
 def canvas_win(canvas_app):
-  from PySide import QtCore
-  from FabricEngine.Canvas.CanvasWindow import CanvasWindow
   class CanvasTestWindow( CanvasWindow ) :
     storedOutput = ""
     def _reportCallback(self, source, level, line):
