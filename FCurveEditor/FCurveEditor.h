@@ -53,10 +53,10 @@ private slots:
   void onRectangleSelectReleased( const QRectF&, Qt::KeyboardModifiers );
   void onFrameAllKeys();
   void onFrameSelectedKeys();
-  void onDeleteSelectedHandles();
-  void onStartEditingHandle();
-  void onEditedHandleValueChanged();
-  void onStopEditingHandle();
+  void onDeleteSelectedKeys();
+  void onStartEditingKey();
+  void onEditedKeyValueChanged();
+  void onStopEditingKey();
   void onRepaintViews();
   inline void veXEditFinished() { this->veEditFinished( true ); }
   inline void veYEditFinished() { this->veEditFinished( false ); }

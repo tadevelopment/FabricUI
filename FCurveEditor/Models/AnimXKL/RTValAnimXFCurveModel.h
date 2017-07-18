@@ -25,9 +25,9 @@ protected:
   FabricCore::RTVal idToIndex( size_t ) const;
 
 public:
-  size_t getHandleCount() const FTL_OVERRIDE;
-  Handle getHandle( size_t ) const FTL_OVERRIDE;
-  Handle getOrderedHandle( size_t ) const FTL_OVERRIDE;
+  size_t getKeyCount() const FTL_OVERRIDE;
+  Key getKey( size_t ) const FTL_OVERRIDE;
+  Key getOrderedKey( size_t ) const FTL_OVERRIDE;
   size_t getIndexAfterTime( qreal ) const FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
 
@@ -42,7 +42,7 @@ class RTValAnimXFCurveVersionedConstModel : public RTValAnimXFCurveConstModel
   typedef RTValAnimXFCurveConstModel Parent;
 
 protected:
-  mutable size_t m_lastHandleCount;
+  mutable size_t m_lastKeyCount;
   mutable size_t m_lastStructureVersion;
   mutable size_t m_lastValueVersion;
 
@@ -53,7 +53,7 @@ public:
   void update() FTL_OVERRIDE { this->update( true ); }
 
   RTValAnimXFCurveVersionedConstModel()
-    : m_lastHandleCount( 0 )
+    : m_lastKeyCount( 0 )
     , m_lastStructureVersion( 0 )
     , m_lastValueVersion( 0 )
   {}
@@ -64,9 +64,9 @@ class RTValAnimXFCurveVersionedModel : public RTValAnimXFCurveVersionedConstMode
   Q_OBJECT
 
 public:
-  void setHandle( size_t, Handle ) FTL_OVERRIDE;
-  void addHandle() FTL_OVERRIDE;
-  void deleteHandle( size_t ) FTL_OVERRIDE;
+  void setKey( size_t, Key ) FTL_OVERRIDE;
+  void addKey() FTL_OVERRIDE;
+  void deleteKey( size_t ) FTL_OVERRIDE;
 };
 
 class RTValAnimXFCurveModel : public RTValAnimXFCurveConstModel
@@ -74,9 +74,9 @@ class RTValAnimXFCurveModel : public RTValAnimXFCurveConstModel
   Q_OBJECT
 
 public:
-  void setHandle( size_t, Handle ) FTL_OVERRIDE;
-  void addHandle() FTL_OVERRIDE;
-  void deleteHandle( size_t ) FTL_OVERRIDE;
+  void setKey( size_t, Key ) FTL_OVERRIDE;
+  void addKey() FTL_OVERRIDE;
+  void deleteKey( size_t ) FTL_OVERRIDE;
 };
 
 } // namespace FCurveEditor

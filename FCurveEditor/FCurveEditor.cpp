@@ -79,12 +79,12 @@ void FCurveEditor::veEditFinished( bool isXNotY )
   bool ok;
   const qreal v = text.toDouble( &ok );
   if( !ok )
-    this->onEditedHandleValueChanged();
+    this->onEditedKeyValueChanged();
   else
   {
-    Handle h = m_model->getHandle( m_curveItem->editedHandle() );
+    Key h = m_model->getKey( m_curveItem->editedKey() );
     QPointF* p = NULL;
-    switch( m_curveItem->editedHandleProp() )
+    switch( m_curveItem->editedKeyProp() )
     {
     case FCurveItem::CENTER: p = &h.pos; break;
     case FCurveItem::TAN_IN: p = &h.tanIn; break;
@@ -95,7 +95,7 @@ void FCurveEditor::veEditFinished( bool isXNotY )
       p->setX( v );
     else
       p->setY( v );
-    m_model->setHandle( m_curveItem->editedHandle(), h );
+    m_model->setKey( m_curveItem->editedKey(), h );
   }
 }
 
@@ -117,12 +117,12 @@ FCurveEditor::FCurveEditor()
     this, SIGNAL, FCurveEditor, rectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers ),
     this, SLOT, FCurveEditor, onRectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers )
   );
-  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, startEditingHandle, ( ), this, SLOT, FCurveEditor, onStartEditingHandle, ( ) );
+  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, startEditingKey, ( ), this, SLOT, FCurveEditor, onStartEditingKey, ( ) );
   QOBJECT_CONNECT(
-    m_curveItem, SIGNAL, FCurveItem, editedHandleValueChanged, ( ),
-    this, SLOT, FCurveEditor, onEditedHandleValueChanged, ( )
+    m_curveItem, SIGNAL, FCurveItem, editedKeyValueChanged, ( ),
+    this, SLOT, FCurveEditor, onEditedKeyValueChanged, ( )
   );
-  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, stopEditingHandle, ( ), this, SLOT, FCurveEditor, onStopEditingHandle, ( ) );
+  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, stopEditingKey, ( ), this, SLOT, FCurveEditor, onStopEditingKey, ( ) );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, repaintViews, ( ), this, SLOT, FCurveEditor, onRepaintViews, ( ) );
 
   QAction* frameAllAction = new QAction( "Frame All Keys", this );
@@ -137,10 +137,10 @@ FCurveEditor::FCurveEditor()
   QOBJECT_CONNECT( frameSelectedAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onFrameSelectedKeys, () );
   this->addAction( frameSelectedAction );
 
-  QAction* deleteAction = new QAction( "Delete selected Handles", this );
+  QAction* deleteAction = new QAction( "Delete selected Keys", this );
   deleteAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   deleteAction->setShortcut( Qt::Key_Delete );
-  QOBJECT_CONNECT( deleteAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeleteSelectedHandles, () );
+  QOBJECT_CONNECT( deleteAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeleteSelectedKeys, () );
   this->addAction( deleteAction );
 
   this->setVEPos( QPoint( -20, 20 ) );
@@ -168,11 +168,11 @@ void FCurveEditor::updateVEPos()
   ) );
 }
 
-void FCurveEditor::onEditedHandleValueChanged()
+void FCurveEditor::onEditedKeyValueChanged()
 {
-  Handle h = m_model->getHandle( m_curveItem->editedHandle() );
+  Key h = m_model->getKey( m_curveItem->editedKey() );
   QPointF p;
-  switch( m_curveItem->editedHandleProp() )
+  switch( m_curveItem->editedKeyProp() )
   {
   case FCurveItem::CENTER: p = h.pos; break;
   case FCurveItem::TAN_IN: p = h.tanIn; break;
@@ -183,13 +183,13 @@ void FCurveEditor::onEditedHandleValueChanged()
   m_valueEditor->m_y->set( p.y() );
 }
 
-void FCurveEditor::onStartEditingHandle()
+void FCurveEditor::onStartEditingKey()
 {
   m_valueEditor->setVisible( true );
-  this->onEditedHandleValueChanged();
+  this->onEditedKeyValueChanged();
 }
 
-void FCurveEditor::onStopEditingHandle()
+void FCurveEditor::onStopEditingKey()
 {
   m_valueEditor->setVisible( false );
 }
@@ -197,7 +197,7 @@ void FCurveEditor::onStopEditingHandle()
 void FCurveEditor::onRectangleSelectReleased( const QRectF& r, Qt::KeyboardModifiers m )
 {
   if( !m.testFlag( Qt::ShiftModifier ) && !m.testFlag( Qt::ControlModifier ) )
-    m_curveItem->clearHandleSelection();
+    m_curveItem->clearKeySelection();
   m_curveItem->rectangleSelect( r );
 }
 
@@ -211,9 +211,9 @@ void FCurveEditor::onFrameSelectedKeys()
   this->frameSelectedKeys();
 }
 
-void FCurveEditor::onDeleteSelectedHandles()
+void FCurveEditor::onDeleteSelectedKeys()
 {
-  m_curveItem->deleteSelectedHandles();
+  m_curveItem->deleteSelectedKeys();
 }
 
 FCurveEditor::~FCurveEditor()
@@ -246,18 +246,18 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
 {
   if( e->button() == Qt::RightButton )
   {
-    // Adding a new Handle
+    // Adding a new Key
     QPointF scenePos = this->view()->mapToScene(
       this->view()->mapFromGlobal( this->mapToGlobal( e->pos() ) ) );
-    m_model->addHandle();
-    Handle h; h.pos = scenePos;
+    m_model->addKey();
+    Key h; h.pos = scenePos;
     {
       // heuristic for tangents, based on the current zoom level
       h.tanIn.setX( 20 / this->view()->transform().m11() );
       h.tanOut.setX( h.tanIn.x() );
     }
-    m_model->setHandle( m_model->getHandleCount() - 1, h );
-    m_model->autoTangents( m_model->getHandleCount() - 1 );
+    m_model->setKey( m_model->getKeyCount() - 1, h );
+    m_model->autoTangents( m_model->getKeyCount() - 1 );
   }
   else
     Parent::mousePressEvent( e );

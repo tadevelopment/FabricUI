@@ -40,16 +40,16 @@ class AnimxFCurveModel : public AbstractFCurveModel, public adsk::ICurve
 
 public:
 
-  void addHandle( const Handle& );
+  void addKey( const Key& );
 
   // AbstractFCurveModel
-  size_t getHandleCount() const FTL_OVERRIDE { return m_keys.size(); }
-  Handle getHandle( size_t uiId ) const FTL_OVERRIDE;
-  Handle getOrderedHandle( size_t ) const FTL_OVERRIDE;
+  size_t getKeyCount() const FTL_OVERRIDE { return m_keys.size(); }
+  Key getKey( size_t uiId ) const FTL_OVERRIDE;
+  Key getOrderedKey( size_t ) const FTL_OVERRIDE;
   size_t getIndexAfterTime( qreal ) const FTL_OVERRIDE;
-  void setHandle( size_t uiId, Handle ) FTL_OVERRIDE;
-  void addHandle() FTL_OVERRIDE;
-  void deleteHandle( size_t uiId ) FTL_OVERRIDE;
+  void setKey( size_t uiId, Key ) FTL_OVERRIDE;
+  void addKey() FTL_OVERRIDE;
+  void deleteKey( size_t uiId ) FTL_OVERRIDE;
   void autoTangents( size_t ) FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
 

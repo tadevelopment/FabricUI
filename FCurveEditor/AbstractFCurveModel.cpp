@@ -6,18 +6,18 @@
 
 using namespace FabricUI::FCurveEditor;
 
-void AbstractFCurveModel::moveHandles( const size_t* indices, const size_t nbIndices, QPointF delta )
+void AbstractFCurveModel::moveKeys( const size_t* indices, const size_t nbIndices, QPointF delta )
 {
   for( size_t i = 0; i < nbIndices; i++ )
   {
-    Handle h = getHandle( indices[i] );
+    Key h = getKey( indices[i] );
     h.pos += delta;
-    this->setHandle( indices[i], h );
+    this->setKey( indices[i], h );
   }
 }
 
-void AbstractFCurveModel::deleteHandles( const size_t* indices, const size_t nbIndices )
+void AbstractFCurveModel::deleteKeys( const size_t* indices, const size_t nbIndices )
 {
   for( size_t i = nbIndices; i > 0; i-- )
-    this->deleteHandle( indices[i-1] );
+    this->deleteKey( indices[i-1] );
 }

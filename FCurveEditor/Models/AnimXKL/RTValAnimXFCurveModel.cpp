@@ -8,7 +8,7 @@
 
 using namespace FabricUI::FCurveEditor;
 
-size_t RTValAnimXFCurveConstModel::getHandleCount() const
+size_t RTValAnimXFCurveConstModel::getKeyCount() const
 {
   if( !m_val.isValid() || m_val.isNullObject() )
     return 0;
@@ -22,7 +22,7 @@ FabricCore::RTVal RTValAnimXFCurveConstModel::idToIndex( size_t i ) const
   FabricCore::RTVal iRV = FabricCore::RTVal::ConstructUInt32( m_val.getContext(), i );
   return const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "UInt32", "getKeyIndex", 1, &iRV );
 }
-Handle RTValAnimXFCurveConstModel::getOrderedHandle( size_t index ) const
+Key RTValAnimXFCurveConstModel::getOrderedKey( size_t index ) const
 {
   const size_t argc = 2;
   FabricCore::RTVal args[argc] = {
@@ -31,7 +31,7 @@ Handle RTValAnimXFCurveConstModel::getOrderedHandle( size_t index ) const
   };
   const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "Boolean", "keyframeAtIndex", argc, args );
   FabricCore::RTVal key = args[1];
-  Handle dst;
+  Key dst;
   dst.pos.setX( key.maybeGetMember( "time" ).getFloat64() );
   dst.pos.setY( key.maybeGetMember( "value" ).getFloat64() );
   dst.tanIn.setX( key.maybeGetMember( "tanIn" ).maybeGetMember( "x" ).getFloat64() );
@@ -41,9 +41,9 @@ Handle RTValAnimXFCurveConstModel::getOrderedHandle( size_t index ) const
   return dst;
 }
 
-Handle RTValAnimXFCurveConstModel::getHandle( size_t id ) const
+Key RTValAnimXFCurveConstModel::getKey( size_t id ) const
 {
-  return this->getOrderedHandle( this->idToIndex( id ).getUInt32() );
+  return this->getOrderedKey( this->idToIndex( id ).getUInt32() );
 }
 
 size_t RTValAnimXFCurveConstModel::getIndexAfterTime( qreal time ) const
@@ -77,34 +77,34 @@ void RTValAnimXFCurveVersionedConstModel::update( bool emitChanges ) const
 
   const bool structureChanged = ( m_lastStructureVersion != sVersion );
   const bool valueChanged = ( m_lastValueVersion != vVersion );
-  const size_t lastHandleCount = m_lastHandleCount;
+  const size_t lastKeyCount = m_lastKeyCount;
 
   m_lastStructureVersion = sVersion;
   m_lastValueVersion = vVersion;
-  m_lastHandleCount = Parent::getHandleCount();
+  m_lastKeyCount = Parent::getKeyCount();
 
   if( !emitChanges )
     return;
 
-  const size_t hc = Parent::getHandleCount();
+  const size_t hc = Parent::getKeyCount();
   if( structureChanged )
   {
-    for( size_t i = lastHandleCount; i > hc; i-- )
-      emit this->handleDeleted( i-1 );
-    for( size_t i = lastHandleCount; i < hc; i++ )
-      emit this->handleAdded();
+    for( size_t i = lastKeyCount; i > hc; i-- )
+      emit this->keyDeleted( i-1 );
+    for( size_t i = lastKeyCount; i < hc; i++ )
+      emit this->keyAdded();
   }
   else
-    assert( lastHandleCount == hc );
+    assert( lastKeyCount == hc );
     
   if( valueChanged )
   {
     for( size_t i = 0; i < hc; i++ )
-      emit this->handleMoved( i );
+      emit this->keyMoved( i );
   }
 }
 
-inline void SetHandle( FabricCore::RTVal& m_val, const FabricCore::RTVal& index, Handle h )
+inline void SetKey( FabricCore::RTVal& m_val, const FabricCore::RTVal& index, Key h )
 {
   const size_t argc = 9;
   FabricCore::RTVal args[argc] =
@@ -122,19 +122,19 @@ inline void SetHandle( FabricCore::RTVal& m_val, const FabricCore::RTVal& index,
   m_val.callMethod( "", "setKeyframe", argc, args );
 }
 
-void RTValAnimXFCurveVersionedModel::setHandle( size_t i, Handle h )
+void RTValAnimXFCurveVersionedModel::setKey( size_t i, Key h )
 {
-  SetHandle( m_val, this->idToIndex( i ), h );
+  SetKey( m_val, this->idToIndex( i ), h );
   emit this->dirty();
 }
 
-void RTValAnimXFCurveModel::setHandle( size_t i, Handle h )
+void RTValAnimXFCurveModel::setKey( size_t i, Key h )
 {
-  SetHandle( m_val, this->idToIndex( i ), h );
-  emit this->handleMoved( i );
+  SetKey( m_val, this->idToIndex( i ), h );
+  emit this->keyMoved( i );
 }
 
-inline void AddHandle( FabricCore::RTVal& m_val )
+inline void AddKey( FabricCore::RTVal& m_val )
 {
   assert( m_val.isValid() );
   if( m_val.isNullObject() )
@@ -142,33 +142,33 @@ inline void AddHandle( FabricCore::RTVal& m_val )
   m_val.callMethod( "", "pushKeyframe", 0, NULL );
 }
 
-void RTValAnimXFCurveVersionedModel::addHandle()
+void RTValAnimXFCurveVersionedModel::addKey()
 {
-  AddHandle( m_val );
+  AddKey( m_val );
   emit this->dirty();
 }
 
-void RTValAnimXFCurveModel::addHandle()
+void RTValAnimXFCurveModel::addKey()
 {
-  AddHandle( m_val );
-  emit this->handleAdded();
+  AddKey( m_val );
+  emit this->keyAdded();
 }
 
-inline void DeleteHandle( FabricCore::RTVal& m_val, FabricCore::RTVal* index )
+inline void DeleteKey( FabricCore::RTVal& m_val, FabricCore::RTVal* index )
 {
   assert( m_val.isValid() );
   m_val.callMethod( "", "removeKeyframe", 1, index );
 }
 
-void RTValAnimXFCurveVersionedModel::deleteHandle( size_t i )
+void RTValAnimXFCurveVersionedModel::deleteKey( size_t i )
 {
   FabricCore::RTVal index = this->idToIndex( i );
-  DeleteHandle( m_val, &index );
+  DeleteKey( m_val, &index );
 }
 
-void RTValAnimXFCurveModel::deleteHandle( size_t i )
+void RTValAnimXFCurveModel::deleteKey( size_t i )
 {
   FabricCore::RTVal index = this->idToIndex( i );
-  DeleteHandle( m_val, &index );
-  emit this->handleDeleted( i );
+  DeleteKey( m_val, &index );
+  emit this->keyDeleted( i );
 }

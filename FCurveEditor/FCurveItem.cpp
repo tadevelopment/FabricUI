@@ -46,18 +46,18 @@ class FCurveItem::FCurveShape : public QGraphicsItem
     QPointF botRight = QPointF( 1, 1 ) * ( -std::numeric_limits<qreal>::max() );
     if( m_parent->m_curve != NULL )
     {
-      size_t hc = m_parent->m_curve->getHandleCount();
+      size_t hc = m_parent->m_curve->getKeyCount();
       if( hc <= 1 )
       {
         QPointF pos;
         if( hc == 1 )
-          pos = m_parent->m_curve->getHandle( 0 ).pos;
+          pos = m_parent->m_curve->getKey( 0 ).pos;
         m_boundingRect = QRectF( -1 + pos.x(), -1 + pos.y(), 2, 2 );
         return;
       }
       for( size_t i = 0; i < hc; i++ )
       {
-        Handle h = m_parent->m_curve->getHandle( i );
+        Key h = m_parent->m_curve->getKey( i );
         topLeft = min( topLeft, h.pos );
         botRight = max( botRight, h.pos );
         topLeft.setY( std::min( topLeft.y(), h.pos.y() - h.tanIn.y() ) );
@@ -80,13 +80,13 @@ class FCurveItem::FCurveShape : public QGraphicsItem
   {
     if( m_parent->m_curve != NULL )
     {
-      if( !this->m_parent->m_selectedHandles.empty() )
+      if( !this->m_parent->m_selectedKeys.empty() )
       {
         QPointF topLeft = QPointF( 1, 1 ) * std::numeric_limits<qreal>::max();
         QPointF botRight = QPointF( 1, 1 ) * ( -std::numeric_limits<qreal>::max() );
-        for( std::set<size_t>::const_iterator it = this->m_parent->m_selectedHandles.begin(); it != this->m_parent->m_selectedHandles.end(); it++ )
+        for( std::set<size_t>::const_iterator it = this->m_parent->m_selectedKeys.begin(); it != this->m_parent->m_selectedKeys.end(); it++ )
         {
-          Handle h = m_parent->m_curve->getHandle( *it );
+          Key h = m_parent->m_curve->getKey( *it );
           topLeft = min( topLeft, h.pos );
           botRight = max( botRight, h.pos );
           topLeft.setY( std::min( topLeft.y(), h.pos.y() - h.tanIn.y() ) );
@@ -152,7 +152,7 @@ public:
       QColor inactiveColor( 80, 98, 110 );
       QColor activeColor( 102, 125, 140 );
 
-      if( !this->m_parent->m_selectedHandles.empty() ) {
+      if( !this->m_parent->m_selectedKeys.empty() ) {
         pen.setColor( activeColor );        
       }
       else {
@@ -166,7 +166,7 @@ public:
         return;
 
       // drawing the FCurve as line segments
-      if( m_parent->m_curve->getHandleCount() <= 1 )
+      if( m_parent->m_curve->getKeyCount() <= 1 )
         painter->drawLine(
           QPointF( er.left(), m_parent->m_curve->evaluate( er.left() ) ),
           QPointF( er.right(), m_parent->m_curve->evaluate( er.right() ) )
@@ -175,7 +175,7 @@ public:
       {
         // from the left of the screen, to the first key
         size_t firstKey = m_parent->m_curve->getIndexAfterTime( er.left() );
-        qreal firstKeyTime = m_parent->m_curve->getOrderedHandle( firstKey ).pos.x();
+        qreal firstKeyTime = m_parent->m_curve->getOrderedKey( firstKey ).pos.x();
         for( size_t i = 0; true; i++ )
         {
           qreal x1 = er.left() + ( i * er.width() ) / n;
@@ -189,15 +189,15 @@ public:
         }
 
         size_t lastKey = m_parent->m_curve->getIndexAfterTime( er.right() );
-        qreal lastKeyTime = m_parent->m_curve->getOrderedHandle( lastKey ).pos.x();
+        qreal lastKeyTime = m_parent->m_curve->getOrderedKey( lastKey ).pos.x();
 
         // drawing all the middle keys
         if( lastKey > 0 )
         {
           for( size_t i = firstKey; i < lastKey; i++ )
           {
-            qreal leftTime = m_parent->m_curve->getOrderedHandle( i ).pos.x();
-            qreal rightTime = m_parent->m_curve->getOrderedHandle( i + 1 ).pos.x();
+            qreal leftTime = m_parent->m_curve->getOrderedKey( i ).pos.x();
+            qreal rightTime = m_parent->m_curve->getOrderedKey( i + 1 ).pos.x();
             for( qreal x = leftTime; x < rightTime; x += step )
             {
               qreal x2 = std::min( rightTime, x + step );
@@ -229,14 +229,14 @@ QRectF FCurveItem::selectedKeysBoundingRect() const {
   return m_curveShape->selectedKeysBoundingRect(); 
 }
 
-class FCurveItem::HandleWidget : public QGraphicsWidget
+class FCurveItem::KeyWidget : public QGraphicsWidget
 {
   FCurveItem* m_parent;
   size_t m_index;
 
   class Center : public QGraphicsRectItem
   {
-    HandleWidget* m_parent;
+    KeyWidget* m_parent;
     typedef QGraphicsRectItem Parent;
     bool m_selected;
     bool m_hovered;
@@ -250,7 +250,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       );
     }
   public:
-    Center( HandleWidget* parent )
+    Center( KeyWidget* parent )
       : QGraphicsRectItem( parent )
       , m_parent( parent )
       , m_selected( false )
@@ -261,7 +261,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       this->setAcceptHoverEvents( true );
       this->updateColor();
     };
-    void setHandleSelected( bool selected )
+    void setKeySelected( bool selected )
     {
       m_selected = selected;
       this->updateColor();
@@ -273,11 +273,11 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       bool ctrl = event->modifiers().testFlag( Qt::ControlModifier );
       m_selectOnRelease = !shift && !ctrl;
       if( !m_selected && !shift && !ctrl )
-        m_parent->m_parent->clearHandleSelection();
+        m_parent->m_parent->clearKeySelection();
       if( m_selected && ctrl )
-        m_parent->m_parent->removeHandleFromSelection( m_parent->m_index );
+        m_parent->m_parent->removeKeyFromSelection( m_parent->m_index );
       else
-        m_parent->m_parent->addHandleToSelection( m_parent->m_index );
+        m_parent->m_parent->addKeyToSelection( m_parent->m_index );
       emit m_parent->m_parent->interactionBegin();
       this->setCursor( Qt::SizeAllCursor );
     }
@@ -285,18 +285,18 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     {
       AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
       const size_t index = m_parent->m_index;
-      const Handle h = curve->getHandle( index );
+      const Key h = curve->getKey( index );
       m_selectOnRelease = false;
-      m_parent->m_parent->moveSelectedHandles( event->scenePos() - h.pos );
+      m_parent->m_parent->moveSelectedKeys( event->scenePos() - h.pos );
     }
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
       Parent::mouseReleaseEvent( event );
       if( m_selectOnRelease )
       {
-        m_parent->m_parent->clearHandleSelection();
-        m_parent->m_parent->addHandleToSelection( m_parent->m_index );
-        m_parent->m_parent->editHandle( m_parent->m_index );
+        m_parent->m_parent->clearKeySelection();
+        m_parent->m_parent->addKeyToSelection( m_parent->m_index );
+        m_parent->m_parent->editKey( m_parent->m_index );
       }
       emit m_parent->m_parent->interactionEnd();
       this->unsetCursor();
@@ -321,7 +321,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
 
     class End : public QGraphicsEllipseItem
     {
-      HandleWidget* m_parent;
+      KeyWidget* m_parent;
       Tangent* m_tangent;
       bool m_selected;
       typedef QGraphicsEllipseItem Parent;
@@ -332,7 +332,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       }
     public:
       QGraphicsWidget* m_posW; // Used for its position
-      End( HandleWidget* parent, Tangent* tangent )
+      End( KeyWidget* parent, Tangent* tangent )
         : QGraphicsEllipseItem()
         , m_parent( parent )
         , m_tangent( tangent )
@@ -349,13 +349,13 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
       {
         emit m_parent->m_parent->interactionBegin();
-        m_parent->m_parent->editHandle( m_parent->m_index, m_tangent->m_inNotOut ? TAN_IN : TAN_OUT );
+        m_parent->m_parent->editKey( m_parent->m_index, m_tangent->m_inNotOut ? TAN_IN : TAN_OUT );
       }
       void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
       {
         AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
         const size_t index = m_parent->m_index;
-        Handle h = curve->getHandle( index );
+        Key h = curve->getKey( index );
 
         const qreal crossProd = std::abs( h.tanIn.x() * h.tanOut.y() - h.tanIn.y() * h.tanOut.x() );
         const qreal l2In = len2( h.tanIn );
@@ -381,7 +381,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
           if( !splitTangents )
             h.tanIn = h.tanOut * sqrt( l2In / l2Out );
         }
-        curve->setHandle( index, h );
+        curve->setKey( index, h );
         emit m_parent->m_parent->repaintViews();
       }
       void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::SizeAllCursor ); }
@@ -395,7 +395,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     End* m_end;
 
   public:
-    Tangent( HandleWidget* parent, bool inNotOut )
+    Tangent( KeyWidget* parent, bool inNotOut )
       : m_inNotOut( inNotOut )
       , m_line( new QGraphicsLineItem( parent ) )
       , m_end( new End( parent, this ) )
@@ -406,7 +406,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       m_line->setPen( linePen );
     }
 
-    void setValue( const Handle& h )
+    void setValue( const Key& h )
     {
       const QPointF p = m_inNotOut ? -h.tanIn : h.tanOut;
       m_line->setLine( QLineF( QPointF( 0, 0 ), p ) );
@@ -424,7 +424,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
   Tangent m_inT, m_outT;
 
 public:
-  HandleWidget( FCurveItem* parent, size_t index )
+  KeyWidget( FCurveItem* parent, size_t index )
     : QGraphicsWidget( parent )
     , m_parent( parent )
     , m_index( index )
@@ -434,7 +434,7 @@ public:
   {
     this->setEditState( NOTHING );
   }
-  void setValue( const Handle& h )
+  void setValue( const Key& h )
   {
     this->setPos( h.pos );
     m_inT.setValue( h );
@@ -442,19 +442,19 @@ public:
   }
   inline void setIndex( size_t i ) { this->m_index = i; }
 
-  inline void setEditState( HandleProp p )
+  inline void setEditState( KeyProp p )
   {
     const bool visible = ( p != NOTHING );
     m_inT.setVisible( visible );
     m_outT.setVisible( visible );
-    m_center->setHandleSelected( p == CENTER );
+    m_center->setKeySelected( p == CENTER );
     m_inT.setSelected( p == TAN_IN );
     m_outT.setSelected( p == TAN_OUT );
   }
 
-  inline void setHandleSelected( bool selected )
+  inline void setKeySelected( bool selected )
   {
-    m_center->setHandleSelected( selected );
+    m_center->setKeySelected( selected );
     if( !selected )
       this->setEditState( NOTHING );
   }
@@ -467,86 +467,86 @@ FCurveItem::FCurveItem()
   m_curveShape->setParentItem( this );
 }
 
-void FCurveItem::clearHandleSelection()
+void FCurveItem::clearKeySelection()
 {
-  for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
-    m_handles[*it]->setHandleSelected( false );
-  m_selectedHandles.clear();
-  emit this->stopEditingHandle();
+  for( std::set<size_t>::const_iterator it = m_selectedKeys.begin(); it != m_selectedKeys.end(); it++ )
+    m_keys[*it]->setKeySelected( false );
+  m_selectedKeys.clear();
+  emit this->stopEditingKey();
 }
 
-void FCurveItem::addHandleToSelection( size_t i )
+void FCurveItem::addKeyToSelection( size_t i )
 {
-  if( !m_selectedHandles.empty() )
+  if( !m_selectedKeys.empty() )
   {
-    m_handles[*m_selectedHandles.begin()]->setEditState( NOTHING );
-    emit this->stopEditingHandle();
-    m_handles[*m_selectedHandles.begin()]->setHandleSelected( true );
+    m_keys[*m_selectedKeys.begin()]->setEditState( NOTHING );
+    emit this->stopEditingKey();
+    m_keys[*m_selectedKeys.begin()]->setKeySelected( true );
   }
-  m_selectedHandles.insert( i );
-  m_handles[i]->setHandleSelected( true );
-  if( m_selectedHandles.size() == 1 )
-    this->editHandle( *m_selectedHandles.begin() );
+  m_selectedKeys.insert( i );
+  m_keys[i]->setKeySelected( true );
+  if( m_selectedKeys.size() == 1 )
+    this->editKey( *m_selectedKeys.begin() );
 }
 
-void FCurveItem::removeHandleFromSelection( size_t i )
+void FCurveItem::removeKeyFromSelection( size_t i )
 {
-  m_selectedHandles.erase( i );
-  if( m_editedHandle == i )
-    emit this->stopEditingHandle();
-  m_handles[i]->setHandleSelected( false );
-  if( m_selectedHandles.size() == 1 )
-    this->editHandle( *m_selectedHandles.begin(), CENTER );
+  m_selectedKeys.erase( i );
+  if( m_editedKey == i )
+    emit this->stopEditingKey();
+  m_keys[i]->setKeySelected( false );
+  if( m_selectedKeys.size() == 1 )
+    this->editKey( *m_selectedKeys.begin(), CENTER );
 }
 
 void FCurveItem::rectangleSelect( const QRectF& r )
 {
-  for( size_t i = 0; i < m_handles.size(); i++ )
-    if( r.contains( m_handles[i]->scenePos() ) )
-      this->addHandleToSelection( i );
+  for( size_t i = 0; i < m_keys.size(); i++ )
+    if( r.contains( m_keys[i]->scenePos() ) )
+      this->addKeyToSelection( i );
 }
 
-void FCurveItem::editHandle( size_t i, HandleProp p )
+void FCurveItem::editKey( size_t i, KeyProp p )
 {
-  m_handles[i]->setEditState( p );
-  m_editedHandle = i;
-  m_editedHandleProp = p;
-  emit this->startEditingHandle();
+  m_keys[i]->setEditState( p );
+  m_editedKey = i;
+  m_editedKeyProp = p;
+  emit this->startEditingKey();
 }
 
-void FCurveItem::deleteSelectedHandles()
+void FCurveItem::deleteSelectedKeys()
 {
-  if( m_selectedHandles.empty() )
+  if( m_selectedKeys.empty() )
     return;
   else
-  if( m_selectedHandles.size() == 1 )
+  if( m_selectedKeys.size() == 1 )
   {
-    size_t index = *m_selectedHandles.begin();
-    this->clearHandleSelection();
-    m_curve->deleteHandle( index );
+    size_t index = *m_selectedKeys.begin();
+    this->clearKeySelection();
+    m_curve->deleteKey( index );
   }
   else
   {
     std::vector<size_t> orderedIndices;
-    for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
+    for( std::set<size_t>::const_iterator it = m_selectedKeys.begin(); it != m_selectedKeys.end(); it++ )
       orderedIndices.push_back( *it );
-    this->clearHandleSelection();
+    this->clearKeySelection();
     std::sort( orderedIndices.begin(), orderedIndices.end() );
-    m_curve->deleteHandles( orderedIndices.data(), orderedIndices.size() );
+    m_curve->deleteKeys( orderedIndices.data(), orderedIndices.size() );
   }
 }
 
-void FCurveItem::moveSelectedHandles( QPointF delta )
+void FCurveItem::moveSelectedKeys( QPointF delta )
 {
-  if( m_selectedHandles.empty() )
+  if( m_selectedKeys.empty() )
     return;
   else
-  if( m_selectedHandles.size() == 1 )
+  if( m_selectedKeys.size() == 1 )
   {
-    const size_t index = *m_selectedHandles.begin();
-    Handle h = m_curve->getHandle( index );
+    const size_t index = *m_selectedKeys.begin();
+    Key h = m_curve->getKey( index );
     h.pos += delta;
-    m_curve->setHandle( index, h );
+    m_curve->setKey( index, h );
     emit this->repaintViews();
     return;
   }
@@ -554,73 +554,73 @@ void FCurveItem::moveSelectedHandles( QPointF delta )
   {
     // TODO (optimisation) : cache that vector<size_t> to avoid reallocation
     std::vector<size_t> indices;
-    for( std::set<size_t>::const_iterator it = m_selectedHandles.begin(); it != m_selectedHandles.end(); it++ )
+    for( std::set<size_t>::const_iterator it = m_selectedKeys.begin(); it != m_selectedKeys.end(); it++ )
       indices.push_back( *it );
-    m_curve->moveHandles( indices.data(), indices.size(), delta );
+    m_curve->moveKeys( indices.data(), indices.size(), delta );
     emit this->repaintViews();
   }
 }
 
-void FCurveItem::addHandle( size_t i )
+void FCurveItem::addKey( size_t i )
 {
-  HandleWidget* w = new HandleWidget( this, i );
-  w->setValue( m_curve->getHandle( i ) );
-  m_handles.push_back( w );
+  KeyWidget* w = new KeyWidget( this, i );
+  w->setValue( m_curve->getKey( i ) );
+  m_keys.push_back( w );
 }
 
-void FCurveItem::onHandleAdded()
+void FCurveItem::onKeyAdded()
 {
-  this->addHandle( m_handles.size() );
+  this->addKey( m_keys.size() );
   m_curveShape->setBoundingRectDirty();
 }
 
-void FCurveItem::onHandleDeleted( size_t i )
+void FCurveItem::onKeyDeleted( size_t i )
 {
-  delete m_handles[i];
-  for( size_t j = i; j < m_handles.size() - 1; j++ )
+  delete m_keys[i];
+  for( size_t j = i; j < m_keys.size() - 1; j++ )
   {
-    m_handles[j] = m_handles[j + 1];
-    m_handles[j]->setIndex( j );
+    m_keys[j] = m_keys[j + 1];
+    m_keys[j]->setIndex( j );
   }
-  m_handles.resize( m_handles.size() - 1 );
+  m_keys.resize( m_keys.size() - 1 );
 
-  this->clearHandleSelection();
+  this->clearKeySelection();
 
   m_curveShape->setBoundingRectDirty();
-  if( i == m_editedHandle )
-    emit this->stopEditingHandle();
+  if( i == m_editedKey )
+    emit this->stopEditingKey();
 }
 
-void FCurveItem::onHandleMoved( size_t i )
+void FCurveItem::onKeyMoved( size_t i )
 {
-  assert( i < m_handles.size() );
-  assert( m_handles.size() == m_curve->getHandleCount() );
-  m_handles[i]->setValue( m_curve->getHandle( i ) );
+  assert( i < m_keys.size() );
+  assert( m_keys.size() == m_curve->getKeyCount() );
+  m_keys[i]->setValue( m_curve->getKey( i ) );
   m_curveShape->setBoundingRectDirty();
-  if( i == m_editedHandle )
-    emit this->editedHandleValueChanged();
+  if( i == m_editedKey )
+    emit this->editedKeyValueChanged();
 }
 
 void FCurveItem::setCurve( AbstractFCurveModel* curve )
 {
   assert( curve != m_curve );
   m_curve = curve;
-  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, handleMoved, ( size_t ), this, SLOT, FCurveItem, onHandleMoved, ( size_t ) );
-  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, handleAdded, (), this, SLOT, FCurveItem, onHandleAdded, () );
-  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, handleDeleted, ( size_t ), this, SLOT, FCurveItem, onHandleDeleted, ( size_t ) );
+  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, keyMoved, ( size_t ), this, SLOT, FCurveItem, onKeyMoved, ( size_t ) );
+  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, keyAdded, (), this, SLOT, FCurveItem, onKeyAdded, () );
+  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, keyDeleted, ( size_t ), this, SLOT, FCurveItem, onKeyDeleted, ( size_t ) );
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, dirty, ( ), this, SLOT, FCurveItem, onDirty, ( ) );
 
-  // Clearing previous handles
-  for( std::vector<HandleWidget*>::const_iterator it = m_handles.begin(); it < m_handles.end(); it++ )
+  // Clearing previous keys
+  for( std::vector<KeyWidget*>::const_iterator it = m_keys.begin(); it < m_keys.end(); it++ )
     delete *it;
-  m_handles.clear();
+  m_keys.clear();
 
-  emit this->stopEditingHandle();
+  emit this->stopEditingKey();
   m_curve->init();
 
-  size_t hc = m_curve->getHandleCount();
+  size_t hc = m_curve->getKeyCount();
   for( size_t i = 0; i < hc; i++ )
-    this->addHandle( i );
+    this->addKey( i );
 
   m_curveShape->setBoundingRectDirty();
 }

@@ -5,24 +5,24 @@
 using namespace FabricUI::FCurveEditor;
 using namespace adsk;
 
-Handle AnimxFCurveModel::getOrderedHandle( size_t index ) const
+Key AnimxFCurveModel::getOrderedKey( size_t index ) const
 {
   assert( index < m_keys.size() );
   const Keyframe& key = m_keys[index].key;
-  Handle dst;
+  Key dst;
   dst.pos = QPointF( key.time, key.value );
   dst.tanIn = QPointF( key.tanIn.x, key.tanIn.y );
   dst.tanOut = QPointF( key.tanOut.x, key.tanOut.y );
   return dst;
 }
 
-Handle AnimxFCurveModel::getHandle( size_t uiId ) const
+Key AnimxFCurveModel::getKey( size_t uiId ) const
 {
   assert( uiId < m_keys.size() );
-  return this->getOrderedHandle( m_uiIdToIndex[uiId] );
+  return this->getOrderedKey( m_uiIdToIndex[uiId] );
 }
 
-void AnimxFCurveModel::setHandle( size_t uiId, Handle h )
+void AnimxFCurveModel::setKey( size_t uiId, Key h )
 {
   assert( uiId < m_keys.size() );
   const size_t i = m_uiIdToIndex[uiId];
@@ -62,30 +62,30 @@ void AnimxFCurveModel::setHandle( size_t uiId, Handle h )
   }
 #endif
 
-  emit this->handleMoved( uiId );
+  emit this->keyMoved( uiId );
 }
 
-void AnimxFCurveModel::addHandle()
+void AnimxFCurveModel::addKey()
 {
   UIKey key;
   key.key = adsk::Keyframe();
   key.uiId = m_keys.size();
   m_keys.push_back( key );
   m_uiIdToIndex.push_back( m_keys.size()-1 );
-  emit this->handleAdded();
+  emit this->keyAdded();
 }
 
-void AnimxFCurveModel::addHandle( const Handle& h )
+void AnimxFCurveModel::addKey( const Key& h )
 {
-  this->addHandle();
-  this->setHandle( m_keys.size() - 1, h );
+  this->addKey();
+  this->setKey( m_keys.size() - 1, h );
 }
 
-void AnimxFCurveModel::deleteHandle( size_t uiId )
+void AnimxFCurveModel::deleteKey( size_t uiId )
 {
   size_t index = m_uiIdToIndex[uiId];
 
-  // TODO : more efficient way to delete handles ?
+  // TODO : more efficient way to delete keys ?
 
   // Shifting the local indices
   for( size_t i = index; i < m_keys.size()-1; i++ )
@@ -104,7 +104,7 @@ void AnimxFCurveModel::deleteHandle( size_t uiId )
   }
   m_uiIdToIndex.resize( m_uiIdToIndex.size() - 1 );
 
-  emit this->handleDeleted( uiId );
+  emit this->keyDeleted( uiId );
 }
 
 
@@ -123,7 +123,7 @@ void AnimxFCurveModel::autoTangents( size_t uiId )
       ( dir == 0 ? m_keys[index].key.tanIn.x : m_keys[index].key.tanOut.x ),
       ( dir == 0 ? m_keys[index].key.tanIn.y : m_keys[index].key.tanOut.y )
     );
-  emit this->handleMoved( uiId );
+  emit this->keyMoved( uiId );
 }
 
 qreal AnimxFCurveModel::evaluate( qreal v ) const

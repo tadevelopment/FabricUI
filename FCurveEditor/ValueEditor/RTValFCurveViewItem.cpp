@@ -45,7 +45,7 @@ public:
     m_dfgPortPath = dfgPortPath;
   }
 
-  void setHandle( size_t i, Handle h ) FTL_OVERRIDE
+  void setKey( size_t i, Key h ) FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
     this->synchronizeKLReg();
@@ -80,7 +80,7 @@ public:
     return indicesStr;
   }
 
-  void moveHandles( const size_t* indices, const size_t nbIndices, QPointF delta ) FTL_OVERRIDE
+  void moveKeys( const size_t* indices, const size_t nbIndices, QPointF delta ) FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
     this->synchronizeKLReg();
@@ -98,7 +98,7 @@ public:
     emit this->dirty();
   }
 
-  void addHandle() FTL_OVERRIDE
+  void addKey() FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
     this->synchronizeKLReg();
@@ -108,7 +108,7 @@ public:
     emit this->dirty();
   }
 
-  void deleteHandle( size_t i ) FTL_OVERRIDE
+  void deleteKey( size_t i ) FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
     this->synchronizeKLReg();
@@ -119,7 +119,7 @@ public:
     emit this->dirty();
   }
 
-  void deleteHandles( const size_t* indices, const size_t nbIndices ) FTL_OVERRIDE
+  void deleteKeys( const size_t* indices, const size_t nbIndices ) FTL_OVERRIDE
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
     this->synchronizeKLReg();
@@ -218,8 +218,8 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   m_editor->setFixedHeight( 175 );
   m_editor->frameAllKeys( );
 
-  //connect( m_model, SIGNAL( handleAdded() ), this, SLOT( onViewValueChanged() ) );
-  //connect( m_model, SIGNAL( handleMoved( size_t ) ), this, SLOT( onViewValueChanged() ) );
+  //connect( m_model, SIGNAL( keyAdded() ), this, SLOT( onViewValueChanged() ) );
+  //connect( m_model, SIGNAL( keyMoved( size_t ) ), this, SLOT( onViewValueChanged() ) );
   //connect( m_editor, SIGNAL( interactionBegin() ), this, SIGNAL( interactionBegin() ) );
   //connect( m_editor, SIGNAL( interactionEnd() ), this, SLOT( emitInteractionEnd() ) );
 
