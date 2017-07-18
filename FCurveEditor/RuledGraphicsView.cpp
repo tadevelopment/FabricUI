@@ -214,7 +214,7 @@ void RuledGraphicsView::centeredScale( qreal x, qreal y )
   {
     // The rule is that the scaling center must have the same pixel
     // coordinates before and after the scaling
-    QPoint viewCenter = QPoint( m_view->width(), m_view->height() ) / 2;
+    QPoint viewCenter = m_view->rect().center();
     QPoint scalingCenterPxOffset = m_view->mapFromScene( m_scalingCenter ) - viewCenter;
     m_view->centerOn( m_scalingCenter );
     m_view->scale( x, y );
