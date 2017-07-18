@@ -81,7 +81,7 @@ public:
   inline void setLogScale( qreal s ) { if( s > 0 ) { m_logScale = s; this->update(); } }
 
 signals:
-  void rectangleSelectReleased( const QRectF& ) const;
+  void rectangleSelectReleased( const QRectF&, Qt::KeyboardModifiers ) const;
 
 protected:
   void wheelEvent( QWheelEvent * ) FTL_OVERRIDE;

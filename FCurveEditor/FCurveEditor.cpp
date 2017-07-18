@@ -114,8 +114,8 @@ FCurveEditor::FCurveEditor()
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionBegin, (), this, SIGNAL, FCurveEditor, interactionBegin, () );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionEnd, (), this, SIGNAL, FCurveEditor, interactionEnd, () );
   QOBJECT_CONNECT(
-    this, SIGNAL, FCurveEditor, rectangleSelectReleased, ( const QRectF& ),
-    this, SLOT, FCurveEditor, onRectangleSelectReleased, ( const QRectF& )
+    this, SIGNAL, FCurveEditor, rectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers ),
+    this, SLOT, FCurveEditor, onRectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers )
   );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, startEditingHandle, ( ), this, SLOT, FCurveEditor, onStartEditingHandle, ( ) );
   QOBJECT_CONNECT(
@@ -194,8 +194,10 @@ void FCurveEditor::onStopEditingHandle()
   m_valueEditor->setVisible( false );
 }
 
-void FCurveEditor::onRectangleSelectReleased( const QRectF& r )
+void FCurveEditor::onRectangleSelectReleased( const QRectF& r, Qt::KeyboardModifiers m )
 {
+  if( !m.testFlag( Qt::ShiftModifier ) && !m.testFlag( Qt::ControlModifier ) )
+    m_curveItem->clearHandleSelection();
   m_curveItem->rectangleSelect( r );
 }
 

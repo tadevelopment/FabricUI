@@ -33,14 +33,15 @@ private:
   HandleProp m_editedHandleProp;
 
   void addHandle( size_t );
-  void clearHandleSelection();
   void addHandleToSelection( size_t );
+  void removeHandleFromSelection( size_t );
   void moveSelectedHandles( QPointF delta );
   void editHandle( size_t, HandleProp p = CENTER );
 
 public:
   FCurveItem();
   void setCurve( AbstractFCurveModel* );
+  void clearHandleSelection();
   void rectangleSelect( const QRectF& );
   void deleteSelectedHandles();
   inline size_t editedHandle() const { return m_editedHandle; }

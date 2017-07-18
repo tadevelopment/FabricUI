@@ -87,7 +87,7 @@ protected:
     if( m_state == SELECTING )
     {
       this->update();
-      emit m_parent->rectangleSelectReleased( m_selectionRect );
+      emit m_parent->rectangleSelectReleased( m_selectionRect, event->modifiers() );
     }
     m_state = NOTHING;
     Parent::mouseReleaseEvent( event );

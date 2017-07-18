@@ -240,7 +240,7 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
     typedef QGraphicsRectItem Parent;
     bool m_selected;
     bool m_hovered;
-    bool m_hasMovedBeforeRelease;
+    bool m_selectOnRelease;
     void updateColor()
     {
       this->setPen( Qt::NoPen );
@@ -269,10 +269,15 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
   protected:
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
-      m_hasMovedBeforeRelease = false;
-      if( !m_selected )
+      bool shift = event->modifiers().testFlag( Qt::ShiftModifier );
+      bool ctrl = event->modifiers().testFlag( Qt::ControlModifier );
+      m_selectOnRelease = !shift && !ctrl;
+      if( !m_selected && !shift && !ctrl )
         m_parent->m_parent->clearHandleSelection();
-      m_parent->m_parent->addHandleToSelection( m_parent->m_index );
+      if( m_selected && ctrl )
+        m_parent->m_parent->removeHandleFromSelection( m_parent->m_index );
+      else
+        m_parent->m_parent->addHandleToSelection( m_parent->m_index );
       emit m_parent->m_parent->interactionBegin();
       this->setCursor( Qt::SizeAllCursor );
     }
@@ -281,13 +286,13 @@ class FCurveItem::HandleWidget : public QGraphicsWidget
       AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
       const size_t index = m_parent->m_index;
       const Handle h = curve->getHandle( index );
-      m_hasMovedBeforeRelease = true;
+      m_selectOnRelease = false;
       m_parent->m_parent->moveSelectedHandles( event->scenePos() - h.pos );
     }
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
       Parent::mouseReleaseEvent( event );
-      if( !m_hasMovedBeforeRelease )
+      if( m_selectOnRelease )
       {
         m_parent->m_parent->clearHandleSelection();
         m_parent->m_parent->addHandleToSelection( m_parent->m_index );
@@ -472,22 +477,30 @@ void FCurveItem::clearHandleSelection()
 
 void FCurveItem::addHandleToSelection( size_t i )
 {
-  m_selectedHandles.insert( i );
-  m_handles[i]->setHandleSelected( true );
-  if( m_selectedHandles.size() == 1 )
-    this->editHandle( *m_selectedHandles.begin() );
-  else
-  if( m_selectedHandles.size() == 2 )
+  if( !m_selectedHandles.empty() )
   {
     m_handles[*m_selectedHandles.begin()]->setEditState( NOTHING );
     emit this->stopEditingHandle();
     m_handles[*m_selectedHandles.begin()]->setHandleSelected( true );
   }
+  m_selectedHandles.insert( i );
+  m_handles[i]->setHandleSelected( true );
+  if( m_selectedHandles.size() == 1 )
+    this->editHandle( *m_selectedHandles.begin() );
+}
+
+void FCurveItem::removeHandleFromSelection( size_t i )
+{
+  m_selectedHandles.erase( i );
+  if( m_editedHandle == i )
+    emit this->stopEditingHandle();
+  m_handles[i]->setHandleSelected( false );
+  if( m_selectedHandles.size() == 1 )
+    this->editHandle( *m_selectedHandles.begin(), CENTER );
 }
 
 void FCurveItem::rectangleSelect( const QRectF& r )
 {
-  this->clearHandleSelection();
   for( size_t i = 0; i < m_handles.size(); i++ )
     if( r.contains( m_handles[i]->scenePos() ) )
       this->addHandleToSelection( i );

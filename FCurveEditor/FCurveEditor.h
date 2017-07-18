@@ -50,7 +50,7 @@ protected:
   void resizeEvent( QResizeEvent * ) FTL_OVERRIDE;
 
 private slots:
-  void onRectangleSelectReleased( const QRectF& );
+  void onRectangleSelectReleased( const QRectF&, Qt::KeyboardModifiers );
   void onFrameAllKeys();
   void onFrameSelectedKeys();
   void onDeleteSelectedHandles();
