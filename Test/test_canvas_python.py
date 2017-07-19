@@ -16,11 +16,15 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.yield_fixture(scope="module")
 def canvas_app():
-    yield fabric_test_ui.create_canvas_app()
+    app = fabric_test_ui.create_canvas_app()
+    yield app
+    fabric_test_ui.cleanup_canvas_app(app)
 
 @pytest.yield_fixture(scope="module")
 def canvas_win(canvas_app):
-    yield fabric_test_ui.create_canvas_win(canvas_app)
+    win = fabric_test_ui.create_canvas_win(canvas_app)
+    yield win
+    fabric_test_ui.cleanup_canvas_win(win)
 
 def test_fe5730(canvas_win):
     dfg_controller = canvas_win.dfgWidget.getDFGController()

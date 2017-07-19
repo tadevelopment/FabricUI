@@ -13,14 +13,18 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.yield_fixture(scope="module")
 def canvas_app():
-    yield fabric_test_ui.create_canvas_app()
+    app = fabric_test_ui.create_canvas_app()
+    yield app
+    fabric_test_ui.cleanup_canvas_app(app)
 
 @pytest.yield_fixture(scope="module")
 def canvas_win(canvas_app):
-    yield fabric_test_ui.create_canvas_win(
+    win = fabric_test_ui.create_canvas_win(
       canvas_app,
       report_line_mapper=lambda line: line + "\n",
       )
+    yield win
+    fabric_test_ui.cleanup_canvas_win(win)
 
 # Returns the output of the test
 def main(canvas) :
