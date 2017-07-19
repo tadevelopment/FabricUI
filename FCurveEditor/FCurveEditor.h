@@ -30,8 +30,8 @@ class FCurveEditor : public RuledGraphicsView
   AbstractFCurveModel* m_model;
   QGraphicsScene* m_scene;
   FCurveItem* m_curveItem;
-  class ValueEditor;
-  ValueEditor* m_valueEditor;
+  class KeyValueEditor;
+  KeyValueEditor* m_keyValueEditor;
   void veEditFinished( bool isXNotY );
   void updateVEPos();
 
