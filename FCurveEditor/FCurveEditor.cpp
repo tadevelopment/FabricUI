@@ -54,6 +54,7 @@ class FCurveEditor::KeyValueEditor : public QFrame
       m_edit->setText( QString::number( v ) );
       m_edit->setCursorPosition( 0 );
     }
+    inline void clear() { m_edit->clear(); }
     inline QString get() const { return m_edit->text(); }
   };
 public:
@@ -84,23 +85,39 @@ void FCurveEditor::veEditFinished( bool isXNotY )
   bool ok;
   const qreal v = text.toDouble( &ok );
   if( !ok )
-    this->onEditedKeyValueChanged();
+    this->onEditedKeysChanged(); // clear what the user entered, and fetch the model values
   else
   {
-    Key h = m_model->getKey( m_curveItem->editedKey() );
-    QPointF* p = NULL;
-    switch( m_curveItem->editedKeyProp() )
+    assert( !m_curveItem->selectedKeys().empty() );
+    if( m_curveItem->selectedKeys().size() == 1 )
     {
-    case FCurveItem::CENTER: p = &h.pos; break;
-    case FCurveItem::TAN_IN: p = &h.tanIn; break;
-    case FCurveItem::TAN_OUT: p = &h.tanOut; break;
-    case FCurveItem::NOTHING: assert( false ); break;
+      size_t editedKey = *m_curveItem->selectedKeys().begin();
+      Key h = m_model->getKey( editedKey );
+      QPointF* p = NULL;
+      switch( m_curveItem->editedKeyProp() )
+      {
+      case FCurveItem::POSITION: p = &h.pos; break;
+      case FCurveItem::TAN_IN: p = &h.tanIn; break;
+      case FCurveItem::TAN_OUT: p = &h.tanOut; break;
+      case FCurveItem::NOTHING: assert( false ); break;
+      }
+      if( isXNotY )
+        p->setX( v );
+      else
+        p->setY( v );
+      m_model->setKey( editedKey, h );
     }
-    if( isXNotY )
-      p->setX( v );
     else
-      p->setY( v );
-    m_model->setKey( m_curveItem->editedKey(), h );
+    {
+      for( std::set<size_t>::const_iterator it = m_curveItem->selectedKeys().begin();
+        it != m_curveItem->selectedKeys().end(); it++ )
+      {
+        assert( !isXNotY ); // several keys shouldn't have the same time value, so the field should be disabled then
+        Key h = m_model->getKey( *it );
+        h.pos.setY( v );
+        m_model->setKey( *it, h );
+      }
+    }
   }
 }
 
@@ -122,12 +139,18 @@ FCurveEditor::FCurveEditor()
     this, SIGNAL, FCurveEditor, rectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers ),
     this, SLOT, FCurveEditor, onRectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers )
   );
-  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, startEditingKey, ( ), this, SLOT, FCurveEditor, onStartEditingKey, ( ) );
+  QOBJECT_CONNECT(
+    m_curveItem, SIGNAL, FCurveItem, selectionChanged, ( ),
+    this, SLOT, FCurveEditor, onEditedKeysChanged, ( )
+  );
   QOBJECT_CONNECT(
     m_curveItem, SIGNAL, FCurveItem, editedKeyValueChanged, ( ),
-    this, SLOT, FCurveEditor, onEditedKeyValueChanged, ( )
+    this, SLOT, FCurveEditor, onEditedKeysChanged, ( )
   );
-  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, stopEditingKey, ( ), this, SLOT, FCurveEditor, onStopEditingKey, ( ) );
+  QOBJECT_CONNECT(
+    m_curveItem, SIGNAL, FCurveItem, editedKeyPropChanged, ( ),
+    this, SLOT, FCurveEditor, onEditedKeysChanged, ( )
+  );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, repaintViews, ( ), this, SLOT, FCurveEditor, onRepaintViews, ( ) );
 
   QAction* frameAllAction = new QAction( "Frame All Keys", this );
@@ -173,30 +196,35 @@ void FCurveEditor::updateVEPos()
   ) );
 }
 
-void FCurveEditor::onEditedKeyValueChanged()
+void FCurveEditor::onEditedKeysChanged()
 {
-  Key h = m_model->getKey( m_curveItem->editedKey() );
-  QPointF p;
-  switch( m_curveItem->editedKeyProp() )
+  if( m_curveItem->selectedKeys().empty() )
+    m_keyValueEditor->setVisible( false );
+  else
   {
-  case FCurveItem::POSITION: p = h.pos; break;
-  case FCurveItem::TAN_IN: p = h.tanIn; break;
-  case FCurveItem::TAN_OUT: p = h.tanOut; break;
-  case FCurveItem::NOTHING: assert( false ); break;
+    if( m_curveItem->selectedKeys().size() == 1 )
+    {
+      Key h = m_model->getKey( *m_curveItem->selectedKeys().begin() );
+      QPointF p;
+      switch( m_curveItem->editedKeyProp() )
+      {
+      case FCurveItem::POSITION: p = h.pos; break;
+      case FCurveItem::TAN_IN: p = h.tanIn; break;
+      case FCurveItem::TAN_OUT: p = h.tanOut; break;
+      case FCurveItem::NOTHING: assert( false ); break;
+      }
+      m_keyValueEditor->m_x->set( p.x() );
+      m_keyValueEditor->m_x->setVisible( true );
+      m_keyValueEditor->m_y->set( p.y() );
+    }
+    else
+    {
+      m_keyValueEditor->m_x->setVisible( false );
+      m_keyValueEditor->m_x->clear();
+      m_keyValueEditor->m_y->clear();
+    }
+    m_keyValueEditor->setVisible( true );
   }
-  m_keyValueEditor->m_x->set( p.x() );
-  m_keyValueEditor->m_y->set( p.y() );
-}
-
-void FCurveEditor::onStartEditingKey()
-{
-  m_keyValueEditor->setVisible( true );
-  this->onEditedKeyValueChanged();
-}
-
-void FCurveEditor::onStopEditingKey()
-{
-  m_keyValueEditor->setVisible( false );
 }
 
 void FCurveEditor::onRectangleSelectReleased( const QRectF& r, Qt::KeyboardModifiers m )

@@ -472,7 +472,7 @@ void FCurveItem::clearKeySelection()
   for( std::set<size_t>::const_iterator it = m_selectedKeys.begin(); it != m_selectedKeys.end(); it++ )
     m_keys[*it]->setKeySelected( false );
   m_selectedKeys.clear();
-  emit this->stopEditingKey();
+  emit this->selectionChanged();
 }
 
 void FCurveItem::addKeyToSelection( size_t i )
@@ -480,23 +480,22 @@ void FCurveItem::addKeyToSelection( size_t i )
   if( !m_selectedKeys.empty() )
   {
     m_keys[*m_selectedKeys.begin()]->setEditState( NOTHING );
-    emit this->stopEditingKey();
     m_keys[*m_selectedKeys.begin()]->setKeySelected( true );
   }
   m_selectedKeys.insert( i );
   m_keys[i]->setKeySelected( true );
   if( m_selectedKeys.size() == 1 )
     this->editKey( *m_selectedKeys.begin() );
+  this->selectionChanged();
 }
 
 void FCurveItem::removeKeyFromSelection( size_t i )
 {
   m_selectedKeys.erase( i );
-  if( m_editedKey == i )
-    emit this->stopEditingKey();
   m_keys[i]->setKeySelected( false );
   if( m_selectedKeys.size() == 1 )
     this->editKey( *m_selectedKeys.begin(), POSITION );
+  this->selectionChanged();
 }
 
 void FCurveItem::rectangleSelect( const QRectF& r, Qt::KeyboardModifiers m )
@@ -518,9 +517,8 @@ void FCurveItem::rectangleSelect( const QRectF& r, Qt::KeyboardModifiers m )
 void FCurveItem::editKey( size_t i, KeyProp p )
 {
   m_keys[i]->setEditState( p );
-  m_editedKey = i;
   m_editedKeyProp = p;
-  emit this->startEditingKey();
+  emit this->editedKeyPropChanged();
 }
 
 void FCurveItem::deleteSelectedKeys()
@@ -596,8 +594,6 @@ void FCurveItem::onKeyDeleted( size_t i )
   this->clearKeySelection();
 
   m_curveShape->setBoundingRectDirty();
-  if( i == m_editedKey )
-    emit this->stopEditingKey();
 }
 
 void FCurveItem::onKeyMoved( size_t i )
@@ -606,7 +602,7 @@ void FCurveItem::onKeyMoved( size_t i )
   assert( m_keys.size() == m_curve->getKeyCount() );
   m_keys[i]->setValue( m_curve->getKey( i ) );
   m_curveShape->setBoundingRectDirty();
-  if( i == m_editedKey )
+  if( m_selectedKeys.find( i ) != m_selectedKeys.end() )
     emit this->editedKeyValueChanged();
 }
 
@@ -620,11 +616,11 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, dirty, ( ), this, SLOT, FCurveItem, onDirty, ( ) );
 
   // Clearing previous keys
+  this->clearKeySelection();
   for( std::vector<KeyWidget*>::const_iterator it = m_keys.begin(); it < m_keys.end(); it++ )
     delete *it;
   m_keys.clear();
 
-  emit this->stopEditingKey();
   m_curve->init();
 
   size_t hc = m_curve->getKeyCount();

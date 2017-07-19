@@ -2293,19 +2293,19 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-size: 10px;
 }
 
-#FCurveEditor #ValueEditor
+#FCurveEditor #KeyValueEditor
 {
   background-color: rgba(32,32,32,128);
   border-radius: 4px;
 }
 
-#FCurveEditor #ValueEditor *
+#FCurveEditor #KeyValueEditor *
 {
   color: #FFF;
   font-size: 16px;
 }
 
-#FCurveEditor #ValueEditor #FloatEditor QLineEdit
+#FCurveEditor #KeyValueEditor #FloatEditor QLineEdit
 {
   background-color: rgba(32,32,32);
 }
