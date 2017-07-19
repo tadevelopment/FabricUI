@@ -182,6 +182,7 @@ public:
   {
     Parent::resizeEvent( e );
     this->updateExpandButtonSize();
+    this->frameAllKeys();
   }
 };
 
