@@ -280,6 +280,7 @@ void RTValFCurveViewItem::onModelValueChanged( QVariant const & v )
 {
   FabricCore::RTVal rtval = v.value<FabricCore::RTVal>();
   m_model->setValue( rtval );
+  m_model->update();
   m_model->emitDirty();
 }
 
