@@ -10,7 +10,7 @@ from FabricEngine.Canvas.CanvasWindow import CanvasWindow
 
 # [andrew 20160330] FE-6364
 pytestmark = pytest.mark.skipif(
-    fabric_test_ui.validate_display(),
+    fabric_test_ui.is_missing_display(),
     reason="missing display",
     )
 

@@ -1,4 +1,5 @@
-import pytest
+import os, pytest
+import fabric_test_ui
 from PySide import QtCore
 from FabricEngine import Core
 from FabricEngine.FabricUI import Application
@@ -6,7 +7,7 @@ from FabricEngine.Canvas.CanvasWindow import CanvasWindow
 
 # [andrew 20160330] FE-6364
 pytestmark = pytest.mark.skipif(
-    fabric_test_ui.validate_display(),
+    fabric_test_ui.is_missing_display(),
     reason="missing display",
     )
 
@@ -16,7 +17,10 @@ def canvas_app():
 
 @pytest.yield_fixture(scope="module")
 def canvas_win(canvas_app):
-    yield fabric_test_ui.create_canvas_win(canvas_app)
+    yield fabric_test_ui.create_canvas_win(
+      canvas_app,
+      report_line_mapper=lambda line: line + "\n",
+      )
 
 # Returns the output of the test
 def main(canvas) :
@@ -54,7 +58,7 @@ def main(canvas) :
   ex.connectTo( funcName + '.exec', 'exec' )
 
   #print("TEST_START");
-  canvas.storedOutput = ""
+  canvas.test_output = ""
 
 
   # Default values
@@ -73,7 +77,7 @@ def main(canvas) :
   canvas.onNewGraph(True)
 
   #print("TEST_END");
-  return canvas.storedOutput
+  return canvas.test_output
 
 def test_timeline_ports(canvas_win):
 
