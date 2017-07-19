@@ -49,7 +49,11 @@ class FCurveEditor::ValueEditor : public QFrame
       else
         QOBJECT_CONNECT( m_edit, SIGNAL, QLineEdit, editingFinished, ( ), m_parent->m_parent, SLOT, FCurveEditor, veYEditFinished, ( ) );
     }
-    inline void set( qreal v ) { m_edit->setText( QString::number( v ) ); }
+    inline void set( qreal v )
+    {
+      m_edit->setText( QString::number( v ) );
+      m_edit->setCursorPosition( 0 );
+    }
     inline QString get() const { return m_edit->text(); }
   };
 public:
@@ -65,11 +69,12 @@ public:
     this->setObjectName( "ValueEditor" );
 
     QHBoxLayout* m_layout = new QHBoxLayout();
-    m_layout->setMargin( 2 ); m_layout->setSpacing( 2 );
+    m_layout->setContentsMargins( QMargins( 8, 2, 8, 2 ) );
+    m_layout->setSpacing( 8 );
     m_layout->addWidget( m_x );
     m_layout->addWidget( m_y );
     this->setLayout( m_layout );
-    this->resize( 128, 32 );
+    this->resize( 200, 32 );
   }
 };
 
