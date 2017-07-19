@@ -4,22 +4,19 @@ from FabricEngine import Core
 from FabricEngine.FabricUI import Application
 from FabricEngine.Canvas.CanvasWindow import CanvasWindow
 
+# [andrew 20160330] FE-6364
+pytestmark = pytest.mark.skipif(
+    fabric_test_ui.validate_display(),
+    reason="missing display",
+    )
+
 @pytest.yield_fixture(scope="module")
 def canvas_app():
-  app = Application.FabricApplication()
-  yield app
+    yield fabric_test_ui.create_canvas_app()
 
 @pytest.yield_fixture(scope="module")
 def canvas_win(canvas_app):
-  class CanvasTestWindow( CanvasWindow ) :
-    storedOutput = ""
-    def _reportCallback(self, source, level, line):
-      prefix = "[FABRIC:MT] "
-      if len(line) >= len(prefix) and line[:len(prefix)] == prefix :
-        line = line[len(prefix):]
-      self.storedOutput += line + '\n'
-  canvas = CanvasTestWindow( QtCore.QSettings(), False, False )
-  yield canvas
+    yield fabric_test_ui.create_canvas_win(canvas_app)
 
 # Returns the output of the test
 def main(canvas) :
