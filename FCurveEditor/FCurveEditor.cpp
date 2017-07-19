@@ -19,17 +19,17 @@
 
 using namespace FabricUI::FCurveEditor;
 
-class FCurveEditor::ValueEditor : public QFrame
+class FCurveEditor::KeyValueEditor : public QFrame
 {
   FCurveEditor* m_parent;
 
   class FloatEditor : public QWidget
   {
-    ValueEditor* m_parent;
+    KeyValueEditor* m_parent;
     QLabel* m_label;
     QLineEdit* m_edit;
   public:
-    FloatEditor( ValueEditor* parent, bool isXNotY )
+    FloatEditor( KeyValueEditor* parent, bool isXNotY )
       : QWidget( parent )
       , m_parent( parent )
       , m_label( new QLabel( isXNotY ? "X:" : "Y:" ) )
@@ -60,13 +60,13 @@ public:
   FloatEditor* m_x;
   FloatEditor* m_y;
 
-  ValueEditor( FCurveEditor* parent )
+  KeyValueEditor( FCurveEditor* parent )
     : QFrame( parent )
     , m_parent( parent )
     , m_x( new FloatEditor( this, true ) )
     , m_y( new FloatEditor( this, false ) )
   {
-    this->setObjectName( "ValueEditor" );
+    this->setObjectName( "KeyValueEditor" );
 
     QHBoxLayout* m_layout = new QHBoxLayout();
     m_layout->setContentsMargins( QMargins( 8, 2, 8, 2 ) );
@@ -80,7 +80,7 @@ public:
 
 void FCurveEditor::veEditFinished( bool isXNotY )
 {
-  const QString text = ( isXNotY ? m_valueEditor->m_x->get() : m_valueEditor->m_y->get() );
+  const QString text = ( isXNotY ? m_keyValueEditor->m_x->get() : m_keyValueEditor->m_y->get() );
   bool ok;
   const qreal v = text.toDouble( &ok );
   if( !ok )
@@ -108,7 +108,7 @@ FCurveEditor::FCurveEditor()
   : m_model( NULL )
   , m_scene( new QGraphicsScene() )
   , m_curveItem( new FCurveItem() )
-  , m_valueEditor( new ValueEditor( this ) )
+  , m_keyValueEditor( new KeyValueEditor( this ) )
 {
   this->setObjectName( "FCurveEditor" );
 
@@ -159,17 +159,17 @@ void FCurveEditor::resizeEvent( QResizeEvent * e )
 
 void FCurveEditor::updateVEPos()
 {
-  m_valueEditor->setGeometry( QRect(
+  m_keyValueEditor->setGeometry( QRect(
     ( m_vePos.x() < 0 ?
-      this->rect().right() + m_vePos.x() - m_valueEditor->width() :
+      this->rect().right() + m_vePos.x() - m_keyValueEditor->width() :
       this->rect().left() + m_vePos.x()
     ),
     ( m_vePos.y() < 0 ?
-      this->rect().bottom() + m_vePos.y() - m_valueEditor->height() :
+      this->rect().bottom() + m_vePos.y() - m_keyValueEditor->height() :
       this->rect().top() + m_vePos.y()
     ),
-    m_valueEditor->width(),
-    m_valueEditor->height()
+    m_keyValueEditor->width(),
+    m_keyValueEditor->height()
   ) );
 }
 
@@ -184,19 +184,19 @@ void FCurveEditor::onEditedKeyValueChanged()
   case FCurveItem::TAN_OUT: p = h.tanOut; break;
   case FCurveItem::NOTHING: assert( false ); break;
   }
-  m_valueEditor->m_x->set( p.x() );
-  m_valueEditor->m_y->set( p.y() );
+  m_keyValueEditor->m_x->set( p.x() );
+  m_keyValueEditor->m_y->set( p.y() );
 }
 
 void FCurveEditor::onStartEditingKey()
 {
-  m_valueEditor->setVisible( true );
+  m_keyValueEditor->setVisible( true );
   this->onEditedKeyValueChanged();
 }
 
 void FCurveEditor::onStopEditingKey()
 {
-  m_valueEditor->setVisible( false );
+  m_keyValueEditor->setVisible( false );
 }
 
 void FCurveEditor::onRectangleSelectReleased( const QRectF& r, Qt::KeyboardModifiers m )
