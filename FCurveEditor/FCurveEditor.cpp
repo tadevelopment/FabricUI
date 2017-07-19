@@ -203,7 +203,7 @@ void FCurveEditor::onRectangleSelectReleased( const QRectF& r, Qt::KeyboardModif
 {
   if( !m.testFlag( Qt::ShiftModifier ) && !m.testFlag( Qt::ControlModifier ) )
     m_curveItem->clearKeySelection();
-  m_curveItem->rectangleSelect( r );
+  m_curveItem->rectangleSelect( r, m );
 }
 
 void FCurveEditor::onFrameAllKeys()

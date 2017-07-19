@@ -42,7 +42,7 @@ public:
   FCurveItem();
   void setCurve( AbstractFCurveModel* );
   void clearKeySelection();
-  void rectangleSelect( const QRectF& );
+  void rectangleSelect( const QRectF&, Qt::KeyboardModifiers );
   void deleteSelectedKeys();
   inline size_t editedKey() const { return m_editedKey; }
   inline KeyProp editedKeyProp() const { return m_editedKeyProp; }

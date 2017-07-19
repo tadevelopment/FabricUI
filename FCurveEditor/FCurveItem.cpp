@@ -499,11 +499,20 @@ void FCurveItem::removeKeyFromSelection( size_t i )
     this->editKey( *m_selectedKeys.begin(), CENTER );
 }
 
-void FCurveItem::rectangleSelect( const QRectF& r )
+void FCurveItem::rectangleSelect( const QRectF& r, Qt::KeyboardModifiers m )
 {
+  bool shift = m.testFlag( Qt::ShiftModifier );
+  bool ctrl = m.testFlag( Qt::ControlModifier );
+
   for( size_t i = 0; i < m_keys.size(); i++ )
-    if( r.contains( m_keys[i]->scenePos() ) )
-      this->addKeyToSelection( i );
+    if( !shift && ctrl ) {
+      if( r.contains( m_keys[i]->scenePos() ) )
+      this->removeKeyFromSelection( i );
+    }
+    else {
+      if( r.contains( m_keys[i]->scenePos() ) )
+        this->addKeyToSelection( i );
+    }
 }
 
 void FCurveItem::editKey( size_t i, KeyProp p )
