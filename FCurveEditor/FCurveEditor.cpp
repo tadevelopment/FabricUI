@@ -179,7 +179,7 @@ void FCurveEditor::onEditedKeyValueChanged()
   QPointF p;
   switch( m_curveItem->editedKeyProp() )
   {
-  case FCurveItem::CENTER: p = h.pos; break;
+  case FCurveItem::POSITION: p = h.pos; break;
   case FCurveItem::TAN_IN: p = h.tanIn; break;
   case FCurveItem::TAN_OUT: p = h.tanOut; break;
   case FCurveItem::NOTHING: assert( false ); break;

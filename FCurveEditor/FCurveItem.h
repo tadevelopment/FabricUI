@@ -20,7 +20,7 @@ class FCurveItem : public QGraphicsWidget
   Q_OBJECT
 
 public:
-  enum KeyProp { CENTER, TAN_IN, TAN_OUT, NOTHING };
+  enum KeyProp { POSITION, TAN_IN, TAN_OUT, NOTHING };
 
 private:
   AbstractFCurveModel* m_curve;
@@ -36,7 +36,7 @@ private:
   void addKeyToSelection( size_t );
   void removeKeyFromSelection( size_t );
   void moveSelectedKeys( QPointF delta );
-  void editKey( size_t, KeyProp p = CENTER );
+  void editKey( size_t, KeyProp p = POSITION );
 
 public:
   FCurveItem();

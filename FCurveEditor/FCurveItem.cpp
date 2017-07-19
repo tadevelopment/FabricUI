@@ -447,7 +447,7 @@ public:
     const bool visible = ( p != NOTHING );
     m_inT.setVisible( visible );
     m_outT.setVisible( visible );
-    m_center->setKeySelected( p == CENTER );
+    m_center->setKeySelected( p == POSITION );
     m_inT.setSelected( p == TAN_IN );
     m_outT.setSelected( p == TAN_OUT );
   }
@@ -496,7 +496,7 @@ void FCurveItem::removeKeyFromSelection( size_t i )
     emit this->stopEditingKey();
   m_keys[i]->setKeySelected( false );
   if( m_selectedKeys.size() == 1 )
-    this->editKey( *m_selectedKeys.begin(), CENTER );
+    this->editKey( *m_selectedKeys.begin(), POSITION );
 }
 
 void FCurveItem::rectangleSelect( const QRectF& r, Qt::KeyboardModifiers m )
