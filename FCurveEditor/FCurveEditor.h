@@ -54,9 +54,7 @@ private slots:
   void onFrameAllKeys();
   void onFrameSelectedKeys();
   void onDeleteSelectedKeys();
-  void onStartEditingKey();
-  void onEditedKeyValueChanged();
-  void onStopEditingKey();
+  void onEditedKeysChanged();
   void onRepaintViews();
   inline void veXEditFinished() { this->veEditFinished( true ); }
   inline void veYEditFinished() { this->veEditFinished( false ); }

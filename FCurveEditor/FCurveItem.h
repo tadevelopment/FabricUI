@@ -29,7 +29,6 @@ private:
   class KeyWidget;
   std::vector<KeyWidget*> m_keys;
   std::set<size_t> m_selectedKeys;
-  size_t m_editedKey;
   KeyProp m_editedKeyProp;
 
   void addKey( size_t );
@@ -44,8 +43,8 @@ public:
   void clearKeySelection();
   void rectangleSelect( const QRectF& );
   void deleteSelectedKeys();
-  inline size_t editedKey() const { return m_editedKey; }
   inline KeyProp editedKeyProp() const { return m_editedKeyProp; }
+  inline const std::set<size_t>& selectedKeys() const { return m_selectedKeys; }
   QRectF keysBoundingRect() const;
   void paint( QPainter *, const QStyleOptionGraphicsItem *, QWidget * ) FTL_OVERRIDE;
   QRectF selectedKeysBoundingRect() const;
@@ -53,9 +52,9 @@ public:
 signals:
   void interactionBegin();
   void interactionEnd();
-  void startEditingKey() const;
+  void selectionChanged();
   void editedKeyValueChanged() const;
-  void stopEditingKey() const;
+  void editedKeyPropChanged() const;
 
   // this signal is used to force a repaint after a mouse event (in order to
   // get proper feedback from it). Because if the eventKeyr takes more than ~40ms to compute
