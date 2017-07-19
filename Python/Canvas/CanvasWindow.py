@@ -1435,11 +1435,13 @@ class CanvasWindow(QtGui.QMainWindow):
             if prefix:
                 self.undoAction = self.qUndoStack.createUndoAction(self)
                 self.undoAction.setShortcut(QtGui.QKeySequence.Undo)
+                self.undoAction.setShortcutContext(QtCore.Qt.ApplicationShortcut)
                 Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.undoAction", self.undoAction)
                 menu.addAction(self.undoAction)
                 
                 self.redoAction = self.qUndoStack.createRedoAction(self)
                 self.redoAction.setShortcut(QtGui.QKeySequence.Redo)
+                self.redoAction.setShortcutContext(QtCore.Qt.ApplicationShortcut)
                 Actions.ActionRegistry.GetActionRegistry().registerAction("CanvasWindow.redoAction", self.redoAction)
                 menu.addAction(self.redoAction)
             else:
