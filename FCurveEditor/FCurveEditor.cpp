@@ -263,16 +263,35 @@ void FCurveEditor::setModel( AbstractFCurveModel* model )
 
 void FCurveEditor::frameAllKeys()
 {
-  QRectF rect = m_curveItem->keysBoundingRect();
-  if( rect.isValid() )
-    this->Parent::fitInView( rect );
+  const size_t kc = m_model->getKeyCount();
+  if( kc == 0 )
+    this->Parent::fitInView( QRectF( 0, 0, 1, 1 ) );
+  else
+  {
+    if( kc == 1 )
+      this->view()->centerOn( m_model->getKey( 0 ).pos );
+    else
+    {
+      QRectF rect = m_curveItem->keysBoundingRect();
+      assert( rect.isValid() );
+      this->Parent::fitInView( rect );
+    }
+  }
 }
 
 void FCurveEditor::frameSelectedKeys()
 {
-  QRectF rect = m_curveItem->selectedKeysBoundingRect();
-  if( rect.isValid() )
-    this->Parent::fitInView( rect );
+  if( !m_curveItem->selectedKeys().empty() )
+  {
+    if( m_curveItem->selectedKeys().size() == 1 )
+      this->view()->centerOn( m_model->getKey( *m_curveItem->selectedKeys().begin() ).pos );
+    else
+    {
+      QRectF rect = m_curveItem->selectedKeysBoundingRect();
+      assert( rect.isValid() );
+      this->Parent::fitInView( rect );
+    }
+  }
 }
 
 void FCurveEditor::mousePressEvent( QMouseEvent * e )
