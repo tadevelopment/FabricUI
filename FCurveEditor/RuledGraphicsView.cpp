@@ -33,6 +33,13 @@ public:
     this->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     this->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
   }
+  void scrollPx( QPoint delta )
+  {
+    QScrollBar *hBar = horizontalScrollBar();
+    QScrollBar *vBar = verticalScrollBar();
+    hBar->setValue( hBar->value() + ( isRightToLeft() ? delta.x() : -delta.x() ) );
+    vBar->setValue( vBar->value() - delta.y() );
+  }
 protected:
   // HACK ? (move the parent's handler here instead ?)
   void wheelEvent( QWheelEvent * e ) FTL_OVERRIDE { return e->ignore(); }
@@ -65,12 +72,9 @@ protected:
     {
     case PANNING:
     {
-      QScrollBar *hBar = horizontalScrollBar();
-      QScrollBar *vBar = verticalScrollBar();
       QPoint delta = event->pos() - m_lastMousePos;
+      this->scrollPx( delta );
       m_lastMousePos = event->pos();
-      hBar->setValue( hBar->value() + ( isRightToLeft() ? delta.x() : -delta.x() ) );
-      vBar->setValue( vBar->value() - delta.y() );
       m_parent->updateRulersRange();
     } break;
     case SELECTING:
@@ -212,6 +216,8 @@ void RuledGraphicsView::centeredScale( qreal x, qreal y )
 {
   if( m_zoomOnCursor )
   {
+    QPoint before = m_view->mapFromScene( m_scalingCenter );
+
     // The rule is that the scaling center must have the same pixel
     // coordinates before and after the scaling
     QPoint viewCenter = m_view->rect().center();
@@ -220,6 +226,12 @@ void RuledGraphicsView::centeredScale( qreal x, qreal y )
     m_view->scale( x, y );
     QPoint newScalingCenterPxOffset = m_view->mapFromScene( m_scalingCenter ) - viewCenter;
     m_view->centerOn( m_view->mapToScene( viewCenter + ( newScalingCenterPxOffset - scalingCenterPxOffset ) ) );
+
+    QPoint after = m_view->mapFromScene( m_scalingCenter );
+    QPoint diff = before - after; // correcting a 1px error that sometimes happen
+    m_view->scrollPx( diff );
+
+    assert( before == m_view->mapFromScene( m_scalingCenter ) );
   }
   else
     m_view->scale( x, y );
