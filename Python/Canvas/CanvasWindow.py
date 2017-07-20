@@ -266,7 +266,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.splashScreen.finish(self)
         self.splashScreen = None
         self.statusBar = QtGui.QStatusBar()
-        self.statusBar.setMinimumHeight(30)
+        self.statusBar.setMinimumHeight(26)
         self.setStatusBar(self.statusBar)
 
         # Create Log button on the status bar to show log widget

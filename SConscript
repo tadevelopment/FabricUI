@@ -155,6 +155,7 @@ dirs = [
   'Licensing',
   'ModelItems',
   'Test',
+  'SplashScreens',
 ]
 
 installedHeaders = []
