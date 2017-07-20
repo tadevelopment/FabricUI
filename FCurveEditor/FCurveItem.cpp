@@ -428,9 +428,9 @@ public:
     : QGraphicsWidget( parent )
     , m_parent( parent )
     , m_index( index )
-    , m_center( new Center( this ) )
     , m_inT( this, true )
     , m_outT( this, false )
+    , m_center( new Center( this ) )
   {
     this->setEditState( NOTHING );
   }
