@@ -31,7 +31,6 @@ BaseCommand* RTValCommandManager::createCommand(
   bool doCmd,
   int canMergeID)
 {
-  std::cout << "RTValCommandManager::createCommand" << std::endl;
   return CommandManager::createCommand(
     cmdName, 
     args, 
@@ -45,8 +44,6 @@ BaseCommand* RTValCommandManager::createCommand(
   bool doCmd,
   int canMergeID)
 {
-  std::cout << "RTValCommandManager::createRTValCommand" << std::endl;
-
   FABRIC_CATCH_BEGIN();
 
   BaseCommand *cmd = CommandRegistry::getCommandRegistry()->createCommand(
