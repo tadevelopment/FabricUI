@@ -161,7 +161,7 @@ public:
 
   void setMode( FCurveItem::Mode m )
   {
-    for( size_t i = 0; i < FCurveItem::MODE_COUNT; i++ )
+    for( int i = 0; i < FCurveItem::MODE_COUNT; i++ )
       m_buttons[i]->setChecked( i == m );
   }
 };
