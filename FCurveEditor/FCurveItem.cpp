@@ -234,86 +234,6 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
   FCurveItem* m_parent;
   size_t m_index;
 
-  class Center : public QGraphicsRectItem
-  {
-    KeyWidget* m_parent;
-    typedef QGraphicsRectItem Parent;
-    bool m_selected;
-    bool m_hovered;
-    bool m_selectOnRelease;
-    void updateColor()
-    {
-      this->setPen( Qt::NoPen );
-      this->setBrush( m_hovered ? QColor( 191, 191, 191 ) :
-        m_selected ? QColor( 39, 168, 223 )
-        : QColor( 128, 128, 128 )
-      );
-    }
-  public:
-    Center( KeyWidget* parent )
-      : QGraphicsRectItem( parent )
-      , m_parent( parent )
-      , m_selected( false )
-      , m_hovered( false )
-    {
-      this->setRect( QRectF( -4, -4, 8, 8 ) );
-      this->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
-      this->setAcceptHoverEvents( true );
-      this->updateColor();
-    };
-    void setKeySelected( bool selected )
-    {
-      m_selected = selected;
-      this->updateColor();
-    }
-  protected:
-    void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
-    {
-      bool shift = event->modifiers().testFlag( Qt::ShiftModifier );
-      bool ctrl = event->modifiers().testFlag( Qt::ControlModifier );
-      m_selectOnRelease = !shift && !ctrl;
-      if( !m_selected && !shift && !ctrl )
-        m_parent->m_parent->clearKeySelection();
-      if( m_selected && ctrl )
-        m_parent->m_parent->removeKeyFromSelection( m_parent->m_index );
-      else
-        m_parent->m_parent->addKeyToSelection( m_parent->m_index );
-      emit m_parent->m_parent->interactionBegin();
-      this->setCursor( Qt::SizeAllCursor );
-    }
-    void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
-    {
-      AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
-      const size_t index = m_parent->m_index;
-      const Key h = curve->getKey( index );
-      m_selectOnRelease = false;
-      m_parent->m_parent->moveSelectedKeys( event->scenePos() - h.pos );
-    }
-    void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
-    {
-      Parent::mouseReleaseEvent( event );
-      if( m_selectOnRelease )
-      {
-        m_parent->m_parent->clearKeySelection();
-        m_parent->m_parent->addKeyToSelection( m_parent->m_index );
-        m_parent->m_parent->editKey( m_parent->m_index );
-      }
-      emit m_parent->m_parent->interactionEnd();
-      this->unsetCursor();
-    }
-    void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE
-    {
-      m_hovered = true;
-      this->updateColor();
-    }
-    void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE
-    {
-      m_hovered = false;
-      this->updateColor();
-    }
-  };
-  Center* m_center;
-
   class Tangent
   {
     bool m_inNotOut;
@@ -423,14 +343,94 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
   };
   Tangent m_inT, m_outT;
 
+  class Center : public QGraphicsRectItem
+  {
+    KeyWidget* m_parent;
+    typedef QGraphicsRectItem Parent;
+    bool m_selected;
+    bool m_hovered;
+    bool m_selectOnRelease;
+    void updateColor()
+    {
+      this->setPen( Qt::NoPen );
+      this->setBrush( m_hovered ? QColor( 191, 191, 191 ) :
+        m_selected ? QColor( 39, 168, 223 )
+        : QColor( 128, 128, 128 )
+      );
+    }
+  public:
+    Center( KeyWidget* parent )
+      : QGraphicsRectItem( parent )
+      , m_parent( parent )
+      , m_selected( false )
+      , m_hovered( false )
+    {
+      this->setRect( QRectF( -4, -4, 8, 8 ) );
+      this->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
+      this->setAcceptHoverEvents( true );
+      this->updateColor();
+    };
+    void setKeySelected( bool selected )
+    {
+      m_selected = selected;
+      this->updateColor();
+    }
+  protected:
+    void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
+    {
+      bool shift = event->modifiers().testFlag( Qt::ShiftModifier );
+      bool ctrl = event->modifiers().testFlag( Qt::ControlModifier );
+      m_selectOnRelease = !shift && !ctrl;
+      if( !m_selected && !shift && !ctrl )
+        m_parent->m_parent->clearKeySelection();
+      if( m_selected && ctrl )
+        m_parent->m_parent->removeKeyFromSelection( m_parent->m_index );
+      else
+        m_parent->m_parent->addKeyToSelection( m_parent->m_index );
+      emit m_parent->m_parent->interactionBegin();
+      this->setCursor( Qt::SizeAllCursor );
+    }
+    void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
+    {
+      AbstractFCurveModel* curve = m_parent->m_parent->m_curve;
+      const size_t index = m_parent->m_index;
+      const Key h = curve->getKey( index );
+      m_selectOnRelease = false;
+      m_parent->m_parent->moveSelectedKeys( event->scenePos() - h.pos );
+    }
+    void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
+    {
+      Parent::mouseReleaseEvent( event );
+      if( m_selectOnRelease )
+      {
+        m_parent->m_parent->clearKeySelection();
+        m_parent->m_parent->addKeyToSelection( m_parent->m_index );
+        m_parent->m_parent->editKey( m_parent->m_index );
+      }
+      emit m_parent->m_parent->interactionEnd();
+      this->unsetCursor();
+    }
+    void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE
+    {
+      m_hovered = true;
+      this->updateColor();
+    }
+    void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE
+    {
+      m_hovered = false;
+      this->updateColor();
+    }
+  };
+  Center* m_center;
+
 public:
   KeyWidget( FCurveItem* parent, size_t index )
     : QGraphicsWidget( parent )
     , m_parent( parent )
     , m_index( index )
-    , m_center( new Center( this ) )
     , m_inT( this, true )
     , m_outT( this, false )
+    , m_center( new Center( this ) )
   {
     this->setEditState( NOTHING );
   }
