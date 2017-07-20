@@ -21,6 +21,7 @@ class FCurveItem : public QGraphicsWidget
 
 public:
   enum KeyProp { POSITION, TAN_IN, TAN_OUT, NOTHING };
+  enum Mode { SELECT, ADD, REMOVE, MODE_COUNT };
 
 private:
   AbstractFCurveModel* m_curve;
@@ -30,6 +31,7 @@ private:
   std::vector<KeyWidget*> m_keys;
   std::set<size_t> m_selectedKeys;
   KeyProp m_editedKeyProp;
+  Mode m_currentMode;
 
   void addKey( size_t );
   void addKeyToSelection( size_t );

@@ -155,6 +155,8 @@ RuledGraphicsView::RuledGraphicsView()
   , m_targetScale( QPointF( 1E2, 1E2 ) )
   , m_timer( new QTimer( this ) )
 {
+  this->setObjectName( "RuledGraphicsView" );
+
   QGridLayout* lay = new QGridLayout();
   lay->setSpacing( 0 ); lay->setMargin( 0 );
 

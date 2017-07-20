@@ -4,6 +4,7 @@
 
 #include "FCurveEditor.h"
 #include "FCurveItem.h"
+#include <FabricUI/FCurveEditor/RuledGraphicsView.h>
 
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -11,6 +12,8 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QLayout>
+#include <QToolBar>
+#include <QPushButton>
 
 #include <QDebug>
 #include <assert.h>
@@ -121,22 +124,72 @@ void FCurveEditor::veEditFinished( bool isXNotY )
   }
 }
 
+class FCurveEditor::ToolBar : public QWidget
+{
+  FCurveEditor* m_parent;
+  QHBoxLayout* m_layout;
+  QPushButton* m_buttons[FCurveItem::MODE_COUNT];
+
+  inline void setupButton( FCurveItem::Mode m, const char* name )
+  {
+    m_buttons[m] = new QPushButton();
+    QPushButton* bt = m_buttons[m];
+    bt->setObjectName( name );
+    bt->setFixedSize( QSize( 22, 22 ) );
+    bt->setCheckable( true );
+    m_layout->addWidget( bt );
+  }
+
+public:
+  ToolBar( FCurveEditor* parent )
+    : m_parent( parent )
+    , m_layout( new QHBoxLayout() )
+  {
+    this->setObjectName( "ToolBar" );
+
+    m_layout->setAlignment( Qt::AlignLeft );
+    m_layout->setMargin( 8 );
+    this->setupButton( FCurveItem::SELECT, "Select" );
+    QOBJECT_CONNECT( m_buttons[FCurveItem::SELECT], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeSelect, ( ) );
+    this->setupButton( FCurveItem::ADD, "Add" );
+    QOBJECT_CONNECT( m_buttons[FCurveItem::ADD], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeAdd, ( ) );
+    this->setupButton( FCurveItem::REMOVE, "Remove" );
+    QOBJECT_CONNECT( m_buttons[FCurveItem::REMOVE], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeRemove, ( ) );
+
+    this->setLayout( m_layout );
+  }
+
+  void setMode( FCurveItem::Mode m )
+  {
+    for( size_t i = 0; i < FCurveItem::MODE_COUNT; i++ )
+      m_buttons[i]->setChecked( i == m );
+  }
+};
+
 FCurveEditor::FCurveEditor()
-  : m_model( NULL )
+  : m_rview( new RuledGraphicsView() )
+  , m_model( NULL )
   , m_scene( new QGraphicsScene() )
   , m_curveItem( new FCurveItem() )
-  , m_keyValueEditor( new KeyValueEditor( this ) )
+  , m_toolBar( new ToolBar( this ) )
 {
   this->setObjectName( "FCurveEditor" );
 
+  QVBoxLayout* m_layout = new QVBoxLayout();
+  m_layout->setMargin( 0 ); m_layout->setSpacing( 0 );
+  m_layout->addWidget( m_toolBar );
+  m_layout->addWidget( m_rview );
+  this->setLayout( m_layout );
+  m_keyValueEditor = new KeyValueEditor( this );
+
   m_scene->setSceneRect( QRectF( -1E8, -1E8, 2 * 1E8, 2 * 1E8 ) );
-  this->view()->setScene( m_scene );
+  m_rview->view()->setScene( m_scene );
   m_scene->addItem( m_curveItem );
 
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionBegin, (), this, SIGNAL, FCurveEditor, interactionBegin, () );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionEnd, (), this, SIGNAL, FCurveEditor, interactionEnd, () );
   QOBJECT_CONNECT(
-    this, SIGNAL, FCurveEditor, rectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers ),
+    m_rview, SIGNAL, FCurveEditor, rectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers ),
     this, SLOT, FCurveEditor, onRectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers )
   );
   QOBJECT_CONNECT(
@@ -172,6 +225,8 @@ FCurveEditor::FCurveEditor()
   this->addAction( deleteAction );
 
   this->setVEPos( QPoint( -20, 20 ) );
+  this->setToolBarEnabled( true );
+  this->setMode( FCurveItem::SELECT );
 }
 
 void FCurveEditor::resizeEvent( QResizeEvent * e )
@@ -182,18 +237,46 @@ void FCurveEditor::resizeEvent( QResizeEvent * e )
 
 void FCurveEditor::updateVEPos()
 {
-  m_keyValueEditor->setGeometry( QRect(
-    ( m_vePos.x() < 0 ?
-      this->rect().right() + m_vePos.x() - m_keyValueEditor->width() :
-      this->rect().left() + m_vePos.x()
-    ),
-    ( m_vePos.y() < 0 ?
-      this->rect().bottom() + m_vePos.y() - m_keyValueEditor->height() :
-      this->rect().top() + m_vePos.y()
-    ),
-    m_keyValueEditor->width(),
-    m_keyValueEditor->height()
-  ) );
+  if( !this->toolBarEnabled() )
+  {
+    m_keyValueEditor->setGeometry( QRect(
+      ( m_vePos.x() < 0 ?
+        this->rect().right() + m_vePos.x() - m_keyValueEditor->width() :
+        this->rect().left() + m_vePos.x()
+        ),
+        ( m_vePos.y() < 0 ?
+          this->rect().bottom() + m_vePos.y() - m_keyValueEditor->height() :
+          this->rect().top() + m_vePos.y()
+          ),
+      m_keyValueEditor->width(),
+      m_keyValueEditor->height()
+    ) );
+  }
+}
+
+void FCurveEditor::setToolBarEnabled( bool enabled )
+{
+  if( this->toolBarEnabled() != enabled )
+  {
+    if( enabled )
+    {
+      m_toolBar->setVisible( true );
+      m_toolBar->layout()->addWidget( m_keyValueEditor );
+      m_toolBar->layout()->setAlignment( m_keyValueEditor, Qt::AlignRight );
+    }
+    else
+    {
+      m_toolBar->setVisible( false );
+      m_keyValueEditor->setParent( this );
+      this->updateVEPos();
+    }
+    m_toolbarEnabled = enabled;
+  }
+}
+
+void FCurveEditor::setMode( FCurveItem::Mode m )
+{
+  m_toolBar->setMode( m );
 }
 
 void FCurveEditor::onEditedKeysChanged()
@@ -258,23 +341,23 @@ void FCurveEditor::setModel( AbstractFCurveModel* model )
 {
   m_model = model;
   m_curveItem->setCurve( model );
-  this->fitInView( m_curveItem->keysBoundingRect() );
+  m_rview->fitInView( m_curveItem->keysBoundingRect() );
 }
 
 void FCurveEditor::frameAllKeys()
 {
   const size_t kc = m_model->getKeyCount();
   if( kc == 0 )
-    this->Parent::fitInView( QRectF( 0, 0, 1, 1 ) );
+    m_rview->fitInView( QRectF( 0, 0, 1, 1 ) );
   else
   {
     if( kc == 1 )
-      this->view()->centerOn( m_model->getKey( 0 ).pos );
+      m_rview->view()->centerOn( m_model->getKey( 0 ).pos );
     else
     {
       QRectF rect = m_curveItem->keysBoundingRect();
       assert( rect.isValid() );
-      this->Parent::fitInView( rect );
+      m_rview->fitInView( rect );
     }
   }
 }
@@ -284,12 +367,12 @@ void FCurveEditor::frameSelectedKeys()
   if( !m_curveItem->selectedKeys().empty() )
   {
     if( m_curveItem->selectedKeys().size() == 1 )
-      this->view()->centerOn( m_model->getKey( *m_curveItem->selectedKeys().begin() ).pos );
+      m_rview->view()->centerOn( m_model->getKey( *m_curveItem->selectedKeys().begin() ).pos );
     else
     {
       QRectF rect = m_curveItem->selectedKeysBoundingRect();
       assert( rect.isValid() );
-      this->Parent::fitInView( rect );
+      m_rview->fitInView( rect );
     }
   }
 }
@@ -299,13 +382,13 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
   if( e->button() == Qt::RightButton )
   {
     // Adding a new Key
-    QPointF scenePos = this->view()->mapToScene(
-      this->view()->mapFromGlobal( this->mapToGlobal( e->pos() ) ) );
+    QPointF scenePos = m_rview->view()->mapToScene(
+      m_rview->view()->mapFromGlobal( this->mapToGlobal( e->pos() ) ) );
     m_model->addKey();
     Key h; h.pos = scenePos;
     {
       // heuristic for tangents, based on the current zoom level
-      h.tanIn.setX( 20 / this->view()->transform().m11() );
+      h.tanIn.setX( 20 / m_rview->view()->transform().m11() );
       h.tanOut.setX( h.tanIn.x() );
     }
     m_model->setKey( m_model->getKeyCount() - 1, h );

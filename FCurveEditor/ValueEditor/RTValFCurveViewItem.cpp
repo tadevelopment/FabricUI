@@ -214,6 +214,8 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   m_editor->setModel( m_model );
   m_expandedDialog->editor()->setModel( m_model );
   this->onModelValueChanged( value );
+  m_editor->setToolBarEnabled( false );
+  m_expandedDialog->editor()->setToolBarEnabled( true );
 
   m_editor->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Fixed ) );
   m_editor->setFixedHeight( 175 );
