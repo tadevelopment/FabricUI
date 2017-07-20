@@ -197,7 +197,7 @@ FCurveEditor::FCurveEditor()
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionEnd, (), this, SIGNAL, FCurveEditor, interactionEnd, () );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, modeChanged, (), this, SLOT, FCurveEditor, onModeChanged, () );
   QOBJECT_CONNECT(
-    m_rview, SIGNAL, FCurveEditor, rectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers ),
+    m_rview, SIGNAL, RuledGraphicsView, rectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers ),
     this, SLOT, FCurveEditor, onRectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers )
   );
   QOBJECT_CONNECT(
