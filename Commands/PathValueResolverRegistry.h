@@ -93,6 +93,10 @@ class PathValueResolverRegistry : public Util::BaseFactoryRegistry
       QString const&type
       );
 
+    /// \internal
+    /// Clears the registered content
+    virtual void clear();
+
   private:
     /// Check if the singleton has been set.
     static bool s_instanceFlag;

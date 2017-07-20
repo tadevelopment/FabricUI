@@ -18,8 +18,10 @@ class FabricApplicationStates
     to the FabricCore context/client and application Settings 
     that are shared by all the user-interface components.
     
+    Warning: creating a FabricApplicationStates is interpreted as an application init or reset!
+
     Usage:
-    - Create the singleton : new FabricApplicationStates(client, settings);
+    - Create the singleton : new FabricApplicationStates(client, settings); 
     - Get the singleton : FabricApplicationStates* states = FabricApplicationStates::GetAppStates();
   */
 

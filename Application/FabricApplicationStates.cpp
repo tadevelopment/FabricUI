@@ -5,6 +5,12 @@
 #include "FabricException.h"
 #include "FabricApplicationStates.h"
 
+namespace FabricUI {
+  namespace Commands {
+    void ResetCommandStatesOnNewClient();
+  }
+}
+
 using namespace FabricUI;
 using namespace FabricCore;
 using namespace Application;
@@ -16,7 +22,8 @@ FabricApplicationStates::FabricApplicationStates(
   Client client,
   QSettings *settings)
 {
-  if(s_appStates)
+  // We accept a new FabricApplicationStates only if the client changes (which can happen with our unit tests)
+  if(s_appStates != 0 && s_appStates->m_client.getContext() == client.getContext() )
     FabricException::Throw(
       "FabricApplicationStates::FabricApplicationStates",
       "the singleton has been set already");
@@ -26,10 +33,14 @@ FabricApplicationStates::FabricApplicationStates(
 
   s_appStates = this;
   s_instanceFlag = true;
+
+  Commands::ResetCommandStatesOnNewClient();
 }
 
 FabricApplicationStates::~FabricApplicationStates()
 {
+  if( s_appStates == this )
+    s_appStates = 0;
   s_instanceFlag = false;
 }
 

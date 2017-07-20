@@ -6,7 +6,9 @@
 #include "RTValArrayModelItem.h"
 #include "OptionsEditorHelpers.h"
 #include "KLOptionsTargetEditor.h"
+#include <FabricUI/Util/QtUtil.h>
 #include <FabricUI/Util/RTValUtil.h>
+#include <FabricUI/Viewports/ViewportWidget.h>
 #include "KLOptionsTargetModelItem.h"
 #include <FabricUI/Application/FabricException.h>
 
@@ -17,7 +19,7 @@ using namespace ValueEditor;
 using namespace OptionsEditor;
 
 KLOptionsTargetEditor::KLOptionsTargetEditor(
-  QString const&title)
+  QString title)
   : BaseRTValOptionsEditor(title, 0)
 {
   setObjectName(title);
@@ -86,4 +88,59 @@ void KLOptionsTargetEditor::resetModel(
     );
   
   FABRIC_CATCH_END("KLOptionsTargetEditor::resetModel");
+}
+
+QDockWidget* KLOptionsTargetEditor::create( QString editorID,
+                                            QString title,
+                                            QString groupeName,
+                                            QMainWindow* mainWindow ) {
+  if( mainWindow == 0 )
+    Application::FabricException::Throw(
+      "CreateKLOptionsTargetEditor",
+      "mainWindow is null" );
+
+  QDockWidget *dock = new QDockWidget(
+    title,
+    mainWindow );
+
+  dock->setObjectName( editorID );
+
+  BaseRTValOptionsEditor *optionsEditor = new KLOptionsTargetEditor(
+    editorID );
+
+  dock->setWidget( optionsEditor );
+
+  mainWindow->addDockWidget(
+    Qt::RightDockWidgetArea,
+    dock,
+    Qt::Vertical );
+
+  Viewports::ViewportWidget *viewport = Util::QtUtil::getQWidget<Viewports::ViewportWidget>();
+  if( viewport == 0 )
+    Application::FabricException::Throw(
+      "CreateKLOptionsTargetEditor",
+      "Viewport is null" );
+
+  QObject::connect(
+    viewport,
+    SIGNAL( initComplete() ),
+    optionsEditor,
+    SLOT( resetModel() )
+  );
+
+  QObject::connect(
+    optionsEditor,
+    SIGNAL( updated() ),
+    viewport,
+    SLOT( redraw() )
+  );
+
+  return dock;
+}
+
+QDockWidget* KLOptionsTargetEditor::create( QString editorID,
+                                            QString title,
+                                            QString groupeName ) {
+  QMainWindow* mainWindow = Util::QtUtil::getMainWindow();
+  return KLOptionsTargetEditor::create( editorID, title, groupeName, mainWindow );
 }

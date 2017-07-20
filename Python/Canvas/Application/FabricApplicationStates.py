@@ -41,6 +41,6 @@ def CreateAppStates(client, settings):
     """ Creates the FabricApplicationStates singleton.
     """
     global s_appStatesSingleton
-    if s_appStatesSingleton is None:
-        s_appStatesSingleton = FabricApplicationStates(client, settings)
+    # Overwrite the previous one if any; the unit tests reuse the same process with different CanvasWindow / clients
+    s_appStatesSingleton = FabricApplicationStates(client, settings)
     return s_appStatesSingleton

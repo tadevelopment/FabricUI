@@ -31,6 +31,7 @@ Graph::Graph(
   )
   : QGraphicsWidget(parent)
   , m_config( config )
+  , m_cosmeticConnections( true )
 {
   m_isEditable = true;
 

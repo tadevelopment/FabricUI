@@ -32,6 +32,8 @@ CommandRegistry::CommandRegistry()
 CommandRegistry::~CommandRegistry() 
 {
   s_instanceFlag = false;
+  if( s_cmdRegistry == this )
+    s_cmdRegistry = 0;
 }
 
 CommandRegistry* CommandRegistry::getCommandRegistry()
@@ -73,6 +75,11 @@ bool CommandRegistry::isCommandRegistered(
 {
   return m_cmdSpecs.count(cmdName) > 0;
 }
+
+void CommandRegistry::clear() {
+  m_cmdSpecs.clear();
+}
+
 
 QPair<QString, QString> CommandRegistry::getCommandSpecs(
   QString const&cmdName) 

@@ -42,6 +42,8 @@ CommandManager::~CommandManager()
 {
   clear();
   s_instanceFlag = false;
+  if( s_cmdManager == this )
+    s_cmdManager = 0;
 }
 
 CommandManager* CommandManager::getCommandManager()

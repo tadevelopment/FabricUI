@@ -10,7 +10,7 @@ import sys
 
 from PySide import QtCore, QtGui, QtOpenGL
 from FabricEngine import Core, FabricUI, Util
-from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine, Actions
+from FabricEngine.FabricUI import Application, DFG, KLASTManager, Viewports, TimeLine, Actions, OptionsEditor
 from FabricEngine.Canvas.ScriptEditor import ScriptEditor
 from FabricEngine.Canvas.UICmdHandler import UICmdHandler
 from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
@@ -266,7 +266,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.splashScreen.finish(self)
         self.splashScreen = None
         self.statusBar = QtGui.QStatusBar()
-        self.statusBar.setMinimumHeight(30)
+        self.statusBar.setMinimumHeight(26)
         self.setStatusBar(self.statusBar)
 
         # Create Log button on the status bar to show log widget
@@ -559,9 +559,8 @@ class CanvasWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.viewport)
         self.viewport.portManipulationRequested.connect(self.onPortManipulationRequested)
 
-        args = { "editorID":"Rendering Options", "editorTitle":"Rendering Options" }
-        cmd = GetCommandManager().createCommand('openKLOptionsTargetEditor', args)
-     
+        OptionsEditor.KLOptionsTargetEditor.create( "Rendering Options", "Rendering Options", "", self )
+
         # When a klWidget is activated/deactivated from the value-editor.
         self.valueEditor.refreshViewport.connect(self.viewport.redraw)
 
