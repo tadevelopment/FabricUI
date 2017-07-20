@@ -50,7 +50,7 @@ public:
   QRectF keysBoundingRect() const;
   void paint( QPainter *, const QStyleOptionGraphicsItem *, QWidget * ) FTL_OVERRIDE;
   QRectF selectedKeysBoundingRect() const;
-  inline void setMode( Mode m ) { if( m != m_mode ) { m_mode = m; emit this->modeChanged(); } }
+  void setMode( Mode m );
   inline Mode mode() const { return m_mode; }
 
 signals:

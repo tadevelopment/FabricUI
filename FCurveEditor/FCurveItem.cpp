@@ -652,6 +652,17 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
   m_curveShape->setBoundingRectDirty();
 }
 
+void FCurveItem::setMode( Mode m )
+{
+  if( m != m_mode )
+  {
+    m_mode = m;
+    if( m_mode == REMOVE )
+      this->clearKeySelection();
+    emit this->modeChanged();
+  }
+}
+
 void FCurveItem::paint( QPainter * p, const QStyleOptionGraphicsItem * s, QWidget * w )
 {
   m_curve->update();
