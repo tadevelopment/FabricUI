@@ -378,6 +378,12 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
   protected:
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
+      if( m_parent->m_parent->mode() == REMOVE )
+      {
+        m_parent->m_parent->m_curve->deleteKey( m_parent->m_index );
+        return;
+      }
+
       bool shift = event->modifiers().testFlag( Qt::ShiftModifier );
       bool ctrl = event->modifiers().testFlag( Qt::ControlModifier );
       m_selectOnRelease = !shift && !ctrl;
@@ -502,6 +508,19 @@ void FCurveItem::rectangleSelect( const QRectF& r, Qt::KeyboardModifiers m )
 {
   bool shift = m.testFlag( Qt::ShiftModifier );
   bool ctrl = m.testFlag( Qt::ControlModifier );
+  if( this->mode() == REMOVE )
+  {
+    shift = false;
+    ctrl = false;
+  }
+  else
+  if( this->mode() == SELECT )
+  {
+    if( !shift && !ctrl )
+      this->clearKeySelection();
+  }
+  else
+    assert( false );
 
   for( size_t i = 0; i < m_keys.size(); i++ )
     if( !shift && ctrl ) {
@@ -512,6 +531,9 @@ void FCurveItem::rectangleSelect( const QRectF& r, Qt::KeyboardModifiers m )
       if( r.contains( m_keys[i]->scenePos() ) )
         this->addKeyToSelection( i );
     }
+
+  if( this->mode() == REMOVE )
+    this->deleteSelectedKeys();
 }
 
 void FCurveItem::editKey( size_t i, KeyProp p )

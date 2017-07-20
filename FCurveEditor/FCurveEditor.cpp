@@ -135,7 +135,7 @@ class FCurveEditor::ToolBar : public QWidget
     m_buttons[m] = new QPushButton();
     QPushButton* bt = m_buttons[m];
     bt->setObjectName( name );
-    bt->setFixedSize( QSize( 22, 22 ) );
+    bt->setFixedSize( QSize( 26, 26 ) );
     bt->setCheckable( true );
     m_layout->addWidget( bt );
   }
@@ -188,6 +188,7 @@ FCurveEditor::FCurveEditor()
 
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionBegin, (), this, SIGNAL, FCurveEditor, interactionBegin, () );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionEnd, (), this, SIGNAL, FCurveEditor, interactionEnd, () );
+  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, modeChanged, (), this, SLOT, FCurveEditor, onModeChanged, () );
   QOBJECT_CONNECT(
     m_rview, SIGNAL, FCurveEditor, rectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers ),
     this, SLOT, FCurveEditor, onRectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers )
@@ -274,9 +275,12 @@ void FCurveEditor::setToolBarEnabled( bool enabled )
   }
 }
 
-void FCurveEditor::setMode( FCurveItem::Mode m )
+void FCurveEditor::onModeChanged()
 {
+  FCurveItem::Mode m = m_curveItem->mode();
+  assert( m < FCurveItem::MODE_COUNT );
   m_toolBar->setMode( m );
+  m_rview->enableRectangleSelection( m != FCurveItem::ADD );
 }
 
 void FCurveEditor::onEditedKeysChanged()
@@ -312,8 +316,6 @@ void FCurveEditor::onEditedKeysChanged()
 
 void FCurveEditor::onRectangleSelectReleased( const QRectF& r, Qt::KeyboardModifiers m )
 {
-  if( !m.testFlag( Qt::ShiftModifier ) && !m.testFlag( Qt::ControlModifier ) )
-    m_curveItem->clearKeySelection();
   m_curveItem->rectangleSelect( r, m );
 }
 
@@ -379,7 +381,7 @@ void FCurveEditor::frameSelectedKeys()
 
 void FCurveEditor::mousePressEvent( QMouseEvent * e )
 {
-  if( e->button() == Qt::RightButton )
+  if( m_curveItem->mode() == FCurveItem::ADD )
   {
     // Adding a new Key
     QPointF scenePos = m_rview->view()->mapToScene(

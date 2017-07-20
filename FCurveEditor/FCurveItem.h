@@ -31,7 +31,7 @@ private:
   std::vector<KeyWidget*> m_keys;
   std::set<size_t> m_selectedKeys;
   KeyProp m_editedKeyProp;
-  Mode m_currentMode;
+  Mode m_mode;
 
   void addKey( size_t );
   void addKeyToSelection( size_t );
@@ -50,6 +50,8 @@ public:
   QRectF keysBoundingRect() const;
   void paint( QPainter *, const QStyleOptionGraphicsItem *, QWidget * ) FTL_OVERRIDE;
   QRectF selectedKeysBoundingRect() const;
+  inline void setMode( Mode m ) { if( m != m_mode ) { m_mode = m; emit this->modeChanged(); } }
+  inline Mode mode() const { return m_mode; }
 
 signals:
   void interactionBegin();
@@ -57,6 +59,7 @@ signals:
   void selectionChanged();
   void editedKeyValueChanged() const;
   void editedKeyPropChanged() const;
+  void modeChanged() const;
 
   // this signal is used to force a repaint after a mouse event (in order to
   // get proper feedback from it). Because if the eventKeyr takes more than ~40ms to compute

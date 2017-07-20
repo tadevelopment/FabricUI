@@ -46,12 +46,12 @@ public:
   void setModel( AbstractFCurveModel* );
   void frameAllKeys();
   void frameSelectedKeys();
-  void setMode( FCurveItem::Mode );
 
   inline QPoint vePos() const { return m_vePos; }
   inline void setVEPos( const QPoint& p ) { m_vePos = p; this->updateVEPos(); }
   inline bool toolBarEnabled() const { return m_toolbarEnabled; }
   void setToolBarEnabled( bool );
+  inline void setMode( FCurveItem::Mode m ) { m_curveItem->setMode( m ); }
 
 protected:
   void mousePressEvent( QMouseEvent * ) FTL_OVERRIDE;
@@ -64,6 +64,7 @@ private slots:
   void onDeleteSelectedKeys();
   void onEditedKeysChanged();
   void onRepaintViews();
+  void onModeChanged();
   void setModeSelect() { this->setMode( FCurveItem::SELECT ); }
   void setModeAdd() { this->setMode( FCurveItem::ADD ); }
   void setModeRemove() { this->setMode( FCurveItem::REMOVE ); }
