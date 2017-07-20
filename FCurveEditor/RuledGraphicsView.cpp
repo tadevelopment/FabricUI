@@ -151,7 +151,7 @@ RuledGraphicsView::RuledGraphicsView()
   : m_view( new GraphicsView( this ) )
   , m_scrollSpeed( 1 / 800.0f )
   , m_zoomOnCursor( true )
-  , m_smoothZoom( true )
+  , m_smoothZoom( false )
   , m_targetScale( QPointF( 1E2, 1E2 ) )
   , m_timer( new QTimer( this ) )
 {
