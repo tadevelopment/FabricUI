@@ -6,6 +6,7 @@
 #include <FabricUI/Util/RTValUtil.h>
 #include <FabricUI/DFG/DFGController.h>
 #include <FabricUI/Application/FabricException.h>
+#include <FabricServices/Persistence/RTValToJSONEncoder.hpp>
 
 using namespace FabricUI;
 using namespace DFG;
@@ -168,11 +169,28 @@ void DFGPathValueResolver::setValue(
         value, 
         false);
 
-    else if(dfgType == DFGArg)
-      m_binding.setArgValue( 
-        portPath.toUtf8().constData(), 
-        value, 
-        false);
+    else if( dfgType == DFGArg )
+    {
+      
+      { // Code copy-pasted from FabricUI/DFG/DFGUICmd_SetArgValue.cpp :
+
+        // Automatically set as "persistable" arg values that were explicitly set by the user
+        // NOTE: metadata additions are not properly undone, however in this case it's not a big issue
+        //       since we mostly want to avoid "too big values" like meshes to be persisted, which
+        //       shouldn't be the case here.
+        m_binding.getExec().setExecPortMetadata(
+          portPath.toUtf8().constData(),
+          DFG_METADATA_UIPERSISTVALUE,
+          "true",
+          false
+        );
+      }
+
+      m_binding.setArgValue(
+        portPath.toUtf8().constData(),
+        value,
+        false );
+    }
   }
 
   FABRIC_CATCH_END("DFGPathValueResolver::setValue");
