@@ -130,7 +130,7 @@ class FCurveEditor::ToolBar : public QWidget
   QHBoxLayout* m_layout;
   QPushButton* m_buttons[FCurveItem::MODE_COUNT];
 
-  inline void setupButton( FCurveItem::Mode m, const char* name )
+  inline void setupButton( FCurveItem::Mode m, const char* name, QKeySequence shortcut )
   {
     m_buttons[m] = new QPushButton();
     QPushButton* bt = m_buttons[m];
@@ -138,6 +138,13 @@ class FCurveEditor::ToolBar : public QWidget
     bt->setFixedSize( QSize( 26, 26 ) );
     bt->setCheckable( true );
     m_layout->addWidget( bt );
+    QString actionName = QString::fromUtf8( name ) + " Mode";
+    bt->setToolTip( actionName + " [Press " + shortcut.toString() + "]" );
+    QAction* action = new QAction( actionName, m_parent );
+    action->setShortcut( shortcut );
+    action->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+    m_parent->addAction( action );
+    QOBJECT_CONNECT( action, SIGNAL, QAction, triggered, ( bool ), bt, SIGNAL, QPushButton, released, ( ) );
   }
 
 public:
@@ -149,11 +156,11 @@ public:
 
     m_layout->setAlignment( Qt::AlignLeft );
     m_layout->setMargin( 8 );
-    this->setupButton( FCurveItem::SELECT, "Select" );
+    this->setupButton( FCurveItem::SELECT, "Select", QKeySequence( Qt::Key_1 ) );
     QOBJECT_CONNECT( m_buttons[FCurveItem::SELECT], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeSelect, ( ) );
-    this->setupButton( FCurveItem::ADD, "Add" );
+    this->setupButton( FCurveItem::ADD, "Add", QKeySequence( Qt::Key_2 ) );
     QOBJECT_CONNECT( m_buttons[FCurveItem::ADD], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeAdd, ( ) );
-    this->setupButton( FCurveItem::REMOVE, "Remove" );
+    this->setupButton( FCurveItem::REMOVE, "Remove", QKeySequence( Qt::Key_3 ) );
     QOBJECT_CONNECT( m_buttons[FCurveItem::REMOVE], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeRemove, ( ) );
 
     this->setLayout( m_layout );
