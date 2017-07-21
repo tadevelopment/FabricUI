@@ -1406,7 +1406,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   margin-right: 0px;
 }
 
-#ValueEditor #FCurveEditor #RuledGraphicsView
+#ValueEditor #FCurveEditor
 {
   margin-bottom: 10px;
 }
