@@ -654,7 +654,6 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
 
 void FCurveItem::setMode( Mode m )
 {
-  if( m != m_mode )
   {
     m_mode = m;
     if( m_mode == REMOVE )
