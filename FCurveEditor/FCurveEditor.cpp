@@ -258,23 +258,23 @@ FCurveEditor::FCurveEditor()
   );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, repaintViews, ( ), this, SLOT, FCurveEditor, onRepaintViews, ( ) );
 
-  QAction* frameAllAction = new QAction( "Frame All Keys", this );
-  frameAllAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
-  frameAllAction->setShortcut( Qt::Key_A );
-  QOBJECT_CONNECT( frameAllAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onFrameAllKeys, () );
-  this->addAction( frameAllAction );
+  m_keysFrameAllAction = new QAction( "Frame All Keys", this );
+  m_keysFrameAllAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+  m_keysFrameAllAction->setShortcut( Qt::Key_A );
+  QOBJECT_CONNECT( m_keysFrameAllAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onFrameAllKeys, () );
+  this->addAction( m_keysFrameAllAction );
 
-  QAction* frameSelectedAction = new QAction( "Frame Selected Keys", this );
-  frameSelectedAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
-  frameSelectedAction->setShortcut( Qt::Key_F );
-  QOBJECT_CONNECT( frameSelectedAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onFrameSelectedKeys, () );
-  this->addAction( frameSelectedAction );
+  m_keysFrameSelectedAction = new QAction( "Frame Selected Keys", this );
+  m_keysFrameSelectedAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+  m_keysFrameSelectedAction->setShortcut( Qt::Key_F );
+  QOBJECT_CONNECT( m_keysFrameSelectedAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onFrameSelectedKeys, () );
+  this->addAction( m_keysFrameSelectedAction );
 
-  QAction* deleteAction = new QAction( "Delete selected Keys", this );
-  deleteAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
-  deleteAction->setShortcut( Qt::Key_Delete );
-  QOBJECT_CONNECT( deleteAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeleteSelectedKeys, () );
-  this->addAction( deleteAction );
+  m_keysDeleteAction = new QAction( "Delete selected Keys", this );
+  m_keysDeleteAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+  m_keysDeleteAction->setShortcut( Qt::Key_Delete );
+  QOBJECT_CONNECT( m_keysDeleteAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeleteSelectedKeys, () );
+  this->addAction( m_keysDeleteAction );
 
   this->setVEPos( QPoint( -20, 20 ) );
   this->setToolBarEnabled( true );
@@ -385,6 +385,16 @@ void FCurveEditor::onDeleteSelectedKeys()
   m_curveItem->deleteSelectedKeys();
 }
 
+void FCurveEditor::onSelectAllKeys()
+{
+  m_curveItem->selectAllKeys();
+}
+
+void FCurveEditor::onDeselectAllKeys()
+{
+  m_curveItem->clearKeySelection();
+}
+
 FCurveEditor::~FCurveEditor()
 {
   delete m_scene;
@@ -464,8 +474,19 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
 
   // Keys Menu
   QMenu keysMenu("Keys", this);
-  QAction keysSelectAllAction("Select All Keys", this);
-  QAction keysDeleteAction("Delete Keys", this);
+  
+  QAction* keysSelectAllAction = new QAction("Select All Keys", this);
+  keysSelectAllAction->setShortcut( Qt::CTRL + Qt::Key_A );
+  QOBJECT_CONNECT( keysSelectAllAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onSelectAllKeys, () );
+  
+  QAction* keysDeselectAllAction = new QAction("Deselect All Keys", this);
+  QOBJECT_CONNECT( keysDeselectAllAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeselectAllKeys, () );
+
+  QAction* keysResetTangentsAction = new QAction("Reset Tangents", this);
+  // QOBJECT_CONNECT( keysResetTangentsAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeselectAllKeys, () );
+  
+  QAction* keysZeroSlopeTangentsAction = new QAction("Zero Slope Tangents", this);
+  // QOBJECT_CONNECT( keysZeroSlopeTangentsAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeselectAllKeys, () );
   
   contextMenu.addAction(&selectModeAction);
   contextMenu.addAction(&addKeyModeAction);
@@ -473,18 +494,23 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   contextMenu.addSeparator();
 
   contextMenu.addMenu(&keysMenu);
-  keysMenu.addAction(&keysSelectAllAction);
-  keysMenu.addAction(&keysDeleteAction);
+  keysMenu.addAction(keysSelectAllAction);
+  keysMenu.addAction(keysDeselectAllAction);
+  keysMenu.addAction(this->m_keysDeleteAction);
+  keysMenu.addSeparator();
+  keysMenu.addAction(this->m_keysFrameAllAction);
+  keysMenu.addAction(this->m_keysFrameSelectedAction);
+  keysMenu.addSeparator();
+  keysMenu.addAction(keysResetTangentsAction);
+  keysMenu.addAction(keysZeroSlopeTangentsAction);
+
 
   if(m_curveItem->selectedKeys().empty())
   {
-    foreach (QAction *action, keysMenu.actions()) {
-        if (!action->isSeparator() || !action->menu())
-        {
-          if(action)
-          action->setEnabled(false);
-        }
-    }
+    this->m_keysDeleteAction->setEnabled(false);
+    keysDeselectAllAction->setEnabled(false);
+    keysResetTangentsAction->setEnabled(false);
+    keysZeroSlopeTangentsAction->setEnabled(false);
   }
 
   QAction* action = contextMenu.exec(this->mapToGlobal(pos));
@@ -496,6 +522,8 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   else
   if( action == &removeKeyModeAction )
     m_curveItem->setMode( FCurveItem::REMOVE );
+
+  // Connect Signals and Slots
 }
 
 void FCurveEditor::onRepaintViews()

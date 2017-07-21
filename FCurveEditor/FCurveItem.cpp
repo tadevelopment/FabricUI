@@ -543,6 +543,12 @@ void FCurveItem::editKey( size_t i, KeyProp p )
   emit this->editedKeyPropChanged();
 }
 
+void FCurveItem::selectAllKeys()
+{
+  for( size_t i = 0; i < m_curve->getKeyCount(); i++ )
+    this->addKeyToSelection( i );
+}
+
 void FCurveItem::deleteSelectedKeys()
 {
   if( m_selectedKeys.empty() )

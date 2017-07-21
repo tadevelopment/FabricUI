@@ -39,6 +39,9 @@ class FCurveEditor : public QFrame
   ToolBar* m_toolBar;
   void veEditFinished( bool isXNotY );
   void updateVEPos();
+  QAction* m_keysFrameAllAction;
+  QAction* m_keysFrameSelectedAction;
+  QAction* m_keysDeleteAction;
 
 public:
   FCurveEditor();
@@ -46,7 +49,6 @@ public:
   void setModel( AbstractFCurveModel* );
   void frameAllKeys();
   void frameSelectedKeys();
-
 
   inline QPoint vePos() const { return m_vePos; }
   inline void setVEPos( const QPoint& p ) { m_vePos = p; this->updateVEPos(); }
@@ -64,6 +66,8 @@ private slots:
   void onFrameAllKeys();
   void onFrameSelectedKeys();
   void onDeleteSelectedKeys();
+  void onSelectAllKeys();
+  void onDeselectAllKeys();
   void onEditedKeysChanged();
   void onRepaintViews();
   void onModeChanged();

@@ -45,6 +45,7 @@ public:
   void clearKeySelection();
   void rectangleSelect( const QRectF&, Qt::KeyboardModifiers );
   void deleteSelectedKeys();
+  void selectAllKeys();
   inline KeyProp editedKeyProp() const { return m_editedKeyProp; }
   inline const std::set<size_t>& selectedKeys() const { return m_selectedKeys; }
   QRectF keysBoundingRect() const;
