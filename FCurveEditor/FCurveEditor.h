@@ -47,6 +47,7 @@ public:
   void frameAllKeys();
   void frameSelectedKeys();
 
+
   inline QPoint vePos() const { return m_vePos; }
   inline void setVEPos( const QPoint& p ) { m_vePos = p; this->updateVEPos(); }
   inline bool toolBarEnabled() const { return m_toolbarEnabled; }
@@ -71,6 +72,7 @@ private slots:
   void setModeRemove() { m_curveItem->setMode( FCurveItem::REMOVE ); }
   inline void veXEditFinished() { this->veEditFinished( true ); }
   inline void veYEditFinished() { this->veEditFinished( false ); }
+  void showContextMenu(const QPoint& pos);
 
 signals:
   void interactionBegin();
