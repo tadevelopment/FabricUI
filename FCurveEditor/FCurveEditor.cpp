@@ -14,6 +14,7 @@
 #include <QLayout>
 #include <QToolBar>
 #include <QPushButton>
+#include <QMenu>
 
 #include <QDebug>
 #include <assert.h>
@@ -183,6 +184,7 @@ FCurveEditor::FCurveEditor()
   , m_toolBar( new ToolBar( this ) )
 {
   this->setObjectName( "FCurveEditor" );
+  this->setContextMenuPolicy(Qt::CustomContextMenu);
 
   QVBoxLayout* m_layout = new QVBoxLayout();
   m_layout->setMargin( 0 ); m_layout->setSpacing( 0 );
@@ -194,6 +196,10 @@ FCurveEditor::FCurveEditor()
   m_scene->setSceneRect( QRectF( -1E8, -1E8, 2 * 1E8, 2 * 1E8 ) );
   m_rview->view()->setScene( m_scene );
   m_scene->addItem( m_curveItem );
+
+  QOBJECT_CONNECT(
+    this, SIGNAL, FCurveEditor, customContextMenuRequested, (const QPoint&),
+    this, SLOT, FCurveEditor, showContextMenu, (const QPoint&));
 
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionBegin, (), this, SIGNAL, FCurveEditor, interactionBegin, () );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionEnd, (), this, SIGNAL, FCurveEditor, interactionEnd, () );
@@ -390,7 +396,7 @@ void FCurveEditor::frameSelectedKeys()
 
 void FCurveEditor::mousePressEvent( QMouseEvent * e )
 {
-  if( m_curveItem->mode() == FCurveItem::ADD )
+  if( m_curveItem->mode() == FCurveItem::ADD && e->button() == Qt::LeftButton)
   {
     // Adding a new Key
     QPointF scenePos = m_rview->view()->mapToScene(
@@ -407,6 +413,42 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
   }
   else
     Parent::mousePressEvent( e );
+}
+
+void FCurveEditor::showContextMenu(const QPoint &pos)
+{
+  QMenu contextMenu("Context menu", this);
+
+  QAction selectModeAction("Select Mode", this);
+  QAction addKeyModeAction("Add Key Mode", this);
+  QAction removeKeyModeAction("Remove Key Mode", this);
+
+  // Keys Menu
+  QMenu keysMenu("Keys", this);
+  QAction keysSelectAllAction("Select All Keys", this);
+  QAction keysDeleteAction("Delete Keys", this);
+  
+  contextMenu.addAction(&selectModeAction);
+  contextMenu.addAction(&addKeyModeAction);
+  contextMenu.addAction(&removeKeyModeAction);
+  contextMenu.addSeparator();
+
+  contextMenu.addMenu(&keysMenu);
+  keysMenu.addAction(&keysSelectAllAction);
+  keysMenu.addAction(&keysDeleteAction);
+
+  if(m_curveItem->selectedKeys().empty())
+  {
+    foreach (QAction *action, keysMenu.actions()) {
+        if (!action->isSeparator() || !action->menu())
+        {
+          if(action)
+          action->setEnabled(false);
+        }
+    }
+  }
+
+  contextMenu.exec(this->mapToGlobal(pos));
 }
 
 void FCurveEditor::onRepaintViews()
