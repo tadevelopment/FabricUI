@@ -16,7 +16,7 @@ int main()
   QApplication app( argc, NULL );
   AnimxFCurveModel curve;
 
-  size_t nh = 0;// 7;
+  size_t nh = 7;
   for( size_t i = 0; i < nh; i++ )
   {
     Key h;
