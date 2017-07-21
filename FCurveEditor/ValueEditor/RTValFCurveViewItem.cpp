@@ -56,8 +56,10 @@ public:
     args["id"] = QString::number( i );
     args["time"] = QString::number( h.pos.x() );
     args["value"] = QString::number( h.pos.y() );
+    args["tanInType"] = QString::number( h.tanInType );
     args["tanInX"] = QString::number( h.tanIn.x() );
     args["tanInY"] = QString::number( h.tanIn.y() );
+    args["tanOutType"] = QString::number( h.tanOutType );
     args["tanOutX"] = QString::number( h.tanOut.x() );
     args["tanOutY"] = QString::number( h.tanOut.y() );
     QString cmdName = "AnimX_SetKeyframe";
