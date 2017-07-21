@@ -203,9 +203,9 @@ public:
     FCurveItem::Mode previousMode = m_parent->m_curveItem->mode();
     if( m != previousMode )
     {
-      m_previousMode = previousMode;
+      if( !inTemporaryMode() )
+        m_previousMode = previousMode;
       m_parent->m_curveItem->setMode( m );
-      assert( inTemporaryMode() );
     }
   }
   inline bool inTemporaryMode() const { return m_previousMode < FCurveItem::MODE_COUNT; }
