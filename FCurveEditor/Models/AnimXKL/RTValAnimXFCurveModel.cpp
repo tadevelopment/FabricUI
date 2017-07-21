@@ -22,6 +22,7 @@ FabricCore::RTVal RTValAnimXFCurveConstModel::idToIndex( size_t i ) const
   FabricCore::RTVal iRV = FabricCore::RTVal::ConstructUInt32( m_val.getContext(), i );
   return const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "UInt32", "getKeyIndex", 1, &iRV );
 }
+
 Key RTValAnimXFCurveConstModel::getOrderedKey( size_t index ) const
 {
   const size_t argc = 2;
@@ -38,12 +39,44 @@ Key RTValAnimXFCurveConstModel::getOrderedKey( size_t index ) const
   dst.tanIn.setY( key.maybeGetMember( "tanIn" ).maybeGetMember( "y" ).getFloat64() );
   dst.tanOut.setX( key.maybeGetMember( "tanOut" ).maybeGetMember( "x" ).getFloat64() );
   dst.tanOut.setY( key.maybeGetMember( "tanOut" ).maybeGetMember( "y" ).getFloat64() );
+  dst.tanInType = key.maybeGetMember( "tanIn" ).maybeGetMember( "type" ).getSInt32();
+  dst.tanOutType = key.maybeGetMember( "tanOut" ).maybeGetMember( "type" ).getSInt32();
   return dst;
 }
 
 Key RTValAnimXFCurveConstModel::getKey( size_t id ) const
 {
   return this->getOrderedKey( this->idToIndex( id ).getUInt32() );
+}
+
+const size_t TangeTypeCount = 14+1; // see the KL code
+const char* TangentTypeNames[TangeTypeCount] = 
+{
+  "Global",
+  "Fixed",
+  "Linear",
+  "Flat",
+  "Step",
+  "Slow",
+  "Fast",
+  "Smooth",
+  "Clamped",
+  "Auto",
+  "Sine",
+  "Parabolic",
+  "Log",
+  "Plateau",
+  "StepNext"
+};
+
+size_t RTValAnimXFCurveConstModel::tangentTypeCount() const
+{
+  return TangeTypeCount;
+}
+
+QString RTValAnimXFCurveConstModel::tangentTypeName( size_t i ) const
+{
+  return QString::fromUtf8( TangentTypeNames[i] );
 }
 
 size_t RTValAnimXFCurveConstModel::getIndexAfterTime( qreal time ) const
@@ -112,10 +145,10 @@ inline void SetKey( FabricCore::RTVal& m_val, const FabricCore::RTVal& index, Ke
     index,
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.pos.x() ),
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.pos.y() ),
-    FabricCore::RTVal::ConstructSInt32( m_val.getContext(), 9 ), // HACK : TODO
+    FabricCore::RTVal::ConstructSInt32( m_val.getContext(), h.tanInType ),
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.tanIn.x() ),
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.tanIn.y() ),
-    FabricCore::RTVal::ConstructSInt32( m_val.getContext(), 9 ), // HACK : TODO
+    FabricCore::RTVal::ConstructSInt32( m_val.getContext(), h.tanOutType ),
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.tanOut.x() ),
     FabricCore::RTVal::ConstructFloat64( m_val.getContext(), h.tanOut.y() )
   };

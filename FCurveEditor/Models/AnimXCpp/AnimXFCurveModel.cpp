@@ -5,6 +5,82 @@
 using namespace FabricUI::FCurveEditor;
 using namespace adsk;
 
+inline const char* TangentTypeName( const TangentType& t )
+{
+  switch( t )
+  {
+  case TangentType::Global: return "Global";
+  case TangentType::Fixed: return "Fixed";
+  case TangentType::Linear: return "Linear";
+  case TangentType::Flat: return "Flat";
+  case TangentType::Step: return "Step";
+  case TangentType::Slow: return "Slow";
+  case TangentType::Fast: return "Fast";
+  case TangentType::Smooth: return "Smooth";
+  case TangentType::Clamped: return "Clamped";
+  case TangentType::Auto: return "Auto";
+  case TangentType::Sine: return "Sine";
+  case TangentType::Parabolic: return "Parabolic";
+  case TangentType::Log: return "Log";
+  case TangentType::Plateau: return "Plateau";
+  case TangentType::StepNext: return "StepNext";
+  }
+  assert( false );
+  return "";
+}
+
+
+inline size_t TangentTypeIndex( const TangentType& t )
+{
+  switch( t )
+  {
+  case TangentType::Global: return 0;
+  case TangentType::Fixed: return 1;
+  case TangentType::Linear: return 2;
+  case TangentType::Flat: return 3;
+  case TangentType::Step: return 4;
+  case TangentType::Slow: return 5;
+  case TangentType::Fast: return 6;
+  case TangentType::Smooth: return 7;
+  case TangentType::Clamped: return 8;
+  case TangentType::Auto: return 9;
+  case TangentType::Sine: return 10;
+  case TangentType::Parabolic: return 11;
+  case TangentType::Log: return 12;
+  case TangentType::Plateau: return 13;
+  case TangentType::StepNext: return 14;
+  }
+  assert( false );
+  return 0;
+}
+
+const TangentType TangentTypes[] =
+{
+  TangentType::Global,
+  TangentType::Fixed,
+  TangentType::Linear,
+  TangentType::Flat,
+  TangentType::Step,
+  TangentType::Slow,
+  TangentType::Fast,
+  TangentType::Smooth,
+  TangentType::Clamped,
+  TangentType::Auto,
+  TangentType::Sine,
+  TangentType::Parabolic,
+  TangentType::Log,
+  TangentType::Plateau,
+  TangentType::StepNext
+};
+
+inline TangentType TangentTypeFromIndex( size_t i ) { return TangentTypes[i]; }
+
+QString AnimxFCurveModel::tangentTypeName( size_t i ) const
+{
+  assert( i < this->tangentTypeCount() );
+  return QString::fromUtf8( TangentTypeName( TangentType( i ) ) );
+}
+
 Key AnimxFCurveModel::getOrderedKey( size_t index ) const
 {
   assert( index < m_keys.size() );
@@ -13,6 +89,8 @@ Key AnimxFCurveModel::getOrderedKey( size_t index ) const
   dst.pos = QPointF( key.time, key.value );
   dst.tanIn = QPointF( key.tanIn.x, key.tanIn.y );
   dst.tanOut = QPointF( key.tanOut.x, key.tanOut.y );
+  dst.tanInType = TangentTypeIndex( key.tanIn.type );
+  dst.tanOutType = TangentTypeIndex( key.tanOut.type );
   return dst;
 }
 
@@ -33,9 +111,8 @@ void AnimxFCurveModel::setKey( size_t uiId, Key h )
   key.tanIn.y = h.tanIn.y();
   key.tanOut.x = h.tanOut.x();
   key.tanOut.y = h.tanOut.y();
-  // TODO : tangent types
-  //key.tanIn.type = adsk::TangentType::Parabolic;
-  //key.tanOut.type = adsk::TangentType::Parabolic;
+  key.tanIn.type = TangentTypeFromIndex( h.tanInType );
+  key.tanOut.type = TangentTypeFromIndex( h.tanOutType );
   key.linearInterpolation = false; // HACK/TODO
   key.index = i;
 

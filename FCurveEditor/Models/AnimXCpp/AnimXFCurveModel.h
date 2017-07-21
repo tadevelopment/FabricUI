@@ -52,6 +52,8 @@ public:
   void deleteKey( size_t uiId ) FTL_OVERRIDE;
   void autoTangents( size_t ) FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
+  size_t tangentTypeCount() const FTL_OVERRIDE { return size_t(adsk::TangentType::StepNext) + 1; }
+  QString tangentTypeName( size_t i ) const FTL_OVERRIDE;
 
   // adsk::ICurve
   bool keyframeAtIndex( int, adsk::Keyframe& ) const FTL_OVERRIDE;

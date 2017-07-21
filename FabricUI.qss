@@ -2433,7 +2433,9 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   font-size: 16px;
 }
 
-#FCurveEditor #KeyValueEditor #FloatEditor QLineEdit
+#FCurveEditor #KeyValueEditor #FloatEditor QLineEdit,
+#FCurveEditor #KeyValueEditor #TangentTypeEditor,
+#FCurveEditor #KeyValueEditor #TangentTypeEditor *
 {
   background-color: rgba(32,32,32);
 }

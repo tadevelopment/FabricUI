@@ -30,6 +30,8 @@ public:
   Key getOrderedKey( size_t ) const FTL_OVERRIDE;
   size_t getIndexAfterTime( qreal ) const FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
+  size_t tangentTypeCount() const FTL_OVERRIDE;
+  QString tangentTypeName( size_t i ) const FTL_OVERRIDE;
 
   inline void setValue( FabricCore::RTVal v ) { m_val = v; }
   inline FabricCore::RTVal value() { return m_val; }

@@ -14,6 +14,7 @@
 #include <QLayout>
 #include <QToolBar>
 #include <QPushButton>
+#include <QComboBox>
 #include <QMenu>
 
 #include <QDebug>
@@ -61,15 +62,41 @@ class FCurveEditor::KeyValueEditor : public QFrame
     inline void clear() { m_edit->clear(); }
     inline QString get() const { return m_edit->text(); }
   };
+
+  class TangentTypeEditor : public QComboBox
+  {
+    AbstractFCurveModel* m_model;
+  public:
+
+    TangentTypeEditor()
+      : m_model( NULL )
+    {
+      this->setObjectName( "TangentTypeEditor" );
+    }
+
+    void setModel( AbstractFCurveModel* model )
+    {
+      if( model != m_model )
+      {
+        this->clear();
+        for( size_t i = 0; i < model->tangentTypeCount(); i++ )
+          this->addItem( model->tangentTypeName( i ) );
+        m_model = model;
+      }
+    }
+  };
+
 public:
   FloatEditor* m_x;
   FloatEditor* m_y;
+  TangentTypeEditor* m_tanType;
 
   KeyValueEditor( FCurveEditor* parent )
     : QFrame( parent )
     , m_parent( parent )
     , m_x( new FloatEditor( this, true ) )
     , m_y( new FloatEditor( this, false ) )
+    , m_tanType( new TangentTypeEditor() )
   {
     this->setObjectName( "KeyValueEditor" );
 
@@ -78,6 +105,8 @@ public:
     m_layout->setSpacing( 8 );
     m_layout->addWidget( m_x );
     m_layout->addWidget( m_y );
+    m_layout->addWidget( m_tanType );
+    QOBJECT_CONNECT( m_tanType, SIGNAL, QComboBOx, currentIndexChanged, ( int ), parent, SLOT, FCurveEditor, veTanTypeEditFinished, ( ) );
     this->setLayout( m_layout );
     this->resize( 200, 32 );
   }
@@ -121,6 +150,23 @@ void FCurveEditor::veEditFinished( bool isXNotY )
         h.pos.setY( v );
         m_model->setKey( *it, h );
       }
+    }
+  }
+}
+
+void FCurveEditor::veTanTypeEditFinished()
+{
+  assert( !m_curveItem->selectedKeys().empty() );
+  assert( m_curveItem->selectedKeys().size() == 1 );
+  {
+    size_t editedKey = *m_curveItem->selectedKeys().begin();
+    Key h = m_model->getKey( editedKey );
+    FCurveItem::KeyProp prop = m_curveItem->editedKeyProp();
+    if( prop == FCurveItem::TAN_IN || prop == FCurveItem::TAN_OUT )
+    {
+      size_t& t = ( prop == FCurveItem::TAN_IN ? h.tanInType : h.tanOutType );
+      t = m_keyValueEditor->m_tanType->currentIndex();
+      m_model->setKey( editedKey, h );
     }
   }
 }
@@ -354,9 +400,22 @@ void FCurveEditor::onEditedKeysChanged()
       m_keyValueEditor->m_x->set( p.x() );
       m_keyValueEditor->m_x->setVisible( true );
       m_keyValueEditor->m_y->set( p.y() );
+      m_keyValueEditor->m_tanType->setModel( m_model );
+      if(
+        m_curveItem->editedKeyProp() == FCurveItem::TAN_IN ||
+        m_curveItem->editedKeyProp() == FCurveItem::TAN_OUT
+        )
+      {
+        m_keyValueEditor->m_tanType->setVisible( true );
+        m_keyValueEditor->m_tanType->setCurrentIndex(
+          m_curveItem->editedKeyProp() == FCurveItem::TAN_IN ? h.tanInType : h.tanOutType );
+      }
+      else
+        m_keyValueEditor->m_tanType->setVisible( false );
     }
     else
     {
+      m_keyValueEditor->m_tanType->setVisible( false );
       m_keyValueEditor->m_x->setVisible( false );
       m_keyValueEditor->m_x->clear();
       m_keyValueEditor->m_y->clear();

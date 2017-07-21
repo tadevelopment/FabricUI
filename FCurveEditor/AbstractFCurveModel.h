@@ -17,6 +17,7 @@ struct Key
 {
   QPointF pos;
   QPointF tanIn, tanOut;
+  size_t tanInType, tanOutType;
 };
 
 class AbstractFCurveModel : public QObject
@@ -36,6 +37,9 @@ public:
   virtual void deleteKey( size_t ) = 0;
   // the indices will be sorted in increasing order
   virtual void deleteKeys( const size_t* indices, const size_t nbIndices );
+
+  virtual size_t tangentTypeCount() const = 0;
+  virtual QString tangentTypeName( size_t i ) const { return QString::number( i ); }
 
   virtual void autoTangents( size_t ) {}
 

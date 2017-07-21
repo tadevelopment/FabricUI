@@ -26,6 +26,8 @@ int main()
     h.tanIn = QPointF( xScale * RandFloat(), yScale * ( 1 - 2 * RandFloat() ) ) * 0.3;
     h.tanOut = ( rand() % 2 == 0 ? h.tanIn :
       QPointF( xScale * ( 1 - 2 * RandFloat() ), yScale * ( 1 - 2 * RandFloat() ) ) * 0.3 );
+    h.tanInType = 0;
+    h.tanOutType = 0;
     curve.addKey( h );
   }
 

@@ -76,6 +76,7 @@ private slots:
   void setModeRemove() { m_curveItem->setMode( FCurveItem::REMOVE ); }
   inline void veXEditFinished() { this->veEditFinished( true ); }
   inline void veYEditFinished() { this->veEditFinished( false ); }
+  void veTanTypeEditFinished();
   void showContextMenu(const QPoint& pos);
 
 signals:
