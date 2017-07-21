@@ -2266,7 +2266,7 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
  * FCurveEditor
  ***************************************************************************/
 
-#FCurveEditor #RuledGraphicsView
+#FCurveEditor
 {
   background-color: #222222;
   border: 4px solid #333333;
