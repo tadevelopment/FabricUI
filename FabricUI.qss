@@ -2295,25 +2295,49 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 }
 
 #FCurveEditor #ToolBar #Select
-{ background-image: url(${FABRIC_DIR}/Resources/Icons/select-button.png); }
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/select-button.png);
+}
 #FCurveEditor #ToolBar #Select:hover
-{ background-image: url(${FABRIC_DIR}/Resources/Icons/select-button-hover.png); }
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/select-button-hover.png);
+}
 #FCurveEditor #ToolBar #Select:pressed
-{ background-image: url(${FABRIC_DIR}/Resources/Icons/select-button-pressed.png); }
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/select-button-pressed.png);
+}
+#FCurveEditor #ToolBar #Select:checked
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/select-button-pressed.png);
+  border: none;
+}
+
 
 #FCurveEditor #ToolBar #Add
-{ background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button.png); }
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button.png);
+}
 #FCurveEditor #ToolBar #Add:hover
-{ background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button-hover.png); }
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button-hover.png);
+}
 #FCurveEditor #ToolBar #Add:pressed
-{ background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button-pressed.png); }
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button-pressed.png);
+}
 
 #FCurveEditor #ToolBar #Remove
-{ background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button.png); }
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button.png);
+}
 #FCurveEditor #ToolBar #Remove:hover
-{ background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button-hover.png); }
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button-hover.png);
+}
 #FCurveEditor #ToolBar #Remove:pressed
-{ background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button-pressed.png); }
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button-pressed.png);
+}
 
 #FCurveEditor #RuledGraphicsView
 {

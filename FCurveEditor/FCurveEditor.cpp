@@ -153,9 +153,11 @@ public:
     , m_layout( new QHBoxLayout() )
   {
     this->setObjectName( "ToolBar" );
+    this->setMinimumHeight( 40 );
 
     m_layout->setAlignment( Qt::AlignLeft );
     m_layout->setMargin( 8 );
+    m_layout->setContentsMargins( 8, 2, 2, 2 );
     this->setupButton( FCurveItem::SELECT, "Select", QKeySequence( Qt::Key_1 ) );
     QOBJECT_CONNECT( m_buttons[FCurveItem::SELECT], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeSelect, ( ) );
     this->setupButton( FCurveItem::ADD, "Add", QKeySequence( Qt::Key_2 ) );
