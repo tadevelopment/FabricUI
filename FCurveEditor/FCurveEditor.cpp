@@ -141,6 +141,11 @@ Qt::Key ModeKeys[FCurveItem::MODE_COUNT] =
   Qt::Key_3
 };
 
+inline QKeySequence GetModeToggleShortcut( FCurveItem::Mode m )
+{
+  return QKeySequence( ModeToggleModifier ).toString() + QKeySequence( ModeKeys[m] ).toString();
+}
+
 class FCurveEditor::ToolBar : public QWidget
 {
   FCurveEditor* m_parent;
@@ -172,8 +177,7 @@ public:
       QString actionName = QString::fromUtf8( ModeNames[m] ) + " Mode";
       bt->setToolTip( actionName + " [Press (" + QKeySequence(ModeToggleModifier).toString() + ")" + QKeySequence(ModeKeys[m]).toString() + "]" );
       QAction* action = new QAction( actionName, m_parent );
-      QKeySequence shortcut;
-      action->setShortcut( QKeySequence( ModeToggleModifier ).toString() + QKeySequence( ModeKeys[m] ).toString() );
+      action->setShortcut( GetModeToggleShortcut( FCurveItem::Mode(m) ) );
       action->setShortcutContext( Qt::WidgetWithChildrenShortcut );
       m_parent->addAction( action );
       QOBJECT_CONNECT( action, SIGNAL, QAction, triggered, ( bool ), bt, SIGNAL, QPushButton, released, ( ) );
@@ -452,8 +456,11 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   QMenu contextMenu("Context menu", this);
 
   QAction selectModeAction("Select Mode", this);
+  selectModeAction.setShortcut( GetModeToggleShortcut( FCurveItem::SELECT ) );
   QAction addKeyModeAction("Add Key Mode", this);
+  addKeyModeAction.setShortcut( GetModeToggleShortcut( FCurveItem::ADD ) );
   QAction removeKeyModeAction("Remove Key Mode", this);
+  removeKeyModeAction.setShortcut( GetModeToggleShortcut( FCurveItem::REMOVE ) );
 
   // Keys Menu
   QMenu keysMenu("Keys", this);
