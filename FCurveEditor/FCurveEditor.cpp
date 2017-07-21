@@ -487,7 +487,15 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
     }
   }
 
-  contextMenu.exec(this->mapToGlobal(pos));
+  QAction* action = contextMenu.exec(this->mapToGlobal(pos));
+  if( action == &selectModeAction )
+    m_curveItem->setMode( FCurveItem::SELECT );
+  else
+  if( action == &addKeyModeAction )
+    m_curveItem->setMode( FCurveItem::ADD );
+  else
+  if( action == &removeKeyModeAction )
+    m_curveItem->setMode( FCurveItem::REMOVE );
 }
 
 void FCurveEditor::onRepaintViews()
