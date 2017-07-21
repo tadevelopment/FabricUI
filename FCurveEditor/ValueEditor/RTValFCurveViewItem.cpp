@@ -194,6 +194,8 @@ public:
     : QWidget( parent, Qt::Window )
     , m_editor( new FabricUI::FCurveEditor::FCurveEditor() )
   {
+    this->setObjectName( "ExpandedDialog" );
+
     QHBoxLayout* m_lay = new QHBoxLayout();
     m_lay->setMargin( 0 ); m_lay->setSpacing( 0 );
     m_lay->addWidget( m_editor );
