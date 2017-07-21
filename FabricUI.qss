@@ -2281,10 +2281,13 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 #FCurveEditor #ToolBar
 {
   background-color: #333333;
+  border-right: 1px solid #2B2B2B;
+  border-bottom: 1px solid #2B2B2B;
 }
 
 #FCurveEditor #ToolBar QPushButton
 {
+  background-color: #333333;
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -2298,17 +2301,32 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 { 
   background-image: url(${FABRIC_DIR}/Resources/Icons/select-button.png);
 }
+
 #FCurveEditor #ToolBar #Select:hover
 { 
   background-image: url(${FABRIC_DIR}/Resources/Icons/select-button-hover.png);
 }
+
 #FCurveEditor #ToolBar #Select:pressed
 { 
   background-image: url(${FABRIC_DIR}/Resources/Icons/select-button-pressed.png);
 }
+
 #FCurveEditor #ToolBar #Select:checked
 { 
-  background-image: url(${FABRIC_DIR}/Resources/Icons/select-button-pressed.png);
+  background-image: url(${FABRIC_DIR}/Resources/Icons/select-button-checked.png);
+  border: none;
+}
+
+#FCurveEditor #ToolBar #Select:checked:hover
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/select-button-checked-hover.png);
+  border: none;
+}
+
+#FCurveEditor #ToolBar #Select:checked:pressed
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/select-button-pressed.png);
   border: none;
 }
 
@@ -2317,26 +2335,66 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 { 
   background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button.png);
 }
+
 #FCurveEditor #ToolBar #Add:hover
 { 
   background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button-hover.png);
 }
+
 #FCurveEditor #ToolBar #Add:pressed
 { 
   background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button-pressed.png);
+}
+
+#FCurveEditor #ToolBar #Add:checked
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button-checked.png);
+  border: none;
+}
+
+#FCurveEditor #ToolBar #Add:checked:hover
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button-checked-hover.png);
+  border: none;
+}
+
+#FCurveEditor #ToolBar #Add:checked:pressed
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-add-button-pressed.png);
+  border: none;
 }
 
 #FCurveEditor #ToolBar #Remove
 { 
   background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button.png);
 }
+
 #FCurveEditor #ToolBar #Remove:hover
 { 
   background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button-hover.png);
 }
+
 #FCurveEditor #ToolBar #Remove:pressed
 { 
   background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button-pressed.png);
+}
+
+#FCurveEditor #ToolBar #Remove:checked
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button-pressed.png);
+  border: none;
+}
+
+#FCurveEditor #ToolBar #Remove:checked:hover
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button-checked-hover.png);
+  border: none;
+}
+
+#FCurveEditor #ToolBar #Remove:checked:pressed
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button-pressed.png);
+  border: none;
 }
 
 #FCurveEditor #RuledGraphicsView
