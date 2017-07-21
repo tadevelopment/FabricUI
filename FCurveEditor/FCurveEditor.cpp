@@ -124,33 +124,34 @@ void FCurveEditor::veEditFinished( bool isXNotY )
   }
 }
 
+const char* ModeNames[FCurveItem::MODE_COUNT] =
+{
+  "Select",
+  "Add",
+  "Remove"
+};
+
+const Qt::KeyboardModifier ModeToggleModifier = Qt::ShiftModifier;
+
+Qt::Key ModeKeys[FCurveItem::MODE_COUNT] =
+{
+  Qt::Key_1,
+  Qt::Key_2,
+  Qt::Key_3
+};
+
 class FCurveEditor::ToolBar : public QWidget
 {
   FCurveEditor* m_parent;
   QHBoxLayout* m_layout;
   QPushButton* m_buttons[FCurveItem::MODE_COUNT];
-
-  inline void setupButton( FCurveItem::Mode m, const char* name, QKeySequence shortcut )
-  {
-    m_buttons[m] = new QPushButton();
-    QPushButton* bt = m_buttons[m];
-    bt->setObjectName( name );
-    bt->setFixedSize( QSize( 26, 26 ) );
-    bt->setCheckable( true );
-    m_layout->addWidget( bt );
-    QString actionName = QString::fromUtf8( name ) + " Mode";
-    bt->setToolTip( actionName + " [Press " + shortcut.toString() + "]" );
-    QAction* action = new QAction( actionName, m_parent );
-    action->setShortcut( shortcut );
-    action->setShortcutContext( Qt::WidgetWithChildrenShortcut );
-    m_parent->addAction( action );
-    QOBJECT_CONNECT( action, SIGNAL, QAction, triggered, ( bool ), bt, SIGNAL, QPushButton, released, ( ) );
-  }
+  FCurveItem::Mode m_previousMode; // MODE_COUNT if not in a temporary mode
 
 public:
   ToolBar( FCurveEditor* parent )
     : m_parent( parent )
     , m_layout( new QHBoxLayout() )
+    , m_previousMode( FCurveItem::MODE_COUNT )
   {
     this->setObjectName( "ToolBar" );
     this->setMinimumHeight( 40 );
@@ -158,11 +159,27 @@ public:
     m_layout->setAlignment( Qt::AlignLeft );
     m_layout->setMargin( 8 );
     m_layout->setContentsMargins( 8, 2, 2, 2 );
-    this->setupButton( FCurveItem::SELECT, "Select", QKeySequence( Qt::Key_1 ) );
+
+    for( int m = 0; m < FCurveItem::MODE_COUNT; m++ )
+    {
+      m_buttons[m] = new QPushButton();
+      QPushButton* bt = m_buttons[m];
+      bt->setObjectName( ModeNames[m] );
+      bt->setFixedSize( QSize( 26, 26 ) );
+      bt->setCheckable( true );
+      m_layout->addWidget( bt );
+      QString actionName = QString::fromUtf8( ModeNames[m] ) + " Mode";
+      bt->setToolTip( actionName + " [Press (" + QKeySequence(ModeToggleModifier).toString() + ")" + QKeySequence(ModeKeys[m]).toString() + "]" );
+      QAction* action = new QAction( actionName, m_parent );
+      QKeySequence shortcut;
+      action->setShortcut( QKeySequence( ModeToggleModifier ).toString() + QKeySequence( ModeKeys[m] ).toString() );
+      action->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+      m_parent->addAction( action );
+      QOBJECT_CONNECT( action, SIGNAL, QAction, triggered, ( bool ), bt, SIGNAL, QPushButton, released, ( ) );
+    }
+
     QOBJECT_CONNECT( m_buttons[FCurveItem::SELECT], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeSelect, ( ) );
-    this->setupButton( FCurveItem::ADD, "Add", QKeySequence( Qt::Key_2 ) );
     QOBJECT_CONNECT( m_buttons[FCurveItem::ADD], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeAdd, ( ) );
-    this->setupButton( FCurveItem::REMOVE, "Remove", QKeySequence( Qt::Key_3 ) );
     QOBJECT_CONNECT( m_buttons[FCurveItem::REMOVE], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeRemove, ( ) );
 
     this->setLayout( m_layout );
@@ -172,7 +189,22 @@ public:
   {
     for( int i = 0; i < FCurveItem::MODE_COUNT; i++ )
       m_buttons[i]->setChecked( i == m );
+    if( m == m_previousMode )
+      m_previousMode = FCurveItem::MODE_COUNT;
   }
+
+  inline void setTemporaryMode( FCurveItem::Mode m )
+  {
+    FCurveItem::Mode previousMode = m_parent->m_curveItem->mode();
+    if( m != previousMode )
+    {
+      m_previousMode = previousMode;
+      m_parent->m_curveItem->setMode( m );
+      assert( inTemporaryMode() );
+    }
+  }
+  inline bool inTemporaryMode() const { return m_previousMode < FCurveItem::MODE_COUNT; }
+  inline FCurveItem::Mode getPreviousMode() const { assert( inTemporaryMode() ); return m_previousMode; }
 };
 
 FCurveEditor::FCurveEditor()
@@ -236,7 +268,7 @@ FCurveEditor::FCurveEditor()
 
   this->setVEPos( QPoint( -20, 20 ) );
   this->setToolBarEnabled( true );
-  this->setMode( FCurveItem::SELECT );
+  m_curveItem->setMode( FCurveItem::SELECT );
 }
 
 void FCurveEditor::resizeEvent( QResizeEvent * e )
@@ -412,4 +444,20 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
 void FCurveEditor::onRepaintViews()
 {
   this->repaint();
+}
+
+void FCurveEditor::keyPressEvent( QKeyEvent * e )
+{
+  for( int m = 0; m < FCurveItem::MODE_COUNT; m++ )
+    if( e->key() == ModeKeys[m] )
+      m_toolBar->setTemporaryMode( FCurveItem::Mode(m) );
+  Parent::keyPressEvent( e );
+}
+
+void FCurveEditor::keyReleaseEvent( QKeyEvent * e )
+{
+  if( e->key() == ModeKeys[m_curveItem->mode()] )
+    if( m_toolBar->inTemporaryMode() )
+      m_curveItem->setMode( m_toolBar->getPreviousMode() );
+  Parent::keyReleaseEvent( e );
 }
