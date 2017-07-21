@@ -5,7 +5,7 @@
 #ifndef FABRICUI_FCURVEEDITOR_FCURVEEDITOR_H
 #define FABRICUI_FCURVEEDITOR_FCURVEEDITOR_H
 
-#include <QWidget>
+#include <QFrame>
 #include <FabricUI/FCurveEditor/FCurveItem.h>
 #include <FTL/Config.h>
 
@@ -17,11 +17,11 @@ namespace FCurveEditor
 {
 class RuledGraphicsView;
 
-class FCurveEditor : public QWidget
+class FCurveEditor : public QFrame
 {
   Q_OBJECT
 
-  typedef QWidget Parent;
+  typedef QFrame Parent;
 
   // relative position of the value editor (negative values will be from the right/bottom)
   Q_PROPERTY( QPoint vePos READ vePos WRITE setVEPos )
