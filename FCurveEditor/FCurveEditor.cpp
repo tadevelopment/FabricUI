@@ -106,7 +106,7 @@ public:
     m_layout->addWidget( m_x );
     m_layout->addWidget( m_y );
     m_layout->addWidget( m_tanType );
-    QOBJECT_CONNECT( m_tanType, SIGNAL, QComboBOx, currentIndexChanged, ( int ), parent, SLOT, FCurveEditor, veTanTypeEditFinished, ( ) );
+    QOBJECT_CONNECT_OVERLOADED( m_tanType, SIGNAL, QComboBox, currentIndexChanged, ( int ),, parent, SLOT, FCurveEditor, veTanTypeEditFinished, ( ), );
     this->setLayout( m_layout );
     this->resize( 200, 32 );
   }
