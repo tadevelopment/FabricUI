@@ -408,7 +408,7 @@ void FCurveEditor::onEditedKeysChanged()
       {
         m_keyValueEditor->m_tanType->setVisible( true );
         m_keyValueEditor->m_tanType->setCurrentIndex(
-          m_curveItem->editedKeyProp() == FCurveItem::TAN_IN ? h.tanInType : h.tanOutType );
+          int(m_curveItem->editedKeyProp() == FCurveItem::TAN_IN ? h.tanInType : h.tanOutType) );
       }
       else
         m_keyValueEditor->m_tanType->setVisible( false );
