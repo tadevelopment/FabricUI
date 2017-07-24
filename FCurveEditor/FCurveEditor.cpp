@@ -323,6 +323,10 @@ FCurveEditor::FCurveEditor()
   DEFINE_FCE_ACTION( m_keysFrameSelectedAction, "Frame Selected Keys", onFrameSelectedKeys, Qt::Key_F )
   DEFINE_FCE_ACTION( m_keysDeleteAction, "Delete selected Keys", onDeleteSelectedKeys, Qt::Key_Delete )
   DEFINE_FCE_ACTION_NOSHORTCUT( m_tangentsZeroSlopeAction, "Zero-slope Tangents", onTangentsZeroSlope )
+  DEFINE_FCE_ACTION_NOSHORTCUT( m_presetRampIn, "Ramp In", onPresetRampIn )
+  DEFINE_FCE_ACTION_NOSHORTCUT( m_presetRampOut, "Ramp Out", onPresetRampOut )
+  DEFINE_FCE_ACTION_NOSHORTCUT( m_presetSmoothStep, "Smooth Step", onPresetSmoothStep )
+  DEFINE_FCE_ACTION_NOSHORTCUT( m_clearAction, "Clear all keys", onClearAllKeys )
 
   this->setVEPos( QPoint( -20, 20 ) );
   this->setToolBarEnabled( true );
@@ -470,6 +474,50 @@ void FCurveEditor::onDeselectAllKeys()
   m_curveItem->clearKeySelection();
 }
 
+void AddPreset( AbstractFCurveModel* model,
+  QPointF inP,
+  QPointF outP,
+  QPointF inT,
+  QPointF outT
+)
+{
+  model->addKey();
+  model->addKey();
+  Key in, out;
+  in.pos = inP;
+  in.tanIn = QPointF( 1, 0 );
+  in.tanOut = inT;
+  out.pos = outP;
+  out.tanIn = outT;
+  out.tanOut = QPointF( 1, 0 );
+  model->setKey( 0, in );
+  model->setKey( 1, out );
+}
+
+void FCurveEditor::onPresetRampIn()
+{
+  this->onClearAllKeys();
+  AddPreset( m_model, QPointF( 0, 0 ), QPointF( 1, 1 ), QPointF( 1, 1 ), QPointF( 1, 1 ) );
+}
+
+void FCurveEditor::onPresetRampOut()
+{
+  this->onClearAllKeys();
+  AddPreset( m_model, QPointF( 0, 1 ), QPointF( 1, 0 ), QPointF( 1, -1 ), QPointF( 1, -1 ) );
+}
+
+void FCurveEditor::onPresetSmoothStep()
+{
+  this->onClearAllKeys();
+  AddPreset( m_model, QPointF( 0, 0 ), QPointF( 1, 1 ), QPointF( 1, 0 ), QPointF( 1, 0 ) );
+}
+
+void FCurveEditor::onClearAllKeys()
+{
+  this->onSelectAllKeys();
+  this->onDeleteSelectedKeys();
+}
+
 inline void SetDefaultTangents( Key& key, QGraphicsView const* view )
 {
   // heuristic for tangents, based on the current zoom level
@@ -555,13 +603,13 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
 void FCurveEditor::showContextMenu(const QPoint &pos)
 {
   QMenu contextMenu("Context menu", this);
-
-  // Keys Menu
-  QMenu keysMenu("Keys", this);
   
   for( int i = 0; i < FCurveItem::MODE_COUNT; i++ )
     contextMenu.addAction( m_toolBar->m_modeActions[i] );
   contextMenu.addSeparator();
+
+  // Keys Menu
+  QMenu keysMenu( "Keys", this );
 
   contextMenu.addMenu(&keysMenu);
   keysMenu.addAction(this->m_keysSelectAllAction);
@@ -572,6 +620,16 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   keysMenu.addAction(this->m_keysFrameSelectedAction);
   keysMenu.addSeparator();
   keysMenu.addAction(this->m_tangentsZeroSlopeAction);
+
+  // Presets Menu
+  QMenu presetsMenu( "Presets", this );
+  contextMenu.addMenu( &presetsMenu );
+  presetsMenu.addAction( m_presetRampIn );
+  presetsMenu.addAction( m_presetRampOut );
+  presetsMenu.addAction( m_presetSmoothStep );
+
+  contextMenu.addSeparator();
+  contextMenu.addAction( m_clearAction );
 
   QAction* action = contextMenu.exec(this->mapToGlobal(pos));
 }

@@ -40,12 +40,17 @@ class FCurveEditor : public QFrame
   void veEditFinished( bool isXNotY );
   void updateVEPos();
 
+  QAction* m_clearAction;
   QAction* m_keysSelectAllAction;
   QAction* m_keysDeselectAllAction;
   QAction* m_keysFrameAllAction;
   QAction* m_keysFrameSelectedAction;
   QAction* m_keysDeleteAction;
   QAction* m_tangentsZeroSlopeAction;
+
+  QAction* m_presetRampIn;
+  QAction* m_presetRampOut;
+  QAction* m_presetSmoothStep;
 
 public:
   FCurveEditor();
@@ -84,12 +89,16 @@ private slots:
   void setModeRemove() { m_curveItem->setMode( FCurveItem::REMOVE ); }
 
   // QActions
+  void onClearAllKeys();
   void onFrameAllKeys();
   void onFrameSelectedKeys();
   void onDeleteSelectedKeys();
   void onSelectAllKeys();
   void onDeselectAllKeys();
   void onTangentsZeroSlope();
+  void onPresetRampIn();
+  void onPresetRampOut();
+  void onPresetSmoothStep();
 
 signals:
   void interactionBegin();
