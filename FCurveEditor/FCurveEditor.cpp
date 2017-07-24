@@ -487,9 +487,13 @@ void AddPreset( AbstractFCurveModel* model,
   in.pos = inP;
   in.tanIn = QPointF( 1, 0 );
   in.tanOut = inT;
+  in.tanInType = 0;
+  in.tanOutType = 0;
   out.pos = outP;
   out.tanIn = outT;
   out.tanOut = QPointF( 1, 0 );
+  out.tanInType = 0;
+  out.tanOutType = 0;
   model->setKey( 0, in );
   model->setKey( 1, out );
 }
@@ -525,6 +529,7 @@ inline void SetDefaultTangents( Key& key, QGraphicsView const* view )
   key.tanOut.setX( key.tanIn.x() );
   key.tanIn.setY( 0 );
   key.tanOut.setY( 0 );
+  key.tanInType = 0; key.tanOutType = 0;
 }
 
 void FCurveEditor::onTangentsZeroSlope()
