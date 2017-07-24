@@ -28,6 +28,7 @@ class RTValFCurveViewItem::RTValAnimXFCurveDFGController : public RTValAnimXFCur
 {
   std::string m_bindingId, m_dfgPortPath;
   size_t m_interactionId;
+  bool m_isInteracting;
 
   QString m_lastCommand;
   QMap<QString, QString> m_lastArgs;
@@ -39,6 +40,9 @@ class RTValFCurveViewItem::RTValAnimXFCurveDFGController : public RTValAnimXFCur
   }
 
 public:
+
+  RTValAnimXFCurveDFGController() : m_isInteracting( false ) {}
+
   void setPath( const char* bindingId, const char* dfgPortPath )
   {
     m_bindingId = bindingId;
@@ -62,6 +66,7 @@ public:
     args["tanOutType"] = QString::number( h.tanOutType );
     args["tanOutX"] = QString::number( h.tanOut.x() );
     args["tanOutY"] = QString::number( h.tanOut.y() );
+    args["interactionEnd"] = m_isInteracting ? "false" : "true";
     QString cmdName = "AnimX_SetKeyframe";
     manager->createCommand( cmdName, args, true, m_interactionId );
     m_lastCommand = cmdName;
@@ -93,6 +98,7 @@ public:
     args["ids"] = serializeQS( indices, nbIndices );
     args["dx"] = QString::number( delta.x() );
     args["dy"] = QString::number( delta.y() );
+    args["interactionEnd"] = m_isInteracting ? "false" : "true";
     QString cmdName = "AnimX_MoveKeyframes";
     manager->createCommand( cmdName, args, true, m_interactionId );
     m_lastCommand = cmdName;
@@ -132,13 +138,15 @@ public:
     emit this->dirty();
   }
 
-  inline void incrementInteractionId()
+  inline void onInteractionBegin()
   {
     m_interactionId = FabricUI::Commands::CommandManager::getCommandManager()->getNewCanMergeID();
+    m_isInteracting = true;
   }
 
   void onInteractionEnd()
   {
+    m_isInteracting = false;
     if( !m_lastCommand.isEmpty() )
     {
       FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
@@ -253,7 +261,7 @@ RTValFCurveViewItem::RTValFCurveViewItem(
 
 void RTValFCurveViewItem::onEditorInteractionBegin()
 {
-  m_model->incrementInteractionId();
+  m_model->onInteractionBegin();
 }
 
 void RTValFCurveViewItem::onEditorInteractionEnd()
