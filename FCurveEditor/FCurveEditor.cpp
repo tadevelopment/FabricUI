@@ -631,7 +631,7 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   contextMenu.addSeparator();
   contextMenu.addAction( m_clearAction );
 
-  QAction* action = contextMenu.exec(this->mapToGlobal(pos));
+  contextMenu.exec(this->mapToGlobal(pos));
 }
 
 void FCurveEditor::onRepaintViews()
