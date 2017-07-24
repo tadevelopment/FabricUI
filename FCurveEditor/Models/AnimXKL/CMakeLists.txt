@@ -6,7 +6,8 @@ add_definitions(-DFEC_SHARED)
 target_include_directories( RTValAnimXFCurveModel PUBLIC
   ${SGDir}/Core/Clients/CAPI
 )
+
 target_link_libraries( RTValAnimXFCurveModel PUBLIC
   FCurveEditor
-  ${SGDir}/stage/Windows/x86_64/Release/lib/FabricCore-2.6.lib
+  ${FabricStageDir}/lib/FabricCore-2.6.lib
 )

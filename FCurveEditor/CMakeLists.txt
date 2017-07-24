@@ -88,6 +88,8 @@ else()
   )
 endif()
 
+set( FabricStageDir "${SGDir}/stage/${CMAKE_SYSTEM_NAME}/x86_64/Release" )
+
 include( ${FCurveEditorDir}/Test/CMakeLists.txt )
 include( ${FCurveEditorDir}/Models/AnimXCpp/CMakeLists.txt )
 include( ${FCurveEditorDir}/Models/AnimXKL/CMakeLists.txt )

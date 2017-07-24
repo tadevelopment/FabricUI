@@ -15,6 +15,12 @@ endforeach()
 target_link_libraries( FCurveEditorTest PRIVATE AnimXFCurveModel )
 target_link_libraries( RTValFCurveEditorTest PRIVATE RTValAnimXFCurveModel )
 
-if( NOT DEFINED FABRIC_DIR )
-  set( FABRIC_DIR "${SGDir}/stage/${CMAKE_SYSTEM_NAME}/Release" )
+if( MSVC_VERSION )
+  message( STATUS
+    "You might need to add the following definitions to "
+    "Visual Studio's debug environment :\n"
+    "PATH=${QtDir}/bin;${FabricStageDir}/bin;%PATH%\n"
+    "FABRIC_EXTS_PATH=${FabricStageDir}/Exts\n"
+    "FABRIC_DIR=${FabricStageDir}"
+  )
 endif()
