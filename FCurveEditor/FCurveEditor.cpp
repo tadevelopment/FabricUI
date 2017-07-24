@@ -292,7 +292,7 @@ FCurveEditor::FCurveEditor()
   );
   QOBJECT_CONNECT(
     m_curveItem, SIGNAL, FCurveItem, selectionChanged, ( ),
-    this, SLOT, FCurveEditor, onEditedKeysChanged, ( )
+    this, SLOT, FCurveEditor, onSelectionChanged, ( )
   );
   QOBJECT_CONNECT(
     m_curveItem, SIGNAL, FCurveItem, editedKeyValueChanged, ( ),
@@ -304,23 +304,22 @@ FCurveEditor::FCurveEditor()
   );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, repaintViews, ( ), this, SLOT, FCurveEditor, onRepaintViews, ( ) );
 
-  m_keysFrameAllAction = new QAction( "Frame All Keys", this );
-  m_keysFrameAllAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
-  m_keysFrameAllAction->setShortcut( Qt::Key_A );
-  QOBJECT_CONNECT( m_keysFrameAllAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onFrameAllKeys, () );
-  this->addAction( m_keysFrameAllAction );
+#define DEFINE_FCE_ACTION_NOSHORTCUT( member, strName, slot ) \
+  member = new QAction( strName, this ); \
+  QOBJECT_CONNECT( member, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, slot, () ); \
+  this->addAction( member );
 
-  m_keysFrameSelectedAction = new QAction( "Frame Selected Keys", this );
-  m_keysFrameSelectedAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
-  m_keysFrameSelectedAction->setShortcut( Qt::Key_F );
-  QOBJECT_CONNECT( m_keysFrameSelectedAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onFrameSelectedKeys, () );
-  this->addAction( m_keysFrameSelectedAction );
+#define DEFINE_FCE_ACTION( member, strName, slot, shortcut ) \
+  DEFINE_FCE_ACTION_NOSHORTCUT( member, strName, slot ) \
+  member->setShortcutContext( Qt::WidgetWithChildrenShortcut ); \
+  member->setShortcut( shortcut );
 
-  m_keysDeleteAction = new QAction( "Delete selected Keys", this );
-  m_keysDeleteAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
-  m_keysDeleteAction->setShortcut( Qt::Key_Delete );
-  QOBJECT_CONNECT( m_keysDeleteAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeleteSelectedKeys, () );
-  this->addAction( m_keysDeleteAction );
+  DEFINE_FCE_ACTION( m_keysSelectAllAction, "Select all keys", onSelectAllKeys, Qt::CTRL + Qt::Key_A )
+  DEFINE_FCE_ACTION( m_keysDeselectAllAction, "Deselect all keys", onDeselectAllKeys, Qt::CTRL + Qt::SHIFT + Qt::Key_A )
+  DEFINE_FCE_ACTION( m_keysFrameAllAction, "Frame All Keys", onFrameAllKeys, Qt::Key_A )
+  DEFINE_FCE_ACTION( m_keysFrameSelectedAction, "Frame Selected Keys", onFrameSelectedKeys, Qt::Key_F )
+  DEFINE_FCE_ACTION( m_keysDeleteAction, "Delete selected Keys", onDeleteSelectedKeys, Qt::Key_Delete )
+  DEFINE_FCE_ACTION_NOSHORTCUT( m_tangentsZeroSlopeAction, "Zero-slope Tangents", onTangentsZeroSlope )
 
   this->setVEPos( QPoint( -20, 20 ) );
   this->setToolBarEnabled( true );
@@ -380,38 +379,21 @@ void FCurveEditor::onModeChanged()
   m_rview->enableRectangleSelection( m != FCurveItem::ADD );
 }
 
-void FCurveEditor::onEditedKeysChanged()
+void FCurveEditor::onSelectionChanged()
 {
-  if( m_curveItem->selectedKeys().empty() )
+  const bool empty = m_curveItem->selectedKeys().empty();
+  m_keysDeselectAllAction->setEnabled( !empty );
+  m_keysFrameSelectedAction->setEnabled( !empty );
+  m_keysDeleteAction->setEnabled( !empty );
+  m_keysSelectAllAction->setEnabled( m_curveItem->selectedKeys().size() < m_model->getKeyCount() );
+
+  if( empty )
     m_keyValueEditor->setVisible( false );
   else
   {
     if( m_curveItem->selectedKeys().size() == 1 )
     {
-      Key h = m_model->getKey( *m_curveItem->selectedKeys().begin() );
-      QPointF p;
-      switch( m_curveItem->editedKeyProp() )
-      {
-      case FCurveItem::POSITION: p = h.pos; break;
-      case FCurveItem::TAN_IN: p = h.tanIn; break;
-      case FCurveItem::TAN_OUT: p = h.tanOut; break;
-      case FCurveItem::NOTHING: assert( false ); break;
-      }
-      m_keyValueEditor->m_x->set( p.x() );
-      m_keyValueEditor->m_x->setVisible( true );
-      m_keyValueEditor->m_y->set( p.y() );
-      m_keyValueEditor->m_tanType->setModel( m_model );
-      if(
-        m_curveItem->editedKeyProp() == FCurveItem::TAN_IN ||
-        m_curveItem->editedKeyProp() == FCurveItem::TAN_OUT
-        )
-      {
-        m_keyValueEditor->m_tanType->setVisible( true );
-        m_keyValueEditor->m_tanType->setCurrentIndex(
-          int(m_curveItem->editedKeyProp() == FCurveItem::TAN_IN ? h.tanInType : h.tanOutType) );
-      }
-      else
-        m_keyValueEditor->m_tanType->setVisible( false );
+      this->onEditedKeysChanged();
     }
     else
     {
@@ -421,6 +403,37 @@ void FCurveEditor::onEditedKeysChanged()
       m_keyValueEditor->m_y->clear();
     }
     m_keyValueEditor->setVisible( true );
+  }
+}
+
+void FCurveEditor::onEditedKeysChanged()
+{
+  if( m_curveItem->selectedKeys().size() == 1 )
+  {
+    Key h = m_model->getKey( *m_curveItem->selectedKeys().begin() );
+    QPointF p;
+    switch( m_curveItem->editedKeyProp() )
+    {
+    case FCurveItem::POSITION: p = h.pos; break;
+    case FCurveItem::TAN_IN: p = h.tanIn; break;
+    case FCurveItem::TAN_OUT: p = h.tanOut; break;
+    case FCurveItem::NOTHING: assert( false ); break;
+    }
+    m_keyValueEditor->m_x->set( p.x() );
+    m_keyValueEditor->m_x->setVisible( true );
+    m_keyValueEditor->m_y->set( p.y() );
+    m_keyValueEditor->m_tanType->setModel( m_model );
+    if(
+      m_curveItem->editedKeyProp() == FCurveItem::TAN_IN ||
+      m_curveItem->editedKeyProp() == FCurveItem::TAN_OUT
+      )
+    {
+      m_keyValueEditor->m_tanType->setVisible( true );
+      m_keyValueEditor->m_tanType->setCurrentIndex(
+        int( m_curveItem->editedKeyProp() == FCurveItem::TAN_IN ? h.tanInType : h.tanOutType ) );
+    }
+    else
+      m_keyValueEditor->m_tanType->setVisible( false );
   }
 }
 
@@ -452,6 +465,26 @@ void FCurveEditor::onSelectAllKeys()
 void FCurveEditor::onDeselectAllKeys()
 {
   m_curveItem->clearKeySelection();
+}
+
+inline void SetDefaultTangents( Key& key, QGraphicsView const* view )
+{
+  // heuristic for tangents, based on the current zoom level
+  key.tanIn.setX( 20 / view->transform().m11() );
+  key.tanOut.setX( key.tanIn.x() );
+  key.tanIn.setY( 0 );
+  key.tanOut.setY( 0 );
+}
+
+void FCurveEditor::onTangentsZeroSlope()
+{
+  const std::set<size_t>& selected = m_curveItem->selectedKeys();
+  for( std::set<size_t>::const_iterator it = selected.begin(); it != selected.end(); it++ )
+  {
+    Key key = m_model->getKey( *it );
+    SetDefaultTangents( key, m_rview->view() );
+    m_model->setKey( *it, key );
+  }
 }
 
 FCurveEditor::~FCurveEditor()
@@ -508,11 +541,7 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
       m_rview->view()->mapFromGlobal( this->mapToGlobal( e->pos() ) ) );
     m_model->addKey();
     Key h; h.pos = scenePos;
-    {
-      // heuristic for tangents, based on the current zoom level
-      h.tanIn.setX( 20 / m_rview->view()->transform().m11() );
-      h.tanOut.setX( h.tanIn.x() );
-    }
+    SetDefaultTangents( h, m_rview->view() );
     m_model->setKey( m_model->getKeyCount() - 1, h );
     m_model->autoTangents( m_model->getKeyCount() - 1 );
   }
@@ -534,55 +563,22 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   // Keys Menu
   QMenu keysMenu("Keys", this);
   
-  QAction* keysSelectAllAction = new QAction("Select All Keys", this);
-  keysSelectAllAction->setShortcut( Qt::CTRL + Qt::Key_A );
-  QOBJECT_CONNECT( keysSelectAllAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onSelectAllKeys, () );
-  
-  QAction* keysDeselectAllAction = new QAction("Deselect All Keys", this);
-  QOBJECT_CONNECT( keysDeselectAllAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeselectAllKeys, () );
-
-  QAction* keysResetTangentsAction = new QAction("Reset Tangents", this);
-  // QOBJECT_CONNECT( keysResetTangentsAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeselectAllKeys, () );
-  
-  QAction* keysZeroSlopeTangentsAction = new QAction("Zero Slope Tangents", this);
-  // QOBJECT_CONNECT( keysZeroSlopeTangentsAction, SIGNAL, QAction, triggered, (), this, SLOT, FCurveEditor, onDeselectAllKeys, () );
-  
   contextMenu.addAction(&selectModeAction);
   contextMenu.addAction(&addKeyModeAction);
   contextMenu.addAction(&removeKeyModeAction);
   contextMenu.addSeparator();
 
   contextMenu.addMenu(&keysMenu);
-  keysMenu.addAction(keysSelectAllAction);
-  keysMenu.addAction(keysDeselectAllAction);
+  keysMenu.addAction(this->m_keysSelectAllAction);
+  keysMenu.addAction(this->m_keysDeselectAllAction);
   keysMenu.addAction(this->m_keysDeleteAction);
   keysMenu.addSeparator();
   keysMenu.addAction(this->m_keysFrameAllAction);
   keysMenu.addAction(this->m_keysFrameSelectedAction);
   keysMenu.addSeparator();
-  keysMenu.addAction(keysResetTangentsAction);
-  keysMenu.addAction(keysZeroSlopeTangentsAction);
-
-
-  if(m_curveItem->selectedKeys().empty())
-  {
-    this->m_keysDeleteAction->setEnabled(false);
-    keysDeselectAllAction->setEnabled(false);
-    keysResetTangentsAction->setEnabled(false);
-    keysZeroSlopeTangentsAction->setEnabled(false);
-  }
+  keysMenu.addAction(this->m_tangentsZeroSlopeAction);
 
   QAction* action = contextMenu.exec(this->mapToGlobal(pos));
-  if( action == &selectModeAction )
-    m_curveItem->setMode( FCurveItem::SELECT );
-  else
-  if( action == &addKeyModeAction )
-    m_curveItem->setMode( FCurveItem::ADD );
-  else
-  if( action == &removeKeyModeAction )
-    m_curveItem->setMode( FCurveItem::REMOVE );
-
-  // Connect Signals and Slots
 }
 
 void FCurveEditor::onRepaintViews()

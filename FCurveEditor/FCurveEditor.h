@@ -39,9 +39,13 @@ class FCurveEditor : public QFrame
   ToolBar* m_toolBar;
   void veEditFinished( bool isXNotY );
   void updateVEPos();
+
+  QAction* m_keysSelectAllAction;
+  QAction* m_keysDeselectAllAction;
   QAction* m_keysFrameAllAction;
   QAction* m_keysFrameSelectedAction;
   QAction* m_keysDeleteAction;
+  QAction* m_tangentsZeroSlopeAction;
 
 public:
   FCurveEditor();
@@ -62,22 +66,30 @@ protected:
   void keyReleaseEvent( QKeyEvent * ) FTL_OVERRIDE;
 
 private slots:
+
   void onRectangleSelectReleased( const QRectF&, Qt::KeyboardModifiers );
+  void onSelectionChanged();
+  void onEditedKeysChanged();
+  void onRepaintViews();
+  void onModeChanged();
+  void veTanTypeEditFinished();
+  inline void veXEditFinished() { this->veEditFinished( true ); }
+  inline void veYEditFinished() { this->veEditFinished( false ); }
+
+  void showContextMenu(const QPoint& pos);
+
+  // ToolBar
+  void setModeSelect() { m_curveItem->setMode( FCurveItem::SELECT ); }
+  void setModeAdd() { m_curveItem->setMode( FCurveItem::ADD ); }
+  void setModeRemove() { m_curveItem->setMode( FCurveItem::REMOVE ); }
+
+  // QActions
   void onFrameAllKeys();
   void onFrameSelectedKeys();
   void onDeleteSelectedKeys();
   void onSelectAllKeys();
   void onDeselectAllKeys();
-  void onEditedKeysChanged();
-  void onRepaintViews();
-  void onModeChanged();
-  void setModeSelect() { m_curveItem->setMode( FCurveItem::SELECT ); }
-  void setModeAdd() { m_curveItem->setMode( FCurveItem::ADD ); }
-  void setModeRemove() { m_curveItem->setMode( FCurveItem::REMOVE ); }
-  inline void veXEditFinished() { this->veEditFinished( true ); }
-  inline void veYEditFinished() { this->veEditFinished( false ); }
-  void veTanTypeEditFinished();
-  void showContextMenu(const QPoint& pos);
+  void onTangentsZeroSlope();
 
 signals:
   void interactionBegin();
