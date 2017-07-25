@@ -33,6 +33,7 @@ public:
   virtual void setKey( size_t, Key ) {}
   virtual void moveKeys( const size_t* indices, const size_t nbIndices, QPointF delta );
   virtual void addKey() = 0;
+  virtual void addKey( Key k ) { this->addKey(); this->setKey( getKeyCount() - 1, k ); }
   // Deleting an key will shift the indices of all the keys after it
   virtual void deleteKey( size_t ) = 0;
   // the indices will be sorted in increasing order

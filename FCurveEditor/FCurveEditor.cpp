@@ -481,8 +481,6 @@ void AddPreset( AbstractFCurveModel* model,
   QPointF outT
 )
 {
-  model->addKey();
-  model->addKey();
   Key in, out;
   in.pos = inP;
   in.tanIn = QPointF( 1, 0 );
@@ -494,8 +492,8 @@ void AddPreset( AbstractFCurveModel* model,
   out.tanOut = QPointF( 1, 0 );
   out.tanInType = 0;
   out.tanOutType = 0;
-  model->setKey( 0, in );
-  model->setKey( 1, out );
+  model->addKey( in );
+  model->addKey( out );
 }
 
 void FCurveEditor::onPresetRampIn()
@@ -595,10 +593,9 @@ void FCurveEditor::mousePressEvent( QMouseEvent * e )
     // Adding a new Key
     QPointF scenePos = m_rview->view()->mapToScene(
       m_rview->view()->mapFromGlobal( this->mapToGlobal( e->pos() ) ) );
-    m_model->addKey();
     Key h; h.pos = scenePos;
     SetDefaultTangents( h, m_rview->view() );
-    m_model->setKey( m_model->getKeyCount() - 1, h );
+    m_model->addKey( h );
     m_model->autoTangents( m_model->getKeyCount() - 1 );
   }
   else

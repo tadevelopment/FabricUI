@@ -24,6 +24,18 @@
 using namespace FabricUI::ValueEditor;
 using namespace FabricUI::FCurveEditor;
 
+inline void AddKeyValueToArgs( QMap<QString, QString>& args, const Key& k )
+{
+  args["time"] = QString::number( k.pos.x() );
+  args["value"] = QString::number( k.pos.y() );
+  args["tanInType"] = QString::number( k.tanInType );
+  args["tanInX"] = QString::number( k.tanIn.x() );
+  args["tanInY"] = QString::number( k.tanIn.y() );
+  args["tanOutType"] = QString::number( k.tanOutType );
+  args["tanOutX"] = QString::number( k.tanOut.x() );
+  args["tanOutY"] = QString::number( k.tanOut.y() );
+}
+
 class RTValFCurveViewItem::RTValAnimXFCurveDFGController : public RTValAnimXFCurveVersionedConstModel
 {
   std::string m_bindingId, m_dfgPortPath;
@@ -58,14 +70,7 @@ public:
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
     args["id"] = QString::number( i );
-    args["time"] = QString::number( h.pos.x() );
-    args["value"] = QString::number( h.pos.y() );
-    args["tanInType"] = QString::number( h.tanInType );
-    args["tanInX"] = QString::number( h.tanIn.x() );
-    args["tanInY"] = QString::number( h.tanIn.y() );
-    args["tanOutType"] = QString::number( h.tanOutType );
-    args["tanOutX"] = QString::number( h.tanOut.x() );
-    args["tanOutY"] = QString::number( h.tanOut.y() );
+    AddKeyValueToArgs( args, h );
     args["interactionEnd"] = m_isInteracting ? "false" : "true";
     QString cmdName = "AnimX_SetKeyframe";
     manager->createCommand( cmdName, args, true, m_interactionId );
@@ -106,14 +111,26 @@ public:
     emit this->dirty();
   }
 
-  void addKey() FTL_OVERRIDE
+  void addKey( Key k, bool useKey )
   {
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
     this->synchronizeKLReg();
     QMap<QString, QString> args;
     args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+    if( useKey )
+      AddKeyValueToArgs( args, k );
     manager->createCommand( "AnimX_PushKeyframe", args );
     emit this->dirty();
+  }
+
+  void addKey() FTL_OVERRIDE
+  {
+    addKey( Key(), false );
+  }
+
+  void addKey( Key k ) FTL_OVERRIDE
+  {
+    addKey( k, true );
   }
 
   void deleteKey( size_t i ) FTL_OVERRIDE
