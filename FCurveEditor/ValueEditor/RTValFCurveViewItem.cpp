@@ -73,7 +73,8 @@ public:
     AddKeyValueToArgs( args, h );
     args["interactionEnd"] = m_isInteracting ? "false" : "true";
     QString cmdName = "AnimX_SetKeyframe";
-    manager->createCommand( cmdName, args, true, m_interactionId );
+    manager->createCommand( cmdName, args, true,
+      m_isInteracting ? m_interactionId : FabricUI::Commands::CommandManager::NoCanMergeID );
     m_lastCommand = cmdName;
     m_lastArgs = args;
     emit this->dirty();
