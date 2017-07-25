@@ -6,7 +6,6 @@
 #define FABRICUI_FCURVEEDITOR_FCURVEEDITOR_H
 
 #include <QFrame>
-#include <FabricUI/FCurveEditor/FCurveItem.h>
 #include <FTL/Config.h>
 
 class QGraphicsScene;
@@ -16,7 +15,13 @@ namespace FabricUI
 namespace FCurveEditor
 {
 class RuledGraphicsView;
+class AbstractFCurveModel;
+class FCurveEditorScene;
 
+/*
+  An FCurveEditor is a widget to display and edit FCurves (through
+  the AbstractFCurveModel interface). Internally, it uses QGraphics.
+*/
 class FCurveEditor : public QFrame
 {
   Q_OBJECT
@@ -30,10 +35,7 @@ class FCurveEditor : public QFrame
   bool m_toolbarEnabled;
 
   RuledGraphicsView* m_rview;
-  AbstractFCurveModel* m_model;
-  class Scene;
-  Scene* m_scene;
-  FCurveItem* m_curveItem;
+  FCurveEditorScene* m_scene;
   class KeyValueEditor;
   KeyValueEditor* m_keyValueEditor;
   class ToolBar;
@@ -57,8 +59,6 @@ public:
   FCurveEditor();
   ~FCurveEditor();
   void setModel( AbstractFCurveModel* );
-  inline AbstractFCurveModel const* model() const { return m_model; }
-  inline AbstractFCurveModel* model() { return m_model; }
   void frameAllKeys();
   void frameSelectedKeys();
 
@@ -85,9 +85,9 @@ private slots:
   void showContextMenu(const QPoint& pos);
 
   // ToolBar
-  void setModeSelect() { m_curveItem->setMode( FCurveItem::SELECT ); }
-  void setModeAdd() { m_curveItem->setMode( FCurveItem::ADD ); }
-  void setModeRemove() { m_curveItem->setMode( FCurveItem::REMOVE ); }
+  void setModeSelect();
+  void setModeAdd();
+  void setModeRemove();
 
   // QActions
   void onClearAllKeys();

@@ -1,5 +1,6 @@
 
 #include <FabricUI/FCurveEditor/FCurveItem.h>
+#include <FabricUI/FCurveEditor/FCurveEditorScene.h>
 #include <FTL/Config.h>
 #include <FabricUI/Util/QtSignalsSlots.h>
 
@@ -378,7 +379,7 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
   protected:
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
-      if( m_parent->m_parent->mode() == REMOVE )
+      if( m_parent->m_parent->m_scene->mode() == REMOVE )
       {
         m_parent->m_parent->m_curve->deleteKey( m_parent->m_index );
         return;
@@ -467,8 +468,9 @@ public:
   }
 };
 
-FCurveItem::FCurveItem()
-  : m_curve( NULL )
+FCurveItem::FCurveItem( FCurveEditorScene* scene )
+  : m_scene( scene )
+  , m_curve( NULL )
   , m_curveShape( new FCurveShape( this ) )
 {
   m_curveShape->setParentItem( this );
@@ -509,13 +511,13 @@ void FCurveItem::rectangleSelect( const QRectF& r, Qt::KeyboardModifiers m )
 {
   bool shift = m.testFlag( Qt::ShiftModifier );
   bool ctrl = m.testFlag( Qt::ControlModifier );
-  if( this->mode() == REMOVE )
+  if( m_scene->mode() == REMOVE )
   {
     shift = false;
     ctrl = false;
   }
   else
-  if( this->mode() == SELECT )
+  if( m_scene->mode() == SELECT )
   {
     if( !shift && !ctrl )
       this->clearKeySelection();
@@ -533,7 +535,7 @@ void FCurveItem::rectangleSelect( const QRectF& r, Qt::KeyboardModifiers m )
         this->addKeyToSelection( i );
     }
 
-  if( this->mode() == REMOVE )
+  if( m_scene->mode() == REMOVE )
     this->deleteSelectedKeys();
 }
 
@@ -654,16 +656,6 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
     this->addKey( i );
 
   m_curveShape->setBoundingRectDirty();
-}
-
-void FCurveItem::setMode( Mode m )
-{
-  {
-    m_mode = m;
-    if( m_mode == REMOVE )
-      this->clearKeySelection();
-    emit this->modeChanged();
-  }
 }
 
 void FCurveItem::paint( QPainter * p, const QStyleOptionGraphicsItem * s, QWidget * w )

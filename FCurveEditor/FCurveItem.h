@@ -15,15 +15,21 @@ namespace FabricUI
 namespace FCurveEditor
 {
 
+class FCurveEditorScene;
+
+/*
+  An FCurveItem is the QGraphics representatation of
+  an FCurve (its curve, keys and tangents)
+*/
 class FCurveItem : public QGraphicsWidget
 {
   Q_OBJECT
 
 public:
   enum KeyProp { POSITION, TAN_IN, TAN_OUT, NOTHING };
-  enum Mode { SELECT, ADD, REMOVE, MODE_COUNT };
 
 private:
+  FCurveEditorScene* m_scene;
   AbstractFCurveModel* m_curve;
   class FCurveShape;
   FCurveShape* m_curveShape;
@@ -31,7 +37,6 @@ private:
   std::vector<KeyWidget*> m_keys;
   std::set<size_t> m_selectedKeys;
   KeyProp m_editedKeyProp;
-  Mode m_mode;
 
   void addKey( size_t );
   void removeKeyFromSelection( size_t );
@@ -39,7 +44,9 @@ private:
   void editKey( size_t, KeyProp p = POSITION );
 
 public:
-  FCurveItem();
+  FCurveItem( FCurveEditorScene* );
+  inline AbstractFCurveModel* curve() { return m_curve; }
+  inline AbstractFCurveModel const* curve() const { return m_curve; }
   void setCurve( AbstractFCurveModel* );
   void clearKeySelection();
   void addKeyToSelection( size_t );
@@ -51,8 +58,6 @@ public:
   QRectF keysBoundingRect() const;
   void paint( QPainter *, const QStyleOptionGraphicsItem *, QWidget * ) FTL_OVERRIDE;
   QRectF selectedKeysBoundingRect() const;
-  void setMode( Mode m );
-  inline Mode mode() const { return m_mode; }
 
 signals:
   void interactionBegin();
@@ -60,7 +65,6 @@ signals:
   void selectionChanged();
   void editedKeyValueChanged() const;
   void editedKeyPropChanged() const;
-  void modeChanged() const;
 
 private slots:
   void onKeyAdded();
