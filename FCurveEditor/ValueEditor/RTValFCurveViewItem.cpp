@@ -197,6 +197,7 @@ class RTValFCurveViewItem::Editor : public FabricUI::FCurveEditor::FCurveEditor
     this->setVEPos( QPoint( -8 - m_expandButton->width() - 8, 8 ) );
   }
 public:
+
   Editor( RTValFCurveViewItem* parent )
     : m_parent( parent )
     , m_expandButton( new QPushButton( this ) )
@@ -206,12 +207,15 @@ public:
     QOBJECT_CONNECT( m_expandButton, SIGNAL, QPushButton, released, ( ), m_parent, SLOT, RTValFCurveViewItem, expand, ( ) );
     this->updateExpandButtonSize();
   }
+
   void resizeEvent( QResizeEvent * e ) FTL_OVERRIDE
   {
     Parent::resizeEvent( e );
     this->updateExpandButtonSize();
     this->frameAllKeys();
   }
+
+  ~Editor() { delete this->model(); }
 };
 
 class RTValFCurveViewItem::ExpandedDialog : public QWidget
@@ -295,8 +299,6 @@ void RTValFCurveViewItem::expand()
 
 RTValFCurveViewItem::~RTValFCurveViewItem()
 {
-  delete m_editor;
-  delete m_model;
 }
 
 void RTValFCurveViewItem::onViewValueChanged()

@@ -56,6 +56,8 @@ public:
   FCurveEditor();
   ~FCurveEditor();
   void setModel( AbstractFCurveModel* );
+  inline AbstractFCurveModel const* model() const { return m_model; }
+  inline AbstractFCurveModel* model() { return m_model; }
   void frameAllKeys();
   void frameSelectedKeys();
 
