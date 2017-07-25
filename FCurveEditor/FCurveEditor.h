@@ -31,7 +31,8 @@ class FCurveEditor : public QFrame
 
   RuledGraphicsView* m_rview;
   AbstractFCurveModel* m_model;
-  QGraphicsScene* m_scene;
+  class Scene;
+  Scene* m_scene;
   FCurveItem* m_curveItem;
   class KeyValueEditor;
   KeyValueEditor* m_keyValueEditor;
@@ -67,7 +68,6 @@ public:
   void setToolBarEnabled( bool );
 
 protected:
-  void mousePressEvent( QMouseEvent * ) FTL_OVERRIDE;
   void resizeEvent( QResizeEvent * ) FTL_OVERRIDE;
   void keyPressEvent( QKeyEvent * ) FTL_OVERRIDE;
   void keyReleaseEvent( QKeyEvent * ) FTL_OVERRIDE;

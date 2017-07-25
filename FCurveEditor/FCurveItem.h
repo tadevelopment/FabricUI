@@ -34,7 +34,6 @@ private:
   Mode m_mode;
 
   void addKey( size_t );
-  void addKeyToSelection( size_t );
   void removeKeyFromSelection( size_t );
   void moveSelectedKeys( QPointF delta );
   void editKey( size_t, KeyProp p = POSITION );
@@ -43,6 +42,7 @@ public:
   FCurveItem();
   void setCurve( AbstractFCurveModel* );
   void clearKeySelection();
+  void addKeyToSelection( size_t );
   void rectangleSelect( const QRectF&, Qt::KeyboardModifiers );
   void deleteSelectedKeys();
   void selectAllKeys();

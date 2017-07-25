@@ -16,6 +16,7 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QMenu>
+#include <QGraphicsSceneEvent>
 
 #include <QDebug>
 #include <assert.h>
@@ -261,10 +262,75 @@ public:
   inline FCurveItem::Mode getPreviousMode() const { assert( inTemporaryMode() ); return m_previousMode; }
 };
 
+inline void SetDefaultTangents( Key& key, QGraphicsView const* view )
+{
+  // heuristic for tangents, based on the current zoom level
+  key.tanIn.setX( 20 / view->transform().m11() );
+  key.tanOut.setX( key.tanIn.x() );
+  key.tanIn.setY( 0 );
+  key.tanOut.setY( 0 );
+  key.tanInType = 0; key.tanOutType = 0;
+}
+
+class FCurveEditor::Scene : public QGraphicsScene
+{
+  typedef QGraphicsScene Parent;
+  FCurveEditor* m_parent;
+  bool m_isDraggingKey;
+
+public:
+  Scene( FCurveEditor* parent )
+    : m_parent( parent )
+    , m_isDraggingKey( false )
+  {}
+
+protected:
+
+  void mousePressEvent( QGraphicsSceneMouseEvent * e ) FTL_OVERRIDE
+  {
+    if( m_parent->m_curveItem->mode() == FCurveItem::ADD && e->button() == Qt::LeftButton )
+    {
+      // Adding a new Key
+      QPointF scenePos = e->scenePos();
+      Key h; h.pos = scenePos;
+      SetDefaultTangents( h, m_parent->m_rview->view() );
+      m_parent->m_model->addKey( h );
+      size_t index = m_parent->m_model->getKeyCount() - 1;
+      m_parent->m_model->autoTangents( index );
+      m_parent->onDeselectAllKeys();
+      m_parent->m_curveItem->addKeyToSelection( index );
+      m_isDraggingKey = true;
+      emit m_parent->interactionBegin();
+    }
+    else
+      Parent::mousePressEvent( e );
+  }
+
+  void mouseMoveEvent( QGraphicsSceneMouseEvent * e ) FTL_OVERRIDE
+  {
+    Parent::mouseMoveEvent( e );
+    if( m_isDraggingKey )
+    {
+      size_t index = m_parent->m_model->getKeyCount() - 1;
+      Key k = m_parent->m_model->getKey( index );
+      k.pos = e->scenePos();
+      m_parent->m_model->setKey( index, k );
+      e->widget()->repaint();
+    }
+  }
+
+  void mouseReleaseEvent( QGraphicsSceneMouseEvent * e ) FTL_OVERRIDE
+  {
+    Parent::mouseReleaseEvent( e );
+    m_isDraggingKey = false;
+    emit m_parent->interactionEnd();
+  }
+};
+
 FCurveEditor::FCurveEditor()
   : m_rview( new RuledGraphicsView() )
   , m_model( NULL )
-  , m_scene( new QGraphicsScene() )
+  , m_scene( new Scene( this ) )
   , m_curveItem( new FCurveItem() )
   , m_toolBar( new ToolBar( this ) )
 {
@@ -520,16 +586,6 @@ void FCurveEditor::onClearAllKeys()
   this->onDeleteSelectedKeys();
 }
 
-inline void SetDefaultTangents( Key& key, QGraphicsView const* view )
-{
-  // heuristic for tangents, based on the current zoom level
-  key.tanIn.setX( 20 / view->transform().m11() );
-  key.tanOut.setX( key.tanIn.x() );
-  key.tanIn.setY( 0 );
-  key.tanOut.setY( 0 );
-  key.tanInType = 0; key.tanOutType = 0;
-}
-
 void FCurveEditor::onTangentsZeroSlope()
 {
   const std::set<size_t>& selected = m_curveItem->selectedKeys();
@@ -584,22 +640,6 @@ void FCurveEditor::frameSelectedKeys()
       m_rview->fitInView( rect );
     }
   }
-}
-
-void FCurveEditor::mousePressEvent( QMouseEvent * e )
-{
-  if( m_curveItem->mode() == FCurveItem::ADD && e->button() == Qt::LeftButton)
-  {
-    // Adding a new Key
-    QPointF scenePos = m_rview->view()->mapToScene(
-      m_rview->view()->mapFromGlobal( this->mapToGlobal( e->pos() ) ) );
-    Key h; h.pos = scenePos;
-    SetDefaultTangents( h, m_rview->view() );
-    m_model->addKey( h );
-    m_model->autoTangents( m_model->getKeyCount() - 1 );
-  }
-  else
-    Parent::mousePressEvent( e );
 }
 
 void FCurveEditor::showContextMenu(const QPoint &pos)
