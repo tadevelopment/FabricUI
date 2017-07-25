@@ -371,7 +371,6 @@ FCurveEditor::FCurveEditor()
     m_curveItem, SIGNAL, FCurveItem, editedKeyPropChanged, ( ),
     this, SLOT, FCurveEditor, onEditedKeysChanged, ( )
   );
-  QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, repaintViews, ( ), this, SLOT, FCurveEditor, onRepaintViews, ( ) );
 
 #define DEFINE_FCE_ACTION_NOSHORTCUT( member, strName, slot ) \
   member = new QAction( strName, this ); \
@@ -674,11 +673,6 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   contextMenu.addAction( m_clearAction );
 
   contextMenu.exec(this->mapToGlobal(pos));
-}
-
-void FCurveEditor::onRepaintViews()
-{
-  this->repaint();
 }
 
 void FCurveEditor::keyPressEvent( QKeyEvent * e )

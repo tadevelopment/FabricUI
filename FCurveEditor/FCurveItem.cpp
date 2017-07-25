@@ -302,7 +302,7 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
             h.tanIn = h.tanOut * sqrt( l2In / l2Out );
         }
         curve->setKey( index, h );
-        emit m_parent->m_parent->repaintViews();
+        event->widget()->repaint();
       }
       void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::SizeAllCursor ); }
       void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->unsetCursor(); }
@@ -403,6 +403,7 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
       const Key h = curve->getKey( index );
       m_selectOnRelease = false;
       m_parent->m_parent->moveSelectedKeys( event->scenePos() - h.pos );
+      event->widget()->repaint();
     }
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
@@ -582,8 +583,6 @@ void FCurveItem::moveSelectedKeys( QPointF delta )
     Key h = m_curve->getKey( index );
     h.pos += delta;
     m_curve->setKey( index, h );
-    emit this->repaintViews();
-    return;
   }
   else
   {
@@ -592,7 +591,6 @@ void FCurveItem::moveSelectedKeys( QPointF delta )
     for( std::set<size_t>::const_iterator it = m_selectedKeys.begin(); it != m_selectedKeys.end(); it++ )
       indices.push_back( *it );
     m_curve->moveKeys( indices.data(), indices.size(), delta );
-    emit this->repaintViews();
   }
 }
 

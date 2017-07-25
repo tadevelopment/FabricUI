@@ -77,7 +77,6 @@ private slots:
   void onRectangleSelectReleased( const QRectF&, Qt::KeyboardModifiers );
   void onSelectionChanged();
   void onEditedKeysChanged();
-  void onRepaintViews();
   void onModeChanged();
   void veTanTypeEditFinished();
   inline void veXEditFinished() { this->veEditFinished( true ); }
