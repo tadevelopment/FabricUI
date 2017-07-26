@@ -48,6 +48,7 @@ public:
   // TODO : evaluate arrays, to reduce the overhead
 
   virtual void init() {}
+  // update() will pull changes from the underlying model, and emit change signals
   virtual void update() {}
 
 signals:

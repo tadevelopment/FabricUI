@@ -44,6 +44,7 @@ void FCurveEditorScene::mousePressEvent( QGraphicsSceneMouseEvent * e )
     m_curveItem->curve()->addKey( h );
     size_t index = m_curveItem->curve()->getKeyCount() - 1;
     m_curveItem->curve()->autoTangents( index );
+    m_curveItem->curve()->update();
     m_curveItem->clearKeySelection();
     m_curveItem->addKeyToSelection( index );
     m_isDraggingKey = true;
