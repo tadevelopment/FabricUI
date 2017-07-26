@@ -158,6 +158,7 @@ public:
 
   void setPreInfinityType( size_t i ) FTL_OVERRIDE
   {
+    /*
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
     this->synchronizeKLReg();
     QMap<QString, QString> args;
@@ -165,10 +166,12 @@ public:
     args["type"] = QString::number( i );
     manager->createCommand( "AnimX_SetPreInfinityType", args );
     emit this->dirty();
+    */
   }
 
   void setPostInfinityType( size_t i ) FTL_OVERRIDE
   {
+    /*
     FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
     this->synchronizeKLReg();
     QMap<QString, QString> args;
@@ -176,6 +179,7 @@ public:
     args["type"] = QString::number( i );
     manager->createCommand( "AnimX_SetPostInfinityType", args );
     emit this->dirty();
+    */
   }
 
   inline void onInteractionBegin()
