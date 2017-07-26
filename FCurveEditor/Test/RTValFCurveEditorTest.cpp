@@ -28,6 +28,13 @@ void ReportCallBack(
 
 inline float RandFloat() { return float( rand() ) / RAND_MAX; }
 
+void FormatEditor( FCurveEditor* editor )
+{
+  editor->resize( 800, 600 );
+  editor->show();
+  editor->setStyleSheet( LoadQSS() );
+}
+
 int main()
 {
   int argc = 0;
@@ -51,10 +58,27 @@ int main()
   curve.setValue( curveRTVal );
 
   FCurveEditor* editor = new FCurveEditor();
+  editor->setWindowTitle( "Original" );
   editor->setModel( &curve );
-  editor->resize( 800, 600 );
-  editor->show();
-  editor->setStyleSheet( LoadQSS() );
+  FormatEditor( editor );
+
+  FCurveEditor* editor2 = new FCurveEditor();
+  editor2->setWindowTitle( "Same scene" );
+  editor2->deriveFrom( editor );
+  FormatEditor( editor2 );
+
+
+  FCurveEditor* editor3 = new FCurveEditor();
+  editor3->setWindowTitle( "Same Model, different scene" );
+  editor3->setModel( &curve );
+  FormatEditor( editor3 );
+
+  RTValAnimXFCurveVersionedModel model2;
+  model2.setValue( curveRTVal );
+  FCurveEditor* editor4 = new FCurveEditor();
+  editor4->setWindowTitle( "Same RTVal, different model" );
+  editor4->setModel( &model2 );
+  FormatEditor( editor4 );
 
   app.exec();
 
