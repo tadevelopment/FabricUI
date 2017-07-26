@@ -37,13 +37,17 @@ public:
   void setMode( Mode m );
   inline Mode mode() const { return m_mode; }
   inline FCurveItem* curveItem() { return m_curveItem; }
+  void setSnapToCurve( bool );
+  inline bool snapToCurve() const { return m_snapToCurve; }
 
 private:
-  Mode m_mode;
-  bool m_isDraggingKey;
 
   // TODO : replace by an array of FCurveItems
   FCurveItem* m_curveItem;
+
+  Mode m_mode;
+  bool m_isDraggingKey;
+  bool m_snapToCurve;
 
 protected:
   void mousePressEvent( QGraphicsSceneMouseEvent * ) FTL_OVERRIDE;
@@ -54,6 +58,7 @@ signals:
   void modeChanged() const;
   void interactionBegin();
   void interactionEnd();
+  void snapToCurveChanged();
 };
 
 } // namespace FCurveEditor

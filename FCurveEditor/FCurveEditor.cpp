@@ -15,6 +15,7 @@
 #include <QLayout>
 #include <QToolBar>
 #include <QPushButton>
+#include <QSplitter>
 #include <QComboBox>
 #include <QMenu>
 #include <QGraphicsSceneEvent>
@@ -199,6 +200,7 @@ Qt::Key ModeKeys[MODE_COUNT] =
   Qt::Key_2,
   Qt::Key_3
 };
+const Qt::Key SnapToCurveKey = Qt::Key_C;
 
 inline QKeySequence GetModeToggleShortcut( Mode m )
 {
@@ -213,6 +215,8 @@ class FCurveEditor::ToolBar : public QWidget
   Mode m_previousMode; // MODE_COUNT if not in a temporary mode
 
 public:
+  QPushButton* m_snapToCurveButton;
+  QAction* m_snapToCurveAction;
   QAction* m_modeActions[MODE_COUNT];
 
   ToolBar( FCurveEditor* parent )
@@ -227,18 +231,21 @@ public:
     m_layout->setMargin( 8 );
     m_layout->setContentsMargins( 8, 2, 2, 2 );
 
+    const size_t buttonSize = 26;
+
     for( int m = 0; m < MODE_COUNT; m++ )
     {
       m_buttons[m] = new QPushButton();
       QPushButton* bt = m_buttons[m];
       bt->setObjectName( ModeNames[m] );
-      bt->setFixedSize( QSize( 26, 26 ) );
+      bt->setFixedSize( QSize( buttonSize, buttonSize ) );
       bt->setCheckable( true );
       m_layout->addWidget( bt );
       QString actionName = QString::fromUtf8( ModeNames[m] ) + " Keys Mode";
       bt->setToolTip( actionName + " [Press (" + QKeySequence(ModeToggleModifier).toString() + ")" + QKeySequence(ModeKeys[m]).toString() + "]" );
       m_modeActions[m] = new QAction( actionName, m_parent );
       QAction* action = m_modeActions[m];
+      action->setCheckable( true );
       action->setShortcut( GetModeToggleShortcut( Mode(m) ) );
       action->setShortcutContext( Qt::WidgetWithChildrenShortcut );
       m_parent->addAction( action );
@@ -249,15 +256,38 @@ public:
     QOBJECT_CONNECT( m_buttons[ADD], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeAdd, ( ) );
     QOBJECT_CONNECT( m_buttons[REMOVE], SIGNAL, QPushButton, released, ( ), m_parent, SLOT, FCurveEditor, setModeRemove, ( ) );
 
+    m_layout->addWidget( new QSplitter( Qt::Vertical ) );
+
+    m_snapToCurveButton = new QPushButton();
+    m_snapToCurveButton->setObjectName( "SnapToCurve" );
+    m_snapToCurveButton->setFixedSize( QSize( buttonSize, buttonSize ) );
+    m_snapToCurveButton->setCheckable( true );
+    m_snapToCurveButton->setToolTip( "Snap to Curve [Press (" + QKeySequence( ModeToggleModifier ).toString() + ")"
+      + QKeySequence( SnapToCurveKey ).toString() + "]" );
+    m_snapToCurveAction = new QAction( "Snap to Curve", m_parent );
+    m_snapToCurveAction->setCheckable( true );
+    m_snapToCurveAction->setShortcut( QKeySequence( ModeToggleModifier ).toString() + QKeySequence( SnapToCurveKey ).toString() );
+    m_snapToCurveAction->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+    m_parent->addAction( m_snapToCurveAction );
+    QOBJECT_CONNECT( m_snapToCurveAction, SIGNAL, QAction, triggered, ( bool ), m_snapToCurveButton, SLOT, QPushButton, toggle, ( ) );
+    QOBJECT_CONNECT( m_snapToCurveButton, SIGNAL, QPushButton, toggled, ( bool ), m_parent, SLOT, FCurveEditor, setSnapToCurveFromButton, ( ) );
+    m_layout->addWidget( m_snapToCurveButton );
+
     this->setLayout( m_layout );
   }
 
   void setMode( Mode m )
   {
     for( int i = 0; i < MODE_COUNT; i++ )
+    {
       m_buttons[i]->setChecked( i == m );
+      m_modeActions[i]->setChecked( i == m );
+      m_modeActions[i]->setEnabled( i != m );
+    }
     if( m == m_previousMode )
       m_previousMode = MODE_COUNT;
+    m_snapToCurveButton->setVisible( m == ADD );
+    m_snapToCurveAction->setEnabled( m == ADD );
   }
 
   inline void setTemporaryMode( Mode m )
@@ -372,6 +402,17 @@ void FCurveEditor::onModeChanged()
   assert( m < MODE_COUNT );
   m_toolBar->setMode( m );
   m_rview->enableRectangleSelection( m != ADD );
+}
+
+void FCurveEditor::onSnapToCurveChanged()
+{
+  m_toolBar->m_snapToCurveAction->setChecked( m_scene->snapToCurve() );
+  m_toolBar->m_snapToCurveButton->setChecked( m_scene->snapToCurve() );
+}
+
+void FCurveEditor::setSnapToCurveFromButton()
+{
+  m_scene->setSnapToCurve( m_toolBar->m_snapToCurveButton->isChecked() );
 }
 
 void FCurveEditor::onSelectionChanged()
@@ -545,6 +586,7 @@ void FCurveEditor::linkToScene()
   QOBJECT_CONNECT( m_scene, SIGNAL, FCurveEditorScene, interactionBegin, ( ), this, SIGNAL, FCurveEditor, interactionBegin, ( ) );
   QOBJECT_CONNECT( m_scene, SIGNAL, FCurveEditorScene, interactionEnd, ( ), this, SIGNAL, FCurveEditor, interactionEnd, ( ) );
   QOBJECT_CONNECT( m_scene, SIGNAL, FCurveEditorScene, modeChanged, ( ), this, SLOT, FCurveEditor, onModeChanged, ( ) );
+  QOBJECT_CONNECT( m_scene, SIGNAL, FCurveEditorScene, snapToCurveChanged, ( ), this, SLOT, FCurveEditor, onSnapToCurveChanged, ( ) );
   QOBJECT_CONNECT(
     m_scene->curveItem(), SIGNAL, FCurveItem, selectionChanged, ( ),
     this, SLOT, FCurveEditor, onSelectionChanged, ( )
@@ -627,6 +669,7 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   keysMenu.addAction(this->m_keysFrameSelectedAction);
   keysMenu.addSeparator();
   keysMenu.addAction(this->m_tangentsZeroSlopeAction);
+  keysMenu.addAction( m_toolBar->m_snapToCurveAction );
 
   // Presets Menu
   QMenu presetsMenu( "Presets", this );

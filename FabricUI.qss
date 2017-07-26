@@ -2396,6 +2396,37 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
   background-image: url(${FABRIC_DIR}/Resources/Icons/key-remove-button-pressed.png);
 }
 
+#FCurveEditor #ToolBar #SnapToCurve
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/snap-to-curve-button.png);
+  border: none;
+}
+
+#FCurveEditor #ToolBar #SnapToCurve:hover
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/snap-to-curve-button-hover.png);
+}
+
+#FCurveEditor #ToolBar #SnapToCurve:pressed
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/snap-to-curve-button-pressed.png);
+}
+
+#FCurveEditor #ToolBar #SnapToCurve:checked
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/snap-to-curve-button-pressed.png);
+}
+
+#FCurveEditor #ToolBar #SnapToCurve:checked:hover
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/snap-to-curve-button-checked-hover.png);
+}
+
+#FCurveEditor #ToolBar #SnapToCurve:checked:pressed
+{ 
+  background-image: url(${FABRIC_DIR}/Resources/Icons/snap-to-curve-button-pressed.png);
+}
+
 #FCurveEditor #RuledGraphicsView
 {
   qproperty-rulersSize: 12;

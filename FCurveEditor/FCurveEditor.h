@@ -83,6 +83,8 @@ private slots:
   void onSelectionChanged();
   void onEditedKeysChanged();
   void onModeChanged();
+  void onSnapToCurveChanged();
+  void setSnapToCurveFromButton();
   void veTanTypeEditFinished();
   inline void veXEditFinished() { this->veEditFinished( true ); }
   inline void veYEditFinished() { this->veEditFinished( false ); }

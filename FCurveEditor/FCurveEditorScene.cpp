@@ -13,6 +13,7 @@ using namespace FabricUI::FCurveEditor;
 FCurveEditorScene::FCurveEditorScene( AbstractFCurveModel* model )
   : m_curveItem( new FCurveItem( this ) )
   , m_isDraggingKey( false )
+  , m_snapToCurve( false )
 {
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionBegin, ( ), this, SIGNAL, FCurveEditorScene, interactionBegin, ( ) );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionEnd, ( ), this, SIGNAL, FCurveEditorScene, interactionEnd, ( ) );
@@ -30,6 +31,15 @@ void FCurveEditorScene::setMode( Mode m )
   if( m_mode == REMOVE )
     m_curveItem->clearKeySelection();
   emit this->modeChanged();
+}
+
+void FCurveEditorScene::setSnapToCurve( bool snap )
+{
+  if( snap != m_snapToCurve )
+  {
+    m_snapToCurve = snap;
+    emit this->snapToCurveChanged();
+  }
 }
 
 void FCurveEditorScene::mousePressEvent( QGraphicsSceneMouseEvent * e )
