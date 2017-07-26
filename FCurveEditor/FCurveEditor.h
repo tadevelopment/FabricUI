@@ -35,6 +35,7 @@ class FCurveEditor : public QFrame
   bool m_toolbarEnabled;
 
   RuledGraphicsView* m_rview;
+  bool m_owningScene;
   FCurveEditorScene* m_scene;
   class KeyValueEditor;
   KeyValueEditor* m_keyValueEditor;
@@ -42,6 +43,8 @@ class FCurveEditor : public QFrame
   ToolBar* m_toolBar;
   void veEditFinished( bool isXNotY );
   void updateVEPos();
+  void deleteOwnedScene();
+  void linkToScene();
 
   QAction* m_clearAction;
   QAction* m_keysSelectAllAction;
@@ -59,6 +62,8 @@ public:
   FCurveEditor();
   ~FCurveEditor();
   void setModel( AbstractFCurveModel* );
+  AbstractFCurveModel* model();
+  void deriveFrom( FCurveEditor* );
   void frameAllKeys();
   void frameSelectedKeys();
 

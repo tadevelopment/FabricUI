@@ -31,12 +31,19 @@ int main()
     curve.addKey( h );
   }
 
-
   FCurveEditor* editor = new FCurveEditor();
+  editor->setWindowTitle( "Original" );
   editor->setModel( &curve );
   editor->resize( 800, 600 );
   editor->show();
   editor->setStyleSheet( LoadQSS() );
+
+  FCurveEditor* editor2 = new FCurveEditor();
+  editor2->setWindowTitle( "Attached" );
+  editor2->deriveFrom( editor );
+  editor2->resize( 800, 600 );
+  editor2->show();
+  editor2->setStyleSheet( LoadQSS() );
 
   app.exec();
   return 0;

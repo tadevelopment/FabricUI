@@ -276,6 +276,7 @@ public:
 
 FCurveEditor::FCurveEditor()
   : m_rview( new RuledGraphicsView() )
+  , m_owningScene( true )
   , m_scene( NULL )
   , m_toolBar( new ToolBar( this ) )
 {
@@ -288,6 +289,10 @@ FCurveEditor::FCurveEditor()
   m_layout->addWidget( m_rview );
   this->setLayout( m_layout );
   m_keyValueEditor = new KeyValueEditor( this );
+
+  QOBJECT_CONNECT(
+    this, SIGNAL, FCurveEditor, customContextMenuRequested, ( const QPoint& ),
+    this, SLOT, FCurveEditor, showContextMenu, ( const QPoint& ) );
 
   QOBJECT_CONNECT(
     m_rview, SIGNAL, RuledGraphicsView, rectangleSelectReleased, ( const QRectF&, Qt::KeyboardModifiers ),
@@ -514,23 +519,28 @@ void FCurveEditor::onTangentsZeroSlope()
   }
 }
 
+void FCurveEditor::deleteOwnedScene()
+{
+  if( m_scene != NULL && m_owningScene )
+    delete m_scene;
+}
+
 FCurveEditor::~FCurveEditor()
 {
-  delete m_scene;
+  this->deleteOwnedScene();
 }
 
 void FCurveEditor::setModel( AbstractFCurveModel* model )
 {
-  if( m_scene != NULL )
-    delete m_scene;
-
+  this->deleteOwnedScene();
   m_scene = new FCurveEditorScene( model );
+  m_owningScene = true;
+  this->linkToScene();
+}
 
+void FCurveEditor::linkToScene()
+{
   m_rview->view()->setScene( m_scene );
-
-  QOBJECT_CONNECT(
-    this, SIGNAL, FCurveEditor, customContextMenuRequested, ( const QPoint& ),
-    this, SLOT, FCurveEditor, showContextMenu, ( const QPoint& ) );
 
   QOBJECT_CONNECT( m_scene, SIGNAL, FCurveEditorScene, interactionBegin, ( ), this, SIGNAL, FCurveEditor, interactionBegin, ( ) );
   QOBJECT_CONNECT( m_scene, SIGNAL, FCurveEditorScene, interactionEnd, ( ), this, SIGNAL, FCurveEditor, interactionEnd, ( ) );
@@ -554,6 +564,14 @@ void FCurveEditor::setModel( AbstractFCurveModel* model )
   this->setToolBarEnabled( true );
   this->onModeChanged();
   this->onSelectionChanged();
+}
+
+void FCurveEditor::deriveFrom( FCurveEditor* other )
+{
+  this->deleteOwnedScene();
+  m_scene = other->m_scene;
+  m_owningScene = false;
+  this->linkToScene();
 }
 
 void FCurveEditor::frameAllKeys()
@@ -638,6 +656,8 @@ void FCurveEditor::keyReleaseEvent( QKeyEvent * e )
       m_scene->setMode( m_toolBar->getPreviousMode() );
   Parent::keyReleaseEvent( e );
 }
+
+AbstractFCurveModel* FCurveEditor::model() { return m_scene->curveItem()->curve(); }
 
 void FCurveEditor::setModeSelect() { m_scene->setMode( SELECT ); }
 void FCurveEditor::setModeAdd() { m_scene->setMode( ADD ); }

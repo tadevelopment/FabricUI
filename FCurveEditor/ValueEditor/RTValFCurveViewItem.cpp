@@ -246,7 +246,10 @@ RTValFCurveViewItem::RTValFCurveViewItem(
   , m_expandedDialog( new ExpandedDialog( m_editor ) )
 {
   m_editor->setModel( m_model );
-  m_expandedDialog->editor()->setModel( m_model );
+
+  //m_expandedDialog->editor()->setModel( m_model ); // 2 different scenes
+  m_expandedDialog->editor()->deriveFrom( m_editor ); // sharing the same scene
+
   this->onModelValueChanged( value );
   m_editor->setToolBarEnabled( false );
   m_expandedDialog->editor()->setToolBarEnabled( true );
