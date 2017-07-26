@@ -86,6 +86,7 @@ class FCurveEditor::KeyValueEditor : public QFrame
       : m_model( NULL )
     {
       this->setObjectName( "TangentTypeEditor" );
+      this->setToolTip( "Tangent Type" );
     }
 
     void setModel( AbstractFCurveModel* model )
@@ -216,6 +217,8 @@ class FCurveEditor::ToolBar : public QWidget
 
 public:
   QPushButton* m_snapToCurveButton;
+  QComboBox* m_preInfType;
+  QComboBox* m_postInfType;
   QAction* m_snapToCurveAction;
   QAction* m_modeActions[MODE_COUNT];
 
@@ -223,6 +226,8 @@ public:
     : m_parent( parent )
     , m_layout( new QHBoxLayout() )
     , m_previousMode( MODE_COUNT )
+    , m_preInfType( new QComboBox() )
+    , m_postInfType( new QComboBox() )
   {
     this->setObjectName( "ToolBar" );
     this->setMinimumHeight( 40 );
@@ -272,6 +277,22 @@ public:
     QOBJECT_CONNECT( m_snapToCurveAction, SIGNAL, QAction, triggered, ( bool ), m_snapToCurveButton, SLOT, QPushButton, toggle, ( ) );
     QOBJECT_CONNECT( m_snapToCurveButton, SIGNAL, QPushButton, toggled, ( bool ), m_parent, SLOT, FCurveEditor, setSnapToCurveFromButton, ( ) );
     m_layout->addWidget( m_snapToCurveButton );
+
+    m_layout->addWidget( new QSplitter( Qt::Vertical ) );
+    m_preInfType->setObjectName( "InfinityTypeEditor" );
+    m_postInfType->setObjectName( "InfinityTypeEditor" );
+    m_preInfType->setToolTip( "Pre-Infinity Type" );
+    m_postInfType->setToolTip( "Post-Infinity Type" );
+    m_layout->addWidget( m_preInfType );
+    m_layout->addWidget( m_postInfType );
+    QOBJECT_CONNECT_OVERLOADED(
+      m_preInfType, SIGNAL, QComboBox, currentIndexChanged, ( int ), ,
+      m_parent, SLOT, FCurveEditor, setPreInfinityTypeFromCombo, ( ),
+    );
+    QOBJECT_CONNECT_OVERLOADED(
+      m_postInfType, SIGNAL, QComboBox, currentIndexChanged, ( int ), ,
+      m_parent, SLOT, FCurveEditor, setPostInfinityTypeFromCombo, ( ),
+    );
 
     this->setLayout( m_layout );
   }
@@ -413,6 +434,22 @@ void FCurveEditor::onSnapToCurveChanged()
 void FCurveEditor::setSnapToCurveFromButton()
 {
   m_scene->setSnapToCurve( m_toolBar->m_snapToCurveButton->isChecked() );
+}
+
+void FCurveEditor::onInfinityTypesChanged()
+{
+  m_toolBar->m_preInfType->setCurrentIndex( m_scene->curveItem()->curve()->getPreInfinityType() );
+  m_toolBar->m_postInfType->setCurrentIndex( m_scene->curveItem()->curve()->getPostInfinityType() );
+}
+
+void FCurveEditor::setPreInfinityTypeFromCombo()
+{
+  m_scene->curveItem()->curve()->setPreInfinityType( m_toolBar->m_preInfType->currentIndex() );
+}
+
+void FCurveEditor::setPostInfinityTypeFromCombo()
+{
+  m_scene->curveItem()->curve()->setPostInfinityType( m_toolBar->m_postInfType->currentIndex() );
 }
 
 void FCurveEditor::onSelectionChanged()
@@ -583,6 +620,8 @@ void FCurveEditor::linkToScene()
 {
   m_rview->view()->setScene( m_scene );
 
+  AbstractFCurveModel* curve = m_scene->curveItem()->curve();
+
   QOBJECT_CONNECT( m_scene, SIGNAL, FCurveEditorScene, interactionBegin, ( ), this, SIGNAL, FCurveEditor, interactionBegin, ( ) );
   QOBJECT_CONNECT( m_scene, SIGNAL, FCurveEditorScene, interactionEnd, ( ), this, SIGNAL, FCurveEditor, interactionEnd, ( ) );
   QOBJECT_CONNECT( m_scene, SIGNAL, FCurveEditorScene, modeChanged, ( ), this, SLOT, FCurveEditor, onModeChanged, ( ) );
@@ -599,8 +638,20 @@ void FCurveEditor::linkToScene()
     m_scene->curveItem(), SIGNAL, FCurveItem, editedKeyPropChanged, ( ),
     this, SLOT, FCurveEditor, onEditedKeysChanged, ( )
   );
+  QOBJECT_CONNECT(
+    curve, SIGNAL, AbstractFCurveModel, infinityTypesChanged, ( ),
+    this, SLOT, FCurveEditor, onInfinityTypesChanged, ( )
+  );
 
   m_rview->fitInView( m_scene->curveItem()->keysBoundingRect() );
+
+  for( size_t i = 0; i < 2; i++ )
+  {
+    QComboBox* b = ( i == 0 ? m_toolBar->m_preInfType : m_toolBar->m_postInfType );
+    b->clear();
+    for( size_t i = 0; i < curve->infinityTypeCount(); i++ )
+      b->addItem( curve->infinityTypeName( i ) );
+  }
 
   this->setVEPos( QPoint( -20, 20 ) );
   this->setToolBarEnabled( true );

@@ -2466,7 +2466,11 @@ QScrollBar::add-page:horizontal::pressed, QScrollBar::sub-page:horizontal::press
 
 #FCurveEditor #KeyValueEditor #FloatEditor QLineEdit,
 #FCurveEditor #KeyValueEditor #TangentTypeEditor,
-#FCurveEditor #KeyValueEditor #TangentTypeEditor *
+#FCurveEditor #KeyValueEditor #TangentTypeEditor > * > *,
+#FCurveEditor #ToolBar #InfinityTypeEditor,
+#FCurveEditor #ToolBar #InfinityTypeEditor > * > *
 {
+  color: #FFF;
+  font-size: 16px;
   background-color: rgba(32,32,32);
 }

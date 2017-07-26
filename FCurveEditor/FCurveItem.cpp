@@ -116,6 +116,12 @@ public:
     const qreal w = r.width();
     r.setLeft( r.left() - 100 * w );
     r.setRight( r.right() + 100 * w );
+    const qreal h = r.height();
+    if( h > 0 )
+    {
+      r.setTop( r.top() - 100 * h );
+      r.setBottom( r.bottom() + 100 * h );
+    }
     return r;
   }
 
@@ -634,6 +640,12 @@ void FCurveItem::onKeyMoved( size_t i )
     emit this->editedKeyValueChanged();
 }
 
+void FCurveItem::onInfinityTypesChanged()
+{
+  m_curveShape->update();
+  this->onDirty();
+}
+
 void FCurveItem::setCurve( AbstractFCurveModel* curve )
 {
   assert( curve != m_curve );
@@ -641,6 +653,7 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, keyMoved, ( size_t ), this, SLOT, FCurveItem, onKeyMoved, ( size_t ) );
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, keyAdded, (), this, SLOT, FCurveItem, onKeyAdded, () );
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, keyDeleted, ( size_t ), this, SLOT, FCurveItem, onKeyDeleted, ( size_t ) );
+  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, infinityTypesChanged, ( ), this, SLOT, FCurveItem, onInfinityTypesChanged, ( ) );
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, dirty, ( ), this, SLOT, FCurveItem, onDirty, ( ) );
 
   // Clearing previous keys

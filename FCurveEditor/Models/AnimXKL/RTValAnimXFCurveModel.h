@@ -32,6 +32,10 @@ public:
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
   size_t tangentTypeCount() const FTL_OVERRIDE;
   QString tangentTypeName( size_t i ) const FTL_OVERRIDE;
+  size_t infinityTypeCount() const FTL_OVERRIDE;
+  QString infinityTypeName( size_t i ) const FTL_OVERRIDE;
+  size_t getPreInfinityType() const FTL_OVERRIDE;
+  size_t getPostInfinityType() const FTL_OVERRIDE;
 
   inline void setValue( FabricCore::RTVal v ) { m_val = v; }
   inline FabricCore::RTVal value() { return m_val; }
@@ -69,6 +73,8 @@ public:
   void setKey( size_t, Key ) FTL_OVERRIDE;
   void addKey() FTL_OVERRIDE;
   void deleteKey( size_t ) FTL_OVERRIDE;
+  void setPreInfinityType( size_t ) FTL_OVERRIDE;
+  void setPostInfinityType( size_t ) FTL_OVERRIDE;
 };
 
 class RTValAnimXFCurveModel : public RTValAnimXFCurveConstModel
@@ -79,6 +85,8 @@ public:
   void setKey( size_t, Key ) FTL_OVERRIDE;
   void addKey() FTL_OVERRIDE;
   void deleteKey( size_t ) FTL_OVERRIDE;
+  void setPreInfinityType( size_t ) FTL_OVERRIDE;
+  void setPostInfinityType( size_t ) FTL_OVERRIDE;
 };
 
 } // namespace FCurveEditor

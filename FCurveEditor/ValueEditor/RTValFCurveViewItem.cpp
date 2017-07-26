@@ -156,6 +156,28 @@ public:
     emit this->dirty();
   }
 
+  void setPreInfinityType( size_t i ) FTL_OVERRIDE
+  {
+    FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
+    this->synchronizeKLReg();
+    QMap<QString, QString> args;
+    args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+    args["type"] = QString::number( i );
+    manager->createCommand( "AnimX_SetPreInfinityType", args );
+    emit this->dirty();
+  }
+
+  void setPostInfinityType( size_t i ) FTL_OVERRIDE
+  {
+    FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
+    this->synchronizeKLReg();
+    QMap<QString, QString> args;
+    args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+    args["type"] = QString::number( i );
+    manager->createCommand( "AnimX_SetPostInfinityType", args );
+    emit this->dirty();
+  }
+
   inline void onInteractionBegin()
   {
     m_interactionId = FabricUI::Commands::CommandManager::getCommandManager()->getNewCanMergeID();

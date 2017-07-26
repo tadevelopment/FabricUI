@@ -70,6 +70,7 @@ private slots:
   void onKeyAdded();
   void onKeyDeleted( size_t );
   void onKeyMoved( size_t );
+  void onInfinityTypesChanged();
   inline void onDirty() { this->update(); }
 };
 

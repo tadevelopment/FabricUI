@@ -85,6 +85,9 @@ private slots:
   void onModeChanged();
   void onSnapToCurveChanged();
   void setSnapToCurveFromButton();
+  void onInfinityTypesChanged();
+  void setPreInfinityTypeFromCombo();
+  void setPostInfinityTypeFromCombo();
   void veTanTypeEditFinished();
   inline void veXEditFinished() { this->veEditFinished( true ); }
   inline void veYEditFinished() { this->veEditFinished( false ); }

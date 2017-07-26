@@ -42,6 +42,13 @@ public:
   virtual size_t tangentTypeCount() const = 0;
   virtual QString tangentTypeName( size_t i ) const { return QString::number( i ); }
 
+  virtual size_t infinityTypeCount() const = 0;
+  virtual QString infinityTypeName( size_t i ) const { return QString::number( i ); }
+  virtual size_t getPreInfinityType() const = 0;
+  virtual size_t getPostInfinityType() const = 0;
+  virtual void setPreInfinityType( size_t ) = 0;
+  virtual void setPostInfinityType( size_t ) = 0;
+
   virtual void autoTangents( size_t ) {}
 
   virtual qreal evaluate( qreal v ) const = 0;
@@ -55,6 +62,7 @@ signals:
   void keyAdded() const;
   void keyDeleted( size_t ) const;
   void keyMoved( size_t ) const;
+  void infinityTypesChanged() const;
 
   // when emitted, UI items should schedule an update
   void dirty() const;

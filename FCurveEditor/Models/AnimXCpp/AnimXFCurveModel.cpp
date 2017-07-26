@@ -29,7 +29,6 @@ inline const char* TangentTypeName( const TangentType& t )
   return "";
 }
 
-
 inline size_t TangentTypeIndex( const TangentType& t )
 {
   switch( t )
@@ -79,6 +78,86 @@ QString AnimxFCurveModel::tangentTypeName( size_t i ) const
 {
   assert( i < this->tangentTypeCount() );
   return QString::fromUtf8( TangentTypeName( TangentType( i ) ) );
+}
+
+inline const char* InfinityTypeName( const InfinityType& t )
+{
+  switch( t )
+  {
+  case InfinityType::Constant: return "Constant";
+  case InfinityType::Cycle: return "Cycle";
+  case InfinityType::CycleRelative: return "CycleRelative";
+  case InfinityType::Linear: return "Linear";
+  case InfinityType::Oscillate: return "Oscillate";
+  }
+  assert( false );
+  return "";
+}
+
+inline size_t InfinityTypeIndex( const InfinityType& t )
+{
+  switch( t )
+  {
+  case InfinityType::Constant: return 0;
+  case InfinityType::Cycle: return 1;
+  case InfinityType::CycleRelative: return 2;
+  case InfinityType::Linear: return 3;
+  case InfinityType::Oscillate: return 4;
+  }
+  assert( false );
+  return 0;
+}
+
+const InfinityType InfinityTypes[] =
+{
+  InfinityType::Constant,
+  InfinityType::Cycle,
+  InfinityType::CycleRelative,
+  InfinityType::Linear,
+  InfinityType::Oscillate,
+};
+
+inline InfinityType InfinityTypeFromIndex( size_t i ) { return InfinityTypes[i]; }
+
+QString AnimxFCurveModel::infinityTypeName( size_t i ) const
+{
+  return InfinityTypeName( InfinityTypeFromIndex( i ) );
+}
+
+AnimxFCurveModel::AnimxFCurveModel()
+  : m_preInfType( InfinityType::Constant )
+  , m_postInfType( InfinityType::Constant )
+{
+}
+
+size_t AnimxFCurveModel::getPreInfinityType() const
+{
+  return InfinityTypeIndex( m_preInfType );
+}
+
+size_t AnimxFCurveModel::getPostInfinityType() const
+{
+  return InfinityTypeIndex( m_postInfType );
+}
+
+void AnimxFCurveModel::setPreInfinityType( size_t i )
+{
+  InfinityType t = InfinityTypeFromIndex( i );
+  if( t != m_preInfType )
+  {
+    m_preInfType = t;
+    emit this->infinityTypesChanged();
+  }
+}
+
+void AnimxFCurveModel::setPostInfinityType( size_t i )
+{
+  InfinityType t = InfinityTypeFromIndex( i );
+  if( t != m_postInfType )
+  {
+    m_postInfType = t;
+    emit this->infinityTypesChanged();
+  }
 }
 
 Key AnimxFCurveModel::getOrderedKey( size_t index ) const

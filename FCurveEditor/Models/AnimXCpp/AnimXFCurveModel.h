@@ -26,6 +26,7 @@ class AnimxFCurveModel : public AbstractFCurveModel, public adsk::ICurve
   };
   std::vector<UIKey> m_keys;
   std::vector<size_t> m_uiIdToIndex;
+  adsk::InfinityType m_preInfType, m_postInfType;
 
   inline void swap( const size_t a, const size_t b )
   {
@@ -39,6 +40,8 @@ class AnimxFCurveModel : public AbstractFCurveModel, public adsk::ICurve
   }
 
 public:
+
+  AnimxFCurveModel();
 
   void addKey( const Key& );
 
@@ -54,14 +57,20 @@ public:
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
   size_t tangentTypeCount() const FTL_OVERRIDE { return size_t(adsk::TangentType::StepNext) + 1; }
   QString tangentTypeName( size_t i ) const FTL_OVERRIDE;
+  size_t infinityTypeCount() const FTL_OVERRIDE { return size_t( adsk::InfinityType::Oscillate ) + 1; }
+  QString infinityTypeName( size_t i ) const FTL_OVERRIDE;
+  size_t getPreInfinityType() const FTL_OVERRIDE;
+  size_t getPostInfinityType() const FTL_OVERRIDE;
+  void setPreInfinityType( size_t ) FTL_OVERRIDE;
+  void setPostInfinityType( size_t ) FTL_OVERRIDE;
 
   // adsk::ICurve
   bool keyframeAtIndex( int, adsk::Keyframe& ) const FTL_OVERRIDE;
   bool keyframe( double, adsk::Keyframe& ) const FTL_OVERRIDE;
   bool first( adsk::Keyframe& ) const FTL_OVERRIDE;
   bool last( adsk::Keyframe& ) const FTL_OVERRIDE;
-  adsk::InfinityType preInfinityType() const FTL_OVERRIDE { return adsk::InfinityType::Linear; } // TODO
-  adsk::InfinityType postInfinityType() const FTL_OVERRIDE { return adsk::InfinityType::Linear; } // TODO
+  adsk::InfinityType preInfinityType() const FTL_OVERRIDE { return m_preInfType; }
+  adsk::InfinityType postInfinityType() const FTL_OVERRIDE { return m_postInfType; }
   bool isWeighted() const FTL_OVERRIDE { return true; } // TODO
   unsigned int keyframeCount() const FTL_OVERRIDE { return m_keys.size(); }
   bool isStatic() const FTL_OVERRIDE { return false; } // TODO
