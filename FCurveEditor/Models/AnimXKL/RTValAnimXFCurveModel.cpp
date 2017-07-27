@@ -101,12 +101,16 @@ QString RTValAnimXFCurveConstModel::infinityTypeName( size_t i ) const
 
 size_t RTValAnimXFCurveConstModel::getPreInfinityType() const
 {
+  if( !m_val.isValid() || m_val.isNullObject() )
+    return 0;
   return const_cast<FabricCore::RTVal*>( &m_val )
     ->callMethod( "SInt32", "preInfinityType", 0, NULL ).getSInt32();
 }
 
 size_t RTValAnimXFCurveConstModel::getPostInfinityType() const
 {
+  if( !m_val.isValid() || m_val.isNullObject() )
+    return 0;
   return const_cast<FabricCore::RTVal*>( &m_val )
     ->callMethod( "SInt32", "postInfinityType", 0, NULL ).getSInt32();
 }

@@ -27,6 +27,15 @@
 
 using namespace FabricUI::FCurveEditor;
 
+AbstractAction::AbstractAction( QObject* parent )
+  : QAction( parent )
+{
+  QOBJECT_CONNECT(
+    this, SIGNAL, QAction, triggered, ( bool ),
+    this, SLOT, AbstractAction, onTriggered, ( )
+  );
+}
+
 class FCurveEditor::KeyValueEditor : public QFrame
 {
   FCurveEditor* m_parent;
@@ -197,6 +206,37 @@ inline QKeySequence GetModeToggleShortcut( Mode m )
   return QKeySequence( ModeToggleModifier ).toString() + QKeySequence( ModeKeys[m] ).toString();
 }
 
+class FCurveEditor::SetInfinityTypeAction : public AbstractAction
+{
+  FCurveEditor* m_parent;
+  size_t m_type;
+public:
+  enum Direction { PRE, POST, PREPOST };
+  Direction m_direction;
+
+  SetInfinityTypeAction( FCurveEditor* parent, Direction direction, size_t type )
+    : AbstractAction( parent )
+    , m_parent( parent )
+    , m_type( type )
+    , m_direction( direction )
+  {
+  }
+
+  void onTriggered() FTL_OVERRIDE
+  {
+    if( m_direction == PRE || m_direction == PREPOST )
+      m_parent->m_scene->curveItem()->curve()->setPreInfinityType( m_type );
+    if( m_direction == POST || m_direction == PREPOST )
+      m_parent->m_scene->curveItem()->curve()->setPostInfinityType( m_type );
+  }
+
+  void setValue( bool v )
+  {
+    this->setEnabled( !v );
+    this->setChecked( v );
+  }
+};
+
 class FCurveEditor::ToolBar : public QWidget
 {
   FCurveEditor* m_parent;
@@ -206,8 +246,7 @@ class FCurveEditor::ToolBar : public QWidget
 
 public:
   QPushButton* m_snapToCurveButton;
-  QComboBox* m_preInfType;
-  QComboBox* m_postInfType;
+  std::vector<SetInfinityTypeAction*> m_preInf, m_postInf, m_prePostInf;
   QAction* m_snapToCurveAction;
   QAction* m_modeActions[MODE_COUNT];
 
@@ -215,8 +254,6 @@ public:
     : m_parent( parent )
     , m_layout( new QHBoxLayout() )
     , m_previousMode( MODE_COUNT )
-    , m_preInfType( new QComboBox() )
-    , m_postInfType( new QComboBox() )
   {
     this->setObjectName( "ToolBar" );
     this->setMinimumHeight( 40 );
@@ -266,22 +303,6 @@ public:
     QOBJECT_CONNECT( m_snapToCurveAction, SIGNAL, QAction, triggered, ( bool ), m_snapToCurveButton, SLOT, QPushButton, toggle, ( ) );
     QOBJECT_CONNECT( m_snapToCurveButton, SIGNAL, QPushButton, toggled, ( bool ), m_parent, SLOT, FCurveEditor, setSnapToCurveFromButton, ( ) );
     m_layout->addWidget( m_snapToCurveButton );
-
-    m_layout->addWidget( new QSplitter( Qt::Vertical ) );
-    m_preInfType->setObjectName( "InfinityTypeEditor" );
-    m_postInfType->setObjectName( "InfinityTypeEditor" );
-    m_preInfType->setToolTip( "Pre-Infinity Type" );
-    m_postInfType->setToolTip( "Post-Infinity Type" );
-    m_layout->addWidget( m_preInfType );
-    m_layout->addWidget( m_postInfType );
-    QOBJECT_CONNECT_OVERLOADED(
-      m_preInfType, SIGNAL, QComboBox, currentIndexChanged, ( int ), ,
-      m_parent, SLOT, FCurveEditor, setPreInfinityTypeFromCombo, ( ),
-    );
-    QOBJECT_CONNECT_OVERLOADED(
-      m_postInfType, SIGNAL, QComboBox, currentIndexChanged, ( int ), ,
-      m_parent, SLOT, FCurveEditor, setPostInfinityTypeFromCombo, ( ),
-    );
 
     this->setLayout( m_layout );
   }
@@ -428,18 +449,13 @@ void FCurveEditor::setSnapToCurveFromButton()
 
 void FCurveEditor::onInfinityTypesChanged()
 {
-  m_toolBar->m_preInfType->setCurrentIndex( m_scene->curveItem()->curve()->getPreInfinityType() );
-  m_toolBar->m_postInfType->setCurrentIndex( m_scene->curveItem()->curve()->getPostInfinityType() );
-}
-
-void FCurveEditor::setPreInfinityTypeFromCombo()
-{
-  m_scene->curveItem()->curve()->setPreInfinityType( m_toolBar->m_preInfType->currentIndex() );
-}
-
-void FCurveEditor::setPostInfinityTypeFromCombo()
-{
-  m_scene->curveItem()->curve()->setPostInfinityType( m_toolBar->m_postInfType->currentIndex() );
+  AbstractFCurveModel* curve = m_scene->curveItem()->curve();
+  for( size_t t = 0; t < curve->infinityTypeCount(); t++ )
+  {
+    m_toolBar->m_preInf[t]->setValue( t == curve->getPreInfinityType() );
+    m_toolBar->m_postInf[t]->setValue( t == curve->getPostInfinityType() );
+    m_toolBar->m_prePostInf[t]->setValue( t == curve->getPreInfinityType() && t == curve->getPostInfinityType() );
+  }
 }
 
 void FCurveEditor::onSelectionChanged()
@@ -642,13 +658,27 @@ void FCurveEditor::linkToScene()
 
   m_rview->fitInView( m_scene->curveItem()->keysBoundingRect() );
 
-  for( size_t i = 0; i < 2; i++ )
+  for( size_t i = 0; i < 3; i++ )
   {
-    QComboBox* b = ( i == 0 ? m_toolBar->m_preInfType : m_toolBar->m_postInfType );
-    b->clear();
-    for( size_t i = 0; i < curve->infinityTypeCount(); i++ )
-      b->addItem( curve->infinityTypeName( i ) );
+    std::vector<SetInfinityTypeAction*>* actions = NULL;
+    switch( i )
+    {
+    case 0: actions = &m_toolBar->m_preInf; break;
+    case 1: actions = &m_toolBar->m_postInf; break;
+    case 2: actions = &m_toolBar->m_prePostInf; break;
+    }
+    for( size_t j = 0; j < actions->size(); j++ )
+      ( *actions )[j]->deleteLater();
+    actions->clear();
+    for( size_t j = 0; j < curve->infinityTypeCount(); j++ )
+    {
+      SetInfinityTypeAction* action = new SetInfinityTypeAction( this, SetInfinityTypeAction::Direction( i ), j );
+      action->setCheckable( true );
+      action->setText( curve->infinityTypeName( j ) );
+      actions->push_back( action );
+    }
   }
+  this->onInfinityTypesChanged();
 
   this->setVEPos( QPoint( -20, 20 ) );
   this->setToolBarEnabled( true );
@@ -726,6 +756,29 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   presetsMenu.addAction( m_presetRampIn );
   presetsMenu.addAction( m_presetRampOut );
   presetsMenu.addAction( m_presetSmoothStep );
+
+  // Infinity Types Menu
+  QMenu infTypesMenu( "Infinity Types", this );
+  contextMenu.addMenu( &infTypesMenu );
+  QMenu preInfMenu( "Pre-Infinity", this );
+  QMenu postInfMenu( "Post-Infinity", this );
+  QMenu prePostInfMenu( "Both", this );
+  {
+    for( int i = 0; i < 3; i++ )
+    {
+      const std::vector<SetInfinityTypeAction*>* actions = NULL;
+      QMenu* menu = NULL;
+      switch( i )
+      {
+      case 0: actions = &m_toolBar->m_preInf; menu = &preInfMenu; break;
+      case 1: actions = &m_toolBar->m_postInf; menu = &postInfMenu; break;
+      case 2: actions = &m_toolBar->m_prePostInf; menu = &prePostInfMenu; break;
+      }
+      for( size_t j = 0; j < actions->size(); j++ )
+        menu->addAction( (*actions)[j] );
+      infTypesMenu.addMenu( menu );
+    }
+  }
 
   contextMenu.addSeparator();
   contextMenu.addAction( m_clearAction );

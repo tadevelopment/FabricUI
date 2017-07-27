@@ -6,6 +6,7 @@
 #define FABRICUI_FCURVEEDITOR_FCURVEEDITOR_H
 
 #include <QFrame>
+#include <QAction>
 #include <FTL/Config.h>
 
 class QGraphicsScene;
@@ -17,6 +18,17 @@ namespace FCurveEditor
 class RuledGraphicsView;
 class AbstractFCurveModel;
 class FCurveEditorScene;
+
+class AbstractAction : public QAction
+{
+  Q_OBJECT
+
+public:
+  AbstractAction( QObject* );
+
+protected slots:
+  virtual void onTriggered() = 0;
+};
 
 /*
   An FCurveEditor is a widget to display and edit FCurves (through
@@ -45,6 +57,7 @@ class FCurveEditor : public QFrame
   void updateVEPos();
   void deleteOwnedScene();
   void linkToScene();
+  class SetInfinityTypeAction;
 
   QAction* m_clearAction;
   QAction* m_keysSelectAllAction;
@@ -87,8 +100,6 @@ private slots:
   void onSnapToCurveChanged();
   void setSnapToCurveFromButton();
   void onInfinityTypesChanged();
-  void setPreInfinityTypeFromCombo();
-  void setPostInfinityTypeFromCombo();
   void veTanTypeEditFinished();
   inline void veXEditFinished() { this->veEditFinished( true ); }
   inline void veYEditFinished() { this->veEditFinished( false ); }
