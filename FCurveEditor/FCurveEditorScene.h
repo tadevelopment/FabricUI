@@ -39,11 +39,17 @@ public:
   inline FCurveItem* curveItem() { return m_curveItem; }
   void setSnapToCurve( bool );
   inline bool snapToCurve() const { return m_snapToCurve; }
+  void addKeyAtPos( QPointF p );
+  bool updateDraggedSnappedKey();
+  void updateDraggedSnappedPos( QPointF );
 
 private:
 
   // TODO : replace by an array of FCurveItems
   FCurveItem* m_curveItem;
+
+  class DraggedKey;
+  DraggedKey* m_draggedSnappedKey;
 
   Mode m_mode;
   bool m_isDraggingKey;

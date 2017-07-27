@@ -14,6 +14,7 @@ FCurveEditorScene::FCurveEditorScene( AbstractFCurveModel* model )
   : m_curveItem( new FCurveItem( this ) )
   , m_isDraggingKey( false )
   , m_snapToCurve( false )
+  , m_draggedSnappedKey( NULL )
 {
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionBegin, ( ), this, SIGNAL, FCurveEditorScene, interactionBegin, ( ) );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionEnd, ( ), this, SIGNAL, FCurveEditorScene, interactionEnd, ( ) );
@@ -38,30 +39,115 @@ void FCurveEditorScene::setSnapToCurve( bool snap )
   if( snap != m_snapToCurve )
   {
     m_snapToCurve = snap;
+    if( m_isDraggingKey )
+    {
+      AbstractFCurveModel* curve = this->curveItem()->curve();
+      if( m_snapToCurve )
+        m_curveItem->deleteSelectedKeys();
+      else
+      {
+        this->addKeyAtPos( m_curveItem->keysBoundingRect().center() );
+      }
+      curve->update();
+    }
+    this->updateDraggedSnappedKey();
     emit this->snapToCurveChanged();
   }
+}
+
+class FCurveEditorScene::DraggedKey : public QGraphicsRectItem
+{
+public:
+  QGraphicsLineItem* m_vertLine;
+
+  DraggedKey( FCurveEditorScene * parent )
+  {
+    {
+      QPen linePen;
+      linePen.setColor( QColor( 255, 255, 255, 64 ) );
+      linePen.setCosmetic( true );
+      m_vertLine = new QGraphicsLineItem();
+      m_vertLine->setPen( linePen );
+      parent->addItem( m_vertLine );
+    }
+
+    parent->addItem( this );
+    this->setRect( QRectF( -4, -4, 8, 8 ) );
+    this->setFlag( QGraphicsItem::ItemIgnoresTransformations, true );
+    this->setPen( Qt::NoPen );
+    this->setBrush( QColor( 39, 168, 223 ) );
+  }
+
+  ~DraggedKey() { delete m_vertLine; }
+};
+
+// returns true if the key is displayed, false otherwise
+bool FCurveEditorScene::updateDraggedSnappedKey()
+{
+  if( m_isDraggingKey && m_snapToCurve )
+  {
+    if( m_draggedSnappedKey == NULL )
+      m_draggedSnappedKey = new DraggedKey( this );
+    return true;
+  }
+  else
+  {
+    if( m_draggedSnappedKey != NULL )
+    {
+      delete m_draggedSnappedKey;
+      m_draggedSnappedKey = NULL;
+    }
+    return false;
+  }
+}
+
+void FCurveEditorScene::addKeyAtPos( QPointF scenePos )
+{
+  Key h; h.pos = scenePos;
+  h.tanIn = QPointF( 1, 0 ); h.tanOut = h.tanIn;
+  h.tanInType = 0; h.tanOutType = 0;
+  m_curveItem->curve()->addKey( h );
+  size_t index = m_curveItem->curve()->getKeyCount() - 1;
+  m_curveItem->curve()->autoTangents( index );
+  m_curveItem->curve()->update();
+  m_curveItem->addKeyToSelection( index );
 }
 
 void FCurveEditorScene::mousePressEvent( QGraphicsSceneMouseEvent * e )
 {
   if( this->mode() == ADD && e->button() == Qt::LeftButton )
   {
-    // Adding a new Key
-    QPointF scenePos = e->scenePos();
-    Key h; h.pos = scenePos;
-    h.tanIn = QPointF( 1, 0 ); h.tanOut = h.tanIn;
-    h.tanInType = 0; h.tanOutType = 0;
-    m_curveItem->curve()->addKey( h );
-    size_t index = m_curveItem->curve()->getKeyCount() - 1;
-    m_curveItem->curve()->autoTangents( index );
-    m_curveItem->curve()->update();
     m_curveItem->clearKeySelection();
-    m_curveItem->addKeyToSelection( index );
+    if( !m_snapToCurve )
+    {
+      // Adding a new Key
+      this->addKeyAtPos( e->scenePos() );
+    }
     m_isDraggingKey = true;
+    this->updateDraggedSnappedPos( e->scenePos() );
     emit this->interactionBegin();
   }
   else
     Parent::mousePressEvent( e );
+}
+
+void FCurveEditorScene::updateDraggedSnappedPos( QPointF scenePos )
+{
+  if( this->updateDraggedSnappedKey() )
+  {
+    qreal x = scenePos.x();
+    m_draggedSnappedKey->setPos( QPointF(
+      x,
+      m_curveItem->curve()->evaluate( x )
+    ) );
+    m_draggedSnappedKey->m_vertLine->setLine(
+      x,
+      this->sceneRect().top(),
+      x,
+      this->sceneRect().bottom()
+    );
+    this->update();
+  }
 }
 
 void FCurveEditorScene::mouseMoveEvent( QGraphicsSceneMouseEvent * e )
@@ -69,17 +155,34 @@ void FCurveEditorScene::mouseMoveEvent( QGraphicsSceneMouseEvent * e )
   Parent::mouseMoveEvent( e );
   if( m_isDraggingKey )
   {
-    size_t index = m_curveItem->curve()->getKeyCount() - 1;
-    Key k = m_curveItem->curve()->getKey( index );
-    k.pos = e->scenePos();
-    m_curveItem->curve()->setKey( index, k );
-    e->widget()->repaint();
+    if( this->updateDraggedSnappedKey() )
+    {
+      this->updateDraggedSnappedPos( e->scenePos() );
+    }
+    else
+    {
+      size_t index = m_curveItem->curve()->getKeyCount() - 1;
+      Key k = m_curveItem->curve()->getKey( index );
+      k.pos = e->scenePos();
+      m_curveItem->curve()->setKey( index, k );
+      m_curveItem->curve()->autoTangents( index );
+      e->widget()->repaint();
+    }
   }
 }
 
 void FCurveEditorScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * e )
 {
   Parent::mouseReleaseEvent( e );
-  m_isDraggingKey = false;
-  emit this->interactionEnd();
+  if( m_isDraggingKey )
+  {
+    if( m_snapToCurve )
+      this->addKeyAtPos( QPointF(
+        e->scenePos().x(),
+        m_curveItem->curve()->evaluate( e->scenePos().x() )
+      ) );
+    m_isDraggingKey = false;
+    this->updateDraggedSnappedKey();
+    emit this->interactionEnd();
+  }
 }
