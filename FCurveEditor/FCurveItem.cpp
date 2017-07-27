@@ -167,7 +167,7 @@ public:
       }
 
       painter->setPen( pen );
-      const size_t n = widget->width() / 8;
+      const size_t n = widget->width() / 1;// 8;
       qreal step = er.width() / n;
       if( step == 0 )
         return;
