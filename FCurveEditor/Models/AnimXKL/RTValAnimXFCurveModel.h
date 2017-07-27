@@ -75,6 +75,7 @@ public:
   void deleteKey( size_t ) FTL_OVERRIDE;
   void setPreInfinityType( size_t ) FTL_OVERRIDE;
   void setPostInfinityType( size_t ) FTL_OVERRIDE;
+  void autoTangents( size_t ) FTL_OVERRIDE;
 };
 
 class RTValAnimXFCurveModel : public RTValAnimXFCurveConstModel
@@ -87,6 +88,7 @@ public:
   void deleteKey( size_t ) FTL_OVERRIDE;
   void setPreInfinityType( size_t ) FTL_OVERRIDE;
   void setPostInfinityType( size_t ) FTL_OVERRIDE;
+  void autoTangents( size_t ) FTL_OVERRIDE;
 };
 
 } // namespace FCurveEditor

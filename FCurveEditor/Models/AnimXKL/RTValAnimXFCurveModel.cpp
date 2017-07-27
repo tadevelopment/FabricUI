@@ -278,3 +278,19 @@ void RTValAnimXFCurveModel::setPostInfinityType( size_t i )
   m_val.callMethod( "", "setPostInfinityType", 1, &t );
   emit this->infinityTypesChanged();
 }
+
+void RTValAnimXFCurveVersionedModel::autoTangents( size_t id )
+{
+  assert( m_val.isValid() );
+  FabricCore::RTVal index = this->idToIndex( id );
+  m_val.callMethod( "", "autoTangent", 1, &index );
+  emit this->dirty();
+}
+
+void RTValAnimXFCurveModel::autoTangents( size_t id )
+{
+  assert( m_val.isValid() );
+  FabricCore::RTVal index = this->idToIndex( id );
+  m_val.callMethod( "", "autoTangent", 1, &index );
+  emit this->keyMoved( id );
+}

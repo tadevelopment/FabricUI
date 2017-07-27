@@ -275,7 +275,7 @@ void AnimxFCurveModel::autoTangents( size_t uiId )
       m_keys[index].key,
       ( index > 0 ? &m_keys[index - 1].key : NULL ),
       ( index < m_keys.size()-1 ? &m_keys[index + 1].key : NULL ),
-      adsk::CurveInterpolatorMethod::Bezier, // TODO expose as parameter
+      m_keys[index].key.curveInterpolationMethod(this->isWeighted()),
       ( dir == 0 ? m_keys[index].key.tanIn.x : m_keys[index].key.tanOut.x ),
       ( dir == 0 ? m_keys[index].key.tanIn.y : m_keys[index].key.tanOut.y )
     );
