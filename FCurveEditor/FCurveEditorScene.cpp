@@ -12,9 +12,9 @@ using namespace FabricUI::FCurveEditor;
 
 FCurveEditorScene::FCurveEditorScene( AbstractFCurveModel* model )
   : m_curveItem( new FCurveItem( this ) )
+  , m_draggedSnappedKey( NULL )
   , m_isDraggingKey( false )
   , m_snapToCurve( false )
-  , m_draggedSnappedKey( NULL )
 {
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionBegin, ( ), this, SIGNAL, FCurveEditorScene, interactionBegin, ( ) );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionEnd, ( ), this, SIGNAL, FCurveEditorScene, interactionEnd, ( ) );
