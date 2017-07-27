@@ -362,7 +362,8 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
     void updateColor()
     {
       this->setPen( Qt::NoPen );
-      this->setBrush( m_hovered ? QColor( 191, 191, 191 ) :
+      this->setBrush( 
+        ( m_hovered && m_parent->m_parent->m_scene->mode() != ADD ) ? QColor( 191, 191, 191 ) :
         m_selected ? QColor( 39, 168, 223 )
         : QColor( 128, 128, 128 )
       );
