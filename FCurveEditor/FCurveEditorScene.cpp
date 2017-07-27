@@ -34,27 +34,6 @@ void FCurveEditorScene::setMode( Mode m )
   emit this->modeChanged();
 }
 
-void FCurveEditorScene::setSnapToCurve( bool snap )
-{
-  if( snap != m_snapToCurve )
-  {
-    m_snapToCurve = snap;
-    if( m_isDraggingKey )
-    {
-      AbstractFCurveModel* curve = this->curveItem()->curve();
-      if( m_snapToCurve )
-        m_curveItem->deleteSelectedKeys();
-      else
-      {
-        this->addKeyAtPos( m_curveItem->keysBoundingRect().center() );
-      }
-      curve->update();
-    }
-    this->updateDraggedSnappedKey();
-    emit this->snapToCurveChanged();
-  }
-}
-
 class FCurveEditorScene::DraggedKey : public QGraphicsRectItem
 {
 public:
@@ -80,6 +59,30 @@ public:
 
   ~DraggedKey() { delete m_vertLine; }
 };
+
+void FCurveEditorScene::setSnapToCurve( bool snap )
+{
+  if( snap != m_snapToCurve )
+  {
+    m_snapToCurve = snap;
+    if( m_isDraggingKey )
+    {
+      AbstractFCurveModel* curve = this->curveItem()->curve();
+      if( m_snapToCurve )
+      {
+        this->updateDraggedSnappedPos( curve->getKey( curve->getKeyCount() - 1 ).pos );
+        m_curveItem->deleteSelectedKeys();
+      }
+      else
+      {
+        this->addKeyAtPos( m_draggedSnappedKey->scenePos() );
+      }
+      curve->update();
+    }
+    this->updateDraggedSnappedKey();
+    emit this->snapToCurveChanged();
+  }
+}
 
 // returns true if the key is displayed, false otherwise
 bool FCurveEditorScene::updateDraggedSnappedKey()
