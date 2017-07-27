@@ -236,6 +236,8 @@ QRectF FCurveItem::selectedKeysBoundingRect() const {
   return m_curveShape->selectedKeysBoundingRect(); 
 }
 
+const qreal TangentToSpaceRatio = 3;
+
 class FCurveItem::KeyWidget : public QGraphicsWidget
 {
   FCurveItem* m_parent;
@@ -294,7 +296,7 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
         ;
         if( m_tangent->m_inNotOut )
         {
-          h.tanIn = -( event->scenePos() - m_parent->scenePos() );
+          h.tanIn = -( event->scenePos() - m_parent->scenePos() ) * TangentToSpaceRatio;
           if( h.tanIn.x() < 0 )
             h.tanIn.setX( 0 );
           if( !splitTangents )
@@ -302,7 +304,7 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
         }
         else
         {
-          h.tanOut = ( event->scenePos() - m_parent->scenePos() );
+          h.tanOut = ( event->scenePos() - m_parent->scenePos() ) * TangentToSpaceRatio;
           if( h.tanOut.x() < 0 )
             h.tanOut.setX( 0 );
           if( !splitTangents )
@@ -335,7 +337,7 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
 
     void setValue( const Key& h )
     {
-      const QPointF p = m_inNotOut ? -h.tanIn : h.tanOut;
+      const QPointF p = ( m_inNotOut ? -h.tanIn : h.tanOut ) / TangentToSpaceRatio;
       m_line->setLine( QLineF( QPointF( 0, 0 ), p ) );
       m_end->m_posW->setPos( p );
     }
