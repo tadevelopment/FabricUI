@@ -178,8 +178,12 @@ void FCurveEditor::veTanTypeEditFinished()
     if( prop == FCurveItem::TAN_IN || prop == FCurveItem::TAN_OUT )
     {
       size_t& t = ( prop == FCurveItem::TAN_IN ? h.tanInType : h.tanOutType );
-      t = m_keyValueEditor->m_tanType->currentIndex();
-      m_scene->curveItem()->curve()->setKey( editedKey, h );
+      size_t newT = m_keyValueEditor->m_tanType->currentIndex();
+      if( t != newT )
+      {
+        t = newT;
+        m_scene->curveItem()->curve()->setKey( editedKey, h );
+      }
     }
   }
 }
