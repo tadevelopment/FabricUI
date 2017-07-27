@@ -52,6 +52,7 @@ class FCurveEditor : public QFrame
   QAction* m_keysFrameAllAction;
   QAction* m_keysFrameSelectedAction;
   QAction* m_keysDeleteAction;
+  QAction* m_autoTangentsAction;
   QAction* m_tangentsZeroSlopeAction;
 
   QAction* m_presetRampIn;
@@ -106,6 +107,7 @@ private slots:
   void onDeleteSelectedKeys();
   void onSelectAllKeys();
   void onDeselectAllKeys();
+  void onAutoTangents();
   void onTangentsZeroSlope();
   void onPresetRampIn();
   void onPresetRampOut();

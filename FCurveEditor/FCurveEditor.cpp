@@ -27,17 +27,6 @@
 
 using namespace FabricUI::FCurveEditor;
 
-// TODO : remove
-inline void SetDefaultTangents( Key& key, QGraphicsView const* view )
-{
-  // heuristic for tangents, based on the current zoom level
-  key.tanIn.setX( 20 / view->transform().m11() );
-  key.tanOut.setX( key.tanIn.x() );
-  key.tanIn.setY( 0 );
-  key.tanOut.setY( 0 );
-  key.tanInType = 0; key.tanOutType = 0;
-}
-
 class FCurveEditor::KeyValueEditor : public QFrame
 {
   FCurveEditor* m_parent;
@@ -365,6 +354,7 @@ FCurveEditor::FCurveEditor()
   DEFINE_FCE_ACTION( m_keysFrameAllAction, "Frame All Keys", onFrameAllKeys, Qt::Key_A )
   DEFINE_FCE_ACTION( m_keysFrameSelectedAction, "Frame Selected Keys", onFrameSelectedKeys, Qt::Key_F )
   DEFINE_FCE_ACTION( m_keysDeleteAction, "Delete selected Keys", onDeleteSelectedKeys, Qt::Key_Delete )
+  DEFINE_FCE_ACTION_NOSHORTCUT( m_autoTangentsAction, "Auto Tangents", onAutoTangents )
   DEFINE_FCE_ACTION_NOSHORTCUT( m_tangentsZeroSlopeAction, "Zero-slope Tangents", onTangentsZeroSlope )
   DEFINE_FCE_ACTION_NOSHORTCUT( m_presetRampIn, "Ramp In", onPresetRampIn )
   DEFINE_FCE_ACTION_NOSHORTCUT( m_presetRampOut, "Ramp Out", onPresetRampOut )
@@ -586,13 +576,20 @@ void FCurveEditor::onClearAllKeys()
   this->onDeleteSelectedKeys();
 }
 
+void FCurveEditor::onAutoTangents()
+{
+  const std::set<size_t>& selected = m_scene->curveItem()->selectedKeys();
+  for( std::set<size_t>::const_iterator it = selected.begin(); it != selected.end(); it++ )
+    m_scene->curveItem()->curve()->autoTangents( *it );
+}
+
 void FCurveEditor::onTangentsZeroSlope()
 {
   const std::set<size_t>& selected = m_scene->curveItem()->selectedKeys();
   for( std::set<size_t>::const_iterator it = selected.begin(); it != selected.end(); it++ )
   {
     Key key = m_scene->curveItem()->curve()->getKey( *it );
-    SetDefaultTangents( key, m_rview->view() );
+    key.tanIn.setY( 0 ); key.tanOut.setY( 0 );
     m_scene->curveItem()->curve()->setKey( *it, key );
   }
 }
@@ -719,6 +716,7 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   keysMenu.addAction(this->m_keysFrameAllAction);
   keysMenu.addAction(this->m_keysFrameSelectedAction);
   keysMenu.addSeparator();
+  keysMenu.addAction(this->m_autoTangentsAction);
   keysMenu.addAction(this->m_tangentsZeroSlopeAction);
   keysMenu.addAction( m_toolBar->m_snapToCurveAction );
 
