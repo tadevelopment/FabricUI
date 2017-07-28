@@ -13,6 +13,7 @@ namespace FabricUI {
 namespace FCurveEditor
 {
   class FCurveEditor;
+  class RTValAnimXFCurveDFGController;
 }
 
 namespace ValueEditor {
@@ -23,8 +24,7 @@ class RTValFCurveViewItem : public BaseViewItem
 {
   Q_OBJECT
 
-  class RTValAnimXFCurveDFGController;
-  RTValAnimXFCurveDFGController* m_model;
+  FCurveEditor::RTValAnimXFCurveDFGController* m_model;
   class Editor;
   Editor* m_editor;
   class ExpandedDialog;
@@ -51,8 +51,6 @@ public:
 
 private slots:
   void onViewValueChanged();
-  void onEditorInteractionBegin();
-  void onEditorInteractionEnd();
   void expand();
   inline void emitInteractionEnd() { emit this->interactionEnd( true ); }
 };

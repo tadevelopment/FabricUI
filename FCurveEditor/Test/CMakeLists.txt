@@ -12,8 +12,9 @@ foreach( Test ${Tests} )
   target_link_libraries( ${TestName} PRIVATE FCurveEditor )
   add_dependencies( ${TestName} qss )
 endforeach()
-target_link_libraries( FCurveEditorTest PRIVATE AnimXFCurveModel )
-target_link_libraries( RTValFCurveEditorTest PRIVATE RTValAnimXFCurveModel )
+target_link_libraries( 02_FCurveEditorTest PRIVATE AnimXFCurveModel )
+target_link_libraries( 03_RTValFCurveEditorTest PRIVATE RTValAnimXFCurveModel )
+target_link_libraries( 04_RTValFCurveUndoRedoTest PRIVATE RTValAnimXFCurveDFGController )
 
 if( MSVC_VERSION )
   message( STATUS
