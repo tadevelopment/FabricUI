@@ -101,9 +101,12 @@ DFGConfig::DFGConfig()
   GET_PARAMETER( varLabelDefaultColor, QColor( 190, 93, 90 ) );
 
   predefinedPorts.push_back( PredefinedPort( "Integer", "Integer", "i" ) );
-  predefinedPorts.push_back( PredefinedPort( "Integer [0-100]", "Integer", "i", "", "" ) ); // TODO : metadata
-  predefinedPorts.push_back( PredefinedPort( "Scalar", "Scalar", "s" ) );
+  predefinedPorts.push_back( PredefinedPort( "Integer [0-100]", "Integer", "i", "", "{ \"uiRange\" : \"(0, 100)\" }" ) );
+  predefinedPorts.push_back( PredefinedPort( "Scalar", "Scalar", "v" ) );
+  predefinedPorts.push_back( PredefinedPort( "Scalar [0.0-1.0]", "Scalar", "v", "", "{ \"uiRange\" : \"(0.0, 1.0)\" }" ) );
   predefinedPorts.push_back( PredefinedPort( "Vec3", "Vec3", "vec" ) );
+  predefinedPorts.push_back( PredefinedPort( "Color", "Color", "col" ) );
+  predefinedPorts.push_back( PredefinedPort( "FCurve", "AnimX::AnimCurve", "curve", "AnimX" ) );
 
   GET_PARAMETER( predefinedPorts, predefinedPorts );
 
