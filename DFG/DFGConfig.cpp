@@ -10,8 +10,11 @@ using namespace FabricServices;
 using namespace FabricUI::DFG;
 using namespace FTL;
 
+namespace FabricUI {
+namespace Util {
+
 template<>
-JSONValue* FabricUI::Util::ConfigSection::createValue( const DFGConfig::PredefinedPort v ) const
+JSONValue* ConfigSection::createValue( const DFGConfig::PredefinedPort v ) const
 {
   JSONObject* dst = new JSONObject();
   dst->insert( "name", createValue( v.name ) );
@@ -26,7 +29,7 @@ JSONValue* FabricUI::Util::ConfigSection::createValue( const DFGConfig::Predefin
 }
 
 template<>
-DFGConfig::PredefinedPort FabricUI::Util::ConfigSection::getValue( const JSONValue* entry ) const
+DFGConfig::PredefinedPort ConfigSection::getValue( const JSONValue* entry ) const
 {
   const JSONObject* obj = entry->cast<JSONObject>();
   DFGConfig::PredefinedPort dst(
@@ -44,7 +47,7 @@ DFGConfig::PredefinedPort FabricUI::Util::ConfigSection::getValue( const JSONVal
 
 // TODO : make the vector getter/setters generic template functions
 template<>
-JSONValue* FabricUI::Util::ConfigSection::createValue( const std::vector<DFGConfig::PredefinedPort> v ) const
+JSONValue* ConfigSection::createValue( const std::vector<DFGConfig::PredefinedPort> v ) const
 {
   JSONArray* array = new JSONArray();
   for( std::vector<DFGConfig::PredefinedPort>::const_iterator it = v.begin(); it != v.end(); it++ )
@@ -53,7 +56,7 @@ JSONValue* FabricUI::Util::ConfigSection::createValue( const std::vector<DFGConf
 }
 
 template<>
-std::vector<DFGConfig::PredefinedPort> FabricUI::Util::ConfigSection::getValue( const JSONValue* entry ) const
+std::vector<DFGConfig::PredefinedPort> ConfigSection::getValue( const JSONValue* entry ) const
 {
   const JSONArray* array = entry->cast<JSONArray>();
   std::vector<DFGConfig::PredefinedPort> dst;
@@ -61,6 +64,9 @@ std::vector<DFGConfig::PredefinedPort> FabricUI::Util::ConfigSection::getValue( 
     dst.push_back( getValue<DFGConfig::PredefinedPort>( *it ) );
   return dst;
 }
+
+} // namespace FabricUI
+} // namespace Util
 
 DFGConfig::DFGConfig()
 : defaultFont("Roboto", 10),
