@@ -215,7 +215,7 @@ class FCurveEditor::SetInfinityTypeAction : public AbstractAction
   FCurveEditor* m_parent;
   size_t m_type;
 public:
-  enum Direction { PRE, POST, PREPOST };
+  enum Direction { PRE, POST, DIRCOUNT };
   Direction m_direction;
 
   SetInfinityTypeAction( FCurveEditor* parent, Direction direction, size_t type )
@@ -228,9 +228,9 @@ public:
 
   void onTriggered() FTL_OVERRIDE
   {
-    if( m_direction == PRE || m_direction == PREPOST )
+    if( m_direction == PRE )
       m_parent->m_scene->curveItem()->curve()->setPreInfinityType( m_type );
-    if( m_direction == POST || m_direction == PREPOST )
+    if( m_direction == POST )
       m_parent->m_scene->curveItem()->curve()->setPostInfinityType( m_type );
   }
 
@@ -250,7 +250,7 @@ class FCurveEditor::ToolBar : public QWidget
 
 public:
   QPushButton* m_snapToCurveButton;
-  std::vector<SetInfinityTypeAction*> m_preInf, m_postInf, m_prePostInf;
+  std::vector<SetInfinityTypeAction*> m_infTypes[SetInfinityTypeAction::DIRCOUNT];
   QAction* m_snapToCurveAction;
   QAction* m_modeActions[MODE_COUNT];
 
@@ -456,9 +456,8 @@ void FCurveEditor::onInfinityTypesChanged()
   AbstractFCurveModel* curve = m_scene->curveItem()->curve();
   for( size_t t = 0; t < curve->infinityTypeCount(); t++ )
   {
-    m_toolBar->m_preInf[t]->setValue( t == curve->getPreInfinityType() );
-    m_toolBar->m_postInf[t]->setValue( t == curve->getPostInfinityType() );
-    m_toolBar->m_prePostInf[t]->setValue( t == curve->getPreInfinityType() && t == curve->getPostInfinityType() );
+    m_toolBar->m_infTypes[SetInfinityTypeAction::PRE][t]->setValue( t == curve->getPreInfinityType() );
+    m_toolBar->m_infTypes[SetInfinityTypeAction::POST][t]->setValue( t == curve->getPostInfinityType() );
   }
 }
 
@@ -662,15 +661,9 @@ void FCurveEditor::linkToScene()
 
   m_rview->fitInView( m_scene->curveItem()->keysBoundingRect() );
 
-  for( size_t i = 0; i < 3; i++ )
+  for( size_t i = 0; i < SetInfinityTypeAction::DIRCOUNT; i++ )
   {
-    std::vector<SetInfinityTypeAction*>* actions = NULL;
-    switch( i )
-    {
-    case 0: actions = &m_toolBar->m_preInf; break;
-    case 1: actions = &m_toolBar->m_postInf; break;
-    case 2: actions = &m_toolBar->m_prePostInf; break;
-    }
+    std::vector<SetInfinityTypeAction*>* actions = &(m_toolBar->m_infTypes[i]);
     for( size_t j = 0; j < actions->size(); j++ )
       ( *actions )[j]->deleteLater();
     actions->clear();
@@ -766,17 +759,15 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   contextMenu.addMenu( &infTypesMenu );
   QMenu preInfMenu( "Pre-Infinity", this );
   QMenu postInfMenu( "Post-Infinity", this );
-  QMenu prePostInfMenu( "Both", this );
   {
-    for( int i = 0; i < 3; i++ )
+    for( int i = 0; i < SetInfinityTypeAction::DIRCOUNT; i++ )
     {
-      const std::vector<SetInfinityTypeAction*>* actions = NULL;
+      const std::vector<SetInfinityTypeAction*>* actions = &(m_toolBar->m_infTypes[i]);
       QMenu* menu = NULL;
       switch( i )
       {
-      case 0: actions = &m_toolBar->m_preInf; menu = &preInfMenu; break;
-      case 1: actions = &m_toolBar->m_postInf; menu = &postInfMenu; break;
-      case 2: actions = &m_toolBar->m_prePostInf; menu = &prePostInfMenu; break;
+      case 0: menu = &preInfMenu; break;
+      case 1: menu = &postInfMenu; break;
       }
       for( size_t j = 0; j < actions->size(); j++ )
         menu->addAction( (*actions)[j] );
