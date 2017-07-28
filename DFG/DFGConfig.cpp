@@ -8,6 +8,59 @@
 
 using namespace FabricServices;
 using namespace FabricUI::DFG;
+using namespace FTL;
+
+template<>
+JSONValue* FabricUI::Util::ConfigSection::createValue( const DFGConfig::PredefinedPort v ) const
+{
+  JSONObject* dst = new JSONObject();
+  dst->insert( "name", createValue( v.name ) );
+  dst->insert( "typeSpec", createValue( v.typeSpec ) );
+  if( !v.portName.isEmpty() )
+    dst->insert( "portName", createValue( v.portName ) );
+  if( !v.extDep.isEmpty() )
+    dst->insert( "extDep", createValue( v.extDep ) );
+  if( !v.metaData.isEmpty() )
+    dst->insert( "metaData", createValue( v.metaData ) );
+  return dst;
+}
+
+template<>
+DFGConfig::PredefinedPort FabricUI::Util::ConfigSection::getValue( const JSONValue* entry ) const
+{
+  const JSONObject* obj = entry->cast<JSONObject>();
+  DFGConfig::PredefinedPort dst(
+    getValue<QString>( obj->get( "name" ) ),
+    getValue<QString>( obj->get( "typeSpec" ) )
+  );
+  if( obj->has( "portName" ) )
+    dst.portName = getValue<QString>( obj->get( "portName" ) );
+  if( obj->has( "extDep" ) )
+    dst.extDep = getValue<QString>( obj->get( "extDep" ) );
+  if( obj->has( "metaData" ) )
+    dst.metaData = getValue<QString>( obj->get( "metaData" ) );
+  return dst;
+}
+
+// TODO : make the vector getter/setters generic template functions
+template<>
+JSONValue* FabricUI::Util::ConfigSection::createValue( const std::vector<DFGConfig::PredefinedPort> v ) const
+{
+  JSONArray* array = new JSONArray();
+  for( std::vector<DFGConfig::PredefinedPort>::const_iterator it = v.begin(); it != v.end(); it++ )
+    array->push_back( createValue<DFGConfig::PredefinedPort>( *it ) );
+  return array;
+}
+
+template<>
+std::vector<DFGConfig::PredefinedPort> FabricUI::Util::ConfigSection::getValue( const JSONValue* entry ) const
+{
+  const JSONArray* array = entry->cast<JSONArray>();
+  std::vector<DFGConfig::PredefinedPort> dst;
+  for( JSONArray::const_iterator it = array->begin(); it != array->end(); it++ )
+    dst.push_back( getValue<DFGConfig::PredefinedPort>( *it ) );
+  return dst;
+}
 
 DFGConfig::DFGConfig()
 : defaultFont("Roboto", 10),
@@ -52,12 +105,12 @@ DFGConfig::DFGConfig()
   predefinedPorts.push_back( PredefinedPort( "Scalar", "Scalar", "s" ) );
   predefinedPorts.push_back( PredefinedPort( "Vec3", "Vec3", "vec" ) );
 
+  GET_PARAMETER( predefinedPorts, predefinedPorts );
+
   GET_PARAMETER( klEditorConfig.codeBackgroundColor, defaultFontColor );
   GET_PARAMETER( klEditorConfig.codeFontColor, defaultBackgroundColor );
 
   Util::ConfigSection& dataTypes = cfg.getOrCreateSection( "dataTypes" );
-
-
 
 #define REGISTER_DATA_TYPE_COLOR( typeName, defaultColor ) \
   registerDataTypeColor( typeName, dataTypes.getOrCreateValue( typeName, defaultColor ) )
