@@ -647,6 +647,21 @@ namespace DFG {
       QString m_portname;
     };
 
+    class AbstractAction : public QAction
+    {
+      Q_OBJECT
+
+    public:
+      AbstractAction( QObject* parent ) : QAction( parent )
+      {
+        connect( this, SIGNAL(triggered()),
+                 this, SLOT(onTriggered()) );
+      }
+
+    protected slots:
+      virtual void onTriggered() = 0;
+    };
+
     class CreateAllTimelinePortsAction : public QAction
     {
       Q_OBJECT

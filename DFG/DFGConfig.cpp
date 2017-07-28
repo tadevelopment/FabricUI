@@ -47,6 +47,11 @@ DFGConfig::DFGConfig()
   GET_PARAMETER( varNodeDefaultColor, QColor( 216, 140, 106 ) );
   GET_PARAMETER( varLabelDefaultColor, QColor( 190, 93, 90 ) );
 
+  predefinedPorts.push_back( PredefinedPort( "Integer", "Integer", "i" ) );
+  predefinedPorts.push_back( PredefinedPort( "Integer [0-100]", "Integer", "i", "", "" ) ); // TODO : metadata
+  predefinedPorts.push_back( PredefinedPort( "Scalar", "Scalar", "s" ) );
+  predefinedPorts.push_back( PredefinedPort( "Vec3", "Vec3", "vec" ) );
+
   GET_PARAMETER( klEditorConfig.codeBackgroundColor, defaultFontColor );
   GET_PARAMETER( klEditorConfig.codeFontColor, defaultBackgroundColor );
 

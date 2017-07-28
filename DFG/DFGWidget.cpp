@@ -827,6 +827,37 @@ QMenu *DFGWidget::connectionContextMenuCallback(
   return result;
 }
 
+class CreatePredefinedPortAction : public AbstractAction
+{
+  DFGWidget* m_dfgWidget;
+  DFGConfig::PredefinedPort m_preset;
+
+public:
+  CreatePredefinedPortAction(
+    DFGWidget* dfgWidget,
+    QObject* parent,
+    const DFGConfig::PredefinedPort& preset
+  ) : AbstractAction( parent )
+    , m_dfgWidget( dfgWidget )
+    , m_preset( preset )
+  {
+    this->setText( "Create " + m_preset.name + " Port" );
+  }
+
+protected:
+  void onTriggered() FTL_OVERRIDE
+  {
+    m_dfgWidget->getUIController()->cmdAddPort(
+      m_preset.portName,
+      FabricCore::DFGPortType_In,
+      m_preset.typeSpec,
+      QString(),
+      m_preset.extDep,
+      m_preset.metaData
+    );
+  }
+};
+
 QMenu *DFGWidget::sidePanelContextMenuCallback(
   FabricUI::GraphView::SidePanel* panel,
   void* userData
@@ -882,10 +913,22 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
       timelinePortsMenu->addSeparator();
       timelinePortsMenu->addAction( new CreateAllTimelinePortsAction( graphWidget, timelinePortsMenu, true /* createOnlyMissingPorts */, canAddAllTimelinePorts ) );
     }
+  }
+
+  // Predefined Ports
+  {
+    QMenu* predefinedPortsMenu = result->addMenu( "Predefined ports" );
+    const std::vector<DFGConfig::PredefinedPort>& predefinedPorts = graphWidget->getConfig().predefinedPorts;
+    predefinedPortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output || predefinedPorts.empty() );
+    if( predefinedPorts.empty() )
+      predefinedPortsMenu->setToolTip( "No predefined ports" );
+
+    for( std::vector<DFGConfig::PredefinedPort>::const_iterator it = predefinedPorts.begin(); it != predefinedPorts.end(); it++ )
+      predefinedPortsMenu->addAction( new CreatePredefinedPortAction( graphWidget, predefinedPortsMenu, *it ) );
 
     result->addSeparator();
   }
-  
+
   bool canDeleteAllPorts = (    editable
                             &&  exec.getExecPortCount() > 1
                             && (   (numPortsIn  > 0 && portType == FabricUI::GraphView::PortType_Output)
