@@ -81,6 +81,23 @@ protected:
   }
 };
 
+class RedoAction : public AbstractAction
+{
+public:
+  RedoAction( QObject* parent ) : AbstractAction( parent ) {}
+
+protected:
+  void onTriggered()
+  {
+    std::cout << "Undo" << std::endl;
+    FabricUI::Commands::CommandManager::getCommandManager()->redoCommand();
+    FabricCore::RTVal val = binding.getArgValue( "curve" );
+    s_model->setValue( val );
+    s_model->update();
+  }
+};
+
+
 int main()
 {
   int argc = 0;
@@ -126,6 +143,9 @@ int main()
   UndoAction* undoAction = new UndoAction( editor );
   undoAction->setShortcut( QKeySequence::Undo );
   editor->addAction( undoAction );
+  RedoAction* redoAction = new RedoAction( editor );
+  redoAction->setShortcut( QKeySequence::Redo );
+  editor->addAction( redoAction );
 
   app.exec();
   return 0;
