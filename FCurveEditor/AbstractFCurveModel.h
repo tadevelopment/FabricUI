@@ -49,7 +49,7 @@ public:
   virtual void setPreInfinityType( size_t ) = 0;
   virtual void setPostInfinityType( size_t ) = 0;
 
-  virtual void autoTangents( size_t ) {}
+  virtual void autoTangents( size_t ) = 0;
 
   virtual qreal evaluate( qreal v ) const = 0;
   // TODO : evaluate arrays, to reduce the overhead

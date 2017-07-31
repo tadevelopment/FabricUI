@@ -35,7 +35,7 @@ void RTValAnimXFCurveDFGController::setPath( const char* bindingId, const char* 
   m_dfgPortPath = dfgPortPath;
 }
 
-void RTValAnimXFCurveDFGController::setKey( size_t i, Key h )
+void RTValAnimXFCurveDFGController::setKey( size_t i, Key h, bool autoTangents )
 {
   FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
   SynchronizeKLReg();
@@ -46,12 +46,23 @@ void RTValAnimXFCurveDFGController::setKey( size_t i, Key h )
   args["id"] = QString::number( i );
   AddKeyValueToArgs( args, h );
   args["interactionEnd"] = m_isInteracting ? "false" : "true";
+  args["autoTangent"] = autoTangents ? "true" : "false";
   QString cmdName = "AnimX_SetKeyframe";
   manager->createCommand( cmdName, args, true,
     m_isInteracting ? m_interactionId : FabricUI::Commands::CommandManager::NoCanMergeID );
   m_lastCommand = cmdName;
   m_lastArgs = args;
   emit this->dirty();
+}
+
+void RTValAnimXFCurveDFGController::setKey( size_t i, Key k )
+{
+  this->setKey( i, k, false );
+}
+
+void RTValAnimXFCurveDFGController::autoTangents( size_t i )
+{
+  this->setKey( i, this->getKey( i ), true );
 }
 
 inline QString SerializeQS( const size_t* indices, const size_t nbIndices )

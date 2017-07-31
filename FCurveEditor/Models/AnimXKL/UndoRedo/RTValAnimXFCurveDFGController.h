@@ -34,7 +34,9 @@ public:
   void setPath( const char* bindingId, const char* dfgPortPath );
 
   // AbstractFCurveModel
+  void setKey( size_t i, Key h, bool autoTangents );
   void setKey( size_t i, Key h ) FTL_OVERRIDE;
+  void autoTangents( size_t ) FTL_OVERRIDE;
   void moveKeys( const size_t* indices, const size_t nbIndices, QPointF delta ) FTL_OVERRIDE;
   void addKey( Key k, bool useKey );
   void addKey() FTL_OVERRIDE;
