@@ -113,11 +113,11 @@ RTValFCurveViewItem::RTValFCurveViewItem(
       ( i == 0 ? m_editor : m_expandedDialog->editor() );
     QOBJECT_CONNECT(
       editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionBegin, ( ),
-      this, SLOT, FabricUI::FCurveEditor::RTValAnimXFCurveDFGController, onInteractionBegin, ( )
+      m_model, SLOT, FabricUI::FCurveEditor::RTValAnimXFCurveDFGController, onInteractionBegin, ( )
     );
     QOBJECT_CONNECT(
       editor, SIGNAL, FabricUI::FCurveEditor::FCurveEditor, interactionEnd, ( ),
-      this, SLOT, FabricUI::FCurveEditor::RTValAnimXFCurveDFGControllerm, onInteractionEnd, ( )
+      m_model, SLOT, FabricUI::FCurveEditor::RTValAnimXFCurveDFGController, onInteractionEnd, ( )
     );
   }
 
