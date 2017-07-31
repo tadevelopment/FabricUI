@@ -30,31 +30,24 @@ public:
 
   RTValAnimXFCurveDFGController() : m_isInteracting( false ) {}
 
+  // DFG Path
   void setPath( const char* bindingId, const char* dfgPortPath );
 
+  // AbstractFCurveModel
   void setKey( size_t i, Key h ) FTL_OVERRIDE;
-
   void moveKeys( const size_t* indices, const size_t nbIndices, QPointF delta ) FTL_OVERRIDE;
-
   void addKey( Key k, bool useKey );
-
   void addKey() FTL_OVERRIDE;
-
   void addKey( Key k ) FTL_OVERRIDE;
-
   void deleteKey( size_t i ) FTL_OVERRIDE;
-
   void deleteKeys( const size_t* indices, const size_t nbIndices ) FTL_OVERRIDE;
-
   void setPreInfinityType( size_t i ) FTL_OVERRIDE;
-
   void setPostInfinityType( size_t i ) FTL_OVERRIDE;
 
   inline void emitDirty() { emit this->dirty(); }
 
 public slots:
   void onInteractionBegin();
-
   void onInteractionEnd();
 };
 
