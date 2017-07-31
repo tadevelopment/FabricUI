@@ -97,7 +97,7 @@ void RTValAnimXFCurveDFGController::moveKeys( const size_t* indices, const size_
   emit this->dirty();
 }
 
-void RTValAnimXFCurveDFGController::addKey( Key k, bool useKey )
+void RTValAnimXFCurveDFGController::addKey( Key k, bool useKey, bool autoTangent )
 {
   FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
   SynchronizeKLReg();
@@ -105,18 +105,9 @@ void RTValAnimXFCurveDFGController::addKey( Key k, bool useKey )
   args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
   if( useKey )
     AddKeyValueToArgs( args, k );
+  args["autoTangent"] = autoTangent ? "true" : "false";
   manager->createCommand( "AnimX_PushKeyframe", args );
   emit this->dirty();
-}
-
-void RTValAnimXFCurveDFGController::addKey()
-{
-  addKey( Key(), false );
-}
-
-void RTValAnimXFCurveDFGController::addKey( Key k )
-{
-  addKey( k, true );
 }
 
 void RTValAnimXFCurveDFGController::deleteKey( size_t i )

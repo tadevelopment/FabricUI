@@ -110,9 +110,8 @@ void FCurveEditorScene::addKeyAtPos( QPointF scenePos )
   Key h; h.pos = scenePos;
   h.tanIn = QPointF( 1, 0 ); h.tanOut = h.tanIn;
   h.tanInType = 0; h.tanOutType = 0;
-  m_curveItem->curve()->addKey( h );
+  m_curveItem->curve()->addKey( h, true );
   size_t index = m_curveItem->curve()->getKeyCount() - 1;
-  m_curveItem->curve()->autoTangents( index );
   m_curveItem->curve()->update();
   m_curveItem->addKeyToSelection( index );
 }

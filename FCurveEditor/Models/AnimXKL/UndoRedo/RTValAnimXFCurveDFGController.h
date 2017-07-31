@@ -38,9 +38,10 @@ public:
   void setKey( size_t i, Key h ) FTL_OVERRIDE;
   void autoTangents( size_t ) FTL_OVERRIDE;
   void moveKeys( const size_t* indices, const size_t nbIndices, QPointF delta ) FTL_OVERRIDE;
-  void addKey( Key k, bool useKey );
-  void addKey() FTL_OVERRIDE;
-  void addKey( Key k ) FTL_OVERRIDE;
+  void addKey( Key k, bool useKey, bool autoTangent );
+  void addKey() FTL_OVERRIDE { this->addKey( Key(), false, false ); }
+  void addKey( Key k ) FTL_OVERRIDE { this->addKey( k, true, false ); };
+  void addKey( Key k, bool autoTangent ) FTL_OVERRIDE { this->addKey( k, true, autoTangent ); }
   void deleteKey( size_t i ) FTL_OVERRIDE;
   void deleteKeys( const size_t* indices, const size_t nbIndices ) FTL_OVERRIDE;
   void setPreInfinityType( size_t i ) FTL_OVERRIDE;

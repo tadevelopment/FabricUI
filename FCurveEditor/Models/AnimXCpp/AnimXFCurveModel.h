@@ -43,8 +43,6 @@ public:
 
   AnimxFCurveModel();
 
-  void addKey( const Key& );
-
   // AbstractFCurveModel
   size_t getKeyCount() const FTL_OVERRIDE { return m_keys.size(); }
   Key getKey( size_t uiId ) const FTL_OVERRIDE;
