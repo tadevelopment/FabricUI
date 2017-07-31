@@ -171,7 +171,7 @@ void FCurveEditorScene::mouseMoveEvent( QGraphicsSceneMouseEvent * e )
       Key k = m_curveItem->curve()->getKey( index );
       k.pos = e->scenePos();
       m_curveItem->curve()->setKey( index, k );
-      m_curveItem->curve()->autoTangents( index );
+      m_curveItem->curve()->autoTangent( index );
       e->widget()->repaint();
     }
   }

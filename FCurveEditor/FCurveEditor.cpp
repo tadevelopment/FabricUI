@@ -599,7 +599,7 @@ void FCurveEditor::onAutoTangents()
 {
   const std::set<size_t>& selected = m_scene->curveItem()->selectedKeys();
   for( std::set<size_t>::const_iterator it = selected.begin(); it != selected.end(); it++ )
-    m_scene->curveItem()->curve()->autoTangents( *it );
+    m_scene->curveItem()->curve()->autoTangent( *it );
 }
 
 void FCurveEditor::onTangentsZeroSlope()

@@ -283,7 +283,7 @@ void RTValAnimXFCurveModel::setPostInfinityType( size_t i )
   emit this->infinityTypesChanged();
 }
 
-void RTValAnimXFCurveVersionedModel::autoTangents( size_t id )
+void RTValAnimXFCurveVersionedModel::autoTangent( size_t id )
 {
   assert( m_val.isValid() );
   FabricCore::RTVal index = this->idToIndex( id );
@@ -291,7 +291,7 @@ void RTValAnimXFCurveVersionedModel::autoTangents( size_t id )
   emit this->dirty();
 }
 
-void RTValAnimXFCurveModel::autoTangents( size_t id )
+void RTValAnimXFCurveModel::autoTangent( size_t id )
 {
   assert( m_val.isValid() );
   FabricCore::RTVal index = this->idToIndex( id );

@@ -51,7 +51,7 @@ public:
   void setKey( size_t uiId, Key ) FTL_OVERRIDE;
   void addKey() FTL_OVERRIDE;
   void deleteKey( size_t uiId ) FTL_OVERRIDE;
-  void autoTangents( size_t ) FTL_OVERRIDE;
+  void autoTangent( size_t ) FTL_OVERRIDE;
   qreal evaluate( qreal v ) const FTL_OVERRIDE;
   size_t tangentTypeCount() const FTL_OVERRIDE { return size_t(adsk::TangentType::StepNext) + 1; }
   QString tangentTypeName( size_t i ) const FTL_OVERRIDE;

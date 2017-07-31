@@ -264,7 +264,7 @@ void AnimxFCurveModel::deleteKey( size_t uiId )
 }
 
 
-void AnimxFCurveModel::autoTangents( size_t uiId )
+void AnimxFCurveModel::autoTangent( size_t uiId )
 {
   if( m_keys.size() == 1 )
     return;
