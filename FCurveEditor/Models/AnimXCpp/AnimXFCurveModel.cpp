@@ -231,12 +231,6 @@ void AnimxFCurveModel::addKey()
   emit this->keyAdded();
 }
 
-void AnimxFCurveModel::addKey( const Key& h )
-{
-  this->addKey();
-  this->setKey( m_keys.size() - 1, h );
-}
-
 void AnimxFCurveModel::deleteKey( size_t uiId )
 {
   size_t index = m_uiIdToIndex[uiId];

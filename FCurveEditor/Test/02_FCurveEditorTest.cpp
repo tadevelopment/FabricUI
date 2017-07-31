@@ -28,7 +28,7 @@ int main()
       QPointF( xScale * ( 1 - 2 * RandFloat() ), yScale * ( 1 - 2 * RandFloat() ) ) * 0.3 );
     h.tanInType = 0;
     h.tanOutType = 0;
-    curve.addKey( h );
+    curve.AbstractFCurveModel::addKey( h );
   }
 
   FCurveEditor* editor = new FCurveEditor();
