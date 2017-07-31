@@ -55,6 +55,8 @@ private:
   bool m_isDraggingKey;
   bool m_snapToCurve;
 
+  enum ClickState { RELEASED, CLICKED, DRAGGING } m_clickState;
+
 protected:
   void mousePressEvent( QGraphicsSceneMouseEvent * ) FTL_OVERRIDE;
   void mouseMoveEvent( QGraphicsSceneMouseEvent * ) FTL_OVERRIDE;

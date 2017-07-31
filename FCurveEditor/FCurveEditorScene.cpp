@@ -15,6 +15,7 @@ FCurveEditorScene::FCurveEditorScene( AbstractFCurveModel* model )
   , m_draggedSnappedKey( NULL )
   , m_isDraggingKey( false )
   , m_snapToCurve( false )
+  , m_clickState( RELEASED )
 {
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionBegin, ( ), this, SIGNAL, FCurveEditorScene, interactionBegin, ( ) );
   QOBJECT_CONNECT( m_curveItem, SIGNAL, FCurveItem, interactionEnd, ( ), this, SIGNAL, FCurveEditorScene, interactionEnd, ( ) );
@@ -128,10 +129,10 @@ void FCurveEditorScene::mousePressEvent( QGraphicsSceneMouseEvent * e )
     }
     m_isDraggingKey = true;
     this->updateDraggedSnappedPos( e->scenePos() );
-    emit this->interactionBegin();
   }
   else
     Parent::mousePressEvent( e );
+  m_clickState = CLICKED;
 }
 
 void FCurveEditorScene::updateDraggedSnappedPos( QPointF scenePos )
@@ -155,6 +156,9 @@ void FCurveEditorScene::updateDraggedSnappedPos( QPointF scenePos )
 
 void FCurveEditorScene::mouseMoveEvent( QGraphicsSceneMouseEvent * e )
 {
+  if( m_clickState == CLICKED )
+    emit this->interactionBegin();
+
   Parent::mouseMoveEvent( e );
   if( m_isDraggingKey )
   {
@@ -172,6 +176,7 @@ void FCurveEditorScene::mouseMoveEvent( QGraphicsSceneMouseEvent * e )
       e->widget()->repaint();
     }
   }
+  m_clickState = DRAGGING;
 }
 
 void FCurveEditorScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * e )
@@ -186,6 +191,8 @@ void FCurveEditorScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * e )
       ) );
     m_isDraggingKey = false;
     this->updateDraggedSnappedKey();
-    emit this->interactionEnd();
+    if( !m_snapToCurve && m_clickState == DRAGGING )
+      emit this->interactionEnd();
   }
+  m_clickState = RELEASED;
 }
