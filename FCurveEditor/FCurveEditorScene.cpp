@@ -155,9 +155,6 @@ void FCurveEditorScene::updateDraggedSnappedPos( QPointF scenePos )
 
 void FCurveEditorScene::mouseMoveEvent( QGraphicsSceneMouseEvent * e )
 {
-  if( m_clickState == CLICKED )
-    emit this->interactionBegin();
-
   Parent::mouseMoveEvent( e );
   if( m_isDraggingKey )
   {
@@ -167,6 +164,9 @@ void FCurveEditorScene::mouseMoveEvent( QGraphicsSceneMouseEvent * e )
     }
     else
     {
+      if( m_clickState == CLICKED )
+        emit this->interactionBegin();
+
       size_t index = m_curveItem->curve()->getKeyCount() - 1;
       Key k = m_curveItem->curve()->getKey( index );
       k.pos = e->scenePos();
