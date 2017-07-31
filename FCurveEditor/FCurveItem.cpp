@@ -620,6 +620,8 @@ void FCurveItem::onKeyAdded()
 
 void FCurveItem::onKeyDeleted( size_t i )
 {
+  this->clearKeySelection();
+
   delete m_keys[i];
   for( size_t j = i; j < m_keys.size() - 1; j++ )
   {
@@ -627,8 +629,6 @@ void FCurveItem::onKeyDeleted( size_t i )
     m_keys[j]->setIndex( j );
   }
   m_keys.resize( m_keys.size() - 1 );
-
-  this->clearKeySelection();
 
   m_curveShape->setBoundingRectDirty();
 }
