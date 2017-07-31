@@ -146,6 +146,7 @@ dirs = [
   'DFG/TabSearch',
   'FCurveEditor',
   'FCurveEditor/Models/AnimXKL',
+  'FCurveEditor/Models/AnimXKL/UndoRedo',
   'FCurveEditor/ValueEditor',
  
   'SceneHub',
