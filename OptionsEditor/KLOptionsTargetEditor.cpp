@@ -22,7 +22,6 @@ KLOptionsTargetEditor::KLOptionsTargetEditor(
   QString title)
   : BaseRTValOptionsEditor(title, 0)
 {
-  setObjectName(title);
   resetModel();
 }
 

@@ -2,6 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
+#include <QDockWidget>
 #include <QStringList>
 #include <FabricUI/Util/QtUtil.h>
 #include "../OptionsEditorHelpers.h"
@@ -123,8 +124,15 @@ void OptionsPathValueResolver::setValue(
   
   int index = path.indexOf(OptionsEditorHelpers::pathSeparator);
   
-  BaseRTValOptionsEditor *editor = QtUtil::getQWidget<BaseRTValOptionsEditor>(
+  QDockWidget *dock = QtUtil::getDockWidget(
     path.midRef(0, index).toUtf8().constData());
+
+  if(dock == 0)
+    FabricException::Throw(
+      "OptionsPathValueResolver::setValue",
+      "dock is null");
+
+  BaseRTValOptionsEditor *editor = qobject_cast<BaseRTValOptionsEditor*>(dock->widget());
 
   if(editor == 0)
     FabricException::Throw(
