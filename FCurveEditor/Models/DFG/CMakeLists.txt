@@ -28,12 +28,12 @@ target_link_libraries( FabricUI PUBLIC
   RTValAnimXFCurveModel
 )
 
-add_library( RTValAnimXFCurveDFGController
-  ${CMAKE_CURRENT_LIST_DIR}/RTValAnimXFCurveDFGController.cpp
+add_library( DFGAnimXFCurveModel
+  ${CMAKE_CURRENT_LIST_DIR}/DFGAnimXFCurveModel.cpp
 )
-QtMocProcess( "${CMAKE_CURRENT_LIST_DIR}/RTValAnimXFCurveDFGController.h" RTValAnimXFCurveDFGController )
+QtMocProcess( "${CMAKE_CURRENT_LIST_DIR}/DFGAnimXFCurveModel.h" DFGAnimXFCurveModel )
 
-target_link_libraries( RTValAnimXFCurveDFGController PUBLIC
+target_link_libraries( DFGAnimXFCurveModel PUBLIC
   RTValAnimXFCurveModel
   FabricUI
 )
