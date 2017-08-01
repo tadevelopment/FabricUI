@@ -1,5 +1,5 @@
 set( AnimXDir
-  "${ThirdPartyDir}/VS2013/Release/animx/1.0.0"
+  "${ThirdPartyDir}/${ThirdPartyPrefix}Release/animx/1.0.0"
   CACHE PATH "Directory of Autodesk's AnimX curve library"
 )
 if( NOT EXISTS ${AnimXDir}/include )
