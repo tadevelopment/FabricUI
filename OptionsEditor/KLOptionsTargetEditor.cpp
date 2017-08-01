@@ -89,10 +89,12 @@ void KLOptionsTargetEditor::resetModel(
   FABRIC_CATCH_END("KLOptionsTargetEditor::resetModel");
 }
 
-QDockWidget* KLOptionsTargetEditor::create( QString editorID,
-                                            QString title,
-                                            QString groupeName,
-                                            QMainWindow* mainWindow ) {
+QDockWidget* KLOptionsTargetEditor::create( 
+  QString editorID,
+  QString title,
+  QString groupeName,
+  QMainWindow* mainWindow) 
+{
   if( mainWindow == 0 )
     Application::FabricException::Throw(
       "CreateKLOptionsTargetEditor",
@@ -137,9 +139,11 @@ QDockWidget* KLOptionsTargetEditor::create( QString editorID,
   return dock;
 }
 
-QDockWidget* KLOptionsTargetEditor::create( QString editorID,
-                                            QString title,
-                                            QString groupeName ) {
+QDockWidget* KLOptionsTargetEditor::create( 
+  QString editorID,
+  QString title,
+  QString groupeName) 
+{
   QMainWindow* mainWindow = Util::QtUtil::getMainWindow();
   return KLOptionsTargetEditor::create( editorID, title, groupeName, mainWindow );
 }
