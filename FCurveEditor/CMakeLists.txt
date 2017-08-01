@@ -86,7 +86,12 @@ if( WIN32 )
       ${QtDir}/lib/Qt${QtLibPrfx}Widgets${libSfx}.lib
     )
   endif()
-
+elseif( APPLE )
+  target_link_libraries( FCurveEditor PUBLIC
+    ${QtDir}/lib/QtGui.framework/QtGui
+    ${QtDir}/lib/QtCore.framework/QtCore
+    ${QtDir}/lib/QtOpenGL.framework/QtOpenGL
+  )  
 else()
   target_link_libraries( FCurveEditor PUBLIC
     ${QtDir}/lib/libQtGui.so
