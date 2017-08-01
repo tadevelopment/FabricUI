@@ -30,15 +30,18 @@ class KLOptionsTargetEditor
       
     virtual ~KLOptionsTargetEditor();
 
+    static QDockWidget* create( 
+      QString editorID,
+      QString title,
+      QString groupeName,
+      QMainWindow* mainWindow 
+      );
 
-    static QDockWidget* create( QString editorID,
-                                QString title,
-                                QString groupeName,
-                                QMainWindow* mainWindow );
-
-    static QDockWidget* create( QString editorID,
-                                QString title,
-                                QString groupeName );
+    static QDockWidget* create( 
+      QString editorID,
+      QString title,
+      QString groupeName 
+      );
 
     /// \implmentation of BaseRTValOptionsEditor
     virtual BaseRTValModelItem* constructModel(
@@ -48,16 +51,16 @@ class KLOptionsTargetEditor
       FabricCore::RTVal options
       );
 
-    public slots:  
-      /// \implmentation of BaseRTValOptionsEditor
-      virtual void resetModel(
-        FabricCore::RTVal options=FabricCore::RTVal()
-        );
-      
-      /// \implmentation of BaseRTValOptionsEditor
-      virtual void updateModel(
-        FabricCore::RTVal options=FabricCore::RTVal()
-        );
+  public slots:  
+    /// \implmentation of BaseRTValOptionsEditor
+    virtual void resetModel(
+      FabricCore::RTVal options=FabricCore::RTVal()
+      );
+    
+    /// \implmentation of BaseRTValOptionsEditor
+    virtual void updateModel(
+      FabricCore::RTVal options=FabricCore::RTVal()
+      );
 };
 
 } // namespace OptionsEditor 
