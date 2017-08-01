@@ -14,6 +14,7 @@ const char FabricUI::OptionsEditor::OptionsEditorHelpers::arraySeparator = '_';
 using namespace FabricUI;
 using namespace OptionsEditor;
 using namespace FabricCore;
+using namespace Util;
 
 inline RTVal GetKLSingleOption(
   int optIndex,
@@ -22,7 +23,7 @@ inline RTVal GetKLSingleOption(
 { 
   FABRIC_CATCH_BEGIN();
 
-  options = Util::RTValUtil::toRTVal(options);
+  options = RTValUtil::toRTVal(options);
   QString optionName = singleOptionPaths[optIndex];
 
   RTVal key = RTVal::ConstructString(
@@ -31,7 +32,7 @@ inline RTVal GetKLSingleOption(
 
   if(options.isDict()) 
   {
-    RTVal childrenOptions = options.getDictElement(key); 
+    RTVal childrenOptions = RTValUtil::toRTVal(options.getDictElement(key)); 
     if(childrenOptions.isDict() || childrenOptions.isArray())
       return GetKLSingleOption(
         optIndex+1, 
@@ -46,7 +47,7 @@ inline RTVal GetKLSingleOption(
   {
     int sepIndex = optionName.lastIndexOf(OptionsEditorHelpers::arraySeparator);
     int arrayIndex = optionName.mid(sepIndex+1).toInt();
-    RTVal childrenOptions = options.getArrayElementRef(arrayIndex); 
+    RTVal childrenOptions = RTValUtil::toRTVal(options.getArrayElementRef(arrayIndex)); 
 
     if(childrenOptions.isDict() || childrenOptions.isArray())
       GetKLSingleOption(
@@ -59,7 +60,7 @@ inline RTVal GetKLSingleOption(
   }
 
   else
-    return options;
+    return RTValUtil::toRTVal(options);
 
   FABRIC_CATCH_END("OptionsEditorHelpers::GetKLSingleOption");
 
@@ -74,9 +75,8 @@ inline void SetKLSingleOption(
 { 
   FABRIC_CATCH_BEGIN();
 
-  if(options.isWrappedRTVal()) 
-    options = options.getUnwrappedRTVal(); 
- 
+  options = RTValUtil::toRTVal(options);
+
   QString optionName = singleOptionPaths[optIndex];
 
   RTVal key = RTVal::ConstructString(
@@ -85,7 +85,7 @@ inline void SetKLSingleOption(
 
   if(options.isDict()) 
   {
-    RTVal childrenOptions = options.getDictElement(key); 
+    RTVal childrenOptions = RTValUtil::toRTVal(options.getDictElement(key)); 
     if(childrenOptions.isDict() || childrenOptions.isArray())
       SetKLSingleOption(
         optIndex+1, 
@@ -96,7 +96,7 @@ inline void SetKLSingleOption(
     else
       options.setDictElement(
         key, 
-        Util::RTValUtil::toKLRTVal(singleOption)
+        RTValUtil::toKLRTVal(singleOption)
         );
   }
 
@@ -104,7 +104,7 @@ inline void SetKLSingleOption(
   {
     int sepIndex = optionName.lastIndexOf(OptionsEditorHelpers::arraySeparator);
     int arrayIndex = optionName.mid(sepIndex+1).toInt();
-    RTVal childrenOptions = options.getArrayElementRef(arrayIndex); 
+    RTVal childrenOptions = RTValUtil::toRTVal(options.getArrayElementRef(arrayIndex)); 
 
     if(childrenOptions.isDict() || childrenOptions.isArray())
       SetKLSingleOption(
@@ -116,7 +116,7 @@ inline void SetKLSingleOption(
     else
       options.setArrayElement(
         arrayIndex, 
-        Util::RTValUtil::toKLRTVal(singleOption)
+        RTValUtil::toKLRTVal(singleOption)
         );
   }
 

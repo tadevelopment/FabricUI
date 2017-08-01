@@ -71,7 +71,9 @@ void KLOptionsTargetEditor::updateModel(
   FABRIC_CATCH_BEGIN();
 
   m_model->setRTValOptions( 
-    OptionsEditorHelpers::getKLOptionsTargetOptions(m_title)
+    RTValUtil::toRTVal(
+      OptionsEditorHelpers::getKLOptionsTargetOptions(m_title)
+      )
     );
 
   FABRIC_CATCH_END("KLOptionsTargetEditor::updateModel");
@@ -114,7 +116,7 @@ QDockWidget* KLOptionsTargetEditor::create(
   mainWindow->addDockWidget(
     Qt::RightDockWidgetArea,
     dock,
-    Qt::Vertical );
+    Qt::Vertical);
 
   Viewports::ViewportWidget *viewport = Util::QtUtil::getQWidget<Viewports::ViewportWidget>();
   if( viewport == 0 )
@@ -127,14 +129,14 @@ QDockWidget* KLOptionsTargetEditor::create(
     SIGNAL( initComplete() ),
     optionsEditor,
     SLOT( resetModel() )
-  );
+    );
 
   QObject::connect(
     optionsEditor,
     SIGNAL( updated() ),
     viewport,
     SLOT( redraw() )
-  );
+    );
 
   return dock;
 }
