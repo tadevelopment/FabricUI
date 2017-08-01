@@ -746,19 +746,25 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   keysMenu.addAction(this->m_autoTangentsAction);
   keysMenu.addAction(this->m_tangentsZeroSlopeAction);
   keysMenu.addAction( m_toolBar->m_snapToCurveAction );
+  keysMenu.addSeparator();
+  keysMenu.addAction( m_clearAction );
+
+  // Curve Menu
+  QMenu curveMenu( "Curve", this );
+  contextMenu.addMenu( &curveMenu );
 
   // Presets Menu
   QMenu presetsMenu( "Presets", this );
-  contextMenu.addMenu( &presetsMenu );
+  curveMenu.addMenu( &presetsMenu );
   presetsMenu.addAction( m_presetRampIn );
   presetsMenu.addAction( m_presetRampOut );
   presetsMenu.addAction( m_presetSmoothStep );
 
   // Infinity Types Menu
   QMenu infTypesMenu( "Infinity Types", this );
-  contextMenu.addMenu( &infTypesMenu );
-  QMenu preInfMenu( "Pre-Infinity", this );
-  QMenu postInfMenu( "Post-Infinity", this );
+  curveMenu.addMenu( &infTypesMenu );
+  QMenu preInfMenu( "Pre Infinity", this );
+  QMenu postInfMenu( "Post Infinity", this );
   {
     for( int i = 0; i < SetInfinityTypeAction::DIRCOUNT; i++ )
     {
@@ -776,7 +782,6 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   }
 
   contextMenu.addSeparator();
-  contextMenu.addAction( m_clearAction );
 
   contextMenu.exec(this->mapToGlobal(pos));
 }
