@@ -762,9 +762,7 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
   presetsMenu.addAction( m_presetRampOut );
   presetsMenu.addAction( m_presetSmoothStep );
 
-  // Infinity Types Menu
-  QMenu infTypesMenu( "Infinity Types", this );
-  curveMenu.addMenu( &infTypesMenu );
+  // Infinity Types
   QMenu preInfMenu( "Pre Infinity", this );
   QMenu postInfMenu( "Post Infinity", this );
   {
@@ -779,7 +777,7 @@ void FCurveEditor::showContextMenu(const QPoint &pos)
       }
       for( size_t j = 0; j < actions->size(); j++ )
         menu->addAction( (*actions)[j] );
-      infTypesMenu.addMenu( menu );
+      curveMenu.addMenu( menu );
     }
   }
 
