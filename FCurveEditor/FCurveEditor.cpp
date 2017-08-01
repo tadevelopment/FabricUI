@@ -468,6 +468,8 @@ void FCurveEditor::onSelectionChanged()
   m_keysFrameSelectedAction->setEnabled( !empty );
   m_keysDeleteAction->setEnabled( !empty );
   m_keysSelectAllAction->setEnabled( m_scene->curveItem()->selectedKeys().size() < m_scene->curveItem()->curve()->getKeyCount() );
+  m_autoTangentsAction->setEnabled( !empty );
+  m_tangentsZeroSlopeAction->setEnabled( !empty );
 
   if( empty )
     m_keyValueEditor->setVisible( false );
