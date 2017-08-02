@@ -742,7 +742,7 @@ QMenu *DFGWidget::fixedPortContextMenuCallback(
 
   QMenu *menu = new QMenu( fixedPort->scene()->views()[0] );
 
-  QAction *dummyAction = new QAction( "Port is locked", menu );
+  QAction *dummyAction = new QAction( "Port is Locked", menu );
   dummyAction->setEnabled( editable && false );
   menu->addAction( dummyAction );
 
@@ -895,7 +895,7 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
   // [FE-8248] we only show the 'Timeline' menu for certain host applications (e.g. Canvas standalone).
   if ( graphWidget->isBindingHostAppStandalone() )
   {
-    QMenu *timelinePortsMenu = result->addMenu(tr("Timeline ports"));
+    QMenu *timelinePortsMenu = result->addMenu(tr("Timeline Ports"));
     timelinePortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output );
     {
       QString portname[4] = {"timeline", "timelineStart", "timelineEnd", "timelineFramerate"};
@@ -917,11 +917,11 @@ QMenu *DFGWidget::sidePanelContextMenuCallback(
 
   // Predefined Ports
   {
-    QMenu* predefinedPortsMenu = result->addMenu( "Predefined ports" );
+    QMenu* predefinedPortsMenu = result->addMenu( "Predefined Ports" );
     const std::vector<DFGConfig::PredefinedPort>& predefinedPorts = graphWidget->getConfig().predefinedPorts;
     predefinedPortsMenu->setDisabled( portType != FabricUI::GraphView::PortType_Output || predefinedPorts.empty() );
     if( predefinedPorts.empty() )
-      predefinedPortsMenu->setToolTip( "No predefined ports" );
+      predefinedPortsMenu->setToolTip( "No Predefined Ports" );
 
     for( std::vector<DFGConfig::PredefinedPort>::const_iterator it = predefinedPorts.begin(); it != predefinedPorts.end(); it++ )
       predefinedPortsMenu->addAction( new CreatePredefinedPortAction( graphWidget, predefinedPortsMenu, *it ) );
@@ -1144,7 +1144,7 @@ void DFGWidget::createNewBlockNode( QPoint const &globalPos )
   bool isCTRL  = keyMod.testFlag( Qt::ControlModifier );
   if (isCTRL)
   {
-    DFGGetStringDialog dialog(this, "New block", text, m_dfgConfig, true); 
+    DFGGetStringDialog dialog(this, "New Block", text, m_dfgConfig, true); 
     if(dialog.exec() != QDialog::Accepted)
       return;
 
@@ -1209,7 +1209,7 @@ void DFGWidget::createNewGraphNode( QPoint const &globalPos )
 void DFGWidget::createNewNodeFromJSON( QPoint const &globalPos )
 {
   QString lastPresetFolder = getSettings()->value("mainWindow/lastPresetFolder").toString();
-  QFileInfo fileInfo(QFileDialog::getOpenFileName(this, "Import graph", lastPresetFolder, "*.canvas"));
+  QFileInfo fileInfo(QFileDialog::getOpenFileName(this, "Import Graph", lastPresetFolder, "*.canvas"));
   if ( fileInfo.exists() )
   {
     fileInfo.dir().cdUp();
@@ -2138,7 +2138,7 @@ void DFGWidget::exportGraph( const char *nodeName )
   }
 
   QString filter = "Canvas Preset (*.canvas)";
-  QString filePath = QFileDialog::getSaveFileName(this, "Export graph", lastPresetFolder, filter, &filter);
+  QString filePath = QFileDialog::getSaveFileName(this, "Export Graph", lastPresetFolder, filter, &filter);
   if(filePath.length() == 0)
     return;
   if(filePath.toLower().endsWith(".canvas.canvas"))
