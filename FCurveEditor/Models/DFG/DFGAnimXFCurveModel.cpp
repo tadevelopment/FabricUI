@@ -2,7 +2,7 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include "RTValAnimXFCurveDFGController.h"
+#include "DFGAnimXFCurveModel.h"
 
 #include <FabricUI/Commands/CommandManager.h>
 #include <FabricUI/Commands/KLCommandRegistry.h> // HACK: remove

@@ -5,7 +5,7 @@
 #include "RTValFCurveViewItem.h"
 #include <FabricUI/ValueEditor/QVariantRTVal.h>
 #include <FabricUI/FCurveEditor/FCurveEditor.h>
-#include <FabricUI/FCurveEditor/Models/AnimXKL/UndoRedo/RTValAnimXFCurveDFGController.h>
+#include <FabricUI/FCurveEditor/Models/DFG/DFGAnimXFCurveModel.h>
 
 #include <FabricUI/ModelItems/DFGModelItemMetadata.h>
 #include <FabricUI/Util/QtSignalsSlots.h>
