@@ -132,6 +132,11 @@ void RTValFCurveViewItem::expand()
 {
   m_expandedDialog->show();
   m_expandedDialog->editor()->frameAllKeys( );
+
+  // HACK : sometimes the layout of the widgets in the ToolBar is
+  // wrong (they are on top of each other). Calling this should refresh it.
+  m_expandedDialog->editor()->setToolBarEnabled( false );
+  m_expandedDialog->editor()->setToolBarEnabled( true );
 }
 
 RTValFCurveViewItem::~RTValFCurveViewItem()
