@@ -3,9 +3,16 @@ project( FCurveEditor )
 
 set( FCurveEditorDir ${CMAKE_CURRENT_LIST_DIR} )
 set( SGDir ${FCurveEditorDir}/../../.. )
-set( ThirdPartyDir ${SGDir}/ThirdParty/PreBuilt/${CMAKE_SYSTEM_NAME}/x86_64 )
+set( FabricOSName ${CMAKE_SYSTEM_NAME} )
+if( APPLE )
+  set( FabricOSName "Darwin" )
+endif()
+set( ThirdPartyDir ${SGDir}/ThirdParty/PreBuilt/${FabricOSName}/x86_64 )
 option( WithQtDebugLibs "Compile against the debug version of Qt's libs" OFF )
 
+if( APPLE)
+  set( ThirdPartyPrefix "stdlib-libc++/" )
+endif()
 if( WIN32 )
   set( ThirdPartyPrefix "VS2013/" )
 endif()
@@ -79,7 +86,12 @@ if( WIN32 )
       ${QtDir}/lib/Qt${QtLibPrfx}Widgets${libSfx}.lib
     )
   endif()
-
+elseif( APPLE )
+  target_link_libraries( FCurveEditor PUBLIC
+    ${QtDir}/lib/QtGui.framework/QtGui
+    ${QtDir}/lib/QtCore.framework/QtCore
+    ${QtDir}/lib/QtOpenGL.framework/QtOpenGL
+  )  
 else()
   target_link_libraries( FCurveEditor PUBLIC
     ${QtDir}/lib/libQtGui.so
@@ -91,5 +103,15 @@ endif()
 set( FabricStageDir "${SGDir}/stage/${CMAKE_SYSTEM_NAME}/x86_64/Release" )
 
 include( ${FCurveEditorDir}/Test/CMakeLists.txt )
-include( ${FCurveEditorDir}/Models/AnimXCpp/CMakeLists.txt )
-include( ${FCurveEditorDir}/Models/AnimXKL/CMakeLists.txt )
+option( Models_AnimXCpp "C++ AnimX Model" OFF )
+if( Models_AnimXCpp )
+  include( ${FCurveEditorDir}/Models/AnimXCpp/CMakeLists.txt )
+endif()
+option( Models_AnimXKL "KL AnimX Model" OFF )
+if( Models_AnimXKL )
+  include( ${FCurveEditorDir}/Models/AnimXKL/CMakeLists.txt )
+endif()
+option( Models_AnimXKLUndoRedo "KL AnimX Model with Undo-Redo" OFF )
+if( Models_AnimXKLUndoRedo )
+  include( ${FCurveEditorDir}/Models/DFG/CMakeLists.txt )
+endif()

@@ -49,8 +49,8 @@ Key RTValAnimXFCurveConstModel::getKey( size_t id ) const
   return this->getOrderedKey( this->idToIndex( id ).getUInt32() );
 }
 
-const size_t TangeTypeCount = 14+1; // see the KL code
-const char* TangentTypeNames[TangeTypeCount] = 
+const size_t TangentTypeCount = 14+1; // see the KL code
+const char* TangentTypeNames[TangentTypeCount] = 
 {
   "Global",
   "Fixed",
@@ -71,12 +71,48 @@ const char* TangentTypeNames[TangeTypeCount] =
 
 size_t RTValAnimXFCurveConstModel::tangentTypeCount() const
 {
-  return TangeTypeCount;
+  return TangentTypeCount;
 }
 
 QString RTValAnimXFCurveConstModel::tangentTypeName( size_t i ) const
 {
   return QString::fromUtf8( TangentTypeNames[i] );
+}
+
+const size_t InfinityTypeCount = 4 + 1;
+const char* InfinityTypeNames[InfinityTypeCount] =
+{
+  "Constant",
+  "Linear",
+  "Cycle",
+  "CycleRelative",
+  "Oscillate"
+};
+
+size_t RTValAnimXFCurveConstModel::infinityTypeCount() const
+{
+  return InfinityTypeCount;
+}
+
+QString RTValAnimXFCurveConstModel::infinityTypeName( size_t i ) const
+{
+  return QString::fromUtf8( InfinityTypeNames[i] );
+}
+
+size_t RTValAnimXFCurveConstModel::getPreInfinityType() const
+{
+  if( !m_val.isValid() || m_val.isNullObject() )
+    return 0;
+  return const_cast<FabricCore::RTVal*>( &m_val )
+    ->callMethod( "SInt32", "preInfinityType", 0, NULL ).getSInt32();
+}
+
+size_t RTValAnimXFCurveConstModel::getPostInfinityType() const
+{
+  if( !m_val.isValid() || m_val.isNullObject() )
+    return 0;
+  return const_cast<FabricCore::RTVal*>( &m_val )
+    ->callMethod( "SInt32", "postInfinityType", 0, NULL ).getSInt32();
 }
 
 size_t RTValAnimXFCurveConstModel::getIndexAfterTime( qreal time ) const
@@ -134,6 +170,7 @@ void RTValAnimXFCurveVersionedConstModel::update( bool emitChanges ) const
   {
     for( size_t i = 0; i < hc; i++ )
       emit this->keyMoved( i );
+    emit this->infinityTypesChanged();
   }
 }
 
@@ -204,4 +241,60 @@ void RTValAnimXFCurveModel::deleteKey( size_t i )
   FabricCore::RTVal index = this->idToIndex( i );
   DeleteKey( m_val, &index );
   emit this->keyDeleted( i );
+}
+
+void RTValAnimXFCurveVersionedModel::setPreInfinityType( size_t i )
+{
+  assert( m_val.isValid() );
+  if( m_val.isNullObject() )
+    m_val = FabricCore::RTVal::Create( m_val.getContext(), "AnimX::AnimCurve", 0, NULL );
+  FabricCore::RTVal t = FabricCore::RTVal::ConstructSInt32( m_val.getContext(), i );
+  m_val.callMethod( "", "setPreInfinityType", 1, &t );
+  emit this->dirty();
+}
+
+void RTValAnimXFCurveVersionedModel::setPostInfinityType( size_t i )
+{
+  assert( m_val.isValid() );
+  if( m_val.isNullObject() )
+    m_val = FabricCore::RTVal::Create( m_val.getContext(), "AnimX::AnimCurve", 0, NULL );
+  FabricCore::RTVal t = FabricCore::RTVal::ConstructSInt32( m_val.getContext(), i );
+  m_val.callMethod( "", "setPostInfinityType", 1, &t );
+  emit this->dirty();
+}
+
+void RTValAnimXFCurveModel::setPreInfinityType( size_t i )
+{
+  assert( m_val.isValid() );
+  if( m_val.isNullObject() )
+    m_val = FabricCore::RTVal::Create( m_val.getContext(), "AnimX::AnimCurve", 0, NULL );
+  FabricCore::RTVal t = FabricCore::RTVal::ConstructSInt32( m_val.getContext(), i );
+  m_val.callMethod( "", "setPreInfinityType", 1, &t );
+  emit this->infinityTypesChanged();
+}
+
+void RTValAnimXFCurveModel::setPostInfinityType( size_t i )
+{
+  assert( m_val.isValid() );
+  if( m_val.isNullObject() )
+    m_val = FabricCore::RTVal::Create( m_val.getContext(), "AnimX::AnimCurve", 0, NULL );
+  FabricCore::RTVal t = FabricCore::RTVal::ConstructSInt32( m_val.getContext(), i );
+  m_val.callMethod( "", "setPostInfinityType", 1, &t );
+  emit this->infinityTypesChanged();
+}
+
+void RTValAnimXFCurveVersionedModel::autoTangent( size_t id )
+{
+  assert( m_val.isValid() );
+  FabricCore::RTVal index = this->idToIndex( id );
+  m_val.callMethod( "", "autoTangent", 1, &index );
+  emit this->dirty();
+}
+
+void RTValAnimXFCurveModel::autoTangent( size_t id )
+{
+  assert( m_val.isValid() );
+  FabricCore::RTVal index = this->idToIndex( id );
+  m_val.callMethod( "", "autoTangent", 1, &index );
+  emit this->keyMoved( id );
 }

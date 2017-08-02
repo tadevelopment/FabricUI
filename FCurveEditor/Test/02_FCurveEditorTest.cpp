@@ -28,15 +28,22 @@ int main()
       QPointF( xScale * ( 1 - 2 * RandFloat() ), yScale * ( 1 - 2 * RandFloat() ) ) * 0.3 );
     h.tanInType = 0;
     h.tanOutType = 0;
-    curve.addKey( h );
+    curve.AbstractFCurveModel::addKey( h );
   }
 
-
   FCurveEditor* editor = new FCurveEditor();
+  editor->setWindowTitle( "Original" );
   editor->setModel( &curve );
   editor->resize( 800, 600 );
   editor->show();
   editor->setStyleSheet( LoadQSS() );
+
+  FCurveEditor* editor2 = new FCurveEditor();
+  editor2->setWindowTitle( "Attached" );
+  editor2->deriveFrom( editor );
+  editor2->resize( 800, 600 );
+  editor2->show();
+  editor2->setStyleSheet( LoadQSS() );
 
   app.exec();
   return 0;

@@ -29,7 +29,6 @@ inline const char* TangentTypeName( const TangentType& t )
   return "";
 }
 
-
 inline size_t TangentTypeIndex( const TangentType& t )
 {
   switch( t )
@@ -79,6 +78,86 @@ QString AnimxFCurveModel::tangentTypeName( size_t i ) const
 {
   assert( i < this->tangentTypeCount() );
   return QString::fromUtf8( TangentTypeName( TangentType( i ) ) );
+}
+
+inline const char* InfinityTypeName( const InfinityType& t )
+{
+  switch( t )
+  {
+  case InfinityType::Constant: return "Constant";
+  case InfinityType::Cycle: return "Cycle";
+  case InfinityType::CycleRelative: return "CycleRelative";
+  case InfinityType::Linear: return "Linear";
+  case InfinityType::Oscillate: return "Oscillate";
+  }
+  assert( false );
+  return "";
+}
+
+inline size_t InfinityTypeIndex( const InfinityType& t )
+{
+  switch( t )
+  {
+  case InfinityType::Constant: return 0;
+  case InfinityType::Cycle: return 1;
+  case InfinityType::CycleRelative: return 2;
+  case InfinityType::Linear: return 3;
+  case InfinityType::Oscillate: return 4;
+  }
+  assert( false );
+  return 0;
+}
+
+const InfinityType InfinityTypes[] =
+{
+  InfinityType::Constant,
+  InfinityType::Cycle,
+  InfinityType::CycleRelative,
+  InfinityType::Linear,
+  InfinityType::Oscillate,
+};
+
+inline InfinityType InfinityTypeFromIndex( size_t i ) { return InfinityTypes[i]; }
+
+QString AnimxFCurveModel::infinityTypeName( size_t i ) const
+{
+  return InfinityTypeName( InfinityTypeFromIndex( i ) );
+}
+
+AnimxFCurveModel::AnimxFCurveModel()
+  : m_preInfType( InfinityType::Constant )
+  , m_postInfType( InfinityType::Constant )
+{
+}
+
+size_t AnimxFCurveModel::getPreInfinityType() const
+{
+  return InfinityTypeIndex( m_preInfType );
+}
+
+size_t AnimxFCurveModel::getPostInfinityType() const
+{
+  return InfinityTypeIndex( m_postInfType );
+}
+
+void AnimxFCurveModel::setPreInfinityType( size_t i )
+{
+  InfinityType t = InfinityTypeFromIndex( i );
+  if( t != m_preInfType )
+  {
+    m_preInfType = t;
+    emit this->infinityTypesChanged();
+  }
+}
+
+void AnimxFCurveModel::setPostInfinityType( size_t i )
+{
+  InfinityType t = InfinityTypeFromIndex( i );
+  if( t != m_postInfType )
+  {
+    m_postInfType = t;
+    emit this->infinityTypesChanged();
+  }
 }
 
 Key AnimxFCurveModel::getOrderedKey( size_t index ) const
@@ -152,12 +231,6 @@ void AnimxFCurveModel::addKey()
   emit this->keyAdded();
 }
 
-void AnimxFCurveModel::addKey( const Key& h )
-{
-  this->addKey();
-  this->setKey( m_keys.size() - 1, h );
-}
-
 void AnimxFCurveModel::deleteKey( size_t uiId )
 {
   size_t index = m_uiIdToIndex[uiId];
@@ -185,7 +258,7 @@ void AnimxFCurveModel::deleteKey( size_t uiId )
 }
 
 
-void AnimxFCurveModel::autoTangents( size_t uiId )
+void AnimxFCurveModel::autoTangent( size_t uiId )
 {
   if( m_keys.size() == 1 )
     return;
@@ -196,7 +269,7 @@ void AnimxFCurveModel::autoTangents( size_t uiId )
       m_keys[index].key,
       ( index > 0 ? &m_keys[index - 1].key : NULL ),
       ( index < m_keys.size()-1 ? &m_keys[index + 1].key : NULL ),
-      adsk::CurveInterpolatorMethod::Bezier, // TODO expose as parameter
+      m_keys[index].key.curveInterpolationMethod(this->isWeighted()),
       ( dir == 0 ? m_keys[index].key.tanIn.x : m_keys[index].key.tanOut.x ),
       ( dir == 0 ? m_keys[index].key.tanIn.y : m_keys[index].key.tanOut.y )
     );

@@ -1,5 +1,6 @@
 
 #include <FabricUI/FCurveEditor/FCurveItem.h>
+#include <FabricUI/FCurveEditor/FCurveEditorScene.h>
 #include <FTL/Config.h>
 #include <FabricUI/Util/QtSignalsSlots.h>
 
@@ -115,6 +116,12 @@ public:
     const qreal w = r.width();
     r.setLeft( r.left() - 100 * w );
     r.setRight( r.right() + 100 * w );
+    const qreal h = r.height();
+    if( h > 0 )
+    {
+      r.setTop( r.top() - 100 * h );
+      r.setBottom( r.bottom() + 100 * h );
+    }
     return r;
   }
 
@@ -160,7 +167,7 @@ public:
       }
 
       painter->setPen( pen );
-      const size_t n = widget->width() / 8;
+      const size_t n = widget->width() / 1;// 8;
       qreal step = er.width() / n;
       if( step == 0 )
         return;
@@ -229,6 +236,8 @@ QRectF FCurveItem::selectedKeysBoundingRect() const {
   return m_curveShape->selectedKeysBoundingRect(); 
 }
 
+const qreal TangentToSpaceRatio = 3;
+
 class FCurveItem::KeyWidget : public QGraphicsWidget
 {
   FCurveItem* m_parent;
@@ -287,7 +296,7 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
         ;
         if( m_tangent->m_inNotOut )
         {
-          h.tanIn = -( event->scenePos() - m_parent->scenePos() );
+          h.tanIn = -( event->scenePos() - m_parent->scenePos() ) * TangentToSpaceRatio;
           if( h.tanIn.x() < 0 )
             h.tanIn.setX( 0 );
           if( !splitTangents )
@@ -295,14 +304,14 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
         }
         else
         {
-          h.tanOut = ( event->scenePos() - m_parent->scenePos() );
+          h.tanOut = ( event->scenePos() - m_parent->scenePos() ) * TangentToSpaceRatio;
           if( h.tanOut.x() < 0 )
             h.tanOut.setX( 0 );
           if( !splitTangents )
             h.tanIn = h.tanOut * sqrt( l2In / l2Out );
         }
         curve->setKey( index, h );
-        emit m_parent->m_parent->repaintViews();
+        event->widget()->repaint();
       }
       void hoverEnterEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->setCursor( Qt::SizeAllCursor ); }
       void hoverLeaveEvent( QGraphicsSceneHoverEvent *event ) FTL_OVERRIDE { this->unsetCursor(); }
@@ -328,7 +337,7 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
 
     void setValue( const Key& h )
     {
-      const QPointF p = m_inNotOut ? -h.tanIn : h.tanOut;
+      const QPointF p = ( m_inNotOut ? -h.tanIn : h.tanOut ) / TangentToSpaceRatio;
       m_line->setLine( QLineF( QPointF( 0, 0 ), p ) );
       m_end->m_posW->setPos( p );
     }
@@ -353,7 +362,8 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
     void updateColor()
     {
       this->setPen( Qt::NoPen );
-      this->setBrush( m_hovered ? QColor( 191, 191, 191 ) :
+      this->setBrush( 
+        ( m_hovered && m_parent->m_parent->m_scene->mode() != ADD ) ? QColor( 191, 191, 191 ) :
         m_selected ? QColor( 39, 168, 223 )
         : QColor( 128, 128, 128 )
       );
@@ -378,7 +388,7 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
   protected:
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
-      if( m_parent->m_parent->mode() == REMOVE )
+      if( m_parent->m_parent->m_scene->mode() == REMOVE )
       {
         m_parent->m_parent->m_curve->deleteKey( m_parent->m_index );
         return;
@@ -403,6 +413,7 @@ class FCurveItem::KeyWidget : public QGraphicsWidget
       const Key h = curve->getKey( index );
       m_selectOnRelease = false;
       m_parent->m_parent->moveSelectedKeys( event->scenePos() - h.pos );
+      event->widget()->repaint();
     }
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) FTL_OVERRIDE
     {
@@ -466,8 +477,9 @@ public:
   }
 };
 
-FCurveItem::FCurveItem()
-  : m_curve( NULL )
+FCurveItem::FCurveItem( FCurveEditorScene* scene )
+  : m_scene( scene )
+  , m_curve( NULL )
   , m_curveShape( new FCurveShape( this ) )
 {
   m_curveShape->setParentItem( this );
@@ -508,13 +520,13 @@ void FCurveItem::rectangleSelect( const QRectF& r, Qt::KeyboardModifiers m )
 {
   bool shift = m.testFlag( Qt::ShiftModifier );
   bool ctrl = m.testFlag( Qt::ControlModifier );
-  if( this->mode() == REMOVE )
+  if( m_scene->mode() == REMOVE )
   {
     shift = false;
     ctrl = false;
   }
   else
-  if( this->mode() == SELECT )
+  if( m_scene->mode() == SELECT )
   {
     if( !shift && !ctrl )
       this->clearKeySelection();
@@ -532,7 +544,7 @@ void FCurveItem::rectangleSelect( const QRectF& r, Qt::KeyboardModifiers m )
         this->addKeyToSelection( i );
     }
 
-  if( this->mode() == REMOVE )
+  if( m_scene->mode() == REMOVE )
     this->deleteSelectedKeys();
 }
 
@@ -582,8 +594,6 @@ void FCurveItem::moveSelectedKeys( QPointF delta )
     Key h = m_curve->getKey( index );
     h.pos += delta;
     m_curve->setKey( index, h );
-    emit this->repaintViews();
-    return;
   }
   else
   {
@@ -592,7 +602,6 @@ void FCurveItem::moveSelectedKeys( QPointF delta )
     for( std::set<size_t>::const_iterator it = m_selectedKeys.begin(); it != m_selectedKeys.end(); it++ )
       indices.push_back( *it );
     m_curve->moveKeys( indices.data(), indices.size(), delta );
-    emit this->repaintViews();
   }
 }
 
@@ -611,6 +620,8 @@ void FCurveItem::onKeyAdded()
 
 void FCurveItem::onKeyDeleted( size_t i )
 {
+  this->clearKeySelection();
+
   delete m_keys[i];
   for( size_t j = i; j < m_keys.size() - 1; j++ )
   {
@@ -618,8 +629,6 @@ void FCurveItem::onKeyDeleted( size_t i )
     m_keys[j]->setIndex( j );
   }
   m_keys.resize( m_keys.size() - 1 );
-
-  this->clearKeySelection();
 
   m_curveShape->setBoundingRectDirty();
 }
@@ -634,6 +643,12 @@ void FCurveItem::onKeyMoved( size_t i )
     emit this->editedKeyValueChanged();
 }
 
+void FCurveItem::onInfinityTypesChanged()
+{
+  m_curveShape->update();
+  this->onDirty();
+}
+
 void FCurveItem::setCurve( AbstractFCurveModel* curve )
 {
   assert( curve != m_curve );
@@ -641,6 +656,7 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, keyMoved, ( size_t ), this, SLOT, FCurveItem, onKeyMoved, ( size_t ) );
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, keyAdded, (), this, SLOT, FCurveItem, onKeyAdded, () );
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, keyDeleted, ( size_t ), this, SLOT, FCurveItem, onKeyDeleted, ( size_t ) );
+  QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, infinityTypesChanged, ( ), this, SLOT, FCurveItem, onInfinityTypesChanged, ( ) );
   QOBJECT_CONNECT( m_curve, SIGNAL, AbstractFCurveModel, dirty, ( ), this, SLOT, FCurveItem, onDirty, ( ) );
 
   // Clearing previous keys
@@ -656,16 +672,6 @@ void FCurveItem::setCurve( AbstractFCurveModel* curve )
     this->addKey( i );
 
   m_curveShape->setBoundingRectDirty();
-}
-
-void FCurveItem::setMode( Mode m )
-{
-  {
-    m_mode = m;
-    if( m_mode == REMOVE )
-      this->clearKeySelection();
-    emit this->modeChanged();
-  }
 }
 
 void FCurveItem::paint( QPainter * p, const QStyleOptionGraphicsItem * s, QWidget * w )
