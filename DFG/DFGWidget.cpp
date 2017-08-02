@@ -1635,7 +1635,8 @@ void DFGWidget::editPort( FTL::CStrRef execPortName, bool duplicatePort)
         DFGAddMetaDataPair( metaDataObjectEnc, "uiIsOpenFile", "" );//"" will remove the metadata
       }
 
-      emit portEditDialogInvoked(&dialog, &metaDataObjectEnc);
+      // FE-8542 : Don't add the meta-data if the port is duplicated.
+      emit portEditDialogInvoked(&dialog, !duplicatePort ? &metaDataObjectEnc : NULL);
     }
 
     if ( FTL::StrRef( uiMetadata ) == FTL_STR("{}") )
