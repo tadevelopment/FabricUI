@@ -30,6 +30,8 @@ namespace FabricUI
 
       ArgItemMetadata( ArgModelItem *argModelItem );
 
+      void computeDFGPath();
+
       virtual const char* getString( const char* key ) const /*override*/
       {
         if ( key == FTL_STR("vePortType") )

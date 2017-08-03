@@ -200,6 +200,8 @@ signals:
 	// Connect to this signal to be notified
 	// when the core value changes.
 	void modelValueChanged( QVariant const &newValue );
+
+  void metadataChanged();
 };
 
 } // namespace FabricUI 

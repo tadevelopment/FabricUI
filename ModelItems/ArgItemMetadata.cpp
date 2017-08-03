@@ -11,6 +11,11 @@ using namespace FabricUI::ModelItems;
 ArgItemMetadata::ArgItemMetadata( ArgModelItem *argModelItem )
   : m_argModelItem( argModelItem )
 {
+  this->computeDFGPath();
+}
+
+void ArgItemMetadata::computeDFGPath()
+{
   std::stringstream bdid; bdid << m_argModelItem->getBinding().getBindingID();
   m_bindingId = bdid.str();
 
