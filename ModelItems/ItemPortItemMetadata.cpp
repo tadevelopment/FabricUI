@@ -12,6 +12,7 @@ using namespace FabricUI::ModelItems;
 ItemPortItemMetadata::ItemPortItemMetadata( ItemPortModelItem *nodePortModelItem )
   : m_nodePortModelItem( nodePortModelItem )
 {
+  this->computeDFGPath();
 }
 
 void ItemPortItemMetadata::computeDFGPath()
