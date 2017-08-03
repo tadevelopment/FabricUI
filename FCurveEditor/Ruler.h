@@ -82,7 +82,7 @@ public:
   inline QColor penColor() const { return m_penColor; }
   inline void setPenColor( QColor c ) { m_penColor = c; this->update(); }
   inline QColor penTextColor() const { return m_penColor; }
-  inline void setPenTextColor( QColor c ) { m_penColor = c; this->update(); }
+  inline void setPenTextColor( QColor c ) { m_penTextColor = c; this->update(); }
   inline qreal majorPenWidth() const { return m_majorPenWidth; }
   inline void setMajorPenWidth( qreal w ) { m_majorPenWidth = w; this->update(); }
   inline qreal minorPenWidth() const { return m_minorPenWidth; }
