@@ -29,6 +29,7 @@ class Ruler : public QFrame
   Q_PROPERTY( qreal logScale READ logScale WRITE setLogScale )
 
   Q_PROPERTY( QColor penColor READ penColor WRITE setPenColor )
+  Q_PROPERTY( QColor penTextColor READ penTextColor WRITE setPenTextColor )
   Q_PROPERTY( qreal majorPenWidth READ majorPenWidth WRITE setMajorPenWidth )
   Q_PROPERTY( qreal minorPenWidth READ minorPenWidth WRITE setMinorPenWidth )
 
