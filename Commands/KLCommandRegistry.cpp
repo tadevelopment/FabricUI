@@ -8,7 +8,6 @@
 #include "KLScriptableCommand.h"
 #include "SetPathValueCommand.h"
 #include <FabricUI/Application/FabricException.h>
-#include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
 using namespace Util;
