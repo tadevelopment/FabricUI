@@ -18,8 +18,6 @@ namespace FCurveEditor
 
 namespace ValueEditor {
 
-class ItemMetaData;
-
 class RTValFCurveViewItem : public BaseViewItem
 {
   Q_OBJECT
