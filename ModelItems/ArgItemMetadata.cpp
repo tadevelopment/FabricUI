@@ -4,7 +4,7 @@
 
 #include <FabricUI/ModelItems/ArgItemMetadata.h>
 
-#include <sstream>
+#include <QString>
 
 using namespace FabricUI::ModelItems;
 
@@ -16,10 +16,7 @@ ArgItemMetadata::ArgItemMetadata( ArgModelItem *argModelItem )
 
 void ArgItemMetadata::computeDFGPath()
 {
-  std::stringstream bdid; bdid << m_argModelItem->getBinding().getBindingID();
-  m_bindingId = bdid.str();
+  m_bindingId = QString::number( m_argModelItem->getBinding().getBindingID() ).toUtf8().data();
 
-  std::stringstream pp;
-  pp << m_argModelItem->getArgName();
-  m_portPath = pp.str();
+  m_portPath = m_argModelItem->getArgName();
 }
