@@ -13,6 +13,7 @@ Ruler::Ruler( Orientation o )
   , m_majToMinGradsRatio( 8.0 )
   , m_logScale( 2 )
   , m_penColor( QColor( 128, 128, 128 ) )
+  , m_penTextColor( QColor( 255, 255, 255 ) )
   , m_majorPenWidth( 2 )
   , m_minorPenWidth( 1 )
   , m_majGradToBreadthRatio( 0.5 )
@@ -120,7 +121,11 @@ void Ruler::paintEvent( QPaintEvent * e )
       qreal xs = i / bigFactor;
       qreal xw = Map( xs, m_orientation, m_start, m_end, r );
       DrawLine( &p, xw, m_orientation, m_majGradToBreadthRatio, r );
+      pen.setColor( m_penTextColor );
+      p.setPen( pen );
       DrawText( &p, xw + 5, m_orientation, m_textBreadthPos, r, QString::number( xs ) );
+      pen.setColor( m_penColor );
+      p.setPen( pen );
     }
     pen.setWidthF( m_minorPenWidth );
     p.setPen( pen );

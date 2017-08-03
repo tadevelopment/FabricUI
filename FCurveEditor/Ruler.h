@@ -55,6 +55,7 @@ private:
   qreal m_majToMinGradsRatio;
   qreal m_logScale;
   QColor m_penColor;
+  QColor m_penTextColor;
   qreal m_majorPenWidth;
   qreal m_minorPenWidth;
   qreal m_majGradToBreadthRatio;
@@ -79,6 +80,8 @@ public:
 
   inline QColor penColor() const { return m_penColor; }
   inline void setPenColor( QColor c ) { m_penColor = c; this->update(); }
+  inline QColor penTextColor() const { return m_penColor; }
+  inline void setPenTextColor( QColor c ) { m_penColor = c; this->update(); }
   inline qreal majorPenWidth() const { return m_majorPenWidth; }
   inline void setMajorPenWidth( qreal w ) { m_majorPenWidth = w; this->update(); }
   inline qreal minorPenWidth() const { return m_minorPenWidth; }
