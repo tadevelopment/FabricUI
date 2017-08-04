@@ -10,7 +10,6 @@
 #include <FabricUI/DFG/DFGExecNotifier.h>
 #include <FabricUI/Application/FabricException.h>
 #include <FabricUI/Commands/PathValueResolverRegistry.h>
-#include <FabricUI/DFG/Commands/DFGPathValueResolver.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 
 using namespace FabricUI;
@@ -367,10 +366,9 @@ ToolsNotifier::ToolsNotifier(
     m_toolTargetPath = RTValUtil::toRTVal(pathValue).maybeGetMember(
       "path").getStringCString();
 
-    QString reltargetPath;
-    DFGExec exec = resolver->getSubExecAndPortPath(
+    DFGExec exec = resolver->getDFGPortPaths(
       pathValue, 
-      reltargetPath
+      m_dfgPortPaths
       );
 
     FabricCore::String path = exec.getExecPath();
