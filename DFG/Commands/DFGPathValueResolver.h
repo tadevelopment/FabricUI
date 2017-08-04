@@ -13,7 +13,8 @@ namespace DFG {
 class DFGPathValueResolver : public Commands::BasePathValueResolver
 {
   /**
-    DFGPathValueResolver specialize for DFG graphs. 
+    DFGPathValueResolver specializes BasePathValueResolver for DFG graphs. 
+    It can resolves DFG ports, args and vars from their absolute paths in the DFG graph.
   */  
   
   Q_OBJECT
@@ -97,8 +98,11 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
     enum DFGType { DFGUnknow, DFGPort, DFGArg, DFGVar };
       
     /// Gets the DFG item type (DFGUnknow, DFGPort, DFGVar)
-    DFGType getDFGType(
-      FabricCore::RTVal pathValue
+    /// and the DFGPortPaths if the item is a port.
+    FabricCore::DFGExec getDFGPortPathsAndType(
+      FabricCore::RTVal pathValue,
+      DFGPortPaths &dfgPortPaths,
+      DFGType &dfgType
       );  
 
     /// Casts the path the a humain readable format.
