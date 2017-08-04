@@ -2,7 +2,6 @@
 // Copyright (c) 2010-2017 Fabric Software Inc. All rights reserved.
 //
 
-#include <iostream>
 #include "CommandRegistry.h"
 #include "RTValCommandManager.h"
 #include <FabricUI/Util/RTValUtil.h>
@@ -97,8 +96,6 @@ void RTValCommandManager::preDoCommand(
   BaseRTValScriptableCommand* scriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
   if(!scriptCmd) return;
 
-  std::cout << "\n\nRTValCommandManager::preDoCommand 1 " << cmd->getName().toUtf8().constData() << std::endl;
-
   FABRIC_CATCH_BEGIN();
 
   QString key;
@@ -107,8 +104,6 @@ void RTValCommandManager::preDoCommand(
     if( scriptCmd->hasArgFlag(key, CommandArgFlags::IN_ARG) ||
         scriptCmd->hasArgFlag(key, CommandArgFlags::IO_ARG) )
     {
-      std::cout << "\nkey " << key.toUtf8().constData() << std::endl;
-
       RTVal pathValue = scriptCmd->getRTValArg(key);
       if(PathValueResolverRegistry::getRegistry()->knownPath(pathValue))
       {
@@ -117,8 +112,6 @@ void RTValCommandManager::preDoCommand(
       }
     }
   }
-
-  std::cout << "RTValCommandManager::preDoCommand 2 " << std::endl;
 
   FABRIC_CATCH_END("RTValCommandManager::preDoCommand");
 }
@@ -131,24 +124,18 @@ void RTValCommandManager::postDoCommand(
 
   FABRIC_CATCH_BEGIN();
 
-  std::cout << "\n\nRTValCommandManager::postDoCommand 1 " << cmd->getName().toUtf8().constData() << std::endl;
-
   QString key;
   foreach(key, scriptCmd->getArgKeys())
   {         
     if( scriptCmd->hasArgFlag(key, CommandArgFlags::OUT_ARG) ||
         scriptCmd->hasArgFlag(key, CommandArgFlags::IO_ARG) )
     {
-      std::cout << "\nkey " << key.toUtf8().constData() << std::endl;
-
       RTVal pathValue = scriptCmd->getRTValArg(key);
       if(PathValueResolverRegistry::getRegistry()->knownPath(pathValue))
         PathValueResolverRegistry::getRegistry()->setValue(
           pathValue);
     }
   }
-
-  std::cout << "RTValCommandManager::postDoCommand 2 " << std::endl;
 
   FABRIC_CATCH_END("RTValCommandManager::postDoCommand");
 }
