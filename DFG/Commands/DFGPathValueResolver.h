@@ -69,8 +69,43 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
       );
 
     /// Type of DFG data.
-    enum DFGType { DFGUnknow, DFGPort, DFGArg, DFGVar };
+    enum DFGType { DFGUnknow, DFGPort, DFGBlockPort, DFGArg, DFGVar };
       
+    struct DFGPortPaths {
+      QString portName; // Relative
+      QString blockName;
+      QString nodeName;
+      QString subExecPath;
+
+      DFGPortPaths() {
+       // isBlockPort = false;
+      }
+
+      bool isExecBlockPort() {
+        return !blockName.isEmpty();
+      }
+
+      QString getRelativePortPath() {
+        if(isExecBlockPort())
+          return nodeName + "." + blockName + "." + portName;
+        else if(isExecArg())
+          return portName;
+        else
+          return nodeName + "." + portName;
+      }
+
+      bool isExecArg() {
+        return !isExecBlockPort() && nodeName.isEmpty();
+      }
+    };
+
+    /// Gets the executable and the relative
+    /// port path from `pathValue`
+    FabricCore::DFGExec getSubExecAndPortPaths(
+      FabricCore::RTVal pathValue, 
+      DFGPortPaths &portPaths
+      );
+
     /// Gets the DFG data type (DFGUnknow, DFGPort, DFGVar)
     DFGType getDFGType(
       FabricCore::RTVal pathValue
