@@ -49,11 +49,36 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
       FabricCore::RTVal pathValue
       );
 
-    /// Gets the executable and the relative
-    /// port path from `pathValue`
-    FabricCore::DFGExec getSubExecAndPortPath(
+    struct DFGPortPaths {
+      QString portName; 
+      QString blockName;
+      QString nodeName;
+
+      bool isExecBlockPort() {
+        return !blockName.isEmpty();
+      }
+
+      bool isExecArg() {
+        return !isExecBlockPort() && nodeName.isEmpty();
+      }
+
+      QString getRelativePortPath() {
+        if(isExecBlockPort())
+          return nodeName + "." + blockName + "." + portName;
+        else if(isExecArg())
+          return portName;
+        else if(!nodeName.isEmpty())
+          return nodeName + "." + portName;
+        else
+          return "";
+      }
+    };
+
+    /// Gets the executable and DFGPortPaths
+    /// from the pathValue.
+    FabricCore::DFGExec getDFGPortPaths(
       FabricCore::RTVal pathValue, 
-      QString &relPortPath
+      DFGPortPaths &dfgPortPaths
       );
 
   public slots:
@@ -63,59 +88,27 @@ class DFGPathValueResolver : public Commands::BasePathValueResolver
       );
 
   private:
-    /// Gets a port/var relative path.
-    QString getRelativePath(
+    /// Removes the bindingID or the solverID from the path if set.
+    QString getPathWithoutBindingOrSolverID(
       FabricCore::RTVal pathValue
       );
 
-    /// Type of DFG data.
-    enum DFGType { DFGUnknow, DFGPort, DFGBlockPort, DFGArg, DFGVar };
+    /// Type of DFG item.
+    enum DFGType { DFGUnknow, DFGPort, DFGArg, DFGVar };
       
-    struct DFGPortPaths {
-      QString portName; // Relative
-      QString blockName;
-      QString nodeName;
-      QString subExecPath;
-
-      DFGPortPaths() {
-       // isBlockPort = false;
-      }
-
-      bool isExecBlockPort() {
-        return !blockName.isEmpty();
-      }
-
-      QString getRelativePortPath() {
-        if(isExecBlockPort())
-          return nodeName + "." + blockName + "." + portName;
-        else if(isExecArg())
-          return portName;
-        else
-          return nodeName + "." + portName;
-      }
-
-      bool isExecArg() {
-        return !isExecBlockPort() && nodeName.isEmpty();
-      }
-    };
-
-    /// Gets the executable and the relative
-    /// port path from `pathValue`
-    FabricCore::DFGExec getSubExecAndPortPaths(
-      FabricCore::RTVal pathValue, 
-      DFGPortPaths &portPaths
-      );
-
-    /// Gets the DFG data type (DFGUnknow, DFGPort, DFGVar)
+    /// Gets the DFG item type (DFGUnknow, DFGPort, DFGVar)
     DFGType getDFGType(
       FabricCore::RTVal pathValue
       );  
 
     /// Casts the path the a humain readable format.
+    /// Replaces the bindingID by the solverID if it exists.
+    /// If not (only one binding), removes the bindingID from the path.
     void castPathToHRFormat(
       FabricCore::RTVal pathValue
       );
 
+    /// Solver ID
     QString m_id;
     FabricCore::DFGBinding m_binding;
 };
