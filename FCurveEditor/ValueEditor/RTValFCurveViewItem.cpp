@@ -7,6 +7,7 @@
 #include <FabricUI/FCurveEditor/FCurveEditor.h>
 #include <FabricUI/FCurveEditor/Models/DFG/DFGAnimXFCurveModel.h>
 
+#include <FabricUI/ValueEditor/BaseModelItem.h>
 #include <FabricUI/ModelItems/DFGModelItemMetadata.h>
 #include <FabricUI/Util/QtSignalsSlots.h>
 #include <FabricUI/Util/LoadPixmap.h>
@@ -80,6 +81,13 @@ public:
   inline FabricUI::FCurveEditor::FCurveEditor* editor() { return m_editor; }
 };
 
+void SetPath( RTValAnimXFCurveDFGController* model, const ItemMetadata* metadata )
+{
+  const char* bindingId = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGBindingIdKey.data() );
+  const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );
+  model->setPath( bindingId, portPath );
+}
+
 RTValFCurveViewItem::RTValFCurveViewItem(
   QString const &name,
   QVariant const &value,
@@ -121,9 +129,8 @@ RTValFCurveViewItem::RTValFCurveViewItem(
     );
   }
 
-  const char* bindingId = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGBindingIdKey.data() );
   const char* portPath = metadata->getString( FabricUI::ModelItems::DFGModelItemMetadata::VEDFGPortPathKey.data() );
-  m_model->setPath( bindingId, portPath );
+  SetPath( m_model, metadata );
 
   m_expandedDialog->setWindowTitle( "AnimX::AnimCurve <" + QString::fromUtf8( portPath ) + ">" );
 }
@@ -146,6 +153,25 @@ RTValFCurveViewItem::~RTValFCurveViewItem()
 void RTValFCurveViewItem::onViewValueChanged()
 {
   //emit this->viewValueChanged( QVariant::fromValue<FabricCore::RTVal>( m_model->value() ) );
+}
+
+void RTValFCurveViewItem::setBaseModelItem( BaseModelItem* item )
+{
+  Parent::setBaseModelItem( item );
+  if( this->getModelItem() != NULL )
+  {
+    // TODO : disconnect from previous model item (but BaseModelItem doesn't seem
+    // to do it, so maybe we shouldn't)
+    QOBJECT_CONNECT(
+      this->getModelItem(), SIGNAL, BaseModelItem, metadataChanged, ( ),
+      this, SLOT, RTValFCurveViewItem, onMetadataChanged, ( )
+    );
+  }
+}
+
+void RTValFCurveViewItem::onMetadataChanged()
+{
+  SetPath( m_model, &m_metadata );
 }
 
 QWidget* RTValFCurveViewItem::getWidget()

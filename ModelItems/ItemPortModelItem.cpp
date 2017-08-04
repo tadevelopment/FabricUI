@@ -29,7 +29,7 @@ ItemPortModelItem::ItemPortModelItem(
   , m_exec( exec )
   , m_itemPath( itemPath )
   , m_portName( portName )
-  , m_metadata( 0 )
+  , m_metadata( NULL )
 {
   updatePortPath();
 }
@@ -44,6 +44,11 @@ void ItemPortModelItem::updatePortPath()
   m_portPath = m_itemPath;
   m_portPath += '.';
   m_portPath += m_portName;
+  if( m_metadata != NULL )
+  {
+    m_metadata->computeDFGPath();
+    emit this->metadataChanged();
+  }
 }
 
 FabricUI::ValueEditor::ItemMetadata* ItemPortModelItem::getMetadata()

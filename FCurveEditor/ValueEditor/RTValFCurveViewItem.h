@@ -18,11 +18,11 @@ namespace FCurveEditor
 
 namespace ValueEditor {
 
-class ItemMetaData;
-
 class RTValFCurveViewItem : public BaseViewItem
 {
   Q_OBJECT
+
+  typedef BaseViewItem Parent;
 
   FCurveEditor::RTValAnimXFCurveDFGController* m_model;
   class Editor;
@@ -49,9 +49,13 @@ public:
   void onModelValueChanged( QVariant const & ) FTL_OVERRIDE;
   void deleteMe() FTL_OVERRIDE { delete this; }
 
+protected:
+  void setBaseModelItem( BaseModelItem* ) FTL_OVERRIDE;
+
 private slots:
   void onViewValueChanged();
   void expand();
+  void onMetadataChanged();
   inline void emitInteractionEnd() { emit this->interactionEnd( true ); }
 };
 

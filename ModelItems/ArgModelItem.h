@@ -19,6 +19,8 @@ class DFGUICmdHandler;
 
   namespace ModelItems
   {
+    class ArgItemMetadata;
+
     //////////////////////////////////////////////////////////////////////////
     // Specialization for accessing ports that are also args
     class ArgModelItem : public FabricUI::ValueEditor::BaseModelItem
@@ -30,7 +32,7 @@ class DFGUICmdHandler;
       std::string m_argName;
 
       FabricCore::DFGExec m_rootExec;
-      FabricUI::ValueEditor::ItemMetadata *m_metadata;
+      ArgItemMetadata *m_metadata;
 
     public:
 

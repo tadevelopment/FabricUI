@@ -32,6 +32,8 @@ namespace FabricUI
 
       ItemPortItemMetadata( ItemPortModelItem *nodePortModelItem );
 
+      void computeDFGPath();
+
       virtual const char* getString( const char* key ) const /*override*/
       {
         try
