@@ -19,7 +19,7 @@ class RTValAnimXFCurveDFGController : public RTValAnimXFCurveVersionedConstModel
 {
   Q_OBJECT
 
-  std::string m_bindingId, m_dfgPortPath;
+  QString m_bindingId, m_dfgPortPath;
   size_t m_interactionId;
   bool m_isInteracting;
 
