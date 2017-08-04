@@ -17,7 +17,7 @@ from FabricEngine.Canvas.RTValEncoderDecoder import RTValEncoderDecoder
 from FabricEngine.Canvas.LoadFabricStyleSheet import LoadFabricStyleSheet
 from FabricEngine.Canvas.Commands.CommandManager import *
 from FabricEngine.Canvas.Application.FabricApplicationStates import *
-from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import HotkeyEditorDialog
+#from FabricEngine.Canvas.HotkeyEditor.HotkeyEditorDialog import HotkeyEditorDialog
 from FabricEngine.Canvas.Commands.CommandManagerCallback import CommandManagerCallback
 from FabricEngine.Canvas.LoadFabricPixmap import LoadFabricPixmap
 
@@ -496,7 +496,7 @@ class CanvasWindow(QtGui.QMainWindow):
         self.dfguiCommandHandler = UICmdHandler(self.client, self.scriptEditor)
         
         self.cmdManagerCallback = CommandManagerCallback(self.qUndoStack, self.scriptEditor)
-        self.hotkeyEditorDialog = HotkeyEditorDialog(self)
+        #self.hotkeyEditorDialog = HotkeyEditorDialog(self)
 
 
     def _initDFGWidget(self):
@@ -1449,11 +1449,11 @@ class CanvasWindow(QtGui.QMainWindow):
                     self.manipAction = ToggleManipulationAction(self, self.viewport)
                     menu.addAction(self.manipAction)
 
-                    menu.addSeparator()
+                    # menu.addSeparator()
 
-                    editorMenu = menu.addMenu("Editors")
-                    self.showHotkeyEditorDialogAction = ShowHotkeyEditorDialogAction(editorMenu, self)
-                    editorMenu.addAction(self.showHotkeyEditorDialogAction)
+                    # editorMenu = menu.addMenu("Editors")
+                    # self.showHotkeyEditorDialogAction = ShowHotkeyEditorDialogAction(editorMenu, self)
+                    # editorMenu.addAction(self.showHotkeyEditorDialogAction)
 
         elif name == 'View':
             if prefix:
