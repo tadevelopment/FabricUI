@@ -42,7 +42,7 @@ void RTValAnimXFCurveDFGController::setKey( size_t i, Key h, bool autoTangent )
   FabricCore::RTVal bRV = FabricCore::RTVal::ConstructBoolean( m_val.getContext(), true );
   const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "", "useIds", 1, &bRV );
   QMap<QString, QString> args;
-  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
   args["id"] = QString::number( i );
   AddKeyValueToArgs( args, h );
   args["interactionEnd"] = m_isInteracting ? "false" : "true";
@@ -85,7 +85,7 @@ void RTValAnimXFCurveDFGController::moveKeys( const size_t* indices, const size_
   FabricCore::RTVal bRV = FabricCore::RTVal::ConstructBoolean( m_val.getContext(), true );
   const_cast<FabricCore::RTVal*>( &m_val )->callMethod( "", "useIds", 1, &bRV );
   QMap<QString, QString> args;
-  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
   args["ids"] = SerializeQS( indices, nbIndices );
   args["dx"] = QString::number( delta.x() );
   args["dy"] = QString::number( delta.y() );
@@ -102,7 +102,7 @@ void RTValAnimXFCurveDFGController::addKey( Key k, bool useKey, bool autoTangent
   FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
   SynchronizeKLReg();
   QMap<QString, QString> args;
-  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
   if( useKey )
     AddKeyValueToArgs( args, k );
   args["autoTangent"] = autoTangent ? "true" : "false";
@@ -115,7 +115,7 @@ void RTValAnimXFCurveDFGController::deleteKey( size_t i )
   FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
   SynchronizeKLReg();
   QMap<QString, QString> args;
-  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
   args["id"] = QString::number( i );
   manager->createCommand( "AnimX_RemoveKeyframe", args );
   emit this->dirty();
@@ -126,7 +126,7 @@ void RTValAnimXFCurveDFGController::deleteKeys( const size_t* indices, const siz
   FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
   SynchronizeKLReg();
   QMap<QString, QString> args;
-  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
   args["ids"] = SerializeQS( indices, nbIndices );
   manager->createCommand( "AnimX_RemoveKeyframes", args );
   emit this->dirty();
@@ -137,7 +137,7 @@ void RTValAnimXFCurveDFGController::setPreInfinityType( size_t i )
   FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
   SynchronizeKLReg();
   QMap<QString, QString> args;
-  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
   args["type"] = QString::number( i );
   manager->createCommand( "AnimX_SetPreInfinityType", args );
   emit this->dirty();
@@ -148,7 +148,7 @@ void RTValAnimXFCurveDFGController::setPostInfinityType( size_t i )
   FabricUI::Commands::CommandManager* manager = FabricUI::Commands::CommandManager::getCommandManager();
   SynchronizeKLReg();
   QMap<QString, QString> args;
-  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + "." + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
+  args["target"] = "<" + QString::fromUtf8( m_bindingId.data() ) + QString::fromUtf8( m_dfgPortPath.data() ) + ">";
   args["type"] = QString::number( i );
   manager->createCommand( "AnimX_SetPostInfinityType", args );
   emit this->dirty();
