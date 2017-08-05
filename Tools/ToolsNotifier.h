@@ -11,6 +11,7 @@
 #include <FabricUI/DFG/DFGWidget.h>
 #include <FabricUI/DFG/DFGNotifier.h>
 #include <FabricUI/ValueEditor/VEEditorOwner.h>
+#include <FabricUI/DFG/Commands/DFGPathValueResolver.h>
  
 namespace FabricUI {
 namespace Tools {
@@ -209,6 +210,8 @@ class ToolsNotifier : public QObject
       );
 
     QString m_execPath;
+    DFG::DFGPathValueResolver::DFGPortPaths m_dfgPortPaths;
+
     QString m_toolTargetPath;
     ToolsNotifierRegistry *m_registry;
     QSharedPointer<DFG::DFGNotifier> m_notifier;
