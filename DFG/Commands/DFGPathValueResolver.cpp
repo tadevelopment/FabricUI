@@ -147,7 +147,7 @@ void DFGPathValueResolver::getValue(
 
   QString type = RTValUtil::getType(value);
   
-  if(value.isValid() && type != "None")
+  if(value.isValid())
     pathValue.setMember("value", value);
   
   else
@@ -157,7 +157,7 @@ void DFGPathValueResolver::getValue(
 
     FabricException::Throw(
       "DFGPathValueResolver::getValue",
-      "Invalid PathValue : " + path + ", type " + type.toUtf8()
+      "Invalid data at path : " + path + ", data type : " + type.toUtf8()
       );
   }
 
