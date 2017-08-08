@@ -166,11 +166,8 @@ void GLViewportWidget::setManipulationActive(
 {
   if(state == m_manipTool->isActive())
     return;
-
-  if(state) setFocus();
-  else clearFocus();
+ 
   m_manipTool->setActive(state);
-  
   setMouseTracking(state);
   redraw();
 }

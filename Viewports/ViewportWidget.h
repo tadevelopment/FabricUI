@@ -44,7 +44,17 @@ class ViewportWidget : public QGLWidget
 
     /// Gets the FPS.
     double fps();
-  
+    
+    /// To get the focus.
+    virtual void enterEvent(
+      QEvent * event
+      );
+    
+    /// To release the focus.
+    virtual void leaveEvent(
+      QEvent * event
+      );
+
   signals:
     /// Emitted when OpenGL has been initialized.
     void initComplete();
