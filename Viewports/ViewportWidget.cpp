@@ -16,8 +16,6 @@ void ViewportWidget::init()
   m_eventFilter = new ViewportEventFilter(this);
   installEventFilter(m_eventFilter);
 
-  //setFocusPolicy(Qt::StrongFocus);
- 
   m_fps = 0.0;
   for(int i=0;i<16;i++) 
     m_fpsStack[i] = 0.0;
