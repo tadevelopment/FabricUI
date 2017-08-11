@@ -48,23 +48,29 @@ namespace FabricUI
         if (m_allowEdits)
         {
           setReadOnly(false);
-          setFocus();
         }
         selectAll();
         event->accept();
       }
 
-      void focusOutEvent(QFocusEvent * event)
+    protected slots:
+
+      void onEditingFinished()
       {
         setReadOnly(true);
-        Util::FELineEdit::focusOutEvent(event);
       }
 
     protected:
 
       void init()
       {
-        setReadOnly( true);
+        setReadOnly(true);
+
+        QObject::connect(
+          this, SIGNAL(editingFinished()),
+          this, SLOT(onEditingFinished())
+          );
+
       }
 
     signals:
@@ -93,15 +99,6 @@ namespace FabricUI
       virtual ~DFGExecHeaderWidget();
       
       void refreshExtDeps( FTL::CStrRef extDeps );
-
-      // return true if the req. exts QLineEdit
-      // widget has the keyboard focus..
-      bool reqExtLineEditWidgetHasFocus() const;
-
-      // discard the changes made in the req. exts
-      // QLineEdit widget and remove the keyboard focus.
-      // returns true on success.
-      bool reqExtLineEditWidgetClearFocus();
 
     signals:
 
