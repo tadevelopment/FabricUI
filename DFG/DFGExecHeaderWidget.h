@@ -30,50 +30,19 @@ namespace FabricUI
 
     public:
 
-      ReqExtLineEdit( QWidget *parent = 0 )
-        : FELineEdit( parent )
-        , m_allowEdits( false)
-      {
-        init();
-      }
+      ReqExtLineEdit( QWidget *parent = 0 );
 
-      void setAllowEdits(bool allow)
-      {
-        m_allowEdits = allow;
-      }
-      
-      virtual void mouseDoubleClickEvent(QMouseEvent *event)
-      {
-        // [FE-4882] textfield requires a double-click before it can be edited.
-        if (m_allowEdits)
-        {
-          setReadOnly(false);
-        }
-        selectAll();
-        event->accept();
-      }
+      void setAllowEdits(bool allow);
 
     protected slots:
 
-      void onEditingFinished()
-      {
-        setReadOnly(true);
-      }
+      void onEditingFinished();
 
     protected:
 
-      void init()
-      {
-        setReadOnly(true);
+      virtual bool eventFilter(QObject * watched, QEvent * event);
 
-        QObject::connect(
-          this, SIGNAL(editingFinished()),
-          this, SLOT(onEditingFinished())
-          );
-
-      }
-
-    signals:
+      void init();
 
     protected slots:
 
