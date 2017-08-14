@@ -4,27 +4,33 @@
 
 import os, subprocess
 Import(
-  'allServicesLibFiles',
   'buildArch',
   'buildOS',
   'buildType',
-  'capiSharedFiles',
   'capiSharedLibFlags',
   'corePythonModuleFiles',
-  'dfgSamples',
-  'extraDFGPresets',
   'fabricFlags',
-  'feLogoPNG',
   'parentEnv',
   'pythonConfigs',
   'qtDir',
   'qtFlags',
-  'qtInstalledLibs',
   'qtMOC',
-  'splitSearchFiles',
   'stageDir',
   'uiLibPrefix',
   )
+
+buildCanvasPy = "FABRIC_EXTERNAL_PYTHON_DIR" in os.environ
+if buildCanvasPy:
+  Import(
+    'allServicesLibFiles',
+    'capiSharedFiles',
+    'dfgSamples',
+    'extraDFGPresets',
+    'feLogoPNG',
+    'qtInstalledLibs',
+    'splitSearchFiles'
+  )
+
 
 if buildOS == 'Windows' and buildType == 'Debug':
   Import('servicesFlags_mtd')
@@ -303,7 +309,8 @@ if uiLibPrefix == 'ui':
     shibokenDir = pysideEnv.Dir('shiboken')
 
     if buildOS == 'Windows':
-      pysideEnv['CCFLAGS'].remove('/W2')
+      if "\W2" in pysideEnv['CCFLAGS']:
+        pysideEnv['CCFLAGS'].remove('/W2')
       if buildType == 'Debug':
         pysideEnv.Append(LINKFLAGS = ['/NODEFAULTLIB:LIBCMTD'])
       else:
@@ -591,15 +598,16 @@ if uiLibPrefix == 'ui':
       
   pysideEnv.Alias('pysideGen', pysideGens)
   pysideEnv.Alias('pyside', installedPySideLibs)
-  pysideEnv.Alias('canvas.py', [
-    installedPySideLibs,
-    capiSharedFiles,
-    extraDFGPresets,
-    splitSearchFiles,
-    dfgSamples,
-    qtInstalledLibs,
-    allServicesLibFiles,
-    feLogoPNG,
-    ])
+  if buildCanvasPy:
+    pysideEnv.Alias('canvas.py', [
+      installedPySideLibs,
+      capiSharedFiles,
+      extraDFGPresets,
+      splitSearchFiles,
+      dfgSamples,
+      qtInstalledLibs,
+      allServicesLibFiles,
+      feLogoPNG,
+      ])
 
 Return('uiFiles')

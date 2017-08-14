@@ -33,12 +33,17 @@ env.Append(CPPPATH = [env.Dir('#').srcnode().abspath])
 qtDir = os.environ['QT_DIR']
 qtMOC = os.path.join(qtDir, 'bin', 'moc')
 qtFlags = {
-  'CPPPATH': [os.path.join(qtDir, 'include')],
+  'CPPPATH': [
+      os.path.join(qtDir, 'include'),
+      os.path.join(qtDir, 'include', 'QtCore'),
+      os.path.join(qtDir, 'include', 'QtGUI'),
+      os.path.join(qtDir, 'include', 'QtOpenGL')
+    ],
   'LIBPATH': [os.path.join(qtDir, 'lib')],
   }
 
 if buildOS == 'Windows':
-  qtMoc += '.exe'
+  qtMOC += '.exe'
   if buildType == 'Debug':
     suffix = 'd4'
   else:
@@ -165,7 +170,7 @@ if buildOS == 'Windows':
 
 fabricDir = os.environ['FABRIC_DIR']
 fabricFlags = {
-  'CPPDEFINES': ['FEC_SHARED'],
+  'CPPDEFINES': ['FEC_SHARED', 'NOMINMAX'],
   'CPPPATH': [
     '..',
     os.path.join(fabricDir, 'include'),
